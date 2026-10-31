@@ -70,8 +70,8 @@ int sum(struct outer *o) { return o->a + o->t + o->u + o->c + o->b; }
 // FLAG-NEXT:     type @type[[TYPE_either:[0-9]+]] either = @type[[TYPE1]];
 // FLAG-NEXT:     type @type[[TYPE_outer:[0-9]+]] outer = struct {
 // FLAG-NEXT:         field0 <anonymous>: @type[[TYPE_inner]];
-// FLAG-NEXT:         field1 <anonymous>: @type[[TYPE0]];
-// FLAG-NEXT:         field2 <anonymous>: @type[[TYPE1]];
+// FLAG-NEXT:         field1 <anonymous>: @type[[TYPE0]] [c="tagless"];
+// FLAG-NEXT:         field2 <anonymous>: @type[[TYPE1]] [c="either"];
 // FLAG-NEXT:         field3 <anonymous>: @type[[TYPE_nested:[0-9]+]];
 // FLAG-NEXT:         field4 b: i32;
 // FLAG-NEXT:     } [size=20, align=4, offsets=[0, 4, 8, 12, 16]];
@@ -120,8 +120,8 @@ int sum(struct outer *o) { return o->a + o->t + o->u + o->c + o->b; }
 // EXT-NEXT:     type @type[[TYPE_either:[0-9]+]] either = @type[[TYPE1]];
 // EXT-NEXT:     type @type[[TYPE_outer:[0-9]+]] outer = struct {
 // EXT-NEXT:         field0 <anonymous>: @type[[TYPE_inner]];
-// EXT-NEXT:         field1 <anonymous>: @type[[TYPE0]];
-// EXT-NEXT:         field2 <anonymous>: @type[[TYPE1]];
+// EXT-NEXT:         field1 <anonymous>: @type[[TYPE0]] [c="tagless"];
+// EXT-NEXT:         field2 <anonymous>: @type[[TYPE1]] [c="either"];
 // EXT-NEXT:         field3 <anonymous>: @type[[TYPE_nested:[0-9]+]];
 // EXT-NEXT:         field4 b: i32;
 // EXT-NEXT:     } [size=20, align=4, offsets=[0, 4, 8, 12, 16]];
@@ -170,8 +170,8 @@ int sum(struct outer *o) { return o->a + o->t + o->u + o->c + o->b; }
 // COMPAT-NEXT:     type @type[[TYPE_either:[0-9]+]] either = @type[[TYPE1]];
 // COMPAT-NEXT:     type @type[[TYPE_outer:[0-9]+]] outer = struct {
 // COMPAT-NEXT:         field0 <anonymous>: @type[[TYPE_inner]];
-// COMPAT-NEXT:         field1 <anonymous>: @type[[TYPE0]];
-// COMPAT-NEXT:         field2 <anonymous>: @type[[TYPE1]];
+// COMPAT-NEXT:         field1 <anonymous>: @type[[TYPE0]] [c="tagless"];
+// COMPAT-NEXT:         field2 <anonymous>: @type[[TYPE1]] [c="either"];
 // COMPAT-NEXT:         field3 <anonymous>: @type[[TYPE_nested:[0-9]+]];
 // COMPAT-NEXT:         field4 b: i32;
 // COMPAT-NEXT:     } [size=20, align=4, offsets=[0, 4, 8, 12, 16]];

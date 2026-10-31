@@ -49,8 +49,8 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i16 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i16 [storage=automatic] = truncate<i16, reason=assign, fits=always>(const<i32>(1));
-// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: ptr<@type[[TYPE0]]> [storage=automatic] = addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE0]] [storage=automatic] [c="A"];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: ptr<@type[[TYPE0]]> [storage=automatic] = addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_a]]) [c="A *"] [c="A *"];
 // DEFAULT-NEXT:         write<ptr<i16>>(deref(ptr_offset<ptr<ptr<i16>>, subtract=false, element=ptr<i16>, overflow=ub>(array_decay<ptr<ptr<i16>>, length=Some(2)>(field1(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_ap]])))), widen<i32, reason=promotion>(read<i16>(%[[VALUE_j]])))), addr_of<ptr<i16>>(%[[VALUE_i]]));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

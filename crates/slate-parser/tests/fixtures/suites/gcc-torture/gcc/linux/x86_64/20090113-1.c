@@ -88,10 +88,10 @@ int main() {
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 data: ptr<i32>;
 // DEFAULT-NEXT:         field1 dtype: i32;
-// DEFAULT-NEXT:         field2 dim: array<@type[[TYPE_descriptor_dimension]], 7>;
+// DEFAULT-NEXT:         field2 dim: array<@type[[TYPE_descriptor_dimension]], 7> [c="descriptor_dimension[7]"];
 // DEFAULT-NEXT:     } [size=96, align=8, offsets=[0, 8, 12]];
 // DEFAULT-NEXT:     type @type[[TYPE_gfc_array_i4:[0-9]+]] gfc_array_i4 = @type[[TYPE0]];
-// DEFAULT-NEXT:     fn %[[VALUE_msum_i4:[0-9]+]] @msum_i4(%[[VALUE_retarray:[0-9]+]] retarray: ptr<@type[[TYPE0]]> [const], %[[VALUE_array:[0-9]+]] array: ptr<@type[[TYPE0]]> [const], %[[VALUE_pdim:[0-9]+]] pdim: ptr<const i32> [const]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_msum_i4:[0-9]+]] @msum_i4(%[[VALUE_retarray:[0-9]+]] retarray: ptr<@type[[TYPE0]]> [const] [c="gfc_array_i4 *const"], %[[VALUE_array:[0-9]+]] array: ptr<@type[[TYPE0]]> [const] [c="gfc_array_i4 *const"], %[[VALUE_pdim:[0-9]+]] pdim: ptr<const i32> [const]) -> void [linkage=external] [fallthrough=ret_void] [c="void(gfc_array_i4 *const, gfc_array_i4 *const, const int *const)"] {
 // DEFAULT-NEXT:         let %[[VALUE_count:[0-9]+]] count: array<i32, 7> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_extent:[0-9]+]] extent: array<i32, 7> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_dest:[0-9]+]] dest: ptr<i32> [storage=automatic];
@@ -152,10 +152,10 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_rdata:[0-9]+]] rdata: array<i32, 3> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_adata:[0-9]+]] adata: array<i32, 9> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_retarray_2:[0-9]+]] retarray: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = array_decay<ptr<i32>, length=Some(3)>(%[[VALUE_rdata]]), field1 = const<i32>(265), field2 = aggregate<array<@type[[TYPE_descriptor_dimension]], 7>, zero_fill=true>(index0 = aggregate<@type[[TYPE_descriptor_dimension]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(1), field2 = const<i32>(3))));
-// DEFAULT-NEXT:         let %[[VALUE_array_2:[0-9]+]] array: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = array_decay<ptr<i32>, length=Some(9)>(%[[VALUE_adata]]), field1 = const<i32>(266), field2 = aggregate<array<@type[[TYPE_descriptor_dimension]], 7>, zero_fill=true>(index0 = aggregate<@type[[TYPE_descriptor_dimension]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(1), field2 = const<i32>(3)), index1 = aggregate<@type[[TYPE_descriptor_dimension]], zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(1), field2 = const<i32>(3))));
+// DEFAULT-NEXT:         let %[[VALUE_retarray_2:[0-9]+]] retarray: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = array_decay<ptr<i32>, length=Some(3)>(%[[VALUE_rdata]]), field1 = const<i32>(265), field2 = aggregate<array<@type[[TYPE_descriptor_dimension]], 7>, zero_fill=true>(index0 = aggregate<@type[[TYPE_descriptor_dimension]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(1), field2 = const<i32>(3)))) [c="gfc_array_i4"];
+// DEFAULT-NEXT:         let %[[VALUE_array_2:[0-9]+]] array: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = array_decay<ptr<i32>, length=Some(9)>(%[[VALUE_adata]]), field1 = const<i32>(266), field2 = aggregate<array<@type[[TYPE_descriptor_dimension]], 7>, zero_fill=true>(index0 = aggregate<@type[[TYPE_descriptor_dimension]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(1), field2 = const<i32>(3)), index1 = aggregate<@type[[TYPE_descriptor_dimension]], zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(1), field2 = const<i32>(3)))) [c="gfc_array_i4"];
 // DEFAULT-NEXT:         let %[[VALUE_dim_2:[0-9]+]] dim: i32 [storage=automatic] = const<i32>(2);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE0]]>, ptr<@type[[TYPE0]]>, ptr<const i32>) -> void>(%[[VALUE_msum_i4]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_retarray_2]]), addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_array_2]]), pointer_cast<ptr<const i32>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_dim_2]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE0]]>, ptr<@type[[TYPE0]]>, ptr<const i32>) -> void>(%[[VALUE_msum_i4]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_retarray_2]]) [c="gfc_array_i4 *"], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_array_2]]) [c="gfc_array_i4 *"], pointer_cast<ptr<const i32>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_dim_2]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -51,7 +51,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_targets:[0-9]+]] targets: array<ptr<void>, 3> [storage=static] [align=16] = aggregate<array<ptr<void>, 3>, zero_fill=false>(index0 = label_addr<ptr<void>>(%[[VALUE_zero:[0-9]+]]), index1 = label_addr<ptr<void>>(%[[VALUE_one:[0-9]+]]), index2 = label_addr<ptr<void>>(%[[VALUE_two:[0-9]+]])) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_jump_probe:[0-9]+]] @jump_probe(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if logical_or<bool>(lt<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0)), gt<i32>(read<i32>(%[[VALUE_x]]), const<i32>(2)))
 // DEFAULT-NEXT:             {

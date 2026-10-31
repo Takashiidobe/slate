@@ -39,7 +39,7 @@ void f(int *restrict a[2], restrict ipa b, int *restrict c[restrict]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_ipa:[0-9]+]] ipa = array<ptr<i32>, 2>;
 // DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: array<ptr<i32>, 2> [storage=static] [restrict] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: array<ptr<i32>, 2> [storage=static] [restrict] [align=16] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_a:[0-9]+]] a: ptr<ptr<i32>> [array=2], %[[VALUE_b:[0-9]+]] b: ptr<ptr<i32>> [array=2], %[[VALUE_c:[0-9]+]] c: ptr<ptr<i32>> [restrict]) -> void [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: array<ptr<i32>, 2> [storage=static] [restrict] [align=16] [linkage=external] [c="restrict ipa"];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_a:[0-9]+]] a: ptr<ptr<i32>> [array=2], %[[VALUE_b:[0-9]+]] b: ptr<ptr<i32>> [array=2] [c="restrict ipa"], %[[VALUE_c:[0-9]+]] c: ptr<ptr<i32>> [restrict]) -> void [linkage=external] [c="void(int *restrict[2], restrict ipa, int *restrict[])"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

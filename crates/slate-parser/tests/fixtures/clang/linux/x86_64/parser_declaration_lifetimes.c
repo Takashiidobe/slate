@@ -137,11 +137,11 @@ int members(void) {
 // DEFAULT-NEXT:         field0 T: i32;
 // DEFAULT-NEXT:         field1 a: array<i32, 4>;
 // DEFAULT-NEXT:     } [size=20, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %[[VALUE_after_prototype:[0-9]+]] after_prototype: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_after_nested:[0-9]+]] after_nested: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_after_parameter_enum:[0-9]+]] after_parameter_enum: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_after_prototype_enum:[0-9]+]] after_prototype_enum: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_after_return_callback:[0-9]+]] after_return_callback: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_after_prototype:[0-9]+]] after_prototype: i32 [storage=static] [linkage=external] [c="T"];
+// DEFAULT-NEXT:     global %[[VALUE_after_nested:[0-9]+]] after_nested: i32 [storage=static] [linkage=external] [c="T"];
+// DEFAULT-NEXT:     global %[[VALUE_after_parameter_enum:[0-9]+]] after_parameter_enum: i32 [storage=static] [linkage=external] [c="T"];
+// DEFAULT-NEXT:     global %[[VALUE_after_prototype_enum:[0-9]+]] after_prototype_enum: i32 [storage=static] [linkage=external] [c="T"];
+// DEFAULT-NEXT:     global %[[VALUE_after_return_callback:[0-9]+]] after_return_callback: i32 [storage=static] [linkage=external] [c="T"];
 // DEFAULT-NEXT:     fn %[[VALUE_own_initializer:[0-9]+]] @own_initializer() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_T_2:[0-9]+]] T: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_T_2]]);
@@ -156,13 +156,13 @@ int members(void) {
 // DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(16)));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_x_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_parameters:[0-9]+]] @parameters(%[[VALUE_T_5:[0-9]+]] T: i32, %[[VALUE_a:[0-9]+]] a: ptr<i32> [array=4]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_parameters:[0-9]+]] @parameters(%[[VALUE_T_5:[0-9]+]] T: i32, %[[VALUE_a:[0-9]+]] a: ptr<i32> [array=4]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int, int[4])"] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_prototype:[0-9]+]] @prototype(%[[VALUE_T_6:[0-9]+]] T: i32, %[[VALUE_a_2:[0-9]+]] a: ptr<i32> [array=*]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_nested:[0-9]+]] @nested(%[[VALUE_callback:[0-9]+]] callback: ptr<fn(i32, ptr<i32>) -> i32>, %[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_nested_shadow:[0-9]+]] @nested_shadow(%[[VALUE_T_7:[0-9]+]] T: i32, %[[VALUE_callback_2:[0-9]+]] callback: ptr<fn(ptr<i32>) -> i32>, %[[VALUE_b:[0-9]+]] b: ptr<i32> [array=*]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_parameter_bound:[0-9]+]] @parameter_bound(%[[VALUE_T_8:[0-9]+]] T: ptr<i32> [array=4], %[[VALUE_a_3:[0-9]+]] a: ptr<i32> [array=8]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_prototype:[0-9]+]] @prototype(%[[VALUE_T_6:[0-9]+]] T: i32, %[[VALUE_a_2:[0-9]+]] a: ptr<i32> [array=*]) -> i32 [linkage=external] [c="int(int, int[*])"];
+// DEFAULT-NEXT:     fn %[[VALUE_nested:[0-9]+]] @nested(%[[VALUE_callback:[0-9]+]] callback: ptr<fn(i32, ptr<i32>) -> i32> [c="int (*)(int, int[*])"], %[[VALUE_value:[0-9]+]] value: i32 [c="T"]) -> i32 [linkage=external] [c="int(int (*)(int, int[*]), T)"];
+// DEFAULT-NEXT:     fn %[[VALUE_nested_shadow:[0-9]+]] @nested_shadow(%[[VALUE_T_7:[0-9]+]] T: i32, %[[VALUE_callback_2:[0-9]+]] callback: ptr<fn(ptr<i32>) -> i32> [c="int (*)(int[*])"], %[[VALUE_b:[0-9]+]] b: ptr<i32> [array=*]) -> i32 [linkage=external] [c="int(int, int (*)(int[*]), int[*])"];
+// DEFAULT-NEXT:     fn %[[VALUE_parameter_bound:[0-9]+]] @parameter_bound(%[[VALUE_T_8:[0-9]+]] T: ptr<i32> [array=4], %[[VALUE_a_3:[0-9]+]] a: ptr<i32> [array=8]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int[4], int[8])"] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(8)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_enumeration:[0-9]+]] @enumeration() -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -171,11 +171,11 @@ int members(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_multiline_enumeration:[0-9]+]] @multiline_enumeration() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_parameter_enum:[0-9]+]] @parameter_enum(%[[VALUE_value_2:[0-9]+]] value: @type[[TYPE1]], %[[VALUE_a_4:[0-9]+]] a: ptr<i32> [array=4]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_parameter_enum:[0-9]+]] @parameter_enum(%[[VALUE_value_2:[0-9]+]] value: @type[[TYPE1]], %[[VALUE_a_4:[0-9]+]] a: ptr<i32> [array=4]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(enum, int[4])"] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_prototype_enum:[0-9]+]] @prototype_enum(%[[VALUE_value_3:[0-9]+]] value: @type[[TYPE2]], %[[VALUE_a_5:[0-9]+]] a: ptr<i32> [array=4]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_nested_enum:[0-9]+]] @nested_enum(%[[VALUE_callback_3:[0-9]+]] callback: ptr<fn(@type[[TYPE3]]) -> i32>, %[[VALUE_value_4:[0-9]+]] value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_prototype_enum:[0-9]+]] @prototype_enum(%[[VALUE_value_3:[0-9]+]] value: @type[[TYPE2]], %[[VALUE_a_5:[0-9]+]] a: ptr<i32> [array=4]) -> i32 [linkage=external] [c="int(enum, int[4])"];
+// DEFAULT-NEXT:     fn %[[VALUE_nested_enum:[0-9]+]] @nested_enum(%[[VALUE_callback_3:[0-9]+]] callback: ptr<fn(@type[[TYPE3]]) -> i32>, %[[VALUE_value_4:[0-9]+]] value: i32 [c="T"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int (*)(enum), T)"] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_return_callback:[0-9]+]] @return_callback(%[[VALUE_value_5:[0-9]+]] value: @type[[TYPE4]]) -> ptr<fn(i32) -> i32> [linkage=external] [fallthrough=ub_if_used] {

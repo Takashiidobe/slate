@@ -51,7 +51,7 @@ void untouched(void) {
 // IR-NEXT:     global %[[VALUE_both:[0-9]+]] both: volatile atomic i32 [storage=static] [linkage=external];
 // IR-NEXT:     global %[[VALUE_read_only:[0-9]+]] read_only: i32 [storage=static] [const] = const<i32>(1) [linkage=external];
 // IR-NEXT:     global %[[VALUE_restricted:[0-9]+]] restricted: ptr<i32> [storage=static] [restrict] [linkage=external];
-// IR-NEXT:     fn %[[VALUE_parameters:[0-9]+]] @parameters(%[[VALUE_a:[0-9]+]] a: atomic i32, %[[VALUE_v:[0-9]+]] v: volatile i32, %[[VALUE_c:[0-9]+]] c: i32 [const], %[[VALUE_r:[0-9]+]] r: ptr<i32> [restrict]) -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_parameters:[0-9]+]] @parameters(%[[VALUE_a:[0-9]+]] a: atomic i32, %[[VALUE_v:[0-9]+]] v: volatile i32, %[[VALUE_c:[0-9]+]] c: i32 [const], %[[VALUE_r:[0-9]+]] r: ptr<i32> [restrict]) -> void [linkage=external] [c="void(_Atomic int, volatile int, const int, int *restrict)"];
 // IR-NEXT:     fn %[[VALUE_untouched:[0-9]+]] @untouched() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         let %[[VALUE_local_record:[0-9]+]] local_record: atomic @type[[TYPE_odd3]] [storage=automatic];
 // IR-NEXT:         let %[[VALUE_local_scalar:[0-9]+]] local_scalar: atomic i32 [storage=automatic];

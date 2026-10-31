@@ -68,25 +68,25 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_vafunction:[0-9]+]] @vafunction(%[[VALUE_dummy:[0-9]+]] dummy: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]), const<f64>(1.0))
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]) [c="TYPE"], const<f64>(1.0) [c="TYPE"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]), const<f64>(2.0))
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]) [c="TYPE"], const<f64>(2.0) [c="TYPE"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]), const<f64>(3.0))
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]) [c="TYPE"], const<f64>(3.0) [c="TYPE"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]), const<f64>(4.0))
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]) [c="TYPE"], const<f64>(4.0) [c="TYPE"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]), const<f64>(5.0))
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]) [c="TYPE"], const<f64>(5.0) [c="TYPE"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]), const<f64>(6.0))
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]) [c="TYPE"], const<f64>(6.0) [c="TYPE"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]), const<f64>(7.0))
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]) [c="TYPE"], const<f64>(7.0) [c="TYPE"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]), const<f64>(8.0))
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]) [c="TYPE"], const<f64>(8.0) [c="TYPE"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]), const<f64>(9.0))
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]) [c="TYPE"], const<f64>(9.0) [c="TYPE"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:     }

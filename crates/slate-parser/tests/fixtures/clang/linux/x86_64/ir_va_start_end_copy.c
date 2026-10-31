@@ -46,8 +46,8 @@ void forward(va_list source) {
 // IR-NEXT:     }
 // IR-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
 // IR-NEXT:     fn %[[VALUE_sum:[0-9]+]] @sum(%[[VALUE_count:[0-9]+]] count: i32, ...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
-// IR-NEXT:         let %[[VALUE_copy:[0-9]+]] copy: va_list [storage=automatic];
+// IR-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
+// IR-NEXT:         let %[[VALUE_copy:[0-9]+]] copy: va_list [storage=automatic] [c="va_list"];
 // IR-NEXT:         va_start(%[[VALUE_ap]]);
 // IR-NEXT:         va_copy(%[[VALUE_copy]], %[[VALUE_ap]]);
 // IR-NEXT:         let %[[VALUE_total:[0-9]+]] total: i32 [storage=automatic] = const<i32>(0);
@@ -71,8 +71,8 @@ void forward(va_list source) {
 // IR-NEXT:         va_end(%[[VALUE_copy]]);
 // IR-NEXT:         return read<i32>(%[[VALUE_total]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_forward:[0-9]+]] @forward(%[[VALUE_source:[0-9]+]] source: va_list) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %[[VALUE_dup:[0-9]+]] dup: va_list [storage=automatic];
+// IR-NEXT:     fn %[[VALUE_forward:[0-9]+]] @forward(%[[VALUE_source:[0-9]+]] source: va_list [c="va_list"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(va_list)"] {
+// IR-NEXT:         let %[[VALUE_dup:[0-9]+]] dup: va_list [storage=automatic] [c="va_list"];
 // IR-NEXT:         va_copy(%[[VALUE_dup]], %[[VALUE_source]]);
 // IR-NEXT:         va_end(%[[VALUE_dup]]);
 // IR-NEXT:     }

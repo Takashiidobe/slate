@@ -155,24 +155,24 @@ int sprintf_nonstring_2 (char *d, NONSTRING const char *s)
 // DEFAULT-NEXT:     fn %[[VALUE_puts:[0-9]+]] @puts(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_puts_unlocked:[0-9]+]] @puts_unlocked(%[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_sprintf:[0-9]+]] @sprintf(%[[VALUE3:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE4:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_snprintf:[0-9]+]] @snprintf(%[[VALUE5:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE6:[0-9]+]] <unnamed>: u64, %[[VALUE7:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_vsprintf:[0-9]+]] @vsprintf(%[[VALUE8:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE9:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE10:[0-9]+]] <unnamed>: va_list) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_vsnprintf:[0-9]+]] @vsnprintf(%[[VALUE11:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE12:[0-9]+]] <unnamed>: u64, %[[VALUE13:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE14:[0-9]+]] <unnamed>: va_list) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_snprintf:[0-9]+]] @snprintf(%[[VALUE5:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE6:[0-9]+]] <unnamed>: u64 [c="size_t"], %[[VALUE7:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external] [c="int(char *, size_t, const char *, ...)"];
+// DEFAULT-NEXT:     fn %[[VALUE_vsprintf:[0-9]+]] @vsprintf(%[[VALUE8:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE9:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE10:[0-9]+]] <unnamed>: va_list [c="va_list"]) -> i32 [linkage=external] [c="int(char *, const char *, va_list)"];
+// DEFAULT-NEXT:     fn %[[VALUE_vsnprintf:[0-9]+]] @vsnprintf(%[[VALUE11:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE12:[0-9]+]] <unnamed>: u64 [c="size_t"], %[[VALUE13:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE14:[0-9]+]] <unnamed>: va_list [c="va_list"]) -> i32 [linkage=external] [c="int(char *, size_t, const char *, va_list)"];
 // DEFAULT-NEXT:     fn %[[VALUE_strcmp:[0-9]+]] @strcmp(%[[VALUE15:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE16:[0-9]+]] <unnamed>: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_strncmp:[0-9]+]] @strncmp(%[[VALUE17:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE18:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE19:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strncmp:[0-9]+]] @strncmp(%[[VALUE17:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE18:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE19:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> i32 [linkage=external] [c="int(const char *, const char *, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_stpcpy:[0-9]+]] @stpcpy(%[[VALUE20:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE21:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_stpncpy:[0-9]+]] @stpncpy(%[[VALUE22:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE23:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE24:[0-9]+]] <unnamed>: u64) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_stpncpy:[0-9]+]] @stpncpy(%[[VALUE22:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE23:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE24:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> ptr<i8> [linkage=external] [c="char *(char *, const char *, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_strcat:[0-9]+]] @strcat(%[[VALUE25:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE26:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_strncat:[0-9]+]] @strncat(%[[VALUE27:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE28:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE29:[0-9]+]] <unnamed>: u64) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strncat:[0-9]+]] @strncat(%[[VALUE27:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE28:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE29:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> ptr<i8> [linkage=external] [c="char *(char *, const char *, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_strcpy:[0-9]+]] @strcpy(%[[VALUE30:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE31:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_strncpy:[0-9]+]] @strncpy(%[[VALUE32:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE33:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE34:[0-9]+]] <unnamed>: u64) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strncpy:[0-9]+]] @strncpy(%[[VALUE32:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE33:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE34:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> ptr<i8> [linkage=external] [c="char *(char *, const char *, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_strchr:[0-9]+]] @strchr(%[[VALUE35:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE36:[0-9]+]] <unnamed>: i32) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_strrchr:[0-9]+]] @strrchr(%[[VALUE37:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE38:[0-9]+]] <unnamed>: i32) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_strstr:[0-9]+]] @strstr(%[[VALUE39:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE40:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_strdup:[0-9]+]] @strdup(%[[VALUE41:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE42:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_strnlen:[0-9]+]] @strnlen(%[[VALUE43:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE44:[0-9]+]] <unnamed>: u64) -> u64 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %[[VALUE_strndup:[0-9]+]] @strndup(%[[VALUE45:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE46:[0-9]+]] <unnamed>: u64) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE42:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external] [c="size_t(const char *)"];
+// DEFAULT-NEXT:     fn %[[VALUE_strnlen:[0-9]+]] @strnlen(%[[VALUE43:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE44:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> u64 [linkage=external] [memory=read] [c="size_t(const char *, size_t)"];
+// DEFAULT-NEXT:     fn %[[VALUE_strndup:[0-9]+]] @strndup(%[[VALUE45:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE46:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> ptr<i8> [linkage=external] [c="char *(const char *, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_strcmp_nonstring_1:[0-9]+]] @strcmp_nonstring_1(%[[VALUE_a:[0-9]+]] a: ptr<const i8>, %[[VALUE_b:[0-9]+]] b: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%[[VALUE_strcmp]], read<ptr<const i8>>(%[[VALUE_a]]), read<ptr<const i8>>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
@@ -212,8 +212,8 @@ int sprintf_nonstring_2 (char *d, NONSTRING const char *s)
 // DEFAULT-NEXT:     fn %[[VALUE_stdup_nonstring:[0-9]+]] @stdup_nonstring(%[[VALUE_s_7:[0-9]+]] s: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_strdup]], read<ptr<const i8>>(%[[VALUE_s_7]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_strlen_nonstring:[0-9]+]] @strlen_nonstring(%[[VALUE_s_8:[0-9]+]] s: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE_s_8]]));
+// DEFAULT-NEXT:     fn %[[VALUE_strlen_nonstring:[0-9]+]] @strlen_nonstring(%[[VALUE_s_8:[0-9]+]] s: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="size_t(const char *)"] {
+// DEFAULT-NEXT:         return call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE_s_8]])) [c="size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_printf_nonstring:[0-9]+]] @printf_nonstring(%[[VALUE_s_9:[0-9]+]] s: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], read<ptr<const i8>>(%[[VALUE_s_9]]));

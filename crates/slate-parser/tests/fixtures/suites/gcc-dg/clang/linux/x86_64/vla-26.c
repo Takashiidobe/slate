@@ -38,7 +38,7 @@ void e(int n, float s[3][n])
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_ed:[0-9]+]] @ed(%[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_s:[0-9]+]] s: ptr<vla<f32, %[[VALUE0:[0-9]+]]>> [array=3]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_ed:[0-9]+]] @ed(%[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_s:[0-9]+]] s: ptr<vla<f32, %[[VALUE0:[0-9]+]]>> [array=3]) -> void [linkage=external] [fallthrough=ret_void] [c="void(int, float[3][*])"] {
 // DEFAULT-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n]])));
 // DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -54,7 +54,7 @@ void e(int n, float s[3][n])
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=None>(deref(ptr_offset<ptr<vla<f32, %[[VALUE0]]>>, subtract=false, element=vla<f32, %[[VALUE0]]>, overflow=ub>(read<ptr<vla<f32, %[[VALUE0]]>>>(%[[VALUE_s]]), const<i32>(1)))), read<i32>(%[[VALUE_i]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_e:[0-9]+]] @e(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE_s_2:[0-9]+]] s: ptr<vla<f32, %[[VALUE4:[0-9]+]]>> [array=3]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_e:[0-9]+]] @e(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE_s_2:[0-9]+]] s: ptr<vla<f32, %[[VALUE4:[0-9]+]]>> [array=3]) -> void [linkage=external] [fallthrough=ret_void] [c="void(int, float[3][*])"] {
 // DEFAULT-NEXT:         let %[[VALUE4]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<vla<f32, *>>) -> void>(%[[VALUE_ed]], read<i32>(%[[VALUE_n_2]]), pointer_cast<ptr<vla<f32, *>>, reason=arg>(read<ptr<vla<f32, %[[VALUE4]]>>>(%[[VALUE_s_2]])));
 // DEFAULT-NEXT:     }

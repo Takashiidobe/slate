@@ -39,7 +39,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 120, 32, 37, 88, 32, 37, 111, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([37, 48, 56, 120, 124, 37, 45, 52, 88, 124, 37, 53, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_value:[0-9]+]] value: u32 [storage=automatic] = const<u32>(48879);
 // DEFAULT-NEXT:         let %[[VALUE_mask:[0-9]+]] mask: u32 [storage=automatic] = const<u32>(255);

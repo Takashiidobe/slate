@@ -75,20 +75,20 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_Parrot_gc_mark_PMC_alive_fun:[0-9]+]] @Parrot_gc_mark_PMC_alive_fun(%[[VALUE_interp:[0-9]+]] interp: ptr<i32>, %[[VALUE_pmc:[0-9]+]] pmc: ptr<@type[[TYPE_PMC]]>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_mark_cell:[0-9]+]] @mark_cell(%[[VALUE_interp_2:[0-9]+]] interp: ptr<i32>, %[[VALUE_c:[0-9]+]] c: ptr<@type[[TYPE_Pcc_cell]]>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_mark_cell:[0-9]+]] @mark_cell(%[[VALUE_interp_2:[0-9]+]] interp: ptr<i32>, %[[VALUE_c:[0-9]+]] c: ptr<@type[[TYPE_Pcc_cell]]> [c="Pcc_cell *"]) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] [c="void(int *, Pcc_cell *)"] {
 // DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(eq<i64>(read<i64>(field2(deref(read<ptr<@type[[TYPE_Pcc_cell]]>>(%[[VALUE_c]])))), widen<i64, reason=usual_arith>(const<i32>(4))), ne<ptr<@type[[TYPE_PMC]]>>(read<ptr<@type[[TYPE_PMC]]>>(field0(deref(read<ptr<@type[[TYPE_Pcc_cell]]>>(%[[VALUE_c]])))), null<ptr<@type[[TYPE_PMC]]>>)), not<bool>(ne<u32>(and<u32>(read<u32>(field0(deref(read<ptr<@type[[TYPE_PMC]]>>(field0(deref(read<ptr<@type[[TYPE_Pcc_cell]]>>(%[[VALUE_c]]))))))), reinterpret<u32, reason=usual_arith, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(18)))), const<u32>(0))))
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<i32>, ptr<@type[[TYPE_PMC]]>) -> void>(%[[VALUE_Parrot_gc_mark_PMC_alive_fun]], read<ptr<i32>>(%[[VALUE_interp_2]]), read<ptr<@type[[TYPE_PMC]]>>(field0(deref(read<ptr<@type[[TYPE_Pcc_cell]]>>(%[[VALUE_c]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_interp_3:[0-9]+]] interp: ptr<i32>, %[[VALUE_c_2:[0-9]+]] c: ptr<@type[[TYPE_Pcc_cell]]>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, ptr<@type[[TYPE_Pcc_cell]]>) -> void>(%[[VALUE_mark_cell]], read<ptr<i32>>(%[[VALUE_interp_3]]), read<ptr<@type[[TYPE_Pcc_cell]]>>(%[[VALUE_c_2]]));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_interp_3:[0-9]+]] interp: ptr<i32>, %[[VALUE_c_2:[0-9]+]] c: ptr<@type[[TYPE_Pcc_cell]]> [c="Pcc_cell *"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(int *, Pcc_cell *)"] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, ptr<@type[[TYPE_Pcc_cell]]>) -> void>(%[[VALUE_mark_cell]], read<ptr<i32>>(%[[VALUE_interp_3]]), read<ptr<@type[[TYPE_Pcc_cell]]>>(%[[VALUE_c_2]]) [c="Pcc_cell *"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_c_3:[0-9]+]] c: @type[[TYPE_Pcc_cell]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_c_3:[0-9]+]] c: @type[[TYPE_Pcc_cell]] [storage=automatic] [c="Pcc_cell"];
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_PMC]]>>(field0(%[[VALUE_c_3]]), null<ptr<@type[[TYPE_PMC]]>>);
 // DEFAULT-NEXT:         write<i64>(field1(%[[VALUE_c_3]]), widen<i64, reason=assign>(const<i32>(42)));
 // DEFAULT-NEXT:         write<i64>(field2(%[[VALUE_c_3]]), widen<i64, reason=assign>(const<i32>(4)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, ptr<@type[[TYPE_Pcc_cell]]>) -> void>(%[[VALUE_foo]], addr_of<ptr<i32>>(%[[VALUE_i]]), addr_of<ptr<@type[[TYPE_Pcc_cell]]>>(%[[VALUE_c_3]]));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, ptr<@type[[TYPE_Pcc_cell]]>) -> void>(%[[VALUE_foo]], addr_of<ptr<i32>>(%[[VALUE_i]]), addr_of<ptr<@type[[TYPE_Pcc_cell]]>>(%[[VALUE_c_3]]) [c="Pcc_cell *"]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

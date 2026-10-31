@@ -64,7 +64,7 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     global %[[VALUE_errors:[0-9]+]] errors: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_array:[0-9]+]] array: array<@type[[TYPE_s]], 2> [storage=static] [align=16] = aggregate<array<@type[[TYPE_s]], 2>, zero_fill=false>(index0 = aggregate<@type[[TYPE_s]], zero_fill=false>(field0 = const<i32>(1), field1 = function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_bad_compare:[0-9]+]])), index1 = aggregate<@type[[TYPE_s]], zero_fill=false>(field0 = neg<i32, overflow=ub>(const<i32>(1)), field1 = function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_bad_compare]]))) [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_qsort:[0-9]+]] @qsort(%[[VALUE___base:[0-9]+]] __base: ptr<void>, %[[VALUE___nmemb:[0-9]+]] __nmemb: u64, %[[VALUE___size:[0-9]+]] __size: u64, %[[VALUE___compar:[0-9]+]] __compar: ptr<fn(ptr<const void>, ptr<const void>) -> i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_qsort:[0-9]+]] @qsort(%[[VALUE___base:[0-9]+]] __base: ptr<void>, %[[VALUE___nmemb:[0-9]+]] __nmemb: u64 [c="size_t"], %[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"], %[[VALUE___compar:[0-9]+]] __compar: ptr<fn(ptr<const void>, ptr<const void>) -> i32> [c="__compar_fn_t"]) -> void [linkage=external] [c="void(void *, size_t, size_t, __compar_fn_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_debug:[0-9]+]] @debug() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
@@ -95,7 +95,7 @@ int main(void) {
 // DEFAULT-NEXT:         return neg<i32, overflow=ub>(read<i32>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, u64, u64, ptr<fn(ptr<const void>, ptr<const void>) -> i32>) -> void>(%[[VALUE_qsort]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type[[TYPE_s]]>, length=Some(2)>(%[[VALUE_array]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), const<u64>(16), function_decay<ptr<fn(ptr<const void>, ptr<const void>) -> i32>>(%[[VALUE_compare]]));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, u64, u64, ptr<fn(ptr<const void>, ptr<const void>) -> i32>) -> void>(%[[VALUE_qsort]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type[[TYPE_s]]>, length=Some(2)>(%[[VALUE_array]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))) [c="size_t"], const<u64>(16) [c="size_t"], function_decay<ptr<fn(ptr<const void>, ptr<const void>) -> i32>>(%[[VALUE_compare]]) [c="__compar_fn_t"]);
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%[[VALUE_errors]]), const<i32>(0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -94,7 +94,7 @@ loop:
 // DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] = const<i32>(11) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_t:[0-9]+]] t: ptr<@type[[TYPE0]]>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_t:[0-9]+]] t: ptr<@type[[TYPE0]]> [c="T *"]) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] [c="void(T *)"] {
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
@@ -106,29 +106,29 @@ loop:
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_i_2:[0-9]+]] i: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_t_2:[0-9]+]] t: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_t_2:[0-9]+]] t: @type[[TYPE0]] [storage=automatic] [c="T"];
 // DEFAULT-NEXT:         label %[[VALUE_again:[0-9]+]] again:
 // DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_2]]);
 // DEFAULT-NEXT:             let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), const<i32>(1));
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_i_2]], read<i32>(%[[VALUE4]]));
-// DEFAULT-NEXT:             write<@type[[TYPE0]]>(%[[VALUE_t_2]], copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(compound_literal %[[VALUE5:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = read<i32>(%[[VALUE4]]), field1 = const<i32>(0), field2 = const<i32>(0), field3 = const<i32>(0), field4 = const<i32>(0), field5 = const<i32>(0), field6 = const<i32>(0), field7 = const<i32>(0), field8 = widen<i64, reason=assign>(const<i32>(0)), field9 = widen<i64, reason=assign>(const<i32>(0)), field10 = const<i32>(0))))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE0]]>) -> void>(%[[VALUE_test]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_t_2]]));
+// DEFAULT-NEXT:             write<@type[[TYPE0]]>(%[[VALUE_t_2]], copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(compound_literal %[[VALUE5:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = read<i32>(%[[VALUE4]]), field1 = const<i32>(0), field2 = const<i32>(0), field3 = const<i32>(0), field4 = const<i32>(0), field5 = const<i32>(0), field6 = const<i32>(0), field7 = const<i32>(0), field8 = widen<i64, reason=assign>(const<i32>(0)), field9 = widen<i64, reason=assign>(const<i32>(0)), field10 = const<i32>(0)))) [c="T"]) [c="T"]) [c="T"];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE0]]>) -> void>(%[[VALUE_test]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_t_2]]) [c="T *"]);
 // DEFAULT-NEXT:         goto %[[VALUE_again]];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_t1:[0-9]+]] t1: ptr<@type[[TYPE0]]> [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_t2:[0-9]+]] t2: ptr<@type[[TYPE0]]> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_t1:[0-9]+]] t1: ptr<@type[[TYPE0]]> [storage=automatic] [c="T *"];
+// DEFAULT-NEXT:         let %[[VALUE_t2:[0-9]+]] t2: ptr<@type[[TYPE0]]> [storage=automatic] [c="T *"];
 // DEFAULT-NEXT:         let %[[VALUE_cnt:[0-9]+]] cnt: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_t1]], null<ptr<@type[[TYPE0]]>>);
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_t1]], null<ptr<@type[[TYPE0]]>> [c="T *"]) [c="T *"];
 // DEFAULT-NEXT:         label %[[VALUE_loop:[0-9]+]] loop:
-// DEFAULT-NEXT:             write<ptr<@type[[TYPE0]]>>(%[[VALUE_t2]], read<ptr<@type[[TYPE0]]>>(%[[VALUE_t1]]));
+// DEFAULT-NEXT:             write<ptr<@type[[TYPE0]]>>(%[[VALUE_t2]], read<ptr<@type[[TYPE0]]>>(%[[VALUE_t1]]) [c="T *"]) [c="T *"];
 // DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_cnt]]);
 // DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE6]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_cnt]], read<i32>(%[[VALUE7]]));
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_t1]], addr_of<ptr<@type[[TYPE0]]>>(compound_literal %[[VALUE8:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = aggregate<@type[[TYPE1]], zero_fill=true>(field8 = widen<i64, reason=assign>(read<i32>(%[[VALUE6]]))))));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_t1]], addr_of<ptr<@type[[TYPE0]]>>(compound_literal %[[VALUE8:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = aggregate<@type[[TYPE1]], zero_fill=true>(field8 = widen<i64, reason=assign>(read<i32>(%[[VALUE6]]))))) [c="T *"]) [c="T *"];
 // DEFAULT-NEXT:         if lt<i32>(read<i32>(%[[VALUE_cnt]]), const<i32>(3))
 // DEFAULT-NEXT:             goto %[[VALUE_loop]];
-// DEFAULT-NEXT:         if logical_or<bool>(ne<ptr<@type[[TYPE0]]>>(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t1]]), read<ptr<@type[[TYPE0]]>>(%[[VALUE_t2]])), ne<i64>(read<i64>(field8(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t1]]))))), widen<i64, reason=usual_arith>(const<i32>(2))))
+// DEFAULT-NEXT:         if logical_or<bool>(ne<ptr<@type[[TYPE0]]>>(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t1]]) [c="T *"], read<ptr<@type[[TYPE0]]>>(%[[VALUE_t2]]) [c="T *"]), ne<i64>(read<i64>(field8(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t1]]))))), widen<i64, reason=usual_arith>(const<i32>(2))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_foo]], const<i32>(10));
 // DEFAULT-NEXT:         return const<i32>(0);

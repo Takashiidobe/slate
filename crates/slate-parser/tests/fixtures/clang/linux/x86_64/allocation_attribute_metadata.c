@@ -58,23 +58,23 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_calloc:[0-9]+]] @calloc(%[[VALUE___nmemb:[0-9]+]] __nmemb: u64, %[[VALUE___size_2:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];
+// DEFAULT-NEXT:     fn %[[VALUE_calloc:[0-9]+]] @calloc(%[[VALUE___nmemb:[0-9]+]] __nmemb: u64 [c="size_t"], %[[VALUE___size_2:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_free:[0-9]+]] @free(%[[VALUE___ptr:[0-9]+]] __ptr: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_allocate:[0-9]+]] @allocate(%[[VALUE_size:[0-9]+]] size: u64, %[[VALUE_alignment:[0-9]+]] alignment: u64) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         read<u64>(%[[VALUE_alignment]]);
+// DEFAULT-NEXT:     fn %[[VALUE_allocate:[0-9]+]] @allocate(%[[VALUE_size:[0-9]+]] size: u64 [c="size_t"], %[[VALUE_alignment:[0-9]+]] alignment: u64 [c="size_t"]) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] [c="void *(size_t, size_t)"] {
+// DEFAULT-NEXT:         read<u64>(%[[VALUE_alignment]]) [c="size_t"];
 // DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], read<u64>(%[[VALUE_size]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_allocate_array:[0-9]+]] @allocate_array(%[[VALUE_count:[0-9]+]] count: u64, %[[VALUE_size_2:[0-9]+]] size: u64) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_allocate_array:[0-9]+]] @allocate_array(%[[VALUE_count:[0-9]+]] count: u64 [c="size_t"], %[[VALUE_size_2:[0-9]+]] size: u64 [c="size_t"]) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] [c="void *(size_t, size_t)"] {
 // DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_calloc]], read<u64>(%[[VALUE_count]]), read<u64>(%[[VALUE_size_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_offset_aligned:[0-9]+]] @offset_aligned(%[[VALUE_pointer:[0-9]+]] pointer: ptr<void>) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<void>>(%[[VALUE_pointer]])), const<i32>(4)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_values:[0-9]+]] values: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_allocate]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3))), const<u64>(4)), const<u64>(4)));
-// DEFAULT-NEXT:         let %[[VALUE_zeroed:[0-9]+]] zeroed: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_allocate_array]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), const<u64>(4)));
+// DEFAULT-NEXT:         let %[[VALUE_values:[0-9]+]] values: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_allocate]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3))), const<u64>(4)) [c="size_t"], const<u64>(4) [c="size_t"]));
+// DEFAULT-NEXT:         let %[[VALUE_zeroed:[0-9]+]] zeroed: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_allocate_array]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))) [c="size_t"], const<u64>(4) [c="size_t"]));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_values]]), const<i32>(0))), const<i32>(7));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_values]]), const<i32>(1))), const<i32>(9));
 // DEFAULT-NEXT:         let %[[VALUE_second:[0-9]+]] second: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>) -> ptr<void>>(%[[VALUE_offset_aligned]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%[[VALUE_values]]))));

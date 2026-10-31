@@ -46,7 +46,7 @@ long long difference(const int *a, int *b) { return a - b; }
 // DEFAULT-NEXT:     global %[[VALUE_size:[0-9]+]] size: u64 [storage=static] [linkage=external] [c="typeof(sizeof(...))"] [c_canon="unsigned long long"];
 // DEFAULT-NEXT:     global %[[VALUE_wider:[0-9]+]] wider: i64 [storage=static] [linkage=external] [c="typeof(1LL + 1u)"] [c_canon="long long"];
 // DEFAULT-NEXT:     fn %[[VALUE_ranks:[0-9]+]] @ranks(%[[VALUE_a:[0-9]+]] a: i32 [c="long"], %[[VALUE_b:[0-9]+]] b: u32 [c="unsigned int"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(long, unsigned int)"] {
-// DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: u32 [storage=automatic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE_a]])), read<u32>(%[[VALUE_b]])) [c="typeof(a + b)"] [c_canon="unsigned long"];
+// DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: u32 [storage=automatic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE_a]])), read<u32>(%[[VALUE_b]])) [c="typeof(a + b)"] [c="typeof(a + b)"] [c_canon="unsigned long"];
 // DEFAULT-NEXT:         return read<u32>(%[[VALUE_result]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_selection:[0-9]+]] @selection(%[[VALUE_a_2:[0-9]+]] a: i32 [c="long"], %[[VALUE_b_2:[0-9]+]] b: u32 [c="unsigned int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(long, unsigned int)"] {

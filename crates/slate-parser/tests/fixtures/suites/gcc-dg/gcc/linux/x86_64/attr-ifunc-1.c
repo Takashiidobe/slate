@@ -52,8 +52,8 @@ int main ()
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE___builtin_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%[[VALUE_str]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_resolver:[0-9]+]] @resolver() -> ptr<fn() -> i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return function_decay<ptr<fn() -> i32>>(%[[VALUE_implementation]]);
+// DEFAULT-NEXT:     fn %[[VALUE_resolver:[0-9]+]] @resolver() -> ptr<fn() -> i32> [linkage=internal] [fallthrough=ub_if_used] [c="typeof(implementation) *(void)"] {
+// DEFAULT-NEXT:         return function_decay<ptr<fn() -> i32>>(%[[VALUE_implementation]]) [c="typeof(implementation) *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_magic:[0-9]+]] @magic() -> i32 [linkage=external] [ifunc="resolver"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

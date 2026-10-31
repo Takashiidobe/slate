@@ -45,10 +45,10 @@ int32x4x4_t test_vld1q_s32_x4(int32_t const *a) {
 // DEFAULT-NEXT:         field5 n64_i32: array<i32, 2>;
 // DEFAULT-NEXT:         field6 n64_i16: array<i16, 4>;
 // DEFAULT-NEXT:         field7 n64_i8: array<i8, 8>;
-// DEFAULT-NEXT:         field8 n64_p64: array<u64, 1>;
-// DEFAULT-NEXT:         field9 n64_p32: array<u32, 2>;
-// DEFAULT-NEXT:         field10 n64_p16: array<u16, 4>;
-// DEFAULT-NEXT:         field11 n64_p8: array<u8, 8>;
+// DEFAULT-NEXT:         field8 n64_p64: array<u64, 1> [c="poly64_t[1]"];
+// DEFAULT-NEXT:         field9 n64_p32: array<u32, 2> [c="poly32_t[2]"];
+// DEFAULT-NEXT:         field10 n64_p16: array<u16, 4> [c="poly16_t[4]"];
+// DEFAULT-NEXT:         field11 n64_p8: array<u8, 8> [c="poly8_t[8]"];
 // DEFAULT-NEXT:         field12 n64_f32: array<f32, 2>;
 // DEFAULT-NEXT:         field13 n64_f64: array<f64, 1>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
@@ -62,27 +62,27 @@ int32x4x4_t test_vld1q_s32_x4(int32_t const *a) {
 // DEFAULT-NEXT:         field5 n128_i32: array<i32, 4>;
 // DEFAULT-NEXT:         field6 n128_i16: array<i16, 8>;
 // DEFAULT-NEXT:         field7 n128_i8: array<i8, 16>;
-// DEFAULT-NEXT:         field8 n128_p64: array<u64, 2>;
-// DEFAULT-NEXT:         field9 n128_p32: array<u32, 4>;
-// DEFAULT-NEXT:         field10 n128_p16: array<u16, 8>;
-// DEFAULT-NEXT:         field11 n128_p8: array<u8, 16>;
+// DEFAULT-NEXT:         field8 n128_p64: array<u64, 2> [c="poly64_t[2]"];
+// DEFAULT-NEXT:         field9 n128_p32: array<u32, 4> [c="poly32_t[4]"];
+// DEFAULT-NEXT:         field10 n128_p16: array<u16, 8> [c="poly16_t[8]"];
+// DEFAULT-NEXT:         field11 n128_p8: array<u8, 16> [c="poly8_t[16]"];
 // DEFAULT-NEXT:         field12 n128_f32: array<f32, 4>;
 // DEFAULT-NEXT:         field13 n128_f64: array<f64, 2>;
 // DEFAULT-NEXT:         field14 s: @type[[TYPE0:[0-9]+]];
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE0]] = struct {
-// DEFAULT-NEXT:         field0 low64: @type[[TYPE___n64]];
-// DEFAULT-NEXT:         field1 high64: @type[[TYPE___n64]];
+// DEFAULT-NEXT:         field0 low64: @type[[TYPE___n64]] [c="__n64"];
+// DEFAULT-NEXT:         field1 high64: @type[[TYPE___n64]] [c="__n64"];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE___n128_2:[0-9]+]] __n128 = @type[[TYPE___n128]];
 // DEFAULT-NEXT:     type @type[[TYPE___n128x4:[0-9]+]] __n128x4 = struct {
-// DEFAULT-NEXT:         field0 val: array<@type[[TYPE___n128]], 4>;
+// DEFAULT-NEXT:         field0 val: array<@type[[TYPE___n128]], 4> [c="__n128[4]"];
 // DEFAULT-NEXT:     } [size=64, align=16, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE___n128x4_2:[0-9]+]] __n128x4 = @type[[TYPE___n128x4]];
-// DEFAULT-NEXT:     type @type[[TYPE_int32x4x4_t:[0-9]+]] int32x4x4_t = @type[[TYPE___n128x4]];
-// DEFAULT-NEXT:     fn %[[VALUE_neon_ld1m4_q32:[0-9]+]] @neon_ld1m4_q32(%[[VALUE_ptr:[0-9]+]] ptr: ptr<const i32>) -> @type[[TYPE___n128x4]] [linkage=external] [abi=win_arm64(scalar) -> native_c];
-// DEFAULT-NEXT:     fn %[[VALUE_test_vld1q_s32_x4:[0-9]+]] @test_vld1q_s32_x4(%[[VALUE_a:[0-9]+]] a: ptr<const i32>) -> @type[[TYPE___n128x4]] [linkage=external] [abi=win_arm64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return copy<@type[[TYPE___n128x4]], reason=return>(call<@type[[TYPE___n128x4]], signature=fn(ptr<const i32>) -> @type[[TYPE___n128x4]], abi=win_arm64(scalar) -> native_c>(%[[VALUE_neon_ld1m4_q32]], pointer_cast<ptr<const i32>, reason=arg>(pointer_cast<ptr<i32>, reason=explicit>(read<ptr<const i32>>(%[[VALUE_a]])))));
+// DEFAULT-NEXT:     type @type[[TYPE_int32x4x4_t:[0-9]+]] int32x4x4_t = @type[[TYPE___n128x4]] [c="__n128x4"];
+// DEFAULT-NEXT:     fn %[[VALUE_neon_ld1m4_q32:[0-9]+]] @neon_ld1m4_q32(%[[VALUE_ptr:[0-9]+]] ptr: ptr<const i32>) -> @type[[TYPE___n128x4]] [linkage=external] [abi=win_arm64(scalar) -> native_c] [c="__n128x4(const int *)"];
+// DEFAULT-NEXT:     fn %[[VALUE_test_vld1q_s32_x4:[0-9]+]] @test_vld1q_s32_x4(%[[VALUE_a:[0-9]+]] a: ptr<const i32> [c="const int32_t *"]) -> @type[[TYPE___n128x4]] [linkage=external] [abi=win_arm64(scalar) -> native_c] [fallthrough=ub_if_used] [c="int32x4x4_t(const int32_t *)"] {
+// DEFAULT-NEXT:         return copy<@type[[TYPE___n128x4]], reason=return>(call<@type[[TYPE___n128x4]], signature=fn(ptr<const i32>) -> @type[[TYPE___n128x4]], abi=win_arm64(scalar) -> native_c>(%[[VALUE_neon_ld1m4_q32]], pointer_cast<ptr<const i32>, reason=arg>(pointer_cast<ptr<i32>, reason=explicit>(read<ptr<const i32>>(%[[VALUE_a]]) [c="const int32_t *"]))) [c="__n128x4"]) [c="int32x4x4_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

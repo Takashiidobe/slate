@@ -699,7 +699,13 @@ absent from default dumps.
 
 ```ebnf
 metadata = "[" key "=" string "]" ;          (* only with --show-metadata *)
+c_type   = '[c=' string ']' ;                (* always, when spelling differs from canonical *)
 ```
+
+- `c_type` follows a value, record field, parameter, declaration, or `write`,
+  in the same position as metadata. A `let` can print two: its initializer's
+  and its own. A `write` can too: its value's and its place's
+  ([C type metadata](ir/pipeline.md#c-type-metadata)).
 
 - Metadata is source context keyed by node: C type (`c`, `c_canon`,
   `typedef_chain`, `c_const`, …), storage class (`c_storage`), folded layout

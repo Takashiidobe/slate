@@ -70,10 +70,10 @@ extern __typeof (__vsyslog_chk) __vsyslog_chk __asm__ ("" ASMNAME ("__GI___vsysl
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___vsyslog_chk:[0-9]+]] @__vsyslog_chk(%[[VALUE_pri_3:[0-9]+]] pri: i32, %[[VALUE_flag_2:[0-9]+]] flag: i32, %[[VALUE_fmt_3:[0-9]+]] fmt: ptr<const i8>, %[[VALUE_ap_2:[0-9]+]] ap: i32) -> void [linkage=external] [asm_name="__GI___vsyslog_chk"] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___EI___vsyslog_chk:[0-9]+]] @__EI___vsyslog_chk(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE3:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [asm_name="__vsyslog_chk"] [alias="__GI___vsyslog_chk"];
+// DEFAULT-NEXT:     fn %[[VALUE___EI___vsyslog_chk:[0-9]+]] @__EI___vsyslog_chk(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE3:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [asm_name="__vsyslog_chk"] [alias="__GI___vsyslog_chk"] [c="typeof(__vsyslog_chk)"];
 // DEFAULT-NEXT:     fn %[[VALUE___syslog:[0-9]+]] @__syslog(%[[VALUE_pri_4:[0-9]+]] pri: i32, %[[VALUE_fmt_4:[0-9]+]] fmt: ptr<const i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___EI_syslog:[0-9]+]] @__EI_syslog(%[[VALUE4:[0-9]+]] <unnamed>: i32, %[[VALUE5:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> void [linkage=external] [asm_name="syslog"] [alias="__GI_syslog"];
-// DEFAULT-NEXT:     fn %[[VALUE___EI_vsyslog:[0-9]+]] @__EI_vsyslog(%[[VALUE6:[0-9]+]] <unnamed>: i32, %[[VALUE7:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE8:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [asm_name="vsyslog"] [alias="__GI_vsyslog"];
+// DEFAULT-NEXT:     fn %[[VALUE___EI_syslog:[0-9]+]] @__EI_syslog(%[[VALUE4:[0-9]+]] <unnamed>: i32, %[[VALUE5:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> void [linkage=external] [asm_name="syslog"] [alias="__GI_syslog"] [c="typeof(syslog)"];
+// DEFAULT-NEXT:     fn %[[VALUE___EI_vsyslog:[0-9]+]] @__EI_vsyslog(%[[VALUE6:[0-9]+]] <unnamed>: i32, %[[VALUE7:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE8:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [asm_name="vsyslog"] [alias="__GI_vsyslog"] [c="typeof(vsyslog)"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

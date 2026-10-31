@@ -132,27 +132,27 @@ int vector_variadic(v4si narrow, v8si wide) {
 // IR-NEXT:     fn %[[VALUE_variadic_forward:[0-9]+]] @variadic_forward(%[[VALUE_value_12:[0-9]+]] value: complex<f64>) -> complex<f64> [linkage=external] [abi=aapcs64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return call<complex<f64>, signature=fn(i32, ...) -> complex<f64>, abi=aapcs64(scalar, native_c) -> native_c>(%[[VALUE_variadic_sink]], const<i32>(1), read<complex<f64>>(%[[VALUE_value_12]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_vector_byte:[0-9]+]] @vector_byte(%[[VALUE_value_13:[0-9]+]] value: vector<u8, 1>) -> vector<u8, 1> [linkage=external] [abi=aapcs64(coerce<i32>) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<vector<u8, 1>>(%[[VALUE_value_13]]);
+// IR-NEXT:     fn %[[VALUE_vector_byte:[0-9]+]] @vector_byte(%[[VALUE_value_13:[0-9]+]] value: vector<u8, 1> [c="v1c"]) -> vector<u8, 1> [linkage=external] [abi=aapcs64(coerce<i32>) -> direct] [fallthrough=ub_if_used] [c="v1c(v1c)"] {
+// IR-NEXT:         return read<vector<u8, 1>>(%[[VALUE_value_13]]) [c="v1c"];
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_vector_word:[0-9]+]] @vector_word(%[[VALUE_value_14:[0-9]+]] value: vector<i16, 2>) -> vector<i16, 2> [linkage=external] [abi=aapcs64(coerce<i32>) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<vector<i16, 2>>(%[[VALUE_value_14]]);
+// IR-NEXT:     fn %[[VALUE_vector_word:[0-9]+]] @vector_word(%[[VALUE_value_14:[0-9]+]] value: vector<i16, 2> [c="v2ss"]) -> vector<i16, 2> [linkage=external] [abi=aapcs64(coerce<i32>) -> direct] [fallthrough=ub_if_used] [c="v2ss(v2ss)"] {
+// IR-NEXT:         return read<vector<i16, 2>>(%[[VALUE_value_14]]) [c="v2ss"];
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_vector_integer_pair:[0-9]+]] @vector_integer_pair(%[[VALUE_value_15:[0-9]+]] value: vector<i32, 2>) -> vector<i32, 2> [linkage=external] [abi=aapcs64(direct) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<vector<i32, 2>>(%[[VALUE_value_15]]);
+// IR-NEXT:     fn %[[VALUE_vector_integer_pair:[0-9]+]] @vector_integer_pair(%[[VALUE_value_15:[0-9]+]] value: vector<i32, 2> [c="v2si"]) -> vector<i32, 2> [linkage=external] [abi=aapcs64(direct) -> direct] [fallthrough=ub_if_used] [c="v2si(v2si)"] {
+// IR-NEXT:         return read<vector<i32, 2>>(%[[VALUE_value_15]]) [c="v2si"];
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_vector_one_double:[0-9]+]] @vector_one_double(%[[VALUE_value_16:[0-9]+]] value: vector<f64, 1>) -> vector<f64, 1> [linkage=external] [abi=aapcs64(direct) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<vector<f64, 1>>(%[[VALUE_value_16]]);
+// IR-NEXT:     fn %[[VALUE_vector_one_double:[0-9]+]] @vector_one_double(%[[VALUE_value_16:[0-9]+]] value: vector<f64, 1> [c="v1df"]) -> vector<f64, 1> [linkage=external] [abi=aapcs64(direct) -> direct] [fallthrough=ub_if_used] [c="v1df(v1df)"] {
+// IR-NEXT:         return read<vector<f64, 1>>(%[[VALUE_value_16]]) [c="v1df"];
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_vector_128:[0-9]+]] @vector_128(%[[VALUE_value_17:[0-9]+]] value: vector<i32, 4>) -> vector<i32, 4> [linkage=external] [abi=aapcs64(direct) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<vector<i32, 4>>(%[[VALUE_value_17]]);
+// IR-NEXT:     fn %[[VALUE_vector_128:[0-9]+]] @vector_128(%[[VALUE_value_17:[0-9]+]] value: vector<i32, 4> [c="v4si"]) -> vector<i32, 4> [linkage=external] [abi=aapcs64(direct) -> direct] [fallthrough=ub_if_used] [c="v4si(v4si)"] {
+// IR-NEXT:         return read<vector<i32, 4>>(%[[VALUE_value_17]]) [c="v4si"];
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_vector_256:[0-9]+]] @vector_256(%[[VALUE_value_18:[0-9]+]] value: vector<i32, 8>) -> vector<i32, 8> [linkage=external] [abi=aapcs64(byref<align=16>) -> sret<align=16>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<vector<i32, 8>>(%[[VALUE_value_18]]);
+// IR-NEXT:     fn %[[VALUE_vector_256:[0-9]+]] @vector_256(%[[VALUE_value_18:[0-9]+]] value: vector<i32, 8> [c="v8si"]) -> vector<i32, 8> [linkage=external] [abi=aapcs64(byref<align=16>) -> sret<align=16>] [fallthrough=ub_if_used] [c="v8si(v8si)"] {
+// IR-NEXT:         return read<vector<i32, 8>>(%[[VALUE_value_18]]) [c="v8si"];
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_vector_sink:[0-9]+]] @vector_sink(%[[VALUE_tag_2:[0-9]+]] tag: i32, ...) -> i32 [linkage=external];
-// IR-NEXT:     fn %[[VALUE_vector_variadic:[0-9]+]] @vector_variadic(%[[VALUE_narrow:[0-9]+]] narrow: vector<i32, 4>, %[[VALUE_wide:[0-9]+]] wide: vector<i32, 8>) -> i32 [linkage=external] [abi=aapcs64(direct, byref<align=16>) -> scalar] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<i32, signature=fn(i32, ...) -> i32, abi=aapcs64(scalar, direct, byref<align=16>) -> scalar>(%[[VALUE_vector_sink]], const<i32>(1), read<vector<i32, 4>>(%[[VALUE_narrow]]), read<vector<i32, 8>>(%[[VALUE_wide]]));
+// IR-NEXT:     fn %[[VALUE_vector_variadic:[0-9]+]] @vector_variadic(%[[VALUE_narrow:[0-9]+]] narrow: vector<i32, 4> [c="v4si"], %[[VALUE_wide:[0-9]+]] wide: vector<i32, 8> [c="v8si"]) -> i32 [linkage=external] [abi=aapcs64(direct, byref<align=16>) -> scalar] [fallthrough=ub_if_used] [c="int(v4si, v8si)"] {
+// IR-NEXT:         return call<i32, signature=fn(i32, ...) -> i32, abi=aapcs64(scalar, direct, byref<align=16>) -> scalar>(%[[VALUE_vector_sink]], const<i32>(1), read<vector<i32, 4>>(%[[VALUE_narrow]]) [c="v4si"], read<vector<i32, 8>>(%[[VALUE_wide]]) [c="v8si"]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

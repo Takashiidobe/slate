@@ -74,23 +74,23 @@ main (void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___m128i:[0-9]+]] __m128i = vector<i32, 4>;
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
-// DEFAULT-NEXT:         field0 v: vector<i32, 4>;
+// DEFAULT-NEXT:         field0 v: vector<i32, 4> [c="__m128i"];
 // DEFAULT-NEXT:         field1 i: array<i32, 4>;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0, 0]];
-// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: vector<i32, 4> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: vector<i32, 4> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: vector<i32, 4> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: vector<i32, 4> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: vector<i32, 4> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: vector<i32, 4> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: vector<i32, 4> [storage=static] [linkage=external] [c="__m128i"];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: vector<i32, 4> [storage=static] [linkage=external] [c="__m128i"];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: vector<i32, 4> [storage=static] [linkage=external] [c="__m128i"];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: vector<i32, 4> [storage=static] [linkage=external] [c="__m128i"];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: vector<i32, 4> [storage=static] [linkage=external] [c="__m128i"];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: vector<i32, 4> [storage=static] [linkage=external] [c="__m128i"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: vector<i32, 4>) -> void [linkage=external] [abi=sysv64(direct) -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<vector<i32, 4>>(%[[VALUE_a]], xor<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]]), not<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]]))));
-// DEFAULT-NEXT:         write<vector<i32, 4>>(%[[VALUE_b]], xor<vector<i32, 4>, elementwise=true>(not<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]])), read<vector<i32, 4>>(%[[VALUE_x]])));
-// DEFAULT-NEXT:         write<vector<i32, 4>>(%[[VALUE_c]], or<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]]), not<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]]))));
-// DEFAULT-NEXT:         write<vector<i32, 4>>(%[[VALUE_d]], or<vector<i32, 4>, elementwise=true>(not<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]])), read<vector<i32, 4>>(%[[VALUE_x]])));
-// DEFAULT-NEXT:         write<vector<i32, 4>>(%[[VALUE_e]], and<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]]), not<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]]))));
-// DEFAULT-NEXT:         write<vector<i32, 4>>(%[[VALUE_f]], and<vector<i32, 4>, elementwise=true>(not<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]])), read<vector<i32, 4>>(%[[VALUE_x]])));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: vector<i32, 4> [c="__m128i"]) -> void [linkage=external] [abi=sysv64(direct) -> void] [fallthrough=ret_void] [c="void(__m128i)"] {
+// DEFAULT-NEXT:         write<vector<i32, 4>>(%[[VALUE_a]], xor<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]]) [c="__m128i"], not<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]]) [c="__m128i"]) [c="__m128i"]) [c="__m128i"]) [c="__m128i"];
+// DEFAULT-NEXT:         write<vector<i32, 4>>(%[[VALUE_b]], xor<vector<i32, 4>, elementwise=true>(not<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]]) [c="__m128i"]) [c="__m128i"], read<vector<i32, 4>>(%[[VALUE_x]]) [c="__m128i"]) [c="__m128i"]) [c="__m128i"];
+// DEFAULT-NEXT:         write<vector<i32, 4>>(%[[VALUE_c]], or<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]]) [c="__m128i"], not<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]]) [c="__m128i"]) [c="__m128i"]) [c="__m128i"]) [c="__m128i"];
+// DEFAULT-NEXT:         write<vector<i32, 4>>(%[[VALUE_d]], or<vector<i32, 4>, elementwise=true>(not<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]]) [c="__m128i"]) [c="__m128i"], read<vector<i32, 4>>(%[[VALUE_x]]) [c="__m128i"]) [c="__m128i"]) [c="__m128i"];
+// DEFAULT-NEXT:         write<vector<i32, 4>>(%[[VALUE_e]], and<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]]) [c="__m128i"], not<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]]) [c="__m128i"]) [c="__m128i"]) [c="__m128i"]) [c="__m128i"];
+// DEFAULT-NEXT:         write<vector<i32, 4>>(%[[VALUE_f]], and<vector<i32, 4>, elementwise=true>(not<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]]) [c="__m128i"]) [c="__m128i"], read<vector<i32, 4>>(%[[VALUE_x]]) [c="__m128i"]) [c="__m128i"]) [c="__m128i"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE0]] [storage=automatic];
@@ -107,8 +107,8 @@ main (void)
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field1(%[[VALUE_u]])), read<i32>(%[[VALUE_i]]))), sub<i32, overflow=ub>(mul<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(49)), const<i32>(36)));
-// DEFAULT-NEXT:         call<void, signature=fn(vector<i32, 4>) -> void, abi=sysv64(direct) -> void>(%[[VALUE_foo]], read<vector<i32, 4>>(field0(%[[VALUE_u]])));
-// DEFAULT-NEXT:         write<vector<i32, 4>>(field0(%[[VALUE_u]]), read<vector<i32, 4>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         call<void, signature=fn(vector<i32, 4>) -> void, abi=sysv64(direct) -> void>(%[[VALUE_foo]], read<vector<i32, 4>>(field0(%[[VALUE_u]])) [c="__m128i"]);
+// DEFAULT-NEXT:         write<vector<i32, 4>>(field0(%[[VALUE_u]]), read<vector<i32, 4>>(%[[VALUE_a]]) [c="__m128i"]) [c="__m128i"];
 // DEFAULT-NEXT:         for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -122,7 +122,7 @@ main (void)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field1(%[[VALUE_u]])), read<i32>(%[[VALUE_i]])))), not<i32>(const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         write<vector<i32, 4>>(field0(%[[VALUE_u]]), read<vector<i32, 4>>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         write<vector<i32, 4>>(field0(%[[VALUE_u]]), read<vector<i32, 4>>(%[[VALUE_b]]) [c="__m128i"]) [c="__m128i"];
 // DEFAULT-NEXT:         for %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -136,7 +136,7 @@ main (void)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field1(%[[VALUE_u]])), read<i32>(%[[VALUE_i]])))), not<i32>(const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         write<vector<i32, 4>>(field0(%[[VALUE_u]]), read<vector<i32, 4>>(%[[VALUE_c]]));
+// DEFAULT-NEXT:         write<vector<i32, 4>>(field0(%[[VALUE_u]]), read<vector<i32, 4>>(%[[VALUE_c]]) [c="__m128i"]) [c="__m128i"];
 // DEFAULT-NEXT:         for %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -150,7 +150,7 @@ main (void)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field1(%[[VALUE_u]])), read<i32>(%[[VALUE_i]])))), not<i32>(const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         write<vector<i32, 4>>(field0(%[[VALUE_u]]), read<vector<i32, 4>>(%[[VALUE_d]]));
+// DEFAULT-NEXT:         write<vector<i32, 4>>(field0(%[[VALUE_u]]), read<vector<i32, 4>>(%[[VALUE_d]]) [c="__m128i"]) [c="__m128i"];
 // DEFAULT-NEXT:         for %[[VALUE12:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -164,7 +164,7 @@ main (void)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field1(%[[VALUE_u]])), read<i32>(%[[VALUE_i]])))), not<i32>(const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         write<vector<i32, 4>>(field0(%[[VALUE_u]]), read<vector<i32, 4>>(%[[VALUE_e]]));
+// DEFAULT-NEXT:         write<vector<i32, 4>>(field0(%[[VALUE_u]]), read<vector<i32, 4>>(%[[VALUE_e]]) [c="__m128i"]) [c="__m128i"];
 // DEFAULT-NEXT:         for %[[VALUE15:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -178,7 +178,7 @@ main (void)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field1(%[[VALUE_u]])), read<i32>(%[[VALUE_i]])))), const<i32>(0))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         write<vector<i32, 4>>(field0(%[[VALUE_u]]), read<vector<i32, 4>>(%[[VALUE_f]]));
+// DEFAULT-NEXT:         write<vector<i32, 4>>(field0(%[[VALUE_u]]), read<vector<i32, 4>>(%[[VALUE_f]]) [c="__m128i"]) [c="__m128i"];
 // DEFAULT-NEXT:         for %[[VALUE18:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));

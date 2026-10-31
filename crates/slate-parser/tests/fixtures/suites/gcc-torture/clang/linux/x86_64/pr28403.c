@@ -53,12 +53,12 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x1:[0-9]+]] x1: i32, %[[VALUE_x2:[0-9]+]] x2: i32, %[[VALUE_x3:[0-9]+]] x3: i32, %[[VALUE_x4:[0-9]+]] x4: i32, %[[VALUE_x5:[0-9]+]] x5: i32, %[[VALUE_x6:[0-9]+]] x6: i32, %[[VALUE_x7:[0-9]+]] x7: i32, %[[VALUE_x8:[0-9]+]] x8: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_global]], add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE_x1]]), read<i32>(%[[VALUE_x2]])), read<i32>(%[[VALUE_x3]])), read<i32>(%[[VALUE_x4]])), read<i32>(%[[VALUE_x5]])), read<i32>(%[[VALUE_x6]])), read<i32>(%[[VALUE_x7]])), read<i32>(%[[VALUE_x8]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: u64) -> u64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: u64 [c="ull"]) -> u64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="ull(ull)"] {
 // DEFAULT-NEXT:         call<i32, signature=fn(i32, i32, i32, i32, i32, i32, i32, i32) -> i32>(%[[VALUE_foo]], const<i32>(1), const<i32>(2), const<i32>(1), const<i32>(3), const<i32>(1), const<i32>(4), const<i32>(1), const<i32>(5));
-// DEFAULT-NEXT:         return shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x]]), read<i32>(%[[VALUE_global]]));
+// DEFAULT-NEXT:         return shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x]]) [c="ull"], read<i32>(%[[VALUE_global]])) [c="ull"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE_bar]], const<u64>(81985529216486895)), shr<u64, amount_out_of_range=ub, fill=zero_extend>(const<u64>(81985529216486895), const<i32>(18)))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE_bar]], const<u64>(81985529216486895) [c="ull"]) [c="ull"], shr<u64, amount_out_of_range=ub, fill=zero_extend>(const<u64>(81985529216486895), const<i32>(18)) [c="ull"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

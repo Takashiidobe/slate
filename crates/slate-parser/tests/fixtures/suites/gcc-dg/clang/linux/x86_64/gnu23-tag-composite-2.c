@@ -73,13 +73,13 @@ void k()
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: @type[[TYPE_bar]] [storage=static] = aggregate<@type[[TYPE_bar]], zero_fill=false>(field0 = aggregate<@type[[TYPE_buf]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)))) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_j:[0-9]+]] @j() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE_buf_2]] [storage=automatic] = aggregate<@type[[TYPE_buf_2]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE_buf]] [storage=automatic] = aggregate<@type[[TYPE_buf]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: @type[[TYPE_buf_2]] [storage=automatic] = aggregate<@type[[TYPE_buf_2]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE_buf]] [storage=automatic] = aggregate<@type[[TYPE_buf]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0))) [c="typeof(*(1 ? &s : &t))"];
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: @type[[TYPE_buf_2]] [storage=automatic] = aggregate<@type[[TYPE_buf_2]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0))) [c="typeof(*(1 ? &t : &s))"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_k:[0-9]+]] @k() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_t_2:[0-9]+]] t: @type[[TYPE_buf_3]] [storage=automatic] = aggregate<@type[[TYPE_buf_3]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_bar_2]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: @type[[TYPE_bar]] [storage=automatic] = aggregate<@type[[TYPE_bar]], zero_fill=false>(field0 = aggregate<@type[[TYPE_buf]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: @type[[TYPE_bar]] [storage=automatic] = aggregate<@type[[TYPE_bar]], zero_fill=false>(field0 = aggregate<@type[[TYPE_buf]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)))) [c="typeof(*(1 ? &a : &b))"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

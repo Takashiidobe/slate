@@ -53,7 +53,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: array<array<array<i32, 3>, 3>, 48> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: ptr<array<i32, 3>> [array=3], %[[VALUE_y:[0-9]+]] y: ptr<array<i32, 3>> [array=3]) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: ptr<array<i32, 3>> [array=3], %[[VALUE_y:[0-9]+]] y: ptr<array<i32, 3>> [array=3]) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] [c="void(int[3][3], int[3][3])"] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<ptr<array<i32, 3>>>(read<ptr<array<i32, 3>>>(%[[VALUE_x]]), array_decay<ptr<array<i32, 3>>, length=Some(3)>(deref(ptr_offset<ptr<array<array<i32, 3>, 3>>, subtract=false, element=array<array<i32, 3>, 3>, overflow=ub>(array_decay<ptr<array<array<i32, 3>, 3>>, length=Some(48)>(%[[VALUE_g]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(8))))))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(true));
@@ -65,7 +65,7 @@ int main() {
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE0]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x_2:[0-9]+]] x: ptr<array<array<i32, 3>, 3>>) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x_2:[0-9]+]] x: ptr<array<array<i32, 3>, 3>>) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] [c="void(int[][3][3])"] {
 // DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             init:

@@ -484,8 +484,8 @@ main ()
 // DEFAULT-NEXT:     fn %[[VALUE_test_fetch_add:[0-9]+]] @test_fetch_add() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr:[0-9]+]] __atomic_store_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp:[0-9]+]] __atomic_store_tmp: i127b [storage=automatic] = widen<i127b, reason=assign>(const<i125b>(13505789527944801758751150119415226784));
-// DEFAULT-NEXT:             write<i127b, atomic=relaxed>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_store_ptr]])), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_store_tmp]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp:[0-9]+]] __atomic_store_tmp: i127b [storage=automatic] = widen<i127b, reason=assign>(const<i125b>(13505789527944801758751150119415226784)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i127b, atomic=relaxed>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_store_ptr]])), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_store_tmp]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i127b>(%[[VALUE_count]], neg<i127b, overflow=ub>(const<i127b>(64910836855286429164283779649638556795)));
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i127b [synthetic] = update<i127b, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i127b>>(%[[VALUE_v]])), add<i127b, overflow=wrap>(old<i127b>, read<i127b>(%[[VALUE_count]])));
@@ -512,18 +512,18 @@ main ()
 // DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i127b [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr:[0-9]+]] __atomic_load_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic];
-// DEFAULT-NEXT:             write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr]]))));
-// DEFAULT-NEXT:             write<i127b>(%[[VALUE7]], read<i127b>(%[[VALUE___atomic_load_tmp]]));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i127b>(%[[VALUE7]], read<i127b>(%[[VALUE___atomic_load_tmp]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i127b>(read<i127b>(%[[VALUE7]]), neg<i127b, overflow=ub>(const<i127b>(46947703095804269367567934653765590730)))
+// DEFAULT-NEXT:         if ne<i127b>(read<i127b>(%[[VALUE7]]) [c="typeof((cast)0, *__atomic_load_ptr)"], neg<i127b, overflow=ub>(const<i127b>(46947703095804269367567934653765590730)) [c="typeof((cast)0, *__atomic_load_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_fetch_sub:[0-9]+]] @test_fetch_sub() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_2:[0-9]+]] __atomic_store_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_2:[0-9]+]] __atomic_store_tmp: i127b [storage=automatic] = widen<i127b, reason=assign>(const<i126b>(30796781768365552851024605388374299173));
-// DEFAULT-NEXT:             write<i127b, atomic=release>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_store_ptr_2]])), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_store_tmp_2]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_2:[0-9]+]] __atomic_store_tmp: i127b [storage=automatic] = widen<i127b, reason=assign>(const<i126b>(30796781768365552851024605388374299173)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i127b, atomic=release>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_store_ptr_2]])), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_store_tmp_2]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i127b>(%[[VALUE_count]], widen<i127b, reason=assign>(const<i126b>(32457177597484647488149720668185011722)));
 // DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: i127b [synthetic] = update<i127b, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i127b>>(%[[VALUE_v]])), sub<i127b, overflow=wrap>(old<i127b>, read<i127b>(%[[VALUE_count]])));
@@ -550,18 +550,18 @@ main ()
 // DEFAULT-NEXT:         let %[[VALUE15:[0-9]+]]: i127b [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr_2:[0-9]+]] __atomic_load_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_2:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic];
-// DEFAULT-NEXT:             write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_2]])), read<i127b, atomic=acquire>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_2]]))));
-// DEFAULT-NEXT:             write<i127b>(%[[VALUE15]], read<i127b>(%[[VALUE___atomic_load_tmp_2]]));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_2:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_2]])), read<i127b, atomic=acquire>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_2]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i127b>(%[[VALUE15]], read<i127b>(%[[VALUE___atomic_load_tmp_2]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i127b>(read<i127b>(%[[VALUE15]]), widen<i127b, reason=usual_arith>(neg<i126b, overflow=ub>(const<i126b>(24798803265012232752862261577173970817))))
+// DEFAULT-NEXT:         if ne<i127b>(read<i127b>(%[[VALUE15]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i127b, reason=usual_arith>(neg<i126b, overflow=ub>(const<i126b>(24798803265012232752862261577173970817))) [c="typeof((cast)0, *__atomic_load_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_fetch_and:[0-9]+]] @test_fetch_and() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_3:[0-9]+]] __atomic_store_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_3:[0-9]+]] __atomic_store_tmp: i127b [storage=automatic] = read<i127b>(%[[VALUE_init]]);
-// DEFAULT-NEXT:             write<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_store_ptr_3]])), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_store_tmp_3]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_3:[0-9]+]] __atomic_store_tmp: i127b [storage=automatic] = read<i127b>(%[[VALUE_init]]) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_store_ptr_3]])), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_store_tmp_3]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE16:[0-9]+]]: i127b [synthetic] = update<i127b, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i127b>>(%[[VALUE_v]])), and<i127b>(old<i127b>, widen<i127b, reason=arg>(const<i32>(0))));
 // DEFAULT-NEXT:         if ne<i127b>(read<i127b>(%[[VALUE16]]), read<i127b>(%[[VALUE_init]]))
@@ -804,61 +804,61 @@ main ()
 // DEFAULT-NEXT:     fn %[[VALUE_test_exchange:[0-9]+]] @test_exchange() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_4:[0-9]+]] __atomic_store_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_4:[0-9]+]] __atomic_store_tmp: i127b [storage=automatic] = widen<i127b, reason=assign>(const<i125b>(15794812138349191682564933935017390008));
-// DEFAULT-NEXT:             write<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_store_ptr_4]])), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_store_tmp_4]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_4:[0-9]+]] __atomic_store_tmp: i127b [storage=automatic] = widen<i127b, reason=assign>(const<i125b>(15794812138349191682564933935017390008)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_store_ptr_4]])), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_store_tmp_4]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE102:[0-9]+]]: i127b [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_ptr:[0-9]+]] __atomic_exchange_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_val:[0-9]+]] __atomic_exchange_val: i127b [storage=automatic] = widen<i127b, reason=assign>(neg<i122b, overflow=ub>(const<i122b>(2166613183393424891717146518563613668)));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_tmp:[0-9]+]] __atomic_exchange_tmp: i127b [storage=automatic];
-// DEFAULT-NEXT:             let %[[VALUE103:[0-9]+]]: i127b [synthetic] = update<i127b, result=old, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_exchange_ptr]])), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_exchange_val]]))));
-// DEFAULT-NEXT:             write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_exchange_tmp]])), read<i127b>(%[[VALUE103]]));
-// DEFAULT-NEXT:             write<i127b>(%[[VALUE102]], read<i127b>(%[[VALUE___atomic_exchange_tmp]]));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_val:[0-9]+]] __atomic_exchange_val: i127b [storage=automatic] = widen<i127b, reason=assign>(neg<i122b, overflow=ub>(const<i122b>(2166613183393424891717146518563613668))) [c="typeof((cast)0, *__atomic_exchange_ptr)"] [c="typeof((cast)0, *__atomic_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_tmp:[0-9]+]] __atomic_exchange_tmp: i127b [storage=automatic] [c="typeof((cast)0, *__atomic_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE103:[0-9]+]]: i127b [synthetic] = update<i127b, result=old, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_exchange_ptr]])), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_exchange_val]]))) [c="typeof((cast)0, *__atomic_exchange_ptr)"]);
+// DEFAULT-NEXT:             write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_exchange_tmp]])), read<i127b>(%[[VALUE103]])) [c="typeof((cast)0, *__atomic_exchange_ptr)"];
+// DEFAULT-NEXT:             write<i127b>(%[[VALUE102]], read<i127b>(%[[VALUE___atomic_exchange_tmp]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE104:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i127b>(read<i127b>(%[[VALUE102]]), widen<i127b, reason=usual_arith>(const<i125b>(15794812138349191682564933935017390008)))
+// DEFAULT-NEXT:         if ne<i127b>(read<i127b>(%[[VALUE102]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"], widen<i127b, reason=usual_arith>(const<i125b>(15794812138349191682564933935017390008)) [c="typeof((cast)0, *__atomic_exchange_ptr)"])
 // DEFAULT-NEXT:             write<bool>(%[[VALUE104]], const<bool>(true));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             let %[[VALUE105:[0-9]+]]: i127b [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_3:[0-9]+]] __atomic_load_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_3:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic];
-// DEFAULT-NEXT:                 write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_3]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_3]]))));
-// DEFAULT-NEXT:                 write<i127b>(%[[VALUE105]], read<i127b>(%[[VALUE___atomic_load_tmp_3]]));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_3:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_3]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_3]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i127b>(%[[VALUE105]], read<i127b>(%[[VALUE___atomic_load_tmp_3]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%[[VALUE104]], ne<i127b>(read<i127b>(%[[VALUE105]]), widen<i127b, reason=usual_arith>(neg<i122b, overflow=ub>(const<i122b>(2166613183393424891717146518563613668)))));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE104]], ne<i127b>(read<i127b>(%[[VALUE105]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i127b, reason=usual_arith>(neg<i122b, overflow=ub>(const<i122b>(2166613183393424891717146518563613668))) [c="typeof((cast)0, *__atomic_load_ptr)"]));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE104]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE106:[0-9]+]]: i127b [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_ptr_2:[0-9]+]] __atomic_exchange_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_val_2:[0-9]+]] __atomic_exchange_val: i127b [storage=automatic] = const<i127b>(61251098386268815852902382804483910638);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_tmp_2:[0-9]+]] __atomic_exchange_tmp: i127b [storage=automatic];
-// DEFAULT-NEXT:             let %[[VALUE107:[0-9]+]]: i127b [synthetic] = update<i127b, result=old, atomic=relaxed>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_exchange_ptr_2]])), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_exchange_val_2]]))));
-// DEFAULT-NEXT:             write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_exchange_tmp_2]])), read<i127b>(%[[VALUE107]]));
-// DEFAULT-NEXT:             write<i127b>(%[[VALUE106]], read<i127b>(%[[VALUE___atomic_exchange_tmp_2]]));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_val_2:[0-9]+]] __atomic_exchange_val: i127b [storage=automatic] = const<i127b>(61251098386268815852902382804483910638) [c="typeof((cast)0, *__atomic_exchange_ptr)"] [c="typeof((cast)0, *__atomic_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_tmp_2:[0-9]+]] __atomic_exchange_tmp: i127b [storage=automatic] [c="typeof((cast)0, *__atomic_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE107:[0-9]+]]: i127b [synthetic] = update<i127b, result=old, atomic=relaxed>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_exchange_ptr_2]])), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_exchange_val_2]]))) [c="typeof((cast)0, *__atomic_exchange_ptr)"]);
+// DEFAULT-NEXT:             write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_exchange_tmp_2]])), read<i127b>(%[[VALUE107]])) [c="typeof((cast)0, *__atomic_exchange_ptr)"];
+// DEFAULT-NEXT:             write<i127b>(%[[VALUE106]], read<i127b>(%[[VALUE___atomic_exchange_tmp_2]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE108:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i127b>(read<i127b>(%[[VALUE106]]), widen<i127b, reason=usual_arith>(neg<i122b, overflow=ub>(const<i122b>(2166613183393424891717146518563613668))))
+// DEFAULT-NEXT:         if ne<i127b>(read<i127b>(%[[VALUE106]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"], widen<i127b, reason=usual_arith>(neg<i122b, overflow=ub>(const<i122b>(2166613183393424891717146518563613668))) [c="typeof((cast)0, *__atomic_exchange_ptr)"])
 // DEFAULT-NEXT:             write<bool>(%[[VALUE108]], const<bool>(true));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             let %[[VALUE109:[0-9]+]]: i127b [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_4:[0-9]+]] __atomic_load_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_4:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic];
-// DEFAULT-NEXT:                 write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_4]])), read<i127b, atomic=acquire>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_4]]))));
-// DEFAULT-NEXT:                 write<i127b>(%[[VALUE109]], read<i127b>(%[[VALUE___atomic_load_tmp_4]]));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_4:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_4]])), read<i127b, atomic=acquire>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_4]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i127b>(%[[VALUE109]], read<i127b>(%[[VALUE___atomic_load_tmp_4]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%[[VALUE108]], ne<i127b>(read<i127b>(%[[VALUE109]]), const<i127b>(61251098386268815852902382804483910638)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE108]], ne<i127b>(read<i127b>(%[[VALUE109]]) [c="typeof((cast)0, *__atomic_load_ptr)"], const<i127b>(61251098386268815852902382804483910638) [c="typeof((cast)0, *__atomic_load_ptr)"]));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE108]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<i127b>(%[[VALUE_count]], widen<i127b, reason=assign>(neg<i122b, overflow=ub>(const<i122b>(2166613183393424891717146518563613668))));
 // DEFAULT-NEXT:         let %[[VALUE110:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp:[0-9]+]] __atomic_compare_exchange_tmp: i127b [storage=automatic] = widen<i127b, reason=assign>(neg<i126b, overflow=ub>(const<i126b>(36677332297536901313774263310237646448)));
-// DEFAULT-NEXT:             let %[[VALUE111:[0-9]+]]: bool [synthetic] = compare_exchange<i127b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_compare_exchange_ptr]])), addr_of<ptr<i127b>>(%[[VALUE_count]]), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_compare_exchange_tmp]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp:[0-9]+]] __atomic_compare_exchange_tmp: i127b [storage=automatic] = widen<i127b, reason=assign>(neg<i126b, overflow=ub>(const<i126b>(36677332297536901313774263310237646448))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE111:[0-9]+]]: bool [synthetic] = compare_exchange<i127b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_compare_exchange_ptr]])), addr_of<ptr<i127b>>(%[[VALUE_count]]), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_compare_exchange_tmp]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:             write<bool>(%[[VALUE110]], read<bool>(%[[VALUE111]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE110]])
@@ -870,18 +870,18 @@ main ()
 // DEFAULT-NEXT:             let %[[VALUE113:[0-9]+]]: i127b [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_5:[0-9]+]] __atomic_load_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_5:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic];
-// DEFAULT-NEXT:                 write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_5]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_5]]))));
-// DEFAULT-NEXT:                 write<i127b>(%[[VALUE113]], read<i127b>(%[[VALUE___atomic_load_tmp_5]]));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_5:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_5]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_5]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i127b>(%[[VALUE113]], read<i127b>(%[[VALUE___atomic_load_tmp_5]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%[[VALUE112]], ne<i127b>(read<i127b>(%[[VALUE113]]), const<i127b>(61251098386268815852902382804483910638)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE112]], ne<i127b>(read<i127b>(%[[VALUE113]]) [c="typeof((cast)0, *__atomic_load_ptr)"], const<i127b>(61251098386268815852902382804483910638) [c="typeof((cast)0, *__atomic_load_ptr)"]));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE112]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE114:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr_2:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_2:[0-9]+]] __atomic_compare_exchange_tmp: i127b [storage=automatic] = widen<i127b, reason=assign>(neg<i126b, overflow=ub>(const<i126b>(36677332297536901313774263310237646448)));
-// DEFAULT-NEXT:             let %[[VALUE115:[0-9]+]]: bool [synthetic] = compare_exchange<i127b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_compare_exchange_ptr_2]])), addr_of<ptr<i127b>>(%[[VALUE_count]]), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_compare_exchange_tmp_2]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_2:[0-9]+]] __atomic_compare_exchange_tmp: i127b [storage=automatic] = widen<i127b, reason=assign>(neg<i126b, overflow=ub>(const<i126b>(36677332297536901313774263310237646448))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE115:[0-9]+]]: bool [synthetic] = compare_exchange<i127b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_compare_exchange_ptr_2]])), addr_of<ptr<i127b>>(%[[VALUE_count]]), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_compare_exchange_tmp_2]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:             write<bool>(%[[VALUE114]], read<bool>(%[[VALUE115]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%[[VALUE114]]))
@@ -893,19 +893,19 @@ main ()
 // DEFAULT-NEXT:             let %[[VALUE117:[0-9]+]]: i127b [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_6:[0-9]+]] __atomic_load_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_6:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic];
-// DEFAULT-NEXT:                 write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_6]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_6]]))));
-// DEFAULT-NEXT:                 write<i127b>(%[[VALUE117]], read<i127b>(%[[VALUE___atomic_load_tmp_6]]));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_6:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_6]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_6]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i127b>(%[[VALUE117]], read<i127b>(%[[VALUE___atomic_load_tmp_6]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%[[VALUE116]], ne<i127b>(read<i127b>(%[[VALUE117]]), widen<i127b, reason=usual_arith>(neg<i126b, overflow=ub>(const<i126b>(36677332297536901313774263310237646448)))));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE116]], ne<i127b>(read<i127b>(%[[VALUE117]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i127b, reason=usual_arith>(neg<i126b, overflow=ub>(const<i126b>(36677332297536901313774263310237646448))) [c="typeof((cast)0, *__atomic_load_ptr)"]));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE116]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<i127b>(%[[VALUE_count]], widen<i127b, reason=assign>(neg<i122b, overflow=ub>(const<i122b>(2166613183393424891717146518563613668))));
 // DEFAULT-NEXT:         let %[[VALUE118:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr_3:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_3:[0-9]+]] __atomic_compare_exchange_tmp: i127b [storage=automatic] = const<i127b>(73949932022761409003352953944661689416);
-// DEFAULT-NEXT:             let %[[VALUE119:[0-9]+]]: bool [synthetic] = compare_exchange<i127b, form=write_back, weak=false, success=seq_cst, failure=relaxed>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_compare_exchange_ptr_3]])), addr_of<ptr<i127b>>(%[[VALUE_count]]), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_compare_exchange_tmp_3]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_3:[0-9]+]] __atomic_compare_exchange_tmp: i127b [storage=automatic] = const<i127b>(73949932022761409003352953944661689416) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE119:[0-9]+]]: bool [synthetic] = compare_exchange<i127b, form=write_back, weak=false, success=seq_cst, failure=relaxed>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_compare_exchange_ptr_3]])), addr_of<ptr<i127b>>(%[[VALUE_count]]), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_compare_exchange_tmp_3]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:             write<bool>(%[[VALUE118]], read<bool>(%[[VALUE119]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE118]])
@@ -917,18 +917,18 @@ main ()
 // DEFAULT-NEXT:             let %[[VALUE121:[0-9]+]]: i127b [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_7:[0-9]+]] __atomic_load_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_7:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic];
-// DEFAULT-NEXT:                 write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_7]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_7]]))));
-// DEFAULT-NEXT:                 write<i127b>(%[[VALUE121]], read<i127b>(%[[VALUE___atomic_load_tmp_7]]));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_7:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_7]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_7]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i127b>(%[[VALUE121]], read<i127b>(%[[VALUE___atomic_load_tmp_7]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%[[VALUE120]], ne<i127b>(read<i127b>(%[[VALUE121]]), widen<i127b, reason=usual_arith>(neg<i126b, overflow=ub>(const<i126b>(36677332297536901313774263310237646448)))));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE120]], ne<i127b>(read<i127b>(%[[VALUE121]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i127b, reason=usual_arith>(neg<i126b, overflow=ub>(const<i126b>(36677332297536901313774263310237646448))) [c="typeof((cast)0, *__atomic_load_ptr)"]));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE120]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE122:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr_4:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_4:[0-9]+]] __atomic_compare_exchange_tmp: i127b [storage=automatic] = const<i127b>(73949932022761409003352953944661689416);
-// DEFAULT-NEXT:             let %[[VALUE123:[0-9]+]]: bool [synthetic] = compare_exchange<i127b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_compare_exchange_ptr_4]])), addr_of<ptr<i127b>>(%[[VALUE_count]]), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_compare_exchange_tmp_4]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_4:[0-9]+]] __atomic_compare_exchange_tmp: i127b [storage=automatic] = const<i127b>(73949932022761409003352953944661689416) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE123:[0-9]+]]: bool [synthetic] = compare_exchange<i127b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_compare_exchange_ptr_4]])), addr_of<ptr<i127b>>(%[[VALUE_count]]), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_compare_exchange_tmp_4]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:             write<bool>(%[[VALUE122]], read<bool>(%[[VALUE123]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%[[VALUE122]]))
@@ -940,19 +940,19 @@ main ()
 // DEFAULT-NEXT:             let %[[VALUE125:[0-9]+]]: i127b [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_8:[0-9]+]] __atomic_load_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_8:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic];
-// DEFAULT-NEXT:                 write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_8]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_8]]))));
-// DEFAULT-NEXT:                 write<i127b>(%[[VALUE125]], read<i127b>(%[[VALUE___atomic_load_tmp_8]]));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_8:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_8]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_8]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i127b>(%[[VALUE125]], read<i127b>(%[[VALUE___atomic_load_tmp_8]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%[[VALUE124]], ne<i127b>(read<i127b>(%[[VALUE125]]), const<i127b>(73949932022761409003352953944661689416)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE124]], ne<i127b>(read<i127b>(%[[VALUE125]]) [c="typeof((cast)0, *__atomic_load_ptr)"], const<i127b>(73949932022761409003352953944661689416) [c="typeof((cast)0, *__atomic_load_ptr)"]));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE124]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE126:[0-9]+]]: i127b [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr_9:[0-9]+]] __atomic_load_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_9:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic];
-// DEFAULT-NEXT:             write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_9]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_9]]))));
-// DEFAULT-NEXT:             write<i127b>(%[[VALUE126]], read<i127b>(%[[VALUE___atomic_load_tmp_9]]));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_9:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_9]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_9]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i127b>(%[[VALUE126]], read<i127b>(%[[VALUE___atomic_load_tmp_9]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i127b>(%[[VALUE_count]], read<i127b>(%[[VALUE126]]));
 // DEFAULT-NEXT:         do %[[VALUE127:[0-9]+]]
@@ -961,8 +961,8 @@ main ()
 // DEFAULT-NEXT:             let %[[VALUE128:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___atomic_compare_exchange_ptr_5:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:                 let %[[VALUE___atomic_compare_exchange_tmp_5:[0-9]+]] __atomic_compare_exchange_tmp: i127b [storage=automatic] = read<i127b>(%[[VALUE_res]]);
-// DEFAULT-NEXT:                 let %[[VALUE129:[0-9]+]]: bool [synthetic] = compare_exchange<i127b, form=write_back, weak=true, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_compare_exchange_ptr_5]])), addr_of<ptr<i127b>>(%[[VALUE_count]]), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_compare_exchange_tmp_5]]))));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_compare_exchange_tmp_5:[0-9]+]] __atomic_compare_exchange_tmp: i127b [storage=automatic] = read<i127b>(%[[VALUE_res]]) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:                 let %[[VALUE129:[0-9]+]]: bool [synthetic] = compare_exchange<i127b, form=write_back, weak=true, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_compare_exchange_ptr_5]])), addr_of<ptr<i127b>>(%[[VALUE_count]]), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_compare_exchange_tmp_5]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE128]], read<bool>(%[[VALUE129]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             yield not<bool>(read<bool>(%[[VALUE128]]));
@@ -970,18 +970,18 @@ main ()
 // DEFAULT-NEXT:         let %[[VALUE130:[0-9]+]]: i127b [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr_10:[0-9]+]] __atomic_load_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_10:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic];
-// DEFAULT-NEXT:             write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_10]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_10]]))));
-// DEFAULT-NEXT:             write<i127b>(%[[VALUE130]], read<i127b>(%[[VALUE___atomic_load_tmp_10]]));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_10:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_10]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_10]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i127b>(%[[VALUE130]], read<i127b>(%[[VALUE___atomic_load_tmp_10]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i127b>(read<i127b>(%[[VALUE130]]), widen<i127b, reason=usual_arith>(neg<i124b, overflow=ub>(const<i124b>(8306826182756755040243351558153703230))))
+// DEFAULT-NEXT:         if ne<i127b>(read<i127b>(%[[VALUE130]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i127b, reason=usual_arith>(neg<i124b, overflow=ub>(const<i124b>(8306826182756755040243351558153703230))) [c="typeof((cast)0, *__atomic_load_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE131:[0-9]+]]: i127b [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr_11:[0-9]+]] __atomic_load_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_11:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic];
-// DEFAULT-NEXT:             write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_11]])), read<i127b, atomic=acquire>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_11]]))));
-// DEFAULT-NEXT:             write<i127b>(%[[VALUE131]], read<i127b>(%[[VALUE___atomic_load_tmp_11]]));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_11:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_11]])), read<i127b, atomic=acquire>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_11]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i127b>(%[[VALUE131]], read<i127b>(%[[VALUE___atomic_load_tmp_11]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i127b>(%[[VALUE_count]], read<i127b>(%[[VALUE131]]));
 // DEFAULT-NEXT:         do %[[VALUE132:[0-9]+]]
@@ -990,8 +990,8 @@ main ()
 // DEFAULT-NEXT:             let %[[VALUE133:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___atomic_compare_exchange_ptr_6:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:                 let %[[VALUE___atomic_compare_exchange_tmp_6:[0-9]+]] __atomic_compare_exchange_tmp: i127b [storage=automatic] = read<i127b>(%[[VALUE_res]]);
-// DEFAULT-NEXT:                 let %[[VALUE134:[0-9]+]]: bool [synthetic] = compare_exchange<i127b, form=write_back, weak=true, success=relaxed, failure=relaxed>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_compare_exchange_ptr_6]])), addr_of<ptr<i127b>>(%[[VALUE_count]]), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_compare_exchange_tmp_6]]))));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_compare_exchange_tmp_6:[0-9]+]] __atomic_compare_exchange_tmp: i127b [storage=automatic] = read<i127b>(%[[VALUE_res]]) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:                 let %[[VALUE134:[0-9]+]]: bool [synthetic] = compare_exchange<i127b, form=write_back, weak=true, success=relaxed, failure=relaxed>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_compare_exchange_ptr_6]])), addr_of<ptr<i127b>>(%[[VALUE_count]]), read<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_compare_exchange_tmp_6]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE133]], read<bool>(%[[VALUE134]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             yield not<bool>(read<bool>(%[[VALUE133]]));
@@ -999,11 +999,11 @@ main ()
 // DEFAULT-NEXT:         let %[[VALUE135:[0-9]+]]: i127b [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr_12:[0-9]+]] __atomic_load_ptr: ptr<atomic i127b> [storage=automatic] = addr_of<ptr<atomic i127b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_12:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic];
-// DEFAULT-NEXT:             write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_12]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_12]]))));
-// DEFAULT-NEXT:             write<i127b>(%[[VALUE135]], read<i127b>(%[[VALUE___atomic_load_tmp_12]]));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_12:[0-9]+]] __atomic_load_tmp: i127b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i127b>(deref(addr_of<ptr<i127b>>(%[[VALUE___atomic_load_tmp_12]])), read<i127b, atomic=seq_cst>(deref(read<ptr<atomic i127b>>(%[[VALUE___atomic_load_ptr_12]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i127b>(%[[VALUE135]], read<i127b>(%[[VALUE___atomic_load_tmp_12]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i127b>(read<i127b>(%[[VALUE135]]), widen<i127b, reason=usual_arith>(const<i126b>(40548318646852783326528965468308206588)))
+// DEFAULT-NEXT:         if ne<i127b>(read<i127b>(%[[VALUE135]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i127b, reason=usual_arith>(const<i126b>(40548318646852783326528965468308206588)) [c="typeof((cast)0, *__atomic_load_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

@@ -148,7 +148,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: i64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_f1i:[0-9]+]] @f1i(%[[VALUE_ap:[0-9]+]] ap: va_list) -> void [linkage=external] [inline=always] [definition=inline_only] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f1i:[0-9]+]] @f1i(%[[VALUE_ap:[0-9]+]] ap: va_list [c="va_list"]) -> void [linkage=external] [inline=always] [definition=inline_only] [fallthrough=ret_void] [c="void(va_list)"] {
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x]], float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]])));
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i64 [synthetic] = va_arg<i64>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_x]]);
@@ -160,12 +160,12 @@ int main(void) {
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x]], read<i64>(%[[VALUE5]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_i:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
-// DEFAULT-NEXT:         call<void, signature=fn(va_list) -> void>(%[[VALUE_f1i]], read<va_list>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:         call<void, signature=fn(va_list) -> void>(%[[VALUE_f1i]], read<va_list>(%[[VALUE_ap_2]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f2i:[0-9]+]] @f2i(%[[VALUE_ap_3:[0-9]+]] ap: va_list) -> void [linkage=external] [inline=always] [definition=inline_only] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f2i:[0-9]+]] @f2i(%[[VALUE_ap_3:[0-9]+]] ap: va_list [c="va_list"]) -> void [linkage=external] [inline=always] [definition=inline_only] [fallthrough=ret_void] [c="void(va_list)"] {
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_y]], widen<i64, reason=assign>(va_arg<i32>(%[[VALUE_ap_3]])));
 // DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: i64 [synthetic] = va_arg<i64>(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_y]]);
@@ -175,12 +175,12 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_y]]);
 // DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: i64 [synthetic] = float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(%[[VALUE10]])), read<f64>(%[[VALUE9]])));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_y]], read<i64>(%[[VALUE11]]));
-// DEFAULT-NEXT:         call<void, signature=fn(va_list) -> void>(%[[VALUE_f1i]], read<va_list>(%[[VALUE_ap_3]]));
+// DEFAULT-NEXT:         call<void, signature=fn(va_list) -> void>(%[[VALUE_f1i]], read<va_list>(%[[VALUE_ap_3]]) [c="va_list"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_i_2:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_4:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_4:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_4]]);
-// DEFAULT-NEXT:         call<void, signature=fn(va_list) -> void>(%[[VALUE_f2i]], read<va_list>(%[[VALUE_ap_4]]));
+// DEFAULT-NEXT:         call<void, signature=fn(va_list) -> void>(%[[VALUE_f2i]], read<va_list>(%[[VALUE_ap_4]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_4]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f3h:[0-9]+]] @f3h(%[[VALUE_i_3:[0-9]+]] i: i32, %[[VALUE_arg0:[0-9]+]] arg0: i64, %[[VALUE_arg1:[0-9]+]] arg1: i64, %[[VALUE_arg2:[0-9]+]] arg2: i64, %[[VALUE_arg3:[0-9]+]] arg3: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
@@ -192,7 +192,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_arg1_2:[0-9]+]] arg1: i64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_arg2_2:[0-9]+]] arg2: i64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_arg3_2:[0-9]+]] arg3: i64 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_ap_5:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_5:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:         switch %[[VALUE12:[0-9]+]] read<i32>(%[[VALUE_i_4]])
 // DEFAULT-NEXT:             {
@@ -228,7 +228,7 @@ int main(void) {
 // DEFAULT-NEXT:         return read<i64>(%[[VALUE_t]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_i_5:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_6:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_6:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_6]]);
 // DEFAULT-NEXT:         switch %[[VALUE13:[0-9]+]] read<i32>(%[[VALUE_i_5]])
 // DEFAULT-NEXT:             {
@@ -245,7 +245,7 @@ int main(void) {
 // DEFAULT-NEXT:                 default %[[VALUE13]]:
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn(va_list) -> void>(%[[VALUE_f1i]], read<va_list>(%[[VALUE_ap_6]]));
+// DEFAULT-NEXT:         call<void, signature=fn(va_list) -> void>(%[[VALUE_f1i]], read<va_list>(%[[VALUE_ap_6]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_6]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

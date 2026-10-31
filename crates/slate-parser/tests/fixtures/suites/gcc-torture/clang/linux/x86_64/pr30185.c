@@ -58,14 +58,14 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_S_2:[0-9]+]] S = @type[[TYPE_S]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: @type[[TYPE_S]], %[[VALUE_y:[0-9]+]] y: @type[[TYPE_S]]) -> @type[[TYPE_S]] [linkage=external] [abi=sysv64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: @type[[TYPE_S]] [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: @type[[TYPE_S]] [c="S"], %[[VALUE_y:[0-9]+]] y: @type[[TYPE_S]] [c="S"]) -> @type[[TYPE_S]] [linkage=external] [abi=sysv64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] [c="S(S, S)"] {
+// DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: @type[[TYPE_S]] [storage=automatic] [c="S"];
 // DEFAULT-NEXT:         write<i64>(field1(%[[VALUE_z]]), div<i64, by_zero=ub, min_by_neg_one=ub>(read<i64>(field1(%[[VALUE_x]])), read<i64>(field1(%[[VALUE_y]]))));
-// DEFAULT-NEXT:         return copy<@type[[TYPE_S]], reason=return>(read<@type[[TYPE_S]]>(%[[VALUE_z]]));
+// DEFAULT-NEXT:         return copy<@type[[TYPE_S]], reason=return>(read<@type[[TYPE_S]]>(%[[VALUE_z]]) [c="S"]) [c="S"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_S]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_S]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_S]] [storage=automatic] [c="S"];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_S]] [storage=automatic] [c="S"];
 // DEFAULT-NEXT:         write<i64>(field1(%[[VALUE_a]]), const<i64>(32));
 // DEFAULT-NEXT:         write<i64>(field1(%[[VALUE_b]]), const<i64>(4));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(field1(temporary %[[VALUE0:[0-9]+]] = call<@type[[TYPE_S]], signature=fn(@type[[TYPE_S]], @type[[TYPE_S]]) -> @type[[TYPE_S]], abi=sysv64(native_c, native_c) -> native_c>(%[[VALUE_foo]], copy<@type[[TYPE_S]], reason=arg>(read<@type[[TYPE_S]]>(%[[VALUE_a]])), copy<@type[[TYPE_S]], reason=arg>(read<@type[[TYPE_S]]>(%[[VALUE_b]]))))), const<i64>(8))

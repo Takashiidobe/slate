@@ -95,7 +95,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = const<i32>(2);
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%[[VALUE_a]]) [c="IP"] [c="IP"];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
@@ -116,9 +116,9 @@ int main(void) {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]])), read<i32>(deref(read<ptr<i32>>(%[[VALUE_p]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_pt:[0-9]+]] pt: ptr<@type[[TYPE1]]> [storage=automatic] = null<ptr<@type[[TYPE1]]>>;
-// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE1]] [storage=automatic] = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<i32>(0));
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%[[VALUE_f]]), read<i32>(field0(%[[VALUE_E2]]))), read<i32>(field0(%[[VALUE_g2]]))), read<i32>(field0(%[[VALUE_g]]))), read<i32>(field0(%[[VALUE_s]]))), read<i32>(field0(%[[VALUE_t]]))), from_bool<i32, reason=promotion>(ne<ptr<@type[[TYPE1]]>>(read<ptr<@type[[TYPE1]]>>(%[[VALUE_pt]]), null<ptr<@type[[TYPE1]]>>)))), enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e1]]))), enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e2]]))), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(ne<ptr<fn() -> @type[[TYPE_F]]>>(read<ptr<fn() -> @type[[TYPE_F]]>>(%[[VALUE_fp]]), null<ptr<fn() -> @type[[TYPE_F]]>>)))), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_b1]]))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4))));
+// DEFAULT-NEXT:         let %[[VALUE_pt:[0-9]+]] pt: ptr<@type[[TYPE1]]> [storage=automatic] = null<ptr<@type[[TYPE1]]>> [c="PT"] [c="PT"];
+// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE1]] [storage=automatic] = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<i32>(0)) [c="T"];
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%[[VALUE_f]]), read<i32>(field0(%[[VALUE_E2]]))), read<i32>(field0(%[[VALUE_g2]]))), read<i32>(field0(%[[VALUE_g]]))), read<i32>(field0(%[[VALUE_s]]))), read<i32>(field0(%[[VALUE_t]]))), from_bool<i32, reason=promotion>(ne<ptr<@type[[TYPE1]]>>(read<ptr<@type[[TYPE1]]>>(%[[VALUE_pt]]) [c="PT"], null<ptr<@type[[TYPE1]]>> [c="PT"])))), enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e1]]))), enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e2]]))), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(ne<ptr<fn() -> @type[[TYPE_F]]>>(read<ptr<fn() -> @type[[TYPE_F]]>>(%[[VALUE_fp]]), null<ptr<fn() -> @type[[TYPE_F]]>>)))), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_b1]]))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

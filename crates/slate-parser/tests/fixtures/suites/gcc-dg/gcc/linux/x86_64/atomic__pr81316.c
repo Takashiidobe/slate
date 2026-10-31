@@ -67,7 +67,7 @@ int main(int argc)
 // DEFAULT-NEXT:     type @type[[TYPE_pthread_attr_t_2:[0-9]+]] pthread_attr_t = @type[[TYPE_pthread_attr_t]];
 // DEFAULT-NEXT:     global %[[VALUE_sem1:[0-9]+]] sem1: atomic i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_sched_yield:[0-9]+]] @sched_yield() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_pthread_create:[0-9]+]] @pthread_create(%[[VALUE___newthread:[0-9]+]] __newthread: ptr<u64> [restrict], %[[VALUE___attr:[0-9]+]] __attr: ptr<const @type[[TYPE_pthread_attr_t]]> [restrict], %[[VALUE___start_routine:[0-9]+]] __start_routine: ptr<fn(ptr<void>) -> ptr<void>>, %[[VALUE___arg:[0-9]+]] __arg: ptr<void> [restrict]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_pthread_create:[0-9]+]] @pthread_create(%[[VALUE___newthread:[0-9]+]] __newthread: ptr<u64> [restrict] [c="pthread_t *restrict"], %[[VALUE___attr:[0-9]+]] __attr: ptr<const @type[[TYPE_pthread_attr_t]]> [restrict] [c="const pthread_attr_t *restrict"], %[[VALUE___start_routine:[0-9]+]] __start_routine: ptr<fn(ptr<void>) -> ptr<void>>, %[[VALUE___arg:[0-9]+]] __arg: ptr<void> [restrict]) -> i32 [linkage=external] [c="int(pthread_t *restrict, const pthread_attr_t *restrict, void *(*)(void *), void *restrict)"];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_va:[0-9]+]] va: ptr<void>) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<ptr<void>> [storage=automatic] = pointer_cast<ptr<ptr<void>>, reason=assign>(read<ptr<void>>(%[[VALUE_va]]));
@@ -77,8 +77,8 @@ int main(int argc)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<void> [storage=automatic] = null<ptr<void>>;
-// DEFAULT-NEXT:         let %[[VALUE_thr:[0-9]+]] thr: u64 [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<u64>, ptr<const @type[[TYPE_pthread_attr_t]]>, ptr<fn(ptr<void>) -> ptr<void>>, ptr<void>) -> i32>(%[[VALUE_pthread_create]], addr_of<ptr<u64>>(%[[VALUE_thr]]), null<ptr<const @type[[TYPE_pthread_attr_t]]>>, function_decay<ptr<fn(ptr<void>) -> ptr<void>>>(%[[VALUE_f]]), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<ptr<void>>>(%[[VALUE_p_2]]))), const<i32>(0))
+// DEFAULT-NEXT:         let %[[VALUE_thr:[0-9]+]] thr: u64 [storage=automatic] [c="pthread_t"];
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<u64>, ptr<const @type[[TYPE_pthread_attr_t]]>, ptr<fn(ptr<void>) -> ptr<void>>, ptr<void>) -> i32>(%[[VALUE_pthread_create]], addr_of<ptr<u64>>(%[[VALUE_thr]]) [c="pthread_t *"], null<ptr<const @type[[TYPE_pthread_attr_t]]>> [c="const pthread_attr_t *"], function_decay<ptr<fn(ptr<void>) -> ptr<void>>>(%[[VALUE_f]]), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<ptr<void>>>(%[[VALUE_p_2]]))), const<i32>(0))
 // DEFAULT-NEXT:             return const<i32>(2);
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p_2]], pointer_cast<ptr<void>, reason=assign>(addr_of<ptr<ptr<void>>>(%[[VALUE_p_2]])));
 // DEFAULT-NEXT:         write<i32, atomic=release>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_sem1]])), const<i32>(1));

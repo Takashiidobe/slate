@@ -57,7 +57,7 @@ int main()
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: @type[[TYPE_foo_2]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_foo]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_foo]] [storage=automatic] [c="typeof(*(1 ? &x : &y))"];
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=8..9, bits=0..3>(%[[VALUE_a]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(8)));
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=8..9, bits=0..3>(%[[VALUE_a]]))), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

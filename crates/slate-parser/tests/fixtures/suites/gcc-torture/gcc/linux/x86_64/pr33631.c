@@ -46,7 +46,7 @@ int main() {
 // DEFAULT-NEXT:     type @type[[TYPE_pthread_mutex_t:[0-9]+]] pthread_mutex_t = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i32;
-// DEFAULT-NEXT:         field1 m: @type[[TYPE0]];
+// DEFAULT-NEXT:         field1 m: @type[[TYPE0]] [c="pthread_mutex_t"];
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

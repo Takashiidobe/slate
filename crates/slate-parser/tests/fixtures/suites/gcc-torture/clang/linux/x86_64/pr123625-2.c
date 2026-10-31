@@ -58,28 +58,28 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_v16di:[0-9]+]] v16di = vector<i64, 16>;
-// DEFAULT-NEXT:     global %[[VALUE_g0:[0-9]+]] g0: vector<i64, 16> [storage=static] = aggregate<vector<i64, 16>, zero_fill=true>(index0 = widen<i64, reason=assign>(const<i32>(1))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_g1:[0-9]+]] g1: vector<i64, 16> [storage=static] = aggregate<vector<i64, 16>, zero_fill=true>(index0 = widen<i64, reason=assign>(const<i32>(5))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_g2:[0-9]+]] g2: vector<i64, 16> [storage=static] = aggregate<vector<i64, 16>, zero_fill=true>(index0 = widen<i64, reason=assign>(const<i32>(3))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_g3:[0-9]+]] g3: vector<i64, 16> [storage=static] = aggregate<vector<i64, 16>, zero_fill=true>(index0 = widen<i64, reason=assign>(const<i32>(7))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_g0:[0-9]+]] g0: vector<i64, 16> [storage=static] = aggregate<vector<i64, 16>, zero_fill=true>(index0 = widen<i64, reason=assign>(const<i32>(1))) [linkage=external] [c="v16di"];
+// DEFAULT-NEXT:     global %[[VALUE_g1:[0-9]+]] g1: vector<i64, 16> [storage=static] = aggregate<vector<i64, 16>, zero_fill=true>(index0 = widen<i64, reason=assign>(const<i32>(5))) [linkage=external] [c="v16di"];
+// DEFAULT-NEXT:     global %[[VALUE_g2:[0-9]+]] g2: vector<i64, 16> [storage=static] = aggregate<vector<i64, 16>, zero_fill=true>(index0 = widen<i64, reason=assign>(const<i32>(3))) [linkage=external] [c="v16di"];
+// DEFAULT-NEXT:     global %[[VALUE_g3:[0-9]+]] g3: vector<i64, 16> [storage=static] = aggregate<vector<i64, 16>, zero_fill=true>(index0 = widen<i64, reason=assign>(const<i32>(7))) [linkage=external] [c="v16di"];
 // DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: volatile i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: volatile i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: vector<i64, 16> [storage=automatic] = read<vector<i64, 16>>(%[[VALUE_g0]]);
-// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: vector<i64, 16> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: vector<i64, 16> [storage=automatic] = read<vector<i64, 16>>(%[[VALUE_g0]]) [c="v16di"] [c="v16di"];
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: vector<i64, 16> [storage=automatic] [c="v16di"];
 // DEFAULT-NEXT:         if ne<i32>(read<i32, volatile>(%[[VALUE_p]]), const<i32>(0))
-// DEFAULT-NEXT:             write<vector<i64, 16>>(%[[VALUE_a]], read<vector<i64, 16>>(%[[VALUE_b]]));
+// DEFAULT-NEXT:             write<vector<i64, 16>>(%[[VALUE_a]], read<vector<i64, 16>>(%[[VALUE_b]]) [c="v16di"]) [c="v16di"];
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<vector<i64, 16>>(%[[VALUE_a]], read<vector<i64, 16>>(%[[VALUE_g1]]));
-// DEFAULT-NEXT:         write<vector<i64, 16>>(%[[VALUE_g1]], read<vector<i64, 16>>(%[[VALUE_a]]));
-// DEFAULT-NEXT:         write<vector<i64, 16>>(%[[VALUE_b]], read<vector<i64, 16>>(%[[VALUE_g2]]));
-// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: vector<i64, 16> [storage=automatic];
+// DEFAULT-NEXT:             write<vector<i64, 16>>(%[[VALUE_a]], read<vector<i64, 16>>(%[[VALUE_g1]]) [c="v16di"]) [c="v16di"];
+// DEFAULT-NEXT:         write<vector<i64, 16>>(%[[VALUE_g1]], read<vector<i64, 16>>(%[[VALUE_a]]) [c="v16di"]) [c="v16di"];
+// DEFAULT-NEXT:         write<vector<i64, 16>>(%[[VALUE_b]], read<vector<i64, 16>>(%[[VALUE_g2]]) [c="v16di"]) [c="v16di"];
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: vector<i64, 16> [storage=automatic] [c="v16di"];
 // DEFAULT-NEXT:         if ne<i32>(read<i32, volatile>(%[[VALUE_q]]), const<i32>(0))
-// DEFAULT-NEXT:             write<vector<i64, 16>>(%[[VALUE_c]], read<vector<i64, 16>>(%[[VALUE_b]]));
+// DEFAULT-NEXT:             write<vector<i64, 16>>(%[[VALUE_c]], read<vector<i64, 16>>(%[[VALUE_b]]) [c="v16di"]) [c="v16di"];
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<vector<i64, 16>>(%[[VALUE_c]], read<vector<i64, 16>>(%[[VALUE_g3]]));
-// DEFAULT-NEXT:         write<vector<i64, 16>>(%[[VALUE_g3]], read<vector<i64, 16>>(%[[VALUE_c]]));
+// DEFAULT-NEXT:             write<vector<i64, 16>>(%[[VALUE_c]], read<vector<i64, 16>>(%[[VALUE_g3]]) [c="v16di"]) [c="v16di"];
+// DEFAULT-NEXT:         write<vector<i64, 16>>(%[[VALUE_g3]], read<vector<i64, 16>>(%[[VALUE_c]]) [c="v16di"]) [c="v16di"];
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i64>(read<i64>(lane(%[[VALUE_g1]], const<i32>(0))), widen<i64, reason=usual_arith>(const<i32>(5))), ne<i64>(read<i64>(lane(%[[VALUE_g1]], const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(0)))), ne<i64>(read<i64>(lane(%[[VALUE_g3]], const<i32>(0))), widen<i64, reason=usual_arith>(const<i32>(7)))), ne<i64>(read<i64>(lane(%[[VALUE_g3]], const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

@@ -78,16 +78,16 @@ fn4 ()
 // DEFAULT-NEXT:     type @type[[TYPE_dt_interpolation:[0-9]+]] dt_interpolation = struct {
 // DEFAULT-NEXT:         field0 width: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: vector<f32, 4> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: vector<f32, 4> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: vector<f32, 4> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: vector<f32, 4> [storage=static] [linkage=external] [c="__m128"];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: vector<f32, 4> [storage=static] [linkage=external] [c="__m128"];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: vector<f32, 4> [storage=static] [linkage=external] [c="__m128"];
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: @type[[TYPE_dt_interpolation]] [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1(%[[VALUE_p1:[0-9]+]] p1: f32) -> vector<f32, 4> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<vector<f32, 4>>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=true>(index0 = read<f32>(%[[VALUE_p1]])));
+// DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1(%[[VALUE_p1:[0-9]+]] p1: f32) -> vector<f32, 4> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] [c="__m128(float)"] {
+// DEFAULT-NEXT:         return read<vector<f32, 4>>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=true>(index0 = read<f32>(%[[VALUE_p1]]))) [c="__m128"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fn2:[0-9]+]] @fn2(%[[VALUE_p1_2:[0-9]+]] p1: f32) -> vector<f32, 4> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<vector<f32, 4>, signature=fn(f32) -> vector<f32, 4>, abi=sysv64(scalar) -> direct>(%[[VALUE_fn1]], read<f32>(%[[VALUE_p1_2]]));
+// DEFAULT-NEXT:     fn %[[VALUE_fn2:[0-9]+]] @fn2(%[[VALUE_p1_2:[0-9]+]] p1: f32) -> vector<f32, 4> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] [c="__m128(float)"] {
+// DEFAULT-NEXT:         return call<vector<f32, 4>, signature=fn(f32) -> vector<f32, 4>, abi=sysv64(scalar) -> direct>(%[[VALUE_fn1]], read<f32>(%[[VALUE_p1_2]])) [c="__m128"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn3:[0-9]+]] @fn3(%[[VALUE_p1_3:[0-9]+]] p1: ptr<@type[[TYPE_dt_interpolation]]>, %[[VALUE_p2:[0-9]+]] p2: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
@@ -100,11 +100,11 @@ fn4 ()
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_p2]])), read<i32>(%[[VALUE_n]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn4:[0-9]+]] @fn4() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: vector<f32, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: vector<f32, 4> [storage=automatic] [c="__m128"];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_dt_interpolation]]>, ptr<i32>) -> void>(%[[VALUE_fn3]], addr_of<ptr<@type[[TYPE_dt_interpolation]]>>(%[[VALUE_c]]), addr_of<ptr<i32>>(%[[VALUE_b]]));
-// DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: vector<f32, 4> [storage=automatic] = call<vector<f32, 4>, signature=fn(f32) -> vector<f32, 4>, abi=sysv64(scalar) -> direct>(%[[VALUE_fn2]], div<f32, rounding=nearest_even, exceptions=observable, contract=fast>(const<f32>(1.0), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE_b]]))));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_e]], read<vector<f32, 4>>(compound_literal %[[VALUE4:[0-9]+]] [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=true>()));
-// DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: vector<f32, 4> [storage=automatic] = read<vector<f32, 4>>(%[[VALUE_e]]);
+// DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: vector<f32, 4> [storage=automatic] = call<vector<f32, 4>, signature=fn(f32) -> vector<f32, 4>, abi=sysv64(scalar) -> direct>(%[[VALUE_fn2]], div<f32, rounding=nearest_even, exceptions=observable, contract=fast>(const<f32>(1.0), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE_b]])))) [c="__m128"] [c="__m128"];
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_e]], read<vector<f32, 4>>(compound_literal %[[VALUE4:[0-9]+]] [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=true>()) [c="__m128"]) [c="__m128"];
+// DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: vector<f32, 4> [storage=automatic] = read<vector<f32, 4>>(%[[VALUE_e]]) [c="__m128"] [c="__m128"];
 // DEFAULT-NEXT:         for %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
@@ -122,10 +122,10 @@ fn4 ()
 // DEFAULT-NEXT:                         condition: ne<i32>(read<i32>(field0(%[[VALUE_c]])), const<i32>(0))
 // DEFAULT-NEXT:                         increment: omitted
 // DEFAULT-NEXT:                         body:
-// DEFAULT-NEXT:                             write<vector<f32, 4>>(%[[VALUE_f]], read<vector<f32, 4>>(%[[VALUE_a]]));
-// DEFAULT-NEXT:                     write<vector<f32, 4>>(%[[VALUE_h]], read<vector<f32, 4>>(%[[VALUE_f]]));
+// DEFAULT-NEXT:                             write<vector<f32, 4>>(%[[VALUE_f]], read<vector<f32, 4>>(%[[VALUE_a]]) [c="__m128"]) [c="__m128"];
+// DEFAULT-NEXT:                     write<vector<f32, 4>>(%[[VALUE_h]], read<vector<f32, 4>>(%[[VALUE_f]]) [c="__m128"]) [c="__m128"];
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_d]], mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%[[VALUE_h]]), read<vector<f32, 4>>(%[[VALUE_g]])));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_d]], mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%[[VALUE_h]]) [c="__m128"], read<vector<f32, 4>>(%[[VALUE_g]]) [c="__m128"]) [c="__m128"]) [c="__m128"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

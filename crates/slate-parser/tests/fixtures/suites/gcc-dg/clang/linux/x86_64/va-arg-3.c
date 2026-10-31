@@ -40,8 +40,8 @@ void bar (va_list *args)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE0:[0-9]+]] <unnamed>: ptr<i8>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_args:[0-9]+]] args: ptr<va_list>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<ptr<va_list>>(read<ptr<va_list>>(%[[VALUE_args]]), null<ptr<va_list>>)
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_args:[0-9]+]] args: ptr<va_list> [c="va_list *"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(va_list *)"] {
+// DEFAULT-NEXT:         if ne<ptr<va_list>>(read<ptr<va_list>>(%[[VALUE_args]]) [c="va_list *"], null<ptr<va_list>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_s:[0-9]+]] s: ptr<i8> [storage=automatic] = va_arg<ptr<i8>>(deref(read<ptr<va_list>>(%[[VALUE_args]])));
 // DEFAULT-NEXT:                 call<void, signature=fn(ptr<i8>) -> void>(%[[VALUE_baz]], read<ptr<i8>>(%[[VALUE_s]]));

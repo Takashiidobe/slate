@@ -225,33 +225,33 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_lastc]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_size:[0-9]+]] size: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_a0:[0-9]+]] a0: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a1:[0-9]+]] a1: @type[[TYPE1]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a2:[0-9]+]] a2: @type[[TYPE2]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a3:[0-9]+]] a3: @type[[TYPE3]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a4:[0-9]+]] a4: @type[[TYPE4]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a5:[0-9]+]] a5: @type[[TYPE5]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a6:[0-9]+]] a6: @type[[TYPE6]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a7:[0-9]+]] a7: @type[[TYPE7]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a8:[0-9]+]] a8: @type[[TYPE8]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a9:[0-9]+]] a9: @type[[TYPE9]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a10:[0-9]+]] a10: @type[[TYPE10]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a11:[0-9]+]] a11: @type[[TYPE11]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a12:[0-9]+]] a12: @type[[TYPE12]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a13:[0-9]+]] a13: @type[[TYPE13]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a14:[0-9]+]] a14: @type[[TYPE14]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a15:[0-9]+]] a15: @type[[TYPE15]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a16:[0-9]+]] a16: @type[[TYPE16]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a31:[0-9]+]] a31: @type[[TYPE17]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a32:[0-9]+]] a32: @type[[TYPE18]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a35:[0-9]+]] a35: @type[[TYPE19]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a72:[0-9]+]] a72: @type[[TYPE20]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_a0:[0-9]+]] a0: @type[[TYPE0]] [storage=automatic] [c="A0"];
+// DEFAULT-NEXT:         let %[[VALUE_a1:[0-9]+]] a1: @type[[TYPE1]] [storage=automatic] [c="A1"];
+// DEFAULT-NEXT:         let %[[VALUE_a2:[0-9]+]] a2: @type[[TYPE2]] [storage=automatic] [c="A2"];
+// DEFAULT-NEXT:         let %[[VALUE_a3:[0-9]+]] a3: @type[[TYPE3]] [storage=automatic] [c="A3"];
+// DEFAULT-NEXT:         let %[[VALUE_a4:[0-9]+]] a4: @type[[TYPE4]] [storage=automatic] [c="A4"];
+// DEFAULT-NEXT:         let %[[VALUE_a5:[0-9]+]] a5: @type[[TYPE5]] [storage=automatic] [c="A5"];
+// DEFAULT-NEXT:         let %[[VALUE_a6:[0-9]+]] a6: @type[[TYPE6]] [storage=automatic] [c="A6"];
+// DEFAULT-NEXT:         let %[[VALUE_a7:[0-9]+]] a7: @type[[TYPE7]] [storage=automatic] [c="A7"];
+// DEFAULT-NEXT:         let %[[VALUE_a8:[0-9]+]] a8: @type[[TYPE8]] [storage=automatic] [c="A8"];
+// DEFAULT-NEXT:         let %[[VALUE_a9:[0-9]+]] a9: @type[[TYPE9]] [storage=automatic] [c="A9"];
+// DEFAULT-NEXT:         let %[[VALUE_a10:[0-9]+]] a10: @type[[TYPE10]] [storage=automatic] [c="A10"];
+// DEFAULT-NEXT:         let %[[VALUE_a11:[0-9]+]] a11: @type[[TYPE11]] [storage=automatic] [c="A11"];
+// DEFAULT-NEXT:         let %[[VALUE_a12:[0-9]+]] a12: @type[[TYPE12]] [storage=automatic] [c="A12"];
+// DEFAULT-NEXT:         let %[[VALUE_a13:[0-9]+]] a13: @type[[TYPE13]] [storage=automatic] [c="A13"];
+// DEFAULT-NEXT:         let %[[VALUE_a14:[0-9]+]] a14: @type[[TYPE14]] [storage=automatic] [c="A14"];
+// DEFAULT-NEXT:         let %[[VALUE_a15:[0-9]+]] a15: @type[[TYPE15]] [storage=automatic] [c="A15"];
+// DEFAULT-NEXT:         let %[[VALUE_a16:[0-9]+]] a16: @type[[TYPE16]] [storage=automatic] [c="A16"];
+// DEFAULT-NEXT:         let %[[VALUE_a31:[0-9]+]] a31: @type[[TYPE17]] [storage=automatic] [c="A31"];
+// DEFAULT-NEXT:         let %[[VALUE_a32:[0-9]+]] a32: @type[[TYPE18]] [storage=automatic] [c="A32"];
+// DEFAULT-NEXT:         let %[[VALUE_a35:[0-9]+]] a35: @type[[TYPE19]] [storage=automatic] [c="A35"];
+// DEFAULT-NEXT:         let %[[VALUE_a72:[0-9]+]] a72: @type[[TYPE20]] [storage=automatic] [c="A72"];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_size]]), const<i32>(21))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
-// DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_a0]], copy<@type[[TYPE0]], reason=assign>(va_arg<@type[[TYPE0]], regs=[]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_a0]], copy<@type[[TYPE0]], reason=assign>(va_arg<@type[[TYPE0]], regs=[]>(%[[VALUE_ap]]) [c="typeof(a0)"]) [c="A0"]) [c="A0"];
 // DEFAULT-NEXT:         for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -264,7 +264,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(0), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(0)>(field0(%[[VALUE_a0]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE1]]>(%[[VALUE_a1]], copy<@type[[TYPE1]], reason=assign>(va_arg<@type[[TYPE1]], regs=[int]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE1]]>(%[[VALUE_a1]], copy<@type[[TYPE1]], reason=assign>(va_arg<@type[[TYPE1]], regs=[int]>(%[[VALUE_ap]]) [c="typeof(a1)"]) [c="A1"]) [c="A1"];
 // DEFAULT-NEXT:         for %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -277,7 +277,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(1), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1)>(field0(%[[VALUE_a1]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE2]]>(%[[VALUE_a2]], copy<@type[[TYPE2]], reason=assign>(va_arg<@type[[TYPE2]], regs=[int]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE2]]>(%[[VALUE_a2]], copy<@type[[TYPE2]], reason=assign>(va_arg<@type[[TYPE2]], regs=[int]>(%[[VALUE_ap]]) [c="typeof(a2)"]) [c="A2"]) [c="A2"];
 // DEFAULT-NEXT:         for %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -290,7 +290,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(2), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(2)>(field0(%[[VALUE_a2]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE3]]>(%[[VALUE_a3]], copy<@type[[TYPE3]], reason=assign>(va_arg<@type[[TYPE3]], regs=[int]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE3]]>(%[[VALUE_a3]], copy<@type[[TYPE3]], reason=assign>(va_arg<@type[[TYPE3]], regs=[int]>(%[[VALUE_ap]]) [c="typeof(a3)"]) [c="A3"]) [c="A3"];
 // DEFAULT-NEXT:         for %[[VALUE12:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -303,7 +303,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(3), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(field0(%[[VALUE_a3]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE4]]>(%[[VALUE_a4]], copy<@type[[TYPE4]], reason=assign>(va_arg<@type[[TYPE4]], regs=[int]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE4]]>(%[[VALUE_a4]], copy<@type[[TYPE4]], reason=assign>(va_arg<@type[[TYPE4]], regs=[int]>(%[[VALUE_ap]]) [c="typeof(a4)"]) [c="A4"]) [c="A4"];
 // DEFAULT-NEXT:         for %[[VALUE15:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -316,7 +316,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(4), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(field0(%[[VALUE_a4]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE5]]>(%[[VALUE_a5]], copy<@type[[TYPE5]], reason=assign>(va_arg<@type[[TYPE5]], regs=[int]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE5]]>(%[[VALUE_a5]], copy<@type[[TYPE5]], reason=assign>(va_arg<@type[[TYPE5]], regs=[int]>(%[[VALUE_ap]]) [c="typeof(a5)"]) [c="A5"]) [c="A5"];
 // DEFAULT-NEXT:         for %[[VALUE18:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -329,7 +329,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(5), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(5)>(field0(%[[VALUE_a5]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE6]]>(%[[VALUE_a6]], copy<@type[[TYPE6]], reason=assign>(va_arg<@type[[TYPE6]], regs=[int]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE6]]>(%[[VALUE_a6]], copy<@type[[TYPE6]], reason=assign>(va_arg<@type[[TYPE6]], regs=[int]>(%[[VALUE_ap]]) [c="typeof(a6)"]) [c="A6"]) [c="A6"];
 // DEFAULT-NEXT:         for %[[VALUE21:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -342,7 +342,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(6), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(6)>(field0(%[[VALUE_a6]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE7]]>(%[[VALUE_a7]], copy<@type[[TYPE7]], reason=assign>(va_arg<@type[[TYPE7]], regs=[int]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE7]]>(%[[VALUE_a7]], copy<@type[[TYPE7]], reason=assign>(va_arg<@type[[TYPE7]], regs=[int]>(%[[VALUE_ap]]) [c="typeof(a7)"]) [c="A7"]) [c="A7"];
 // DEFAULT-NEXT:         for %[[VALUE24:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -355,7 +355,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(7), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(7)>(field0(%[[VALUE_a7]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE8]]>(%[[VALUE_a8]], copy<@type[[TYPE8]], reason=assign>(va_arg<@type[[TYPE8]], regs=[int]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE8]]>(%[[VALUE_a8]], copy<@type[[TYPE8]], reason=assign>(va_arg<@type[[TYPE8]], regs=[int]>(%[[VALUE_ap]]) [c="typeof(a8)"]) [c="A8"]) [c="A8"];
 // DEFAULT-NEXT:         for %[[VALUE27:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -368,7 +368,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(8), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(8)>(field0(%[[VALUE_a8]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE9]]>(%[[VALUE_a9]], copy<@type[[TYPE9]], reason=assign>(va_arg<@type[[TYPE9]], regs=[int, int]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE9]]>(%[[VALUE_a9]], copy<@type[[TYPE9]], reason=assign>(va_arg<@type[[TYPE9]], regs=[int, int]>(%[[VALUE_ap]]) [c="typeof(a9)"]) [c="A9"]) [c="A9"];
 // DEFAULT-NEXT:         for %[[VALUE30:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -381,7 +381,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(9), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(9)>(field0(%[[VALUE_a9]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE10]]>(%[[VALUE_a10]], copy<@type[[TYPE10]], reason=assign>(va_arg<@type[[TYPE10]], regs=[int, int]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE10]]>(%[[VALUE_a10]], copy<@type[[TYPE10]], reason=assign>(va_arg<@type[[TYPE10]], regs=[int, int]>(%[[VALUE_ap]]) [c="typeof(a10)"]) [c="A10"]) [c="A10"];
 // DEFAULT-NEXT:         for %[[VALUE33:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -394,7 +394,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(10), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(10)>(field0(%[[VALUE_a10]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE11]]>(%[[VALUE_a11]], copy<@type[[TYPE11]], reason=assign>(va_arg<@type[[TYPE11]], regs=[int, int]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE11]]>(%[[VALUE_a11]], copy<@type[[TYPE11]], reason=assign>(va_arg<@type[[TYPE11]], regs=[int, int]>(%[[VALUE_ap]]) [c="typeof(a11)"]) [c="A11"]) [c="A11"];
 // DEFAULT-NEXT:         for %[[VALUE36:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -407,7 +407,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(11), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(11)>(field0(%[[VALUE_a11]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE12]]>(%[[VALUE_a12]], copy<@type[[TYPE12]], reason=assign>(va_arg<@type[[TYPE12]], regs=[int, int]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE12]]>(%[[VALUE_a12]], copy<@type[[TYPE12]], reason=assign>(va_arg<@type[[TYPE12]], regs=[int, int]>(%[[VALUE_ap]]) [c="typeof(a12)"]) [c="A12"]) [c="A12"];
 // DEFAULT-NEXT:         for %[[VALUE39:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -420,7 +420,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(12), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(12)>(field0(%[[VALUE_a12]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE13]]>(%[[VALUE_a13]], copy<@type[[TYPE13]], reason=assign>(va_arg<@type[[TYPE13]], regs=[int, int]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE13]]>(%[[VALUE_a13]], copy<@type[[TYPE13]], reason=assign>(va_arg<@type[[TYPE13]], regs=[int, int]>(%[[VALUE_ap]]) [c="typeof(a13)"]) [c="A13"]) [c="A13"];
 // DEFAULT-NEXT:         for %[[VALUE42:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -433,7 +433,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(13), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(13)>(field0(%[[VALUE_a13]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE14]]>(%[[VALUE_a14]], copy<@type[[TYPE14]], reason=assign>(va_arg<@type[[TYPE14]], regs=[int, int]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE14]]>(%[[VALUE_a14]], copy<@type[[TYPE14]], reason=assign>(va_arg<@type[[TYPE14]], regs=[int, int]>(%[[VALUE_ap]]) [c="typeof(a14)"]) [c="A14"]) [c="A14"];
 // DEFAULT-NEXT:         for %[[VALUE45:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -446,7 +446,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(14), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(14)>(field0(%[[VALUE_a14]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE15]]>(%[[VALUE_a15]], copy<@type[[TYPE15]], reason=assign>(va_arg<@type[[TYPE15]], regs=[int, int]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE15]]>(%[[VALUE_a15]], copy<@type[[TYPE15]], reason=assign>(va_arg<@type[[TYPE15]], regs=[int, int]>(%[[VALUE_ap]]) [c="typeof(a15)"]) [c="A15"]) [c="A15"];
 // DEFAULT-NEXT:         for %[[VALUE48:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -459,7 +459,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(15), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(15)>(field0(%[[VALUE_a15]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE16]]>(%[[VALUE_a16]], copy<@type[[TYPE16]], reason=assign>(va_arg<@type[[TYPE16]], regs=[int, int]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE16]]>(%[[VALUE_a16]], copy<@type[[TYPE16]], reason=assign>(va_arg<@type[[TYPE16]], regs=[int, int]>(%[[VALUE_ap]]) [c="typeof(a16)"]) [c="A16"]) [c="A16"];
 // DEFAULT-NEXT:         for %[[VALUE51:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -472,7 +472,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(16), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(16)>(field0(%[[VALUE_a16]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE17]]>(%[[VALUE_a31]], copy<@type[[TYPE17]], reason=assign>(va_arg<@type[[TYPE17]], memory>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE17]]>(%[[VALUE_a31]], copy<@type[[TYPE17]], reason=assign>(va_arg<@type[[TYPE17]], memory>(%[[VALUE_ap]]) [c="typeof(a31)"]) [c="A31"]) [c="A31"];
 // DEFAULT-NEXT:         for %[[VALUE54:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -485,7 +485,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(31), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_a31]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE18]]>(%[[VALUE_a32]], copy<@type[[TYPE18]], reason=assign>(va_arg<@type[[TYPE18]], memory>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE18]]>(%[[VALUE_a32]], copy<@type[[TYPE18]], reason=assign>(va_arg<@type[[TYPE18]], memory>(%[[VALUE_ap]]) [c="typeof(a32)"]) [c="A32"]) [c="A32"];
 // DEFAULT-NEXT:         for %[[VALUE57:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -498,7 +498,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(32), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(32)>(field0(%[[VALUE_a32]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE19]]>(%[[VALUE_a35]], copy<@type[[TYPE19]], reason=assign>(va_arg<@type[[TYPE19]], memory>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE19]]>(%[[VALUE_a35]], copy<@type[[TYPE19]], reason=assign>(va_arg<@type[[TYPE19]], memory>(%[[VALUE_ap]]) [c="typeof(a35)"]) [c="A35"]) [c="A35"];
 // DEFAULT-NEXT:         for %[[VALUE60:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -511,7 +511,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(35), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(35)>(field0(%[[VALUE_a35]])), read<i32>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:         write<@type[[TYPE20]]>(%[[VALUE_a72]], copy<@type[[TYPE20]], reason=assign>(va_arg<@type[[TYPE20]], memory>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<@type[[TYPE20]]>(%[[VALUE_a72]], copy<@type[[TYPE20]], reason=assign>(va_arg<@type[[TYPE20]], memory>(%[[VALUE_ap]]) [c="typeof(a72)"]) [c="A72"]) [c="A72"];
 // DEFAULT-NEXT:         for %[[VALUE63:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -527,27 +527,27 @@ int main(void) {
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_a0_2:[0-9]+]] a0: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a1_2:[0-9]+]] a1: @type[[TYPE1]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a2_2:[0-9]+]] a2: @type[[TYPE2]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a3_2:[0-9]+]] a3: @type[[TYPE3]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a4_2:[0-9]+]] a4: @type[[TYPE4]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a5_2:[0-9]+]] a5: @type[[TYPE5]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a6_2:[0-9]+]] a6: @type[[TYPE6]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a7_2:[0-9]+]] a7: @type[[TYPE7]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a8_2:[0-9]+]] a8: @type[[TYPE8]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a9_2:[0-9]+]] a9: @type[[TYPE9]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a10_2:[0-9]+]] a10: @type[[TYPE10]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a11_2:[0-9]+]] a11: @type[[TYPE11]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a12_2:[0-9]+]] a12: @type[[TYPE12]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a13_2:[0-9]+]] a13: @type[[TYPE13]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a14_2:[0-9]+]] a14: @type[[TYPE14]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a15_2:[0-9]+]] a15: @type[[TYPE15]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a16_2:[0-9]+]] a16: @type[[TYPE16]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a31_2:[0-9]+]] a31: @type[[TYPE17]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a32_2:[0-9]+]] a32: @type[[TYPE18]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a35_2:[0-9]+]] a35: @type[[TYPE19]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a72_2:[0-9]+]] a72: @type[[TYPE20]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_a0_2:[0-9]+]] a0: @type[[TYPE0]] [storage=automatic] [c="A0"];
+// DEFAULT-NEXT:         let %[[VALUE_a1_2:[0-9]+]] a1: @type[[TYPE1]] [storage=automatic] [c="A1"];
+// DEFAULT-NEXT:         let %[[VALUE_a2_2:[0-9]+]] a2: @type[[TYPE2]] [storage=automatic] [c="A2"];
+// DEFAULT-NEXT:         let %[[VALUE_a3_2:[0-9]+]] a3: @type[[TYPE3]] [storage=automatic] [c="A3"];
+// DEFAULT-NEXT:         let %[[VALUE_a4_2:[0-9]+]] a4: @type[[TYPE4]] [storage=automatic] [c="A4"];
+// DEFAULT-NEXT:         let %[[VALUE_a5_2:[0-9]+]] a5: @type[[TYPE5]] [storage=automatic] [c="A5"];
+// DEFAULT-NEXT:         let %[[VALUE_a6_2:[0-9]+]] a6: @type[[TYPE6]] [storage=automatic] [c="A6"];
+// DEFAULT-NEXT:         let %[[VALUE_a7_2:[0-9]+]] a7: @type[[TYPE7]] [storage=automatic] [c="A7"];
+// DEFAULT-NEXT:         let %[[VALUE_a8_2:[0-9]+]] a8: @type[[TYPE8]] [storage=automatic] [c="A8"];
+// DEFAULT-NEXT:         let %[[VALUE_a9_2:[0-9]+]] a9: @type[[TYPE9]] [storage=automatic] [c="A9"];
+// DEFAULT-NEXT:         let %[[VALUE_a10_2:[0-9]+]] a10: @type[[TYPE10]] [storage=automatic] [c="A10"];
+// DEFAULT-NEXT:         let %[[VALUE_a11_2:[0-9]+]] a11: @type[[TYPE11]] [storage=automatic] [c="A11"];
+// DEFAULT-NEXT:         let %[[VALUE_a12_2:[0-9]+]] a12: @type[[TYPE12]] [storage=automatic] [c="A12"];
+// DEFAULT-NEXT:         let %[[VALUE_a13_2:[0-9]+]] a13: @type[[TYPE13]] [storage=automatic] [c="A13"];
+// DEFAULT-NEXT:         let %[[VALUE_a14_2:[0-9]+]] a14: @type[[TYPE14]] [storage=automatic] [c="A14"];
+// DEFAULT-NEXT:         let %[[VALUE_a15_2:[0-9]+]] a15: @type[[TYPE15]] [storage=automatic] [c="A15"];
+// DEFAULT-NEXT:         let %[[VALUE_a16_2:[0-9]+]] a16: @type[[TYPE16]] [storage=automatic] [c="A16"];
+// DEFAULT-NEXT:         let %[[VALUE_a31_2:[0-9]+]] a31: @type[[TYPE17]] [storage=automatic] [c="A31"];
+// DEFAULT-NEXT:         let %[[VALUE_a32_2:[0-9]+]] a32: @type[[TYPE18]] [storage=automatic] [c="A32"];
+// DEFAULT-NEXT:         let %[[VALUE_a35_2:[0-9]+]] a35: @type[[TYPE19]] [storage=automatic] [c="A35"];
+// DEFAULT-NEXT:         let %[[VALUE_a72_2:[0-9]+]] a72: @type[[TYPE20]] [storage=automatic] [c="A72"];
 // DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE66:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -801,7 +801,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(72)>(field0(%[[VALUE_a72_2]])), read<i32>(%[[VALUE_i_2]]))), truncate<i8, reason=assign, fits=unknown>(xor<i32>(read<i32>(%[[VALUE_i_2]]), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(72), const<i32>(3)))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c) -> void>(%[[VALUE_foo]], const<i32>(21), copy<@type[[TYPE0]], reason=vararg>(read<@type[[TYPE0]]>(%[[VALUE_a0_2]])), copy<@type[[TYPE1]], reason=vararg>(read<@type[[TYPE1]]>(%[[VALUE_a1_2]])), copy<@type[[TYPE2]], reason=vararg>(read<@type[[TYPE2]]>(%[[VALUE_a2_2]])), copy<@type[[TYPE3]], reason=vararg>(read<@type[[TYPE3]]>(%[[VALUE_a3_2]])), copy<@type[[TYPE4]], reason=vararg>(read<@type[[TYPE4]]>(%[[VALUE_a4_2]])), copy<@type[[TYPE5]], reason=vararg>(read<@type[[TYPE5]]>(%[[VALUE_a5_2]])), copy<@type[[TYPE6]], reason=vararg>(read<@type[[TYPE6]]>(%[[VALUE_a6_2]])), copy<@type[[TYPE7]], reason=vararg>(read<@type[[TYPE7]]>(%[[VALUE_a7_2]])), copy<@type[[TYPE8]], reason=vararg>(read<@type[[TYPE8]]>(%[[VALUE_a8_2]])), copy<@type[[TYPE9]], reason=vararg>(read<@type[[TYPE9]]>(%[[VALUE_a9_2]])), copy<@type[[TYPE10]], reason=vararg>(read<@type[[TYPE10]]>(%[[VALUE_a10_2]])), copy<@type[[TYPE11]], reason=vararg>(read<@type[[TYPE11]]>(%[[VALUE_a11_2]])), copy<@type[[TYPE12]], reason=vararg>(read<@type[[TYPE12]]>(%[[VALUE_a12_2]])), copy<@type[[TYPE13]], reason=vararg>(read<@type[[TYPE13]]>(%[[VALUE_a13_2]])), copy<@type[[TYPE14]], reason=vararg>(read<@type[[TYPE14]]>(%[[VALUE_a14_2]])), copy<@type[[TYPE15]], reason=vararg>(read<@type[[TYPE15]]>(%[[VALUE_a15_2]])), copy<@type[[TYPE16]], reason=vararg>(read<@type[[TYPE16]]>(%[[VALUE_a16_2]])), copy<@type[[TYPE17]], reason=vararg>(read<@type[[TYPE17]]>(%[[VALUE_a31_2]])), copy<@type[[TYPE18]], reason=vararg>(read<@type[[TYPE18]]>(%[[VALUE_a32_2]])), copy<@type[[TYPE19]], reason=vararg>(read<@type[[TYPE19]]>(%[[VALUE_a35_2]])), copy<@type[[TYPE20]], reason=vararg>(read<@type[[TYPE20]]>(%[[VALUE_a72_2]])));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c) -> void>(%[[VALUE_foo]], const<i32>(21), copy<@type[[TYPE0]], reason=vararg>(read<@type[[TYPE0]]>(%[[VALUE_a0_2]]) [c="A0"]) [c="A0"], copy<@type[[TYPE1]], reason=vararg>(read<@type[[TYPE1]]>(%[[VALUE_a1_2]]) [c="A1"]) [c="A1"], copy<@type[[TYPE2]], reason=vararg>(read<@type[[TYPE2]]>(%[[VALUE_a2_2]]) [c="A2"]) [c="A2"], copy<@type[[TYPE3]], reason=vararg>(read<@type[[TYPE3]]>(%[[VALUE_a3_2]]) [c="A3"]) [c="A3"], copy<@type[[TYPE4]], reason=vararg>(read<@type[[TYPE4]]>(%[[VALUE_a4_2]]) [c="A4"]) [c="A4"], copy<@type[[TYPE5]], reason=vararg>(read<@type[[TYPE5]]>(%[[VALUE_a5_2]]) [c="A5"]) [c="A5"], copy<@type[[TYPE6]], reason=vararg>(read<@type[[TYPE6]]>(%[[VALUE_a6_2]]) [c="A6"]) [c="A6"], copy<@type[[TYPE7]], reason=vararg>(read<@type[[TYPE7]]>(%[[VALUE_a7_2]]) [c="A7"]) [c="A7"], copy<@type[[TYPE8]], reason=vararg>(read<@type[[TYPE8]]>(%[[VALUE_a8_2]]) [c="A8"]) [c="A8"], copy<@type[[TYPE9]], reason=vararg>(read<@type[[TYPE9]]>(%[[VALUE_a9_2]]) [c="A9"]) [c="A9"], copy<@type[[TYPE10]], reason=vararg>(read<@type[[TYPE10]]>(%[[VALUE_a10_2]]) [c="A10"]) [c="A10"], copy<@type[[TYPE11]], reason=vararg>(read<@type[[TYPE11]]>(%[[VALUE_a11_2]]) [c="A11"]) [c="A11"], copy<@type[[TYPE12]], reason=vararg>(read<@type[[TYPE12]]>(%[[VALUE_a12_2]]) [c="A12"]) [c="A12"], copy<@type[[TYPE13]], reason=vararg>(read<@type[[TYPE13]]>(%[[VALUE_a13_2]]) [c="A13"]) [c="A13"], copy<@type[[TYPE14]], reason=vararg>(read<@type[[TYPE14]]>(%[[VALUE_a14_2]]) [c="A14"]) [c="A14"], copy<@type[[TYPE15]], reason=vararg>(read<@type[[TYPE15]]>(%[[VALUE_a15_2]]) [c="A15"]) [c="A15"], copy<@type[[TYPE16]], reason=vararg>(read<@type[[TYPE16]]>(%[[VALUE_a16_2]]) [c="A16"]) [c="A16"], copy<@type[[TYPE17]], reason=vararg>(read<@type[[TYPE17]]>(%[[VALUE_a31_2]]) [c="A31"]) [c="A31"], copy<@type[[TYPE18]], reason=vararg>(read<@type[[TYPE18]]>(%[[VALUE_a32_2]]) [c="A32"]) [c="A32"], copy<@type[[TYPE19]], reason=vararg>(read<@type[[TYPE19]]>(%[[VALUE_a35_2]]) [c="A35"]) [c="A35"], copy<@type[[TYPE20]], reason=vararg>(read<@type[[TYPE20]]>(%[[VALUE_a72_2]]) [c="A72"]) [c="A72"]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

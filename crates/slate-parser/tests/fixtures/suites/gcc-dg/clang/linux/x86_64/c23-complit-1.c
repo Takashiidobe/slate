@@ -64,12 +64,12 @@ main (void)
 // DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: ptr<i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_a:[0-9]+]] a: ptr<i32> [array=*]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_a:[0-9]+]] a: ptr<i32> [array=*]) -> void [linkage=external] [c="void(int[*])"];
 // DEFAULT-NEXT:     fn %[[VALUE_fp:[0-9]+]] @fp(%[[VALUE_p:[0-9]+]] p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_q]], read<ptr<i32>>(%[[VALUE_p]]));
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_a_2:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: ptr<i32> [array=%[[VALUE1:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_a_2:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: ptr<i32> [array=%[[VALUE1:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] [c="void(int, int[*])"] {
 // DEFAULT-NEXT:         let %[[VALUE1]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(call<i32, signature=fn(ptr<i32>) -> i32>(%[[VALUE_fp]], array_decay<ptr<i32>, length=Some(2)>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = aggregate<array<i32, 2>, zero_fill=false>(index0 = read<i32>(%[[VALUE_a_2]]), index1 = add<i32, overflow=ub>(read<i32>(%[[VALUE_a_2]]), const<i32>(2)))))));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_q]]), const<i32>(0)))), read<i32>(%[[VALUE_a_2]])), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_q]]), const<i32>(1)))), add<i32, overflow=ub>(read<i32>(%[[VALUE_a_2]]), const<i32>(2))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

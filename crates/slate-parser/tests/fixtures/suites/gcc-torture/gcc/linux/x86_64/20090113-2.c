@@ -173,10 +173,10 @@ int main() {
 // DEFAULT-NEXT:     type @type[[TYPE_obstack:[0-9]+]] obstack = struct {
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
 // DEFAULT-NEXT:     type @type[[TYPE_bitmap_head_def:[0-9]+]] bitmap_head_def = struct {
-// DEFAULT-NEXT:         field0 first: ptr<@type[[TYPE_bitmap_element_def:[0-9]+]]>;
-// DEFAULT-NEXT:         field1 current: ptr<@type[[TYPE_bitmap_element_def]]>;
+// DEFAULT-NEXT:         field0 first: ptr<@type[[TYPE_bitmap_element_def:[0-9]+]]> [c="bitmap_element *"];
+// DEFAULT-NEXT:         field1 current: ptr<@type[[TYPE_bitmap_element_def]]> [c="bitmap_element *"];
 // DEFAULT-NEXT:         field2 indx: u32;
-// DEFAULT-NEXT:         field3 obstack: ptr<@type[[TYPE_bitmap_obstack:[0-9]+]]>;
+// DEFAULT-NEXT:         field3 obstack: ptr<@type[[TYPE_bitmap_obstack:[0-9]+]]> [c="bitmap_obstack *"];
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 8, 16, 24]];
 // DEFAULT-NEXT:     type @type[[TYPE_bitmap:[0-9]+]] bitmap = ptr<@type[[TYPE_bitmap_head_def]]>;
 // DEFAULT-NEXT:     type @type[[TYPE_const_bitmap:[0-9]+]] const_bitmap = ptr<const @type[[TYPE_bitmap_head_def]]>;
@@ -190,64 +190,64 @@ int main() {
 // DEFAULT-NEXT:         field0 next: ptr<@type[[TYPE_bitmap_element_def]]>;
 // DEFAULT-NEXT:         field1 prev: ptr<@type[[TYPE_bitmap_element_def]]>;
 // DEFAULT-NEXT:         field2 indx: u32;
-// DEFAULT-NEXT:         field3 bits: array<u64, 2>;
+// DEFAULT-NEXT:         field3 bits: array<u64, 2> [c="BITMAP_WORD[2]"];
 // DEFAULT-NEXT:     } [size=40, align=8, offsets=[0, 8, 16, 24]];
 // DEFAULT-NEXT:     type @type[[TYPE_bitmap_obstack_2:[0-9]+]] bitmap_obstack = @type[[TYPE_bitmap_obstack]];
 // DEFAULT-NEXT:     type @type[[TYPE_bitmap_element:[0-9]+]] bitmap_element = @type[[TYPE_bitmap_element_def]];
 // DEFAULT-NEXT:     type @type[[TYPE_bitmap_descriptor:[0-9]+]] bitmap_descriptor = struct incomplete;
 // DEFAULT-NEXT:     type @type[[TYPE_bitmap_head:[0-9]+]] bitmap_head = @type[[TYPE_bitmap_head_def]];
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
-// DEFAULT-NEXT:         field0 elt1: ptr<@type[[TYPE_bitmap_element_def]]>;
-// DEFAULT-NEXT:         field1 elt2: ptr<@type[[TYPE_bitmap_element_def]]>;
+// DEFAULT-NEXT:         field0 elt1: ptr<@type[[TYPE_bitmap_element_def]]> [c="bitmap_element *"];
+// DEFAULT-NEXT:         field1 elt2: ptr<@type[[TYPE_bitmap_element_def]]> [c="bitmap_element *"];
 // DEFAULT-NEXT:         field2 word_no: u32;
-// DEFAULT-NEXT:         field3 bits: u64;
+// DEFAULT-NEXT:         field3 bits: u64 [c="BITMAP_WORD"];
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 8, 16, 24]];
 // DEFAULT-NEXT:     type @type[[TYPE_bitmap_iterator:[0-9]+]] bitmap_iterator = @type[[TYPE0]];
-// DEFAULT-NEXT:     global %[[VALUE_bitmap_zero_bits:[0-9]+]] bitmap_zero_bits: @type[[TYPE_bitmap_element_def]] [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_bmp_iter_set_init:[0-9]+]] @bmp_iter_set_init(%[[VALUE_bi:[0-9]+]] bi: ptr<@type[[TYPE0]]>, %[[VALUE_map:[0-9]+]] map: ptr<const @type[[TYPE_bitmap_head_def]]>, %[[VALUE_start_bit:[0-9]+]] start_bit: u32, %[[VALUE_bit_no:[0-9]+]] bit_no: ptr<u32>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))), read<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<const @type[[TYPE_bitmap_head_def]]>>(%[[VALUE_map]])))));
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE_bitmap_element_def]]>>(field1(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))), null<ptr<@type[[TYPE_bitmap_element_def]]>>);
+// DEFAULT-NEXT:     global %[[VALUE_bitmap_zero_bits:[0-9]+]] bitmap_zero_bits: @type[[TYPE_bitmap_element_def]] [storage=static] [linkage=external] [c="bitmap_element"];
+// DEFAULT-NEXT:     fn %[[VALUE_bmp_iter_set_init:[0-9]+]] @bmp_iter_set_init(%[[VALUE_bi:[0-9]+]] bi: ptr<@type[[TYPE0]]> [c="bitmap_iterator *"], %[[VALUE_map:[0-9]+]] map: ptr<const @type[[TYPE_bitmap_head_def]]> [c="const_bitmap"], %[[VALUE_start_bit:[0-9]+]] start_bit: u32, %[[VALUE_bit_no:[0-9]+]] bit_no: ptr<u32>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] [c="void(bitmap_iterator *, const_bitmap, unsigned int, unsigned int *)"] {
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))), read<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<const @type[[TYPE_bitmap_head_def]]>>(%[[VALUE_map]])))) [c="bitmap_element *"]) [c="bitmap_element *"];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_bitmap_element_def]]>>(field1(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))), null<ptr<@type[[TYPE_bitmap_element_def]]>> [c="bitmap_element *"]) [c="bitmap_element *"];
 // DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<i32>(const<i32>(1), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<@type[[TYPE_bitmap_element_def]]>>(read<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]])))), null<ptr<@type[[TYPE_bitmap_element_def]]>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<@type[[TYPE_bitmap_element_def]]>>(read<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]])))) [c="bitmap_element *"], null<ptr<@type[[TYPE_bitmap_element_def]]>>))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         write<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))), addr_of<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_bitmap_zero_bits]]));
+// DEFAULT-NEXT:                         write<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))), addr_of<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_bitmap_zero_bits]]) [c="bitmap_element *"]) [c="bitmap_element *"];
 // DEFAULT-NEXT:                         break %[[VALUE0]];
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 if ge<u32>(read<u32>(field2(deref(read<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))))))), div<u32, by_zero=ub>(read<u32>(%[[VALUE_start_bit]]), mul<u32, overflow=wrap>(div<u32, by_zero=ub>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(128)), mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8))), const<u32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8))), const<u32>(1))), mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8))), const<u32>(1)))))
 // DEFAULT-NEXT:                     break %[[VALUE0]];
-// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))), read<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))))))));
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))), read<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))))))) [c="bitmap_element *"]) [c="bitmap_element *"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(field2(deref(read<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))))))), div<u32, by_zero=ub>(read<u32>(%[[VALUE_start_bit]]), mul<u32, overflow=wrap>(div<u32, by_zero=ub>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(128)), mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8))), const<u32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8))), const<u32>(1))), mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8))), const<u32>(1)))))
 // DEFAULT-NEXT:             write<u32>(%[[VALUE_start_bit]], mul<u32, overflow=wrap>(read<u32>(field2(deref(read<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))))))), mul<u32, overflow=wrap>(div<u32, by_zero=ub>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(128)), mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8))), const<u32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8))), const<u32>(1))), mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8))), const<u32>(1)))));
 // DEFAULT-NEXT:         write<u32>(field2(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))), rem<u32, by_zero=ub>(div<u32, by_zero=ub>(read<u32>(%[[VALUE_start_bit]]), mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8))), const<u32>(1))), div<u32, by_zero=ub>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(128)), mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8))), const<u32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8))), const<u32>(1)))));
-// DEFAULT-NEXT:         write<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))), read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(2)>(field3(deref(read<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))))))), read<u32>(field2(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))))))));
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<@type[[TYPE0]]> [synthetic] = read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]);
-// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = read<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE1]]))));
-// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u64 [synthetic] = shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE2]]), rem<u32, by_zero=ub>(read<u32>(%[[VALUE_start_bit]]), mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8))), const<u32>(1))));
-// DEFAULT-NEXT:         write<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE1]]))), read<u64>(%[[VALUE3]]));
+// DEFAULT-NEXT:         write<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))), read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(2)>(field3(deref(read<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))))))), read<u32>(field2(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]))))))) [c="BITMAP_WORD"]) [c="BITMAP_WORD"];
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<@type[[TYPE0]]> [synthetic] = read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]]) [c="bitmap_iterator *"] [c="bitmap_iterator *"];
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = read<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE1]])))) [c="BITMAP_WORD"] [c="BITMAP_WORD"];
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u64 [synthetic] = shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE2]]) [c="BITMAP_WORD"], rem<u32, by_zero=ub>(read<u32>(%[[VALUE_start_bit]]), mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8))), const<u32>(1)))) [c="BITMAP_WORD"] [c="BITMAP_WORD"];
+// DEFAULT-NEXT:         write<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE1]]))), read<u64>(%[[VALUE3]]) [c="BITMAP_WORD"]) [c="BITMAP_WORD"] [c="BITMAP_WORD"];
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_start_bit]]);
-// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE4]]), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(not<bool>(ne<u64>(read<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]])))), const<u64>(0))))));
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE4]]), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(not<bool>(ne<u64>(read<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi]])))) [c="BITMAP_WORD"], const<u64>(0))))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_start_bit]], read<u32>(%[[VALUE5]]));
 // DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%[[VALUE_bit_no]])), read<u32>(%[[VALUE_start_bit]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_bmp_iter_next:[0-9]+]] @bmp_iter_next(%[[VALUE_bi_2:[0-9]+]] bi: ptr<@type[[TYPE0]]>, %[[VALUE_bit_no_2:[0-9]+]] bit_no: ptr<u32>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: ptr<@type[[TYPE0]]> [synthetic] = read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_2]]);
-// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: u64 [synthetic] = read<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE6]]))));
-// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: u64 [synthetic] = shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE7]]), const<i32>(1));
-// DEFAULT-NEXT:         write<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE6]]))), read<u64>(%[[VALUE8]]));
+// DEFAULT-NEXT:     fn %[[VALUE_bmp_iter_next:[0-9]+]] @bmp_iter_next(%[[VALUE_bi_2:[0-9]+]] bi: ptr<@type[[TYPE0]]> [c="bitmap_iterator *"], %[[VALUE_bit_no_2:[0-9]+]] bit_no: ptr<u32>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] [c="void(bitmap_iterator *, unsigned int *)"] {
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: ptr<@type[[TYPE0]]> [synthetic] = read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_2]]) [c="bitmap_iterator *"] [c="bitmap_iterator *"];
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: u64 [synthetic] = read<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE6]])))) [c="BITMAP_WORD"] [c="BITMAP_WORD"];
+// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: u64 [synthetic] = shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE7]]) [c="BITMAP_WORD"], const<i32>(1)) [c="BITMAP_WORD"] [c="BITMAP_WORD"];
+// DEFAULT-NEXT:         write<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE6]]))), read<u64>(%[[VALUE8]]) [c="BITMAP_WORD"]) [c="BITMAP_WORD"] [c="BITMAP_WORD"];
 // DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: ptr<u32> [synthetic] = read<ptr<u32>>(%[[VALUE_bit_no_2]]);
 // DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: u32 [synthetic] = read<u32>(deref(read<ptr<u32>>(%[[VALUE9]])));
 // DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE10]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%[[VALUE9]])), read<u32>(%[[VALUE11]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_bmp_iter_set_tail:[0-9]+]] @bmp_iter_set_tail(%[[VALUE_bi_3:[0-9]+]] bi: ptr<@type[[TYPE0]]>, %[[VALUE_bit_no_3:[0-9]+]] bit_no: ptr<u32>) -> u8 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         while %[[VALUE12:[0-9]+]] not<bool>(ne<u64>(and<u64>(read<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_3]])))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))), const<u64>(0)))
+// DEFAULT-NEXT:     fn %[[VALUE_bmp_iter_set_tail:[0-9]+]] @bmp_iter_set_tail(%[[VALUE_bi_3:[0-9]+]] bi: ptr<@type[[TYPE0]]> [c="bitmap_iterator *"], %[[VALUE_bit_no_3:[0-9]+]] bit_no: ptr<u32>) -> u8 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="unsigned char(bitmap_iterator *, unsigned int *)"] {
+// DEFAULT-NEXT:         while %[[VALUE12:[0-9]+]] not<bool>(ne<u64>(and<u64>(read<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_3]])))) [c="BITMAP_WORD"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="BITMAP_WORD"]) [c="BITMAP_WORD"], const<u64>(0)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE13:[0-9]+]]: ptr<@type[[TYPE0]]> [synthetic] = read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_3]]);
-// DEFAULT-NEXT:                 let %[[VALUE14:[0-9]+]]: u64 [synthetic] = read<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE13]]))));
-// DEFAULT-NEXT:                 let %[[VALUE15:[0-9]+]]: u64 [synthetic] = shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE14]]), const<i32>(1));
-// DEFAULT-NEXT:                 write<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE13]]))), read<u64>(%[[VALUE15]]));
+// DEFAULT-NEXT:                 let %[[VALUE13:[0-9]+]]: ptr<@type[[TYPE0]]> [synthetic] = read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_3]]) [c="bitmap_iterator *"] [c="bitmap_iterator *"];
+// DEFAULT-NEXT:                 let %[[VALUE14:[0-9]+]]: u64 [synthetic] = read<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE13]])))) [c="BITMAP_WORD"] [c="BITMAP_WORD"];
+// DEFAULT-NEXT:                 let %[[VALUE15:[0-9]+]]: u64 [synthetic] = shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE14]]) [c="BITMAP_WORD"], const<i32>(1)) [c="BITMAP_WORD"] [c="BITMAP_WORD"];
+// DEFAULT-NEXT:                 write<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE13]]))), read<u64>(%[[VALUE15]]) [c="BITMAP_WORD"]) [c="BITMAP_WORD"] [c="BITMAP_WORD"];
 // DEFAULT-NEXT:                 let %[[VALUE16:[0-9]+]]: ptr<u32> [synthetic] = read<ptr<u32>>(%[[VALUE_bit_no_3]]);
 // DEFAULT-NEXT:                 let %[[VALUE17:[0-9]+]]: u32 [synthetic] = read<u32>(deref(read<ptr<u32>>(%[[VALUE16]])));
 // DEFAULT-NEXT:                 let %[[VALUE18:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE17]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
@@ -255,17 +255,17 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return reinterpret<u8, reason=return, fits=unknown>(truncate<i8, reason=return, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_bmp_iter_set:[0-9]+]] @bmp_iter_set(%[[VALUE_bi_4:[0-9]+]] bi: ptr<@type[[TYPE0]]>, %[[VALUE_bit_no_4:[0-9]+]] bit_no: ptr<u32>) -> u8 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_bmp_iter_set:[0-9]+]] @bmp_iter_set(%[[VALUE_bi_4:[0-9]+]] bi: ptr<@type[[TYPE0]]> [c="bitmap_iterator *"], %[[VALUE_bit_no_4:[0-9]+]] bit_no: ptr<u32>) -> u8 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] [c="unsigned char(bitmap_iterator *, unsigned int *)"] {
 // DEFAULT-NEXT:         let %[[VALUE_bno:[0-9]+]] bno: u32 [storage=automatic] = read<u32>(deref(read<ptr<u32>>(%[[VALUE_bit_no_4]])));
-// DEFAULT-NEXT:         let %[[VALUE_bits:[0-9]+]] bits: u64 [storage=automatic] = read<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]]))));
-// DEFAULT-NEXT:         let %[[VALUE_elt1:[0-9]+]] elt1: ptr<@type[[TYPE_bitmap_element_def]]> [storage=automatic];
-// DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_bits]]), const<u64>(0))
+// DEFAULT-NEXT:         let %[[VALUE_bits:[0-9]+]] bits: u64 [storage=automatic] = read<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]])))) [c="BITMAP_WORD"] [c="BITMAP_WORD"];
+// DEFAULT-NEXT:         let %[[VALUE_elt1:[0-9]+]] elt1: ptr<@type[[TYPE_bitmap_element_def]]> [storage=automatic] [c="bitmap_element *"];
+// DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_bits]]) [c="BITMAP_WORD"], const<u64>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 while %[[VALUE19:[0-9]+]] not<bool>(ne<u64>(and<u64>(read<u64>(%[[VALUE_bits]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))), const<u64>(0)))
+// DEFAULT-NEXT:                 while %[[VALUE19:[0-9]+]] not<bool>(ne<u64>(and<u64>(read<u64>(%[[VALUE_bits]]) [c="BITMAP_WORD"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="BITMAP_WORD"]) [c="BITMAP_WORD"], const<u64>(0)))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %[[VALUE20:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_bits]]);
-// DEFAULT-NEXT:                         let %[[VALUE21:[0-9]+]]: u64 [synthetic] = shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE20]]), const<i32>(1));
-// DEFAULT-NEXT:                         write<u64>(%[[VALUE_bits]], read<u64>(%[[VALUE21]]));
+// DEFAULT-NEXT:                         let %[[VALUE20:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_bits]]) [c="BITMAP_WORD"] [c="BITMAP_WORD"];
+// DEFAULT-NEXT:                         let %[[VALUE21:[0-9]+]]: u64 [synthetic] = shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE20]]) [c="BITMAP_WORD"], const<i32>(1)) [c="BITMAP_WORD"] [c="BITMAP_WORD"];
+// DEFAULT-NEXT:                         write<u64>(%[[VALUE_bits]], read<u64>(%[[VALUE21]]) [c="BITMAP_WORD"]) [c="BITMAP_WORD"] [c="BITMAP_WORD"];
 // DEFAULT-NEXT:                         let %[[VALUE22:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_bno]]);
 // DEFAULT-NEXT:                         let %[[VALUE23:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE22]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:                         write<u32>(%[[VALUE_bno]], read<u32>(%[[VALUE23]]));
@@ -274,34 +274,34 @@ int main() {
 // DEFAULT-NEXT:                 return reinterpret<u8, reason=return, fits=unknown>(truncate<i8, reason=return, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%[[VALUE_bit_no_4]])), mul<u32, overflow=wrap>(div<u32, by_zero=ub>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_bno]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(64))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(64))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(64))));
-// DEFAULT-NEXT:         let %[[VALUE24:[0-9]+]]: ptr<@type[[TYPE0]]> [synthetic] = read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]]);
+// DEFAULT-NEXT:         let %[[VALUE24:[0-9]+]]: ptr<@type[[TYPE0]]> [synthetic] = read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]]) [c="bitmap_iterator *"] [c="bitmap_iterator *"];
 // DEFAULT-NEXT:         let %[[VALUE25:[0-9]+]]: u32 [synthetic] = read<u32>(field2(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE24]]))));
 // DEFAULT-NEXT:         let %[[VALUE26:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE25]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         write<u32>(field2(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE24]]))), read<u32>(%[[VALUE26]]));
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elt1]], read<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]])))));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elt1]], read<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]])))) [c="bitmap_element *"]) [c="bitmap_element *"];
 // DEFAULT-NEXT:         while %[[VALUE27:[0-9]+]] ne<i32>(const<i32>(1), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 while %[[VALUE28:[0-9]+]] ne<u32>(read<u32>(field2(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]])))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         write<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]]))), read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(2)>(field3(deref(read<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elt1]])))), read<u32>(field2(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]]))))))));
-// DEFAULT-NEXT:                         if ne<u64>(read<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]])))), const<u64>(0))
+// DEFAULT-NEXT:                         write<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]]))), read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(2)>(field3(deref(read<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elt1]])))), read<u32>(field2(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]]))))))) [c="BITMAP_WORD"]) [c="BITMAP_WORD"];
+// DEFAULT-NEXT:                         if ne<u64>(read<u64>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]])))) [c="BITMAP_WORD"], const<u64>(0))
 // DEFAULT-NEXT:                             {
-// DEFAULT-NEXT:                                 write<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]]))), read<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elt1]]));
-// DEFAULT-NEXT:                                 return call<u8, signature=fn(ptr<@type[[TYPE0]]>, ptr<u32>) -> u8>(%[[VALUE_bmp_iter_set_tail]], read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]]), read<ptr<u32>>(%[[VALUE_bit_no_4]]));
+// DEFAULT-NEXT:                                 write<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]]))), read<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elt1]]) [c="bitmap_element *"]) [c="bitmap_element *"];
+// DEFAULT-NEXT:                                 return call<u8, signature=fn(ptr<@type[[TYPE0]]>, ptr<u32>) -> u8>(%[[VALUE_bmp_iter_set_tail]], read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]]) [c="bitmap_iterator *"], read<ptr<u32>>(%[[VALUE_bit_no_4]]));
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                         let %[[VALUE29:[0-9]+]]: ptr<u32> [synthetic] = read<ptr<u32>>(%[[VALUE_bit_no_4]]);
 // DEFAULT-NEXT:                         let %[[VALUE30:[0-9]+]]: u32 [synthetic] = read<u32>(deref(read<ptr<u32>>(%[[VALUE29]])));
 // DEFAULT-NEXT:                         let %[[VALUE31:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE30]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(64)));
 // DEFAULT-NEXT:                         write<u32>(deref(read<ptr<u32>>(%[[VALUE29]])), read<u32>(%[[VALUE31]]));
-// DEFAULT-NEXT:                         let %[[VALUE32:[0-9]+]]: ptr<@type[[TYPE0]]> [synthetic] = read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]]);
+// DEFAULT-NEXT:                         let %[[VALUE32:[0-9]+]]: ptr<@type[[TYPE0]]> [synthetic] = read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]]) [c="bitmap_iterator *"] [c="bitmap_iterator *"];
 // DEFAULT-NEXT:                         let %[[VALUE33:[0-9]+]]: u32 [synthetic] = read<u32>(field2(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE32]]))));
 // DEFAULT-NEXT:                         let %[[VALUE34:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE33]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:                         write<u32>(field2(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE32]]))), read<u32>(%[[VALUE34]]));
 // DEFAULT-NEXT:                     }
-// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elt1]], read<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elt1]])))));
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<@type[[TYPE_bitmap_element_def]]>>(read<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elt1]]), null<ptr<@type[[TYPE_bitmap_element_def]]>>))
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elt1]], read<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elt1]])))) [c="bitmap_element *"]) [c="bitmap_element *"];
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<@type[[TYPE_bitmap_element_def]]>>(read<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elt1]]) [c="bitmap_element *"], null<ptr<@type[[TYPE_bitmap_element_def]]>>))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         write<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]]))), read<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elt1]]));
+// DEFAULT-NEXT:                         write<ptr<@type[[TYPE_bitmap_element_def]]>>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_bi_4]]))), read<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elt1]]) [c="bitmap_element *"]) [c="bitmap_element *"];
 // DEFAULT-NEXT:                         return reinterpret<u8, reason=return, fits=unknown>(truncate<i8, reason=return, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 write<u32>(deref(read<ptr<u32>>(%[[VALUE_bit_no_4]])), mul<u32, overflow=wrap>(read<u32>(field2(deref(read<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elt1]])))), reinterpret<u32, reason=usual_arith, fits=unknown>(mul<i32, overflow=ub>(const<i32>(2), const<i32>(64)))));
@@ -313,24 +313,24 @@ int main() {
 // DEFAULT-NEXT:         if logical_and<bool>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(64)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_foobar:[0-9]+]] @foobar(%[[VALUE_chain:[0-9]+]] chain: ptr<@type[[TYPE_bitmap_head_def]]>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_rsi:[0-9]+]] rsi: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_foobar:[0-9]+]] @foobar(%[[VALUE_chain:[0-9]+]] chain: ptr<@type[[TYPE_bitmap_head_def]]> [c="bitmap_head *"]) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] [c="void(bitmap_head *)"] {
+// DEFAULT-NEXT:         let %[[VALUE_rsi:[0-9]+]] rsi: @type[[TYPE0]] [storage=automatic] [c="bitmap_iterator"];
 // DEFAULT-NEXT:         let %[[VALUE_regno:[0-9]+]] regno: u32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE35:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE0]]>, ptr<const @type[[TYPE_bitmap_head_def]]>, u32, ptr<u32>) -> void>(%[[VALUE_bmp_iter_set_init]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_rsi]]), pointer_cast<ptr<const @type[[TYPE_bitmap_head_def]]>, reason=arg>(read<ptr<@type[[TYPE_bitmap_head_def]]>>(%[[VALUE_chain]])), reinterpret<u32, reason=arg, fits=always>(const<i32>(0)), addr_of<ptr<u32>>(%[[VALUE_regno]]));
-// DEFAULT-NEXT:             condition: ne<u8>(call<u8, signature=fn(ptr<@type[[TYPE0]]>, ptr<u32>) -> u8>(%[[VALUE_bmp_iter_set]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_rsi]]), addr_of<ptr<u32>>(%[[VALUE_regno]])), const<u8>(0))
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE0]]>, ptr<const @type[[TYPE_bitmap_head_def]]>, u32, ptr<u32>) -> void>(%[[VALUE_bmp_iter_set_init]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_rsi]]) [c="bitmap_iterator *"], pointer_cast<ptr<const @type[[TYPE_bitmap_head_def]]>, reason=arg>(read<ptr<@type[[TYPE_bitmap_head_def]]>>(%[[VALUE_chain]]) [c="bitmap_head *"]) [c="const_bitmap"], reinterpret<u32, reason=arg, fits=always>(const<i32>(0)), addr_of<ptr<u32>>(%[[VALUE_regno]]));
+// DEFAULT-NEXT:             condition: ne<u8>(call<u8, signature=fn(ptr<@type[[TYPE0]]>, ptr<u32>) -> u8>(%[[VALUE_bmp_iter_set]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_rsi]]) [c="bitmap_iterator *"], addr_of<ptr<u32>>(%[[VALUE_regno]])), const<u8>(0))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE0]]>, ptr<u32>) -> void>(%[[VALUE_bmp_iter_next]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_rsi]]), addr_of<ptr<u32>>(%[[VALUE_regno]]));
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE0]]>, ptr<u32>) -> void>(%[[VALUE_bmp_iter_next]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_rsi]]) [c="bitmap_iterator *"], addr_of<ptr<u32>>(%[[VALUE_regno]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_catchme]], reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%[[VALUE_regno]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_elem:[0-9]+]] elem: @type[[TYPE_bitmap_element_def]] [storage=automatic] = aggregate<@type[[TYPE_bitmap_element_def]], zero_fill=false>(field0 = null<ptr<@type[[TYPE_bitmap_element_def]]>>, field1 = null<ptr<@type[[TYPE_bitmap_element_def]]>>, field2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), field3 = aggregate<array<u64, 2>, zero_fill=false>(index0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1))), index1 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1)))));
-// DEFAULT-NEXT:         let %[[VALUE_live_throughout:[0-9]+]] live_throughout: @type[[TYPE_bitmap_head_def]] [storage=automatic] = aggregate<@type[[TYPE_bitmap_head_def]], zero_fill=false>(field0 = addr_of<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elem]]), field1 = addr_of<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elem]]), field2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), field3 = null<ptr<@type[[TYPE_bitmap_obstack]]>>);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_bitmap_head_def]]>) -> void>(%[[VALUE_foobar]], addr_of<ptr<@type[[TYPE_bitmap_head_def]]>>(%[[VALUE_live_throughout]]));
+// DEFAULT-NEXT:         let %[[VALUE_elem:[0-9]+]] elem: @type[[TYPE_bitmap_element_def]] [storage=automatic] = aggregate<@type[[TYPE_bitmap_element_def]], zero_fill=false>(field0 = null<ptr<@type[[TYPE_bitmap_element_def]]>>, field1 = null<ptr<@type[[TYPE_bitmap_element_def]]>>, field2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), field3 = aggregate<array<u64, 2>, zero_fill=false>(index0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1))) [c="BITMAP_WORD"], index1 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1))) [c="BITMAP_WORD"])) [c="bitmap_element"];
+// DEFAULT-NEXT:         let %[[VALUE_live_throughout:[0-9]+]] live_throughout: @type[[TYPE_bitmap_head_def]] [storage=automatic] = aggregate<@type[[TYPE_bitmap_head_def]], zero_fill=false>(field0 = addr_of<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elem]]) [c="bitmap_element *"], field1 = addr_of<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elem]]) [c="bitmap_element *"], field2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), field3 = null<ptr<@type[[TYPE_bitmap_obstack]]>> [c="bitmap_obstack *"]) [c="bitmap_head"];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_bitmap_head_def]]>) -> void>(%[[VALUE_foobar]], addr_of<ptr<@type[[TYPE_bitmap_head_def]]>>(%[[VALUE_live_throughout]]) [c="bitmap_head *"]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

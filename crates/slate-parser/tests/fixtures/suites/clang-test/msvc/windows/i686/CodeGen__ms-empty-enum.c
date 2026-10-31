@@ -32,7 +32,7 @@ void empty_enum(A a) {}
 // DEFAULT-NEXT:     type @type[[TYPE_tag1:[0-9]+]] tag1 = enum : u32 {
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = @type[[TYPE_tag1]];
-// DEFAULT-NEXT:     fn %[[VALUE_empty_enum:[0-9]+]] @empty_enum(%[[VALUE_a:[0-9]+]] a: @type[[TYPE_tag1]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_empty_enum:[0-9]+]] @empty_enum(%[[VALUE_a:[0-9]+]] a: @type[[TYPE_tag1]] [c="A"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(A)"] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

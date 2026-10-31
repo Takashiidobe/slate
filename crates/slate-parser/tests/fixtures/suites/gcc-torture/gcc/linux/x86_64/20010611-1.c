@@ -55,8 +55,8 @@ fgetws (buf, n, fp)
 // DEFAULT-NEXT:     type @type[[TYPE___FILE:[0-9]+]] __FILE = @type[[TYPE__IO_FILE]];
 // DEFAULT-NEXT:     type @type[[TYPE__IO_FILE_2:[0-9]+]] _IO_FILE = @type[[TYPE__IO_FILE]];
 // DEFAULT-NEXT:     type @type[[TYPE_wchar_t:[0-9]+]] wchar_t = i64;
-// DEFAULT-NEXT:     fn %[[VALUE_fgetws:[0-9]+]] @fgetws(%[[VALUE_buf:[0-9]+]] buf: ptr<i64>, %[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_fp:[0-9]+]] fp: ptr<@type[[TYPE__IO_FILE]]>) -> ptr<i64> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return null<ptr<i64>>;
+// DEFAULT-NEXT:     fn %[[VALUE_fgetws:[0-9]+]] @fgetws(%[[VALUE_buf:[0-9]+]] buf: ptr<i64> [c="wchar_t *"], %[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_fp:[0-9]+]] fp: ptr<@type[[TYPE__IO_FILE]]> [c="_IO_FILE *"]) -> ptr<i64> [linkage=external] [fallthrough=ub_if_used] [c="wchar_t *(wchar_t *restrict, int, __FILE *restrict)"] {
+// DEFAULT-NEXT:         return null<ptr<i64>> [c="wchar_t *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

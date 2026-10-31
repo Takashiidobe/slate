@@ -81,8 +81,8 @@ extern void hoo(int) __attribute__ ((ifunc("hoo_ifunc")));
 // DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_i_2:[0-9]+]] i: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_i_2]]), const<i32>(2));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_foo_ifunc:[0-9]+]] @foo_ifunc() -> ptr<fn(i32) -> i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return conditional<ptr<fn(i32) -> i32>>(ne<i32>(read<i32, volatile>(%[[VALUE_global]]), const<i32>(0)), function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_f1]]), function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_f2]]));
+// DEFAULT-NEXT:     fn %[[VALUE_foo_ifunc:[0-9]+]] @foo_ifunc() -> ptr<fn(i32) -> i32> [linkage=internal] [fallthrough=ub_if_used] [c="foo_t(void)"] {
+// DEFAULT-NEXT:         return conditional<ptr<fn(i32) -> i32>>(ne<i32>(read<i32, volatile>(%[[VALUE_global]]), const<i32>(0)), function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_f1]]), function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_f2]])) [c="foo_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(1));

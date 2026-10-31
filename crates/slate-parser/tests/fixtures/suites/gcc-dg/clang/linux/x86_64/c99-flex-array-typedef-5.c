@@ -34,7 +34,7 @@ union u { int a; T b; }; /* { dg-error "flexible array member in union" } */
 // DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = array<i8, incomplete>;
 // DEFAULT-NEXT:     type @type[[TYPE_u:[0-9]+]] u = union {
 // DEFAULT-NEXT:         field0 a: i32;
-// DEFAULT-NEXT:         field1 b: array<i8, incomplete>;
+// DEFAULT-NEXT:         field1 b: array<i8, incomplete> [c="T"];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

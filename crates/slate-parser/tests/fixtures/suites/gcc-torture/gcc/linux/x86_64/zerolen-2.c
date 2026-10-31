@@ -45,8 +45,8 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_word:[0-9]+]] word = i64;
 // DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = struct {
-// DEFAULT-NEXT:         field0 x: i64;
-// DEFAULT-NEXT:         field1 y: array<i64, 0>;
+// DEFAULT-NEXT:         field0 x: i64 [c="word"];
+// DEFAULT-NEXT:         field1 y: array<i64, 0> [c="word[0]"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

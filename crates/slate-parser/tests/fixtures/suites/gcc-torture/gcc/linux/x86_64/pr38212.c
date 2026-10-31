@@ -43,7 +43,7 @@ int         main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<i32> [restrict], %[[VALUE_i:[0-9]+]] i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<i32> [restrict], %[[VALUE_i:[0-9]+]] i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="int(int *restrict, int)"] {
 // DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<i32> [storage=automatic] [restrict];
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: ptr<i32> [storage=automatic] [restrict];
 // DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: i32 [storage=automatic];

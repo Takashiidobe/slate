@@ -53,8 +53,8 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_GLint:[0-9]+]] GLint = i64;
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_aglChoosePixelFormat:[0-9]+]] @aglChoosePixelFormat(%[[VALUE_a:[0-9]+]] a: ptr<const i64>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=explicit>(read<ptr<const i64>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:     fn %[[VALUE_aglChoosePixelFormat:[0-9]+]] @aglChoosePixelFormat(%[[VALUE_a:[0-9]+]] a: ptr<const i64> [c="const GLint *"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(const GLint *)"] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=explicit>(read<ptr<const i64>>(%[[VALUE_a]]) [c="const GLint *"]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_b]]), const<i32>(3)))), const<i32>(42))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -68,7 +68,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(32)>(%[[VALUE_list]]), const<i32>(3))), const<i32>(42));
 // DEFAULT-NEXT:                 write<ptr<const i32>>(%[[VALUE_blist]], pointer_cast<ptr<const i32>, reason=assign>(array_decay<ptr<i32>, length=Some(32)>(%[[VALUE_list]])));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i64>) -> void>(%[[VALUE_aglChoosePixelFormat]], pointer_cast<ptr<const i64>, reason=arg>(pointer_cast<ptr<i64>, reason=explicit>(read<ptr<const i32>>(%[[VALUE_blist]]))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i64>) -> void>(%[[VALUE_aglChoosePixelFormat]], pointer_cast<ptr<const i64>, reason=arg>(pointer_cast<ptr<i64>, reason=explicit>(read<ptr<const i32>>(%[[VALUE_blist]])) [c="GLint *"]) [c="const GLint *"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i32>) -> void>(%[[VALUE_find]], null<ptr<const i32>>);

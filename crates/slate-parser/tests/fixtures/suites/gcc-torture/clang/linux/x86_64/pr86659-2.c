@@ -74,7 +74,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_value2:[0-9]+]] value2: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_value3:[0-9]+]] value3: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_flag:[0-9]+]] flag: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_var1:[0-9]+]] var1: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_var1:[0-9]+]] var1: @type[[TYPE0]] [storage=automatic] [c="struct1"];
 // DEFAULT-NEXT:         write<u64>(bitfield0<unit=0, bytes=0..8, bits=0..29>(%[[VALUE_var1]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(23))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_flag]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..29>(%[[VALUE_var1]]))))));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_value1]], conditional<i32>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..29>(%[[VALUE_var1]])))), const<i32>(0)), const<i32>(10), const<i32>(20)));

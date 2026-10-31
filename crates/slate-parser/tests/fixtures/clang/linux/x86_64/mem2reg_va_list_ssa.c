@@ -46,16 +46,16 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
 // DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
-// DEFAULT-NEXT:     type @type[[TYPE_va_list_2:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list_2:[0-9]+]] va_list = va_list [c="__gnuc_va_list"];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_consume:[0-9]+]] @consume(%[[VALUE_arguments:[0-9]+]] arguments: va_list) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
+// DEFAULT-NEXT:     fn %[[VALUE_consume:[0-9]+]] @consume(%[[VALUE_arguments:[0-9]+]] arguments: va_list [c="va_list"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(va_list)"] {
 // DEFAULT-NEXT:         return va_arg<i32>(%[[VALUE_arguments]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_relay:[0-9]+]] @relay(%[[VALUE_count:[0-9]+]] count: i32, ...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_arguments_2:[0-9]+]] arguments: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_arguments_2:[0-9]+]] arguments: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_arguments_2]]);
-// DEFAULT-NEXT:         let %[[VALUE_value:[0-9]+]] value: i32 [storage=automatic] = call<i32, signature=fn(va_list) -> i32>(%[[VALUE_consume]], read<va_list>(%[[VALUE_arguments_2]]));
+// DEFAULT-NEXT:         let %[[VALUE_value:[0-9]+]] value: i32 [storage=automatic] = call<i32, signature=fn(va_list) -> i32>(%[[VALUE_consume]], read<va_list>(%[[VALUE_arguments_2]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_arguments_2]]);
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_value]]);
 // DEFAULT-NEXT:     }

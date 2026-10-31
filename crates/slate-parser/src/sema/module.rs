@@ -56,6 +56,7 @@ fn resolve_module(
         function_target: Vec::new(),
         builtin_declarations: HashMap::new(),
         alias_annotations: HashMap::new(),
+        alias_c_types: HashMap::new(),
         next_id,
         break_targets: Vec::new(),
         continue_targets: Vec::new(),
@@ -155,6 +156,9 @@ fn resolve_module(
         if let Some(entries) = lower.alias_annotations.remove(&definition.id) {
             lower.module.annotate(&span, entries);
         }
+        if let Some(c) = lower.alias_c_types.remove(&definition.id) {
+            lower.types.c_nodes.insert(span.id, c);
+        }
         if let Some(inner) = lower.types.inner_comments.remove(&definition.id) {
             lower
                 .module
@@ -197,6 +201,9 @@ fn resolve_module(
     lower.finish_module(unit).map_err(|error| SemaErrors {
         errors: vec![SemaError::resolve_error(&error.checked(), files)],
     })?;
+    lower.module.c_types.types = lower.types.ctypes;
+    lower.module.c_types.definitions = lower.types.definitions;
+    lower.module.c_types.record_fields = lower.types.record_fields;
     let diagnostics = with_sources(lower.types.diagnostics, files)?;
     Ok((lower.module, diagnostics))
 }
@@ -374,8 +381,13 @@ impl Lowerer {
         self.complete_declaration_abis()?;
         let declared: Vec<_> = self.types.entities.types().collect();
         let access = declared
+            .iter()
+            .map(|(id, c)| (*id, self.types.access_of(*c)))
+            .collect();
+        self.module.c_types.nodes = std::mem::take(&mut self.types.c_nodes);
+        self.module.c_types.bindings = declared
             .into_iter()
-            .map(|(id, c)| (id, self.types.access_of(c)))
+            .chain(self.types.locals.iter().map(|(id, c)| (*id, *c)))
             .collect();
         super::effects_statements::normalize(&mut self.module, self.next_id, access)?;
         super::counted_loops::annotate(&mut self.module);
@@ -450,6 +462,7 @@ impl Lowerer {
         let mut metadata = vec![("c_implicit".into(), "true".into())];
         metadata.extend(self.types.render(resolved).entries());
         self.module.annotate(&function, metadata);
+        self.types.record_c_type(&function, resolved);
         self.declare_function(function)
     }
 
@@ -610,6 +623,7 @@ fn lower_item(
                 fallthrough: Some(fallthrough),
             });
             lower.module.annotate(&lowered, metadata);
+            lower.types.record_c_type(&lowered, resolved);
             lower.declare_function(lowered)?;
         }
     }
@@ -1149,6 +1163,7 @@ impl Lowerer {
                 }));
                 self.module
                     .annotate(&local, self.types.render(resolved).entries());
+                self.types.record_c_type(&local, resolved);
                 prologue.push(local);
                 let slot = parameter.derive(Parameter {
                     id: slot,
@@ -1161,6 +1176,7 @@ impl Lowerer {
                 });
                 self.module
                     .annotate(&slot, self.types.render(promoted).entries());
+                self.types.record_c_type(&slot, promoted);
                 self.module
                     .comments
                     .own_groups(slot.id, &parameter.comments);
@@ -1185,6 +1201,7 @@ impl Lowerer {
                 c_entries.push(metadata);
             }
             self.module.annotate(&lowered, c_entries);
+            self.types.record_c_type(&lowered, resolved);
             self.module
                 .comments
                 .own_groups(lowered.id, &parameter.comments);
@@ -1327,6 +1344,7 @@ impl Lowerer {
                 )?;
                 self.types.owner = owner;
                 self.alias_annotations.insert(alias, c_entries);
+                self.alias_c_types.insert(alias, resolved);
                 continue;
             }
             self.types.owner = owner;
@@ -1422,6 +1440,7 @@ impl Lowerer {
                     fallthrough: None,
                 });
                 self.module.annotate(&lowered, c_entries);
+                self.types.record_c_type(&lowered, resolved);
                 self.redeclared(declarator.id, id)?;
                 self.declare_function(lowered)?;
                 continue;
@@ -1637,11 +1656,13 @@ impl Lowerer {
                     common: false,
                 });
                 self.module.annotate(&global, c_entries);
+                self.types.record_c_type(&global, resolved);
                 self.redeclared(declarator.id, id)?;
                 self.declare_global(global)?;
             } else if storage == StorageDuration::Automatic {
                 let binding = declarator.derive(Statement::Let(variable));
                 self.module.annotate(&binding, c_entries);
+                self.types.record_c_type(&binding, resolved);
                 statements.push(binding);
             } else {
                 let global = declarator.derive(Global {
@@ -1659,6 +1680,7 @@ impl Lowerer {
                     global.value.symbol.clone(),
                 );
                 self.module.annotate(&global, c_entries);
+                self.types.record_c_type(&global, resolved);
                 self.module.globals.push(global);
             }
         }

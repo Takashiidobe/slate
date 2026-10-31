@@ -49,17 +49,17 @@ double ordered_double(v2df v) {
 // IR-NEXT:     type @type[[TYPE_v4si:[0-9]+]] v4si = vector<i32, 4>;
 // IR-NEXT:     type @type[[TYPE_v16qu:[0-9]+]] v16qu = vector<u8, 16>;
 // IR-NEXT:     type @type[[TYPE_v2df:[0-9]+]] v2df = vector<f64, 2>;
-// IR-NEXT:     fn %[[VALUE_integer_reductions:[0-9]+]] @integer_reductions(%[[VALUE_v:[0-9]+]] v: vector<i32, 4>) -> i32 [linkage=external] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(intrinsic<i32, llvm.vector.reduce.add>(read<vector<i32, 4>>(%[[VALUE_v]])), intrinsic<i32, llvm.vector.reduce.mul>(read<vector<i32, 4>>(%[[VALUE_v]]))), intrinsic<i32, llvm.vector.reduce.and>(read<vector<i32, 4>>(%[[VALUE_v]]))), intrinsic<i32, llvm.vector.reduce.or>(read<vector<i32, 4>>(%[[VALUE_v]]))), intrinsic<i32, llvm.vector.reduce.xor>(read<vector<i32, 4>>(%[[VALUE_v]])));
+// IR-NEXT:     fn %[[VALUE_integer_reductions:[0-9]+]] @integer_reductions(%[[VALUE_v:[0-9]+]] v: vector<i32, 4> [c="v4si"]) -> i32 [linkage=external] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] [c="int(v4si)"] {
+// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(intrinsic<i32, llvm.vector.reduce.add>(read<vector<i32, 4>>(%[[VALUE_v]]) [c="v4si"]), intrinsic<i32, llvm.vector.reduce.mul>(read<vector<i32, 4>>(%[[VALUE_v]]) [c="v4si"])), intrinsic<i32, llvm.vector.reduce.and>(read<vector<i32, 4>>(%[[VALUE_v]]) [c="v4si"])), intrinsic<i32, llvm.vector.reduce.or>(read<vector<i32, 4>>(%[[VALUE_v]]) [c="v4si"])), intrinsic<i32, llvm.vector.reduce.xor>(read<vector<i32, 4>>(%[[VALUE_v]]) [c="v4si"]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_byte_sum:[0-9]+]] @byte_sum(%[[VALUE_v_2:[0-9]+]] v: vector<u8, 16>) -> u8 [linkage=external] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] {
-// IR-NEXT:         return intrinsic<u8, llvm.vector.reduce.add>(read<vector<u8, 16>>(%[[VALUE_v_2]]));
+// IR-NEXT:     fn %[[VALUE_byte_sum:[0-9]+]] @byte_sum(%[[VALUE_v_2:[0-9]+]] v: vector<u8, 16> [c="v16qu"]) -> u8 [linkage=external] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] [c="unsigned char(v16qu)"] {
+// IR-NEXT:         return intrinsic<u8, llvm.vector.reduce.add>(read<vector<u8, 16>>(%[[VALUE_v_2]]) [c="v16qu"]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_ordered_int:[0-9]+]] @ordered_int(%[[VALUE_v_3:[0-9]+]] v: vector<i32, 4>) -> i32 [linkage=external] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] {
-// IR-NEXT:         return sub<i32, overflow=ub>(intrinsic<i32, llvm.vector.reduce.smax>(read<vector<i32, 4>>(%[[VALUE_v_3]])), intrinsic<i32, llvm.vector.reduce.smin>(read<vector<i32, 4>>(%[[VALUE_v_3]])));
+// IR-NEXT:     fn %[[VALUE_ordered_int:[0-9]+]] @ordered_int(%[[VALUE_v_3:[0-9]+]] v: vector<i32, 4> [c="v4si"]) -> i32 [linkage=external] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] [c="int(v4si)"] {
+// IR-NEXT:         return sub<i32, overflow=ub>(intrinsic<i32, llvm.vector.reduce.smax>(read<vector<i32, 4>>(%[[VALUE_v_3]]) [c="v4si"]), intrinsic<i32, llvm.vector.reduce.smin>(read<vector<i32, 4>>(%[[VALUE_v_3]]) [c="v4si"]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_ordered_double:[0-9]+]] @ordered_double(%[[VALUE_v_4:[0-9]+]] v: vector<f64, 2>) -> f64 [linkage=external] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(intrinsic<f64, llvm.vector.reduce.fmax>(read<vector<f64, 2>>(%[[VALUE_v_4]])), intrinsic<f64, llvm.vector.reduce.fmin>(read<vector<f64, 2>>(%[[VALUE_v_4]]))), intrinsic<f64, llvm.vector.reduce.fmaximum>(read<vector<f64, 2>>(%[[VALUE_v_4]]))), intrinsic<f64, llvm.vector.reduce.fminimum>(read<vector<f64, 2>>(%[[VALUE_v_4]])));
+// IR-NEXT:     fn %[[VALUE_ordered_double:[0-9]+]] @ordered_double(%[[VALUE_v_4:[0-9]+]] v: vector<f64, 2> [c="v2df"]) -> f64 [linkage=external] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] [c="double(v2df)"] {
+// IR-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(intrinsic<f64, llvm.vector.reduce.fmax>(read<vector<f64, 2>>(%[[VALUE_v_4]]) [c="v2df"]), intrinsic<f64, llvm.vector.reduce.fmin>(read<vector<f64, 2>>(%[[VALUE_v_4]]) [c="v2df"])), intrinsic<f64, llvm.vector.reduce.fmaximum>(read<vector<f64, 2>>(%[[VALUE_v_4]]) [c="v2df"])), intrinsic<f64, llvm.vector.reduce.fminimum>(read<vector<f64, 2>>(%[[VALUE_v_4]]) [c="v2df"]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

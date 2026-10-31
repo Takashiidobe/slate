@@ -39,9 +39,9 @@ bar (void)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___m128i:[0-9]+]] __m128i = vector<i32, 4>;
-// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> vector<i32, 4> [linkage=external] [abi=sysv64() -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: vector<i32, 4> [storage=automatic] = aggregate<vector<i32, 4>, zero_fill=true>(index0 = const<i32>(286331153), index1 = const<i32>(572662306), index2 = const<i32>(1145324612));
-// DEFAULT-NEXT:         return not<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]]));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> vector<i32, 4> [linkage=external] [abi=sysv64() -> direct] [fallthrough=ub_if_used] [c="__m128i(void)"] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: vector<i32, 4> [storage=automatic] = aggregate<vector<i32, 4>, zero_fill=true>(index0 = const<i32>(286331153), index1 = const<i32>(572662306), index2 = const<i32>(1145324612)) [c="__m128i"];
+// DEFAULT-NEXT:         return not<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x]]) [c="__m128i"]) [c="__m128i"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

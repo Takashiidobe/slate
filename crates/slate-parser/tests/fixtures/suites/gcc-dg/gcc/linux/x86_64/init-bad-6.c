@@ -39,8 +39,8 @@ typeof(*(0 ? p : q)) x = { 0 }; /* { dg-warning "excess elements in array initia
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_X:[0-9]+]] X = ptr<i32>;
 // DEFAULT-NEXT:     type @type[[TYPE_Y:[0-9]+]] Y = ptr<i32>;
-// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<array<array<ptr<i32>, 0>, incomplete>> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: ptr<array<array<ptr<i32>, 0>, incomplete>> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: array<array<ptr<i32>, 0>, 1> [storage=static] = aggregate<array<array<ptr<i32>, 0>, 1>, zero_fill=false>(index0 = aggregate<array<ptr<i32>, 0>, zero_fill=false>()) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<array<array<ptr<i32>, 0>, incomplete>> [storage=static] [linkage=external] [c="X ((*)[])[0]"];
+// DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: ptr<array<array<ptr<i32>, 0>, incomplete>> [storage=static] [linkage=external] [c="Y ((*)[])[0]"];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: array<array<ptr<i32>, 0>, 1> [storage=static] = aggregate<array<array<ptr<i32>, 0>, 1>, zero_fill=false>(index0 = aggregate<array<ptr<i32>, 0>, zero_fill=false>()) [linkage=external] [c="typeof(*(0 ? p : q))"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

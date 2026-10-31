@@ -114,12 +114,12 @@ test(10, 2, 0, "%d\n", (10, 0));
 // DEFAULT-NEXT:         field14 _fileno: i32;
 // DEFAULT-NEXT:         field15 _flags2: i32 : 24;
 // DEFAULT-NEXT:         field16 _short_backupbuf: array<i8, 1>;
-// DEFAULT-NEXT:         field17 _old_offset: i64;
+// DEFAULT-NEXT:         field17 _old_offset: i64 [c="__off_t"];
 // DEFAULT-NEXT:         field18 _cur_column: u16;
 // DEFAULT-NEXT:         field19 _vtable_offset: i8;
 // DEFAULT-NEXT:         field20 _shortbuf: array<i8, 1>;
-// DEFAULT-NEXT:         field21 _lock: ptr<void>;
-// DEFAULT-NEXT:         field22 _offset: i64;
+// DEFAULT-NEXT:         field21 _lock: ptr<void> [c="_IO_lock_t *"];
+// DEFAULT-NEXT:         field22 _offset: i64 [c="__off64_t"];
 // DEFAULT-NEXT:         field23 _codecvt: ptr<@type[[TYPE__IO_codecvt:[0-9]+]]>;
 // DEFAULT-NEXT:         field24 _wide_data: ptr<@type[[TYPE__IO_wide_data:[0-9]+]]>;
 // DEFAULT-NEXT:         field25 _freeres_list: ptr<@type[[TYPE__IO_FILE]]>;
@@ -127,7 +127,7 @@ test(10, 2, 0, "%d\n", (10, 0));
 // DEFAULT-NEXT:         field27 _prevchain: ptr<ptr<@type[[TYPE__IO_FILE]]>>;
 // DEFAULT-NEXT:         field28 _mode: i32;
 // DEFAULT-NEXT:         field29 _unused3: i32;
-// DEFAULT-NEXT:         field30 _total_written: u64;
+// DEFAULT-NEXT:         field30 _total_written: u64 [c="__uint64_t"];
 // DEFAULT-NEXT:         field31 _unused2: array<i8, 8>;
 // DEFAULT-NEXT:     } [size=216, align=8, offsets=[0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 116, 119, 120, 128, 130, 131, 136, 144, 152, 160, 168, 176, 184, 192, 196, 200, 208], bit_offsets=[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, Some(928), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], bit_units=[(116, 3)], field_units=[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, Some(0), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]];
 // DEFAULT-NEXT:     type @type[[TYPE_FILE:[0-9]+]] FILE = @type[[TYPE__IO_FILE]];
@@ -135,8 +135,8 @@ test(10, 2, 0, "%d\n", (10, 0));
 // DEFAULT-NEXT:     type @type[[TYPE__IO_codecvt]] _IO_codecvt = struct incomplete;
 // DEFAULT-NEXT:     type @type[[TYPE__IO_wide_data]] _IO_wide_data = struct incomplete;
 // DEFAULT-NEXT:     type @type[[TYPE__IO_lock_t:[0-9]+]] _IO_lock_t = void;
-// DEFAULT-NEXT:     type @type[[TYPE_va_list_2:[0-9]+]] va_list = va_list;
-// DEFAULT-NEXT:     extern %[[VALUE_stdout:[0-9]+]] stdout: ptr<@type[[TYPE__IO_FILE]]> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_va_list_2:[0-9]+]] va_list = va_list [c="__gnuc_va_list"];
+// DEFAULT-NEXT:     extern %[[VALUE_stdout:[0-9]+]] stdout: ptr<@type[[TYPE__IO_FILE]]> [storage=static] [linkage=external] [c="FILE *"];
 // DEFAULT-NEXT:     global %[[VALUE_should_optimize:[0-9]+]] should_optimize: volatile i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]) [linkage=internal];
@@ -165,26 +165,26 @@ test(10, 2, 0, "%d\n", (10, 0));
 // DEFAULT-NEXT:     global %[[VALUE_str_25:[0-9]+]] .str[[VALUE_str_25]]: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_26:[0-9]+]] .str[[VALUE_str_26]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_27:[0-9]+]] .str[[VALUE_str_27]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([104, 101, 108, 108, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_vfprintf:[0-9]+]] @vfprintf(%[[VALUE___s:[0-9]+]] __s: ptr<@type[[TYPE__IO_FILE]]> [restrict], %[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], %[[VALUE___arg:[0-9]+]] __arg: va_list) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_vfprintf:[0-9]+]] @vfprintf(%[[VALUE___s:[0-9]+]] __s: ptr<@type[[TYPE__IO_FILE]]> [restrict] [c="FILE *restrict"], %[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], %[[VALUE___arg:[0-9]+]] __arg: va_list [c="__gnuc_va_list"]) -> i32 [linkage=external] [c="int(FILE *restrict, const char *restrict, __gnuc_va_list)"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE___vfprintf_chk:[0-9]+]] @__vfprintf_chk(%[[VALUE_f:[0-9]+]] f: ptr<@type[[TYPE__IO_FILE]]>, %[[VALUE_flag:[0-9]+]] flag: i32, %[[VALUE_fmt:[0-9]+]] fmt: ptr<const i8>, %[[VALUE_ap:[0-9]+]] ap: va_list) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE___vfprintf_chk:[0-9]+]] @__vfprintf_chk(%[[VALUE_f:[0-9]+]] f: ptr<@type[[TYPE__IO_FILE]]> [c="FILE *"], %[[VALUE_flag:[0-9]+]] flag: i32, %[[VALUE_fmt:[0-9]+]] fmt: ptr<const i8>, %[[VALUE_ap:[0-9]+]] ap: va_list [c="va_list"]) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="int(FILE *, int, const char *, va_list)"] {
 // DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(1));
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, ptr<const i8>, va_list) -> i32>(%[[VALUE_vfprintf]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f]]), read<ptr<const i8>>(%[[VALUE_fmt]]), read<va_list>(%[[VALUE_ap]]));
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, ptr<const i8>, va_list) -> i32>(%[[VALUE_vfprintf]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f]]) [c="FILE *"], read<ptr<const i8>>(%[[VALUE_fmt]]), read<va_list>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_inner:[0-9]+]] @inner(%[[VALUE_x:[0-9]+]] x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_ap2:[0-9]+]] ap2: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
+// DEFAULT-NEXT:         let %[[VALUE_ap2:[0-9]+]] ap2: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap2]]);
 // DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<i32>(%[[VALUE_x]])
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(0):
 // DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(1));
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str]])), read<va_list>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str]])), read<va_list>(%[[VALUE_ap_2]]) [c="va_list"]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str_2]])), read<va_list>(%[[VALUE_ap2]])), const<i32>(5))
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str_2]])), read<va_list>(%[[VALUE_ap2]]) [c="va_list"]), const<i32>(5))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -192,11 +192,11 @@ test(10, 2, 0, "%d\n", (10, 0));
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(1):
 // DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(1));
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_3]])), read<va_list>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_3]])), read<va_list>(%[[VALUE_ap_2]]) [c="va_list"]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_4]])), read<va_list>(%[[VALUE_ap2]])), const<i32>(6))
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_4]])), read<va_list>(%[[VALUE_ap2]]) [c="va_list"]), const<i32>(6))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -204,11 +204,11 @@ test(10, 2, 0, "%d\n", (10, 0));
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(2):
 // DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(1));
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_5]])), read<va_list>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_5]])), read<va_list>(%[[VALUE_ap_2]]) [c="va_list"]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_6]])), read<va_list>(%[[VALUE_ap2]])), const<i32>(1))
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_6]])), read<va_list>(%[[VALUE_ap2]]) [c="va_list"]), const<i32>(1))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -216,11 +216,11 @@ test(10, 2, 0, "%d\n", (10, 0));
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(3):
 // DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(1));
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_7]])), read<va_list>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_7]])), read<va_list>(%[[VALUE_ap_2]]) [c="va_list"]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_8]])), read<va_list>(%[[VALUE_ap2]])), const<i32>(0))
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_8]])), read<va_list>(%[[VALUE_ap2]]) [c="va_list"]), const<i32>(0))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -228,11 +228,11 @@ test(10, 2, 0, "%d\n", (10, 0));
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(4):
 // DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_9]])), read<va_list>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_9]])), read<va_list>(%[[VALUE_ap_2]]) [c="va_list"]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_10]])), read<va_list>(%[[VALUE_ap2]])), const<i32>(5))
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_10]])), read<va_list>(%[[VALUE_ap2]]) [c="va_list"]), const<i32>(5))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -240,11 +240,11 @@ test(10, 2, 0, "%d\n", (10, 0));
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(5):
 // DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_11]])), read<va_list>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_11]])), read<va_list>(%[[VALUE_ap_2]]) [c="va_list"]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_12]])), read<va_list>(%[[VALUE_ap2]])), const<i32>(6))
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_12]])), read<va_list>(%[[VALUE_ap2]]) [c="va_list"]), const<i32>(6))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -252,11 +252,11 @@ test(10, 2, 0, "%d\n", (10, 0));
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(6):
 // DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_13]])), read<va_list>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_13]])), read<va_list>(%[[VALUE_ap_2]]) [c="va_list"]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_14]])), read<va_list>(%[[VALUE_ap2]])), const<i32>(1))
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_14]])), read<va_list>(%[[VALUE_ap2]]) [c="va_list"]), const<i32>(1))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -264,11 +264,11 @@ test(10, 2, 0, "%d\n", (10, 0));
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(7):
 // DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_15]])), read<va_list>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_15]])), read<va_list>(%[[VALUE_ap_2]]) [c="va_list"]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_16]])), read<va_list>(%[[VALUE_ap2]])), const<i32>(0))
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_16]])), read<va_list>(%[[VALUE_ap2]]) [c="va_list"]), const<i32>(0))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -276,11 +276,11 @@ test(10, 2, 0, "%d\n", (10, 0));
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(8):
 // DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_17]])), read<va_list>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_17]])), read<va_list>(%[[VALUE_ap_2]]) [c="va_list"]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_18]])), read<va_list>(%[[VALUE_ap2]])), const<i32>(1))
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_18]])), read<va_list>(%[[VALUE_ap2]]) [c="va_list"]), const<i32>(1))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -288,11 +288,11 @@ test(10, 2, 0, "%d\n", (10, 0));
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(9):
 // DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_19]])), read<va_list>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_19]])), read<va_list>(%[[VALUE_ap_2]]) [c="va_list"]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_20]])), read<va_list>(%[[VALUE_ap2]])), const<i32>(7))
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_20]])), read<va_list>(%[[VALUE_ap2]]) [c="va_list"]), const<i32>(7))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -300,11 +300,11 @@ test(10, 2, 0, "%d\n", (10, 0));
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(10):
 // DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_21]])), read<va_list>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_21]])), read<va_list>(%[[VALUE_ap_2]]) [c="va_list"]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]), const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_22]])), read<va_list>(%[[VALUE_ap2]])), const<i32>(2))
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_22]])), read<va_list>(%[[VALUE_ap2]]) [c="va_list"]), const<i32>(2))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);

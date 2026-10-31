@@ -66,7 +66,7 @@ void spilled(int i, char c, double d, long double f) {
 // IR-NEXT:         field2 c: i64;
 // IR-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
 // IR-NEXT:     global %[[VALUE_g:[0-9]+]] g: i32 [storage=static] [linkage=external];
-// IR-NEXT:     fn %[[VALUE_classes:[0-9]+]] @classes(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_c:[0-9]+]] c: i8, %[[VALUE_v:[0-9]+]] v: vector<f32, 4>, %[[VALUE_l:[0-9]+]] l: i64, %[[VALUE_f:[0-9]+]] f: f80, %[[VALUE_g_2:[0-9]+]] g: f80) -> void [linkage=external] [abi=sysv64(scalar, scalar, direct, scalar, scalar, scalar) -> void] [fallthrough=ret_void] {
+// IR-NEXT:     fn %[[VALUE_classes:[0-9]+]] @classes(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_c:[0-9]+]] c: i8, %[[VALUE_v:[0-9]+]] v: vector<f32, 4> [c="v4f"], %[[VALUE_l:[0-9]+]] l: i64, %[[VALUE_f:[0-9]+]] f: f80, %[[VALUE_g_2:[0-9]+]] g: f80) -> void [linkage=external] [abi=sysv64(scalar, scalar, direct, scalar, scalar, scalar) -> void] [fallthrough=ret_void] [c="void(int, char, v4f, long, long double, long double)"] {
 // IR-NEXT:         asm "# %0 %1 %2 %3" [dialect=att] [options=pure,nomem,nostack] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3;
 // IR-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_x]]);
@@ -84,7 +84,7 @@ void spilled(int i, char c, double d, long double f) {
 // IR-NEXT:             lateout 0 "Q" [reg_abcd] width 8 place<i8>(%[[VALUE_c]]);
 // IR-NEXT:             lateout 1 "R" [reg_legacy] width 32 place<i32>(%[[VALUE_x]]);
 // IR-NEXT:             in 2 "g" [reg | mem | imm | sym] -> reg width 32 read<i32>(%[[VALUE_x]]);
-// IR-NEXT:             in 3 "Yz" [{xmm0}] width 128 read<vector<f32, 4>>(%[[VALUE_v]]);
+// IR-NEXT:             in 3 "Yz" [{xmm0}] width 128 read<vector<f32, 4>>(%[[VALUE_v]]) [c="v4f"];
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1 %2 %3 %4" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3 " " %4;
@@ -98,7 +98,7 @@ void spilled(int i, char c, double d, long double f) {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3;
 // IR-NEXT:             in 0 "t" [{st}] width 128 read<f80>(%[[VALUE_f]]);
 // IR-NEXT:             in 1 "u" [{st(1)}] width 128 read<f80>(%[[VALUE_g_2]]);
-// IR-NEXT:             in 2 "v" [zmm_reg] width 128 read<vector<f32, 4>>(%[[VALUE_v]]);
+// IR-NEXT:             in 2 "v" [zmm_reg] width 128 read<vector<f32, 4>>(%[[VALUE_v]]) [c="v4f"];
 // IR-NEXT:             in 3 "X" [imm | sym | reg | xmm_reg | mem] -> reg width 32 read<i32>(%[[VALUE_x]]);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1" [dialect=att] [options=pure,nomem,nostack] [alternative=0] {
@@ -116,13 +116,13 @@ void spilled(int i, char c, double d, long double f) {
 // IR-NEXT:             in 1 "p" [reg] width 64 addr_of<ptr<i32>>(%[[VALUE_x]]);
 // IR-NEXT:         }
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_letters:[0-9]+]] @letters(%[[VALUE_x_2:[0-9]+]] x: i32, %[[VALUE_d:[0-9]+]] d: f64, %[[VALUE_v_2:[0-9]+]] v: vector<f32, 4>, %[[VALUE_l_2:[0-9]+]] l: i64, %[[VALUE_w:[0-9]+]] w: i128, %[[VALUE_b:[0-9]+]] b: @type[[TYPE_big]]) -> void [linkage=external] [abi=sysv64(scalar, scalar, direct, scalar, scalar, native_c) -> void] [fallthrough=ret_void] {
+// IR-NEXT:     fn %[[VALUE_letters:[0-9]+]] @letters(%[[VALUE_x_2:[0-9]+]] x: i32, %[[VALUE_d:[0-9]+]] d: f64, %[[VALUE_v_2:[0-9]+]] v: vector<f32, 4> [c="v4f"], %[[VALUE_l_2:[0-9]+]] l: i64, %[[VALUE_w:[0-9]+]] w: i128, %[[VALUE_b:[0-9]+]] b: @type[[TYPE_big]]) -> void [linkage=external] [abi=sysv64(scalar, scalar, direct, scalar, scalar, native_c) -> void] [fallthrough=ret_void] [c="void(int, double, v4f, long, __int128, struct big)"] {
 // IR-NEXT:         asm volatile "# %0 %1 %2 %3 %4 %5" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3 " " %4 " " %5;
 // IR-NEXT:             in 0 "X" [imm | sym | reg | xmm_reg | mem] -> reg width 32 read<i32>(%[[VALUE_x_2]]);
 // IR-NEXT:             in 1 "X" [imm | sym | reg | xmm_reg | mem] -> imm width 32 const<i32>(5);
 // IR-NEXT:             in 2 "X" [imm | sym | reg | xmm_reg | mem] -> xmm_reg width 64 read<f64>(%[[VALUE_d]]);
-// IR-NEXT:             in 3 "X" [imm | sym | reg | xmm_reg | mem] -> xmm_reg width 128 read<vector<f32, 4>>(%[[VALUE_v_2]]);
+// IR-NEXT:             in 3 "X" [imm | sym | reg | xmm_reg | mem] -> xmm_reg width 128 read<vector<f32, 4>>(%[[VALUE_v_2]]) [c="v4f"];
 // IR-NEXT:             in 4 "X" [imm | sym | reg | xmm_reg | mem] -> mem width 192 place<@type[[TYPE_big]]>(%[[VALUE_b]]);
 // IR-NEXT:             in 5 "X" [imm | sym | reg | xmm_reg | mem] -> sym width 64 sym<offset=0>(%[[VALUE_g]]);
 // IR-NEXT:         }
@@ -133,7 +133,7 @@ void spilled(int i, char c, double d, long double f) {
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1 %2" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2;
-// IR-NEXT:             in 0 "Yi" [xmm_reg] width 128 read<vector<f32, 4>>(%[[VALUE_v_2]]);
+// IR-NEXT:             in 0 "Yi" [xmm_reg] width 128 read<vector<f32, 4>>(%[[VALUE_v_2]]) [c="v4f"];
 // IR-NEXT:             in 1 "Yt" [xmm_reg] width 64 read<f64>(%[[VALUE_d]]);
 // IR-NEXT:             in 2 "Y2" [xmm_reg] width 64 read<f64>(%[[VALUE_d]]);
 // IR-NEXT:         }

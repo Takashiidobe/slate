@@ -54,7 +54,7 @@ int foo (B *x)
 // DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: u64;
-// DEFAULT-NEXT:         field1 b: ptr<@type[[TYPE0]]>;
+// DEFAULT-NEXT:         field1 b: ptr<@type[[TYPE0]]> [c="A *"];
 // DEFAULT-NEXT:         field2 c: i32;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
 // DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = @type[[TYPE1]];
@@ -65,9 +65,9 @@ int foo (B *x)
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return truncate<u32, reason=return, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_r]]), const<i32>(31)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x_2:[0-9]+]] x: ptr<@type[[TYPE1]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: ptr<@type[[TYPE0]]> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_y]], read<ptr<@type[[TYPE0]]>>(field1(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE_x_2]])))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x_2:[0-9]+]] x: ptr<@type[[TYPE1]]> [c="B *"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(B *)"] {
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: ptr<@type[[TYPE0]]> [storage=automatic] [c="A *"];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_y]], read<ptr<@type[[TYPE0]]>>(field1(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE_x_2]])))) [c="A *"]) [c="A *"];
 // DEFAULT-NEXT:         write<u32>(field1(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_y]]))), call<u32, signature=fn(u32) -> u32>(%[[VALUE_bar]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(field2(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE_x_2]])))))));
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:         {

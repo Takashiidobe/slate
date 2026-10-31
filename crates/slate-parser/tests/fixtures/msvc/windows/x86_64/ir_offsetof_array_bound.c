@@ -59,7 +59,7 @@ int bounds(void) {
 // IR-NEXT:     type @type[[TYPE_List:[0-9]+]] List = struct {
 // IR-NEXT:         field0 n: i32;
 // IR-NEXT:         field1 alloc: i32;
-// IR-NEXT:         field2 a: array<@type[[TYPE_Item]], 1>;
+// IR-NEXT:         field2 a: array<@type[[TYPE_Item]], 1> [c="Item[1]"];
 // IR-NEXT:     } [size=32, align=8, offsets=[0, 4, 8]];
 // IR-NEXT:     type @type[[TYPE_List_2:[0-9]+]] List = @type[[TYPE_List]];
 // IR-NEXT:     type @type[[TYPE_Level:[0-9]+]] Level = struct {
@@ -71,15 +71,15 @@ int bounds(void) {
 // IR-NEXT:         field0 ref: i32;
 // IR-NEXT:         field1 gen: u64;
 // IR-NEXT:         field2 nLevel: i32;
-// IR-NEXT:         field3 aLevel: array<@type[[TYPE_Level]], 1>;
+// IR-NEXT:         field3 aLevel: array<@type[[TYPE_Level]], 1> [c="Level[1]"];
 // IR-NEXT:     } [size=40, align=8, offsets=[0, 8, 16, 24]];
 // IR-NEXT:     type @type[[TYPE_Structure_2:[0-9]+]] Structure = @type[[TYPE_Structure]];
 // IR-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
-// IR-NEXT:         field0 list: @type[[TYPE_List]];
+// IR-NEXT:         field0 list: @type[[TYPE_List]] [c="List"];
 // IR-NEXT:         field1 buf: array<u8, 32>;
 // IR-NEXT:     } [size=32, align=8, offsets=[0, 0]];
 // IR-NEXT:     type @type[[TYPE1:[0-9]+]] = union {
-// IR-NEXT:         field0 structure: @type[[TYPE_Structure]];
+// IR-NEXT:         field0 structure: @type[[TYPE_Structure]] [c="Structure"];
 // IR-NEXT:         field1 buf: array<u8, 40>;
 // IR-NEXT:     } [size=40, align=8, offsets=[0, 0]];
 // IR-NEXT:     fn %[[VALUE_bounds:[0-9]+]] @bounds() -> i32 [linkage=external] [fallthrough=ub_if_used] {

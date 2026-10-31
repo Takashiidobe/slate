@@ -62,17 +62,17 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 27> [storage=static] = code_units<array<i8, 27>>([37, 99, 32, 37, 99, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 122, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_memcmp:[0-9]+]] @memcmp(%[[VALUE___s1:[0-9]+]] __s1: ptr<const void>, %[[VALUE___s2:[0-9]+]] __s2: ptr<const void>, %[[VALUE___n:[0-9]+]] __n: u64) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
+// DEFAULT-NEXT:     fn %[[VALUE_memcmp:[0-9]+]] @memcmp(%[[VALUE___s1:[0-9]+]] __s1: ptr<const void>, %[[VALUE___s2:[0-9]+]] __s2: ptr<const void>, %[[VALUE___n:[0-9]+]] __n: u64 [c="size_t"]) -> i32 [linkage=external] [memory=read] [c="int(const void *, const void *, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_strcmp:[0-9]+]] @strcmp(%[[VALUE___s1_2:[0-9]+]] __s1: ptr<const i8>, %[[VALUE___s2_2:[0-9]+]] __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %[[VALUE_strncmp:[0-9]+]] @strncmp(%[[VALUE___s1_3:[0-9]+]] __s1: ptr<const i8>, %[[VALUE___s2_3:[0-9]+]] __s2: ptr<const i8>, %[[VALUE___n_2:[0-9]+]] __n: u64) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %[[VALUE_strncmp:[0-9]+]] @strncmp(%[[VALUE___s1_3:[0-9]+]] __s1: ptr<const i8>, %[[VALUE___s2_3:[0-9]+]] __s2: ptr<const i8>, %[[VALUE___n_2:[0-9]+]] __n: u64 [c="size_t"]) -> i32 [linkage=external] [memory=read] [c="int(const char *, const char *, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_strchr:[0-9]+]] @strchr(%[[VALUE___s:[0-9]+]] __s: ptr<const i8>, %[[VALUE___c:[0-9]+]] __c: i32) -> ptr<i8> [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %[[VALUE_strrchr:[0-9]+]] @strrchr(%[[VALUE___s_2:[0-9]+]] __s: ptr<const i8>, %[[VALUE___c_2:[0-9]+]] __c: i32) -> ptr<i8> [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %[[VALUE_strcspn:[0-9]+]] @strcspn(%[[VALUE___s_3:[0-9]+]] __s: ptr<const i8>, %[[VALUE___reject:[0-9]+]] __reject: ptr<const i8>) -> u64 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %[[VALUE_strspn:[0-9]+]] @strspn(%[[VALUE___s_4:[0-9]+]] __s: ptr<const i8>, %[[VALUE___accept:[0-9]+]] __accept: ptr<const i8>) -> u64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %[[VALUE_strcspn:[0-9]+]] @strcspn(%[[VALUE___s_3:[0-9]+]] __s: ptr<const i8>, %[[VALUE___reject:[0-9]+]] __reject: ptr<const i8>) -> u64 [linkage=external] [memory=read] [c="size_t(const char *, const char *)"];
+// DEFAULT-NEXT:     fn %[[VALUE_strspn:[0-9]+]] @strspn(%[[VALUE___s_4:[0-9]+]] __s: ptr<const i8>, %[[VALUE___accept:[0-9]+]] __accept: ptr<const i8>) -> u64 [linkage=external] [memory=read] [c="size_t(const char *, const char *)"];
 // DEFAULT-NEXT:     fn %[[VALUE_strpbrk:[0-9]+]] @strpbrk(%[[VALUE___s_5:[0-9]+]] __s: ptr<const i8>, %[[VALUE___accept_2:[0-9]+]] __accept: ptr<const i8>) -> ptr<i8> [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %[[VALUE_strstr:[0-9]+]] @strstr(%[[VALUE___haystack:[0-9]+]] __haystack: ptr<const i8>, %[[VALUE___needle:[0-9]+]] __needle: ptr<const i8>) -> ptr<i8> [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE___s_6:[0-9]+]] __s: ptr<const i8>) -> u64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE___s_6:[0-9]+]] __s: ptr<const i8>) -> u64 [linkage=external] [memory=read] [c="size_t(const char *)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_alpha:[0-9]+]] alpha: array<i8, 4> [storage=automatic] = code_units<array<i8, 4>>([97, 98, 99, 0]);
 // DEFAULT-NEXT:         let %[[VALUE_beta:[0-9]+]] beta: array<i8, 4> [storage=automatic] = code_units<array<i8, 4>>([97, 98, 100, 0]);

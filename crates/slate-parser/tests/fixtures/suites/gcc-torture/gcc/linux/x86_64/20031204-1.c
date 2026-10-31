@@ -75,13 +75,13 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_u32:[0-9]+]] u32 = u64;
 // DEFAULT-NEXT:     global %[[VALUE_addr:[0-9]+]] addr: array<i8, 19> [storage=static] [align=16] = code_units<array<i8, 19>>([49, 48, 46, 49, 49, 46, 49, 50, 46, 49, 51, 58, 47, 104, 101, 108, 108, 111, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_strcpy:[0-9]+]] @strcpy(%[[VALUE___dest:[0-9]+]] __dest: ptr<i8> [restrict], %[[VALUE___src:[0-9]+]] __src: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strcpy:[0-9]+]] @strcpy(%[[VALUE___dest:[0-9]+]] __dest: ptr<i8> [restrict], %[[VALUE___src:[0-9]+]] __src: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external] [c="char *(char *restrict, const char *restrict)"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_in_aton:[0-9]+]] @in_aton(%[[VALUE_x:[0-9]+]] x: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(const<i32>(168496141)));
+// DEFAULT-NEXT:     fn %[[VALUE_in_aton:[0-9]+]] @in_aton(%[[VALUE_x:[0-9]+]] x: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="u32(const char *)"] {
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(const<i32>(168496141))) [c="u32"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_root_nfs_parse_addr:[0-9]+]] @root_nfs_parse_addr(%[[VALUE_name:[0-9]+]] name: ptr<i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_addr_2:[0-9]+]] addr: u64 [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_root_nfs_parse_addr:[0-9]+]] @root_nfs_parse_addr(%[[VALUE_name:[0-9]+]] name: ptr<i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="u32(char *)"] {
+// DEFAULT-NEXT:         let %[[VALUE_addr_2:[0-9]+]] addr: u64 [storage=automatic] [c="u32"];
 // DEFAULT-NEXT:         let %[[VALUE_octets:[0-9]+]] octets: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_cp:[0-9]+]] cp: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_cq:[0-9]+]] cq: ptr<i8> [storage=automatic];
@@ -113,16 +113,16 @@ int main() {
 // DEFAULT-NEXT:                     let %[[VALUE10:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE9]]), const<i32>(1));
 // DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_cp]], read<ptr<i8>>(%[[VALUE10]]));
 // DEFAULT-NEXT:                     write<i8>(deref(read<ptr<i8>>(%[[VALUE9]])), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:                 write<u64>(%[[VALUE_addr_2]], call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_in_aton]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_name]]))));
+// DEFAULT-NEXT:                 write<u64>(%[[VALUE_addr_2]], call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_in_aton]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_name]]))) [c="u32"]) [c="u32"];
 // DEFAULT-NEXT:                 call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%[[VALUE_strcpy]], read<ptr<i8>>(%[[VALUE_name]]), pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_cp]])));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<u64>(%[[VALUE_addr_2]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)))));
-// DEFAULT-NEXT:         return read<u64>(%[[VALUE_addr_2]]);
+// DEFAULT-NEXT:             write<u64>(%[[VALUE_addr_2]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)))) [c="u32"]) [c="u32"];
+// DEFAULT-NEXT:         return read<u64>(%[[VALUE_addr_2]]) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: u64 [storage=automatic] = call<u64, signature=fn(ptr<i8>) -> u64>(%[[VALUE_root_nfs_parse_addr]], array_decay<ptr<i8>, length=Some(19)>(%[[VALUE_addr]]));
-// DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_result]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(168496141))))
+// DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: u64 [storage=automatic] = call<u64, signature=fn(ptr<i8>) -> u64>(%[[VALUE_root_nfs_parse_addr]], array_decay<ptr<i8>, length=Some(19)>(%[[VALUE_addr]])) [c="u32"] [c="u32"];
+// DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_result]]) [c="u32"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(168496141))) [c="u32"])
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }

@@ -59,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:         field1 field2: u32 : 1;
 // DEFAULT-NEXT:         field2 field3: u32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 0], bit_offsets=[Some(0), Some(1), Some(2)], bit_units=[(0, 1)], field_units=[Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_set_field1_and_field2:[0-9]+]] @set_field1_and_field2(%[[VALUE_b:[0-9]+]] b: ptr<@type[[TYPE_bitfield]]>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(deref(read<ptr<@type[[TYPE_bitfield]]>>(%[[VALUE_b]]))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(deref(read<ptr<@type[[TYPE_bitfield]]>>(%[[VALUE_b]]))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));

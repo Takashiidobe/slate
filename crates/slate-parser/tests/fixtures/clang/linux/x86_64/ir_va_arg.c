@@ -36,13 +36,13 @@ double sequenced(va_list ap) { return __builtin_va_arg(ap, double) + __builtin_v
 // IR-NEXT:         field0 a: i64;
 // IR-NEXT:         field1 b: f64;
 // IR-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// IR-NEXT:     fn %[[VALUE_fixed_type:[0-9]+]] @fixed_type(%[[VALUE_ap:[0-9]+]] ap: va_list) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_fixed_type:[0-9]+]] @fixed_type(%[[VALUE_ap:[0-9]+]] ap: va_list [c="va_list"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(va_list)"] {
 // IR-NEXT:         return va_arg<i32>(%[[VALUE_ap]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_struct_type:[0-9]+]] @struct_type(%[[VALUE_ap_2:[0-9]+]] ap: va_list) -> @type[[TYPE_Pair]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_struct_type:[0-9]+]] @struct_type(%[[VALUE_ap_2:[0-9]+]] ap: va_list [c="va_list"]) -> @type[[TYPE_Pair]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] [c="struct Pair(va_list)"] {
 // IR-NEXT:         return copy<@type[[TYPE_Pair]], reason=return>(va_arg<@type[[TYPE_Pair]], regs=[int, sse]>(%[[VALUE_ap_2]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_sequenced:[0-9]+]] @sequenced(%[[VALUE_ap_3:[0-9]+]] ap: va_list) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_sequenced:[0-9]+]] @sequenced(%[[VALUE_ap_3:[0-9]+]] ap: va_list [c="va_list"]) -> f64 [linkage=external] [fallthrough=ub_if_used] [c="double(va_list)"] {
 // IR-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(va_arg<f64>(%[[VALUE_ap_3]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(va_arg<i32>(%[[VALUE_ap_3]])));
 // IR-NEXT:     }
 // IR-NEXT: }

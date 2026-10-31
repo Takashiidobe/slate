@@ -36,6 +36,6 @@ void f (int a[_Atomic]); /* { dg-error "_Atomic" } */
 // DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: atomic i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_j:[0-9]+]] j: atomic i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: atomic ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_a:[0-9]+]] a: atomic ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_a:[0-9]+]] a: atomic ptr<i32>) -> void [linkage=external] [c="void(int[])"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

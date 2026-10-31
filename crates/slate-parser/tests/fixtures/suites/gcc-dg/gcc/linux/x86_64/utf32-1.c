@@ -70,11 +70,11 @@ int main ()
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_char32_t:[0-9]+]] char32_t = u32;
-// DEFAULT-NEXT:     global %[[VALUE_c0:[0-9]+]] c0: u32 [storage=static] = const<u32>(97) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_c1:[0-9]+]] c1: u32 [storage=static] = const<u32>(0) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_c2:[0-9]+]] c2: u32 [storage=static] = const<u32>(36) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_c3:[0-9]+]] c3: u32 [storage=static] = const<u32>(8233) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_c4:[0-9]+]] c4: u32 [storage=static] = const<u32>(410401) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c0:[0-9]+]] c0: u32 [storage=static] = const<u32>(97) [c="char32_t"] [linkage=external] [c="char32_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c1:[0-9]+]] c1: u32 [storage=static] = const<u32>(0) [c="char32_t"] [linkage=external] [c="char32_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c2:[0-9]+]] c2: u32 [storage=static] = const<u32>(36) [c="char32_t"] [linkage=external] [c="char32_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c3:[0-9]+]] c3: u32 [storage=static] = const<u32>(8233) [c="char32_t"] [linkage=external] [c="char32_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c4:[0-9]+]] c4: u32 [storage=static] = const<u32>(410401) [c="char32_t"] [linkage=external] [c="char32_t"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(4), const<u64>(4))

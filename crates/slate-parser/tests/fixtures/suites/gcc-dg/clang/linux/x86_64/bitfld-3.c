@@ -100,7 +100,7 @@ int main (void)
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
 // DEFAULT-NEXT:     type @type[[TYPE_UA]] UA = union {
 // DEFAULT-NEXT:         field0 x: i8;
-// DEFAULT-NEXT:         field1 y: i64 : 6;
+// DEFAULT-NEXT:         field1 y: i64 : 6 [c="la"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0], bit_offsets=[None, Some(0)], bit_units=[(0, 1)], field_units=[None, Some(0)]];
 // DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = struct {
 // DEFAULT-NEXT:         field0 a: i8;
@@ -117,7 +117,7 @@ int main (void)
 // DEFAULT-NEXT:         field2 c: i8;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
 // DEFAULT-NEXT:     type @type[[TYPE_UC]] UC = struct {
-// DEFAULT-NEXT:         field0 y: i64 : 6;
+// DEFAULT-NEXT:         field0 y: i64 : 6 [c="la"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
 // DEFAULT-NEXT:     type @type[[TYPE_D:[0-9]+]] D = struct {
 // DEFAULT-NEXT:         field0 a: i8;

@@ -69,47 +69,47 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_ULL:[0-9]+]] ULL = u64;
-// DEFAULT-NEXT:     global %[[VALUE_back:[0-9]+]] back: u64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_hpart:[0-9]+]] hpart: u64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_lpart:[0-9]+]] lpart: u64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_back:[0-9]+]] back: u64 [storage=static] [linkage=external] [c="ULL"];
+// DEFAULT-NEXT:     global %[[VALUE_hpart:[0-9]+]] hpart: u64 [storage=static] [linkage=external] [c="ULL"];
+// DEFAULT-NEXT:     global %[[VALUE_lpart:[0-9]+]] lpart: u64 [storage=static] [linkage=external] [c="ULL"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_build:[0-9]+]] @build(%[[VALUE_h:[0-9]+]] h: i64, %[[VALUE_l:[0-9]+]] l: i64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_hpart]], reinterpret<u64, reason=assign, fits=unknown>(read<i64>(%[[VALUE_h]])));
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_hpart]]);
-// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%[[VALUE1]]), const<i32>(32));
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_hpart]], read<u64>(%[[VALUE2]]));
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_lpart]], reinterpret<u64, reason=assign, fits=unknown>(read<i64>(%[[VALUE_l]])));
-// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_lpart]]);
-// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u64 [synthetic] = and<u64>(read<u64>(%[[VALUE3]]), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(4294967295)));
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_lpart]], read<u64>(%[[VALUE4]]));
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_back]], or<u64>(read<u64>(%[[VALUE_hpart]]), read<u64>(%[[VALUE_lpart]])));
-// DEFAULT-NEXT:         return read<u64>(%[[VALUE_back]]);
+// DEFAULT-NEXT:     fn %[[VALUE_build:[0-9]+]] @build(%[[VALUE_h:[0-9]+]] h: i64, %[[VALUE_l:[0-9]+]] l: i64) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="ULL(long, long)"] {
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_hpart]], reinterpret<u64, reason=assign, fits=unknown>(read<i64>(%[[VALUE_h]])) [c="ULL"]) [c="ULL"];
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_hpart]]) [c="ULL"] [c="ULL"];
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%[[VALUE1]]) [c="ULL"], const<i32>(32)) [c="ULL"] [c="ULL"];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_hpart]], read<u64>(%[[VALUE2]]) [c="ULL"]) [c="ULL"] [c="ULL"];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_lpart]], reinterpret<u64, reason=assign, fits=unknown>(read<i64>(%[[VALUE_l]])) [c="ULL"]) [c="ULL"];
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_lpart]]) [c="ULL"] [c="ULL"];
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u64 [synthetic] = and<u64>(read<u64>(%[[VALUE3]]) [c="ULL"], reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(4294967295)) [c="ULL"]) [c="ULL"] [c="ULL"];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_lpart]], read<u64>(%[[VALUE4]]) [c="ULL"]) [c="ULL"] [c="ULL"];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_back]], or<u64>(read<u64>(%[[VALUE_hpart]]) [c="ULL"], read<u64>(%[[VALUE_lpart]]) [c="ULL"]) [c="ULL"]) [c="ULL"];
+// DEFAULT-NEXT:         return read<u64>(%[[VALUE_back]]) [c="ULL"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(1)))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(1))) [c="ULL"], reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(1)) [c="ULL"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0))), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(0)))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0))) [c="ULL"], reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(0)) [c="ULL"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], widen<i64, reason=arg>(const<i32>(0)), reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967295)))), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(4294967295)))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], widen<i64, reason=arg>(const<i32>(0)), reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967295)))) [c="ULL"], reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(4294967295)) [c="ULL"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], widen<i64, reason=arg>(const<i32>(0)), reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967294)))), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(4294967294)))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], widen<i64, reason=arg>(const<i32>(0)), reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967294)))) [c="ULL"], reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(4294967294)) [c="ULL"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(4294967297)))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(const<i32>(1))) [c="ULL"], reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(4294967297)) [c="ULL"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(const<i32>(0))), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(4294967296)))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(const<i32>(0))) [c="ULL"], reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(4294967296)) [c="ULL"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], widen<i64, reason=arg>(const<i32>(1)), reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967295)))), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(8589934591)))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], widen<i64, reason=arg>(const<i32>(1)), reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967295)))) [c="ULL"], reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(8589934591)) [c="ULL"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], widen<i64, reason=arg>(const<i32>(1)), reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967294)))), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(8589934590)))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], widen<i64, reason=arg>(const<i32>(1)), reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967294)))) [c="ULL"], reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(8589934590)) [c="ULL"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967295))), widen<i64, reason=arg>(const<i32>(1))), const<u64>(18446744069414584321))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967295))), widen<i64, reason=arg>(const<i32>(1))) [c="ULL"], const<u64>(18446744069414584321) [c="ULL"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967295))), widen<i64, reason=arg>(const<i32>(0))), const<u64>(18446744069414584320))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967295))), widen<i64, reason=arg>(const<i32>(0))) [c="ULL"], const<u64>(18446744069414584320) [c="ULL"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967295))), reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967295)))), const<u64>(18446744073709551615))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967295))), reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967295)))) [c="ULL"], const<u64>(18446744073709551615) [c="ULL"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967295))), reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967294)))), const<u64>(18446744073709551614))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_build]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967295))), reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967294)))) [c="ULL"], const<u64>(18446744073709551614) [c="ULL"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

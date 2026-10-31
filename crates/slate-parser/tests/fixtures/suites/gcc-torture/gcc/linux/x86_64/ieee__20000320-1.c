@@ -136,19 +136,19 @@ int main() {
 // DEFAULT-NEXT:     type @type[[TYPE_ul:[0-9]+]] ul = u32;
 // DEFAULT-NEXT:     type @type[[TYPE_fl:[0-9]+]] fl = union {
 // DEFAULT-NEXT:         field0 f: f32;
-// DEFAULT-NEXT:         field1 l: u32;
+// DEFAULT-NEXT:         field1 l: u32 [c="ul"];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE_dl:[0-9]+]] dl = union {
 // DEFAULT-NEXT:         field0 d: f64;
-// DEFAULT-NEXT:         field1 ll: u64;
+// DEFAULT-NEXT:         field1 ll: u64 [c="ull"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     global %[[VALUE_uf:[0-9]+]] uf: @type[[TYPE_fl]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_ud:[0-9]+]] ud: @type[[TYPE_dl]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_failed:[0-9]+]] failed: i32 [storage=static] = const<i32>(0) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_c:[0-9]+]] @c(%[[VALUE_d:[0-9]+]] d: u64, %[[VALUE_f:[0-9]+]] f: u32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<u64>(field1(%[[VALUE_ud]]), read<u64>(%[[VALUE_d]]));
+// DEFAULT-NEXT:     fn %[[VALUE_c:[0-9]+]] @c(%[[VALUE_d:[0-9]+]] d: u64 [c="ull"], %[[VALUE_f:[0-9]+]] f: u32 [c="ul"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(ull, ul)"] {
+// DEFAULT-NEXT:         write<u64>(field1(%[[VALUE_ud]]), read<u64>(%[[VALUE_d]]) [c="ull"]) [c="ull"];
 // DEFAULT-NEXT:         write<f32>(field0(%[[VALUE_uf]]), float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=observable>(read<f64>(field0(%[[VALUE_ud]]))));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(field1(%[[VALUE_uf]])), read<u32>(%[[VALUE_f]]))
 // DEFAULT-NEXT:             {
@@ -160,27 +160,27 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(const<u64>(4), const<u64>(4)), ne<u64>(const<u64>(8), const<u64>(8)))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3931642474694443008), const<u32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3931642474694443009), const<u32>(1));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3936146074321813503), const<u32>(1));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3936146074321813504), const<u32>(1));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3938397874135498751), const<u32>(1));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3938397874135498752), const<u32>(2));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3940649673949183999), const<u32>(2));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3940649673949184000), const<u32>(2));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3940649673949184001), const<u32>(2));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728865214463999), const<u32>(8388607));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728865214464000), const<u32>(8388608));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728865214464001), const<u32>(8388608));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728865751334911), const<u32>(8388608));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728865751334912), const<u32>(8388608));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728865751334913), const<u32>(8388608));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728866019770368), const<u32>(8388608));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728866019770369), const<u32>(8388609));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728866556641279), const<u32>(8388609));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728866556641280), const<u32>(8388610));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728867093512192), const<u32>(8388610));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728867093512193), const<u32>(8388611));
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3931642474694443008) [c="ull"], const<u32>(0) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3931642474694443009) [c="ull"], const<u32>(1) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3936146074321813503) [c="ull"], const<u32>(1) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3936146074321813504) [c="ull"], const<u32>(1) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3938397874135498751) [c="ull"], const<u32>(1) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3938397874135498752) [c="ull"], const<u32>(2) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3940649673949183999) [c="ull"], const<u32>(2) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3940649673949184000) [c="ull"], const<u32>(2) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(3940649673949184001) [c="ull"], const<u32>(2) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728865214463999) [c="ull"], const<u32>(8388607) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728865214464000) [c="ull"], const<u32>(8388608) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728865214464001) [c="ull"], const<u32>(8388608) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728865751334911) [c="ull"], const<u32>(8388608) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728865751334912) [c="ull"], const<u32>(8388608) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728865751334913) [c="ull"], const<u32>(8388608) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728866019770368) [c="ull"], const<u32>(8388608) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728866019770369) [c="ull"], const<u32>(8388609) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728866556641279) [c="ull"], const<u32>(8388609) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728866556641280) [c="ull"], const<u32>(8388610) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728867093512192) [c="ull"], const<u32>(8388610) [c="ul"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], const<u64>(4039728867093512193) [c="ull"], const<u32>(8388611) [c="ul"]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_failed]]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         else

@@ -45,7 +45,7 @@ void f(S *s, float *f)
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = @type[[TYPE0]];
 // DEFAULT-NEXT:     fn %[[VALUE_dont_delete:[0-9]+]] @dont_delete() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE0]]>, %[[VALUE_f_2:[0-9]+]] f: ptr<f32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE0]]> [c="S *"], %[[VALUE_f_2:[0-9]+]] f: ptr<f32>) -> void [linkage=external] [fallthrough=ret_void] [c="void(S *, float *)"] {
 // DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_s]]))), const<i32>(1));
 // DEFAULT-NEXT:         write<f32>(deref(read<ptr<f32>>(%[[VALUE_f_2]])), int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_s]])))), const<i32>(1))

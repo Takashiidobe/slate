@@ -58,13 +58,13 @@ foo (_Decimal32 arg)
 // DEFAULT-NEXT:         field0 bytes: array<u8, 1>;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_decimal32:[0-9]+]] decimal32 = @type[[TYPE1]];
-// DEFAULT-NEXT:     fn %[[VALUE___decimal32ToNumber:[0-9]+]] @__decimal32ToNumber(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const @type[[TYPE1]]>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<@type[[TYPE0]]>) -> ptr<@type[[TYPE0]]> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE___host_to_ieee_32:[0-9]+]] @__host_to_ieee_32(%[[VALUE2:[0-9]+]] <unnamed>: d32, %[[VALUE3:[0-9]+]] <unnamed>: ptr<@type[[TYPE1]]>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___decimal32ToNumber:[0-9]+]] @__decimal32ToNumber(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const @type[[TYPE1]]> [c="const decimal32 *"], %[[VALUE1:[0-9]+]] <unnamed>: ptr<@type[[TYPE0]]> [c="decNumber *"]) -> ptr<@type[[TYPE0]]> [linkage=external] [c="decNumber *(const decimal32 *, decNumber *)"];
+// DEFAULT-NEXT:     fn %[[VALUE___host_to_ieee_32:[0-9]+]] @__host_to_ieee_32(%[[VALUE2:[0-9]+]] <unnamed>: d32, %[[VALUE3:[0-9]+]] <unnamed>: ptr<@type[[TYPE1]]> [c="decimal32 *"]) -> void [linkage=external] [c="void(_Decimal32, decimal32 *)"];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_arg:[0-9]+]] arg: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_dn:[0-9]+]] dn: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_d32:[0-9]+]] d32: @type[[TYPE1]] [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(d32, ptr<@type[[TYPE1]]>) -> void>(%[[VALUE___host_to_ieee_32]], read<d32>(%[[VALUE_arg]]), addr_of<ptr<@type[[TYPE1]]>>(%[[VALUE_d32]]));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE0]]>, signature=fn(ptr<const @type[[TYPE1]]>, ptr<@type[[TYPE0]]>) -> ptr<@type[[TYPE0]]>>(%[[VALUE___decimal32ToNumber]], pointer_cast<ptr<const @type[[TYPE1]]>, reason=arg>(addr_of<ptr<@type[[TYPE1]]>>(%[[VALUE_d32]])), addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_dn]]));
+// DEFAULT-NEXT:         let %[[VALUE_dn:[0-9]+]] dn: @type[[TYPE0]] [storage=automatic] [c="decNumber"];
+// DEFAULT-NEXT:         let %[[VALUE_d32:[0-9]+]] d32: @type[[TYPE1]] [storage=automatic] [c="decimal32"];
+// DEFAULT-NEXT:         call<void, signature=fn(d32, ptr<@type[[TYPE1]]>) -> void>(%[[VALUE___host_to_ieee_32]], read<d32>(%[[VALUE_arg]]), addr_of<ptr<@type[[TYPE1]]>>(%[[VALUE_d32]]) [c="decimal32 *"]);
+// DEFAULT-NEXT:         call<ptr<@type[[TYPE0]]>, signature=fn(ptr<const @type[[TYPE1]]>, ptr<@type[[TYPE0]]>) -> ptr<@type[[TYPE0]]>>(%[[VALUE___decimal32ToNumber]], pointer_cast<ptr<const @type[[TYPE1]]>, reason=arg>(addr_of<ptr<@type[[TYPE1]]>>(%[[VALUE_d32]]) [c="decimal32 *"]) [c="const decimal32 *"], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_dn]]) [c="decNumber *"]) [c="decNumber *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

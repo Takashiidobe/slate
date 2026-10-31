@@ -37,11 +37,11 @@ struct a { b* x; };
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_a:[0-9]+]] a = struct {
-// DEFAULT-NEXT:         field0 x: ptr<@type[[TYPE_a]]>;
+// DEFAULT-NEXT:         field0 x: ptr<@type[[TYPE_a]]> [c="b *"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_b:[0-9]+]] b = @type[[TYPE_a]];
 // DEFAULT-NEXT:     type @type[[TYPE_a_2:[0-9]+]] a = struct {
-// DEFAULT-NEXT:         field0 x: ptr<@type[[TYPE_a]]>;
+// DEFAULT-NEXT:         field0 x: ptr<@type[[TYPE_a]]> [c="b *"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }

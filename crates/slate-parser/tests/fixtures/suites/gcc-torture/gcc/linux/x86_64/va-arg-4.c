@@ -59,17 +59,17 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list [c="__gnuc_va_list"];
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: array<i8, 32>;
 // DEFAULT-NEXT:     } [size=32, align=1, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_big:[0-9]+]] big = @type[[TYPE0]];
-// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: @type[[TYPE0]] [storage=static] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = code_units<array<i8, 32>>([97, 98, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: @type[[TYPE0]] [storage=static] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = code_units<array<i8, 32>>([97, 98, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) [linkage=internal] [c="big"];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x_2:[0-9]+]] x: @type[[TYPE0]], %[[VALUE_s:[0-9]+]] s: ptr<i8>, ...) -> void [linkage=external] [abi=sysv64(native_c, scalar) -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x_2:[0-9]+]] x: @type[[TYPE0]] [c="big"], %[[VALUE_s:[0-9]+]] s: ptr<i8>, ...) -> void [linkage=external] [abi=sysv64(native_c, scalar) -> void] [fallthrough=ret_void] [c="void(big, char *, ...)"] {
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(32)>(field0(%[[VALUE_x_2]])), const<i32>(0))))), const<i32>(97)), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(32)>(field0(%[[VALUE_x_2]])), const<i32>(1))))), const<i32>(98))), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(32)>(field0(%[[VALUE_x_2]])), const<i32>(2))))), const<i32>(99)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
@@ -82,7 +82,7 @@ int main(void) {
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE0]], ptr<i8>, ...) -> void, abi=sysv64(native_c, scalar, scalar, scalar, scalar) -> void>(%[[VALUE_f]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_x]])), array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str]]), const<i32>(42), const<i32>(120), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE0]], ptr<i8>, ...) -> void, abi=sysv64(native_c, scalar, scalar, scalar, scalar) -> void>(%[[VALUE_f]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_x]]) [c="big"]) [c="big"], array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str]]), const<i32>(42), const<i32>(120), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

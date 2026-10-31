@@ -84,8 +84,8 @@ int local(void) {
 // DEFAULT-NEXT:     global %[[VALUE_by_typedef:[0-9]+]] by_typedef: i8 [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_fields:[0-9]+]] fields: @type[[TYPE_fields]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_tagged:[0-9]+]] tagged: @type[[TYPE_tagged]] [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_typedef_object:[0-9]+]] typedef_object: i32 [storage=static] [align=8] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_vector_object:[0-9]+]] vector_object: vector<i32, 4> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_typedef_object:[0-9]+]] typedef_object: i32 [storage=static] [align=8] [linkage=external] [c="aligned_int"];
+// DEFAULT-NEXT:     global %[[VALUE_vector_object:[0-9]+]] vector_object: vector<i32, 4> [storage=static] [linkage=external] [c="vector"];
 // DEFAULT-NEXT:     fn %[[VALUE_local:[0-9]+]] @local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i8 [storage=automatic] [align=16] = truncate<i8, reason=assign, fits=always>(const<i32>(1));
 // DEFAULT-NEXT:         return widen<i32, reason=return>(read<i8>(%[[VALUE_c]]));

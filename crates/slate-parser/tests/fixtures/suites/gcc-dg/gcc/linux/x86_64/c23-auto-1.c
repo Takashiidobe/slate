@@ -167,7 +167,7 @@ tf ()
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: i16 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i8 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE_t]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_int_from_typedef:[0-9]+]] int_from_typedef: i32 [storage=automatic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(3.0));
+// DEFAULT-NEXT:         let %[[VALUE_int_from_typedef:[0-9]+]] int_from_typedef: i32 [storage=automatic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(3.0)) [c="ti"] [c="ti"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

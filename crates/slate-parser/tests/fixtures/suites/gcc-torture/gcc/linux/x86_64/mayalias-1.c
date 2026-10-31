@@ -49,8 +49,8 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = const<i32>(305419896);
-// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: ptr<i16> [storage=automatic] = pointer_cast<ptr<i16>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_a]]));
-// DEFAULT-NEXT:         write<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(read<ptr<i16>>(%[[VALUE_b]]), const<i32>(1))), truncate<i16, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: ptr<i16> [storage=automatic] = pointer_cast<ptr<i16>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_a]])) [c="short_a *"] [c="short_a *"];
+// DEFAULT-NEXT:         write<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(read<ptr<i16>>(%[[VALUE_b]]), const<i32>(1))), truncate<i16, reason=assign, fits=always>(const<i32>(0)) [c="short_a"]) [c="short_a"];
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_a]]), const<i32>(305419896))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

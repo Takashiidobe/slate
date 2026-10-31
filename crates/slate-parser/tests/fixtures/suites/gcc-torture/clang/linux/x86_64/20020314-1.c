@@ -63,18 +63,18 @@ repeat:
 // DEFAULT-NEXT:     } [size=40, align=8, offsets=[0, 8, 16, 24, 28, 32]];
 // DEFAULT-NEXT:     type @type[[TYPE_tux_req_t:[0-9]+]] tux_req_t = @type[[TYPE_tux_req_struct]];
 // DEFAULT-NEXT:     type @type[[TYPE_socket]] socket = struct incomplete;
-// DEFAULT-NEXT:     fn %[[VALUE_add_output_space_event:[0-9]+]] @add_output_space_event(%[[VALUE_req:[0-9]+]] req: ptr<@type[[TYPE_tux_req_struct]]>, %[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE_socket]]>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_del_tux_atom:[0-9]+]] @del_tux_atom(%[[VALUE_req_2:[0-9]+]] req: ptr<@type[[TYPE_tux_req_struct]]>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_add_req_to_workqueue:[0-9]+]] @add_req_to_workqueue(%[[VALUE_req_3:[0-9]+]] req: ptr<@type[[TYPE_tux_req_struct]]>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_user_send_buffer:[0-9]+]] @user_send_buffer(%[[VALUE_req_4:[0-9]+]] req: ptr<@type[[TYPE_tux_req_struct]]>, %[[VALUE_cachemiss:[0-9]+]] cachemiss: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_add_output_space_event:[0-9]+]] @add_output_space_event(%[[VALUE_req:[0-9]+]] req: ptr<@type[[TYPE_tux_req_struct]]> [c="tux_req_t *"], %[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE_socket]]>) -> i32 [linkage=external] [c="int(tux_req_t *, struct socket *)"];
+// DEFAULT-NEXT:     fn %[[VALUE_del_tux_atom:[0-9]+]] @del_tux_atom(%[[VALUE_req_2:[0-9]+]] req: ptr<@type[[TYPE_tux_req_struct]]> [c="tux_req_t *"]) -> void [linkage=external] [c="void(tux_req_t *)"];
+// DEFAULT-NEXT:     fn %[[VALUE_add_req_to_workqueue:[0-9]+]] @add_req_to_workqueue(%[[VALUE_req_3:[0-9]+]] req: ptr<@type[[TYPE_tux_req_struct]]> [c="tux_req_t *"]) -> void [linkage=external] [c="void(tux_req_t *)"];
+// DEFAULT-NEXT:     fn %[[VALUE_user_send_buffer:[0-9]+]] @user_send_buffer(%[[VALUE_req_4:[0-9]+]] req: ptr<@type[[TYPE_tux_req_struct]]> [c="tux_req_t *"], %[[VALUE_cachemiss:[0-9]+]] cachemiss: i32) -> void [linkage=external] [fallthrough=ret_void] [c="void(tux_req_t *, int)"] {
 // DEFAULT-NEXT:         let %[[VALUE_ret:[0-9]+]] ret: i32 [storage=automatic];
 // DEFAULT-NEXT:         label %[[VALUE_repeat:[0-9]+]] repeat:
 // DEFAULT-NEXT:             switch %[[VALUE1:[0-9]+]] read<i32>(%[[VALUE_ret]])
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     case %[[VALUE1]] const<i32>(-11):
-// DEFAULT-NEXT:                         if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE_tux_req_struct]]>, ptr<@type[[TYPE_socket]]>) -> i32>(%[[VALUE_add_output_space_event]], read<ptr<@type[[TYPE_tux_req_struct]]>>(%[[VALUE_req_4]]), read<ptr<@type[[TYPE_socket]]>>(field0(deref(read<ptr<@type[[TYPE_tux_req_struct]]>>(%[[VALUE_req_4]]))))), const<i32>(0))
+// DEFAULT-NEXT:                         if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE_tux_req_struct]]>, ptr<@type[[TYPE_socket]]>) -> i32>(%[[VALUE_add_output_space_event]], read<ptr<@type[[TYPE_tux_req_struct]]>>(%[[VALUE_req_4]]) [c="tux_req_t *"], read<ptr<@type[[TYPE_socket]]>>(field0(deref(read<ptr<@type[[TYPE_tux_req_struct]]>>(%[[VALUE_req_4]]))))), const<i32>(0))
 // DEFAULT-NEXT:                             {
-// DEFAULT-NEXT:                                 call<void, signature=fn(ptr<@type[[TYPE_tux_req_struct]]>) -> void>(%[[VALUE_del_tux_atom]], read<ptr<@type[[TYPE_tux_req_struct]]>>(%[[VALUE_req_4]]));
+// DEFAULT-NEXT:                                 call<void, signature=fn(ptr<@type[[TYPE_tux_req_struct]]>) -> void>(%[[VALUE_del_tux_atom]], read<ptr<@type[[TYPE_tux_req_struct]]>>(%[[VALUE_req_4]]) [c="tux_req_t *"]);
 // DEFAULT-NEXT:                                 goto %[[VALUE_repeat]];
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                     do %[[VALUE2:[0-9]+]]
@@ -83,7 +83,7 @@ repeat:
 // DEFAULT-NEXT:                     while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                     break %[[VALUE1]];
 // DEFAULT-NEXT:                     default %[[VALUE1]]:
-// DEFAULT-NEXT:                         call<void, signature=fn(ptr<@type[[TYPE_tux_req_struct]]>) -> void>(%[[VALUE_add_req_to_workqueue]], read<ptr<@type[[TYPE_tux_req_struct]]>>(%[[VALUE_req_4]]));
+// DEFAULT-NEXT:                         call<void, signature=fn(ptr<@type[[TYPE_tux_req_struct]]>) -> void>(%[[VALUE_add_req_to_workqueue]], read<ptr<@type[[TYPE_tux_req_struct]]>>(%[[VALUE_req_4]]) [c="tux_req_t *"]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

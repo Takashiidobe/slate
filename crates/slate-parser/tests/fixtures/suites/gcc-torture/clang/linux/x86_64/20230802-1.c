@@ -78,7 +78,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_y]], not<i32>(read<i32>(%[[VALUE_y]])));
 // DEFAULT-NEXT:         return and<i64>(reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(read<u32>(%[[VALUE_x]]))), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_y]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_foo_v:[0-9]+]] @foo_v(%[[VALUE_x_2:[0-9]+]] x: volatile u32) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo_v:[0-9]+]] @foo_v(%[[VALUE_x_2:[0-9]+]] x: volatile u32) -> i64 [linkage=external] [fallthrough=ub_if_used] [c="long long(volatile unsigned int)"] {
 // DEFAULT-NEXT:         let %[[VALUE_y_2:[0-9]+]] y: volatile i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(read<u32, volatile>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_y_2]], not<i32>(read<i32, volatile>(%[[VALUE_y_2]])));
 // DEFAULT-NEXT:         return and<i64>(reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(read<u32, volatile>(%[[VALUE_x_2]]))), widen<i64, reason=usual_arith>(read<i32, volatile>(%[[VALUE_y_2]])));
@@ -88,7 +88,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_y_3]], not<i32>(read<i32>(%[[VALUE_y_3]])));
 // DEFAULT-NEXT:         return xor<i64>(reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(read<u32>(%[[VALUE_x_3]]))), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_y_3]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_bar_v:[0-9]+]] @bar_v(%[[VALUE_x_4:[0-9]+]] x: volatile u32) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_bar_v:[0-9]+]] @bar_v(%[[VALUE_x_4:[0-9]+]] x: volatile u32) -> i64 [linkage=external] [fallthrough=ub_if_used] [c="long long(volatile unsigned int)"] {
 // DEFAULT-NEXT:         let %[[VALUE_y_4:[0-9]+]] y: volatile i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(read<u32, volatile>(%[[VALUE_x_4]]));
 // DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_y_4]], not<i32>(read<i32, volatile>(%[[VALUE_y_4]])));
 // DEFAULT-NEXT:         return xor<i64>(reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(read<u32, volatile>(%[[VALUE_x_4]]))), widen<i64, reason=usual_arith>(read<i32, volatile>(%[[VALUE_y_4]])));
@@ -98,7 +98,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_y_5]], not<i32>(read<i32>(%[[VALUE_y_5]])));
 // DEFAULT-NEXT:         return xor<i64>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_y_5]])), reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(read<u32>(%[[VALUE_x_5]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_baz_v:[0-9]+]] @baz_v(%[[VALUE_x_6:[0-9]+]] x: volatile u32) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_baz_v:[0-9]+]] @baz_v(%[[VALUE_x_6:[0-9]+]] x: volatile u32) -> i64 [linkage=external] [fallthrough=ub_if_used] [c="long long(volatile unsigned int)"] {
 // DEFAULT-NEXT:         let %[[VALUE_y_6:[0-9]+]] y: volatile i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(read<u32, volatile>(%[[VALUE_x_6]]));
 // DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_y_6]], not<i32>(read<i32, volatile>(%[[VALUE_y_6]])));
 // DEFAULT-NEXT:         return xor<i64>(widen<i64, reason=usual_arith>(read<i32, volatile>(%[[VALUE_y_6]])), reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(read<u32, volatile>(%[[VALUE_x_6]]))));

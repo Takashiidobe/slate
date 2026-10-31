@@ -85,7 +85,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 25> [storage=static] = code_units<array<i8, 25>>([116, 101, 115, 116, 95, 108, 111, 110, 103, 95, 100, 111, 117, 98, 108, 101, 32, 102, 97, 105, 108, 101, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 17> [storage=static] = code_units<array<i8, 17>>([116, 101, 115, 116, 95, 105, 110, 116, 32, 102, 97, 105, 108, 101, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_5:[0-9]+]] .str[[VALUE_str_5]]: array<i8, 22> [storage=static] = code_units<array<i8, 22>>([116, 101, 115, 116, 95, 108, 111, 110, 103, 95, 105, 110, 116, 32, 102, 97, 105, 108, 101, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_ctest_float:[0-9]+]] @ctest_float(%[[VALUE_x:[0-9]+]] x: complex<f32>) -> complex<f32> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_res:[0-9]+]] res: complex<f32> [storage=automatic];

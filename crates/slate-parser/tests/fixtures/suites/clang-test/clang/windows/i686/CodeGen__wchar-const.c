@@ -46,9 +46,9 @@ int main (int argc, const char * argv[])
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_wchar_t:[0-9]+]] wchar_t = u16;
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<u16, 18> [storage=static] = code_units<array<u16, 18>>([84, 104, 105, 115, 32, 105, 115, 32, 115, 111, 109, 101, 32, 116, 101, 120, 116, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<const u16>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<const i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const u16>) -> void>(%[[VALUE_foo]], pointer_cast<ptr<const u16>, reason=arg>(array_decay<ptr<u16>, length=Some(18)>(%[[VALUE_str]])));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<const u16> [c="const wchar_t *"]) -> void [linkage=external] [c="void(const wchar_t *)"];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<const i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] [c="int(int, const char *[])"] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const u16>) -> void>(%[[VALUE_foo]], pointer_cast<ptr<const u16>, reason=arg>(array_decay<ptr<u16>, length=Some(18)>(%[[VALUE_str]])) [c="const wchar_t *"]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

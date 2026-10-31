@@ -38,7 +38,7 @@ void baz(void)
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = @type[[TYPE__foo]];
-// DEFAULT-NEXT:     extern %[[VALUE_bar:[0-9]+]] bar: @type[[TYPE__foo]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_bar:[0-9]+]] bar: @type[[TYPE__foo]] [storage=static] [linkage=external] [c="foo"];
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_bar]]), const<i32>(0));
 // DEFAULT-NEXT:     }

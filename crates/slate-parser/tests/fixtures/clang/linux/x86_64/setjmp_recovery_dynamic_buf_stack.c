@@ -68,20 +68,20 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=128, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE___sigset_t:[0-9]+]] __sigset_t = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE___jmp_buf_tag:[0-9]+]] __jmp_buf_tag = struct {
-// DEFAULT-NEXT:         field0 __jmpbuf: array<i64, 8>;
+// DEFAULT-NEXT:         field0 __jmpbuf: array<i64, 8> [c="__jmp_buf"];
 // DEFAULT-NEXT:         field1 __mask_was_saved: i32;
-// DEFAULT-NEXT:         field2 __saved_mask: @type[[TYPE0]];
+// DEFAULT-NEXT:         field2 __saved_mask: @type[[TYPE0]] [c="__sigset_t"];
 // DEFAULT-NEXT:     } [size=200, align=8, offsets=[0, 64, 72]];
 // DEFAULT-NEXT:     type @type[[TYPE_jmp_buf:[0-9]+]] jmp_buf = array<@type[[TYPE___jmp_buf_tag]], 1>;
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
-// DEFAULT-NEXT:     global %[[VALUE_jb_stack:[0-9]+]] jb_stack: ptr<array<@type[[TYPE___jmp_buf_tag]], 1>> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_jb_stack:[0-9]+]] jb_stack: ptr<array<@type[[TYPE___jmp_buf_tag]], 1>> [storage=static] [linkage=internal] [c="jmp_buf *"];
 // DEFAULT-NEXT:     global %[[VALUE_jb_top:[0-9]+]] jb_top: i32 [storage=static] = const<i32>(0) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 23> [storage=static] = code_units<array<i8, 23>>([99, 97, 115, 101, 32, 37, 100, 58, 32, 110, 111, 32, 101, 120, 99, 101, 112, 116, 105, 111, 110, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 17> [storage=static] = code_units<array<i8, 17>>([99, 97, 115, 101, 32, 37, 100, 58, 32, 99, 97, 117, 103, 104, 116, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE__setjmp:[0-9]+]] @_setjmp(%[[VALUE___env:[0-9]+]] __env: ptr<@type[[TYPE___jmp_buf_tag]]> [array=1]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_longjmp:[0-9]+]] @longjmp(%[[VALUE___env_2:[0-9]+]] __env: ptr<@type[[TYPE___jmp_buf_tag]]> [array=1], %[[VALUE___val:[0-9]+]] __val: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE__setjmp:[0-9]+]] @_setjmp(%[[VALUE___env:[0-9]+]] __env: ptr<@type[[TYPE___jmp_buf_tag]]> [array=1]) -> i32 [linkage=external] [c="int(struct __jmp_buf_tag[1])"];
+// DEFAULT-NEXT:     fn %[[VALUE_longjmp:[0-9]+]] @longjmp(%[[VALUE___env_2:[0-9]+]] __env: ptr<@type[[TYPE___jmp_buf_tag]]> [array=1], %[[VALUE___val:[0-9]+]] __val: i32) -> void [linkage=external] [noreturn] [c="void(struct __jmp_buf_tag[1], int)"];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_free:[0-9]+]] @free(%[[VALUE___ptr:[0-9]+]] __ptr: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_inner:[0-9]+]] @inner(%[[VALUE_fail:[0-9]+]] fail: i32) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_fail]]), const<i32>(0))
@@ -107,11 +107,11 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<ptr<array<@type[[TYPE___jmp_buf_tag]], 1>>>(%[[VALUE_jb_stack]], pointer_cast<ptr<array<@type[[TYPE___jmp_buf_tag]], 1>>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(const<u64>(200), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))));
+// DEFAULT-NEXT:         write<ptr<array<@type[[TYPE___jmp_buf_tag]], 1>>>(%[[VALUE_jb_stack]], pointer_cast<ptr<array<@type[[TYPE___jmp_buf_tag]], 1>>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(const<u64>(200), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))) [c="jmp_buf *"]) [c="jmp_buf *"];
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_run_case]], const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_run_case]], const<i32>(1), const<i32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_run_case]], const<i32>(2), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], pointer_cast<ptr<void>, reason=arg>(read<ptr<array<@type[[TYPE___jmp_buf_tag]], 1>>>(%[[VALUE_jb_stack]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], pointer_cast<ptr<void>, reason=arg>(read<ptr<array<@type[[TYPE___jmp_buf_tag]], 1>>>(%[[VALUE_jb_stack]]) [c="jmp_buf *"]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

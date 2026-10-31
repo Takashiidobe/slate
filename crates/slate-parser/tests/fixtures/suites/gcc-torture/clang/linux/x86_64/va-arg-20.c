@@ -50,15 +50,15 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_v:[0-9]+]] v: va_list) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_v:[0-9]+]] v: va_list [c="va_list"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(va_list)"] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u64 [storage=automatic] = va_arg<u64>(%[[VALUE_v]]);
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_x]]), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(16)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_c:[0-9]+]] c: i8, %[[VALUE_d:[0-9]+]] d: i8, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_v_2:[0-9]+]] v: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_v_2:[0-9]+]] v: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_v_2]]);
-// DEFAULT-NEXT:         call<void, signature=fn(va_list) -> void>(%[[VALUE_foo]], read<va_list>(%[[VALUE_v_2]]));
+// DEFAULT-NEXT:         call<void, signature=fn(va_list) -> void>(%[[VALUE_foo]], read<va_list>(%[[VALUE_v_2]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_v_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

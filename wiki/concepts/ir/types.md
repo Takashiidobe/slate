@@ -45,8 +45,10 @@ The shown type is concrete and target-resolved; the C type is metadata
 - The whole typedef chain is kept (`uint32_t` → `__uint32_t` →
   `unsigned int`): it is the strongest idiomization signal.
 - C-level distinctions (`char` vs `signed char`, `long` vs `long long` on
-  LP64) live in sema operands and places and are erased only when emitting
-  IR, so `_Generic` still sees them.
+  LP64) live in sema operands and places and are erased from `ir::Type`, so
+  `_Generic` still sees them and `Module::c_types` carries them to Slate
+  ([pipeline](pipeline.md#c-type-metadata)). They can't be recovered from the
+  width: on i686 `u32` is either `unsigned int` or `unsigned long`.
 - Pointers, arrays, and function signatures print inline.
   `Type::Defined(TypeId)` references named or recursive definitions and
   keeps incomplete-type identity.

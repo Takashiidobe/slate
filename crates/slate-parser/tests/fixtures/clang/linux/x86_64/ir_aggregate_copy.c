@@ -59,18 +59,18 @@ union Item copy_item(union Item source) {
 // IR-NEXT:     fn %[[VALUE_take_pair:[0-9]+]] @take_pair(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_Pair]]) -> void [linkage=external] [abi=sysv64(native_c) -> void];
 // IR-NEXT:     fn %[[VALUE_take_item:[0-9]+]] @take_item(%[[VALUE_value_2:[0-9]+]] value: @type[[TYPE_Item]]) -> void [linkage=external] [abi=sysv64(native_c) -> void];
 // IR-NEXT:     fn %[[VALUE_copy_pair:[0-9]+]] @copy_pair(%[[VALUE_source:[0-9]+]] source: @type[[TYPE_Pair]]) -> @type[[TYPE_Pair]] [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_initialized:[0-9]+]] initialized: @type[[TYPE_Pair]] [storage=automatic] = copy<@type[[TYPE_Pair]], reason=assign>(read<@type[[TYPE_Pair]]>(%[[VALUE_source]]));
-// IR-NEXT:         let %[[VALUE_assigned:[0-9]+]] assigned: @type[[TYPE_Pair]] [storage=automatic];
-// IR-NEXT:         write<@type[[TYPE_Pair]]>(%[[VALUE_assigned]], copy<@type[[TYPE_Pair]], reason=assign>(read<@type[[TYPE_Pair]]>(%[[VALUE_initialized]])));
-// IR-NEXT:         call<void, signature=fn(@type[[TYPE_Pair]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_take_pair]], copy<@type[[TYPE_Pair]], reason=arg>(read<@type[[TYPE_Pair]]>(%[[VALUE_assigned]])));
-// IR-NEXT:         return copy<@type[[TYPE_Pair]], reason=return>(read<@type[[TYPE_Pair]]>(%[[VALUE_assigned]]));
+// IR-NEXT:         let %[[VALUE_initialized:[0-9]+]] initialized: @type[[TYPE_Pair]] [storage=automatic] = copy<@type[[TYPE_Pair]], reason=assign>(read<@type[[TYPE_Pair]]>(%[[VALUE_source]])) [c="Pair"] [c="Pair"];
+// IR-NEXT:         let %[[VALUE_assigned:[0-9]+]] assigned: @type[[TYPE_Pair]] [storage=automatic] [c="Pair"];
+// IR-NEXT:         write<@type[[TYPE_Pair]]>(%[[VALUE_assigned]], copy<@type[[TYPE_Pair]], reason=assign>(read<@type[[TYPE_Pair]]>(%[[VALUE_initialized]]) [c="Pair"]) [c="Pair"]) [c="Pair"];
+// IR-NEXT:         call<void, signature=fn(@type[[TYPE_Pair]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_take_pair]], copy<@type[[TYPE_Pair]], reason=arg>(read<@type[[TYPE_Pair]]>(%[[VALUE_assigned]]) [c="Pair"]));
+// IR-NEXT:         return copy<@type[[TYPE_Pair]], reason=return>(read<@type[[TYPE_Pair]]>(%[[VALUE_assigned]]) [c="Pair"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_copy_item:[0-9]+]] @copy_item(%[[VALUE_source_2:[0-9]+]] source: @type[[TYPE_Item]]) -> @type[[TYPE_Item]] [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_initialized_2:[0-9]+]] initialized: @type[[TYPE_Item]] [storage=automatic] = copy<@type[[TYPE_Item]], reason=assign>(read<@type[[TYPE_Item]]>(%[[VALUE_source_2]]));
-// IR-NEXT:         let %[[VALUE_assigned_2:[0-9]+]] assigned: @type[[TYPE_Item]] [storage=automatic];
-// IR-NEXT:         write<@type[[TYPE_Item]]>(%[[VALUE_assigned_2]], copy<@type[[TYPE_Item]], reason=assign>(read<@type[[TYPE_Item]]>(%[[VALUE_initialized_2]])));
-// IR-NEXT:         call<void, signature=fn(@type[[TYPE_Item]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_take_item]], copy<@type[[TYPE_Item]], reason=arg>(read<@type[[TYPE_Item]]>(%[[VALUE_assigned_2]])));
-// IR-NEXT:         return copy<@type[[TYPE_Item]], reason=return>(read<@type[[TYPE_Item]]>(%[[VALUE_assigned_2]]));
+// IR-NEXT:         let %[[VALUE_initialized_2:[0-9]+]] initialized: @type[[TYPE_Item]] [storage=automatic] = copy<@type[[TYPE_Item]], reason=assign>(read<@type[[TYPE_Item]]>(%[[VALUE_source_2]])) [c="Item"] [c="Item"];
+// IR-NEXT:         let %[[VALUE_assigned_2:[0-9]+]] assigned: @type[[TYPE_Item]] [storage=automatic] [c="Item"];
+// IR-NEXT:         write<@type[[TYPE_Item]]>(%[[VALUE_assigned_2]], copy<@type[[TYPE_Item]], reason=assign>(read<@type[[TYPE_Item]]>(%[[VALUE_initialized_2]]) [c="Item"]) [c="Item"]) [c="Item"];
+// IR-NEXT:         call<void, signature=fn(@type[[TYPE_Item]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_take_item]], copy<@type[[TYPE_Item]], reason=arg>(read<@type[[TYPE_Item]]>(%[[VALUE_assigned_2]]) [c="Item"]));
+// IR-NEXT:         return copy<@type[[TYPE_Item]], reason=return>(read<@type[[TYPE_Item]]>(%[[VALUE_assigned_2]]) [c="Item"]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

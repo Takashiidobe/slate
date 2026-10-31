@@ -37,7 +37,7 @@ void unaddressable(struct Pair *s, v4 v) {
 // IR-NEXT:         field0 b: i32 : 3;
 // IR-NEXT:         field1 w: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4], bit_offsets=[Some(0), None], bit_units=[(0, 1)], field_units=[Some(0), None]];
-// IR-NEXT:     fn %[[VALUE_unaddressable:[0-9]+]] @unaddressable(%[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE_Pair]]>, %[[VALUE_v:[0-9]+]] v: vector<i32, 4>) -> void [linkage=external] [abi=sysv64(scalar, direct) -> void] [fallthrough=ret_void] {
+// IR-NEXT:     fn %[[VALUE_unaddressable:[0-9]+]] @unaddressable(%[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE_Pair]]>, %[[VALUE_v:[0-9]+]] v: vector<i32, 4> [c="v4"]) -> void [linkage=external] [abi=sysv64(scalar, direct) -> void] [fallthrough=ret_void] [c="void(struct Pair *, v4)"] {
 // IR-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic] = const<i32>(1);
 // IR-NEXT:         asm "# %0 %1 %2" [dialect=att] [options=readonly,nostack] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2;

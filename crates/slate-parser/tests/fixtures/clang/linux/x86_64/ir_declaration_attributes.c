@@ -57,8 +57,8 @@ int locals(void) {
 // IR-NEXT:     extern %[[VALUE_renamed:[0-9]+]] renamed: i32 [storage=static] [linkage=external] [asm_name="real_name"];
 // IR-NEXT:     global %[[VALUE_placed:[0-9]+]] placed: i32 [storage=static] = const<i32>(1) [linkage=internal] [section="data.custom"];
 // IR-NEXT:     global %[[VALUE_exported:[0-9]+]] exported: i32 [storage=static] = const<i32>(2) [linkage=external] [visibility=hidden] [used];
-// IR-NEXT:     global %[[VALUE_aliased:[0-9]+]] aliased: i16 [storage=static] [linkage=external];
-// IR-NEXT:     global %[[VALUE_reused:[0-9]+]] reused: i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_aliased:[0-9]+]] aliased: i16 [storage=static] [linkage=external] [c="may_alias_short"];
+// IR-NEXT:     global %[[VALUE_reused:[0-9]+]] reused: i32 [storage=static] [linkage=external] [c="deprecated_alias"];
 // IR-NEXT:     fn %[[VALUE_locals:[0-9]+]] @locals() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %[[VALUE_aligned_local:[0-9]+]] aligned_local: i32 [storage=automatic] [align=16] = const<i32>(0);
 // IR-NEXT:         let %[[VALUE_vector_local:[0-9]+]] vector_local: vector<i32, 4> [storage=automatic] = aggregate<vector<i32, 4>, zero_fill=true>(index0 = const<i32>(0));

@@ -56,13 +56,13 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
-// DEFAULT-NEXT:     global %[[VALUE_ap:[0-9]+]] ap: va_list [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ap:[0-9]+]] ap: va_list [storage=static] [linkage=external] [c="va_list"];
 // DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: f32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> ptr<va_list> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> ptr<va_list> [linkage=external] [fallthrough=ub_if_used] [c="va_list *(void)"] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
-// DEFAULT-NEXT:         return addr_of<ptr<va_list>>(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         return addr_of<ptr<va_list>>(%[[VALUE_ap]]) [c="va_list *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_i:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);

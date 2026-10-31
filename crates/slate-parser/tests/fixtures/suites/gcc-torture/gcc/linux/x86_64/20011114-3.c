@@ -71,14 +71,14 @@ int baz (void)
 // DEFAULT-NEXT:         field1 t: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type[[TYPE_C:[0-9]+]] C = @type[[TYPE0]];
-// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: @type[[TYPE0]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: @type[[TYPE0]] [storage=static] [linkage=external] [c="C"];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: ptr<@type[[TYPE0]]> [storage=automatic] = addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_x]]);
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: ptr<@type[[TYPE0]]> [storage=automatic] = addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_x]]) [c="C *"] [c="C *"];
 // DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] {
 // DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn() -> i32>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE2]]));

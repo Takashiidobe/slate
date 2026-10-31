@@ -51,24 +51,24 @@ foo (void)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = ptr<fn() -> void>;
-// DEFAULT-NEXT:     extern %[[VALUE_x:[0-9]+]] x: array<ptr<fn() -> void>, incomplete> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<ptr<fn() -> void>> [storage=static] = array_decay<ptr<ptr<fn() -> void>>, length=None>(%[[VALUE_x]]) [linkage=internal];
+// DEFAULT-NEXT:     extern %[[VALUE_x:[0-9]+]] x: array<ptr<fn() -> void>, incomplete> [storage=static] [linkage=external] [c="T[]"];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<ptr<fn() -> void>> [storage=static] = array_decay<ptr<ptr<fn() -> void>>, length=None>(%[[VALUE_x]]) [c="T *"] [linkage=internal] [c="T *"];
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: bool [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_expect:[0-9]+]] @__builtin_expect(%[[VALUE0:[0-9]+]] <unnamed>: i64, %[[VALUE1:[0-9]+]] <unnamed>: i64) -> i64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: ptr<fn() -> void> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: ptr<fn() -> void> [storage=automatic] [c="T"];
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%[[VALUE___builtin_expect]], from_bool<i64, reason=arg>(read<bool>(%[[VALUE_a]])), widen<i64, reason=arg>(const<i32>(0))), const<i64>(0))
 // DEFAULT-NEXT:             return;
 // DEFAULT-NEXT:         while %[[VALUE2:[0-9]+]] {
-// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: ptr<fn() -> void> [synthetic] = read<ptr<fn() -> void>>(deref(read<ptr<ptr<fn() -> void>>>(%[[VALUE_p]])));
-// DEFAULT-NEXT:             write<ptr<fn() -> void>>(%[[VALUE_f]], read<ptr<fn() -> void>>(%[[VALUE3]]));
-// DEFAULT-NEXT:             yield ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE3]]), null<ptr<fn() -> void>>);
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: ptr<fn() -> void> [synthetic] = read<ptr<fn() -> void>>(deref(read<ptr<ptr<fn() -> void>>>(%[[VALUE_p]]))) [c="T"] [c="T"];
+// DEFAULT-NEXT:             write<ptr<fn() -> void>>(%[[VALUE_f]], read<ptr<fn() -> void>>(%[[VALUE3]]) [c="T"]) [c="T"] [c="T"];
+// DEFAULT-NEXT:             yield ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE3]]) [c="T"], null<ptr<fn() -> void>>);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: ptr<ptr<fn() -> void>> [synthetic] = read<ptr<ptr<fn() -> void>>>(%[[VALUE_p]]);
-// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: ptr<ptr<fn() -> void>> [synthetic] = ptr_offset<ptr<ptr<fn() -> void>>, subtract=false, element=ptr<fn() -> void>, overflow=ub>(read<ptr<ptr<fn() -> void>>>(%[[VALUE4]]), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<ptr<fn() -> void>>>(%[[VALUE_p]], read<ptr<ptr<fn() -> void>>>(%[[VALUE5]]));
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%[[VALUE_f]]));
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: ptr<ptr<fn() -> void>> [synthetic] = read<ptr<ptr<fn() -> void>>>(%[[VALUE_p]]) [c="T *"] [c="T *"];
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: ptr<ptr<fn() -> void>> [synthetic] = ptr_offset<ptr<ptr<fn() -> void>>, subtract=false, element=ptr<fn() -> void>, overflow=ub>(read<ptr<ptr<fn() -> void>>>(%[[VALUE4]]) [c="T *"], const<i32>(1)) [c="T *"] [c="T *"];
+// DEFAULT-NEXT:                 write<ptr<ptr<fn() -> void>>>(%[[VALUE_p]], read<ptr<ptr<fn() -> void>>>(%[[VALUE5]]) [c="T *"]) [c="T *"] [c="T *"];
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%[[VALUE_f]]) [c="T"]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         write<bool>(%[[VALUE_a]], ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
 // DEFAULT-NEXT:     }

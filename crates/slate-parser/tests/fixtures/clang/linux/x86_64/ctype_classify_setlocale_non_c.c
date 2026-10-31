@@ -68,7 +68,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str_5:[0-9]+]] .str[[VALUE_str_5]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([110, 111, 116, 45, 100, 105, 103, 105, 116, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE___ctype_b_loc:[0-9]+]] @__ctype_b_loc() -> ptr<ptr<const u16>> [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_setlocale:[0-9]+]] @setlocale(%[[VALUE___category:[0-9]+]] __category: i32, %[[VALUE___locale:[0-9]+]] __locale: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<ptr<i8>, signature=fn(i32, ptr<const i8>) -> ptr<i8>>(%[[VALUE_setlocale]], const<i32>(6), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str]])));
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(65));

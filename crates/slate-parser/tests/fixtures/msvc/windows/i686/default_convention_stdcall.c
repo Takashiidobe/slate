@@ -53,7 +53,7 @@ int main(void) { return 0; }
 // IR-NEXT:     fn %[[VALUE_var:[0-9]+]] @var(%[[VALUE_a_3:[0-9]+]] a: i32, ...) -> i32 [linkage=external];
 // IR-NEXT:     fn %[[VALUE_explicit_cdecl:[0-9]+]] @explicit_cdecl(%[[VALUE_a_4:[0-9]+]] a: i32) -> i32 [linkage=external];
 // IR-NEXT:     fn %[[VALUE_explicit_fast:[0-9]+]] @explicit_fast(%[[VALUE_a_5:[0-9]+]] a: i32) -> i32 [linkage=external] [abi=x86_win32 fastcall(scalar) -> scalar];
-// IR-NEXT:     fn %[[VALUE_typedefd:[0-9]+]] @typedefd(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external] [abi=x86_win32 stdcall(scalar) -> scalar];
+// IR-NEXT:     fn %[[VALUE_typedefd:[0-9]+]] @typedefd(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external] [abi=x86_win32 stdcall(scalar) -> scalar] [c="fn_t"];
 // IR-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // IR-NEXT:         return const<i32>(0);
 // IR-NEXT:     }

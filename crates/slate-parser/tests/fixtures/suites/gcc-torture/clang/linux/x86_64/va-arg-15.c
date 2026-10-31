@@ -67,7 +67,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_iarg:[0-9]+]] iarg: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_flag:[0-9]+]] flag: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:

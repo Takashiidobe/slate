@@ -334,8 +334,8 @@ func10 (_Atomic int *p)
 // DEFAULT-NEXT:     global %[[VALUE_xaip1:[0-9]+]] xaip1: ptr<atomic i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_xaip2:[0-9]+]] xaip2: ptr<volatile atomic i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_xvp1:[0-9]+]] xvp1: ptr<void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE1:[0-9]+]] <unnamed>: atomic ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_func:[0-9]+]] @func(%[[VALUE_al1:[0-9]+]] al1: volatile atomic i64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE1:[0-9]+]] <unnamed>: atomic ptr<i32>) -> void [linkage=external] [c="void(int[])"];
+// DEFAULT-NEXT:     fn %[[VALUE_func:[0-9]+]] @func(%[[VALUE_al1:[0-9]+]] al1: volatile atomic i64) -> void [linkage=external] [fallthrough=ret_void] [c="void(volatile _Atomic long)"] {
 // DEFAULT-NEXT:         write<i32, atomic=seq_cst>(%[[VALUE_ai1]], read<i32, atomic=seq_cst>(%[[VALUE_ai2]]));
 // DEFAULT-NEXT:         write<i32, atomic=seq_cst>(%[[VALUE_ai1]], read<i32>(%[[VALUE_i1]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i1]], read<i32, atomic=seq_cst>(%[[VALUE_ai2]]));
@@ -431,11 +431,11 @@ func10 (_Atomic int *p)
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_xvp1]], pointer_cast<ptr<void>, reason=assign>(read<ptr<atomic @type[[TYPE_t]]>>(%[[VALUE_atp1]])));
 // DEFAULT-NEXT:         write<ptr<atomic @type[[TYPE_t]]>>(%[[VALUE_atp1]], pointer_cast<ptr<atomic @type[[TYPE_t]]>, reason=assign>(read<ptr<void>>(%[[VALUE_xvp1]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fc0a:[0-9]+]] @fc0a(%[[VALUE23:[0-9]+]] <unnamed>: i32 [const]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_fc0b:[0-9]+]] @fc0b(%[[VALUE24:[0-9]+]] <unnamed>: atomic i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fc0a:[0-9]+]] @fc0a(%[[VALUE23:[0-9]+]] <unnamed>: i32 [const]) -> void [linkage=external] [c="void(const int)"];
+// DEFAULT-NEXT:     fn %[[VALUE_fc0b:[0-9]+]] @fc0b(%[[VALUE24:[0-9]+]] <unnamed>: atomic i32) -> void [linkage=external] [c="void(_Atomic int)"];
 // DEFAULT-NEXT:     fn %[[VALUE_fc1a:[0-9]+]] @fc1a(%[[VALUE_x:[0-9]+]] x: volatile i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fc1b:[0-9]+]] @fc1b(%[[VALUE_x_2:[0-9]+]] x: volatile atomic i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_fc1b:[0-9]+]] @fc1b(%[[VALUE_x_2:[0-9]+]] x: volatile atomic i32) -> void [linkage=external] [fallthrough=ret_void] [c="void(_Atomic int)"] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fc2a:[0-9]+]] @fc2a(%[[VALUE_x_3:[0-9]+]] x: i32 [const]) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
@@ -444,7 +444,7 @@ func10 (_Atomic int *p)
 // DEFAULT-NEXT:     fn %[[VALUE_fc3a:[0-9]+]] @fc3a(%[[VALUE_x_5:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_x_6:[0-9]+]] x: volatile i16 [storage=automatic] = truncate<i16, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_5]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fc3b:[0-9]+]] @fc3b(%[[VALUE_x_7:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_fc3b:[0-9]+]] @fc3b(%[[VALUE_x_7:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] [c="void(_Atomic int)"] {
 // DEFAULT-NEXT:         let %[[VALUE_x_8:[0-9]+]] x: atomic i16 [storage=automatic] = truncate<i16, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_7]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fc4a:[0-9]+]] @fc4a(%[[VALUE_x_9:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {

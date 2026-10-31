@@ -58,7 +58,7 @@ void f2(struct x *y) {
 // DEFAULT-NEXT:     type @type[[TYPE_cf:[0-9]+]] cf = complex<f32>;
 // DEFAULT-NEXT:     type @type[[TYPE_x:[0-9]+]] x = struct {
 // DEFAULT-NEXT:         field0 c: i8;
-// DEFAULT-NEXT:         field1 f: complex<f32>;
+// DEFAULT-NEXT:         field1 f: complex<f32> [c="cf"];
 // DEFAULT-NEXT:     } [size=9, align=1, offsets=[0, 1]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
@@ -68,7 +68,7 @@ void f2(struct x *y) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_x]] [storage=automatic];
-// DEFAULT-NEXT:         write<complex<f32>>(field1(%[[VALUE_s]]), real_to_complex<complex<f32>, reason=assign>(int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))));
+// DEFAULT-NEXT:         write<complex<f32>>(field1(%[[VALUE_s]]), real_to_complex<complex<f32>, reason=assign>(int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))) [c="cf"]) [c="cf"];
 // DEFAULT-NEXT:         write<i8>(field0(%[[VALUE_s]]), truncate<i8, reason=assign, fits=always>(const<i32>(42)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_x]]>) -> void>(%[[VALUE_f2]], addr_of<ptr<@type[[TYPE_x]]>>(%[[VALUE_s]]));
 // DEFAULT-NEXT:     }

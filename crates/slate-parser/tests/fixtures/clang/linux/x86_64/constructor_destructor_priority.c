@@ -64,7 +64,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str_5:[0-9]+]] .str[[VALUE_str_5]]: array<i8, 19> [storage=static] = code_units<array<i8, 19>>([100, 116, 111, 114, 58, 32, 101, 97, 114, 108, 121, 32, 40, 49, 48, 49, 41, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_6:[0-9]+]] .str[[VALUE_str_6]]: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([100, 116, 111, 114, 58, 32, 100, 101, 102, 97, 117, 108, 116, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_7:[0-9]+]] .str[[VALUE_str_7]]: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([109, 97, 105, 110, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_init_late:[0-9]+]] @init_late() -> void [linkage=internal] [constructor=200] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str]])));
 // DEFAULT-NEXT:     }

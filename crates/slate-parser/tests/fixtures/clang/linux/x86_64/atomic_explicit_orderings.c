@@ -68,20 +68,20 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_memory_order_2:[0-9]+]] memory_order = @type[[TYPE_memory_order]];
 // DEFAULT-NEXT:     type @type[[TYPE_atomic_int:[0-9]+]] atomic_int = i32;
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 28> [storage=static] = code_units<array<i8, 28>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: atomic i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         write<i32, atomic=relaxed>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_a]])), const<i32>(10));
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: atomic i32 [storage=automatic] = const<i32>(0) [c="atomic_int"];
+// DEFAULT-NEXT:         write<i32, atomic=relaxed>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_a]])), const<i32>(10)) [c="atomic_int"];
 // DEFAULT-NEXT:         let %[[VALUE_relaxed_load:[0-9]+]] relaxed_load: i32 [storage=automatic] = read<i32, atomic=relaxed>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_a]])));
-// DEFAULT-NEXT:         write<i32, atomic=release>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_a]])), const<i32>(20));
+// DEFAULT-NEXT:         write<i32, atomic=release>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_a]])), const<i32>(20)) [c="atomic_int"];
 // DEFAULT-NEXT:         let %[[VALUE_acquire_load:[0-9]+]] acquire_load: i32 [storage=automatic] = read<i32, atomic=acquire>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_a]])));
-// DEFAULT-NEXT:         write<i32, atomic=seq_cst>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_a]])), const<i32>(30));
+// DEFAULT-NEXT:         write<i32, atomic=seq_cst>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_a]])), const<i32>(30)) [c="atomic_int"];
 // DEFAULT-NEXT:         let %[[VALUE_consume_load:[0-9]+]] consume_load: i32 [storage=automatic] = read<i32, atomic=consume>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_a]])));
 // DEFAULT-NEXT:         let %[[VALUE_old_add:[0-9]+]] old_add: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_a]])), add<i32, overflow=wrap>(old<i32>, const<i32>(2)));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_a]])), add<i32, overflow=wrap>(old<i32>, const<i32>(2)) [c="atomic_int"]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_old_add]], read<i32>(%[[VALUE0]]));
 // DEFAULT-NEXT:         let %[[VALUE_old_or:[0-9]+]] old_or: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_a]])), or<i32>(old<i32>, const<i32>(1)));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_a]])), or<i32>(old<i32>, const<i32>(1)) [c="atomic_int"]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_old_or]], read<i32>(%[[VALUE1]]));
 // DEFAULT-NEXT:         let %[[VALUE_old_xchg:[0-9]+]] old_xchg: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=acquire>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_a]])), const<i32>(5));

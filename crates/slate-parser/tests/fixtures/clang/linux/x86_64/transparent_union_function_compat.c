@@ -59,10 +59,10 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___socklen_t:[0-9]+]] __socklen_t = u32;
-// DEFAULT-NEXT:     type @type[[TYPE_socklen_t:[0-9]+]] socklen_t = u32;
+// DEFAULT-NEXT:     type @type[[TYPE_socklen_t:[0-9]+]] socklen_t = u32 [c="__socklen_t"];
 // DEFAULT-NEXT:     type @type[[TYPE_sa_family_t:[0-9]+]] sa_family_t = u16;
 // DEFAULT-NEXT:     type @type[[TYPE_sockaddr:[0-9]+]] sockaddr = struct {
-// DEFAULT-NEXT:         field0 sa_family: u16;
+// DEFAULT-NEXT:         field0 sa_family: u16 [c="sa_family_t"];
 // DEFAULT-NEXT:         field1 sa_data: array<i8, 14>;
 // DEFAULT-NEXT:     } [size=16, align=2, offsets=[0, 2]];
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
@@ -98,26 +98,26 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:         field1 l: ptr<i64>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE_Argument:[0-9]+]] Argument = @type[[TYPE1]];
-// DEFAULT-NEXT:     fn %[[VALUE_getsockname:[0-9]+]] @getsockname(%[[VALUE___fd:[0-9]+]] __fd: i32, %[[VALUE___addr:[0-9]+]] __addr: @type[[TYPE0]], %[[VALUE___len:[0-9]+]] __len: ptr<u32> [restrict]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_take:[0-9]+]] @take(%[[VALUE_argument:[0-9]+]] argument: @type[[TYPE1]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_getsockname:[0-9]+]] @getsockname(%[[VALUE___fd:[0-9]+]] __fd: i32, %[[VALUE___addr:[0-9]+]] __addr: @type[[TYPE0]] [c="__SOCKADDR_ARG"], %[[VALUE___len:[0-9]+]] __len: ptr<u32> [restrict] [c="socklen_t *restrict"]) -> i32 [linkage=external] [c="int(int, __SOCKADDR_ARG, socklen_t *restrict)"];
+// DEFAULT-NEXT:     fn %[[VALUE_take:[0-9]+]] @take(%[[VALUE_argument:[0-9]+]] argument: @type[[TYPE1]] [c="Argument"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(Argument)"] {
 // DEFAULT-NEXT:         return read<i32>(deref(read<ptr<i32>>(field0(%[[VALUE_argument]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_read_long:[0-9]+]] @read_long(%[[VALUE_value:[0-9]+]] value: ptr<i64>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return truncate<i32, reason=explicit, fits=unknown>(read<i64>(deref(read<ptr<i64>>(%[[VALUE_value]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_call:[0-9]+]] @call(%[[VALUE_f:[0-9]+]] f: ptr<fn(i32, ptr<@type[[TYPE_sockaddr]]>, ptr<u32>) -> i32>, %[[VALUE_fd:[0-9]+]] fd: i32, %[[VALUE_address:[0-9]+]] address: ptr<@type[[TYPE_sockaddr]]>, %[[VALUE_length:[0-9]+]] length: ptr<u32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32, ptr<@type[[TYPE_sockaddr]]>, ptr<u32>) -> i32>(read<ptr<fn(i32, ptr<@type[[TYPE_sockaddr]]>, ptr<u32>) -> i32>>(%[[VALUE_f]]), read<i32>(%[[VALUE_fd]]), read<ptr<@type[[TYPE_sockaddr]]>>(%[[VALUE_address]]), read<ptr<u32>>(%[[VALUE_length]]));
+// DEFAULT-NEXT:     fn %[[VALUE_call:[0-9]+]] @call(%[[VALUE_f:[0-9]+]] f: ptr<fn(i32, ptr<@type[[TYPE_sockaddr]]>, ptr<u32>) -> i32> [c="int (*)(int, struct sockaddr *, socklen_t *)"], %[[VALUE_fd:[0-9]+]] fd: i32, %[[VALUE_address:[0-9]+]] address: ptr<@type[[TYPE_sockaddr]]>, %[[VALUE_length:[0-9]+]] length: ptr<u32> [c="socklen_t *"]) -> i32 [linkage=internal] [fallthrough=ub_if_used] [c="int(int (*)(int, struct sockaddr *, socklen_t *), int, struct sockaddr *, socklen_t *)"] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32, ptr<@type[[TYPE_sockaddr]]>, ptr<u32>) -> i32>(read<ptr<fn(i32, ptr<@type[[TYPE_sockaddr]]>, ptr<u32>) -> i32>>(%[[VALUE_f]]) [c="int (*)(int, struct sockaddr *, socklen_t *)"], read<i32>(%[[VALUE_fd]]), read<ptr<@type[[TYPE_sockaddr]]>>(%[[VALUE_address]]), read<ptr<u32>>(%[[VALUE_length]]) [c="socklen_t *"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         read<ptr<ptr<i8>>>(%[[VALUE_argv]]);
 // DEFAULT-NEXT:         let %[[VALUE_address_2:[0-9]+]] address: @type[[TYPE_sockaddr]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_length_2:[0-9]+]] length: u32 [storage=automatic] = truncate<u32, reason=assign, fits=always>(const<u64>(16));
-// DEFAULT-NEXT:         let %[[VALUE_from_member:[0-9]+]] from_member: ptr<fn(@type[[TYPE1]]) -> i32> [storage=automatic] = pointer_cast<ptr<fn(@type[[TYPE1]]) -> i32>, reason=assign>(function_decay<ptr<fn(ptr<i64>) -> i32>>(%[[VALUE_read_long]]));
+// DEFAULT-NEXT:         let %[[VALUE_length_2:[0-9]+]] length: u32 [storage=automatic] = truncate<u32, reason=assign, fits=always>(const<u64>(16)) [c="socklen_t"] [c="socklen_t"];
+// DEFAULT-NEXT:         let %[[VALUE_from_member:[0-9]+]] from_member: ptr<fn(@type[[TYPE1]]) -> i32> [storage=automatic] = pointer_cast<ptr<fn(@type[[TYPE1]]) -> i32>, reason=assign>(function_decay<ptr<fn(ptr<i64>) -> i32>>(%[[VALUE_read_long]])) [c="int (*)(Argument)"] [c="int (*)(Argument)"];
 // DEFAULT-NEXT:         let %[[VALUE_to_member:[0-9]+]] to_member: ptr<fn(ptr<i32>) -> i32> [storage=automatic] = pointer_cast<ptr<fn(ptr<i32>) -> i32>, reason=assign>(function_decay<ptr<fn(@type[[TYPE1]]) -> i32>>(%[[VALUE_take]]));
 // DEFAULT-NEXT:         let %[[VALUE_merged:[0-9]+]] merged: ptr<fn(ptr<i32>) -> i32> [storage=automatic] = pointer_cast<ptr<fn(ptr<i32>) -> i32>, reason=assign>(conditional<ptr<fn(@type[[TYPE1]]) -> i32>>(ne<i32>(read<i32>(%[[VALUE_argc]]), const<i32>(0)), function_decay<ptr<fn(@type[[TYPE1]]) -> i32>>(%[[VALUE_take]]), pointer_cast<ptr<fn(@type[[TYPE1]]) -> i32>, reason=usual_arith>(read<ptr<fn(ptr<i32>) -> i32>>(%[[VALUE_to_member]]))));
 // DEFAULT-NEXT:         let %[[VALUE_value_2:[0-9]+]] value: i32 [storage=automatic] = const<i32>(5);
 // DEFAULT-NEXT:         let %[[VALUE_wide:[0-9]+]] wide: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(7));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(ptr<fn(i32, ptr<@type[[TYPE_sockaddr]]>, ptr<u32>) -> i32>, i32, ptr<@type[[TYPE_sockaddr]]>, ptr<u32>) -> i32>(%[[VALUE_call]], pointer_cast<ptr<fn(i32, ptr<@type[[TYPE_sockaddr]]>, ptr<u32>) -> i32>, reason=arg>(function_decay<ptr<fn(i32, @type[[TYPE0]], ptr<u32>) -> i32>>(%[[VALUE_getsockname]])), neg<i32, overflow=ub>(const<i32>(1)), addr_of<ptr<@type[[TYPE_sockaddr]]>>(%[[VALUE_address_2]]), addr_of<ptr<u32>>(%[[VALUE_length_2]])), call<i32, signature=fn(@type[[TYPE1]]) -> i32>(read<ptr<fn(@type[[TYPE1]]) -> i32>>(%[[VALUE_from_member]]), aggregate<@type[[TYPE1]], zero_fill=false>(field1 = addr_of<ptr<i64>>(%[[VALUE_wide]])))), call<i32, signature=fn(ptr<i32>) -> i32>(read<ptr<fn(ptr<i32>) -> i32>>(%[[VALUE_to_member]]), addr_of<ptr<i32>>(%[[VALUE_value_2]]))), call<i32, signature=fn(ptr<i32>) -> i32>(read<ptr<fn(ptr<i32>) -> i32>>(%[[VALUE_merged]]), addr_of<ptr<i32>>(%[[VALUE_value_2]])));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(ptr<fn(i32, ptr<@type[[TYPE_sockaddr]]>, ptr<u32>) -> i32>, i32, ptr<@type[[TYPE_sockaddr]]>, ptr<u32>) -> i32>(%[[VALUE_call]], pointer_cast<ptr<fn(i32, ptr<@type[[TYPE_sockaddr]]>, ptr<u32>) -> i32>, reason=arg>(function_decay<ptr<fn(i32, @type[[TYPE0]], ptr<u32>) -> i32>>(%[[VALUE_getsockname]]) [c="int (*)(int, __SOCKADDR_ARG, socklen_t *restrict)"]) [c="int (*)(int, struct sockaddr *, socklen_t *)"], neg<i32, overflow=ub>(const<i32>(1)), addr_of<ptr<@type[[TYPE_sockaddr]]>>(%[[VALUE_address_2]]), addr_of<ptr<u32>>(%[[VALUE_length_2]]) [c="socklen_t *"]), call<i32, signature=fn(@type[[TYPE1]]) -> i32>(read<ptr<fn(@type[[TYPE1]]) -> i32>>(%[[VALUE_from_member]]) [c="int (*)(Argument)"], aggregate<@type[[TYPE1]], zero_fill=false>(field1 = addr_of<ptr<i64>>(%[[VALUE_wide]])))), call<i32, signature=fn(ptr<i32>) -> i32>(read<ptr<fn(ptr<i32>) -> i32>>(%[[VALUE_to_member]]), addr_of<ptr<i32>>(%[[VALUE_value_2]]))), call<i32, signature=fn(ptr<i32>) -> i32>(read<ptr<fn(ptr<i32>) -> i32>>(%[[VALUE_merged]]), addr_of<ptr<i32>>(%[[VALUE_value_2]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

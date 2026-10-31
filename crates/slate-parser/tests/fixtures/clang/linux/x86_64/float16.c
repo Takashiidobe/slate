@@ -56,11 +56,11 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
 // DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
-// DEFAULT-NEXT:     type @type[[TYPE_va_list_2:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list_2:[0-9]+]] va_list = va_list [c="__gnuc_va_list"];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_add16:[0-9]+]] @add16(%[[VALUE_a:[0-9]+]] a: f16, %[[VALUE_b:[0-9]+]] b: f16) -> f16 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=ignore>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(float_widen<f32, reason=excess_precision>(read<f16>(%[[VALUE_a]])), float_widen<f32, reason=excess_precision>(read<f16>(%[[VALUE_b]]))));
 // DEFAULT-NEXT:     }
@@ -68,7 +68,7 @@ int main(void) {
 // DEFAULT-NEXT:         return float_narrow<f16, reason=excess_precision, rounding=nearest_even, exceptions=ignore>(mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(float_widen<f32, reason=excess_precision>(read<f16>(%[[VALUE_a_2]])), float_widen<f32, reason=excess_precision>(read<f16>(%[[VALUE_b_2]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_sum_variadic:[0-9]+]] @sum_variadic(%[[VALUE_n:[0-9]+]] n: i32, ...) -> f16 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         let %[[VALUE_total:[0-9]+]] total: f16 [storage=automatic] = int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0));
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]

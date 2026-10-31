@@ -55,7 +55,7 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type[[TYPE_memory_order_2:[0-9]+]] memory_order = @type[[TYPE_memory_order]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 30> [storage=static] = code_units<array<i8, 30>>([37, 46, 50, 102, 32, 37, 46, 50, 102, 32, 37, 116, 100, 32, 37, 116, 100, 32, 37, 100, 32, 37, 116, 100, 32, 37, 116, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: atomic f32 [storage=automatic] = const<f32>(1.5);
 // DEFAULT-NEXT:         let %[[VALUE_old_f:[0-9]+]] old_f: f32 [storage=automatic];

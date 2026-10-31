@@ -39,8 +39,8 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_adjust:[0-9]+]] @adjust(%[[VALUE_value:[0-9]+]] value: atomic i32, %[[VALUE_delta:[0-9]+]] delta: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
+// DEFAULT-NEXT:     fn %[[VALUE_adjust:[0-9]+]] @adjust(%[[VALUE_value:[0-9]+]] value: atomic i32, %[[VALUE_delta:[0-9]+]] delta: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(_Atomic int, int)"] {
 // DEFAULT-NEXT:         write<i32, atomic=seq_cst>(%[[VALUE_value]], add<i32, overflow=ub>(read<i32, atomic=seq_cst>(%[[VALUE_value]]), read<i32>(%[[VALUE_delta]])));
 // DEFAULT-NEXT:         return read<i32, atomic=seq_cst>(%[[VALUE_value]]);
 // DEFAULT-NEXT:     }

@@ -72,12 +72,12 @@ void vectors(v4f v, v8f w, v16f z, float f) {
 // IR-NEXT:             in 1 "r" [reg] width 64 read<i64>(%[[VALUE_l]]);
 // IR-NEXT:         }
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_vectors:[0-9]+]] @vectors(%[[VALUE_v:[0-9]+]] v: vector<f32, 4>, %[[VALUE_w:[0-9]+]] w: vector<f32, 8>, %[[VALUE_z:[0-9]+]] z: vector<f32, 16>, %[[VALUE_f:[0-9]+]] f: f32) -> void [linkage=external] [abi=sysv64(direct, byval<align=32>, byval<align=64>, scalar) -> void] [fallthrough=ret_void] {
+// IR-NEXT:     fn %[[VALUE_vectors:[0-9]+]] @vectors(%[[VALUE_v:[0-9]+]] v: vector<f32, 4> [c="v4f"], %[[VALUE_w:[0-9]+]] w: vector<f32, 8> [c="v8f"], %[[VALUE_z:[0-9]+]] z: vector<f32, 16> [c="v16f"], %[[VALUE_f:[0-9]+]] f: f32) -> void [linkage=external] [abi=sysv64(direct, byval<align=32>, byval<align=64>, scalar) -> void] [fallthrough=ret_void] [c="void(v4f, v8f, v16f, float)"] {
 // IR-NEXT:         asm "# %0 %1 %2 %3" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3;
-// IR-NEXT:             in 0 "x" [xmm_reg] width 128 read<vector<f32, 4>>(%[[VALUE_v]]);
-// IR-NEXT:             in 1 "x" [ymm_reg] width 256 read<vector<f32, 8>>(%[[VALUE_w]]);
-// IR-NEXT:             in 2 "x" [zmm_reg] width 512 read<vector<f32, 16>>(%[[VALUE_z]]);
+// IR-NEXT:             in 0 "x" [xmm_reg] width 128 read<vector<f32, 4>>(%[[VALUE_v]]) [c="v4f"];
+// IR-NEXT:             in 1 "x" [ymm_reg] width 256 read<vector<f32, 8>>(%[[VALUE_w]]) [c="v8f"];
+// IR-NEXT:             in 2 "x" [zmm_reg] width 512 read<vector<f32, 16>>(%[[VALUE_z]]) [c="v16f"];
 // IR-NEXT:             in 3 "x" [xmm_reg] width 32 read<f32>(%[[VALUE_f]]);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %x0 %t0 %g0" [dialect=att] [options=pure,nomem,nostack] {

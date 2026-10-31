@@ -70,7 +70,7 @@ int nested_block(struct S *p) { { struct S s = *p; return s.a; } }
 // IR-NEXT:         return read<i32>(field0(%[[VALUE_u]]));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_alias_local:[0-9]+]] @alias_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_S]] [storage=automatic];
+// IR-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_S]] [storage=automatic] [c="Alias"];
 // IR-NEXT:         write<i32>(field0(%[[VALUE_a]]), const<i32>(3));
 // IR-NEXT:         return read<i32>(field0(%[[VALUE_a]]));
 // IR-NEXT:     }
@@ -83,8 +83,8 @@ int nested_block(struct S *p) { { struct S s = *p; return s.a; } }
 // IR-NEXT:         return from_bool<i32, reason=return>(eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_enum_alias_local:[0-9]+]] @enum_alias_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_e_2:[0-9]+]] e: @type[[TYPE_E]] [storage=automatic] = int_to_enum<@type[[TYPE_E]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// IR-NEXT:         return from_bool<i32, reason=return>(ne<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e_2]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// IR-NEXT:         let %[[VALUE_e_2:[0-9]+]] e: @type[[TYPE_E]] [storage=automatic] = int_to_enum<@type[[TYPE_E]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))) [c="EnumAlias"] [c="EnumAlias"];
+// IR-NEXT:         return from_bool<i32, reason=return>(ne<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e_2]]) [c="EnumAlias"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_enum_parameter:[0-9]+]] @enum_parameter(%[[VALUE_e_3:[0-9]+]] e: @type[[TYPE_E]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return from_bool<i32, reason=return>(eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e_3]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));

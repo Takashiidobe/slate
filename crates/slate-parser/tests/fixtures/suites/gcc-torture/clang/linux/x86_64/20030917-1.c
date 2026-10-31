@@ -52,8 +52,8 @@ register STR **strp;
 // DEFAULT-NEXT:         field0 ary_fill: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_ARRAY:[0-9]+]] ARRAY = @type[[TYPE_atbl]];
-// DEFAULT-NEXT:     fn %[[VALUE_blah:[0-9]+]] @blah(%[[VALUE_size:[0-9]+]] size: i32, %[[VALUE_strp:[0-9]+]] strp: ptr<ptr<@type[[TYPE_string]]>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_ar:[0-9]+]] ar: ptr<@type[[TYPE_atbl]]> [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_blah:[0-9]+]] @blah(%[[VALUE_size:[0-9]+]] size: i32, %[[VALUE_strp:[0-9]+]] strp: ptr<ptr<@type[[TYPE_string]]>> [c="STR **"]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_ar:[0-9]+]] ar: ptr<@type[[TYPE_atbl]]> [storage=automatic] [c="ARRAY *"];
 // DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE_atbl]]>>(%[[VALUE_ar]]))), sub<i32, overflow=ub>(read<i32>(%[[VALUE_size]]), const<i32>(1)));
 // DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] {
 // DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_size]]);
@@ -61,7 +61,7 @@ register STR **strp;
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_size]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE1]]), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: ptr<@type[[TYPE_string]]> [synthetic] = read<ptr<@type[[TYPE_string]]>>(deref(read<ptr<ptr<@type[[TYPE_string]]>>>(%[[VALUE_strp]])));
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: ptr<@type[[TYPE_string]]> [synthetic] = read<ptr<@type[[TYPE_string]]>>(deref(read<ptr<ptr<@type[[TYPE_string]]>>>(%[[VALUE_strp]]))) [c="STR *"] [c="STR *"];
 // DEFAULT-NEXT:             let %[[VALUE4:[0-9]+]]: u8 [synthetic] = read<u8>(field0(deref(read<ptr<@type[[TYPE_string]]>>(%[[VALUE3]]))));
 // DEFAULT-NEXT:             let %[[VALUE5:[0-9]+]]: u8 [synthetic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE4]]))), not<i32>(const<i32>(128)))));
 // DEFAULT-NEXT:             write<u8>(field0(deref(read<ptr<@type[[TYPE_string]]>>(%[[VALUE3]]))), read<u8>(%[[VALUE5]]));

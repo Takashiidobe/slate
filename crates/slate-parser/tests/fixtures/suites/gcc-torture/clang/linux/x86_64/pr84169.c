@@ -47,15 +47,15 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = u128;
-// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: u128 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_c:[0-9]+]] c: u128, %[[VALUE_d:[0-9]+]] d: u128, %[[VALUE_e:[0-9]+]] e: u128, %[[VALUE_f:[0-9]+]] f: u128, %[[VALUE_g:[0-9]+]] g: u128, %[[VALUE_h:[0-9]+]] h: u128) -> u128 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         overflow_mul<bool>(truncate<u8, reason=explicit, fits=unknown>(read<u128>(%[[VALUE_h]])), neg<i32, overflow=ub>(const<i32>(16)), deref(addr_of<ptr<u128>>(%[[VALUE_h]])));
-// DEFAULT-NEXT:         return add<u128, overflow=wrap>(read<u128>(%[[VALUE_b]]), read<u128>(%[[VALUE_h]]));
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: u128 [storage=static] [linkage=external] [c="T"];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_c:[0-9]+]] c: u128 [c="T"], %[[VALUE_d:[0-9]+]] d: u128 [c="T"], %[[VALUE_e:[0-9]+]] e: u128 [c="T"], %[[VALUE_f:[0-9]+]] f: u128 [c="T"], %[[VALUE_g:[0-9]+]] g: u128 [c="T"], %[[VALUE_h:[0-9]+]] h: u128 [c="T"]) -> u128 [linkage=internal] [fallthrough=ub_if_used] [c="T(T, T, T, T, T, T)"] {
+// DEFAULT-NEXT:         overflow_mul<bool>(truncate<u8, reason=explicit, fits=unknown>(read<u128>(%[[VALUE_h]]) [c="T"]), neg<i32, overflow=ub>(const<i32>(16)), deref(addr_of<ptr<u128>>(%[[VALUE_h]])));
+// DEFAULT-NEXT:         return add<u128, overflow=wrap>(read<u128>(%[[VALUE_b]]) [c="T"], read<u128>(%[[VALUE_h]]) [c="T"]) [c="T"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u128 [storage=automatic] = call<u128, signature=fn(u128, u128, u128, u128, u128, u128) -> u128>(%[[VALUE_foo]], reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(4))));
-// DEFAULT-NEXT:         if ne<u128>(read<u128>(%[[VALUE_x]]), reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(64)))))
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u128 [storage=automatic] = call<u128, signature=fn(u128, u128, u128, u128, u128, u128) -> u128>(%[[VALUE_foo]], reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))) [c="T"], reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))) [c="T"], reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))) [c="T"], reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))) [c="T"], reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))) [c="T"], reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(4))) [c="T"]) [c="T"] [c="T"];
+// DEFAULT-NEXT:         if ne<u128>(read<u128>(%[[VALUE_x]]) [c="T"], reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(64)))) [c="T"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

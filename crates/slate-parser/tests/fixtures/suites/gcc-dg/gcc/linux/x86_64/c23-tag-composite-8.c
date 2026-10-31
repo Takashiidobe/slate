@@ -51,7 +51,7 @@ foo (void *q)
 // DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_s]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_q:[0-9]+]] q: ptr<void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE_s_2]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_s]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_s]]>, reason=assign>(read<ptr<void>>(%[[VALUE_q]]));
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_s]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_s]]>, reason=assign>(read<ptr<void>>(%[[VALUE_q]])) [c="typeof(1 ? &s : &t)"] [c="typeof(1 ? &s : &t)"];
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(not<bool>(ne<i32>(read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(deref(read<ptr<@type[[TYPE_s]]>>(%[[VALUE_p]])))), const<i32>(0))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

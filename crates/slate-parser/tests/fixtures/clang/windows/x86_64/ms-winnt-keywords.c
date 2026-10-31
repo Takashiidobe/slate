@@ -68,16 +68,16 @@ int use_forced(void) { return forced() + forced_static() + forced_after(); }
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_UI:[0-9]+]] UI = i32;
 // DEFAULT-NEXT:     type @type[[TYPE_WCHAR:[0-9]+]] WCHAR = u16;
-// DEFAULT-NEXT:     type @type[[TYPE_LPUWSTR:[0-9]+]] LPUWSTR = ptr<u16>;
+// DEFAULT-NEXT:     type @type[[TYPE_LPUWSTR:[0-9]+]] LPUWSTR = ptr<u16> [c="__unaligned WCHAR *"];
 // DEFAULT-NEXT:     type @type[[TYPE_UP:[0-9]+]] UP = ptr<i32>;
 // DEFAULT-NEXT:     global %[[VALUE_wide:[0-9]+]] wide: ptr<i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_wide_const:[0-9]+]] wide_const: ptr<i32> [storage=static] [const] = null<ptr<i32>> [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_unaligned_int:[0-9]+]] unaligned_int: i32 [storage=static] [align=1] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_unaligned_pointer:[0-9]+]] unaligned_pointer: ptr<i32> [storage=static] [align=1] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_unaligned_wide_string:[0-9]+]] unaligned_wide_string: ptr<u16> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unaligned_wide_string:[0-9]+]] unaligned_wide_string: ptr<u16> [storage=static] [linkage=external] [c="LPUWSTR"];
 // DEFAULT-NEXT:     global %[[VALUE_plain:[0-9]+]] plain: ptr<i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_convert:[0-9]+]] @convert() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<u16>>(%[[VALUE_unaligned_wide_string]], pointer_cast<ptr<u16>, reason=explicit>(read<ptr<i32>>(%[[VALUE_plain]])));
+// DEFAULT-NEXT:         write<ptr<u16>>(%[[VALUE_unaligned_wide_string]], pointer_cast<ptr<u16>, reason=explicit>(read<ptr<i32>>(%[[VALUE_plain]])) [c="LPUWSTR"]) [c="LPUWSTR"];
 // DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_plain]], read<ptr<i32>, align=1>(%[[VALUE_unaligned_pointer]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_forced:[0-9]+]] @forced() -> i32 [linkage=external] [inline=always] [definition=discardable] [fallthrough=ub_if_used] {

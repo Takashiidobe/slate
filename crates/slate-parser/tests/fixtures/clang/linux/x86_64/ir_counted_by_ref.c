@@ -108,8 +108,8 @@ int has_counter(struct plain *p) {
 // IR-NEXT:         field0 n: i32;
 // IR-NEXT:         field1 items: ptr<i32>;
 // IR-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// IR-NEXT:     fn %[[VALUE_store_counted:[0-9]+]] @store_counted(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_counted]]>, %[[VALUE_count:[0-9]+]] count: u64) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         write<u8>(deref(addr_of<ptr<u8>>(field1(deref(read<ptr<@type[[TYPE_counted]]>>(%[[VALUE_p]]))))), truncate<u8, reason=assign, fits=unknown>(read<u64>(%[[VALUE_count]])));
+// IR-NEXT:     fn %[[VALUE_store_counted:[0-9]+]] @store_counted(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_counted]]>, %[[VALUE_count:[0-9]+]] count: u64 [c="size_t"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(struct counted *, size_t)"] {
+// IR-NEXT:         write<u8>(deref(addr_of<ptr<u8>>(field1(deref(read<ptr<@type[[TYPE_counted]]>>(%[[VALUE_p]]))))), truncate<u8, reason=assign, fits=unknown>(read<u64>(%[[VALUE_count]]) [c="size_t"]));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_store_nested:[0-9]+]] @store_nested(%[[VALUE_p_2:[0-9]+]] p: ptr<@type[[TYPE_nested_counter]]>) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         write<i32>(deref(addr_of<ptr<i32>>(field0(field0(deref(read<ptr<@type[[TYPE_nested_counter]]>>(%[[VALUE_p_2]])))))), const<i32>(4));
@@ -123,18 +123,18 @@ int has_counter(struct plain *p) {
 // IR-NEXT:     fn %[[VALUE_store_dot:[0-9]+]] @store_dot(%[[VALUE_p_4:[0-9]+]] p: ptr<@type[[TYPE_counted]]>) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         write<u8>(deref(addr_of<ptr<u8>>(field1(deref(ptr_offset<ptr<@type[[TYPE_counted]]>, subtract=false, element=@type[[TYPE_counted]], overflow=ub>(read<ptr<@type[[TYPE_counted]]>>(%[[VALUE_p_4]]), const<i32>(1)))))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_set_plain:[0-9]+]] @set_plain(%[[VALUE_p_5:[0-9]+]] p: ptr<@type[[TYPE_plain]]>, %[[VALUE_count_2:[0-9]+]] count: u64) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:     fn %[[VALUE_set_plain:[0-9]+]] @set_plain(%[[VALUE_p_5:[0-9]+]] p: ptr<@type[[TYPE_plain]]>, %[[VALUE_count_2:[0-9]+]] count: u64 [c="size_t"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(struct plain *, size_t)"] {
 // IR-NEXT:         let %[[VALUE3:[0-9]+]]: u64 [synthetic];
 // IR-NEXT:         {
-// IR-NEXT:             let %[[VALUE4:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_count_2]]);
-// IR-NEXT:             write<u64>(deref(addr_of<ptr<u64>>(compound_literal %[[VALUE5:[0-9]+]] [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))))), read<u64>(%[[VALUE4]]));
-// IR-NEXT:             write<u64>(%[[VALUE3]], read<u64>(%[[VALUE4]]));
+// IR-NEXT:             let %[[VALUE4:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_count_2]]) [c="size_t"] [c="size_t"];
+// IR-NEXT:             write<u64>(deref(addr_of<ptr<u64>>(compound_literal %[[VALUE5:[0-9]+]] [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))))), read<u64>(%[[VALUE4]]) [c="size_t"]) [c="size_t"] [c="size_t"];
+// IR-NEXT:             write<u64>(%[[VALUE3]], read<u64>(%[[VALUE4]]) [c="size_t"]);
 // IR-NEXT:         }
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_set_counted:[0-9]+]] @set_counted(%[[VALUE_p_6:[0-9]+]] p: ptr<@type[[TYPE_counted]]>, %[[VALUE_count_3:[0-9]+]] count: u64) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:     fn %[[VALUE_set_counted:[0-9]+]] @set_counted(%[[VALUE_p_6:[0-9]+]] p: ptr<@type[[TYPE_counted]]>, %[[VALUE_count_3:[0-9]+]] count: u64 [c="size_t"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(struct counted *, size_t)"] {
 // IR-NEXT:         let %[[VALUE6:[0-9]+]]: u8 [synthetic];
 // IR-NEXT:         {
-// IR-NEXT:             let %[[VALUE7:[0-9]+]]: u8 [synthetic] = truncate<u8, reason=assign, fits=unknown>(read<u64>(%[[VALUE_count_3]]));
+// IR-NEXT:             let %[[VALUE7:[0-9]+]]: u8 [synthetic] = truncate<u8, reason=assign, fits=unknown>(read<u64>(%[[VALUE_count_3]]) [c="size_t"]);
 // IR-NEXT:             write<u8>(deref(addr_of<ptr<u8>>(field1(deref(read<ptr<@type[[TYPE_counted]]>>(%[[VALUE_p_6]]))))), read<u8>(%[[VALUE7]]));
 // IR-NEXT:             write<u8>(%[[VALUE6]], read<u8>(%[[VALUE7]]));
 // IR-NEXT:         }

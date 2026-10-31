@@ -58,6 +58,6 @@ size_t size = sizeof (_Alignas (_Alignof (max_align_t)) char) { 1 };
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0]];
 // DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<i8> [storage=static] = addr_of<ptr<i8>>(compound_literal %[[VALUE0:[0-9]+]] [storage=static] [align=16] = truncate<i8, reason=assign, fits=always>(const<i32>(1))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_size:[0-9]+]] size: u64 [storage=static] = const<u64>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_size:[0-9]+]] size: u64 [storage=static] = const<u64>(1) [c="size_t"] [linkage=external] [c="size_t"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

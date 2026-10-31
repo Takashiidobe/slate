@@ -101,37 +101,37 @@ void m (char16_t c0, char32_t c1)
 // DEFAULT-NEXT:     fn %[[VALUE_f_ll:[0-9]+]] @f_ll(%[[VALUE12:[0-9]+]] <unnamed>: i64) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_fsll:[0-9]+]] @fsll(%[[VALUE13:[0-9]+]] <unnamed>: i64) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_full:[0-9]+]] @full(%[[VALUE14:[0-9]+]] <unnamed>: u64) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_m:[0-9]+]] @m(%[[VALUE_c0:[0-9]+]] c0: u16, %[[VALUE_c1:[0-9]+]] c1: u32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i8) -> void>(%[[VALUE_f_c]], reinterpret<i8, reason=arg, fits=unknown>(truncate<u8, reason=arg, fits=unknown>(read<u16>(%[[VALUE_c0]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(i8) -> void>(%[[VALUE_fsc]], reinterpret<i8, reason=arg, fits=unknown>(truncate<u8, reason=arg, fits=unknown>(read<u16>(%[[VALUE_c0]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(u8) -> void>(%[[VALUE_fuc]], truncate<u8, reason=arg, fits=unknown>(read<u16>(%[[VALUE_c0]])));
-// DEFAULT-NEXT:         call<void, signature=fn(i16) -> void>(%[[VALUE_f_s]], reinterpret<i16, reason=arg, fits=unknown>(read<u16>(%[[VALUE_c0]])));
-// DEFAULT-NEXT:         call<void, signature=fn(i16) -> void>(%[[VALUE_fss]], reinterpret<i16, reason=arg, fits=unknown>(read<u16>(%[[VALUE_c0]])));
+// DEFAULT-NEXT:     fn %[[VALUE_m:[0-9]+]] @m(%[[VALUE_c0:[0-9]+]] c0: u16 [c="char16_t"], %[[VALUE_c1:[0-9]+]] c1: u32 [c="char32_t"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(char16_t, char32_t)"] {
+// DEFAULT-NEXT:         call<void, signature=fn(i8) -> void>(%[[VALUE_f_c]], reinterpret<i8, reason=arg, fits=unknown>(truncate<u8, reason=arg, fits=unknown>(read<u16>(%[[VALUE_c0]]) [c="char16_t"])));
+// DEFAULT-NEXT:         call<void, signature=fn(i8) -> void>(%[[VALUE_fsc]], reinterpret<i8, reason=arg, fits=unknown>(truncate<u8, reason=arg, fits=unknown>(read<u16>(%[[VALUE_c0]]) [c="char16_t"])));
+// DEFAULT-NEXT:         call<void, signature=fn(u8) -> void>(%[[VALUE_fuc]], truncate<u8, reason=arg, fits=unknown>(read<u16>(%[[VALUE_c0]]) [c="char16_t"]));
+// DEFAULT-NEXT:         call<void, signature=fn(i16) -> void>(%[[VALUE_f_s]], reinterpret<i16, reason=arg, fits=unknown>(read<u16>(%[[VALUE_c0]]) [c="char16_t"]));
+// DEFAULT-NEXT:         call<void, signature=fn(i16) -> void>(%[[VALUE_fss]], reinterpret<i16, reason=arg, fits=unknown>(read<u16>(%[[VALUE_c0]]) [c="char16_t"]));
 // DEFAULT-NEXT:         call<void, signature=fn(u16) -> void>(%[[VALUE_fus]], read<u16>(%[[VALUE_c0]]));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_f_i]], reinterpret<i32, reason=arg, fits=unknown>(widen<u32, reason=arg>(read<u16>(%[[VALUE_c0]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_fsi]], reinterpret<i32, reason=arg, fits=unknown>(widen<u32, reason=arg>(read<u16>(%[[VALUE_c0]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%[[VALUE_fui]], widen<u32, reason=arg>(read<u16>(%[[VALUE_c0]])));
-// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_f_l]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u16>(%[[VALUE_c0]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_fsl]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u16>(%[[VALUE_c0]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_ful]], widen<u64, reason=arg>(read<u16>(%[[VALUE_c0]])));
-// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_f_ll]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u16>(%[[VALUE_c0]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_fsll]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u16>(%[[VALUE_c0]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_full]], widen<u64, reason=arg>(read<u16>(%[[VALUE_c0]])));
-// DEFAULT-NEXT:         call<void, signature=fn(i8) -> void>(%[[VALUE_f_c]], reinterpret<i8, reason=arg, fits=unknown>(truncate<u8, reason=arg, fits=unknown>(read<u32>(%[[VALUE_c1]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(i8) -> void>(%[[VALUE_fsc]], reinterpret<i8, reason=arg, fits=unknown>(truncate<u8, reason=arg, fits=unknown>(read<u32>(%[[VALUE_c1]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(u8) -> void>(%[[VALUE_fuc]], truncate<u8, reason=arg, fits=unknown>(read<u32>(%[[VALUE_c1]])));
-// DEFAULT-NEXT:         call<void, signature=fn(i16) -> void>(%[[VALUE_f_s]], reinterpret<i16, reason=arg, fits=unknown>(truncate<u16, reason=arg, fits=unknown>(read<u32>(%[[VALUE_c1]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(i16) -> void>(%[[VALUE_fss]], reinterpret<i16, reason=arg, fits=unknown>(truncate<u16, reason=arg, fits=unknown>(read<u32>(%[[VALUE_c1]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(u16) -> void>(%[[VALUE_fus]], truncate<u16, reason=arg, fits=unknown>(read<u32>(%[[VALUE_c1]])));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_f_i]], reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%[[VALUE_c1]])));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_fsi]], reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%[[VALUE_c1]])));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_f_i]], reinterpret<i32, reason=arg, fits=unknown>(widen<u32, reason=arg>(read<u16>(%[[VALUE_c0]]) [c="char16_t"])));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_fsi]], reinterpret<i32, reason=arg, fits=unknown>(widen<u32, reason=arg>(read<u16>(%[[VALUE_c0]]) [c="char16_t"])));
+// DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%[[VALUE_fui]], widen<u32, reason=arg>(read<u16>(%[[VALUE_c0]]) [c="char16_t"]));
+// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_f_l]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u16>(%[[VALUE_c0]]) [c="char16_t"])));
+// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_fsl]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u16>(%[[VALUE_c0]]) [c="char16_t"])));
+// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_ful]], widen<u64, reason=arg>(read<u16>(%[[VALUE_c0]]) [c="char16_t"]));
+// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_f_ll]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u16>(%[[VALUE_c0]]) [c="char16_t"])));
+// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_fsll]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u16>(%[[VALUE_c0]]) [c="char16_t"])));
+// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_full]], widen<u64, reason=arg>(read<u16>(%[[VALUE_c0]]) [c="char16_t"]));
+// DEFAULT-NEXT:         call<void, signature=fn(i8) -> void>(%[[VALUE_f_c]], reinterpret<i8, reason=arg, fits=unknown>(truncate<u8, reason=arg, fits=unknown>(read<u32>(%[[VALUE_c1]]) [c="char32_t"])));
+// DEFAULT-NEXT:         call<void, signature=fn(i8) -> void>(%[[VALUE_fsc]], reinterpret<i8, reason=arg, fits=unknown>(truncate<u8, reason=arg, fits=unknown>(read<u32>(%[[VALUE_c1]]) [c="char32_t"])));
+// DEFAULT-NEXT:         call<void, signature=fn(u8) -> void>(%[[VALUE_fuc]], truncate<u8, reason=arg, fits=unknown>(read<u32>(%[[VALUE_c1]]) [c="char32_t"]));
+// DEFAULT-NEXT:         call<void, signature=fn(i16) -> void>(%[[VALUE_f_s]], reinterpret<i16, reason=arg, fits=unknown>(truncate<u16, reason=arg, fits=unknown>(read<u32>(%[[VALUE_c1]]) [c="char32_t"])));
+// DEFAULT-NEXT:         call<void, signature=fn(i16) -> void>(%[[VALUE_fss]], reinterpret<i16, reason=arg, fits=unknown>(truncate<u16, reason=arg, fits=unknown>(read<u32>(%[[VALUE_c1]]) [c="char32_t"])));
+// DEFAULT-NEXT:         call<void, signature=fn(u16) -> void>(%[[VALUE_fus]], truncate<u16, reason=arg, fits=unknown>(read<u32>(%[[VALUE_c1]]) [c="char32_t"]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_f_i]], reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%[[VALUE_c1]]) [c="char32_t"]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_fsi]], reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%[[VALUE_c1]]) [c="char32_t"]));
 // DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%[[VALUE_fui]], read<u32>(%[[VALUE_c1]]));
-// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_f_l]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u32>(%[[VALUE_c1]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_fsl]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u32>(%[[VALUE_c1]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_ful]], widen<u64, reason=arg>(read<u32>(%[[VALUE_c1]])));
-// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_f_ll]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u32>(%[[VALUE_c1]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_fsll]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u32>(%[[VALUE_c1]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_full]], widen<u64, reason=arg>(read<u32>(%[[VALUE_c1]])));
+// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_f_l]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u32>(%[[VALUE_c1]]) [c="char32_t"])));
+// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_fsl]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u32>(%[[VALUE_c1]]) [c="char32_t"])));
+// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_ful]], widen<u64, reason=arg>(read<u32>(%[[VALUE_c1]]) [c="char32_t"]));
+// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_f_ll]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u32>(%[[VALUE_c1]]) [c="char32_t"])));
+// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_fsll]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u32>(%[[VALUE_c1]]) [c="char32_t"])));
+// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_full]], widen<u64, reason=arg>(read<u32>(%[[VALUE_c1]]) [c="char32_t"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

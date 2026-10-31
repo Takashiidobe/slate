@@ -46,12 +46,12 @@ foo (void)
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_uu:[0-9]+]] uu = @type[[TYPE_u]];
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: @type[[TYPE_u]] [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: @type[[TYPE_u]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: @type[[TYPE_u]] [storage=static] [linkage=external] [c="uu"];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<@type[[TYPE_u]]>(%[[VALUE_a]], copy<@type[[TYPE_u]], reason=assign>(read<@type[[TYPE_u]]>(%[[VALUE_b]])));
-// DEFAULT-NEXT:         write<@type[[TYPE_u]]>(%[[VALUE_a]], copy<@type[[TYPE_u]], reason=assign>(read<@type[[TYPE_u]]>(%[[VALUE_b]])));
-// DEFAULT-NEXT:         write<@type[[TYPE_u]]>(%[[VALUE_b]], copy<@type[[TYPE_u]], reason=assign>(read<@type[[TYPE_u]]>(%[[VALUE_a]])));
-// DEFAULT-NEXT:         write<@type[[TYPE_u]]>(%[[VALUE_b]], copy<@type[[TYPE_u]], reason=assign>(read<@type[[TYPE_u]]>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_u]]>(%[[VALUE_a]], copy<@type[[TYPE_u]], reason=assign>(read<@type[[TYPE_u]]>(%[[VALUE_b]]) [c="uu"]));
+// DEFAULT-NEXT:         write<@type[[TYPE_u]]>(%[[VALUE_b]], copy<@type[[TYPE_u]], reason=assign>(read<@type[[TYPE_u]]>(%[[VALUE_a]])) [c="uu"]) [c="uu"];
+// DEFAULT-NEXT:         write<@type[[TYPE_u]]>(%[[VALUE_b]], copy<@type[[TYPE_u]], reason=assign>(read<@type[[TYPE_u]]>(%[[VALUE_a]]) [c="uu"]) [c="uu"]) [c="uu"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

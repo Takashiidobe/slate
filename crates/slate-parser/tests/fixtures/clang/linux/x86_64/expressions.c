@@ -66,7 +66,7 @@ done:
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_doubled]], add<i32, overflow=ub>(const<i32>(1), read<i32>(%[[VALUE0]])));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_doubled]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_operators:[0-9]+]] @operators(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_point]]>, %[[VALUE_values:[0-9]+]] values: ptr<i32> [array=4]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_operators:[0-9]+]] @operators(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_point]]>, %[[VALUE_values:[0-9]+]] values: ptr<i32> [array=4]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(struct point *, int[4])"] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));

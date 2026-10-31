@@ -35,7 +35,7 @@ foo_t test = foo;
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_foo_t:[0-9]+]] foo_t = ptr<fn() -> void>;
-// DEFAULT-NEXT:     global %[[VALUE_test:[0-9]+]] test: ptr<fn() -> void> [storage=static] = function_decay<ptr<fn() -> void>>(%[[VALUE_foo:[0-9]+]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_test:[0-9]+]] test: ptr<fn() -> void> [storage=static] = function_decay<ptr<fn() -> void>>(%[[VALUE_foo:[0-9]+]]) [c="foo_t"] [linkage=external] [c="foo_t"];
 // DEFAULT-NEXT:     fn %[[VALUE_foo]] @foo() -> void [linkage=external] [visibility=hidden];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

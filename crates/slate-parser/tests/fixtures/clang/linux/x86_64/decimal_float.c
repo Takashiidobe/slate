@@ -48,7 +48,7 @@ _Decimal64 scale(_Decimal64 value, _Decimal32 factor);
 // C89-NEXT:     global %[[VALUE_small:[0-9]+]] small: d32 [storage=static] = const<d32>(1.5) [linkage=external];
 // C89-NEXT:     global %[[VALUE_medium:[0-9]+]] medium: d64 [storage=static] = const<d64>(2.5) [linkage=external];
 // C89-NEXT:     global %[[VALUE_large:[0-9]+]] large: d128 [storage=static] = const<d128>(3.5) [linkage=external];
-// C89-NEXT:     global %[[VALUE_total:[0-9]+]] total: d64 [storage=static] [linkage=external];
+// C89-NEXT:     global %[[VALUE_total:[0-9]+]] total: d64 [storage=static] [linkage=external] [c="money"];
 // C89-NEXT:     fn %[[VALUE_scale:[0-9]+]] @scale(%[[VALUE_value:[0-9]+]] value: d64, %[[VALUE_factor:[0-9]+]] factor: d32) -> d64 [linkage=external];
 // C89-NEXT: }
 // SLATE-FILECHECK-END C89
@@ -83,7 +83,7 @@ _Decimal64 scale(_Decimal64 value, _Decimal32 factor);
 // C23-NEXT:     global %[[VALUE_small:[0-9]+]] small: d32 [storage=static] = const<d32>(1.5) [linkage=external];
 // C23-NEXT:     global %[[VALUE_medium:[0-9]+]] medium: d64 [storage=static] = const<d64>(2.5) [linkage=external];
 // C23-NEXT:     global %[[VALUE_large:[0-9]+]] large: d128 [storage=static] = const<d128>(3.5) [linkage=external];
-// C23-NEXT:     global %[[VALUE_total:[0-9]+]] total: d64 [storage=static] [linkage=external];
+// C23-NEXT:     global %[[VALUE_total:[0-9]+]] total: d64 [storage=static] [linkage=external] [c="money"];
 // C23-NEXT:     fn %[[VALUE_scale:[0-9]+]] @scale(%[[VALUE_value:[0-9]+]] value: d64, %[[VALUE_factor:[0-9]+]] factor: d32) -> d64 [linkage=external];
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23

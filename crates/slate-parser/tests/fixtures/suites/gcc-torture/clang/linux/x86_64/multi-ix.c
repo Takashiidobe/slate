@@ -225,7 +225,7 @@ void c(int n, ...) {
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_s:[0-9]+]] @s(%[[VALUE_n:[0-9]+]] n: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_list:[0-9]+]] list: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_list:[0-9]+]] list: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_list]]);
 // DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] {
 // DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n]]);
@@ -240,7 +240,7 @@ void c(int n, ...) {
 // DEFAULT-NEXT:         va_end(%[[VALUE_list]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_z:[0-9]+]] @z(%[[VALUE_n_2:[0-9]+]] n: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_list_2:[0-9]+]] list: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_list_2:[0-9]+]] list: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_list_2]]);
 // DEFAULT-NEXT:         while %[[VALUE4:[0-9]+]] {
 // DEFAULT-NEXT:             let %[[VALUE5:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n_2]]);
@@ -255,7 +255,7 @@ void c(int n, ...) {
 // DEFAULT-NEXT:         va_end(%[[VALUE_list_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_c:[0-9]+]] @c(%[[VALUE_n_3:[0-9]+]] n: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_list_3:[0-9]+]] list: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_list_3:[0-9]+]] list: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_list_3]]);
 // DEFAULT-NEXT:         while %[[VALUE7:[0-9]+]] {
 // DEFAULT-NEXT:             let %[[VALUE8:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n_3]]);
@@ -272,46 +272,46 @@ void c(int n, ...) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_n_4:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_a0:[0-9]+]] a0: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a1:[0-9]+]] a1: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a2:[0-9]+]] a2: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a3:[0-9]+]] a3: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a4:[0-9]+]] a4: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a5:[0-9]+]] a5: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a6:[0-9]+]] a6: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a7:[0-9]+]] a7: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a8:[0-9]+]] a8: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a9:[0-9]+]] a9: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a10:[0-9]+]] a10: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a11:[0-9]+]] a11: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a12:[0-9]+]] a12: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a13:[0-9]+]] a13: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a14:[0-9]+]] a14: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a15:[0-9]+]] a15: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a16:[0-9]+]] a16: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a17:[0-9]+]] a17: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a18:[0-9]+]] a18: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a19:[0-9]+]] a19: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a20:[0-9]+]] a20: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a21:[0-9]+]] a21: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a22:[0-9]+]] a22: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a23:[0-9]+]] a23: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a24:[0-9]+]] a24: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a25:[0-9]+]] a25: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a26:[0-9]+]] a26: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a27:[0-9]+]] a27: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a28:[0-9]+]] a28: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a29:[0-9]+]] a29: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a30:[0-9]+]] a30: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a31:[0-9]+]] a31: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a32:[0-9]+]] a32: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a33:[0-9]+]] a33: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a34:[0-9]+]] a34: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a35:[0-9]+]] a35: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a36:[0-9]+]] a36: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a37:[0-9]+]] a37: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a38:[0-9]+]] a38: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_a39:[0-9]+]] a39: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a0:[0-9]+]] a0: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a1:[0-9]+]] a1: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a2:[0-9]+]] a2: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a3:[0-9]+]] a3: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a4:[0-9]+]] a4: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a5:[0-9]+]] a5: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a6:[0-9]+]] a6: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a7:[0-9]+]] a7: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a8:[0-9]+]] a8: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a9:[0-9]+]] a9: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a10:[0-9]+]] a10: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a11:[0-9]+]] a11: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a12:[0-9]+]] a12: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a13:[0-9]+]] a13: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a14:[0-9]+]] a14: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a15:[0-9]+]] a15: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a16:[0-9]+]] a16: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a17:[0-9]+]] a17: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a18:[0-9]+]] a18: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a19:[0-9]+]] a19: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a20:[0-9]+]] a20: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a21:[0-9]+]] a21: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a22:[0-9]+]] a22: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a23:[0-9]+]] a23: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a24:[0-9]+]] a24: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a25:[0-9]+]] a25: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a26:[0-9]+]] a26: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a27:[0-9]+]] a27: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a28:[0-9]+]] a28: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a29:[0-9]+]] a29: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a30:[0-9]+]] a30: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a31:[0-9]+]] a31: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a32:[0-9]+]] a32: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a33:[0-9]+]] a33: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a34:[0-9]+]] a34: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a35:[0-9]+]] a35: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a36:[0-9]+]] a36: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a37:[0-9]+]] a37: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a38:[0-9]+]] a38: array<i32, 500> [storage=automatic] [align=16] [c="l"];
+// DEFAULT-NEXT:         let %[[VALUE_a39:[0-9]+]] a39: array<i32, 500> [storage=automatic] [align=16] [c="l"];
 // DEFAULT-NEXT:         let %[[VALUE_i0:[0-9]+]] i0: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_i1:[0-9]+]] i1: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_i2:[0-9]+]] i2: i32 [storage=automatic];

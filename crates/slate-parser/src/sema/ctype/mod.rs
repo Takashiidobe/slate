@@ -250,12 +250,13 @@ impl CTypeKind {
     }
 }
 
+#[derive(Debug, Clone)]
 struct Entry {
     kind: CTypeKind,
     canonical: QualType,
 }
 
-#[derive(Default)]
+#[derive(Debug, Clone, Default)]
 pub struct CTypes {
     entries: Vec<Entry>,
     ids: HashMap<CTypeKind, CTypeId>,

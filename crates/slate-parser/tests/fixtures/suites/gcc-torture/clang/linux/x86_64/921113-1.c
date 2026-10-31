@@ -86,14 +86,14 @@ int main(void) {
 // DEFAULT-NEXT:         field0 wsx: f32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_struct_list:[0-9]+]] struct_list = @type[[TYPE0]];
-// DEFAULT-NEXT:     type @type[[TYPE_list_t:[0-9]+]] list_t = ptr<@type[[TYPE0]]>;
+// DEFAULT-NEXT:     type @type[[TYPE_list_t:[0-9]+]] list_t = ptr<@type[[TYPE0]]> [c="struct_list *"];
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 x: f32;
 // DEFAULT-NEXT:         field1 y: f32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type[[TYPE_vector_t:[0-9]+]] vector_t = @type[[TYPE1]];
-// DEFAULT-NEXT:     global %[[VALUE_pos:[0-9]+]] pos: array<@type[[TYPE1]], 1> [storage=static] = aggregate<array<@type[[TYPE1]], 1>, zero_fill=false>(index0 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_limit:[0-9]+]] limit: array<@type[[TYPE1]], 2> [storage=static] [align=16] = aggregate<array<@type[[TYPE1]], 2>, zero_fill=false>(index0 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0))), index1 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_pos:[0-9]+]] pos: array<@type[[TYPE1]], 1> [storage=static] = aggregate<array<@type[[TYPE1]], 1>, zero_fill=false>(index0 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)))) [linkage=external] [c="vector_t[1]"];
+// DEFAULT-NEXT:     global %[[VALUE_limit:[0-9]+]] limit: array<@type[[TYPE1]], 2> [storage=static] [align=16] = aggregate<array<@type[[TYPE1]], 2>, zero_fill=false>(index0 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0))), index1 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)))) [linkage=external] [c="vector_t[2]"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_w:[0-9]+]] @w(%[[VALUE_x:[0-9]+]] x: f32, %[[VALUE_y:[0-9]+]] y: f32) -> void [linkage=external] [fallthrough=ret_void] {
@@ -106,7 +106,7 @@ int main(void) {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<f32, exceptions=ignore>(read<f32>(%[[VALUE_x_3]]), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1))), ne<f32, exceptions=ignore>(read<f32>(%[[VALUE_y_3]]), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_gitter:[0-9]+]] @gitter(%[[VALUE_count:[0-9]+]] count: i32, %[[VALUE_pos_2:[0-9]+]] pos: ptr<@type[[TYPE1]]>, %[[VALUE_list:[0-9]+]] list: ptr<@type[[TYPE0]]>, %[[VALUE_nww:[0-9]+]] nww: ptr<i32>, %[[VALUE_limit_2:[0-9]+]] limit: ptr<@type[[TYPE1]]> [array=2], %[[VALUE_r:[0-9]+]] r: f32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_gitter:[0-9]+]] @gitter(%[[VALUE_count:[0-9]+]] count: i32, %[[VALUE_pos_2:[0-9]+]] pos: ptr<@type[[TYPE1]]> [c="vector_t[]"], %[[VALUE_list:[0-9]+]] list: ptr<@type[[TYPE0]]> [c="list_t"], %[[VALUE_nww:[0-9]+]] nww: ptr<i32>, %[[VALUE_limit_2:[0-9]+]] limit: ptr<@type[[TYPE1]]> [array=2] [c="vector_t[2]"], %[[VALUE_r:[0-9]+]] r: f32) -> void [linkage=external] [fallthrough=ret_void] [c="void(int, vector_t[], list_t, int *, vector_t[2], float)"] {
 // DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: f32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_gitt:[0-9]+]] gitt: array<array<i32, 128>, 128> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%[[VALUE_f1]], read<f32>(field0(deref(ptr_offset<ptr<@type[[TYPE1]]>, subtract=false, element=@type[[TYPE1]], overflow=ub>(read<ptr<@type[[TYPE1]]>>(%[[VALUE_limit_2]]), const<i32>(0))))), read<f32>(field1(deref(ptr_offset<ptr<@type[[TYPE1]]>, subtract=false, element=@type[[TYPE1]], overflow=ub>(read<ptr<@type[[TYPE1]]>>(%[[VALUE_limit_2]]), const<i32>(0))))));
@@ -125,8 +125,8 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_nww_2:[0-9]+]] nww: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_list_2:[0-9]+]] list: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<@type[[TYPE1]]>, ptr<@type[[TYPE0]]>, ptr<i32>, ptr<@type[[TYPE1]]>, f32) -> void>(%[[VALUE_gitter]], const<i32>(1), array_decay<ptr<@type[[TYPE1]]>, length=Some(1)>(%[[VALUE_pos]]), addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_list_2]]), addr_of<ptr<i32>>(%[[VALUE_nww_2]]), array_decay<ptr<@type[[TYPE1]]>, length=Some(2)>(%[[VALUE_limit]]), float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)));
+// DEFAULT-NEXT:         let %[[VALUE_list_2:[0-9]+]] list: @type[[TYPE0]] [storage=automatic] [c="struct_list"];
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<@type[[TYPE1]]>, ptr<@type[[TYPE0]]>, ptr<i32>, ptr<@type[[TYPE1]]>, f32) -> void>(%[[VALUE_gitter]], const<i32>(1), array_decay<ptr<@type[[TYPE1]]>, length=Some(1)>(%[[VALUE_pos]]) [c="vector_t *"], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_list_2]]) [c="list_t"], addr_of<ptr<i32>>(%[[VALUE_nww_2]]), array_decay<ptr<@type[[TYPE1]]>, length=Some(2)>(%[[VALUE_limit]]) [c="vector_t *"], float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

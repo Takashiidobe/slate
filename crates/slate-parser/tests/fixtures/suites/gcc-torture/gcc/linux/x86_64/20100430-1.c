@@ -89,7 +89,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_dummy:[0-9]+]] @dummy(%[[VALUE_s:[0-9]+]] s: u16) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<u16>(%[[VALUE_g]], read<u16>(%[[VALUE_s]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_info:[0-9]+]] info: ptr<@type[[TYPE0]]>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_info:[0-9]+]] info: ptr<@type[[TYPE0]]> [c="info_t *"]) -> i32 [linkage=internal] [fallthrough=ub_if_used] [c="int(info_t *)"] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
@@ -118,11 +118,11 @@ int main(void) {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_info_2:[0-9]+]] info: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_info_2:[0-9]+]] info: @type[[TYPE0]] [storage=automatic] [c="info_t"];
 // DEFAULT-NEXT:         write<u8>(field0(field0(field1(%[[VALUE_info_2]]))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))));
 // DEFAULT-NEXT:         write<u8>(field1(deref(ptr_offset<ptr<@type[[TYPE_packed_struct2]]>, subtract=false, element=@type[[TYPE_packed_struct2]], overflow=ub>(array_decay<ptr<@type[[TYPE_packed_struct2]]>, length=Some(4)>(field1(field1(%[[VALUE_info_2]]))), const<i32>(1)))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(8))));
 // DEFAULT-NEXT:         write<u8>(field1(deref(ptr_offset<ptr<@type[[TYPE_packed_struct2]]>, subtract=false, element=@type[[TYPE_packed_struct2]], overflow=ub>(array_decay<ptr<@type[[TYPE_packed_struct2]]>, length=Some(4)>(field1(field1(%[[VALUE_info_2]]))), const<i32>(0)))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(8))));
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<@type[[TYPE0]]>) -> i32>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_info_2]]));
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<@type[[TYPE0]]>) -> i32>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_info_2]]) [c="info_t *"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

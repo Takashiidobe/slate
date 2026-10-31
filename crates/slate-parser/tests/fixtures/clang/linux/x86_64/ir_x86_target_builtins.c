@@ -52,7 +52,7 @@ unsigned long long leading_zeros(unsigned long long value) {
 // IR-NEXT:         return add<u64, overflow=wrap>(call<u64, signature=fn() -> u64>(%[[VALUE___builtin_ia32_rdtsc]]), intrinsic<u64, llvm.x86.rdtsc>());
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE___builtin_ia32_pmovmskb128:[0-9]+]] @__builtin_ia32_pmovmskb128(%[[VALUE0:[0-9]+]] <unnamed>: vector<i8, 16>) -> i32 [linkage=external] [memory=none] [abi=sysv64(direct) -> scalar];
-// IR-NEXT:     fn %[[VALUE_sign_mask:[0-9]+]] @sign_mask(%[[VALUE_bytes:[0-9]+]] bytes: vector<i8, 16>) -> i32 [linkage=external] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_sign_mask:[0-9]+]] @sign_mask(%[[VALUE_bytes:[0-9]+]] bytes: vector<i8, 16> [c="v16qi"]) -> i32 [linkage=external] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] [c="int(v16qi)"] {
 // IR-NEXT:         return call<i32, signature=fn(vector<i8, 16>) -> i32, abi=sysv64(direct) -> scalar>(%[[VALUE___builtin_ia32_pmovmskb128]], read<vector<i8, 16>>(%[[VALUE_bytes]]));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE___builtin_ia32_lzcnt_u64:[0-9]+]] @__builtin_ia32_lzcnt_u64(%[[VALUE1:[0-9]+]] <unnamed>: u64) -> u64 [linkage=external] [memory=none];

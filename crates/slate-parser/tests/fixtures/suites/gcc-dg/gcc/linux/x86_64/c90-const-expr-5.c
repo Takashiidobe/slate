@@ -83,9 +83,9 @@ f (void)
 // DEFAULT-NEXT:         eq<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_fp]]), null<ptr<fn() -> void>>);
 // DEFAULT-NEXT:         eq<ptr<void>>(null<ptr<void>>, pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<fn() -> void>>(%[[VALUE_fp]])));
 // DEFAULT-NEXT:         eq<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_fp]]), null<ptr<fn() -> void>>);
-// DEFAULT-NEXT:         eq<ptr<void>>(null<ptr<void>>, pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<fn() -> void>>(%[[VALUE_fp]])));
-// DEFAULT-NEXT:         eq<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_fp]]), pointer_cast<ptr<fn() -> void>, reason=usual_arith>(int_to_ptr<ptr<void>, reason=explicit>(const<i32>(1))));
-// DEFAULT-NEXT:         eq<ptr<void>>(int_to_ptr<ptr<void>, reason=explicit>(const<i32>(1)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<fn() -> void>>(%[[VALUE_fp]])));
+// DEFAULT-NEXT:         eq<ptr<void>>(null<ptr<void>> [c="V *"], pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<fn() -> void>>(%[[VALUE_fp]])) [c="V *"]);
+// DEFAULT-NEXT:         eq<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_fp]]), pointer_cast<ptr<fn() -> void>, reason=usual_arith>(int_to_ptr<ptr<void>, reason=explicit>(const<i32>(1)) [c="V *"]));
+// DEFAULT-NEXT:         eq<ptr<void>>(int_to_ptr<ptr<void>, reason=explicit>(const<i32>(1)) [c="V *"], pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<fn() -> void>>(%[[VALUE_fp]])) [c="V *"]);
 // DEFAULT-NEXT:         eq<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_fp]]), pointer_cast<ptr<fn() -> void>, reason=usual_arith>(null<ptr<const void>>));
 // DEFAULT-NEXT:         eq<ptr<const void>>(null<ptr<const void>>, pointer_cast<ptr<const void>, reason=usual_arith>(read<ptr<fn() -> void>>(%[[VALUE_fp]])));
 // DEFAULT-NEXT:     }

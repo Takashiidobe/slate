@@ -65,20 +65,20 @@ int main(void) {
 // DEFAULT-NEXT:         %[[VALUE_E_FAIL:[0-9]+]] E_FAIL = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type[[TYPE_Status:[0-9]+]] Status = @type[[TYPE0]];
-// DEFAULT-NEXT:     type @type[[TYPE_Handler:[0-9]+]] Handler = ptr<fn(i32) -> @type[[TYPE0]]>;
+// DEFAULT-NEXT:     type @type[[TYPE_Handler:[0-9]+]] Handler = ptr<fn(i32) -> @type[[TYPE0]]> [c="Status (*)(int)"];
 // DEFAULT-NEXT:     type @type[[TYPE_Parser:[0-9]+]] Parser = struct {
-// DEFAULT-NEXT:         field0 processor: ptr<fn(i32) -> @type[[TYPE0]]>;
+// DEFAULT-NEXT:         field0 processor: ptr<fn(i32) -> @type[[TYPE0]]> [c="Handler"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([111, 107, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([102, 97, 105, 108, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_E_FAIL]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_handle_ok:[0-9]+]] @handle_ok(%[[VALUE_x:[0-9]+]] x: i32) -> @type[[TYPE0]] [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_E_FAIL]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
+// DEFAULT-NEXT:     fn %[[VALUE_handle_ok:[0-9]+]] @handle_ok(%[[VALUE_x:[0-9]+]] x: i32) -> @type[[TYPE0]] [linkage=internal] [fallthrough=ub_if_used] [c="Status(int)"] {
 // DEFAULT-NEXT:         read<i32>(%[[VALUE_x]]);
-// DEFAULT-NEXT:         return int_to_enum<@type[[TYPE0]], reason=return>(reinterpret<u32, reason=return, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         return int_to_enum<@type[[TYPE0]], reason=return>(reinterpret<u32, reason=return, fits=always>(const<i32>(0))) [c="Status"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_handle_fail:[0-9]+]] @handle_fail(%[[VALUE_x_2:[0-9]+]] x: i32) -> @type[[TYPE0]] [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_handle_fail:[0-9]+]] @handle_fail(%[[VALUE_x_2:[0-9]+]] x: i32) -> @type[[TYPE0]] [linkage=internal] [fallthrough=ub_if_used] [c="Status(int)"] {
 // DEFAULT-NEXT:         read<i32>(%[[VALUE_x_2]]);
-// DEFAULT-NEXT:         return int_to_enum<@type[[TYPE0]], reason=return>(reinterpret<u32, reason=return, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         return int_to_enum<@type[[TYPE0]], reason=return>(reinterpret<u32, reason=return, fits=always>(const<i32>(1))) [c="Status"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: @type[[TYPE_Parser]] [storage=automatic];
@@ -95,9 +95,9 @@ int main(void) {
 // DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..const<i32>(2)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<ptr<fn(i32) -> @type[[TYPE0]]>>(field0(%[[VALUE_p]]), conditional<ptr<fn(i32) -> @type[[TYPE0]]>>(eq<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), function_decay<ptr<fn(i32) -> @type[[TYPE0]]>>(%[[VALUE_handle_ok]]), function_decay<ptr<fn(i32) -> @type[[TYPE0]]>>(%[[VALUE_handle_fail]])));
-// DEFAULT-NEXT:                     let %[[VALUE_result:[0-9]+]] result: @type[[TYPE0]] [storage=automatic] = call<@type[[TYPE0]], signature=fn(i32) -> @type[[TYPE0]]>(read<ptr<fn(i32) -> @type[[TYPE0]]>>(field0(%[[VALUE_p]])), const<i32>(5));
-// DEFAULT-NEXT:                     if eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_result]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
+// DEFAULT-NEXT:                     write<ptr<fn(i32) -> @type[[TYPE0]]>>(field0(%[[VALUE_p]]), conditional<ptr<fn(i32) -> @type[[TYPE0]]>>(eq<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), function_decay<ptr<fn(i32) -> @type[[TYPE0]]>>(%[[VALUE_handle_ok]]) [c="Status (*)(int)"], function_decay<ptr<fn(i32) -> @type[[TYPE0]]>>(%[[VALUE_handle_fail]]) [c="Status (*)(int)"]) [c="Handler"]) [c="Handler"];
+// DEFAULT-NEXT:                     let %[[VALUE_result:[0-9]+]] result: @type[[TYPE0]] [storage=automatic] = call<@type[[TYPE0]], signature=fn(i32) -> @type[[TYPE0]]>(read<ptr<fn(i32) -> @type[[TYPE0]]>>(field0(%[[VALUE_p]])) [c="Handler"], const<i32>(5)) [c="Status"] [c="Status"];
+// DEFAULT-NEXT:                     if eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_result]]) [c="Status"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_E_FAIL]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])));
 // DEFAULT-NEXT:                         }

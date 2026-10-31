@@ -40,9 +40,9 @@ tdef (int n)
 // DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = vla<i32, %[[VALUE0:[0-9]+]]>;
 // DEFAULT-NEXT:     fn %[[VALUE_tdef:[0-9]+]] @tdef(%[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n]])));
-// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: vla<i32, %[[VALUE0]]> [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<vla<i32, %[[VALUE0]]>> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<vla<i32, %[[VALUE0]]>>>(%[[VALUE_p]], addr_of<ptr<vla<i32, %[[VALUE0]]>>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: vla<i32, %[[VALUE0]]> [storage=automatic] [c="A"];
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<vla<i32, %[[VALUE0]]>> [storage=automatic] [c="A *"];
+// DEFAULT-NEXT:         write<ptr<vla<i32, %[[VALUE0]]>>>(%[[VALUE_p]], addr_of<ptr<vla<i32, %[[VALUE0]]>>>(%[[VALUE_a]]) [c="A *"]) [c="A *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

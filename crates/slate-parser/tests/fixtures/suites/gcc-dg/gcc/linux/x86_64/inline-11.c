@@ -43,7 +43,7 @@ void g(inline int(void)); /* { dg-warning "parameter '\\({anonymous}\\)' declare
 // DEFAULT-NEXT:     type @type[[TYPE_d:[0-9]+]] d = i32;
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: ptr<fn() -> i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_e:[0-9]+]] @e(%[[VALUE_f:[0-9]+]] f: ptr<fn() -> i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE0:[0-9]+]] <unnamed>: ptr<fn() -> i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_e:[0-9]+]] @e(%[[VALUE_f:[0-9]+]] f: ptr<fn() -> i32>) -> void [linkage=external] [c="void(int(void))"];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE0:[0-9]+]] <unnamed>: ptr<fn() -> i32>) -> void [linkage=external] [c="void(int(void))"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

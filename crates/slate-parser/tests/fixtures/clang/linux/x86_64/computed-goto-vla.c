@@ -55,7 +55,7 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:         label %[[VALUE_L1]] L1:
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_vla_sum:[0-9]+]] @vla_sum(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE_arr:[0-9]+]] arr: ptr<i32> [array=%[[VALUE0:[0-9]+]]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_vla_sum:[0-9]+]] @vla_sum(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE_arr:[0-9]+]] arr: ptr<i32> [array=%[[VALUE0:[0-9]+]]]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int, int[*])"] {
 // DEFAULT-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
 // DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: vla<i32, %[[VALUE1]]> [storage=automatic];
@@ -94,7 +94,7 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:         label %[[VALUE_L1]] L1:
 // COMPUTED-NEXT:             return const<i32>(1);
 // COMPUTED-NEXT:     }
-// COMPUTED-NEXT:     fn %[[VALUE_vla_sum:[0-9]+]] @vla_sum(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE_arr:[0-9]+]] arr: ptr<i32> [array=%[[VALUE0:[0-9]+]]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// COMPUTED-NEXT:     fn %[[VALUE_vla_sum:[0-9]+]] @vla_sum(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE_arr:[0-9]+]] arr: ptr<i32> [array=%[[VALUE0:[0-9]+]]]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int, int[*])"] {
 // COMPUTED-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
 // COMPUTED-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
 // COMPUTED-NEXT:         let %[[VALUE_local:[0-9]+]] local: vla<i32, %[[VALUE1]]> [storage=automatic];
@@ -133,7 +133,7 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:         label %[[VALUE_L1]] L1:
 // DOUBLED-NEXT:             return const<i32>(1);
 // DOUBLED-NEXT:     }
-// DOUBLED-NEXT:     fn %[[VALUE_vla_sum:[0-9]+]] @vla_sum(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE_arr:[0-9]+]] arr: ptr<i32> [array=%[[VALUE0:[0-9]+]]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DOUBLED-NEXT:     fn %[[VALUE_vla_sum:[0-9]+]] @vla_sum(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE_arr:[0-9]+]] arr: ptr<i32> [array=%[[VALUE0:[0-9]+]]]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int, int[*])"] {
 // DOUBLED-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
 // DOUBLED-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(read<i32>(%[[VALUE_n_2]]), const<i32>(2))));
 // DOUBLED-NEXT:         let %[[VALUE_local:[0-9]+]] local: vla<i32, %[[VALUE1]]> [storage=automatic];

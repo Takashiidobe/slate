@@ -81,7 +81,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_data_ptr:[0-9]+]] data_ptr: ptr<@type[[TYPE_data_record]]> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_data_tmp:[0-9]+]] data_tmp: @type[[TYPE_data_record]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_fetch_count:[0-9]+]] fetch_count: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_num_records:[0-9]+]] @num_records() -> i32 [linkage=external] [fallthrough=ub_if_used] {

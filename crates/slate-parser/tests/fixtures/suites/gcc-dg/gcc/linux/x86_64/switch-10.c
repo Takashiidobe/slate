@@ -49,11 +49,11 @@ test (uint8_t ch)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___uint8_t:[0-9]+]] __uint8_t = u8;
-// DEFAULT-NEXT:     type @type[[TYPE_uint8_t:[0-9]+]] uint8_t = u8;
+// DEFAULT-NEXT:     type @type[[TYPE_uint8_t:[0-9]+]] uint8_t = u8 [c="__uint8_t"];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_ch:[0-9]+]] ch: u8) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_ch]])))
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_ch:[0-9]+]] ch: u8 [c="uint8_t"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(uint8_t)"] {
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_ch]]) [c="uint8_t"]))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(0):
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_foo]]);

@@ -138,7 +138,7 @@ non_evaluated (void)
 // DEFAULT-NEXT:     global %[[VALUE_cf:[0-9]+]] cf: complex<f32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_cd:[0-9]+]] cd: complex<f64> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_cld:[0-9]+]] cld: complex<f80> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: u64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: u64 [storage=static] [linkage=external] [c="size_t"];
 // DEFAULT-NEXT:     fn %[[VALUE_unprototyped_fn:[0-9]+]] @unprototyped_fn(unprototyped) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_varargs_fn:[0-9]+]] @varargs_fn(%[[VALUE0:[0-9]+]] <unnamed>: i32, ...) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_double_fn:[0-9]+]] @double_fn(%[[VALUE1:[0-9]+]] <unnamed>: f64) -> void [linkage=external];
@@ -185,11 +185,11 @@ non_evaluated (void)
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_d]], float_widen<f64, reason=assign>(call<f32, signature=fn() -> f32>(%[[VALUE_float_fn]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_non_evaluated:[0-9]+]] @non_evaluated() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_s]], const<u64>(8));
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_s]], const<u64>(8));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_s]], const<u64>(8) [c="size_t"]) [c="size_t"];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_s]], const<u64>(8) [c="size_t"]) [c="size_t"];
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_d]], float_widen<f64, reason=explicit>(read<f32>(%[[VALUE_f]])));
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_s]], const<u64>(8));
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_s]], const<u64>(1));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_s]], const<u64>(8) [c="size_t"]) [c="size_t"];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_s]], const<u64>(1) [c="size_t"]) [c="size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

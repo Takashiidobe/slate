@@ -43,17 +43,17 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_uint64:[0-9]+]] uint64 = u64;
-// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_x:[0-9]+]] x: u64, %[[VALUE_y:[0-9]+]] y: i32, %[[VALUE_z:[0-9]+]] z: i32, %[[VALUE_p:[0-9]+]] p: ptr<u64>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_w:[0-9]+]] w: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(shl<u64, overflow=wrap, amount_out_of_range=ub>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x]]), read<i32>(%[[VALUE_y]])), const<u64>(4294967295)), and<i32>(read<i32>(%[[VALUE_z]]), const<i32>(31))));
-// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<u64> [synthetic] = read<ptr<u64>>(%[[VALUE_p]]);
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = read<u64>(deref(read<ptr<u64>>(%[[VALUE0]])));
-// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = or<u64>(read<u64>(%[[VALUE1]]), shl<u64, overflow=wrap, amount_out_of_range=ub>(and<u64>(widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_w]])), const<u64>(4294967295)), read<i32>(%[[VALUE_z]])));
-// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE0]])), read<u64>(%[[VALUE2]]));
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_x:[0-9]+]] x: u64 [c="uint64"], %[[VALUE_y:[0-9]+]] y: i32, %[[VALUE_z:[0-9]+]] z: i32, %[[VALUE_p:[0-9]+]] p: ptr<u64> [c="uint64 *"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(uint64, int, int, uint64 *)"] {
+// DEFAULT-NEXT:         let %[[VALUE_w:[0-9]+]] w: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(shl<u64, overflow=wrap, amount_out_of_range=ub>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x]]) [c="uint64"], read<i32>(%[[VALUE_y]])) [c="uint64"], const<u64>(4294967295) [c="uint64"]) [c="uint64"], and<i32>(read<i32>(%[[VALUE_z]]), const<i32>(31))) [c="uint64"]);
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<u64> [synthetic] = read<ptr<u64>>(%[[VALUE_p]]) [c="uint64 *"] [c="uint64 *"];
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = read<u64>(deref(read<ptr<u64>>(%[[VALUE0]]))) [c="uint64"] [c="uint64"];
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = or<u64>(read<u64>(%[[VALUE1]]) [c="uint64"], shl<u64, overflow=wrap, amount_out_of_range=ub>(and<u64>(widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_w]])), const<u64>(4294967295)), read<i32>(%[[VALUE_z]])) [c="uint64"]) [c="uint64"] [c="uint64"];
+// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE0]])), read<u64>(%[[VALUE2]]) [c="uint64"]) [c="uint64"] [c="uint64"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, i32, i32, ptr<u64>) -> void>(%[[VALUE_g]], const<u64>(16045690981116495207), const<i32>(0), const<i32>(0), addr_of<ptr<u64>>(%[[VALUE_a]]));
-// DEFAULT-NEXT:         return conditional<i32>(eq<u64>(read<u64>(%[[VALUE_a]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(19088743)))), const<i32>(0), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="uint64"] [c="uint64"];
+// DEFAULT-NEXT:         call<void, signature=fn(u64, i32, i32, ptr<u64>) -> void>(%[[VALUE_g]], const<u64>(16045690981116495207) [c="uint64"], const<i32>(0), const<i32>(0), addr_of<ptr<u64>>(%[[VALUE_a]]) [c="uint64 *"]);
+// DEFAULT-NEXT:         return conditional<i32>(eq<u64>(read<u64>(%[[VALUE_a]]) [c="uint64"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(19088743))) [c="uint64"]), const<i32>(0), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

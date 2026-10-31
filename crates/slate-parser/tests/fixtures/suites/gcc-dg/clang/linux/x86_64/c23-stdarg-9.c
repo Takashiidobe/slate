@@ -320,7 +320,7 @@ main ()
 // DEFAULT-NEXT:     } [size=4096, align=4, offsets=[0]];
 // DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_r]]);
@@ -331,7 +331,7 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_2:[0-9]+]] r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_r_2]]);
@@ -346,7 +346,7 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_3:[0-9]+]] r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_ap_3:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_3:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_r_3]]);
@@ -365,7 +365,7 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_4:[0-9]+]] r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_ap_4:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_4:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_4]]);
 // DEFAULT-NEXT:         let %[[VALUE18:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap_4]]);
 // DEFAULT-NEXT:         let %[[VALUE19:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_r_4]]);
@@ -388,7 +388,7 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5(...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_5:[0-9]+]] r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_ap_5:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_5:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:         let %[[VALUE30:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:         let %[[VALUE31:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_r_5]]);
@@ -415,7 +415,7 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6(...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_6:[0-9]+]] r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_ap_6:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_6:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_6]]);
 // DEFAULT-NEXT:         let %[[VALUE45:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap_6]]);
 // DEFAULT-NEXT:         let %[[VALUE46:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_r_6]]);
@@ -446,7 +446,7 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7(...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_7:[0-9]+]] r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_ap_7:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_7:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_7]]);
 // DEFAULT-NEXT:         let %[[VALUE63:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap_7]]);
 // DEFAULT-NEXT:         let %[[VALUE64:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_r_7]]);
@@ -481,7 +481,7 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8(...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_8:[0-9]+]] r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_ap_8:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_8:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_8]]);
 // DEFAULT-NEXT:         let %[[VALUE84:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap_8]]);
 // DEFAULT-NEXT:         let %[[VALUE85:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_r_8]]);
@@ -520,7 +520,7 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_s1:[0-9]+]] @s1(...) -> @type[[TYPE_S]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_9:[0-9]+]] r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_ap_9:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_9:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_9]]);
 // DEFAULT-NEXT:         let %[[VALUE108:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap_9]]);
 // DEFAULT-NEXT:         let %[[VALUE109:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_r_9]]);
@@ -533,7 +533,7 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_s2:[0-9]+]] @s2(...) -> @type[[TYPE_S]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_10:[0-9]+]] r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_ap_10:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_10:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_10]]);
 // DEFAULT-NEXT:         let %[[VALUE111:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap_10]]);
 // DEFAULT-NEXT:         let %[[VALUE112:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_r_10]]);
@@ -550,7 +550,7 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_s3:[0-9]+]] @s3(...) -> @type[[TYPE_S]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_11:[0-9]+]] r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_ap_11:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_11:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_11]]);
 // DEFAULT-NEXT:         let %[[VALUE117:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap_11]]);
 // DEFAULT-NEXT:         let %[[VALUE118:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_r_11]]);
@@ -571,7 +571,7 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_s4:[0-9]+]] @s4(...) -> @type[[TYPE_S]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_12:[0-9]+]] r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_ap_12:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_12:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_12]]);
 // DEFAULT-NEXT:         let %[[VALUE126:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap_12]]);
 // DEFAULT-NEXT:         let %[[VALUE127:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_r_12]]);
@@ -596,7 +596,7 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_s5:[0-9]+]] @s5(...) -> @type[[TYPE_S]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_13:[0-9]+]] r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_ap_13:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_13:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_13]]);
 // DEFAULT-NEXT:         let %[[VALUE138:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap_13]]);
 // DEFAULT-NEXT:         let %[[VALUE139:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_r_13]]);
@@ -625,7 +625,7 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_s6:[0-9]+]] @s6(...) -> @type[[TYPE_S]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_14:[0-9]+]] r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_ap_14:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_14:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_14]]);
 // DEFAULT-NEXT:         let %[[VALUE153:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap_14]]);
 // DEFAULT-NEXT:         let %[[VALUE154:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_r_14]]);
@@ -658,7 +658,7 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_s7:[0-9]+]] @s7(...) -> @type[[TYPE_S]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_15:[0-9]+]] r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_ap_15:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_15:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_15]]);
 // DEFAULT-NEXT:         let %[[VALUE171:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap_15]]);
 // DEFAULT-NEXT:         let %[[VALUE172:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_r_15]]);
@@ -695,7 +695,7 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_s8:[0-9]+]] @s8(...) -> @type[[TYPE_S]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_16:[0-9]+]] r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_ap_16:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_16:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_16]]);
 // DEFAULT-NEXT:         let %[[VALUE192:[0-9]+]]: i32 [synthetic] = va_arg<i32>(%[[VALUE_ap_16]]);
 // DEFAULT-NEXT:         let %[[VALUE193:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_r_16]]);

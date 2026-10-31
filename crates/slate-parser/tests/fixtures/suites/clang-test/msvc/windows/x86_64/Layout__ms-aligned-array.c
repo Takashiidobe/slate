@@ -71,11 +71,11 @@ CHECK_SIZE(C, 16);
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = struct {
 // DEFAULT-NEXT:         field0 b: i8;
-// DEFAULT-NEXT:         field1 a: array<@type[[TYPE_Struct2]], 1>;
+// DEFAULT-NEXT:         field1 a: array<@type[[TYPE_Struct2]], 1> [c="AlignedStruct2[1]"];
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 16]];
 // DEFAULT-NEXT:     type @type[[TYPE_C:[0-9]+]] C = struct {
 // DEFAULT-NEXT:         field0 b: i8;
-// DEFAULT-NEXT:         field1 a: array<@type[[TYPE_Struct2]], incomplete>;
+// DEFAULT-NEXT:         field1 a: array<@type[[TYPE_Struct2]], incomplete> [c="AlignedStruct2[]"];
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0, 16]];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

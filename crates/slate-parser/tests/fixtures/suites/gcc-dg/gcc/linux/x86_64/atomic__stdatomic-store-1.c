@@ -85,8 +85,8 @@ main ()
 // DEFAULT-NEXT:         write<i8>(%[[VALUE_count]], truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr:[0-9]+]] __atomic_store_ptr: ptr<atomic i8> [storage=automatic] = addr_of<ptr<atomic i8>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_count]])), const<i32>(1)));
-// DEFAULT-NEXT:             write<i8, atomic=relaxed>(deref(read<ptr<atomic i8>>(%[[VALUE___atomic_store_ptr]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_count]])), const<i32>(1))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i8, atomic=relaxed>(deref(read<ptr<atomic i8>>(%[[VALUE___atomic_store_ptr]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i8 [synthetic] = read<i8>(%[[VALUE_count]]);
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE0]])), const<i32>(1)));
@@ -95,8 +95,8 @@ main ()
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_2:[0-9]+]] __atomic_store_ptr: ptr<atomic i8> [storage=automatic] = addr_of<ptr<atomic i8>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_2:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_count]])), const<i32>(1)));
-// DEFAULT-NEXT:             write<i8, atomic=relaxed>(deref(read<ptr<atomic i8>>(%[[VALUE___atomic_store_ptr_2]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_2]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_2:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_count]])), const<i32>(1))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i8, atomic=relaxed>(deref(read<ptr<atomic i8>>(%[[VALUE___atomic_store_ptr_2]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_2]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i8 [synthetic] = read<i8>(%[[VALUE_count]]);
 // DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE2]])), const<i32>(1)));
@@ -105,8 +105,8 @@ main ()
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_3:[0-9]+]] __atomic_store_ptr: ptr<atomic i8> [storage=automatic] = addr_of<ptr<atomic i8>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_3:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_count]])), const<i32>(1)));
-// DEFAULT-NEXT:             write<i8, atomic=release>(deref(read<ptr<atomic i8>>(%[[VALUE___atomic_store_ptr_3]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_3]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_3:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_count]])), const<i32>(1))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i8, atomic=release>(deref(read<ptr<atomic i8>>(%[[VALUE___atomic_store_ptr_3]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_3]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i8 [synthetic] = read<i8>(%[[VALUE_count]]);
 // DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE4]])), const<i32>(1)));
@@ -115,8 +115,8 @@ main ()
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_4:[0-9]+]] __atomic_store_ptr: ptr<atomic i8> [storage=automatic] = addr_of<ptr<atomic i8>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_4:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_count]])), const<i32>(1)));
-// DEFAULT-NEXT:             write<i8, atomic=seq_cst>(deref(read<ptr<atomic i8>>(%[[VALUE___atomic_store_ptr_4]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_4]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_4:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_count]])), const<i32>(1))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i8, atomic=seq_cst>(deref(read<ptr<atomic i8>>(%[[VALUE___atomic_store_ptr_4]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_4]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: i8 [synthetic] = read<i8>(%[[VALUE_count]]);
 // DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE6]])), const<i32>(1)));
@@ -128,8 +128,8 @@ main ()
 // DEFAULT-NEXT:         write<i8>(%[[VALUE_count]], read<i8>(%[[VALUE9]]));
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_5:[0-9]+]] __atomic_store_ptr: ptr<atomic i8> [storage=automatic] = addr_of<ptr<atomic i8>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_5:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = read<i8>(%[[VALUE_count]]);
-// DEFAULT-NEXT:             write<i8, atomic=seq_cst>(deref(read<ptr<atomic i8>>(%[[VALUE___atomic_store_ptr_5]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_5]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_5:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = read<i8>(%[[VALUE_count]]) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i8, atomic=seq_cst>(deref(read<ptr<atomic i8>>(%[[VALUE___atomic_store_ptr_5]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_5]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8, atomic=seq_cst>(%[[VALUE_v]])), widen<i32, reason=promotion>(read<i8>(%[[VALUE_count]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

@@ -45,7 +45,7 @@ f1 (a)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f0:[0-9]+]] @f0(%[[VALUE_a:[0-9]+]] a: ptr<i32> [restrict]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f0:[0-9]+]] @f0(%[[VALUE_a:[0-9]+]] a: ptr<i32> [restrict]) -> void [linkage=external] [fallthrough=ret_void] [c="void(int[])"] {
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: ptr<ptr<i32>> [storage=automatic] = pointer_cast<ptr<ptr<i32>>, reason=assign>(addr_of<ptr<ptr<i32>>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: ptr<ptr<i32>> [storage=automatic] = addr_of<ptr<ptr<i32>>>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }

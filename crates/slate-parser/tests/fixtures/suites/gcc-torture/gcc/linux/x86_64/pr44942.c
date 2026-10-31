@@ -88,11 +88,11 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list [c="__gnuc_va_list"];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32, %[[VALUE_c:[0-9]+]] c: i32, %[[VALUE_d:[0-9]+]] d: i32, %[[VALUE_e:[0-9]+]] e: i32, %[[VALUE_f:[0-9]+]] f: i32, %[[VALUE_g:[0-9]+]] g: i32, %[[VALUE_h:[0-9]+]] h: f80, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], va_arg<i32>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(1234))
@@ -101,7 +101,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_a_2:[0-9]+]] a: i32, %[[VALUE_b_2:[0-9]+]] b: i32, %[[VALUE_c_2:[0-9]+]] c: i32, %[[VALUE_d_2:[0-9]+]] d: i32, %[[VALUE_e_2:[0-9]+]] e: i32, %[[VALUE_f_2:[0-9]+]] f: i32, %[[VALUE_g_2:[0-9]+]] g: i32, %[[VALUE_h_2:[0-9]+]] h: f80, %[[VALUE_i_2:[0-9]+]] i: i32, %[[VALUE_j:[0-9]+]] j: f80, %[[VALUE_k:[0-9]+]] k: i32, %[[VALUE_l:[0-9]+]] l: f80, %[[VALUE_m:[0-9]+]] m: i32, %[[VALUE_n:[0-9]+]] n: f80, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_o:[0-9]+]] o: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_o]], va_arg<i32>(%[[VALUE_ap_2]]));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_o]]), const<i32>(1234))
@@ -110,7 +110,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3(%[[VALUE_a_3:[0-9]+]] a: f64, %[[VALUE_b_3:[0-9]+]] b: f64, %[[VALUE_c_3:[0-9]+]] c: f64, %[[VALUE_d_3:[0-9]+]] d: f64, %[[VALUE_e_3:[0-9]+]] e: f64, %[[VALUE_f_3:[0-9]+]] f: f64, %[[VALUE_g_3:[0-9]+]] g: f64, %[[VALUE_h_3:[0-9]+]] h: f80, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_i_3:[0-9]+]] i: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_ap_3:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_3:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_i_3]], va_arg<f64>(%[[VALUE_ap_3]]));
 // DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(%[[VALUE_i_3]]), const<f64>(1234.0))
@@ -119,7 +119,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4(%[[VALUE_a_4:[0-9]+]] a: f64, %[[VALUE_b_4:[0-9]+]] b: f64, %[[VALUE_c_4:[0-9]+]] c: f64, %[[VALUE_d_4:[0-9]+]] d: f64, %[[VALUE_e_4:[0-9]+]] e: f64, %[[VALUE_f_4:[0-9]+]] f: f64, %[[VALUE_g_4:[0-9]+]] g: f64, %[[VALUE_h_4:[0-9]+]] h: f80, %[[VALUE_i_4:[0-9]+]] i: f64, %[[VALUE_j_2:[0-9]+]] j: f80, %[[VALUE_k_2:[0-9]+]] k: f64, %[[VALUE_l_2:[0-9]+]] l: f80, %[[VALUE_m_2:[0-9]+]] m: f64, %[[VALUE_n_2:[0-9]+]] n: f80, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_o_2:[0-9]+]] o: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_ap_4:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_4:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_4]]);
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_o_2]], va_arg<f64>(%[[VALUE_ap_4]]));
 // DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(%[[VALUE_o_2]]), const<f64>(1234.0))

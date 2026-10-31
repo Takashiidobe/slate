@@ -79,18 +79,18 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_inner_t:[0-9]+]] inner_t = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 lead: i32;
-// DEFAULT-NEXT:         field1 in: @type[[TYPE0]];
+// DEFAULT-NEXT:         field1 in: @type[[TYPE0]] [c="inner_t"];
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type[[TYPE_outer_t:[0-9]+]] outer_t = @type[[TYPE1]];
 // DEFAULT-NEXT:     type @type[[TYPE2:[0-9]+]] = struct {
-// DEFAULT-NEXT:         field0 dict: ptr<@type[[TYPE1]]>;
+// DEFAULT-NEXT:         field0 dict: ptr<@type[[TYPE1]]> [c="outer_t *"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_state_t:[0-9]+]] state_t = @type[[TYPE2]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_compute:[0-9]+]] @compute(%[[VALUE_ms:[0-9]+]] ms: ptr<const @type[[TYPE2]]> [const], %[[VALUE_flag:[0-9]+]] flag: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_o:[0-9]+]] o: ptr<const @type[[TYPE1]]> [storage=automatic] [const] = pointer_cast<ptr<const @type[[TYPE1]]>, reason=assign>(read<ptr<@type[[TYPE1]]>>(field0(deref(read<ptr<const @type[[TYPE2]]>>(%[[VALUE_ms]])))));
-// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<const @type[[TYPE0]]> [storage=automatic] [const] = addr_of<ptr<const @type[[TYPE0]]>>(field1(deref(read<ptr<const @type[[TYPE1]]>>(%[[VALUE_o]]))));
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
+// DEFAULT-NEXT:     fn %[[VALUE_compute:[0-9]+]] @compute(%[[VALUE_ms:[0-9]+]] ms: ptr<const @type[[TYPE2]]> [const] [c="const state_t *const"], %[[VALUE_flag:[0-9]+]] flag: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(const state_t *const, int)"] {
+// DEFAULT-NEXT:         let %[[VALUE_o:[0-9]+]] o: ptr<const @type[[TYPE1]]> [storage=automatic] [const] = pointer_cast<ptr<const @type[[TYPE1]]>, reason=assign>(read<ptr<@type[[TYPE1]]>>(field0(deref(read<ptr<const @type[[TYPE2]]>>(%[[VALUE_ms]])))) [c="outer_t *"]) [c="const outer_t *"] [c="const outer_t *const"];
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<const @type[[TYPE0]]> [storage=automatic] [const] = addr_of<ptr<const @type[[TYPE0]]>>(field1(deref(read<ptr<const @type[[TYPE1]]>>(%[[VALUE_o]])))) [c="const inner_t *"] [c="const inner_t *const"];
 // DEFAULT-NEXT:         let %[[VALUE_acc:[0-9]+]] acc: i32 [storage=automatic] = read<i32>(field1(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_q]]))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_flag]]), const<i32>(0))
 // DEFAULT-NEXT:             {
@@ -106,16 +106,16 @@ int main(void) {
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_acc]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_inr:[0-9]+]] inr: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_inr:[0-9]+]] inr: @type[[TYPE0]] [storage=automatic] [c="inner_t"];
 // DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_inr]]), const<i32>(0));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_inr]]), const<i32>(3));
 // DEFAULT-NEXT:         write<i32>(field2(%[[VALUE_inr]]), const<i32>(4));
-// DEFAULT-NEXT:         let %[[VALUE_ou:[0-9]+]] ou: @type[[TYPE1]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ou:[0-9]+]] ou: @type[[TYPE1]] [storage=automatic] [c="outer_t"];
 // DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_ou]]), const<i32>(0));
-// DEFAULT-NEXT:         write<@type[[TYPE0]]>(field1(%[[VALUE_ou]]), copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(%[[VALUE_inr]])));
-// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE2]] [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE1]]>>(field0(%[[VALUE_s]]), addr_of<ptr<@type[[TYPE1]]>>(%[[VALUE_ou]]));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]])), call<i32, signature=fn(ptr<const @type[[TYPE2]]>, i32) -> i32>(%[[VALUE_compute]], pointer_cast<ptr<const @type[[TYPE2]]>, reason=arg>(addr_of<ptr<@type[[TYPE2]]>>(%[[VALUE_s]])), const<i32>(0)), call<i32, signature=fn(ptr<const @type[[TYPE2]]>, i32) -> i32>(%[[VALUE_compute]], pointer_cast<ptr<const @type[[TYPE2]]>, reason=arg>(addr_of<ptr<@type[[TYPE2]]>>(%[[VALUE_s]])), const<i32>(1)));
+// DEFAULT-NEXT:         write<@type[[TYPE0]]>(field1(%[[VALUE_ou]]), copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(%[[VALUE_inr]]) [c="inner_t"]) [c="inner_t"]) [c="inner_t"];
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE2]] [storage=automatic] [c="state_t"];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE1]]>>(field0(%[[VALUE_s]]), addr_of<ptr<@type[[TYPE1]]>>(%[[VALUE_ou]]) [c="outer_t *"]) [c="outer_t *"];
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]])), call<i32, signature=fn(ptr<const @type[[TYPE2]]>, i32) -> i32>(%[[VALUE_compute]], pointer_cast<ptr<const @type[[TYPE2]]>, reason=arg>(addr_of<ptr<@type[[TYPE2]]>>(%[[VALUE_s]]) [c="state_t *"]) [c="const state_t *"], const<i32>(0)), call<i32, signature=fn(ptr<const @type[[TYPE2]]>, i32) -> i32>(%[[VALUE_compute]], pointer_cast<ptr<const @type[[TYPE2]]>, reason=arg>(addr_of<ptr<@type[[TYPE2]]>>(%[[VALUE_s]]) [c="state_t *"]) [c="const state_t *"], const<i32>(1)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

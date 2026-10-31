@@ -43,23 +43,23 @@ ULONGLONG shift_left(ULONGLONG value, DWORD count) {
 // IR-NEXT:     type @type[[TYPE__LARGE_INTEGER:[0-9]+]] _LARGE_INTEGER = union {
 // IR-NEXT:         field0 <anonymous>: @type[[TYPE0:[0-9]+]];
 // IR-NEXT:         field1 u: @type[[TYPE1:[0-9]+]];
-// IR-NEXT:         field2 QuadPart: i64;
+// IR-NEXT:         field2 QuadPart: i64 [c="LONGLONG"];
 // IR-NEXT:     } [size=8, align=8, offsets=[0, 0, 0]];
 // IR-NEXT:     type @type[[TYPE0]] = struct {
-// IR-NEXT:         field0 LowPart: u32;
-// IR-NEXT:         field1 HighPart: i32;
+// IR-NEXT:         field0 LowPart: u32 [c="DWORD"];
+// IR-NEXT:         field1 HighPart: i32 [c="LONG"];
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // IR-NEXT:     type @type[[TYPE1]] = struct {
-// IR-NEXT:         field0 LowPart: u32;
-// IR-NEXT:         field1 HighPart: i32;
+// IR-NEXT:         field0 LowPart: u32 [c="DWORD"];
+// IR-NEXT:         field1 HighPart: i32 [c="LONG"];
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // IR-NEXT:     type @type[[TYPE_LARGE_INTEGER:[0-9]+]] LARGE_INTEGER = @type[[TYPE__LARGE_INTEGER]];
 // IR-NEXT:     global %[[VALUE_handle_size:[0-9]+]] handle_size: u32 [storage=static] = const<u32>(4) [linkage=external];
 // IR-NEXT:     global %[[VALUE_long_ptr_size:[0-9]+]] long_ptr_size: u32 [storage=static] = const<u32>(4) [linkage=external];
 // IR-NEXT:     global %[[VALUE_large_integer_size:[0-9]+]] large_integer_size: u32 [storage=static] = const<u32>(8) [linkage=external];
 // IR-NEXT:     global %[[VALUE_large_integer_align:[0-9]+]] large_integer_align: u32 [storage=static] = const<u32>(8) [linkage=external];
-// IR-NEXT:     fn %[[VALUE_shift_left:[0-9]+]] @shift_left(%[[VALUE_value:[0-9]+]] value: u64, %[[VALUE_count:[0-9]+]] count: u32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%[[VALUE_value]]), read<u32>(%[[VALUE_count]]));
+// IR-NEXT:     fn %[[VALUE_shift_left:[0-9]+]] @shift_left(%[[VALUE_value:[0-9]+]] value: u64 [c="ULONGLONG"], %[[VALUE_count:[0-9]+]] count: u32 [c="DWORD"]) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="ULONGLONG(ULONGLONG, DWORD)"] {
+// IR-NEXT:         return shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%[[VALUE_value]]), read<u32>(%[[VALUE_count]]) [c="DWORD"]) [c="ULONGLONG"];
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -63,7 +63,7 @@ void foo ()
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE_s_2]] [storage=automatic] = aggregate<@type[[TYPE_s_2]], zero_fill=true>();
 // DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_e]]) -> void>(%[[VALUE_f]], int_to_enum<@type[[TYPE_e]], reason=arg>(reinterpret<u32, reason=arg, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_e]]>(bitfield0<unit=0, bytes=0..1, bits=0..3>(%[[VALUE_s]])))))));
 // DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_e]]) -> void>(%[[VALUE_f]], int_to_enum<@type[[TYPE_e]], reason=arg>(reinterpret<u32, reason=arg, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_e]]>(bitfield0<unit=0, bytes=0..1, bits=0..3>(%[[VALUE_t]])))))));
-// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE_s]] [storage=automatic] = aggregate<@type[[TYPE_s]], zero_fill=true>();
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE_s]] [storage=automatic] = aggregate<@type[[TYPE_s]], zero_fill=true>() [c="typeof(*(1 ? &s : &t))"];
 // DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_e]]) -> void>(%[[VALUE_f]], int_to_enum<@type[[TYPE_e]], reason=arg>(reinterpret<u32, reason=arg, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_e]]>(bitfield0<unit=0, bytes=0..1, bits=0..3>(%[[VALUE_u]])))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

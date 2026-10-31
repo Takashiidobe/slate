@@ -55,13 +55,13 @@ main ()
 // DEFAULT-NEXT:     type @type[[TYPE_V:[0-9]+]] V = vector<f32, 16>;
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 b: i256b;
-// DEFAULT-NEXT:         field1 v: vector<f32, 16>;
+// DEFAULT-NEXT:         field1 v: vector<f32, 16> [c="V"];
 // DEFAULT-NEXT:     } [size=64, align=64, offsets=[0, 0]];
 // DEFAULT-NEXT:     global %[[VALUE_u:[0-9]+]] u: @type[[TYPE0]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_c:[0-9]+]] c: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: vector<f32, 16> [synthetic] = read<vector<f32, 16>>(field1(%[[VALUE_u]]));
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: vector<f32, 16> [synthetic] = sub<vector<f32, 16>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 16>>(%[[VALUE0]]), vector_splat<vector<f32, 16>, reason=usual_arith>(conditional<f32>(ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(0)), const<f32>(0.0), const<f32>(1.0))));
-// DEFAULT-NEXT:         write<vector<f32, 16>>(field1(%[[VALUE_u]]), read<vector<f32, 16>>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: vector<f32, 16> [synthetic] = read<vector<f32, 16>>(field1(%[[VALUE_u]])) [c="V"] [c="V"];
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: vector<f32, 16> [synthetic] = sub<vector<f32, 16>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 16>>(%[[VALUE0]]) [c="V"], vector_splat<vector<f32, 16>, reason=usual_arith>(conditional<f32>(ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(0)), const<f32>(0.0), const<f32>(1.0)))) [c="V"] [c="V"];
+// DEFAULT-NEXT:         write<vector<f32, 16>>(field1(%[[VALUE_u]]), read<vector<f32, 16>>(%[[VALUE1]]) [c="V"]) [c="V"] [c="V"];
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i256b [synthetic] = read<i256b>(field0(%[[VALUE_u]]));
 // DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i256b [synthetic] = mul<i256b, overflow=ub>(read<i256b>(%[[VALUE2]]), widen<i256b, reason=usual_arith>(read<i32>(%[[VALUE_c]])));
 // DEFAULT-NEXT:         write<i256b>(field0(%[[VALUE_u]]), read<i256b>(%[[VALUE3]]));

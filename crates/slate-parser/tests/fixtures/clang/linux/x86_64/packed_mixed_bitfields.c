@@ -58,7 +58,7 @@ int main(void) {
 // DEFAULT-NEXT:         field5 tail: u32 : 17;
 // DEFAULT-NEXT:     } [size=11, align=1, offsets=[0, 1, 1, 4, 4, 8], bit_offsets=[None, Some(8), Some(11), Some(32), Some(32), Some(67)], bit_units=[(1, 2), (4, 7)], field_units=[None, Some(0), Some(0), None, Some(1), Some(1)]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 22> [storage=static] = code_units<array<i8, 22>>([37, 117, 32, 37, 117, 32, 37, 100, 32, 37, 108, 108, 117, 32, 37, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_bits:[0-9]+]] bits: @type[[TYPE_MixedBits]] [storage=automatic] = aggregate<@type[[TYPE_MixedBits]], zero_fill=true>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         write<u8>(field0(%[[VALUE_bits]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(165))));

@@ -54,27 +54,27 @@ int plain(int a[]) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_guaranteed:[0-9]+]] @guaranteed(%[[VALUE_a:[0-9]+]] a: ptr<i32> [array=static 3]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_guaranteed:[0-9]+]] @guaranteed(%[[VALUE_a:[0-9]+]] a: ptr<i32> [array=static 3]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int[3])"] {
 // IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_a]]), const<i32>(0))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_qualified_const:[0-9]+]] @qualified_const(%[[VALUE_a_2:[0-9]+]] a: ptr<i32> [const]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_qualified_const:[0-9]+]] @qualified_const(%[[VALUE_a_2:[0-9]+]] a: ptr<i32> [const]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int[])"] {
 // IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_a_2]]), const<i32>(0))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_qualified_restrict:[0-9]+]] @qualified_restrict(%[[VALUE_a_3:[0-9]+]] a: ptr<i32> [restrict] [array=4]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_qualified_restrict:[0-9]+]] @qualified_restrict(%[[VALUE_a_3:[0-9]+]] a: ptr<i32> [restrict] [array=4]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int[4])"] {
 // IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_a_3]]), const<i32>(0))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_guaranteed_const:[0-9]+]] @guaranteed_const(%[[VALUE_a_4:[0-9]+]] a: ptr<i32> [const] [array=static 5]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_guaranteed_const:[0-9]+]] @guaranteed_const(%[[VALUE_a_4:[0-9]+]] a: ptr<i32> [const] [array=static 5]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int[5])"] {
 // IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_a_4]]), const<i32>(0))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_unspecified_extent:[0-9]+]] @unspecified_extent(%[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_a_5:[0-9]+]] a: ptr<i32> [array=*]) -> void [linkage=external];
-// IR-NEXT:     fn %[[VALUE_guaranteed_variable:[0-9]+]] @guaranteed_variable(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE_a_6:[0-9]+]] a: ptr<i32> [array=static %[[VALUE0:[0-9]+]]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_unspecified_extent:[0-9]+]] @unspecified_extent(%[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_a_5:[0-9]+]] a: ptr<i32> [array=*]) -> void [linkage=external] [c="void(int, int[*])"];
+// IR-NEXT:     fn %[[VALUE_guaranteed_variable:[0-9]+]] @guaranteed_variable(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE_a_6:[0-9]+]] a: ptr<i32> [array=static %[[VALUE0:[0-9]+]]]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int, int[*])"] {
 // IR-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
 // IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_a_6]]), const<i32>(0))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_const_element:[0-9]+]] @const_element(%[[VALUE_a_7:[0-9]+]] a: ptr<const i32> [array=3]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_const_element:[0-9]+]] @const_element(%[[VALUE_a_7:[0-9]+]] a: ptr<const i32> [array=3]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(const int[3])"] {
 // IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(read<ptr<const i32>>(%[[VALUE_a_7]]), const<i32>(0))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_plain:[0-9]+]] @plain(%[[VALUE_a_8:[0-9]+]] a: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_plain:[0-9]+]] @plain(%[[VALUE_a_8:[0-9]+]] a: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int[])"] {
 // IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_a_8]]), const<i32>(0))));
 // IR-NEXT:     }
 // IR-NEXT: }

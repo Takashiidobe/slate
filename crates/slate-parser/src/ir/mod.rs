@@ -1,6 +1,7 @@
 mod abi;
 mod asm;
 mod atomic;
+mod c_types;
 mod comments;
 mod declarations;
 mod module;
@@ -18,6 +19,7 @@ pub use asm::{
     AsmRejectReason, AsmRejection, AsmSymbol, AsmTiedInput, InlineAsm,
 };
 pub use atomic::{Atomicity, CompareExchangeForm, FenceScope, MemoryOrder, SyncScope, Weakness};
+pub use c_types::CTypeTable;
 pub use comments::{Comments, Detached, OwnedComments, Sibling};
 pub use declarations::{
     Access, AggregateMember, AggregateTarget, ArrayExtent, ArrayParameter, AutoInit,

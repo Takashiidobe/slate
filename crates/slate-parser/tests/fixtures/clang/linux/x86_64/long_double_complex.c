@@ -203,7 +203,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_cprojl:[0-9]+]] @cprojl(%[[VALUE___z_19:[0-9]+]] __z: complex<f80>) -> complex<f80> [linkage=external] [memory=none] [abi=sysv64(byval<align=16>) -> coerce<f80, f80>];
 // DEFAULT-NEXT:     fn %[[VALUE_cimagl:[0-9]+]] @cimagl(%[[VALUE___z_20:[0-9]+]] __z: complex<f80>) -> f80 [linkage=external] [memory=none] [abi=sysv64(byval<align=16>) -> scalar];
 // DEFAULT-NEXT:     fn %[[VALUE_creall:[0-9]+]] @creall(%[[VALUE___z_21:[0-9]+]] __z: complex<f80>) -> f80 [linkage=external] [memory=none] [abi=sysv64(byval<align=16>) -> scalar];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_print_lc:[0-9]+]] @print_lc(%[[VALUE_name:[0-9]+]] name: ptr<const i8>, %[[VALUE_z:[0-9]+]] z: complex<f80>) -> void [linkage=internal] [abi=sysv64(scalar, byval<align=16>) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str]])), read<ptr<const i8>>(%[[VALUE_name]]), call<f80, signature=fn(complex<f80>) -> f80, abi=sysv64(byval<align=16>) -> scalar>(%[[VALUE_creall]], read<complex<f80>>(%[[VALUE_z]])), call<f80, signature=fn(complex<f80>) -> f80, abi=sysv64(byval<align=16>) -> scalar>(%[[VALUE_cimagl]], read<complex<f80>>(%[[VALUE_z]])));

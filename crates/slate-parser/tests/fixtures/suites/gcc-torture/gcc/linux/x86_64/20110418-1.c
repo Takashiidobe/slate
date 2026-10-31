@@ -53,34 +53,34 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_uint64_t:[0-9]+]] uint64_t = u64;
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_a:[0-9]+]] a: ptr<u64>, %[[VALUE_aa:[0-9]+]] aa: u64) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_new_value:[0-9]+]] new_value: u64 [storage=automatic] = read<u64>(%[[VALUE_aa]]);
-// DEFAULT-NEXT:         let %[[VALUE_old_value:[0-9]+]] old_value: u64 [storage=automatic] = read<u64>(deref(read<ptr<u64>>(%[[VALUE_a]])));
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_a:[0-9]+]] a: ptr<u64> [c="uint64_t *"], %[[VALUE_aa:[0-9]+]] aa: u64 [c="uint64_t"]) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] [c="void(uint64_t *, uint64_t)"] {
+// DEFAULT-NEXT:         let %[[VALUE_new_value:[0-9]+]] new_value: u64 [storage=automatic] = read<u64>(%[[VALUE_aa]]) [c="uint64_t"] [c="uint64_t"];
+// DEFAULT-NEXT:         let %[[VALUE_old_value:[0-9]+]] old_value: u64 [storage=automatic] = read<u64>(deref(read<ptr<u64>>(%[[VALUE_a]]))) [c="uint64_t"] [c="uint64_t"];
 // DEFAULT-NEXT:         let %[[VALUE_bit_size:[0-9]+]] bit_size: i32 [storage=automatic] = const<i32>(32);
-// DEFAULT-NEXT:         let %[[VALUE_mask:[0-9]+]] mask: u64 [storage=automatic] = widen<u64, reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
-// DEFAULT-NEXT:         let %[[VALUE_tmp:[0-9]+]] tmp: u64 [storage=automatic] = and<u64>(read<u64>(%[[VALUE_old_value]]), read<u64>(%[[VALUE_mask]]));
-// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_new_value]]);
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = and<u64>(read<u64>(%[[VALUE0]]), read<u64>(%[[VALUE_mask]]));
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_new_value]], read<u64>(%[[VALUE1]]));
-// DEFAULT-NEXT:         if gt<u64>(read<u64>(%[[VALUE_tmp]]), read<u64>(%[[VALUE_new_value]]))
-// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_new_value]]);
-// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE2]]), shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), read<i32>(%[[VALUE_bit_size]])));
-// DEFAULT-NEXT:             write<u64>(%[[VALUE_new_value]], read<u64>(%[[VALUE3]]));
-// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_new_value]]);
-// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE4]]), and<u64>(read<u64>(%[[VALUE_old_value]]), not<u64>(read<u64>(%[[VALUE_mask]]))));
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_new_value]], read<u64>(%[[VALUE5]]));
-// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE_a]])), read<u64>(%[[VALUE_new_value]]));
+// DEFAULT-NEXT:         let %[[VALUE_mask:[0-9]+]] mask: u64 [storage=automatic] = widen<u64, reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))) [c="uint64_t"] [c="uint64_t"];
+// DEFAULT-NEXT:         let %[[VALUE_tmp:[0-9]+]] tmp: u64 [storage=automatic] = and<u64>(read<u64>(%[[VALUE_old_value]]) [c="uint64_t"], read<u64>(%[[VALUE_mask]]) [c="uint64_t"]) [c="uint64_t"] [c="uint64_t"];
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_new_value]]) [c="uint64_t"] [c="uint64_t"];
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = and<u64>(read<u64>(%[[VALUE0]]) [c="uint64_t"], read<u64>(%[[VALUE_mask]]) [c="uint64_t"]) [c="uint64_t"] [c="uint64_t"];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_new_value]], read<u64>(%[[VALUE1]]) [c="uint64_t"]) [c="uint64_t"] [c="uint64_t"];
+// DEFAULT-NEXT:         if gt<u64>(read<u64>(%[[VALUE_tmp]]) [c="uint64_t"], read<u64>(%[[VALUE_new_value]]) [c="uint64_t"])
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_new_value]]) [c="uint64_t"] [c="uint64_t"];
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE2]]) [c="uint64_t"], shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), read<i32>(%[[VALUE_bit_size]])) [c="uint64_t"]) [c="uint64_t"] [c="uint64_t"];
+// DEFAULT-NEXT:             write<u64>(%[[VALUE_new_value]], read<u64>(%[[VALUE3]]) [c="uint64_t"]) [c="uint64_t"] [c="uint64_t"];
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_new_value]]) [c="uint64_t"] [c="uint64_t"];
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE4]]) [c="uint64_t"], and<u64>(read<u64>(%[[VALUE_old_value]]) [c="uint64_t"], not<u64>(read<u64>(%[[VALUE_mask]]) [c="uint64_t"]) [c="uint64_t"]) [c="uint64_t"]) [c="uint64_t"] [c="uint64_t"];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_new_value]], read<u64>(%[[VALUE5]]) [c="uint64_t"]) [c="uint64_t"] [c="uint64_t"];
+// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE_a]])), read<u64>(%[[VALUE_new_value]]) [c="uint64_t"]) [c="uint64_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_value:[0-9]+]] value: u64 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_new_value_2:[0-9]+]] new_value: u64 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_old_value_2:[0-9]+]] old_value: u64 [storage=automatic];
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_value]], reinterpret<u64, reason=assign, fits=always>(const<i64>(4294967297)));
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_old_value_2]], read<u64>(%[[VALUE_value]]));
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_new_value_2]], and<u64>(add<u64, overflow=wrap>(read<u64>(%[[VALUE_value]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))), widen<u64, reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<u64>, u64) -> void>(%[[VALUE_f]], addr_of<ptr<u64>>(%[[VALUE_value]]), read<u64>(%[[VALUE_new_value_2]]));
-// DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_value]]), add<u64, overflow=wrap>(read<u64>(%[[VALUE_old_value_2]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
+// DEFAULT-NEXT:         let %[[VALUE_value:[0-9]+]] value: u64 [storage=automatic] [c="uint64_t"];
+// DEFAULT-NEXT:         let %[[VALUE_new_value_2:[0-9]+]] new_value: u64 [storage=automatic] [c="uint64_t"];
+// DEFAULT-NEXT:         let %[[VALUE_old_value_2:[0-9]+]] old_value: u64 [storage=automatic] [c="uint64_t"];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_value]], reinterpret<u64, reason=assign, fits=always>(const<i64>(4294967297)) [c="uint64_t"]) [c="uint64_t"];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_old_value_2]], read<u64>(%[[VALUE_value]]) [c="uint64_t"]) [c="uint64_t"];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_new_value_2]], and<u64>(add<u64, overflow=wrap>(read<u64>(%[[VALUE_value]]) [c="uint64_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="uint64_t"]) [c="uint64_t"], widen<u64, reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))) [c="uint64_t"]) [c="uint64_t"]) [c="uint64_t"];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<u64>, u64) -> void>(%[[VALUE_f]], addr_of<ptr<u64>>(%[[VALUE_value]]) [c="uint64_t *"], read<u64>(%[[VALUE_new_value_2]]) [c="uint64_t"]);
+// DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_value]]) [c="uint64_t"], add<u64, overflow=wrap>(read<u64>(%[[VALUE_old_value_2]]) [c="uint64_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="uint64_t"]) [c="uint64_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -53,7 +53,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 35> [storage=static] = code_units<array<i8, 35>>([37, 46, 51, 102, 32, 37, 46, 51, 102, 32, 37, 46, 51, 102, 32, 37, 46, 51, 102, 32, 37, 108, 100, 32, 37, 108, 108, 100, 32, 37, 46, 51, 102, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_sin:[0-9]+]] @__builtin_sin(%[[VALUE0:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_cos:[0-9]+]] @__builtin_cos(%[[VALUE1:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_tan:[0-9]+]] @__builtin_tan(%[[VALUE2:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];

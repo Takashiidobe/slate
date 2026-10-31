@@ -125,7 +125,7 @@ bool __atomic_is_lock_free (size_t i, void *p)
 // DEFAULT-NEXT:         write<u8>(deref(read<ptr<u8>>(%[[VALUE_p_7]])), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(not<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(read<ptr<u8>>(%[[VALUE_p_7]]))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_v_4]]))))))));
 // DEFAULT-NEXT:         return read<u8>(%[[VALUE_ret]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___atomic_is_lock_free:[0-9]+]] @__atomic_is_lock_free(%[[VALUE_i_7:[0-9]+]] i: u64, %[[VALUE_p_8:[0-9]+]] p: ptr<void>) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE___atomic_is_lock_free:[0-9]+]] @__atomic_is_lock_free(%[[VALUE_i_7:[0-9]+]] i: u64 [c="size_t"], %[[VALUE_p_8:[0-9]+]] p: ptr<void>) -> bool [linkage=external] [fallthrough=ub_if_used] [c="_Bool(size_t, void *)"] {
 // DEFAULT-NEXT:         write<i16>(deref(pointer_cast<ptr<i16>, reason=explicit>(read<ptr<void>>(%[[VALUE_p_8]]))), truncate<i16, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         return const<bool>(true);
 // DEFAULT-NEXT:     }

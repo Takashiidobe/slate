@@ -29,7 +29,7 @@ int foo (int n, char m[1][n])
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_m:[0-9]+]] m: ptr<vla<i8, %[[VALUE0:[0-9]+]]>> [array=1]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_m:[0-9]+]] m: ptr<vla<i8, %[[VALUE0:[0-9]+]]>> [array=1]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int, char[1][*])"] {
 // DEFAULT-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -39,14 +39,14 @@ uintptr_t foo(struct buffer * b) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___uint8_t:[0-9]+]] __uint8_t = u8;
-// DEFAULT-NEXT:     type @type[[TYPE_uint8_t:[0-9]+]] uint8_t = u8;
+// DEFAULT-NEXT:     type @type[[TYPE_uint8_t:[0-9]+]] uint8_t = u8 [c="__uint8_t"];
 // DEFAULT-NEXT:     type @type[[TYPE_uintptr_t:[0-9]+]] uintptr_t = u64;
 // DEFAULT-NEXT:     type @type[[TYPE_buffer:[0-9]+]] buffer = struct {
-// DEFAULT-NEXT:         field0 ptr: ptr<u8>;
+// DEFAULT-NEXT:         field0 ptr: ptr<u8> [c="uint8_t *"];
 // DEFAULT-NEXT:         field1 len: i32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_b:[0-9]+]] b: ptr<@type[[TYPE_buffer]]>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return ptr_to_int<u64, reason=explicit>(read<ptr<u8>>(field0(deref(read<ptr<@type[[TYPE_buffer]]>>(%[[VALUE_b]])))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_b:[0-9]+]] b: ptr<@type[[TYPE_buffer]]>) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="uintptr_t(struct buffer *)"] {
+// DEFAULT-NEXT:         return ptr_to_int<u64, reason=explicit>(read<ptr<u8>>(field0(deref(read<ptr<@type[[TYPE_buffer]]>>(%[[VALUE_b]])))) [c="uint8_t *"]) [c="uintptr_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

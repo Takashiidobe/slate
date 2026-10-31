@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     global %[[VALUE_foo:[0-9]+]] foo: @type[[TYPE0]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] [c="int(int, char *[])"] {
 // DEFAULT-NEXT:         write<i32>(field0(field1(field1(%[[VALUE_foo]]))), const<i32>(6));
 // DEFAULT-NEXT:         write<i32>(field0(field1(%[[VALUE_foo]])), const<i32>(5));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(field1(field1(%[[VALUE_foo]])))), const<i32>(6))

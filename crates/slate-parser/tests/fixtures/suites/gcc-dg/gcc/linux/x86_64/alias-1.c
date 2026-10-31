@@ -59,10 +59,10 @@ YYSTYPE
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_tDefEntry_2:[0-9]+]] tDefEntry = @type[[TYPE_tDefEntry]];
 // DEFAULT-NEXT:     type @type[[TYPE_incomplete:[0-9]+]] incomplete = struct incomplete;
-// DEFAULT-NEXT:     fn %[[VALUE_addSibMacro:[0-9]+]] @addSibMacro(%[[VALUE_list:[0-9]+]] list: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_ppT:[0-9]+]] ppT: ptr<ptr<@type[[TYPE_tDefEntry]]>> [storage=automatic] = pointer_cast<ptr<ptr<@type[[TYPE_tDefEntry]]>>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_list]]));
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_incomplete]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_incomplete]]>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_list]]));
-// DEFAULT-NEXT:         return read<i32>(%[[VALUE_list]]);
+// DEFAULT-NEXT:     fn %[[VALUE_addSibMacro:[0-9]+]] @addSibMacro(%[[VALUE_list:[0-9]+]] list: i32 [c="YYSTYPE"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="YYSTYPE(YYSTYPE)"] {
+// DEFAULT-NEXT:         let %[[VALUE_ppT:[0-9]+]] ppT: ptr<ptr<@type[[TYPE_tDefEntry]]>> [storage=automatic] = pointer_cast<ptr<ptr<@type[[TYPE_tDefEntry]]>>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_list]]) [c="YYSTYPE *"]) [c="tDefEntry **"] [c="tDefEntry **"];
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_incomplete]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_incomplete]]>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_list]]) [c="YYSTYPE *"]);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_list]]) [c="YYSTYPE"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

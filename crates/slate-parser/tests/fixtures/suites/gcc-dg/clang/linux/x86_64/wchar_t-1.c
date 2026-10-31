@@ -44,9 +44,9 @@ wct (void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_wchar_t:[0-9]+]] wchar_t = i32;
 // DEFAULT-NEXT:     global %[[VALUE___wc_t__:[0-9]+]] __wc_t__: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_wc_t_p:[0-9]+]] wc_t_p: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wc_t_p:[0-9]+]] wc_t_p: ptr<i32> [storage=static] [linkage=external] [c="wchar_t *"];
 // DEFAULT-NEXT:     fn %[[VALUE_wct:[0-9]+]] @wct() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_wc_t_p]], addr_of<ptr<i32>>(%[[VALUE___wc_t__]]));
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_wc_t_p]], addr_of<ptr<i32>>(%[[VALUE___wc_t__]]) [c="wchar_t *"]) [c="wchar_t *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

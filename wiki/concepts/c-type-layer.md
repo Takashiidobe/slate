@@ -47,6 +47,8 @@ _Atomic`. Tags print by definition name.
 
 ## Layout
 
+- After lowering, the interner moves into `Module::c_types`, which maps nodes and
+  bindings to their C types ([C type metadata](ir/pipeline.md#c-type-metadata)).
 - `layout.rs` erases a C type to `ir::Type`. Pointer `is_const`/`access`
   come from the pointee's canonical qualifiers; parameters use the adjusted
   pointer; enums and records map to `Defined(id)`; `long double` follows

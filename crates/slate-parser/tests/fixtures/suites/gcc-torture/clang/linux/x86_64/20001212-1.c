@@ -38,8 +38,8 @@ ld a (ld x, ld y)
 // DEFAULT-NEXT:         field0 l: f80;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_ld:[0-9]+]] ld = @type[[TYPE0]];
-// DEFAULT-NEXT:     fn %[[VALUE_a:[0-9]+]] @a(%[[VALUE_x:[0-9]+]] x: @type[[TYPE0]], %[[VALUE_y:[0-9]+]] y: @type[[TYPE0]]) -> @type[[TYPE0]] [linkage=external] [abi=sysv64(byval<align=16>, byval<align=16>) -> coerce<f80>] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_a:[0-9]+]] @a(%[[VALUE_x:[0-9]+]] x: @type[[TYPE0]] [c="ld"], %[[VALUE_y:[0-9]+]] y: @type[[TYPE0]] [c="ld"]) -> @type[[TYPE0]] [linkage=external] [abi=sysv64(byval<align=16>, byval<align=16>) -> coerce<f80>] [fallthrough=ub_if_used] [c="ld(ld, ld)"] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE0]] [storage=automatic] [c="ld"];
 // DEFAULT-NEXT:         write<f80>(field0(%[[VALUE_b]]), add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(field0(%[[VALUE_x]])), read<f80>(field0(%[[VALUE_y]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

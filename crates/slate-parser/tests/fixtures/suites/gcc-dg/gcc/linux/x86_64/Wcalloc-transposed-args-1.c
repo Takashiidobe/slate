@@ -81,9 +81,9 @@ foo (int n)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
 // DEFAULT-NEXT:     fn %[[VALUE_free:[0-9]+]] @free(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_calloc:[0-9]+]] @calloc(%[[VALUE1:[0-9]+]] <unnamed>: u64, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_calloc:[0-9]+]] @calloc(%[[VALUE1:[0-9]+]] <unnamed>: u64 [c="size_t"], %[[VALUE2:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_myfree:[0-9]+]] @myfree(%[[VALUE3:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE4:[0-9]+]] <unnamed>: i32, %[[VALUE5:[0-9]+]] <unnamed>: i32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_mycalloc:[0-9]+]] @mycalloc(%[[VALUE6:[0-9]+]] <unnamed>: i32, %[[VALUE7:[0-9]+]] <unnamed>: i32, %[[VALUE8:[0-9]+]] <unnamed>: u64, %[[VALUE9:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [deallocator=%[[VALUE_myfree]], argument=0];
+// DEFAULT-NEXT:     fn %[[VALUE_mycalloc:[0-9]+]] @mycalloc(%[[VALUE6:[0-9]+]] <unnamed>: i32, %[[VALUE7:[0-9]+]] <unnamed>: i32, %[[VALUE8:[0-9]+]] <unnamed>: u64 [c="size_t"], %[[VALUE9:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> ptr<void> [linkage=external] [deallocator=%[[VALUE_myfree]], argument=0] [c="void *(int, int, size_t, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_calloc:[0-9]+]] @__builtin_calloc(%[[VALUE10:[0-9]+]] <unnamed>: u64, %[[VALUE11:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_free:[0-9]+]] @__builtin_free(%[[VALUE12:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
@@ -116,17 +116,17 @@ foo (int n)
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_p]]));
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_calloc]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))), const<u64>(4)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1)))));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_p]]));
-// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(i32, i32, u64, u64) -> ptr<void>>(%[[VALUE_mycalloc]], const<i32>(42), const<i32>(42), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), const<u64>(4)));
+// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(i32, i32, u64, u64) -> ptr<void>>(%[[VALUE_mycalloc]], const<i32>(42), const<i32>(42), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))) [c="size_t"], const<u64>(4) [c="size_t"]));
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, i32) -> ptr<void>>(%[[VALUE_myfree]], read<ptr<void>>(%[[VALUE_p]]), const<i32>(42), const<i32>(42));
-// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(i32, i32, u64, u64) -> ptr<void>>(%[[VALUE_mycalloc]], const<i32>(42), const<i32>(42), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_n]]))), const<u64>(4)));
+// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(i32, i32, u64, u64) -> ptr<void>>(%[[VALUE_mycalloc]], const<i32>(42), const<i32>(42), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_n]]))) [c="size_t"], const<u64>(4) [c="size_t"]));
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, i32) -> ptr<void>>(%[[VALUE_myfree]], read<ptr<void>>(%[[VALUE_p]]), const<i32>(42), const<i32>(42));
-// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(i32, i32, u64, u64) -> ptr<void>>(%[[VALUE_mycalloc]], const<i32>(42), const<i32>(42), const<u64>(4), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1)))));
+// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(i32, i32, u64, u64) -> ptr<void>>(%[[VALUE_mycalloc]], const<i32>(42), const<i32>(42), const<u64>(4) [c="size_t"], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))) [c="size_t"]));
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, i32) -> ptr<void>>(%[[VALUE_myfree]], read<ptr<void>>(%[[VALUE_p]]), const<i32>(42), const<i32>(42));
-// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(i32, i32, u64, u64) -> ptr<void>>(%[[VALUE_mycalloc]], const<i32>(42), const<i32>(42), const<u64>(4), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_n]])))));
+// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(i32, i32, u64, u64) -> ptr<void>>(%[[VALUE_mycalloc]], const<i32>(42), const<i32>(42), const<u64>(4) [c="size_t"], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_n]]))) [c="size_t"]));
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, i32) -> ptr<void>>(%[[VALUE_myfree]], read<ptr<void>>(%[[VALUE_p]]), const<i32>(42), const<i32>(42));
-// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(i32, i32, u64, u64) -> ptr<void>>(%[[VALUE_mycalloc]], const<i32>(42), const<i32>(42), const<u64>(4), const<u64>(1)));
+// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(i32, i32, u64, u64) -> ptr<void>>(%[[VALUE_mycalloc]], const<i32>(42), const<i32>(42), const<u64>(4) [c="size_t"], const<u64>(1) [c="size_t"]));
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, i32) -> ptr<void>>(%[[VALUE_myfree]], read<ptr<void>>(%[[VALUE_p]]), const<i32>(42), const<i32>(42));
-// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(i32, i32, u64, u64) -> ptr<void>>(%[[VALUE_mycalloc]], const<i32>(42), const<i32>(42), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))), const<u64>(4)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1)))));
+// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(i32, i32, u64, u64) -> ptr<void>>(%[[VALUE_mycalloc]], const<i32>(42), const<i32>(42), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))), const<u64>(4)) [c="size_t"], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))) [c="size_t"]));
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, i32) -> ptr<void>>(%[[VALUE_myfree]], read<ptr<void>>(%[[VALUE_p]]), const<i32>(42), const<i32>(42));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

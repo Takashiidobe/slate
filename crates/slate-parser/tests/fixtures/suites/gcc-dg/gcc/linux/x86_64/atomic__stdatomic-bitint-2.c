@@ -492,8 +492,8 @@ main ()
 // DEFAULT-NEXT:     fn %[[VALUE_test_fetch_add:[0-9]+]] @test_fetch_add() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr:[0-9]+]] __atomic_store_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp:[0-9]+]] __atomic_store_tmp: i575b [storage=automatic] = const<i575b>(59465222573183779324781274162178653782927579944977967117312772499849358939735575735090252965265846823956223131844773977101864574011188590603103408821590130462520809924774161);
-// DEFAULT-NEXT:             write<i575b, atomic=relaxed>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_store_ptr]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_store_tmp]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp:[0-9]+]] __atomic_store_tmp: i575b [storage=automatic] = const<i575b>(59465222573183779324781274162178653782927579944977967117312772499849358939735575735090252965265846823956223131844773977101864574011188590603103408821590130462520809924774161) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i575b, atomic=relaxed>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_store_ptr]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_store_tmp]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], widen<i575b, reason=assign>(const<i574b>(21849324526703540909725517290562575722142104889154621021004438836543599493803029317660194646869455042293514095831327249339063542203879269024249546998746919066599380031180974)));
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), add<i575b, overflow=wrap>(old<i575b>, read<i575b>(%[[VALUE_count]])));
@@ -520,18 +520,18 @@ main ()
 // DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr]]))));
-// DEFAULT-NEXT:             write<i575b>(%[[VALUE7]], read<i575b>(%[[VALUE___atomic_load_tmp]]));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE7]], read<i575b>(%[[VALUE___atomic_load_tmp]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE7]]), const<i575b>(50772914847017056263626981642397084668362971002648882618921432151810167147311120025498350130558055645973332937183316341719236334789395175575369638910752439489741778580712874))
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE7]]) [c="typeof((cast)0, *__atomic_load_ptr)"], const<i575b>(50772914847017056263626981642397084668362971002648882618921432151810167147311120025498350130558055645973332937183316341719236334789395175575369638910752439489741778580712874) [c="typeof((cast)0, *__atomic_load_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_fetch_sub:[0-9]+]] @test_fetch_sub() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_2:[0-9]+]] __atomic_store_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_2:[0-9]+]] __atomic_store_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i574b, overflow=ub>(const<i574b>(24875491091433158113922205635657739252057730543056417031972993454853665637813018617125143194799847437263037065304695383952916979113678037118532311779822859742705294727822376)));
-// DEFAULT-NEXT:             write<i575b, atomic=release>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_store_ptr_2]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_store_tmp_2]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_2:[0-9]+]] __atomic_store_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i574b, overflow=ub>(const<i574b>(24875491091433158113922205635657739252057730543056417031972993454853665637813018617125143194799847437263037065304695383952916979113678037118532311779822859742705294727822376))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i575b, atomic=release>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_store_ptr_2]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_store_tmp_2]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], widen<i575b, reason=assign>(const<i572b>(6813702694653136917886567607003795360731391695538381923575500076220746287948057449348609672603971831069550813465757196210073636056135824219022209113495061317682354090030599)));
 // DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), sub<i575b, overflow=wrap>(old<i575b>, read<i575b>(%[[VALUE_count]])));
@@ -558,18 +558,18 @@ main ()
 // DEFAULT-NEXT:         let %[[VALUE15:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr_2:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_2:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_2]])), read<i575b, atomic=acquire>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_2]]))));
-// DEFAULT-NEXT:             write<i575b>(%[[VALUE15]], read<i575b>(%[[VALUE___atomic_load_tmp_2]]));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_2:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_2]])), read<i575b, atomic=acquire>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_2]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE15]], read<i575b>(%[[VALUE___atomic_load_tmp_2]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE15]]), widen<i575b, reason=usual_arith>(const<i573b>(12206831285723993913608764153999867503877388065709520492722734997662608064883178884845246520895751504306595321963537515263720586046053061993060248328767959628969017720178421)))
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE15]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i575b, reason=usual_arith>(const<i573b>(12206831285723993913608764153999867503877388065709520492722734997662608064883178884845246520895751504306595321963537515263720586046053061993060248328767959628969017720178421)) [c="typeof((cast)0, *__atomic_load_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_fetch_and:[0-9]+]] @test_fetch_and() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_3:[0-9]+]] __atomic_store_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_3:[0-9]+]] __atomic_store_tmp: i575b [storage=automatic] = read<i575b>(%[[VALUE_init]]);
-// DEFAULT-NEXT:             write<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_store_ptr_3]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_store_tmp_3]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_3:[0-9]+]] __atomic_store_tmp: i575b [storage=automatic] = read<i575b>(%[[VALUE_init]]) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_store_ptr_3]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_store_tmp_3]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE16:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
 // DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE16]]), read<i575b>(%[[VALUE_init]]))
@@ -811,61 +811,61 @@ main ()
 // DEFAULT-NEXT:     fn %[[VALUE_test_exchange:[0-9]+]] @test_exchange() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_4:[0-9]+]] __atomic_store_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_4:[0-9]+]] __atomic_store_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i568b, overflow=ub>(const<i568b>(285679222948993342888321238830899996788334328454283006589115162661816862491992700267590986826514460282130796141107636816730207482542791159837024986802592659048696136633096)));
-// DEFAULT-NEXT:             write<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_store_ptr_4]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_store_tmp_4]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_4:[0-9]+]] __atomic_store_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i568b, overflow=ub>(const<i568b>(285679222948993342888321238830899996788334328454283006589115162661816862491992700267590986826514460282130796141107636816730207482542791159837024986802592659048696136633096))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_store_ptr_4]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_store_tmp_4]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE101:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_ptr:[0-9]+]] __atomic_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_val:[0-9]+]] __atomic_exchange_val: i575b [storage=automatic] = widen<i575b, reason=assign>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_tmp:[0-9]+]] __atomic_exchange_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:             let %[[VALUE102:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_exchange_ptr]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_exchange_val]]))));
-// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_exchange_tmp]])), read<i575b>(%[[VALUE102]]));
-// DEFAULT-NEXT:             write<i575b>(%[[VALUE101]], read<i575b>(%[[VALUE___atomic_exchange_tmp]]));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_val:[0-9]+]] __atomic_exchange_val: i575b [storage=automatic] = widen<i575b, reason=assign>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601)) [c="typeof((cast)0, *__atomic_exchange_ptr)"] [c="typeof((cast)0, *__atomic_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_tmp:[0-9]+]] __atomic_exchange_tmp: i575b [storage=automatic] [c="typeof((cast)0, *__atomic_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE102:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_exchange_ptr]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_exchange_val]]))) [c="typeof((cast)0, *__atomic_exchange_ptr)"]);
+// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_exchange_tmp]])), read<i575b>(%[[VALUE102]])) [c="typeof((cast)0, *__atomic_exchange_ptr)"];
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE101]], read<i575b>(%[[VALUE___atomic_exchange_tmp]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE103:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE101]]), widen<i575b, reason=usual_arith>(neg<i568b, overflow=ub>(const<i568b>(285679222948993342888321238830899996788334328454283006589115162661816862491992700267590986826514460282130796141107636816730207482542791159837024986802592659048696136633096))))
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE101]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"], widen<i575b, reason=usual_arith>(neg<i568b, overflow=ub>(const<i568b>(285679222948993342888321238830899996788334328454283006589115162661816862491992700267590986826514460282130796141107636816730207482542791159837024986802592659048696136633096))) [c="typeof((cast)0, *__atomic_exchange_ptr)"])
 // DEFAULT-NEXT:             write<bool>(%[[VALUE103]], const<bool>(true));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             let %[[VALUE104:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_3:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_3:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_3]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_3]]))));
-// DEFAULT-NEXT:                 write<i575b>(%[[VALUE104]], read<i575b>(%[[VALUE___atomic_load_tmp_3]]));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_3:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_3]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_3]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i575b>(%[[VALUE104]], read<i575b>(%[[VALUE___atomic_load_tmp_3]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%[[VALUE103]], ne<i575b>(read<i575b>(%[[VALUE104]]), widen<i575b, reason=usual_arith>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601))));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE103]], ne<i575b>(read<i575b>(%[[VALUE104]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i575b, reason=usual_arith>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601)) [c="typeof((cast)0, *__atomic_load_ptr)"]));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE103]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE105:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_ptr_2:[0-9]+]] __atomic_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_val_2:[0-9]+]] __atomic_exchange_val: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i572b, overflow=ub>(const<i572b>(4427613371507571222951705350055906255006016685171218855857415580222001757304647519678682295710994407542058879878792272713121656498918585491540313864044915269100507689612649)));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_tmp_2:[0-9]+]] __atomic_exchange_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:             let %[[VALUE106:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_exchange_ptr_2]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_exchange_val_2]]))));
-// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_exchange_tmp_2]])), read<i575b>(%[[VALUE106]]));
-// DEFAULT-NEXT:             write<i575b>(%[[VALUE105]], read<i575b>(%[[VALUE___atomic_exchange_tmp_2]]));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_val_2:[0-9]+]] __atomic_exchange_val: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i572b, overflow=ub>(const<i572b>(4427613371507571222951705350055906255006016685171218855857415580222001757304647519678682295710994407542058879878792272713121656498918585491540313864044915269100507689612649))) [c="typeof((cast)0, *__atomic_exchange_ptr)"] [c="typeof((cast)0, *__atomic_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_tmp_2:[0-9]+]] __atomic_exchange_tmp: i575b [storage=automatic] [c="typeof((cast)0, *__atomic_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE106:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_exchange_ptr_2]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_exchange_val_2]]))) [c="typeof((cast)0, *__atomic_exchange_ptr)"]);
+// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_exchange_tmp_2]])), read<i575b>(%[[VALUE106]])) [c="typeof((cast)0, *__atomic_exchange_ptr)"];
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE105]], read<i575b>(%[[VALUE___atomic_exchange_tmp_2]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE107:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE105]]), widen<i575b, reason=usual_arith>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601)))
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE105]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"], widen<i575b, reason=usual_arith>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601)) [c="typeof((cast)0, *__atomic_exchange_ptr)"])
 // DEFAULT-NEXT:             write<bool>(%[[VALUE107]], const<bool>(true));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             let %[[VALUE108:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_4:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_4:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_4]])), read<i575b, atomic=acquire>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_4]]))));
-// DEFAULT-NEXT:                 write<i575b>(%[[VALUE108]], read<i575b>(%[[VALUE___atomic_load_tmp_4]]));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_4:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_4]])), read<i575b, atomic=acquire>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_4]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i575b>(%[[VALUE108]], read<i575b>(%[[VALUE___atomic_load_tmp_4]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%[[VALUE107]], ne<i575b>(read<i575b>(%[[VALUE108]]), widen<i575b, reason=usual_arith>(neg<i572b, overflow=ub>(const<i572b>(4427613371507571222951705350055906255006016685171218855857415580222001757304647519678682295710994407542058879878792272713121656498918585491540313864044915269100507689612649)))));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE107]], ne<i575b>(read<i575b>(%[[VALUE108]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i575b, reason=usual_arith>(neg<i572b, overflow=ub>(const<i572b>(4427613371507571222951705350055906255006016685171218855857415580222001757304647519678682295710994407542058879878792272713121656498918585491540313864044915269100507689612649))) [c="typeof((cast)0, *__atomic_load_ptr)"]));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE107]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], widen<i575b, reason=assign>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601)));
 // DEFAULT-NEXT:         let %[[VALUE109:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707));
-// DEFAULT-NEXT:             let %[[VALUE110:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707)) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE110:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:             write<bool>(%[[VALUE109]], read<bool>(%[[VALUE110]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE109]])
@@ -877,18 +877,18 @@ main ()
 // DEFAULT-NEXT:             let %[[VALUE112:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_5:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_5:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_5]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_5]]))));
-// DEFAULT-NEXT:                 write<i575b>(%[[VALUE112]], read<i575b>(%[[VALUE___atomic_load_tmp_5]]));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_5:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_5]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_5]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i575b>(%[[VALUE112]], read<i575b>(%[[VALUE___atomic_load_tmp_5]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%[[VALUE111]], ne<i575b>(read<i575b>(%[[VALUE112]]), widen<i575b, reason=usual_arith>(neg<i572b, overflow=ub>(const<i572b>(4427613371507571222951705350055906255006016685171218855857415580222001757304647519678682295710994407542058879878792272713121656498918585491540313864044915269100507689612649)))));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE111]], ne<i575b>(read<i575b>(%[[VALUE112]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i575b, reason=usual_arith>(neg<i572b, overflow=ub>(const<i572b>(4427613371507571222951705350055906255006016685171218855857415580222001757304647519678682295710994407542058879878792272713121656498918585491540313864044915269100507689612649))) [c="typeof((cast)0, *__atomic_load_ptr)"]));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE111]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE113:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr_2:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_2:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707));
-// DEFAULT-NEXT:             let %[[VALUE114:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr_2]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp_2]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_2:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707)) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE114:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr_2]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp_2]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:             write<bool>(%[[VALUE113]], read<bool>(%[[VALUE114]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%[[VALUE113]]))
@@ -900,19 +900,19 @@ main ()
 // DEFAULT-NEXT:             let %[[VALUE116:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_6:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_6:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_6]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_6]]))));
-// DEFAULT-NEXT:                 write<i575b>(%[[VALUE116]], read<i575b>(%[[VALUE___atomic_load_tmp_6]]));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_6:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_6]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_6]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i575b>(%[[VALUE116]], read<i575b>(%[[VALUE___atomic_load_tmp_6]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%[[VALUE115]], ne<i575b>(read<i575b>(%[[VALUE116]]), widen<i575b, reason=usual_arith>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707))));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE115]], ne<i575b>(read<i575b>(%[[VALUE116]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i575b, reason=usual_arith>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707)) [c="typeof((cast)0, *__atomic_load_ptr)"]));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE115]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], widen<i575b, reason=assign>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601)));
 // DEFAULT-NEXT:         let %[[VALUE117:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr_3:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_3:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i574b, overflow=ub>(const<i574b>(20263258027145541347005514871938569231358927704236809883668741851321168433670480594273940614283839738125120292424689828120954658857299483460682957837178666219043928324493674)));
-// DEFAULT-NEXT:             let %[[VALUE118:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=false, success=seq_cst, failure=relaxed>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr_3]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp_3]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_3:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i574b, overflow=ub>(const<i574b>(20263258027145541347005514871938569231358927704236809883668741851321168433670480594273940614283839738125120292424689828120954658857299483460682957837178666219043928324493674))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE118:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=false, success=seq_cst, failure=relaxed>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr_3]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp_3]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:             write<bool>(%[[VALUE117]], read<bool>(%[[VALUE118]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE117]])
@@ -924,18 +924,18 @@ main ()
 // DEFAULT-NEXT:             let %[[VALUE120:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_7:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_7:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_7]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_7]]))));
-// DEFAULT-NEXT:                 write<i575b>(%[[VALUE120]], read<i575b>(%[[VALUE___atomic_load_tmp_7]]));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_7:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_7]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_7]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i575b>(%[[VALUE120]], read<i575b>(%[[VALUE___atomic_load_tmp_7]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%[[VALUE119]], ne<i575b>(read<i575b>(%[[VALUE120]]), widen<i575b, reason=usual_arith>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707))));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE119]], ne<i575b>(read<i575b>(%[[VALUE120]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i575b, reason=usual_arith>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707)) [c="typeof((cast)0, *__atomic_load_ptr)"]));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE119]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE121:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr_4:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_4:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i574b, overflow=ub>(const<i574b>(20263258027145541347005514871938569231358927704236809883668741851321168433670480594273940614283839738125120292424689828120954658857299483460682957837178666219043928324493674)));
-// DEFAULT-NEXT:             let %[[VALUE122:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr_4]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp_4]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_4:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i574b, overflow=ub>(const<i574b>(20263258027145541347005514871938569231358927704236809883668741851321168433670480594273940614283839738125120292424689828120954658857299483460682957837178666219043928324493674))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE122:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr_4]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp_4]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:             write<bool>(%[[VALUE121]], read<bool>(%[[VALUE122]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%[[VALUE121]]))
@@ -947,19 +947,19 @@ main ()
 // DEFAULT-NEXT:             let %[[VALUE124:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_8:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_8:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_8]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_8]]))));
-// DEFAULT-NEXT:                 write<i575b>(%[[VALUE124]], read<i575b>(%[[VALUE___atomic_load_tmp_8]]));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_8:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_8]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_8]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:                 write<i575b>(%[[VALUE124]], read<i575b>(%[[VALUE___atomic_load_tmp_8]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%[[VALUE123]], ne<i575b>(read<i575b>(%[[VALUE124]]), widen<i575b, reason=usual_arith>(neg<i574b, overflow=ub>(const<i574b>(20263258027145541347005514871938569231358927704236809883668741851321168433670480594273940614283839738125120292424689828120954658857299483460682957837178666219043928324493674)))));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE123]], ne<i575b>(read<i575b>(%[[VALUE124]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i575b, reason=usual_arith>(neg<i574b, overflow=ub>(const<i574b>(20263258027145541347005514871938569231358927704236809883668741851321168433670480594273940614283839738125120292424689828120954658857299483460682957837178666219043928324493674))) [c="typeof((cast)0, *__atomic_load_ptr)"]));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE123]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE125:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr_9:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_9:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_9]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_9]]))));
-// DEFAULT-NEXT:             write<i575b>(%[[VALUE125]], read<i575b>(%[[VALUE___atomic_load_tmp_9]]));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_9:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_9]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_9]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE125]], read<i575b>(%[[VALUE___atomic_load_tmp_9]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], read<i575b>(%[[VALUE125]]));
 // DEFAULT-NEXT:         do %[[VALUE126:[0-9]+]]
@@ -968,8 +968,8 @@ main ()
 // DEFAULT-NEXT:             let %[[VALUE127:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___atomic_compare_exchange_ptr_5:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:                 let %[[VALUE___atomic_compare_exchange_tmp_5:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = read<i575b>(%[[VALUE_res]]);
-// DEFAULT-NEXT:                 let %[[VALUE128:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=true, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr_5]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp_5]]))));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_compare_exchange_tmp_5:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = read<i575b>(%[[VALUE_res]]) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:                 let %[[VALUE128:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=true, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr_5]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp_5]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE127]], read<bool>(%[[VALUE128]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             yield not<bool>(read<bool>(%[[VALUE127]]));
@@ -977,18 +977,18 @@ main ()
 // DEFAULT-NEXT:         let %[[VALUE129:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr_10:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_10:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_10]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_10]]))));
-// DEFAULT-NEXT:             write<i575b>(%[[VALUE129]], read<i575b>(%[[VALUE___atomic_load_tmp_10]]));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_10:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_10]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_10]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE129]], read<i575b>(%[[VALUE___atomic_load_tmp_10]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE129]]), widen<i575b, reason=usual_arith>(neg<i574b, overflow=ub>(const<i574b>(16824575484325699317676901385039269892159088498214546587270561270194949883633525226852471340383622963413347929825603645704031605186035732198289398312096220637875507777951270))))
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE129]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i575b, reason=usual_arith>(neg<i574b, overflow=ub>(const<i574b>(16824575484325699317676901385039269892159088498214546587270561270194949883633525226852471340383622963413347929825603645704031605186035732198289398312096220637875507777951270))) [c="typeof((cast)0, *__atomic_load_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE130:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr_11:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_11:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_11]])), read<i575b, atomic=acquire>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_11]]))));
-// DEFAULT-NEXT:             write<i575b>(%[[VALUE130]], read<i575b>(%[[VALUE___atomic_load_tmp_11]]));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_11:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_11]])), read<i575b, atomic=acquire>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_11]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE130]], read<i575b>(%[[VALUE___atomic_load_tmp_11]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], read<i575b>(%[[VALUE130]]));
 // DEFAULT-NEXT:         do %[[VALUE131:[0-9]+]]
@@ -997,8 +997,8 @@ main ()
 // DEFAULT-NEXT:             let %[[VALUE132:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___atomic_compare_exchange_ptr_6:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:                 let %[[VALUE___atomic_compare_exchange_tmp_6:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = read<i575b>(%[[VALUE_res]]);
-// DEFAULT-NEXT:                 let %[[VALUE133:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=true, success=relaxed, failure=relaxed>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr_6]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp_6]]))));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_compare_exchange_tmp_6:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = read<i575b>(%[[VALUE_res]]) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:                 let %[[VALUE133:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=true, success=relaxed, failure=relaxed>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr_6]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp_6]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE132]], read<bool>(%[[VALUE133]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             yield not<bool>(read<bool>(%[[VALUE132]]));
@@ -1006,11 +1006,11 @@ main ()
 // DEFAULT-NEXT:         let %[[VALUE134:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr_12:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_12:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_12]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_12]]))));
-// DEFAULT-NEXT:             write<i575b>(%[[VALUE134]], read<i575b>(%[[VALUE___atomic_load_tmp_12]]));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_12:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic] [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_12]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_12]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE134]], read<i575b>(%[[VALUE___atomic_load_tmp_12]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE134]]), const<i575b>(38526723524241510681596040872921046258686913522346460153630827191928894145888653494477560089471384963669990319834214183931637273421742229314636944667809470545896815521952826))
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE134]]) [c="typeof((cast)0, *__atomic_load_ptr)"], const<i575b>(38526723524241510681596040872921046258686913522346460153630827191928894145888653494477560089471384963669990319834214183931637273421742229314636944667809470545896815521952826) [c="typeof((cast)0, *__atomic_load_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

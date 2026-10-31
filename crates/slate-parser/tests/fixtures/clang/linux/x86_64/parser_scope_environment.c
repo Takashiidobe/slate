@@ -74,14 +74,14 @@ void attribute_scope(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_T_3:[0-9]+]] T = struct {
 // DEFAULT-NEXT:         field0 T: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %[[VALUE_after_function:[0-9]+]] after_function: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_after_tags_and_members:[0-9]+]] after_tags_and_members: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_after_prototype:[0-9]+]] after_prototype: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_after_function:[0-9]+]] after_function: i32 [storage=static] [linkage=external] [c="T"];
+// DEFAULT-NEXT:     global %[[VALUE_after_tags_and_members:[0-9]+]] after_tags_and_members: i32 [storage=static] [linkage=external] [c="T"];
+// DEFAULT-NEXT:     global %[[VALUE_after_prototype:[0-9]+]] after_prototype: i32 [storage=static] [linkage=external] [c="T"];
 // DEFAULT-NEXT:     global %[[VALUE_bits:[0-9]+]] bits: i32b [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_aligned_type:[0-9]+]] aligned_type: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_aligned_expression:[0-9]+]] aligned_expression: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_nested_scopes:[0-9]+]] @nested_scopes(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_outer:[0-9]+]] outer: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_outer:[0-9]+]] outer: i32 [storage=automatic] = const<i32>(0) [c="T"] [c="T"];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_T:[0-9]+]] T: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
@@ -128,7 +128,7 @@ void attribute_scope(void) {
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(read<u64>(%[[VALUE13]]), const<u64>(4))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_prototype:[0-9]+]] @prototype(%[[VALUE_callback:[0-9]+]] callback: ptr<fn(i32) -> i32>, %[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_prototype:[0-9]+]] @prototype(%[[VALUE_callback:[0-9]+]] callback: ptr<fn(i32) -> i32>, %[[VALUE_value:[0-9]+]] value: i32 [c="T"]) -> i32 [linkage=external] [c="int(int (*)(int), T)"];
 // DEFAULT-NEXT:     fn %[[VALUE_attribute_scope:[0-9]+]] @attribute_scope() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_T_5:[0-9]+]] T: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_aligned_object:[0-9]+]] aligned_object: i32 [storage=automatic];

@@ -78,7 +78,7 @@ foo (double w[], int x, double y[], double z[])
 // DEFAULT-NEXT:                 write<ptr<f64>>(deref(ptr_offset<ptr<ptr<f64>>, subtract=false, element=ptr<f64>, overflow=ub>(read<ptr<ptr<f64>>>(%[[VALUE_m]]), read<i64>(%[[VALUE_i]]))), ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(deref(ptr_offset<ptr<ptr<f64>>, subtract=false, element=ptr<f64>, overflow=ub>(read<ptr<ptr<f64>>>(%[[VALUE_m]]), sub<i64, overflow=ub>(read<i64>(%[[VALUE_i]]), widen<i64, reason=usual_arith>(const<i32>(1)))))), read<i64>(%[[VALUE_b]])));
 // DEFAULT-NEXT:         return read<ptr<ptr<f64>>>(%[[VALUE_m]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_w_2:[0-9]+]] w: ptr<f64>, %[[VALUE_x_2:[0-9]+]] x: i32, %[[VALUE_y_2:[0-9]+]] y: ptr<f64>, %[[VALUE_z_2:[0-9]+]] z: ptr<f64>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_w_2:[0-9]+]] w: ptr<f64>, %[[VALUE_x_2:[0-9]+]] x: i32, %[[VALUE_y_2:[0-9]+]] y: ptr<f64>, %[[VALUE_z_2:[0-9]+]] z: ptr<f64>) -> void [linkage=external] [fallthrough=ret_void] [c="void(double[], int, double[], double[])"] {
 // DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: ptr<ptr<f64>> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<ptr<f64>>>(%[[VALUE_a_2]], call<ptr<ptr<f64>>, signature=fn(i64, i64, i64, i64) -> ptr<ptr<f64>>>(%[[VALUE_bar]], widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(const<i32>(50)), widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(const<i32>(50))));

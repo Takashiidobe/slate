@@ -82,14 +82,14 @@ int main() {
 // DEFAULT-NEXT:         field0 next_use: ptr<@type[[TYPE_du_chain]]>;
 // DEFAULT-NEXT:         field1 cl: i32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %[[VALUE_reg_class_contents:[0-9]+]] reg_class_contents: array<array<u64, 2>, 2> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_reg_class_contents:[0-9]+]] reg_class_contents: array<array<u64, 2>, 2> [storage=static] [align=16] [linkage=external] [c="HARD_REG_SET[2]"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_merge_overlapping_regs:[0-9]+]] @merge_overlapping_regs(%[[VALUE_p:[0-9]+]] p: ptr<array<u64, 2>>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_merge_overlapping_regs:[0-9]+]] @merge_overlapping_regs(%[[VALUE_p:[0-9]+]] p: ptr<array<u64, 2>> [c="HARD_REG_SET *"]) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] [c="void(HARD_REG_SET *)"] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(2)>(deref(read<ptr<array<u64, 2>>>(%[[VALUE_p]]))), const<i32>(0)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))))), ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(2)>(deref(read<ptr<array<u64, 2>>>(%[[VALUE_p]]))), const<i32>(1)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_regrename_optimize:[0-9]+]] @regrename_optimize(%[[VALUE_this:[0-9]+]] this: ptr<@type[[TYPE_du_chain]]>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_this_unavailable:[0-9]+]] this_unavailable: array<u64, 2> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_this_unavailable:[0-9]+]] this_unavailable: array<u64, 2> [storage=automatic] [align=16] [c="HARD_REG_SET"];
 // DEFAULT-NEXT:         let %[[VALUE_scan_fp_:[0-9]+]] scan_fp_: ptr<u64> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_n_uses:[0-9]+]] n_uses: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_last:[0-9]+]] last: ptr<@type[[TYPE_du_chain]]> [storage=automatic];
@@ -130,7 +130,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: u64 [synthetic] = read<u64>(deref(read<ptr<u64>>(%[[VALUE12]])));
 // DEFAULT-NEXT:         let %[[VALUE14:[0-9]+]]: u64 [synthetic] = or<u64>(read<u64>(%[[VALUE13]]), not<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%[[VALUE_scan_fp_]]), const<i32>(1))))));
 // DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE12]])), read<u64>(%[[VALUE14]]));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<array<u64, 2>>) -> void>(%[[VALUE_merge_overlapping_regs]], addr_of<ptr<array<u64, 2>>>(%[[VALUE_this_unavailable]]));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<array<u64, 2>>) -> void>(%[[VALUE_merge_overlapping_regs]], addr_of<ptr<array<u64, 2>>>(%[[VALUE_this_unavailable]]) [c="HARD_REG_SET *"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_du1:[0-9]+]] du1: @type[[TYPE_du_chain]] [storage=automatic] = aggregate<@type[[TYPE_du_chain]], zero_fill=false>(field0 = null<ptr<@type[[TYPE_du_chain]]>>, field1 = const<i32>(0));

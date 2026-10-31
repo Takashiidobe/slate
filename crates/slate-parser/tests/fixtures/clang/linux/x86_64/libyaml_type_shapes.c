@@ -61,16 +61,16 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_yaml_char_t:[0-9]+]] yaml_char_t = u8;
-// DEFAULT-NEXT:     type @type[[TYPE_yaml_read_handler_t:[0-9]+]] yaml_read_handler_t = fn(ptr<void>, ptr<u8>, u64, ptr<u64>) -> i32;
+// DEFAULT-NEXT:     type @type[[TYPE_yaml_read_handler_t:[0-9]+]] yaml_read_handler_t = fn(ptr<void>, ptr<u8>, u64, ptr<u64>) -> i32 [c="int(void *, yaml_char_t *, unsigned long, unsigned long *)"];
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
-// DEFAULT-NEXT:         field0 read_handler: ptr<fn(ptr<void>, ptr<u8>, u64, ptr<u64>) -> i32>;
+// DEFAULT-NEXT:         field0 read_handler: ptr<fn(ptr<void>, ptr<u8>, u64, ptr<u64>) -> i32> [c="yaml_read_handler_t *"];
 // DEFAULT-NEXT:         field1 read_handler_data: ptr<void>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_parser_t:[0-9]+]] parser_t = @type[[TYPE0]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([37, 100, 32, 37, 108, 117, 32, 37, 99, 32, 37, 99, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_read_bytes:[0-9]+]] @read_bytes(%[[VALUE_data:[0-9]+]] data: ptr<void>, %[[VALUE_buffer:[0-9]+]] buffer: ptr<u8>, %[[VALUE_size:[0-9]+]] size: u64, %[[VALUE_size_read:[0-9]+]] size_read: ptr<u64>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_source:[0-9]+]] source: ptr<u8> [storage=automatic] = pointer_cast<ptr<u8>, reason=explicit>(read<ptr<void>>(%[[VALUE_data]]));
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
+// DEFAULT-NEXT:     fn %[[VALUE_read_bytes:[0-9]+]] @read_bytes(%[[VALUE_data:[0-9]+]] data: ptr<void>, %[[VALUE_buffer:[0-9]+]] buffer: ptr<u8> [c="yaml_char_t *"], %[[VALUE_size:[0-9]+]] size: u64, %[[VALUE_size_read:[0-9]+]] size_read: ptr<u64>) -> i32 [linkage=internal] [fallthrough=ub_if_used] [c="int(void *, yaml_char_t *, unsigned long, unsigned long *)"] {
+// DEFAULT-NEXT:         let %[[VALUE_source:[0-9]+]] source: ptr<u8> [storage=automatic] = pointer_cast<ptr<u8>, reason=explicit>(read<ptr<void>>(%[[VALUE_data]])) [c="yaml_char_t *"] [c="yaml_char_t *"];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_i:[0-9]+]] i: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
@@ -84,21 +84,21 @@ int main(void) {
 // DEFAULT-NEXT:             counted: %[[VALUE_i]] in reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)))..read<u64>(%[[VALUE_size]])
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_buffer]]), read<u64>(%[[VALUE_i]]))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_source]]), read<u64>(%[[VALUE_i]])))));
+// DEFAULT-NEXT:                     write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_buffer]]), read<u64>(%[[VALUE_i]]))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_source]]), read<u64>(%[[VALUE_i]])))) [c="yaml_char_t"]) [c="yaml_char_t"];
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE_size_read]])), read<u64>(%[[VALUE_size]]));
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_input:[0-9]+]] input: array<u8, 4> [storage=automatic] = code_units<array<u8, 4>>([97, 98, 99, 0]);
-// DEFAULT-NEXT:         let %[[VALUE_tag:[0-9]+]] tag: array<u8, 22> [storage=automatic] [align=16] = code_units<array<u8, 22>>([116, 97, 103, 58, 121, 97, 109, 108, 46, 111, 114, 103, 44, 50, 48, 48, 50, 58, 115, 116, 114, 0]);
-// DEFAULT-NEXT:         let %[[VALUE_buffer_2:[0-9]+]] buffer: array<u8, 4> [storage=automatic] = aggregate<array<u8, 4>, zero_fill=true>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         let %[[VALUE_input:[0-9]+]] input: array<u8, 4> [storage=automatic] = code_units<array<u8, 4>>([97, 98, 99, 0]) [c="yaml_char_t[]"];
+// DEFAULT-NEXT:         let %[[VALUE_tag:[0-9]+]] tag: array<u8, 22> [storage=automatic] [align=16] = code_units<array<u8, 22>>([116, 97, 103, 58, 121, 97, 109, 108, 46, 111, 114, 103, 44, 50, 48, 48, 50, 58, 115, 116, 114, 0]) [c="yaml_char_t[]"];
+// DEFAULT-NEXT:         let %[[VALUE_buffer_2:[0-9]+]] buffer: array<u8, 4> [storage=automatic] = aggregate<array<u8, 4>, zero_fill=true>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))) [c="yaml_char_t"]) [c="yaml_char_t[4]"];
 // DEFAULT-NEXT:         let %[[VALUE_size_read_2:[0-9]+]] size_read: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         let %[[VALUE_parser:[0-9]+]] parser: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<fn(ptr<void>, ptr<u8>, u64, ptr<u64>) -> i32>>(field0(%[[VALUE_parser]]), function_decay<ptr<fn(ptr<void>, ptr<u8>, u64, ptr<u64>) -> i32>>(%[[VALUE_read_bytes]]));
-// DEFAULT-NEXT:         write<ptr<void>>(field1(%[[VALUE_parser]]), pointer_cast<ptr<void>, reason=assign>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_input]])));
-// DEFAULT-NEXT:         let %[[VALUE_ok:[0-9]+]] ok: i32 [storage=automatic] = call<i32, signature=fn(ptr<void>, ptr<u8>, u64, ptr<u64>) -> i32>(read<ptr<fn(ptr<void>, ptr<u8>, u64, ptr<u64>) -> i32>>(field0(%[[VALUE_parser]])), read<ptr<void>>(field1(%[[VALUE_parser]])), array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_buffer_2]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))), addr_of<ptr<u64>>(%[[VALUE_size_read_2]]));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%[[VALUE_str]])), read<i32>(%[[VALUE_ok]]), read<u64>(%[[VALUE_size_read_2]]), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_buffer_2]]), const<i32>(1)))))), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(22)>(%[[VALUE_tag]]), const<i32>(4)))))));
+// DEFAULT-NEXT:         let %[[VALUE_parser:[0-9]+]] parser: @type[[TYPE0]] [storage=automatic] [c="parser_t"];
+// DEFAULT-NEXT:         write<ptr<fn(ptr<void>, ptr<u8>, u64, ptr<u64>) -> i32>>(field0(%[[VALUE_parser]]), function_decay<ptr<fn(ptr<void>, ptr<u8>, u64, ptr<u64>) -> i32>>(%[[VALUE_read_bytes]]) [c="yaml_read_handler_t *"]) [c="yaml_read_handler_t *"];
+// DEFAULT-NEXT:         write<ptr<void>>(field1(%[[VALUE_parser]]), pointer_cast<ptr<void>, reason=assign>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_input]]) [c="yaml_char_t *"]));
+// DEFAULT-NEXT:         let %[[VALUE_ok:[0-9]+]] ok: i32 [storage=automatic] = call<i32, signature=fn(ptr<void>, ptr<u8>, u64, ptr<u64>) -> i32>(read<ptr<fn(ptr<void>, ptr<u8>, u64, ptr<u64>) -> i32>>(field0(%[[VALUE_parser]])) [c="yaml_read_handler_t *"], read<ptr<void>>(field1(%[[VALUE_parser]])), array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_buffer_2]]) [c="yaml_char_t *"], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))), addr_of<ptr<u64>>(%[[VALUE_size_read_2]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%[[VALUE_str]])), read<i32>(%[[VALUE_ok]]), read<u64>(%[[VALUE_size_read_2]]), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_buffer_2]]), const<i32>(1)))) [c="yaml_char_t"])), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(22)>(%[[VALUE_tag]]), const<i32>(4)))) [c="yaml_char_t"])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

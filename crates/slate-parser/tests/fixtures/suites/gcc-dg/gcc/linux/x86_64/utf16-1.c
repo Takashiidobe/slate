@@ -93,18 +93,18 @@ int main ()
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_char16_t:[0-9]+]] char16_t = u16;
-// DEFAULT-NEXT:     global %[[VALUE_c0:[0-9]+]] c0: u16 [storage=static] = const<u16>(97) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_c1:[0-9]+]] c1: u16 [storage=static] = const<u16>(0) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_c2:[0-9]+]] c2: u16 [storage=static] = const<u16>(36) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_c3:[0-9]+]] c3: u16 [storage=static] = const<u16>(8233) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_c4:[0-9]+]] c4: u16 [storage=static] = const<u16>(32784) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_c5:[0-9]+]] c5: u16 [storage=static] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(97))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_c6:[0-9]+]] c6: u16 [storage=static] = truncate<u16, reason=assign, fits=always>(const<u32>(97)) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_c7:[0-9]+]] c7: u16 [storage=static] = truncate<u16, reason=assign, fits=always>(const<u32>(8233)) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_c8:[0-9]+]] c8: u16 [storage=static] = truncate<u16, reason=assign, fits=always>(const<u32>(32784)) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_c9:[0-9]+]] c9: u16 [storage=static] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(97))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_ca:[0-9]+]] ca: u16 [storage=static] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(8233))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_cb:[0-9]+]] cb: u16 [storage=static] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(const<i32>(32784))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c0:[0-9]+]] c0: u16 [storage=static] = const<u16>(97) [c="char16_t"] [linkage=external] [c="char16_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c1:[0-9]+]] c1: u16 [storage=static] = const<u16>(0) [c="char16_t"] [linkage=external] [c="char16_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c2:[0-9]+]] c2: u16 [storage=static] = const<u16>(36) [c="char16_t"] [linkage=external] [c="char16_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c3:[0-9]+]] c3: u16 [storage=static] = const<u16>(8233) [c="char16_t"] [linkage=external] [c="char16_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c4:[0-9]+]] c4: u16 [storage=static] = const<u16>(32784) [c="char16_t"] [linkage=external] [c="char16_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c5:[0-9]+]] c5: u16 [storage=static] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(97))) [c="char16_t"] [linkage=external] [c="char16_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c6:[0-9]+]] c6: u16 [storage=static] = truncate<u16, reason=assign, fits=always>(const<u32>(97)) [c="char16_t"] [linkage=external] [c="char16_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c7:[0-9]+]] c7: u16 [storage=static] = truncate<u16, reason=assign, fits=always>(const<u32>(8233)) [c="char16_t"] [linkage=external] [c="char16_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c8:[0-9]+]] c8: u16 [storage=static] = truncate<u16, reason=assign, fits=always>(const<u32>(32784)) [c="char16_t"] [linkage=external] [c="char16_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c9:[0-9]+]] c9: u16 [storage=static] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(97))) [c="char16_t"] [linkage=external] [c="char16_t"];
+// DEFAULT-NEXT:     global %[[VALUE_ca:[0-9]+]] ca: u16 [storage=static] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(8233))) [c="char16_t"] [linkage=external] [c="char16_t"];
+// DEFAULT-NEXT:     global %[[VALUE_cb:[0-9]+]] cb: u16 [storage=static] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(const<i32>(32784))) [c="char16_t"] [linkage=external] [c="char16_t"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(2), const<u64>(2))
@@ -117,29 +117,29 @@ int main ()
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(2), const<u64>(2))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c0]]))), const<i32>(97))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c0]]) [c="char16_t"])), const<i32>(97))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c1]]))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c1]]) [c="char16_t"])), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c2]]))), const<i32>(36))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c2]]) [c="char16_t"])), const<i32>(36))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c3]]))), const<i32>(8233))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c3]]) [c="char16_t"])), const<i32>(8233))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c4]]))), const<i32>(32784))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c4]]) [c="char16_t"])), const<i32>(32784))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c5]]))), const<i32>(97))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c5]]) [c="char16_t"])), const<i32>(97))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c6]]))), const<i32>(97))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c6]]) [c="char16_t"])), const<i32>(97))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c7]]))), const<i32>(8233))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c7]]) [c="char16_t"])), const<i32>(8233))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c8]]))), const<i32>(32784))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c8]]) [c="char16_t"])), const<i32>(32784))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c9]]))), const<i32>(97))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_c9]]) [c="char16_t"])), const<i32>(97))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_ca]]))), const<i32>(8233))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_ca]]) [c="char16_t"])), const<i32>(8233))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_cb]]))), const<i32>(32784))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_cb]]) [c="char16_t"])), const<i32>(32784))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -73,12 +73,12 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_global]], read<i32>(%[[VALUE1]]));
 // DEFAULT-NEXT:                 return pointer_cast<ptr<void>, reason=return>(addr_of<ptr<i32>>(%[[VALUE_global]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return int_to_ptr<ptr<void>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))));
+// DEFAULT-NEXT:         return int_to_ptr<ptr<void>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))) [c="size_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<void> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p_2]], call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_foo]], read<i32>(%[[VALUE_global]])));
-// DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>>(%[[VALUE_p_2]]), int_to_ptr<ptr<void>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))))))
+// DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>>(%[[VALUE_p_2]]), int_to_ptr<ptr<void>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))) [c="size_t"]))
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_global]]);
 // DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));

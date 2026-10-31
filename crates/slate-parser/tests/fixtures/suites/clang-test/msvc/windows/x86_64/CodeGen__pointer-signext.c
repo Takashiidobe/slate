@@ -59,14 +59,14 @@ int test(unsigned long long param)
 // DEFAULT-NEXT:     type @type[[TYPE_LIST_ENTRY:[0-9]+]] LIST_ENTRY = @type[[TYPE__LIST_ENTRY]];
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 Signature: u64;
-// DEFAULT-NEXT:         field1 Link: @type[[TYPE__LIST_ENTRY]];
+// DEFAULT-NEXT:         field1 Link: @type[[TYPE__LIST_ENTRY]] [c="LIST_ENTRY"];
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_MEMORY_MAP:[0-9]+]] MEMORY_MAP = @type[[TYPE0]];
 // DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_param:[0-9]+]] param: u64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_Link:[0-9]+]] Link: ptr<@type[[TYPE__LIST_ENTRY]]> [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_Entry:[0-9]+]] Entry: ptr<@type[[TYPE0]]> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE__LIST_ENTRY]]>>(%[[VALUE_Link]], int_to_ptr<ptr<@type[[TYPE__LIST_ENTRY]]>, reason=explicit>(read<u64>(%[[VALUE_param]])));
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_Entry]], int_to_ptr<ptr<@type[[TYPE0]]>, reason=explicit>(ptr_diff<i64, element=u8, same_array=required, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(read<ptr<@type[[TYPE__LIST_ENTRY]]>>(%[[VALUE_Link]])), pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<@type[[TYPE__LIST_ENTRY]]>>(field1(deref(null<ptr<@type[[TYPE0]]>>)))))));
+// DEFAULT-NEXT:         let %[[VALUE_Link:[0-9]+]] Link: ptr<@type[[TYPE__LIST_ENTRY]]> [storage=automatic] [c="LIST_ENTRY *"];
+// DEFAULT-NEXT:         let %[[VALUE_Entry:[0-9]+]] Entry: ptr<@type[[TYPE0]]> [storage=automatic] [c="MEMORY_MAP *"];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE__LIST_ENTRY]]>>(%[[VALUE_Link]], int_to_ptr<ptr<@type[[TYPE__LIST_ENTRY]]>, reason=explicit>(read<u64>(%[[VALUE_param]])) [c="LIST_ENTRY *"]) [c="LIST_ENTRY *"];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_Entry]], int_to_ptr<ptr<@type[[TYPE0]]>, reason=explicit>(ptr_diff<i64, element=u8, same_array=required, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(read<ptr<@type[[TYPE__LIST_ENTRY]]>>(%[[VALUE_Link]]) [c="LIST_ENTRY *"]), pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<@type[[TYPE__LIST_ENTRY]]>>(field1(deref(null<ptr<@type[[TYPE0]]>>))) [c="LIST_ENTRY *"]))) [c="MEMORY_MAP *"]) [c="MEMORY_MAP *"];
 // DEFAULT-NEXT:         return reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_Entry]]))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

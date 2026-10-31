@@ -41,10 +41,10 @@ _Static_assert(_Generic(&DllMain, int(__stdcall *)(void *, unsigned long, void *
 // DEFAULT-NEXT:     fn %[[VALUE_WinMain:[0-9]+]] @WinMain(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE3:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external] [abi=x86_win32 stdcall(scalar, scalar, scalar, scalar) -> scalar];
 // DEFAULT-NEXT:     fn %[[VALUE_wWinMain:[0-9]+]] @wWinMain(%[[VALUE4:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE5:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE6:[0-9]+]] <unnamed>: ptr<u16>, %[[VALUE7:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external] [abi=x86_win32 stdcall(scalar, scalar, scalar, scalar) -> scalar];
 // DEFAULT-NEXT:     fn %[[VALUE_DllMain:[0-9]+]] @DllMain(%[[VALUE8:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE9:[0-9]+]] <unnamed>: u32, %[[VALUE10:[0-9]+]] <unnamed>: ptr<void>) -> i32 [linkage=external] [abi=x86_win32 stdcall(scalar, scalar, scalar) -> scalar];
-// DEFAULT-NEXT:     fn %[[VALUE_parameter:[0-9]+]] @parameter(%[[VALUE_WinMain_2:[0-9]+]] WinMain: ptr<fn() -> i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_parameter:[0-9]+]] @parameter(%[[VALUE_WinMain_2:[0-9]+]] WinMain: ptr<fn() -> i32>) -> void [linkage=external] [fallthrough=ret_void] [c="void(int(void))"] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_alias:[0-9]+]] @alias() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<fn() -> i32> [storage=automatic] = null<ptr<fn() -> i32>>;
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<fn() -> i32> [storage=automatic] = null<ptr<fn() -> i32>> [c="WinMain *"] [c="WinMain *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

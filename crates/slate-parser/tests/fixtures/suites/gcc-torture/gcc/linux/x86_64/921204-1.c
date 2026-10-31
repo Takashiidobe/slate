@@ -76,28 +76,28 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 2, 2, 2, 2], bit_offsets=[Some(0), Some(1), Some(18), Some(19), Some(20), Some(21)], bit_units=[(0, 4)], field_units=[Some(0), Some(0), Some(0), Some(0), Some(0), Some(0)]];
 // DEFAULT-NEXT:     type @type[[TYPE_bf:[0-9]+]] bf = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = union {
-// DEFAULT-NEXT:         field0 b: @type[[TYPE0]];
+// DEFAULT-NEXT:         field0 b: @type[[TYPE0]] [c="bf"];
 // DEFAULT-NEXT:         field1 w: u32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE_bu:[0-9]+]] bu = @type[[TYPE1]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_i:[0-9]+]] i: @type[[TYPE1]]) -> @type[[TYPE1]] [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_o:[0-9]+]] o: @type[[TYPE1]] [storage=automatic] = copy<@type[[TYPE1]], reason=assign>(read<@type[[TYPE1]]>(%[[VALUE_i]]));
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_i:[0-9]+]] i: @type[[TYPE1]] [c="bu"]) -> @type[[TYPE1]] [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] [c="bu(bu)"] {
+// DEFAULT-NEXT:         let %[[VALUE_o:[0-9]+]] o: @type[[TYPE1]] [storage=automatic] = copy<@type[[TYPE1]], reason=assign>(read<@type[[TYPE1]]>(%[[VALUE_i]]) [c="bu"]) [c="bu"] [c="bu"];
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..1>(field0(%[[VALUE_o]])))), const<i32>(0))
 // DEFAULT-NEXT:             write<u32>(bitfield2<unit=0, bytes=0..4, bits=18..19>(field0(%[[VALUE_o]])), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:             write<u32>(bitfield4<unit=0, bytes=0..4, bits=20..21>(field0(%[[VALUE_o]])), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<u32>(bitfield2<unit=0, bytes=0..4, bits=18..19>(field0(%[[VALUE_o]])), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:             write<u32>(bitfield4<unit=0, bytes=0..4, bits=20..21>(field0(%[[VALUE_o]])), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         return copy<@type[[TYPE1]], reason=return>(read<@type[[TYPE1]]>(%[[VALUE_o]]));
+// DEFAULT-NEXT:         return copy<@type[[TYPE1]], reason=return>(read<@type[[TYPE1]]>(%[[VALUE_o]]) [c="bu"]) [c="bu"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE1]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: @type[[TYPE1]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE1]] [storage=automatic] [c="bu"];
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: @type[[TYPE1]] [storage=automatic] [c="bu"];
 // DEFAULT-NEXT:         write<u32>(field1(%[[VALUE_a]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(67108864)));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..1>(field0(%[[VALUE_a]])), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         write<@type[[TYPE1]]>(%[[VALUE_r]], copy<@type[[TYPE1]], reason=assign>(call<@type[[TYPE1]], signature=fn(@type[[TYPE1]]) -> @type[[TYPE1]], abi=sysv64(native_c) -> native_c>(%[[VALUE_f]], copy<@type[[TYPE1]], reason=arg>(read<@type[[TYPE1]]>(%[[VALUE_a]])))));
+// DEFAULT-NEXT:         write<@type[[TYPE1]]>(%[[VALUE_r]], copy<@type[[TYPE1]], reason=assign>(call<@type[[TYPE1]], signature=fn(@type[[TYPE1]]) -> @type[[TYPE1]], abi=sysv64(native_c) -> native_c>(%[[VALUE_f]], copy<@type[[TYPE1]], reason=arg>(read<@type[[TYPE1]]>(%[[VALUE_a]]) [c="bu"]) [c="bu"]) [c="bu"]) [c="bu"]) [c="bu"];
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(field1(%[[VALUE_a]])), read<u32>(field1(%[[VALUE_r]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

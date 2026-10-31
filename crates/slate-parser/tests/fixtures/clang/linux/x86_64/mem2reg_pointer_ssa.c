@@ -48,7 +48,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_value_pointer:[0-9]+]] value_pointer: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_value]]) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_values:[0-9]+]] values: array<i32, 3> [storage=static] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(11), index1 = const<i32>(13), index2 = const<i32>(17)) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_return_global:[0-9]+]] @return_global() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return addr_of<ptr<i32>>(%[[VALUE_value]]);
 // DEFAULT-NEXT:     }

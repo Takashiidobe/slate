@@ -83,16 +83,16 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([116, 101, 115, 116, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_to_kdev_t:[0-9]+]] @to_kdev_t(%[[VALUE_dev:[0-9]+]] dev: i32) -> u32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_to_kdev_t:[0-9]+]] @to_kdev_t(%[[VALUE_dev:[0-9]+]] dev: i32) -> u32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] [c="kdev_t(int)"] {
 // DEFAULT-NEXT:         let %[[VALUE_major:[0-9]+]] major: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_minor:[0-9]+]] minor: i32 [storage=automatic];
 // DEFAULT-NEXT:         if eq<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))))
-// DEFAULT-NEXT:             return reinterpret<u32, reason=explicit, fits=unknown>(read<i32>(%[[VALUE_dev]]));
+// DEFAULT-NEXT:             return reinterpret<u32, reason=explicit, fits=unknown>(read<i32>(%[[VALUE_dev]])) [c="kdev_t"];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_major]], shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_dev]]), const<i32>(8)));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_minor]], and<i32>(read<i32>(%[[VALUE_dev]]), const<i32>(255)));
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(%[[VALUE_major]]), const<i32>(22)), read<i32>(%[[VALUE_minor]])));
+// DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(%[[VALUE_major]]), const<i32>(22)), read<i32>(%[[VALUE_minor]]))) [c="kdev_t"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_do_mknod:[0-9]+]] @do_mknod(%[[VALUE_filename:[0-9]+]] filename: ptr<const i8>, %[[VALUE_mode:[0-9]+]] mode: i32, %[[VALUE_dev_2:[0-9]+]] dev: u32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_do_mknod:[0-9]+]] @do_mknod(%[[VALUE_filename:[0-9]+]] filename: ptr<const i8>, %[[VALUE_mode:[0-9]+]] mode: i32, %[[VALUE_dev_2:[0-9]+]] dev: u32 [c="kdev_t"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(const char *, int, kdev_t)"] {
 // DEFAULT-NEXT:         if eq<u32>(read<u32>(%[[VALUE_dev_2]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(360710264)))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         else
@@ -119,18 +119,18 @@ int main(void) {
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a9]], add<u32, overflow=wrap>(mul<u32, overflow=wrap>(ptr_to_int<u32, reason=explicit>(read<ptr<const i8>>(%[[VALUE_filename_2]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(13))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5))));
 // DEFAULT-NEXT:         return int_to_ptr<ptr<i8>, reason=explicit>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(mul<u32, overflow=wrap>(read<u32>(%[[VALUE_a1]]), read<u32>(%[[VALUE_a2]])), mul<u32, overflow=wrap>(read<u32>(%[[VALUE_a3]]), read<u32>(%[[VALUE_a4]]))), mul<u32, overflow=wrap>(read<u32>(%[[VALUE_a5]]), read<u32>(%[[VALUE_a6]]))), mul<u32, overflow=wrap>(read<u32>(%[[VALUE_a7]]), read<u32>(%[[VALUE_a8]]))), read<u32>(%[[VALUE_a9]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_sys_mknod:[0-9]+]] @sys_mknod(%[[VALUE_filename_3:[0-9]+]] filename: ptr<const i8>, %[[VALUE_mode_2:[0-9]+]] mode: i32, %[[VALUE_dev_3:[0-9]+]] dev: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_sys_mknod:[0-9]+]] @sys_mknod(%[[VALUE_filename_3:[0-9]+]] filename: ptr<const i8>, %[[VALUE_mode_2:[0-9]+]] mode: i32, %[[VALUE_dev_3:[0-9]+]] dev: u32 [c="dev_t"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(const char *, int, dev_t)"] {
 // DEFAULT-NEXT:         let %[[VALUE_error:[0-9]+]] error: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_tmp:[0-9]+]] tmp: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_tmp]], call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_getname]], read<ptr<const i8>>(%[[VALUE_filename_3]])));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_error]], truncate<i32, reason=assign, fits=unknown>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%[[VALUE_tmp]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, i32, u32) -> void>(%[[VALUE_do_mknod]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_tmp]])), read<i32>(%[[VALUE_mode_2]]), call<u32, signature=fn(i32) -> u32>(%[[VALUE_to_kdev_t]], reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%[[VALUE_dev_3]]))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, i32, u32) -> void>(%[[VALUE_do_mknod]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_tmp]])), read<i32>(%[[VALUE_mode_2]]), call<u32, signature=fn(i32) -> u32>(%[[VALUE_to_kdev_t]], reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%[[VALUE_dev_3]]) [c="dev_t"])) [c="kdev_t"]);
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_error]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, i32, u32) -> i32>(%[[VALUE_sys_mknod]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str]])), const<i32>(1), reinterpret<u32, reason=arg, fits=always>(const<i32>(305419896)));
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, i32, u32) -> i32>(%[[VALUE_sys_mknod]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str]])), const<i32>(1), reinterpret<u32, reason=arg, fits=always>(const<i32>(305419896)) [c="dev_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -40,12 +40,12 @@ int not_a_pointer(void) __attribute__((malloc(release)));
 // DEFAULT-NEXT:     type @type[[TYPE_stream:[0-9]+]] stream = struct incomplete;
 // DEFAULT-NEXT:     type @type[[TYPE_stream_2:[0-9]+]] stream = @type[[TYPE_stream]];
 // DEFAULT-NEXT:     fn %[[VALUE_release:[0-9]+]] @release(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_close_at:[0-9]+]] @close_at(%[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: ptr<@type[[TYPE_stream]]>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_allocate:[0-9]+]] @allocate(%[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [deallocator=%[[VALUE_release]], argument=0];
+// DEFAULT-NEXT:     fn %[[VALUE_close_at:[0-9]+]] @close_at(%[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: ptr<@type[[TYPE_stream]]> [c="stream *"]) -> void [linkage=external] [c="void(int, stream *)"];
+// DEFAULT-NEXT:     fn %[[VALUE_allocate:[0-9]+]] @allocate(%[[VALUE3:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> ptr<void> [linkage=external] [deallocator=%[[VALUE_release]], argument=0] [c="void *(size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_free:[0-9]+]] @__builtin_free(%[[VALUE4:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_open_stream:[0-9]+]] @open_stream(%[[VALUE5:[0-9]+]] <unnamed>: i32) -> ptr<@type[[TYPE_stream]]> [linkage=external] [deallocator=%[[VALUE_close_at]], argument=1] [deallocator=%[[VALUE___builtin_free]], argument=0];
-// DEFAULT-NEXT:     fn %[[VALUE_redeclared:[0-9]+]] @redeclared(%[[VALUE6:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [deallocator=%[[VALUE_release]], argument=0] [deallocator=%[[VALUE___builtin_free]], argument=0];
-// DEFAULT-NEXT:     fn %[[VALUE_ignored_index:[0-9]+]] @ignored_index(%[[VALUE7:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_open_stream:[0-9]+]] @open_stream(%[[VALUE5:[0-9]+]] <unnamed>: i32) -> ptr<@type[[TYPE_stream]]> [linkage=external] [deallocator=%[[VALUE_close_at]], argument=1] [deallocator=%[[VALUE___builtin_free]], argument=0] [c="stream *(int)"];
+// DEFAULT-NEXT:     fn %[[VALUE_redeclared:[0-9]+]] @redeclared(%[[VALUE6:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> ptr<void> [linkage=external] [deallocator=%[[VALUE_release]], argument=0] [deallocator=%[[VALUE___builtin_free]], argument=0] [c="void *(size_t)"];
+// DEFAULT-NEXT:     fn %[[VALUE_ignored_index:[0-9]+]] @ignored_index(%[[VALUE7:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_not_a_pointer:[0-9]+]] @not_a_pointer() -> i32 [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

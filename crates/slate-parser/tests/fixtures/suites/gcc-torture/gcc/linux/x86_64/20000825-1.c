@@ -58,17 +58,17 @@ u32 fails(u32 *var)
 // DEFAULT-NEXT:     type @type[[TYPE_s64:[0-9]+]] s64 = i64;
 // DEFAULT-NEXT:     type @type[[TYPE_u32:[0-9]+]] u32 = u32;
 // DEFAULT-NEXT:     type @type[[TYPE_u64:[0-9]+]] u64 = u64;
-// DEFAULT-NEXT:     fn %[[VALUE_foobar:[0-9]+]] @foobar(%[[VALUE_logmask:[0-9]+]] logmask: i32) -> u32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_ret:[0-9]+]] ret: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=unknown>(not<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), read<i32>(%[[VALUE_logmask]]))));
-// DEFAULT-NEXT:         return read<u32>(%[[VALUE_ret]]);
+// DEFAULT-NEXT:     fn %[[VALUE_foobar:[0-9]+]] @foobar(%[[VALUE_logmask:[0-9]+]] logmask: i32) -> u32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] [c="u32(int)"] {
+// DEFAULT-NEXT:         let %[[VALUE_ret:[0-9]+]] ret: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=unknown>(not<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), read<i32>(%[[VALUE_logmask]])))) [c="u32"] [c="u32"];
+// DEFAULT-NEXT:         return read<u32>(%[[VALUE_ret]]) [c="u32"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_good:[0-9]+]] @good(%[[VALUE_var:[0-9]+]] var: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<u32>(%[[VALUE_var]], call<u32, signature=fn(i32) -> u32>(%[[VALUE_foobar]], const<i32>(0)));
-// DEFAULT-NEXT:         return read<u32>(%[[VALUE_var]]);
+// DEFAULT-NEXT:     fn %[[VALUE_good:[0-9]+]] @good(%[[VALUE_var:[0-9]+]] var: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_var]], call<u32, signature=fn(i32) -> u32>(%[[VALUE_foobar]], const<i32>(0)) [c="u32"]) [c="u32"];
+// DEFAULT-NEXT:         return read<u32>(%[[VALUE_var]]) [c="u32"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fails:[0-9]+]] @fails(%[[VALUE_var_2:[0-9]+]] var: ptr<u32>) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%[[VALUE_var_2]])), call<u32, signature=fn(i32) -> u32>(%[[VALUE_foobar]], const<i32>(0)));
-// DEFAULT-NEXT:         return read<u32>(deref(read<ptr<u32>>(%[[VALUE_var_2]])));
+// DEFAULT-NEXT:     fn %[[VALUE_fails:[0-9]+]] @fails(%[[VALUE_var_2:[0-9]+]] var: ptr<u32> [c="u32 *"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32 *)"] {
+// DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%[[VALUE_var_2]])), call<u32, signature=fn(i32) -> u32>(%[[VALUE_foobar]], const<i32>(0)) [c="u32"]) [c="u32"];
+// DEFAULT-NEXT:         return read<u32>(deref(read<ptr<u32>>(%[[VALUE_var_2]]))) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -150,7 +150,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str_26:[0-9]+]] .str[[VALUE_str_26]]: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([118, 116, 97, 98, 45, 115, 112, 97, 99, 101, 45, 110, 111, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_27:[0-9]+]] .str[[VALUE_str_27]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE___ctype_b_loc:[0-9]+]] @__ctype_b_loc() -> ptr<ptr<const u16>> [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_alpha:[0-9]+]] alpha: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(65));
 // DEFAULT-NEXT:         let %[[VALUE_digit:[0-9]+]] digit: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(53));

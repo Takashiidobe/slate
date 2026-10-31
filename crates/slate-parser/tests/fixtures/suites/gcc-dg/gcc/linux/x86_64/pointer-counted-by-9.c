@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
 // DEFAULT-NEXT:     global %[[VALUE_p_annotated:[0-9]+]] p_annotated: ptr<@type[[TYPE_annotated]]> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_p_nested_annotated:[0-9]+]] p_nested_annotated: ptr<@type[[TYPE_nested_annotated]]> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_setup:[0-9]+]] @setup(%[[VALUE_normal_count:[0-9]+]] normal_count: i32, %[[VALUE_attr_count:[0-9]+]] attr_count: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_annotated]]>>(%[[VALUE_p_annotated]], pointer_cast<ptr<@type[[TYPE_annotated]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(16))));
@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field1(deref(read<ptr<@type[[TYPE_annotated]]>>(%[[VALUE_p_annotated]])))), const<i32>(2))), read<i8>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field1(deref(read<ptr<@type[[TYPE_nested_annotated]]>>(%[[VALUE_p_nested_annotated]])))), const<i32>(3))), read<i8>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] [c="int(int, char *[])"] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_setup]], const<i32>(10), const<i32>(10));
 // DEFAULT-NEXT:         call<void, signature=fn(i8, i8) -> void>(%[[VALUE_test]], truncate<i8, reason=arg, fits=always>(const<i32>(65)), truncate<i8, reason=arg, fits=always>(const<i32>(66)));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field1(deref(read<ptr<@type[[TYPE_annotated]]>>(%[[VALUE_p_annotated]])))), const<i32>(2))))), const<i32>(65))

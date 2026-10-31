@@ -53,22 +53,22 @@ java_check_regular_methods (tree class_decl)
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_tree:[0-9]+]] tree = ptr<@type[[TYPE_tree_node]]>;
 // DEFAULT-NEXT:     type @type[[TYPE_tree_common]] tree_common = struct {
-// DEFAULT-NEXT:         field0 type: ptr<@type[[TYPE_tree_node]]>;
+// DEFAULT-NEXT:         field0 type: ptr<@type[[TYPE_tree_node]]> [c="tree"];
 // DEFAULT-NEXT:         field1 lang_flag_0: u32 : 1;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8], bit_offsets=[None, Some(64)], bit_units=[(8, 1)], field_units=[None, Some(0)]];
-// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE_tree_node]]>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_java_check_regular_methods:[0-9]+]] @java_check_regular_methods(%[[VALUE_class_decl:[0-9]+]] class_decl: ptr<@type[[TYPE_tree_node]]>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE_tree_node]]> [c="tree"]) -> void [linkage=external] [c="void(tree)"];
+// DEFAULT-NEXT:     fn %[[VALUE_java_check_regular_methods:[0-9]+]] @java_check_regular_methods(%[[VALUE_class_decl:[0-9]+]] class_decl: ptr<@type[[TYPE_tree_node]]> [c="tree"]) -> void [linkage=internal] [fallthrough=ret_void] [c="void(tree)"] {
 // DEFAULT-NEXT:         let %[[VALUE_saw_constructor:[0-9]+]] saw_constructor: i32 [storage=automatic] = reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=8..9, bits=0..1>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(field0(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_class_decl]]))))))))));
-// DEFAULT-NEXT:         let %[[VALUE_class:[0-9]+]] class: ptr<@type[[TYPE_tree_node]]> [storage=automatic] = read<ptr<@type[[TYPE_tree_node]]>>(field0(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_class_decl]])))));
+// DEFAULT-NEXT:         let %[[VALUE_class:[0-9]+]] class: ptr<@type[[TYPE_tree_node]]> [storage=automatic] = read<ptr<@type[[TYPE_tree_node]]>>(field0(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_class_decl]]))))) [c="tree"] [c="tree"];
 // DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: omitted
 // DEFAULT-NEXT:             increment: omitted
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if ne<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_class]]), null<ptr<@type[[TYPE_tree_node]]>>)
-// DEFAULT-NEXT:                         if ne<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(field0(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_class_decl]]))))), null<ptr<@type[[TYPE_tree_node]]>>)
-// DEFAULT-NEXT:                             call<void, signature=fn(ptr<@type[[TYPE_tree_node]]>) -> void>(%[[VALUE_bar]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_class]]));
+// DEFAULT-NEXT:                     if ne<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_class]]) [c="tree"], null<ptr<@type[[TYPE_tree_node]]>>)
+// DEFAULT-NEXT:                         if ne<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(field0(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_class_decl]]))))) [c="tree"], null<ptr<@type[[TYPE_tree_node]]>>)
+// DEFAULT-NEXT:                             call<void, signature=fn(ptr<@type[[TYPE_tree_node]]>) -> void>(%[[VALUE_bar]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_class]]) [c="tree"]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -105,7 +105,7 @@ main (int argc, char *argv[])
 // DEFAULT-NEXT:         return read<i32>(field0(%[[VALUE_p_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] [c="int(int, char *[])"] {
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_fill]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], call<i32, signature=fn(@type[[TYPE_LE]]) -> i32, abi=sysv64(native_c) -> scalar>(%[[VALUE_readLE]], copy<@type[[TYPE_LE]], reason=arg>(read<@type[[TYPE_LE]]>(%[[VALUE_gle]]))));

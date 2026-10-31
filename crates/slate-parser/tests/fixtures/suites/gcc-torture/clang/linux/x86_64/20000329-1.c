@@ -105,7 +105,7 @@ main (int ac, char *av[])
 // DEFAULT-NEXT:                     call<void, signature=fn(u64, ptr<i8>) -> void>(%[[VALUE_giop_encode_ulong]], read<u64>(%[[VALUE_l]]), array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_buf_2]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_ac:[0-9]+]] ac: i32, %[[VALUE_av:[0-9]+]] av: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_ac:[0-9]+]] ac: i32, %[[VALUE_av:[0-9]+]] av: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] [c="int(int, char *[])"] {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_giop_tx_big_endian]], const<i32>(1));
 // DEFAULT-NEXT:         call<f64, signature=fn(u64) -> f64>(%[[VALUE_time_giop_encode]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))));
 // DEFAULT-NEXT:     }

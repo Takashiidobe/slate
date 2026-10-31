@@ -59,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([37, 108, 108, 117, 58, 37, 108, 108, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_add128:[0-9]+]] @add128(%[[VALUE_a:[0-9]+]] a: i128, %[[VALUE_b:[0-9]+]] b: i128) -> i128 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<i128, overflow=ub>(read<i128>(%[[VALUE_a]]), read<i128>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }

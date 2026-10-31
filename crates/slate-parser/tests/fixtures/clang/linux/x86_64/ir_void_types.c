@@ -44,7 +44,7 @@ here:
 // IR-NEXT:     }
 // IR-NEXT:     type @type[[TYPE_alias:[0-9]+]] alias = void;
 // IR-NEXT:     extern %[[VALUE_incomplete_object:[0-9]+]] incomplete_object: void [storage=static] [linkage=external];
-// IR-NEXT:     fn %[[VALUE_returns_nothing:[0-9]+]] @returns_nothing() -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_returns_nothing:[0-9]+]] @returns_nothing() -> void [linkage=external] [c="alias(void)"];
 // IR-NEXT:     fn %[[VALUE_address_of_incomplete:[0-9]+]] @address_of_incomplete() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return addr_of<ptr<void>>(%[[VALUE_incomplete_object]]);
 // IR-NEXT:     }

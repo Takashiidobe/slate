@@ -41,7 +41,7 @@ void f(struct incomplete *list[]) {
 // DEFAULT-NEXT:     type @type[[TYPE_aligned_to:[0-9]+]] aligned_to = i64;
 // DEFAULT-NEXT:     type @type[[TYPE_incomplete:[0-9]+]] incomplete = struct incomplete;
 // DEFAULT-NEXT:     global %[[VALUE_global:[0-9]+]] global: ptr<i8> [storage=static] = addr_of<ptr<i8>>(compound_literal %[[VALUE0:[0-9]+]] [storage=static] [align=8] = truncate<i8, reason=assign, fits=always>(const<i32>(1))) [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_list:[0-9]+]] list: ptr<ptr<@type[[TYPE_incomplete]]>>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_list:[0-9]+]] list: ptr<ptr<@type[[TYPE_incomplete]]>>) -> void [linkage=external] [fallthrough=ret_void] [c="void(struct incomplete *[])"] {
 // DEFAULT-NEXT:         let %[[VALUE_leading:[0-9]+]] leading: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] [align=16] = truncate<i8, reason=assign, fits=always>(const<i32>(2)));
 // DEFAULT-NEXT:         let %[[VALUE_trailing:[0-9]+]] trailing: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] [align=4] = truncate<i8, reason=assign, fits=always>(const<i32>(3)));
 // DEFAULT-NEXT:         let %[[VALUE_array:[0-9]+]] array: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(3)>(compound_literal %[[VALUE3:[0-9]+]] [storage=automatic] [align=8] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3)));

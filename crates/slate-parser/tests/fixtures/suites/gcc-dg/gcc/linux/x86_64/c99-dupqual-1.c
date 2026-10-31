@@ -40,10 +40,10 @@ volatile VI *v3;		/* { dg-bogus "duplicate" } */
 // DEFAULT-NEXT:     type @type[[TYPE_CI:[0-9]+]] CI = i32;
 // DEFAULT-NEXT:     type @type[[TYPE_VI:[0-9]+]] VI = i32;
 // DEFAULT-NEXT:     global %[[VALUE_c1:[0-9]+]] c1: i32 [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_c2:[0-9]+]] c2: i32 [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_c3:[0-9]+]] c3: ptr<const i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c2:[0-9]+]] c2: i32 [storage=static] [const] [linkage=external] [c="const CI"];
+// DEFAULT-NEXT:     global %[[VALUE_c3:[0-9]+]] c3: ptr<const i32> [storage=static] [linkage=external] [c="const CI *"];
 // DEFAULT-NEXT:     global %[[VALUE_v1:[0-9]+]] v1: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_v2:[0-9]+]] v2: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_v3:[0-9]+]] v3: ptr<volatile i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_v2:[0-9]+]] v2: volatile i32 [storage=static] [linkage=external] [c="volatile VI"];
+// DEFAULT-NEXT:     global %[[VALUE_v3:[0-9]+]] v3: ptr<volatile i32> [storage=static] [linkage=external] [c="volatile VI *"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

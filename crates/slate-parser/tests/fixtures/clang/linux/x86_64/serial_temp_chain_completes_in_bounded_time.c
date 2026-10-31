@@ -789,7 +789,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([37, 108, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_chain:[0-9]+]] @chain(%[[VALUE_x:[0-9]+]] x: i64) -> i64 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_total:[0-9]+]] total: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_total]], sub<i64, overflow=ub>(add<i64, overflow=ub>(read<i64>(%[[VALUE_total]]), mul<i64, overflow=ub>(add<i64, overflow=ub>(read<i64>(%[[VALUE_x]]), widen<i64, reason=usual_arith>(const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(3)))), widen<i64, reason=usual_arith>(const<i32>(2))));

@@ -163,8 +163,8 @@ inline void testC();
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test7:[0-9]+]] @test7(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_strlcpy:[0-9]+]] @strlcpy(%[[VALUE_dest:[0-9]+]] dest: ptr<i8>, %[[VALUE_src:[0-9]+]] src: ptr<const i8>, %[[VALUE_size:[0-9]+]] size: u32) -> u32 [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=always>(const<i32>(3));
+// DEFAULT-NEXT:     fn %[[VALUE_strlcpy:[0-9]+]] @strlcpy(%[[VALUE_dest:[0-9]+]] dest: ptr<i8>, %[[VALUE_src:[0-9]+]] src: ptr<const i8>, %[[VALUE_size:[0-9]+]] size: u32 [c="typeof(sizeof(...))"]) -> u32 [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ub_if_used] [c="typeof(sizeof(...))(char *, const char *, typeof(sizeof(...)))"] {
+// DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=always>(const<i32>(3)) [c="typeof(sizeof(...))"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test8:[0-9]+]] @test8(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<u32, signature=fn(ptr<i8>, ptr<const i8>, u32) -> u32>(%[[VALUE_strlcpy]], null<ptr<i8>>, null<ptr<const i8>>, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));

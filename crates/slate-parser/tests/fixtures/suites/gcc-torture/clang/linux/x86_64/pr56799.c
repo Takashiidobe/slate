@@ -79,19 +79,19 @@ __attribute__((noinline)) int foo(S *ptr) {
 // DEFAULT-NEXT:     global %[[VALUE_lo:[0-9]+]] lo: i32 [storage=static] = const<i32>(0) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_ptr:[0-9]+]] ptr: ptr<@type[[TYPE0]]>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_ptr:[0-9]+]] ptr: ptr<@type[[TYPE0]]> [c="S *"]) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="int(S *)"] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = read<i32>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_ptr]]))));
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u16 [storage=automatic] = reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=unknown>(read<i32>(%[[VALUE_a]])));
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_b]]))), const<i32>(0))
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u16 [storage=automatic] = reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=unknown>(read<i32>(%[[VALUE_a]]))) [c="u16"] [c="u16"];
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_b]]) [c="u16"])), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_lo]], const<i32>(1));
 // DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_c]]);
 // DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), read<i32>(field1(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_ptr]])))));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<u16>(%[[VALUE_b]], reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_a]]), const<i32>(16)))));
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_b]]))), const<i32>(0))
+// DEFAULT-NEXT:         write<u16>(%[[VALUE_b]], reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_a]]), const<i32>(16)))) [c="u16"]) [c="u16"];
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_b]]) [c="u16"])), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_hi]], const<i32>(1));
 // DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_c]]);
@@ -104,11 +104,11 @@ __attribute__((noinline)) int foo(S *ptr) {
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_c]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: @type[[TYPE0]] [storage=automatic] [c="S"];
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_a_2]]), const<i32>(65536));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_a_2]]), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], call<i32, signature=fn(ptr<@type[[TYPE0]]>) -> i32>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_a_2]])));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], call<i32, signature=fn(ptr<@type[[TYPE0]]>) -> i32>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_a_2]]) [c="S *"]));
 // DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(eq<i32>(read<i32>(%[[VALUE_r]]), const<i32>(2)), eq<i32>(read<i32>(%[[VALUE_lo]]), const<i32>(0))), eq<i32>(read<i32>(%[[VALUE_hi]]), const<i32>(1)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

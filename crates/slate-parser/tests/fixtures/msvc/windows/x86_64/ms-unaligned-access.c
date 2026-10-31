@@ -35,7 +35,7 @@ char byte(__unaligned char *p) { return *p; }
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_WCHAR:[0-9]+]] WCHAR = u16;
-// DEFAULT-NEXT:     type @type[[TYPE_LPUWSTR:[0-9]+]] LPUWSTR = ptr<u16>;
+// DEFAULT-NEXT:     type @type[[TYPE_LPUWSTR:[0-9]+]] LPUWSTR = ptr<u16> [c="__unaligned WCHAR *"];
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 b: i32;
@@ -47,11 +47,11 @@ char byte(__unaligned char *p) { return *p; }
 // DEFAULT-NEXT:     fn %[[VALUE_store:[0-9]+]] @store(%[[VALUE_p_2:[0-9]+]] p: ptr<i32>, %[[VALUE_x:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32, align=1>(deref(read<ptr<i32>>(%[[VALUE_p_2]])), read<i32>(%[[VALUE_x]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_member:[0-9]+]] @member(%[[VALUE_p_3:[0-9]+]] p: ptr<@type[[TYPE0]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_member:[0-9]+]] @member(%[[VALUE_p_3:[0-9]+]] p: ptr<@type[[TYPE0]]> [c="__unaligned S *"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(__unaligned S *)"] {
 // DEFAULT-NEXT:         return read<i32, align=1>(field1(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_p_3]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_wide:[0-9]+]] @wide(%[[VALUE_p_4:[0-9]+]] p: ptr<u16>) -> u16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<u16, align=1>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(read<ptr<u16>>(%[[VALUE_p_4]]), const<i32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE_wide:[0-9]+]] @wide(%[[VALUE_p_4:[0-9]+]] p: ptr<u16> [c="LPUWSTR"]) -> u16 [linkage=external] [fallthrough=ub_if_used] [c="WCHAR(LPUWSTR)"] {
+// DEFAULT-NEXT:         return read<u16, align=1>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(read<ptr<u16>>(%[[VALUE_p_4]]), const<i32>(1)))) [c="WCHAR"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_plain:[0-9]+]] @plain(%[[VALUE_p_5:[0-9]+]] p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<i32>(deref(read<ptr<i32>>(%[[VALUE_p_5]])));

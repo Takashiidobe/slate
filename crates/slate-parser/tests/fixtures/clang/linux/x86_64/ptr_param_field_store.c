@@ -51,14 +51,14 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type[[TYPE_pair_t:[0-9]+]] pair_t = @type[[TYPE0]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_fill:[0-9]+]] @fill(%[[VALUE_out:[0-9]+]] out: ptr<@type[[TYPE0]]>, %[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
+// DEFAULT-NEXT:     fn %[[VALUE_fill:[0-9]+]] @fill(%[[VALUE_out:[0-9]+]] out: ptr<@type[[TYPE0]]> [c="pair_t *"], %[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32) -> void [linkage=internal] [fallthrough=ret_void] [c="void(pair_t *, int, int)"] {
 // DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_out]]))), read<i32>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_out]]))), read<i32>(%[[VALUE_y]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE0]]>, i32, i32) -> void>(%[[VALUE_fill]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_p]]), const<i32>(3), const<i32>(4));
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: @type[[TYPE0]] [storage=automatic] [c="pair_t"];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE0]]>, i32, i32) -> void>(%[[VALUE_fill]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_p]]) [c="pair_t *"], const<i32>(3), const<i32>(4));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]])), read<i32>(field0(%[[VALUE_p]])), read<i32>(field1(%[[VALUE_p]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

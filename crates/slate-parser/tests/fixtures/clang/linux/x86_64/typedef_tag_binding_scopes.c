@@ -63,9 +63,9 @@ _Static_assert(sizeof(struct T) == 12, "");
 // IR-NEXT:     type @type[[TYPE_T_6:[0-9]+]] T = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:     } [size=1, align=1, offsets=[0]];
-// IR-NEXT:     global %[[VALUE_y:[0-9]+]] y: i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_y:[0-9]+]] y: i32 [storage=static] [linkage=external] [c="T"];
 // IR-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %[[VALUE_x:[0-9]+]] x: i64 [storage=automatic];
+// IR-NEXT:         let %[[VALUE_x:[0-9]+]] x: i64 [storage=automatic] [c="T"];
 // IR-NEXT:         {
 // IR-NEXT:         }
 // IR-NEXT:     }

@@ -68,13 +68,13 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_k0:[0-9]+]] @k0(%[[VALUE_A_3:[0-9]+]] A: i32, %[[VALUE_B_3:[0-9]+]] B: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return or<i32>(and<i32>(read<i32>(%[[VALUE_A_3]]), read<i32>(%[[VALUE_B_3]])), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(%[[VALUE_A_3]]), read<i32>(%[[VALUE_B_3]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_h1:[0-9]+]] @h1(%[[VALUE_A_4:[0-9]+]] A: volatile i32, %[[VALUE_B_4:[0-9]+]] B: volatile i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_h1:[0-9]+]] @h1(%[[VALUE_A_4:[0-9]+]] A: volatile i32, %[[VALUE_B_4:[0-9]+]] B: volatile i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="int(volatile int, volatile int)"] {
 // DEFAULT-NEXT:         return and<i32>(or<i32>(read<i32, volatile>(%[[VALUE_A_4]]), read<i32, volatile>(%[[VALUE_B_4]])), from_bool<i32, reason=promotion>(eq<i32>(read<i32, volatile>(%[[VALUE_A_4]]), read<i32, volatile>(%[[VALUE_B_4]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_i1:[0-9]+]] @i1(%[[VALUE_A_5:[0-9]+]] A: volatile i32, %[[VALUE_B_5:[0-9]+]] B: volatile i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_i1:[0-9]+]] @i1(%[[VALUE_A_5:[0-9]+]] A: volatile i32, %[[VALUE_B_5:[0-9]+]] B: volatile i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="int(volatile int, volatile int)"] {
 // DEFAULT-NEXT:         return or<i32>(read<i32, volatile>(%[[VALUE_A_5]]), from_bool<i32, reason=promotion>(eq<i32>(read<i32, volatile>(%[[VALUE_A_5]]), read<i32, volatile>(%[[VALUE_B_5]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_k1:[0-9]+]] @k1(%[[VALUE_A_6:[0-9]+]] A: volatile i32, %[[VALUE_B_6:[0-9]+]] B: volatile i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_k1:[0-9]+]] @k1(%[[VALUE_A_6:[0-9]+]] A: volatile i32, %[[VALUE_B_6:[0-9]+]] B: volatile i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="int(volatile int, volatile int)"] {
 // DEFAULT-NEXT:         return or<i32>(and<i32>(read<i32, volatile>(%[[VALUE_A_6]]), read<i32, volatile>(%[[VALUE_B_6]])), from_bool<i32, reason=promotion>(eq<i32>(read<i32, volatile>(%[[VALUE_A_6]]), read<i32, volatile>(%[[VALUE_B_6]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];

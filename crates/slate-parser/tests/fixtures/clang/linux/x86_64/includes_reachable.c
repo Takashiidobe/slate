@@ -33,7 +33,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_ULONG_MAX_TYPE:[0-9]+]] ULONG_MAX_TYPE = i32;
-// DEFAULT-NEXT:     global %[[VALUE_value:[0-9]+]] value: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_value:[0-9]+]] value: i32 [storage=static] [linkage=external] [c="ULONG_MAX_TYPE"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

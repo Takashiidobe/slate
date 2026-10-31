@@ -57,24 +57,24 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type[[TYPE_FSE_repeat:[0-9]+]] FSE_repeat = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
-// DEFAULT-NEXT:         field0 mode: @type[[TYPE0]];
+// DEFAULT-NEXT:         field0 mode: @type[[TYPE0]] [c="FSE_repeat"];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_Entropy:[0-9]+]] Entropy = @type[[TYPE1]];
-// DEFAULT-NEXT:     fn %[[VALUE_select_type:[0-9]+]] @select_type(%[[VALUE_repeatMode:[0-9]+]] repeatMode: ptr<@type[[TYPE0]]>, %[[VALUE_count:[0-9]+]] count: u32) -> u32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_select_type:[0-9]+]] @select_type(%[[VALUE_repeatMode:[0-9]+]] repeatMode: ptr<@type[[TYPE0]]> [c="FSE_repeat *"], %[[VALUE_count:[0-9]+]] count: u32) -> u32 [linkage=internal] [fallthrough=ub_if_used] [c="unsigned int(FSE_repeat *, unsigned int)"] {
 // DEFAULT-NEXT:         if eq<u32>(read<u32>(%[[VALUE_count]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<@type[[TYPE0]]>(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_repeatMode]])), int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:                 write<@type[[TYPE0]]>(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_repeatMode]])), int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))) [c="FSE_repeat"]) [c="FSE_repeat"];
 // DEFAULT-NEXT:                 return reinterpret<u32, reason=return, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return add<u32, overflow=wrap>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_repeatMode]])))), read<u32>(%[[VALUE_count]]));
+// DEFAULT-NEXT:         return add<u32, overflow=wrap>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_repeatMode]]))) [c="FSE_repeat"]), read<u32>(%[[VALUE_count]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_run:[0-9]+]] @run(%[[VALUE_e:[0-9]+]] e: ptr<@type[[TYPE1]]>, %[[VALUE_count_2:[0-9]+]] count: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(ptr<@type[[TYPE0]]>, u32) -> u32>(%[[VALUE_select_type]], addr_of<ptr<@type[[TYPE0]]>>(field0(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE_e]])))), read<u32>(%[[VALUE_count_2]])));
+// DEFAULT-NEXT:     fn %[[VALUE_run:[0-9]+]] @run(%[[VALUE_e:[0-9]+]] e: ptr<@type[[TYPE1]]> [c="Entropy *"], %[[VALUE_count_2:[0-9]+]] count: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(Entropy *, unsigned int)"] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(ptr<@type[[TYPE0]]>, u32) -> u32>(%[[VALUE_select_type]], addr_of<ptr<@type[[TYPE0]]>>(field0(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE_e]])))) [c="FSE_repeat *"], read<u32>(%[[VALUE_count_2]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_e_2:[0-9]+]] e: @type[[TYPE1]] [storage=automatic];
-// DEFAULT-NEXT:         write<@type[[TYPE0]]>(field0(%[[VALUE_e_2]]), int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2))));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn(ptr<@type[[TYPE1]]>, u32) -> i32>(%[[VALUE_run]], addr_of<ptr<@type[[TYPE1]]>>(%[[VALUE_e_2]]), reinterpret<u32, reason=arg, fits=always>(const<i32>(0))), call<i32, signature=fn(ptr<@type[[TYPE1]]>, u32) -> i32>(%[[VALUE_run]], addr_of<ptr<@type[[TYPE1]]>>(%[[VALUE_e_2]]), reinterpret<u32, reason=arg, fits=always>(const<i32>(5))));
+// DEFAULT-NEXT:         let %[[VALUE_e_2:[0-9]+]] e: @type[[TYPE1]] [storage=automatic] [c="Entropy"];
+// DEFAULT-NEXT:         write<@type[[TYPE0]]>(field0(%[[VALUE_e_2]]), int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2))) [c="FSE_repeat"]) [c="FSE_repeat"];
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn(ptr<@type[[TYPE1]]>, u32) -> i32>(%[[VALUE_run]], addr_of<ptr<@type[[TYPE1]]>>(%[[VALUE_e_2]]) [c="Entropy *"], reinterpret<u32, reason=arg, fits=always>(const<i32>(0))), call<i32, signature=fn(ptr<@type[[TYPE1]]>, u32) -> i32>(%[[VALUE_run]], addr_of<ptr<@type[[TYPE1]]>>(%[[VALUE_e_2]]) [c="Entropy *"], reinterpret<u32, reason=arg, fits=always>(const<i32>(5))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -69,7 +69,7 @@ int main()
 // DEFAULT-NEXT:     fn %[[VALUE_test_foo:[0-9]+]] @test_foo(%[[VALUE_a:[0-9]+]] a: ptr<@type[[TYPE_foo]]>, %[[VALUE_b:[0-9]+]] b: ptr<void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_a]]))), const<i32>(1));
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE_foo_2]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_foo]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_foo]]>, reason=assign>(read<ptr<void>>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_foo]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_foo]]>, reason=assign>(read<ptr<void>>(%[[VALUE_b]])) [c="typeof(*(1 ? &s : &t)) *"] [c="typeof(*(1 ? &s : &t)) *"];
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_p]]))), const<i32>(2));
 // DEFAULT-NEXT:         return read<i32>(field1(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_a]]))));
 // DEFAULT-NEXT:     }

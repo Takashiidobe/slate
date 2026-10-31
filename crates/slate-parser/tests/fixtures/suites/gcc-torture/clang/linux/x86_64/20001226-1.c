@@ -55,7 +55,7 @@ unsigned foo(int x[64], int y[64])
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<i32> [array=64], %[[VALUE_y:[0-9]+]] y: ptr<i32> [array=64]) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<i32> [array=64], %[[VALUE_y:[0-9]+]] y: ptr<i32> [array=64]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="unsigned int(int[64], int[64])"] {
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_x]]), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_y]]), const<i32>(0)))))
 // DEFAULT-NEXT:             goto %[[VALUE_gt:[0-9]+]];
 // DEFAULT-NEXT:         if lt<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_x]]), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_y]]), const<i32>(0)))))

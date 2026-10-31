@@ -134,7 +134,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([37, 100, 32, 37, 108, 108, 117, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_ffs:[0-9]+]] @__builtin_ffs(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_ffsl:[0-9]+]] @__builtin_ffsl(%[[VALUE1:[0-9]+]] <unnamed>: i64) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_ffsll:[0-9]+]] @__builtin_ffsll(%[[VALUE2:[0-9]+]] <unnamed>: i64) -> i32 [linkage=external] [memory=none];

@@ -71,7 +71,7 @@ typedef int Socket;
 // WIN32-NEXT:         storage d128 [size=16, align=16];
 // WIN32-NEXT:     }
 // WIN32-NEXT:     type @type[[TYPE_HANDLE:[0-9]+]] HANDLE = i32;
-// WIN32-NEXT:     type @type[[TYPE_Socket:[0-9]+]] Socket = i32;
+// WIN32-NEXT:     type @type[[TYPE_Socket:[0-9]+]] Socket = i32 [c="HANDLE"];
 // WIN32-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // WIN32-NEXT:         return const<i32>(2);
 // WIN32-NEXT:     }

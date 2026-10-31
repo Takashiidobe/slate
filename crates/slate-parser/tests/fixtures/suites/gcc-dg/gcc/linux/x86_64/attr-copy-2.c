@@ -303,7 +303,7 @@ void falias_nothrow (void);
 // DEFAULT-NEXT:     fn %[[VALUE_target_cold:[0-9]+]] @target_cold() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_alias_cold:[0-9]+]] @alias_cold() -> i32 [linkage=external] [alias="target_cold"];
+// DEFAULT-NEXT:     fn %[[VALUE_alias_cold:[0-9]+]] @alias_cold() -> i32 [linkage=external] [alias="target_cold"] [c="typeof(target_cold)"];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_fnoret:[0-9]+]] @fnoret() -> void [linkage=external] [noreturn] [fallthrough=ub] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

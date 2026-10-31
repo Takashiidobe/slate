@@ -103,89 +103,89 @@ foo (void)
 // DEFAULT-NEXT:         field0 p: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_type:[0-9]+]] type = i32;
-// DEFAULT-NEXT:     type @type[[TYPE_typepp:[0-9]+]] typepp = ptr<ptr<i32>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype:[0-9]+]] ctype = i32;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2:[0-9]+]] ctype2 = i32;
-// DEFAULT-NEXT:     type @type[[TYPE_ctypepp:[0-9]+]] ctypepp = ptr<ptr<i32>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp:[0-9]+]] ctype2pp = ptr<ptr<i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_typepp:[0-9]+]] typepp = ptr<ptr<i32>> [c="type **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype:[0-9]+]] ctype = i32 [c="typeof(0 ? (sc) : (sc))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2:[0-9]+]] ctype2 = i32 [c="typeof(0 ? (sc) : (sc))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctypepp:[0-9]+]] ctypepp = ptr<ptr<i32>> [c="ctype **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp:[0-9]+]] ctype2pp = ptr<ptr<i32>> [c="ctype2 **"];
 // DEFAULT-NEXT:     type @type[[TYPE_type_2:[0-9]+]] type = @type[[TYPE_s]];
-// DEFAULT-NEXT:     type @type[[TYPE_typepp_2:[0-9]+]] typepp = ptr<ptr<@type[[TYPE_s]]>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype_2:[0-9]+]] ctype = @type[[TYPE_s]];
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2_2:[0-9]+]] ctype2 = @type[[TYPE_s]];
-// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_2:[0-9]+]] ctypepp = ptr<ptr<@type[[TYPE_s]]>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_2:[0-9]+]] ctype2pp = ptr<ptr<@type[[TYPE_s]]>>;
+// DEFAULT-NEXT:     type @type[[TYPE_typepp_2:[0-9]+]] typepp = ptr<ptr<@type[[TYPE_s]]>> [c="type **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype_2:[0-9]+]] ctype = @type[[TYPE_s]] [c="typeof(0 ? (st) : (st))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2_2:[0-9]+]] ctype2 = @type[[TYPE_s]] [c="typeof(0 ? (st) : (st))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_2:[0-9]+]] ctypepp = ptr<ptr<@type[[TYPE_s]]>> [c="ctype **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_2:[0-9]+]] ctype2pp = ptr<ptr<@type[[TYPE_s]]>> [c="ctype2 **"];
 // DEFAULT-NEXT:     type @type[[TYPE_type_3:[0-9]+]] type = @type[[TYPE_u]];
-// DEFAULT-NEXT:     type @type[[TYPE_typepp_3:[0-9]+]] typepp = ptr<ptr<@type[[TYPE_u]]>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype_3:[0-9]+]] ctype = @type[[TYPE_u]];
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2_3:[0-9]+]] ctype2 = @type[[TYPE_u]];
-// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_3:[0-9]+]] ctypepp = ptr<ptr<@type[[TYPE_u]]>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_3:[0-9]+]] ctype2pp = ptr<ptr<@type[[TYPE_u]]>>;
+// DEFAULT-NEXT:     type @type[[TYPE_typepp_3:[0-9]+]] typepp = ptr<ptr<@type[[TYPE_u]]>> [c="type **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype_3:[0-9]+]] ctype = @type[[TYPE_u]] [c="typeof(0 ? (un) : (un))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2_3:[0-9]+]] ctype2 = @type[[TYPE_u]] [c="typeof(0 ? (un) : (un))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_3:[0-9]+]] ctypepp = ptr<ptr<@type[[TYPE_u]]>> [c="ctype **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_3:[0-9]+]] ctype2pp = ptr<ptr<@type[[TYPE_u]]>> [c="ctype2 **"];
 // DEFAULT-NEXT:     type @type[[TYPE_type_4:[0-9]+]] type = void;
-// DEFAULT-NEXT:     type @type[[TYPE_typepp_4:[0-9]+]] typepp = ptr<ptr<void>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype_4:[0-9]+]] ctype = void;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2_4:[0-9]+]] ctype2 = void;
-// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_4:[0-9]+]] ctypepp = ptr<ptr<void>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_4:[0-9]+]] ctype2pp = ptr<ptr<void>>;
+// DEFAULT-NEXT:     type @type[[TYPE_typepp_4:[0-9]+]] typepp = ptr<ptr<void>> [c="type **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype_4:[0-9]+]] ctype = void [c="typeof(0 ? ((cast)0) : ((cast)1))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2_4:[0-9]+]] ctype2 = void [c="typeof(0 ? ((cast)1) : ((cast)0))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_4:[0-9]+]] ctypepp = ptr<ptr<void>> [c="ctype **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_4:[0-9]+]] ctype2pp = ptr<ptr<void>> [c="ctype2 **"];
 // DEFAULT-NEXT:     type @type[[TYPE_type_5:[0-9]+]] type = ptr<const void>;
-// DEFAULT-NEXT:     type @type[[TYPE_typepp_5:[0-9]+]] typepp = ptr<ptr<ptr<const void>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype_5:[0-9]+]] ctype = ptr<const void>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2_5:[0-9]+]] ctype2 = ptr<const void>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_5:[0-9]+]] ctypepp = ptr<ptr<ptr<const void>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_5:[0-9]+]] ctype2pp = ptr<ptr<ptr<const void>>>;
+// DEFAULT-NEXT:     type @type[[TYPE_typepp_5:[0-9]+]] typepp = ptr<ptr<ptr<const void>>> [c="type **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype_5:[0-9]+]] ctype = ptr<const void> [c="typeof(0 ? (c_vp) : (c_ip))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2_5:[0-9]+]] ctype2 = ptr<const void> [c="typeof(0 ? (c_ip) : (c_vp))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_5:[0-9]+]] ctypepp = ptr<ptr<ptr<const void>>> [c="ctype **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_5:[0-9]+]] ctype2pp = ptr<ptr<ptr<const void>>> [c="ctype2 **"];
 // DEFAULT-NEXT:     type @type[[TYPE_type_6:[0-9]+]] type = ptr<volatile i32>;
-// DEFAULT-NEXT:     type @type[[TYPE_typepp_6:[0-9]+]] typepp = ptr<ptr<ptr<volatile i32>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype_6:[0-9]+]] ctype = ptr<volatile i32>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2_6:[0-9]+]] ctype2 = ptr<volatile i32>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_6:[0-9]+]] ctypepp = ptr<ptr<ptr<volatile i32>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_6:[0-9]+]] ctype2pp = ptr<ptr<ptr<volatile i32>>>;
+// DEFAULT-NEXT:     type @type[[TYPE_typepp_6:[0-9]+]] typepp = ptr<ptr<ptr<volatile i32>>> [c="type **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype_6:[0-9]+]] ctype = ptr<volatile i32> [c="typeof(0 ? (v_ip) : (0))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2_6:[0-9]+]] ctype2 = ptr<volatile i32> [c="typeof(0 ? (0) : (v_ip))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_6:[0-9]+]] ctypepp = ptr<ptr<ptr<volatile i32>>> [c="ctype **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_6:[0-9]+]] ctype2pp = ptr<ptr<ptr<volatile i32>>> [c="ctype2 **"];
 // DEFAULT-NEXT:     type @type[[TYPE_type_7:[0-9]+]] type = ptr<const volatile i32>;
-// DEFAULT-NEXT:     type @type[[TYPE_typepp_7:[0-9]+]] typepp = ptr<ptr<ptr<const volatile i32>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype_7:[0-9]+]] ctype = ptr<const volatile i32>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2_7:[0-9]+]] ctype2 = ptr<const volatile i32>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_7:[0-9]+]] ctypepp = ptr<ptr<ptr<const volatile i32>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_7:[0-9]+]] ctype2pp = ptr<ptr<ptr<const volatile i32>>>;
+// DEFAULT-NEXT:     type @type[[TYPE_typepp_7:[0-9]+]] typepp = ptr<ptr<ptr<const volatile i32>>> [c="type **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype_7:[0-9]+]] ctype = ptr<const volatile i32> [c="typeof(0 ? (c_ip) : (v_ip))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2_7:[0-9]+]] ctype2 = ptr<const volatile i32> [c="typeof(0 ? (v_ip) : (c_ip))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_7:[0-9]+]] ctypepp = ptr<ptr<ptr<const volatile i32>>> [c="ctype **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_7:[0-9]+]] ctype2pp = ptr<ptr<ptr<const volatile i32>>> [c="ctype2 **"];
 // DEFAULT-NEXT:     type @type[[TYPE_type_8:[0-9]+]] type = ptr<const void>;
-// DEFAULT-NEXT:     type @type[[TYPE_typepp_8:[0-9]+]] typepp = ptr<ptr<ptr<const void>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype_8:[0-9]+]] ctype = ptr<const void>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2_8:[0-9]+]] ctype2 = ptr<const void>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_8:[0-9]+]] ctypepp = ptr<ptr<ptr<const void>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_8:[0-9]+]] ctype2pp = ptr<ptr<ptr<const void>>>;
+// DEFAULT-NEXT:     type @type[[TYPE_typepp_8:[0-9]+]] typepp = ptr<ptr<ptr<const void>>> [c="type **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype_8:[0-9]+]] ctype = ptr<const void> [c="typeof(0 ? (vp) : (c_cp))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2_8:[0-9]+]] ctype2 = ptr<const void> [c="typeof(0 ? (c_cp) : (vp))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_8:[0-9]+]] ctypepp = ptr<ptr<ptr<const void>>> [c="ctype **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_8:[0-9]+]] ctype2pp = ptr<ptr<ptr<const void>>> [c="ctype2 **"];
 // DEFAULT-NEXT:     type @type[[TYPE_type_9:[0-9]+]] type = ptr<const i32>;
-// DEFAULT-NEXT:     type @type[[TYPE_typepp_9:[0-9]+]] typepp = ptr<ptr<ptr<const i32>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype_9:[0-9]+]] ctype = ptr<const i32>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2_9:[0-9]+]] ctype2 = ptr<const i32>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_9:[0-9]+]] ctypepp = ptr<ptr<ptr<const i32>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_9:[0-9]+]] ctype2pp = ptr<ptr<ptr<const i32>>>;
+// DEFAULT-NEXT:     type @type[[TYPE_typepp_9:[0-9]+]] typepp = ptr<ptr<ptr<const i32>>> [c="type **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype_9:[0-9]+]] ctype = ptr<const i32> [c="typeof(0 ? (ip) : (c_ip))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2_9:[0-9]+]] ctype2 = ptr<const i32> [c="typeof(0 ? (c_ip) : (ip))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_9:[0-9]+]] ctypepp = ptr<ptr<ptr<const i32>>> [c="ctype **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_9:[0-9]+]] ctype2pp = ptr<ptr<ptr<const i32>>> [c="ctype2 **"];
 // DEFAULT-NEXT:     type @type[[TYPE_type_10:[0-9]+]] type = ptr<void>;
-// DEFAULT-NEXT:     type @type[[TYPE_typepp_10:[0-9]+]] typepp = ptr<ptr<ptr<void>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype_10:[0-9]+]] ctype = ptr<void>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2_10:[0-9]+]] ctype2 = ptr<void>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_10:[0-9]+]] ctypepp = ptr<ptr<ptr<void>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_10:[0-9]+]] ctype2pp = ptr<ptr<ptr<void>>>;
+// DEFAULT-NEXT:     type @type[[TYPE_typepp_10:[0-9]+]] typepp = ptr<ptr<ptr<void>>> [c="type **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype_10:[0-9]+]] ctype = ptr<void> [c="typeof(0 ? (vp) : (ip))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2_10:[0-9]+]] ctype2 = ptr<void> [c="typeof(0 ? (ip) : (vp))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_10:[0-9]+]] ctypepp = ptr<ptr<ptr<void>>> [c="ctype **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_10:[0-9]+]] ctype2pp = ptr<ptr<ptr<void>>> [c="ctype2 **"];
 // DEFAULT-NEXT:     type @type[[TYPE_type_11:[0-9]+]] type = ptr<volatile i32>;
-// DEFAULT-NEXT:     type @type[[TYPE_typepp_11:[0-9]+]] typepp = ptr<ptr<ptr<volatile i32>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype_11:[0-9]+]] ctype = ptr<volatile i32>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2_11:[0-9]+]] ctype2 = ptr<volatile i32>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_11:[0-9]+]] ctypepp = ptr<ptr<ptr<volatile i32>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_11:[0-9]+]] ctype2pp = ptr<ptr<ptr<volatile i32>>>;
+// DEFAULT-NEXT:     type @type[[TYPE_typepp_11:[0-9]+]] typepp = ptr<ptr<ptr<volatile i32>>> [c="type **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype_11:[0-9]+]] ctype = ptr<volatile i32> [c="typeof(0 ? (v_ip) : ((cast)0))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2_11:[0-9]+]] ctype2 = ptr<volatile i32> [c="typeof(0 ? ((cast)0) : (v_ip))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_11:[0-9]+]] ctypepp = ptr<ptr<ptr<volatile i32>>> [c="ctype **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_11:[0-9]+]] ctype2pp = ptr<ptr<ptr<volatile i32>>> [c="ctype2 **"];
 // DEFAULT-NEXT:     type @type[[TYPE_type_12:[0-9]+]] type = ptr<ptr<i32>>;
-// DEFAULT-NEXT:     type @type[[TYPE_typepp_12:[0-9]+]] typepp = ptr<ptr<ptr<ptr<i32>>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype_12:[0-9]+]] ctype = ptr<ptr<i32>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2_12:[0-9]+]] ctype2 = ptr<ptr<i32>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_12:[0-9]+]] ctypepp = ptr<ptr<ptr<ptr<i32>>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_12:[0-9]+]] ctype2pp = ptr<ptr<ptr<ptr<i32>>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_type_13:[0-9]+]] type = ptr<fn() -> void>;
-// DEFAULT-NEXT:     type @type[[TYPE_typepp_13:[0-9]+]] typepp = ptr<ptr<ptr<fn() -> void>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype_13:[0-9]+]] ctype = ptr<fn() -> void>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2_13:[0-9]+]] ctype2 = ptr<fn() -> void>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_13:[0-9]+]] ctypepp = ptr<ptr<ptr<fn() -> void>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_13:[0-9]+]] ctype2pp = ptr<ptr<ptr<fn() -> void>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_type_14:[0-9]+]] type = ptr<fn() -> void>;
-// DEFAULT-NEXT:     type @type[[TYPE_typepp_14:[0-9]+]] typepp = ptr<ptr<ptr<fn() -> void>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype_14:[0-9]+]] ctype = ptr<fn() -> void>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2_14:[0-9]+]] ctype2 = ptr<fn() -> void>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_14:[0-9]+]] ctypepp = ptr<ptr<ptr<fn() -> void>>>;
-// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_14:[0-9]+]] ctype2pp = ptr<ptr<ptr<fn() -> void>>>;
+// DEFAULT-NEXT:     type @type[[TYPE_typepp_12:[0-9]+]] typepp = ptr<ptr<ptr<ptr<i32>>>> [c="type **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype_12:[0-9]+]] ctype = ptr<ptr<i32>> [c="typeof(0 ? (r_ipp) : ((cast)0))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2_12:[0-9]+]] ctype2 = ptr<ptr<i32>> [c="typeof(0 ? ((cast)0) : (r_ipp))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_12:[0-9]+]] ctypepp = ptr<ptr<ptr<ptr<i32>>>> [c="ctype **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_12:[0-9]+]] ctype2pp = ptr<ptr<ptr<ptr<i32>>>> [c="ctype2 **"];
+// DEFAULT-NEXT:     type @type[[TYPE_type_13:[0-9]+]] type = ptr<fn() -> void> [c="fpt"];
+// DEFAULT-NEXT:     type @type[[TYPE_typepp_13:[0-9]+]] typepp = ptr<ptr<ptr<fn() -> void>>> [c="type **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype_13:[0-9]+]] ctype = ptr<fn() -> void> [c="typeof(0 ? (fp) : (0))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2_13:[0-9]+]] ctype2 = ptr<fn() -> void> [c="typeof(0 ? (0) : (fp))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_13:[0-9]+]] ctypepp = ptr<ptr<ptr<fn() -> void>>> [c="ctype **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_13:[0-9]+]] ctype2pp = ptr<ptr<ptr<fn() -> void>>> [c="ctype2 **"];
+// DEFAULT-NEXT:     type @type[[TYPE_type_14:[0-9]+]] type = ptr<fn() -> void> [c="fpt"];
+// DEFAULT-NEXT:     type @type[[TYPE_typepp_14:[0-9]+]] typepp = ptr<ptr<ptr<fn() -> void>>> [c="type **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype_14:[0-9]+]] ctype = ptr<fn() -> void> [c="typeof(0 ? (fp) : ((cast)0))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2_14:[0-9]+]] ctype2 = ptr<fn() -> void> [c="typeof(0 ? ((cast)0) : (fp))"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctypepp_14:[0-9]+]] ctypepp = ptr<ptr<ptr<fn() -> void>>> [c="ctype **"];
+// DEFAULT-NEXT:     type @type[[TYPE_ctype2pp_14:[0-9]+]] ctype2pp = ptr<ptr<ptr<fn() -> void>>> [c="ctype2 **"];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_c_vp:[0-9]+]] c_vp: ptr<const void> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_vp:[0-9]+]] vp: ptr<void> [storage=automatic];
@@ -194,134 +194,134 @@ foo (void)
 // DEFAULT-NEXT:         let %[[VALUE_ip:[0-9]+]] ip: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_c_cp:[0-9]+]] c_cp: ptr<const i8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_r_ipp:[0-9]+]] r_ipp: ptr<ptr<i32>> [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_fp:[0-9]+]] fp: ptr<fn() -> void> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_fp:[0-9]+]] fp: ptr<fn() -> void> [storage=automatic] [c="fpt"];
 // DEFAULT-NEXT:         let %[[VALUE_sc:[0-9]+]] sc: i8 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_st:[0-9]+]] st: @type[[TYPE_s]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_un:[0-9]+]] un: @type[[TYPE_u]] [storage=automatic];
 // DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_x:[0-9]+]] x: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_y:[0-9]+]] y: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_z:[0-9]+]] z: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%[[VALUE_x]], read<ptr<ptr<i32>>>(%[[VALUE_y]]));
-// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%[[VALUE_x]], read<ptr<ptr<i32>>>(%[[VALUE_z]]));
+// DEFAULT-NEXT:                 let %[[VALUE_x:[0-9]+]] x: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>> [c="typepp"] [c="typepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_y:[0-9]+]] y: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>> [c="ctypepp"] [c="ctypepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_z:[0-9]+]] z: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>> [c="ctype2pp"] [c="ctype2pp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%[[VALUE_x]], read<ptr<ptr<i32>>>(%[[VALUE_y]]) [c="typepp"]) [c="typepp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%[[VALUE_x]], read<ptr<ptr<i32>>>(%[[VALUE_z]]) [c="typepp"]) [c="typepp"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_x_2:[0-9]+]] x: ptr<ptr<@type[[TYPE_s]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_s]]>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_y_2:[0-9]+]] y: ptr<ptr<@type[[TYPE_s]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_s]]>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_z_2:[0-9]+]] z: ptr<ptr<@type[[TYPE_s]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_s]]>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_s]]>>>(%[[VALUE_x_2]], read<ptr<ptr<@type[[TYPE_s]]>>>(%[[VALUE_y_2]]));
-// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_s]]>>>(%[[VALUE_x_2]], read<ptr<ptr<@type[[TYPE_s]]>>>(%[[VALUE_z_2]]));
+// DEFAULT-NEXT:                 let %[[VALUE_x_2:[0-9]+]] x: ptr<ptr<@type[[TYPE_s]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_s]]>>> [c="typepp"] [c="typepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_y_2:[0-9]+]] y: ptr<ptr<@type[[TYPE_s]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_s]]>>> [c="ctypepp"] [c="ctypepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_z_2:[0-9]+]] z: ptr<ptr<@type[[TYPE_s]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_s]]>>> [c="ctype2pp"] [c="ctype2pp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_s]]>>>(%[[VALUE_x_2]], read<ptr<ptr<@type[[TYPE_s]]>>>(%[[VALUE_y_2]]) [c="typepp"]) [c="typepp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_s]]>>>(%[[VALUE_x_2]], read<ptr<ptr<@type[[TYPE_s]]>>>(%[[VALUE_z_2]]) [c="typepp"]) [c="typepp"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_x_3:[0-9]+]] x: ptr<ptr<@type[[TYPE_u]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_u]]>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_y_3:[0-9]+]] y: ptr<ptr<@type[[TYPE_u]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_u]]>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_z_3:[0-9]+]] z: ptr<ptr<@type[[TYPE_u]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_u]]>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_x_3]], read<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_y_3]]));
-// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_x_3]], read<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_z_3]]));
+// DEFAULT-NEXT:                 let %[[VALUE_x_3:[0-9]+]] x: ptr<ptr<@type[[TYPE_u]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_u]]>>> [c="typepp"] [c="typepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_y_3:[0-9]+]] y: ptr<ptr<@type[[TYPE_u]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_u]]>>> [c="ctypepp"] [c="ctypepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_z_3:[0-9]+]] z: ptr<ptr<@type[[TYPE_u]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_u]]>>> [c="ctype2pp"] [c="ctype2pp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_x_3]], read<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_y_3]]) [c="typepp"]) [c="typepp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_x_3]], read<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_z_3]]) [c="typepp"]) [c="typepp"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_x_4:[0-9]+]] x: ptr<ptr<void>> [storage=automatic] = null<ptr<ptr<void>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_y_4:[0-9]+]] y: ptr<ptr<void>> [storage=automatic] = null<ptr<ptr<void>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_z_4:[0-9]+]] z: ptr<ptr<void>> [storage=automatic] = null<ptr<ptr<void>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<void>>>(%[[VALUE_x_4]], read<ptr<ptr<void>>>(%[[VALUE_y_4]]));
-// DEFAULT-NEXT:                 write<ptr<ptr<void>>>(%[[VALUE_x_4]], read<ptr<ptr<void>>>(%[[VALUE_z_4]]));
+// DEFAULT-NEXT:                 let %[[VALUE_x_4:[0-9]+]] x: ptr<ptr<void>> [storage=automatic] = null<ptr<ptr<void>>> [c="typepp"] [c="typepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_y_4:[0-9]+]] y: ptr<ptr<void>> [storage=automatic] = null<ptr<ptr<void>>> [c="ctypepp"] [c="ctypepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_z_4:[0-9]+]] z: ptr<ptr<void>> [storage=automatic] = null<ptr<ptr<void>>> [c="ctype2pp"] [c="ctype2pp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<void>>>(%[[VALUE_x_4]], read<ptr<ptr<void>>>(%[[VALUE_y_4]]) [c="typepp"]) [c="typepp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<void>>>(%[[VALUE_x_4]], read<ptr<ptr<void>>>(%[[VALUE_z_4]]) [c="typepp"]) [c="typepp"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_x_5:[0-9]+]] x: ptr<ptr<ptr<const void>>> [storage=automatic] = null<ptr<ptr<ptr<const void>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_y_5:[0-9]+]] y: ptr<ptr<ptr<const void>>> [storage=automatic] = null<ptr<ptr<ptr<const void>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_z_5:[0-9]+]] z: ptr<ptr<ptr<const void>>> [storage=automatic] = null<ptr<ptr<ptr<const void>>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<const void>>>>(%[[VALUE_x_5]], read<ptr<ptr<ptr<const void>>>>(%[[VALUE_y_5]]));
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<const void>>>>(%[[VALUE_x_5]], read<ptr<ptr<ptr<const void>>>>(%[[VALUE_z_5]]));
+// DEFAULT-NEXT:                 let %[[VALUE_x_5:[0-9]+]] x: ptr<ptr<ptr<const void>>> [storage=automatic] = null<ptr<ptr<ptr<const void>>>> [c="typepp"] [c="typepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_y_5:[0-9]+]] y: ptr<ptr<ptr<const void>>> [storage=automatic] = null<ptr<ptr<ptr<const void>>>> [c="ctypepp"] [c="ctypepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_z_5:[0-9]+]] z: ptr<ptr<ptr<const void>>> [storage=automatic] = null<ptr<ptr<ptr<const void>>>> [c="ctype2pp"] [c="ctype2pp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<const void>>>>(%[[VALUE_x_5]], read<ptr<ptr<ptr<const void>>>>(%[[VALUE_y_5]]) [c="typepp"]) [c="typepp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<const void>>>>(%[[VALUE_x_5]], read<ptr<ptr<ptr<const void>>>>(%[[VALUE_z_5]]) [c="typepp"]) [c="typepp"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_x_6:[0-9]+]] x: ptr<ptr<ptr<volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<volatile i32>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_y_6:[0-9]+]] y: ptr<ptr<ptr<volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<volatile i32>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_z_6:[0-9]+]] z: ptr<ptr<ptr<volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<volatile i32>>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<volatile i32>>>>(%[[VALUE_x_6]], read<ptr<ptr<ptr<volatile i32>>>>(%[[VALUE_y_6]]));
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<volatile i32>>>>(%[[VALUE_x_6]], read<ptr<ptr<ptr<volatile i32>>>>(%[[VALUE_z_6]]));
+// DEFAULT-NEXT:                 let %[[VALUE_x_6:[0-9]+]] x: ptr<ptr<ptr<volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<volatile i32>>>> [c="typepp"] [c="typepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_y_6:[0-9]+]] y: ptr<ptr<ptr<volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<volatile i32>>>> [c="ctypepp"] [c="ctypepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_z_6:[0-9]+]] z: ptr<ptr<ptr<volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<volatile i32>>>> [c="ctype2pp"] [c="ctype2pp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<volatile i32>>>>(%[[VALUE_x_6]], read<ptr<ptr<ptr<volatile i32>>>>(%[[VALUE_y_6]]) [c="typepp"]) [c="typepp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<volatile i32>>>>(%[[VALUE_x_6]], read<ptr<ptr<ptr<volatile i32>>>>(%[[VALUE_z_6]]) [c="typepp"]) [c="typepp"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_x_7:[0-9]+]] x: ptr<ptr<ptr<const volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<const volatile i32>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_y_7:[0-9]+]] y: ptr<ptr<ptr<const volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<const volatile i32>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_z_7:[0-9]+]] z: ptr<ptr<ptr<const volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<const volatile i32>>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<const volatile i32>>>>(%[[VALUE_x_7]], read<ptr<ptr<ptr<const volatile i32>>>>(%[[VALUE_y_7]]));
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<const volatile i32>>>>(%[[VALUE_x_7]], read<ptr<ptr<ptr<const volatile i32>>>>(%[[VALUE_z_7]]));
+// DEFAULT-NEXT:                 let %[[VALUE_x_7:[0-9]+]] x: ptr<ptr<ptr<const volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<const volatile i32>>>> [c="typepp"] [c="typepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_y_7:[0-9]+]] y: ptr<ptr<ptr<const volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<const volatile i32>>>> [c="ctypepp"] [c="ctypepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_z_7:[0-9]+]] z: ptr<ptr<ptr<const volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<const volatile i32>>>> [c="ctype2pp"] [c="ctype2pp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<const volatile i32>>>>(%[[VALUE_x_7]], read<ptr<ptr<ptr<const volatile i32>>>>(%[[VALUE_y_7]]) [c="typepp"]) [c="typepp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<const volatile i32>>>>(%[[VALUE_x_7]], read<ptr<ptr<ptr<const volatile i32>>>>(%[[VALUE_z_7]]) [c="typepp"]) [c="typepp"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_x_8:[0-9]+]] x: ptr<ptr<ptr<const void>>> [storage=automatic] = null<ptr<ptr<ptr<const void>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_y_8:[0-9]+]] y: ptr<ptr<ptr<const void>>> [storage=automatic] = null<ptr<ptr<ptr<const void>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_z_8:[0-9]+]] z: ptr<ptr<ptr<const void>>> [storage=automatic] = null<ptr<ptr<ptr<const void>>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<const void>>>>(%[[VALUE_x_8]], read<ptr<ptr<ptr<const void>>>>(%[[VALUE_y_8]]));
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<const void>>>>(%[[VALUE_x_8]], read<ptr<ptr<ptr<const void>>>>(%[[VALUE_z_8]]));
+// DEFAULT-NEXT:                 let %[[VALUE_x_8:[0-9]+]] x: ptr<ptr<ptr<const void>>> [storage=automatic] = null<ptr<ptr<ptr<const void>>>> [c="typepp"] [c="typepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_y_8:[0-9]+]] y: ptr<ptr<ptr<const void>>> [storage=automatic] = null<ptr<ptr<ptr<const void>>>> [c="ctypepp"] [c="ctypepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_z_8:[0-9]+]] z: ptr<ptr<ptr<const void>>> [storage=automatic] = null<ptr<ptr<ptr<const void>>>> [c="ctype2pp"] [c="ctype2pp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<const void>>>>(%[[VALUE_x_8]], read<ptr<ptr<ptr<const void>>>>(%[[VALUE_y_8]]) [c="typepp"]) [c="typepp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<const void>>>>(%[[VALUE_x_8]], read<ptr<ptr<ptr<const void>>>>(%[[VALUE_z_8]]) [c="typepp"]) [c="typepp"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_x_9:[0-9]+]] x: ptr<ptr<ptr<const i32>>> [storage=automatic] = null<ptr<ptr<ptr<const i32>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_y_9:[0-9]+]] y: ptr<ptr<ptr<const i32>>> [storage=automatic] = null<ptr<ptr<ptr<const i32>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_z_9:[0-9]+]] z: ptr<ptr<ptr<const i32>>> [storage=automatic] = null<ptr<ptr<ptr<const i32>>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<const i32>>>>(%[[VALUE_x_9]], read<ptr<ptr<ptr<const i32>>>>(%[[VALUE_y_9]]));
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<const i32>>>>(%[[VALUE_x_9]], read<ptr<ptr<ptr<const i32>>>>(%[[VALUE_z_9]]));
+// DEFAULT-NEXT:                 let %[[VALUE_x_9:[0-9]+]] x: ptr<ptr<ptr<const i32>>> [storage=automatic] = null<ptr<ptr<ptr<const i32>>>> [c="typepp"] [c="typepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_y_9:[0-9]+]] y: ptr<ptr<ptr<const i32>>> [storage=automatic] = null<ptr<ptr<ptr<const i32>>>> [c="ctypepp"] [c="ctypepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_z_9:[0-9]+]] z: ptr<ptr<ptr<const i32>>> [storage=automatic] = null<ptr<ptr<ptr<const i32>>>> [c="ctype2pp"] [c="ctype2pp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<const i32>>>>(%[[VALUE_x_9]], read<ptr<ptr<ptr<const i32>>>>(%[[VALUE_y_9]]) [c="typepp"]) [c="typepp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<const i32>>>>(%[[VALUE_x_9]], read<ptr<ptr<ptr<const i32>>>>(%[[VALUE_z_9]]) [c="typepp"]) [c="typepp"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_x_10:[0-9]+]] x: ptr<ptr<ptr<void>>> [storage=automatic] = null<ptr<ptr<ptr<void>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_y_10:[0-9]+]] y: ptr<ptr<ptr<void>>> [storage=automatic] = null<ptr<ptr<ptr<void>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_z_10:[0-9]+]] z: ptr<ptr<ptr<void>>> [storage=automatic] = null<ptr<ptr<ptr<void>>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<void>>>>(%[[VALUE_x_10]], read<ptr<ptr<ptr<void>>>>(%[[VALUE_y_10]]));
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<void>>>>(%[[VALUE_x_10]], read<ptr<ptr<ptr<void>>>>(%[[VALUE_z_10]]));
+// DEFAULT-NEXT:                 let %[[VALUE_x_10:[0-9]+]] x: ptr<ptr<ptr<void>>> [storage=automatic] = null<ptr<ptr<ptr<void>>>> [c="typepp"] [c="typepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_y_10:[0-9]+]] y: ptr<ptr<ptr<void>>> [storage=automatic] = null<ptr<ptr<ptr<void>>>> [c="ctypepp"] [c="ctypepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_z_10:[0-9]+]] z: ptr<ptr<ptr<void>>> [storage=automatic] = null<ptr<ptr<ptr<void>>>> [c="ctype2pp"] [c="ctype2pp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<void>>>>(%[[VALUE_x_10]], read<ptr<ptr<ptr<void>>>>(%[[VALUE_y_10]]) [c="typepp"]) [c="typepp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<void>>>>(%[[VALUE_x_10]], read<ptr<ptr<ptr<void>>>>(%[[VALUE_z_10]]) [c="typepp"]) [c="typepp"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE10:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_x_11:[0-9]+]] x: ptr<ptr<ptr<volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<volatile i32>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_y_11:[0-9]+]] y: ptr<ptr<ptr<volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<volatile i32>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_z_11:[0-9]+]] z: ptr<ptr<ptr<volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<volatile i32>>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<volatile i32>>>>(%[[VALUE_x_11]], read<ptr<ptr<ptr<volatile i32>>>>(%[[VALUE_y_11]]));
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<volatile i32>>>>(%[[VALUE_x_11]], read<ptr<ptr<ptr<volatile i32>>>>(%[[VALUE_z_11]]));
+// DEFAULT-NEXT:                 let %[[VALUE_x_11:[0-9]+]] x: ptr<ptr<ptr<volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<volatile i32>>>> [c="typepp"] [c="typepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_y_11:[0-9]+]] y: ptr<ptr<ptr<volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<volatile i32>>>> [c="ctypepp"] [c="ctypepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_z_11:[0-9]+]] z: ptr<ptr<ptr<volatile i32>>> [storage=automatic] = null<ptr<ptr<ptr<volatile i32>>>> [c="ctype2pp"] [c="ctype2pp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<volatile i32>>>>(%[[VALUE_x_11]], read<ptr<ptr<ptr<volatile i32>>>>(%[[VALUE_y_11]]) [c="typepp"]) [c="typepp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<volatile i32>>>>(%[[VALUE_x_11]], read<ptr<ptr<ptr<volatile i32>>>>(%[[VALUE_z_11]]) [c="typepp"]) [c="typepp"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE11:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_x_12:[0-9]+]] x: ptr<ptr<ptr<ptr<i32>>>> [storage=automatic] = null<ptr<ptr<ptr<ptr<i32>>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_y_12:[0-9]+]] y: ptr<ptr<ptr<ptr<i32>>>> [storage=automatic] = null<ptr<ptr<ptr<ptr<i32>>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_z_12:[0-9]+]] z: ptr<ptr<ptr<ptr<i32>>>> [storage=automatic] = null<ptr<ptr<ptr<ptr<i32>>>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<ptr<i32>>>>>(%[[VALUE_x_12]], read<ptr<ptr<ptr<ptr<i32>>>>>(%[[VALUE_y_12]]));
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<ptr<i32>>>>>(%[[VALUE_x_12]], read<ptr<ptr<ptr<ptr<i32>>>>>(%[[VALUE_z_12]]));
+// DEFAULT-NEXT:                 let %[[VALUE_x_12:[0-9]+]] x: ptr<ptr<ptr<ptr<i32>>>> [storage=automatic] = null<ptr<ptr<ptr<ptr<i32>>>>> [c="typepp"] [c="typepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_y_12:[0-9]+]] y: ptr<ptr<ptr<ptr<i32>>>> [storage=automatic] = null<ptr<ptr<ptr<ptr<i32>>>>> [c="ctypepp"] [c="ctypepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_z_12:[0-9]+]] z: ptr<ptr<ptr<ptr<i32>>>> [storage=automatic] = null<ptr<ptr<ptr<ptr<i32>>>>> [c="ctype2pp"] [c="ctype2pp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<ptr<i32>>>>>(%[[VALUE_x_12]], read<ptr<ptr<ptr<ptr<i32>>>>>(%[[VALUE_y_12]]) [c="typepp"]) [c="typepp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<ptr<i32>>>>>(%[[VALUE_x_12]], read<ptr<ptr<ptr<ptr<i32>>>>>(%[[VALUE_z_12]]) [c="typepp"]) [c="typepp"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE12:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_x_13:[0-9]+]] x: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_y_13:[0-9]+]] y: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_z_13:[0-9]+]] z: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_x_13]], read<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_y_13]]));
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_x_13]], read<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_z_13]]));
+// DEFAULT-NEXT:                 let %[[VALUE_x_13:[0-9]+]] x: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>> [c="typepp"] [c="typepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_y_13:[0-9]+]] y: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>> [c="ctypepp"] [c="ctypepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_z_13:[0-9]+]] z: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>> [c="ctype2pp"] [c="ctype2pp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_x_13]], read<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_y_13]]) [c="typepp"]) [c="typepp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_x_13]], read<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_z_13]]) [c="typepp"]) [c="typepp"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE13:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_x_14:[0-9]+]] x: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_y_14:[0-9]+]] y: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>>;
-// DEFAULT-NEXT:                 let %[[VALUE_z_14:[0-9]+]] z: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_x_14]], read<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_y_14]]));
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_x_14]], read<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_z_14]]));
+// DEFAULT-NEXT:                 let %[[VALUE_x_14:[0-9]+]] x: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>> [c="typepp"] [c="typepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_y_14:[0-9]+]] y: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>> [c="ctypepp"] [c="ctypepp"];
+// DEFAULT-NEXT:                 let %[[VALUE_z_14:[0-9]+]] z: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>> [c="ctype2pp"] [c="ctype2pp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_x_14]], read<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_y_14]]) [c="typepp"]) [c="typepp"];
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_x_14]], read<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_z_14]]) [c="typepp"]) [c="typepp"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }

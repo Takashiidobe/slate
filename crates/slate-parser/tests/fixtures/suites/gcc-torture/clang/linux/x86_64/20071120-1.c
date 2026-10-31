@@ -107,48 +107,48 @@ int main() {
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
 // DEFAULT-NEXT:     type @type[[TYPE_VEC_deferred_access_check_gc:[0-9]+]] VEC_deferred_access_check_gc = @type[[TYPE_deferred_access_check]];
 // DEFAULT-NEXT:     type @type[[TYPE_deferred_access:[0-9]+]] deferred_access = struct {
-// DEFAULT-NEXT:         field0 deferred_access_checks: ptr<@type[[TYPE_deferred_access_check]]>;
+// DEFAULT-NEXT:         field0 deferred_access_checks: ptr<@type[[TYPE_deferred_access_check]]> [c="VEC_deferred_access_check_gc *"];
 // DEFAULT-NEXT:         field1 deferring_access_checks_kind: i32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_deferred_access_2:[0-9]+]] deferred_access = @type[[TYPE_deferred_access]];
 // DEFAULT-NEXT:     type @type[[TYPE_VEC_deferred_access_base:[0-9]+]] VEC_deferred_access_base = struct {
 // DEFAULT-NEXT:         field0 num: u32;
-// DEFAULT-NEXT:         field1 vec: array<@type[[TYPE_deferred_access]], 1>;
+// DEFAULT-NEXT:         field1 vec: array<@type[[TYPE_deferred_access]], 1> [c="deferred_access[1]"];
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_VEC_deferred_access_base_2:[0-9]+]] VEC_deferred_access_base = @type[[TYPE_VEC_deferred_access_base]];
 // DEFAULT-NEXT:     type @type[[TYPE_VEC_deferred_access_gc:[0-9]+]] VEC_deferred_access_gc = struct {
-// DEFAULT-NEXT:         field0 base: @type[[TYPE_VEC_deferred_access_base]];
+// DEFAULT-NEXT:         field0 base: @type[[TYPE_VEC_deferred_access_base]] [c="VEC_deferred_access_base"];
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_VEC_deferred_access_gc_2:[0-9]+]] VEC_deferred_access_gc = @type[[TYPE_VEC_deferred_access_gc]];
-// DEFAULT-NEXT:     global %[[VALUE_deferred_access_stack:[0-9]+]] deferred_access_stack: ptr<@type[[TYPE_VEC_deferred_access_gc]]> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_deferred_access_stack:[0-9]+]] deferred_access_stack: ptr<@type[[TYPE_VEC_deferred_access_gc]]> [storage=static] [linkage=internal] [c="VEC_deferred_access_gc *"];
 // DEFAULT-NEXT:     global %[[VALUE_deferred_access_no_check:[0-9]+]] deferred_access_no_check: u32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_gt_pch_rs_gt_cp_semantics_h:[0-9]+]] gt_pch_rs_gt_cp_semantics_h: array<@type[[TYPE_ggc_root_tab]], 1> [storage=static] [const] = aggregate<array<@type[[TYPE_ggc_root_tab]], 1>, zero_fill=false>(index0 = aggregate<@type[[TYPE_ggc_root_tab]], zero_fill=false>(field0 = pointer_cast<ptr<void>, reason=assign>(addr_of<ptr<u32>>(%[[VALUE_deferred_access_no_check]])))) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_vec_assert_fail:[0-9]+]] @vec_assert_fail() -> void [linkage=external] [inline=never] [definition=emitted] [noreturn] [fallthrough=ub] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_VEC_deferred_access_base_last:[0-9]+]] @VEC_deferred_access_base_last(%[[VALUE_vec_:[0-9]+]] vec_: ptr<@type[[TYPE_VEC_deferred_access_base]]>) -> ptr<@type[[TYPE_deferred_access]]> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_VEC_deferred_access_base_last:[0-9]+]] @VEC_deferred_access_base_last(%[[VALUE_vec_:[0-9]+]] vec_: ptr<@type[[TYPE_VEC_deferred_access_base]]> [c="VEC_deferred_access_base *"]) -> ptr<@type[[TYPE_deferred_access]]> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] [c="deferred_access *(VEC_deferred_access_base *)"] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic];
-// DEFAULT-NEXT:         if logical_and<bool>(ne<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE_vec_]]), null<ptr<@type[[TYPE_VEC_deferred_access_base]]>>), ne<u32>(read<u32>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE_vec_]])))), const<u32>(0)))
+// DEFAULT-NEXT:         if logical_and<bool>(ne<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE_vec_]]) [c="VEC_deferred_access_base *"], null<ptr<@type[[TYPE_VEC_deferred_access_base]]>>), ne<u32>(read<u32>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE_vec_]])))), const<u32>(0)))
 // DEFAULT-NEXT:             write<i32>(%[[VALUE0]], const<i32>(0));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_vec_assert_fail]]);
 // DEFAULT-NEXT:             write<i32>(%[[VALUE0]], const<i32>(0));
-// DEFAULT-NEXT:         return addr_of<ptr<@type[[TYPE_deferred_access]]>>(deref(ptr_offset<ptr<@type[[TYPE_deferred_access]]>, subtract=false, element=@type[[TYPE_deferred_access]], overflow=ub>(array_decay<ptr<@type[[TYPE_deferred_access]]>, length=Some(1)>(field1(deref(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE_vec_]])))), sub<u32, overflow=wrap>(read<u32>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE_vec_]])))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))))));
+// DEFAULT-NEXT:         return addr_of<ptr<@type[[TYPE_deferred_access]]>>(deref(ptr_offset<ptr<@type[[TYPE_deferred_access]]>, subtract=false, element=@type[[TYPE_deferred_access]], overflow=ub>(array_decay<ptr<@type[[TYPE_deferred_access]]>, length=Some(1)>(field1(deref(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE_vec_]])))), sub<u32, overflow=wrap>(read<u32>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE_vec_]])))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))))) [c="deferred_access *"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_VEC_deferred_access_base_pop:[0-9]+]] @VEC_deferred_access_base_pop(%[[VALUE_vec__2:[0-9]+]] vec_: ptr<@type[[TYPE_VEC_deferred_access_base]]>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_VEC_deferred_access_base_pop:[0-9]+]] @VEC_deferred_access_base_pop(%[[VALUE_vec__2:[0-9]+]] vec_: ptr<@type[[TYPE_VEC_deferred_access_base]]> [c="VEC_deferred_access_base *"]) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] [c="void(VEC_deferred_access_base *)"] {
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic];
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE_vec__2]])))), const<u32>(0))
 // DEFAULT-NEXT:             write<i32>(%[[VALUE1]], const<i32>(0));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_vec_assert_fail]]);
 // DEFAULT-NEXT:             write<i32>(%[[VALUE1]], const<i32>(0));
-// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: ptr<@type[[TYPE_VEC_deferred_access_base]]> [synthetic] = read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE_vec__2]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: ptr<@type[[TYPE_VEC_deferred_access_base]]> [synthetic] = read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE_vec__2]]) [c="VEC_deferred_access_base *"] [c="VEC_deferred_access_base *"];
 // DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u32 [synthetic] = read<u32>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE2]]))));
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u32 [synthetic] = sub<u32, overflow=wrap>(read<u32>(%[[VALUE3]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         write<u32>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE2]]))), read<u32>(%[[VALUE4]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_perform_access_checks:[0-9]+]] @perform_access_checks(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_deferred_access_check]]>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_perform_access_checks:[0-9]+]] @perform_access_checks(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_deferred_access_check]]> [c="VEC_deferred_access_check_gc *"]) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] [c="void(VEC_deferred_access_check_gc *)"] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_pop_to_parent_deferring_access_checks:[0-9]+]] @pop_to_parent_deferring_access_checks() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
@@ -158,18 +158,18 @@ int main() {
 // DEFAULT-NEXT:             write<u32>(%[[VALUE_deferred_access_no_check]], read<u32>(%[[VALUE6]]));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_checks:[0-9]+]] checks: ptr<@type[[TYPE_deferred_access_check]]> [storage=automatic];
-// DEFAULT-NEXT:                 let %[[VALUE_ptr:[0-9]+]] ptr: ptr<@type[[TYPE_deferred_access]]> [storage=automatic];
-// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_deferred_access_check]]>>(%[[VALUE_checks]], read<ptr<@type[[TYPE_deferred_access_check]]>>(field0(deref(call<ptr<@type[[TYPE_deferred_access]]>, signature=fn(ptr<@type[[TYPE_VEC_deferred_access_base]]>) -> ptr<@type[[TYPE_deferred_access]]>>(%[[VALUE_VEC_deferred_access_base_last]], conditional<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(ne<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]]), null<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>), addr_of<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]])))), null<ptr<@type[[TYPE_VEC_deferred_access_base]]>>))))));
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE_VEC_deferred_access_base]]>) -> void>(%[[VALUE_VEC_deferred_access_base_pop]], conditional<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(ne<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]]), null<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>), addr_of<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]])))), null<ptr<@type[[TYPE_VEC_deferred_access_base]]>>));
-// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_deferred_access]]>>(%[[VALUE_ptr]], call<ptr<@type[[TYPE_deferred_access]]>, signature=fn(ptr<@type[[TYPE_VEC_deferred_access_base]]>) -> ptr<@type[[TYPE_deferred_access]]>>(%[[VALUE_VEC_deferred_access_base_last]], conditional<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(ne<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]]), null<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>), addr_of<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]])))), null<ptr<@type[[TYPE_VEC_deferred_access_base]]>>)));
+// DEFAULT-NEXT:                 let %[[VALUE_checks:[0-9]+]] checks: ptr<@type[[TYPE_deferred_access_check]]> [storage=automatic] [c="VEC_deferred_access_check_gc *"];
+// DEFAULT-NEXT:                 let %[[VALUE_ptr:[0-9]+]] ptr: ptr<@type[[TYPE_deferred_access]]> [storage=automatic] [c="deferred_access *"];
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_deferred_access_check]]>>(%[[VALUE_checks]], read<ptr<@type[[TYPE_deferred_access_check]]>>(field0(deref(call<ptr<@type[[TYPE_deferred_access]]>, signature=fn(ptr<@type[[TYPE_VEC_deferred_access_base]]>) -> ptr<@type[[TYPE_deferred_access]]>>(%[[VALUE_VEC_deferred_access_base_last]], conditional<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(ne<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]]), null<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>), addr_of<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]])))), null<ptr<@type[[TYPE_VEC_deferred_access_base]]>>))))) [c="VEC_deferred_access_check_gc *"]) [c="VEC_deferred_access_check_gc *"];
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE_VEC_deferred_access_base]]>) -> void>(%[[VALUE_VEC_deferred_access_base_pop]], conditional<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(ne<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]]) [c="VEC_deferred_access_gc *"], null<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>), addr_of<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]])))) [c="VEC_deferred_access_base *"], null<ptr<@type[[TYPE_VEC_deferred_access_base]]>> [c="VEC_deferred_access_base *"]) [c="VEC_deferred_access_base *"]);
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_deferred_access]]>>(%[[VALUE_ptr]], call<ptr<@type[[TYPE_deferred_access]]>, signature=fn(ptr<@type[[TYPE_VEC_deferred_access_base]]>) -> ptr<@type[[TYPE_deferred_access]]>>(%[[VALUE_VEC_deferred_access_base_last]], conditional<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(ne<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]]) [c="VEC_deferred_access_gc *"], null<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>), addr_of<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]])))) [c="VEC_deferred_access_base *"], null<ptr<@type[[TYPE_VEC_deferred_access_base]]>> [c="VEC_deferred_access_base *"]) [c="VEC_deferred_access_base *"]) [c="deferred_access *"]) [c="deferred_access *"];
 // DEFAULT-NEXT:                 if eq<i32>(read<i32>(field1(deref(read<ptr<@type[[TYPE_deferred_access]]>>(%[[VALUE_ptr]])))), const<i32>(0))
-// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type[[TYPE_deferred_access_check]]>) -> void>(%[[VALUE_perform_access_checks]], read<ptr<@type[[TYPE_deferred_access_check]]>>(%[[VALUE_checks]]));
+// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type[[TYPE_deferred_access_check]]>) -> void>(%[[VALUE_perform_access_checks]], read<ptr<@type[[TYPE_deferred_access_check]]>>(%[[VALUE_checks]]) [c="VEC_deferred_access_check_gc *"]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE7:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]], pointer_cast<ptr<@type[[TYPE_VEC_deferred_access_gc]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], add<u64, overflow=wrap>(const<u64>(24), mul<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))))));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]], pointer_cast<ptr<@type[[TYPE_VEC_deferred_access_gc]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], add<u64, overflow=wrap>(const<u64>(24), mul<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))))) [c="VEC_deferred_access_gc *"]) [c="VEC_deferred_access_gc *"];
 // DEFAULT-NEXT:         write<u32>(field0(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]])))), reinterpret<u32, reason=assign, fits=always>(const<i32>(2)));
 // DEFAULT-NEXT:         write<i32>(field1(deref(ptr_offset<ptr<@type[[TYPE_deferred_access]]>, subtract=false, element=@type[[TYPE_deferred_access]], overflow=ub>(array_decay<ptr<@type[[TYPE_deferred_access]]>, length=Some(1)>(field1(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]]))))), const<i32>(0)))), const<i32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_pop_to_parent_deferring_access_checks]]);

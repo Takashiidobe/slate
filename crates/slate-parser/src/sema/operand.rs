@@ -275,7 +275,7 @@ impl TypeResolver {
                 reason,
             )?;
             let node = value.node.clone();
-            return Ok(Operand {
+            let converted = Operand {
                 c,
                 value: Value {
                     ty: self.ir_type(c),
@@ -286,12 +286,16 @@ impl TypeResolver {
                         semantics: crate::ir::ConversionSema::Exact,
                     }),
                 },
-            });
+            };
+            self.record_operand_c_type(&converted);
+            return Ok(converted);
         }
-        Ok(Operand {
+        let converted = Operand {
             value: context.emit_arithmetic_conversion(operand.value, self.ir_type(c), reason)?,
             c,
-        })
+        };
+        self.record_operand_c_type(&converted);
+        Ok(converted)
     }
 
     pub(super) fn arithmetic_type(

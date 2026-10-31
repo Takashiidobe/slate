@@ -51,11 +51,11 @@ void do_initcalls(void **call)
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([58, 32, 37, 115, 40, 41, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE___check_printsym_format:[0-9]+]] @__check_printsym_format(%[[VALUE_fmt:[0-9]+]] fmt: ptr<const i8>, ...) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_print_symbol:[0-9]+]] @print_symbol(%[[VALUE_fmt_2:[0-9]+]] fmt: ptr<const i8>, %[[VALUE_addr:[0-9]+]] addr: i64) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_print_symbol:[0-9]+]] @print_symbol(%[[VALUE_fmt_2:[0-9]+]] fmt: ptr<const i8>, %[[VALUE_addr:[0-9]+]] addr: i64 [c="my_intptr_t"]) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] [c="void(const char *, my_intptr_t)"] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ...) -> void>(%[[VALUE___check_printsym_format]], read<ptr<const i8>>(%[[VALUE_fmt_2]]), array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_do_initcalls:[0-9]+]] @do_initcalls(%[[VALUE_call:[0-9]+]] call: ptr<ptr<void>>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, i64) -> void>(%[[VALUE_print_symbol]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_2]])), ptr_to_int<i64, reason=explicit>(read<ptr<void>>(deref(read<ptr<ptr<void>>>(%[[VALUE_call]])))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, i64) -> void>(%[[VALUE_print_symbol]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_2]])), ptr_to_int<i64, reason=explicit>(read<ptr<void>>(deref(read<ptr<ptr<void>>>(%[[VALUE_call]])))) [c="my_intptr_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

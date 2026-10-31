@@ -16,11 +16,15 @@ pub(super) fn normalize(
         .map(|function| function.value.id)
         .collect();
     let mut hoister = Hoister::new(next_id, module.target.pointer_width, access, effect_free);
+    hoister.c_nodes = std::mem::take(&mut module.c_types.nodes);
+    hoister.c_bindings = std::mem::take(&mut module.c_types.bindings);
     for function in &mut module.functions {
         if let Some(body) = &mut function.value.body {
             *body = hoister.statements(std::mem::take(body))?;
         }
     }
+    module.c_types.nodes = hoister.c_nodes;
+    module.c_types.bindings = hoister.c_bindings;
     Ok(())
 }
 

@@ -41,15 +41,15 @@ __attribute__((target("avx"))) void defined256(m256 v) {
 // IR-NEXT:     }
 // IR-NEXT:     type @type[[TYPE_m256:[0-9]+]] m256 = vector<f32, 8>;
 // IR-NEXT:     type @type[[TYPE_m512:[0-9]+]] m512 = vector<f32, 16>;
-// IR-NEXT:     fn %[[VALUE_plain256:[0-9]+]] @plain256(%[[VALUE0:[0-9]+]] <unnamed>: vector<f32, 8>) -> void [linkage=external] [abi=sysv64(byval<align=32>) -> void];
-// IR-NEXT:     fn %[[VALUE_avx256:[0-9]+]] @avx256(%[[VALUE1:[0-9]+]] <unnamed>: vector<f32, 8>) -> void [linkage=external] [target=+avx] [abi=sysv64(direct) -> void];
-// IR-NEXT:     fn %[[VALUE_avx2_256:[0-9]+]] @avx2_256(%[[VALUE2:[0-9]+]] <unnamed>: vector<f32, 8>) -> void [linkage=external] [target=+avx2] [abi=sysv64(direct) -> void];
-// IR-NEXT:     fn %[[VALUE_cancelled256:[0-9]+]] @cancelled256(%[[VALUE3:[0-9]+]] <unnamed>: vector<f32, 8>) -> void [linkage=external] [target=+avx,-avx] [abi=sysv64(byval<align=32>) -> void];
-// IR-NEXT:     fn %[[VALUE_arch512:[0-9]+]] @arch512(%[[VALUE4:[0-9]+]] <unnamed>: vector<f32, 16>) -> void [linkage=external] [target=arch=skylake-avx512] [abi=sysv64(direct) -> void];
-// IR-NEXT:     fn %[[VALUE_avx512_wide:[0-9]+]] @avx512_wide(%[[VALUE5:[0-9]+]] <unnamed>: vector<f32, 16>) -> void [linkage=external] [target=+avx] [abi=sysv64(byval<align=64>) -> void];
-// IR-NEXT:     fn %[[VALUE_avx512f_wide:[0-9]+]] @avx512f_wide(%[[VALUE6:[0-9]+]] <unnamed>: vector<f32, 16>) -> void [linkage=external] [target=+avx512f] [abi=sysv64(direct) -> void];
-// IR-NEXT:     fn %[[VALUE_defined256:[0-9]+]] @defined256(%[[VALUE_v:[0-9]+]] v: vector<f32, 8>) -> void [linkage=external] [target=+avx] [abi=sysv64(direct) -> void] [fallthrough=ret_void] {
-// IR-NEXT:         call<void, abi=sysv64(direct) -> void>(%[[VALUE_avx256]], read<vector<f32, 8>>(%[[VALUE_v]]));
+// IR-NEXT:     fn %[[VALUE_plain256:[0-9]+]] @plain256(%[[VALUE0:[0-9]+]] <unnamed>: vector<f32, 8> [c="m256"]) -> void [linkage=external] [abi=sysv64(byval<align=32>) -> void] [c="void(m256)"];
+// IR-NEXT:     fn %[[VALUE_avx256:[0-9]+]] @avx256(%[[VALUE1:[0-9]+]] <unnamed>: vector<f32, 8> [c="m256"]) -> void [linkage=external] [target=+avx] [abi=sysv64(direct) -> void] [c="void(m256)"];
+// IR-NEXT:     fn %[[VALUE_avx2_256:[0-9]+]] @avx2_256(%[[VALUE2:[0-9]+]] <unnamed>: vector<f32, 8> [c="m256"]) -> void [linkage=external] [target=+avx2] [abi=sysv64(direct) -> void] [c="void(m256)"];
+// IR-NEXT:     fn %[[VALUE_cancelled256:[0-9]+]] @cancelled256(%[[VALUE3:[0-9]+]] <unnamed>: vector<f32, 8> [c="m256"]) -> void [linkage=external] [target=+avx,-avx] [abi=sysv64(byval<align=32>) -> void] [c="void(m256)"];
+// IR-NEXT:     fn %[[VALUE_arch512:[0-9]+]] @arch512(%[[VALUE4:[0-9]+]] <unnamed>: vector<f32, 16> [c="m512"]) -> void [linkage=external] [target=arch=skylake-avx512] [abi=sysv64(direct) -> void] [c="void(m512)"];
+// IR-NEXT:     fn %[[VALUE_avx512_wide:[0-9]+]] @avx512_wide(%[[VALUE5:[0-9]+]] <unnamed>: vector<f32, 16> [c="m512"]) -> void [linkage=external] [target=+avx] [abi=sysv64(byval<align=64>) -> void] [c="void(m512)"];
+// IR-NEXT:     fn %[[VALUE_avx512f_wide:[0-9]+]] @avx512f_wide(%[[VALUE6:[0-9]+]] <unnamed>: vector<f32, 16> [c="m512"]) -> void [linkage=external] [target=+avx512f] [abi=sysv64(direct) -> void] [c="void(m512)"];
+// IR-NEXT:     fn %[[VALUE_defined256:[0-9]+]] @defined256(%[[VALUE_v:[0-9]+]] v: vector<f32, 8> [c="m256"]) -> void [linkage=external] [target=+avx] [abi=sysv64(direct) -> void] [fallthrough=ret_void] [c="void(m256)"] {
+// IR-NEXT:         call<void, abi=sysv64(direct) -> void>(%[[VALUE_avx256]], read<vector<f32, 8>>(%[[VALUE_v]]) [c="m256"]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

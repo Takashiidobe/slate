@@ -59,14 +59,14 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_material_type:[0-9]+]] material_type = @type[[TYPE0]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: f64) -> @type[[TYPE0]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_m:[0-9]+]] m: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: f64) -> @type[[TYPE0]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] [c="material_type(double)"] {
+// DEFAULT-NEXT:         let %[[VALUE_m:[0-9]+]] m: @type[[TYPE0]] [storage=automatic] [c="material_type"];
 // DEFAULT-NEXT:         write<f64>(field0(%[[VALUE_m]]), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), read<f64>(%[[VALUE_x]])));
-// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_m]]));
+// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_m]]) [c="material_type"]) [c="material_type"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: @type[[TYPE0]] [storage=automatic] [c="material_type"];
 // DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -79,7 +79,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<@type[[TYPE0]]>(%[[VALUE_x_2]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(f64) -> @type[[TYPE0]], abi=sysv64(scalar) -> native_c>(%[[VALUE_foo]], const<f64>(1.0))));
+// DEFAULT-NEXT:                     write<@type[[TYPE0]]>(%[[VALUE_x_2]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(f64) -> @type[[TYPE0]], abi=sysv64(scalar) -> native_c>(%[[VALUE_foo]], const<f64>(1.0)) [c="material_type"]) [c="material_type"]) [c="material_type"];
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(field0(%[[VALUE_x_2]])), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), const<f64>(1.0)))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }

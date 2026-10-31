@@ -45,7 +45,7 @@ void g(int n, ...) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list [c="__gnuc_va_list"];
 // DEFAULT-NEXT:     type @type[[TYPE_a:[0-9]+]] a = struct {
 // DEFAULT-NEXT:         field0 c: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
@@ -73,7 +73,7 @@ void g(int n, ...) {
 // DEFAULT-NEXT:         field1 i: i32;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_n:[0-9]+]] n: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_a]] [storage=automatic] = copy<@type[[TYPE_a]], reason=assign>(va_arg<@type[[TYPE_a]], regs=[int]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_b]] [storage=automatic] = copy<@type[[TYPE_b]], reason=assign>(va_arg<@type[[TYPE_b]], regs=[int, int]>(%[[VALUE_ap]]));

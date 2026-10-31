@@ -49,7 +49,7 @@ int g(void) {
 // IR-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<i32> [storage=automatic] [const] = addr_of<ptr<i32>>(%[[VALUE_x]]);
 // IR-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<const i32> [storage=automatic] = pointer_cast<ptr<const i32>, reason=assign>(addr_of<ptr<i32>>(%[[VALUE_x]]));
 // IR-NEXT:         let %[[VALUE_table:[0-9]+]] table: array<i32, 2> [storage=automatic] [const] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2));
-// IR-NEXT:         let %[[VALUE_t:[0-9]+]] t: i32 [storage=automatic] [const] = const<i32>(7);
+// IR-NEXT:         let %[[VALUE_t:[0-9]+]] t: i32 [storage=automatic] [const] = const<i32>(7) [c="constant"];
 // IR-NEXT:         let %[[VALUE_c:[0-9]+]] c: i32 [storage=automatic] [const] [constexpr] = const<i32>(5);
 // IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_q]]))), read<i32>(deref(read<ptr<const i32>>(%[[VALUE_p]])))), read<i32>(%[[VALUE_k]])), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<const i32>, length=Some(2)>(%[[VALUE_table]]), const<i32>(1))))), read<i32>(%[[VALUE_t]])), read<i32>(%[[VALUE_c]])), read<i32>(%[[VALUE_s]])), read<i32>(%[[VALUE_limit]]));
 // IR-NEXT:     }

@@ -42,10 +42,10 @@ foo (void)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = i129b;
-// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i129b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i129b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i129b [storage=static] [linkage=external] [c="B"];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i129b [storage=static] [linkage=external] [c="B"];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(overflow_mul<bool>(read<i129b>(%[[VALUE_a]]), const<i32>(1), deref(addr_of<ptr<i129b>>(%[[VALUE_b]]))));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(overflow_mul<bool>(read<i129b>(%[[VALUE_a]]) [c="B"], const<i32>(1), deref(addr_of<ptr<i129b>>(%[[VALUE_b]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

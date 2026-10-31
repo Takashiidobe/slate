@@ -65,18 +65,18 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = @type[[TYPE0]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> @type[[TYPE0]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_now:[0-9]+]] now: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> @type[[TYPE0]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] [c="T(void)"] {
+// DEFAULT-NEXT:         let %[[VALUE_now:[0-9]+]] now: @type[[TYPE0]] [storage=automatic] [c="T"];
 // DEFAULT-NEXT:         write<i8>(field0(%[[VALUE_now]]), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i8>(field1(%[[VALUE_now]]), truncate<i8, reason=assign, fits=always>(const<i32>(2)));
 // DEFAULT-NEXT:         write<i8>(field2(%[[VALUE_now]]), truncate<i8, reason=assign, fits=always>(const<i32>(3)));
 // DEFAULT-NEXT:         write<i16>(field3(%[[VALUE_now]]), truncate<i16, reason=assign, fits=always>(const<i32>(4)));
-// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_now]]));
+// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_now]]) [c="T"]) [c="T"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> @type[[TYPE0]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_virk:[0-9]+]] virk: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_virk]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn() -> @type[[TYPE0]], abi=sysv64() -> native_c>(%[[VALUE_g]])));
-// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_virk]]));
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> @type[[TYPE0]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] [c="T(void)"] {
+// DEFAULT-NEXT:         let %[[VALUE_virk:[0-9]+]] virk: @type[[TYPE0]] [storage=automatic] [c="T"];
+// DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_virk]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn() -> @type[[TYPE0]], abi=sysv64() -> native_c>(%[[VALUE_g]]) [c="T"]) [c="T"]) [c="T"];
+// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_virk]]) [c="T"]) [c="T"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: bool [synthetic];

@@ -96,7 +96,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_strcpy:[0-9]+]] @strcpy(%[[VALUE0:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_strcmp:[0-9]+]] @strcmp(%[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE3:[0-9]+]] <unnamed>: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_s:[0-9]+]] s: ptr<i8>, %[[VALUE_format:[0-9]+]] format: ptr<const i8>, %[[VALUE_ap:[0-9]+]] ap: va_list) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_s:[0-9]+]] s: ptr<i8>, %[[VALUE_format:[0-9]+]] format: ptr<const i8>, %[[VALUE_ap:[0-9]+]] ap: va_list [c="va_list"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(char *, const char *, va_list)"] {
 // DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: ptr<const i8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_string:[0-9]+]] string: ptr<const i8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_spec:[0-9]+]] spec: i8 [storage=automatic];
@@ -133,9 +133,9 @@ int main(void) {
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f_2:[0-9]+]] @f(%[[VALUE_s_2:[0-9]+]] s: ptr<i8>, %[[VALUE_f_3:[0-9]+]] f: ptr<const i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<const i8>, va_list) -> i32>(%[[VALUE_g]], read<ptr<i8>>(%[[VALUE_s_2]]), read<ptr<const i8>>(%[[VALUE_f_3]]), read<va_list>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<const i8>, va_list) -> i32>(%[[VALUE_g]], read<ptr<i8>>(%[[VALUE_s_2]]), read<ptr<const i8>>(%[[VALUE_f_3]]), read<va_list>(%[[VALUE_ap_2]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

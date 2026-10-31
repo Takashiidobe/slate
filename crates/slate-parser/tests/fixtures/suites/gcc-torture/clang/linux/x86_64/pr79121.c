@@ -65,26 +65,26 @@ int main() {
 // DEFAULT-NEXT:     type @type[[TYPE_uint32_t:[0-9]+]] uint32_t = u32;
 // DEFAULT-NEXT:     type @type[[TYPE_int32_t:[0-9]+]] int32_t = i32;
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_x:[0-9]+]] x: i32) -> u64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shl<u64, overflow=wrap, amount_out_of_range=ub>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(read<i32>(%[[VALUE_x]]))), const<i32>(4));
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_x:[0-9]+]] x: i32 [c="int32_t"]) -> u64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="unsigned long long(int32_t)"] {
+// DEFAULT-NEXT:         return shl<u64, overflow=wrap, amount_out_of_range=ub>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(read<i32>(%[[VALUE_x]]) [c="int32_t"])), const<i32>(4));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_x_2:[0-9]+]] x: u32) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(read<u32>(%[[VALUE_x_2]]))), const<i32>(4));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_x_2:[0-9]+]] x: u32 [c="uint32_t"]) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="long long(uint32_t)"] {
+// DEFAULT-NEXT:         return shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(read<u32>(%[[VALUE_x_2]]) [c="uint32_t"])), const<i32>(4));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_x_3:[0-9]+]] x: u32) -> u64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=explicit>(read<u32>(%[[VALUE_x_3]])), const<i32>(4));
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_x_3:[0-9]+]] x: u32 [c="uint32_t"]) -> u64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="unsigned long long(uint32_t)"] {
+// DEFAULT-NEXT:         return shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=explicit>(read<u32>(%[[VALUE_x_3]]) [c="uint32_t"]), const<i32>(4));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_x_4:[0-9]+]] x: i32) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i64, reason=explicit>(read<i32>(%[[VALUE_x_4]])), const<i32>(4));
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_x_4:[0-9]+]] x: i32 [c="int32_t"]) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="long long(int32_t)"] {
+// DEFAULT-NEXT:         return shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i64, reason=explicit>(read<i32>(%[[VALUE_x_4]]) [c="int32_t"]), const<i32>(4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32) -> u64>(%[[VALUE_f1]], reinterpret<i32, reason=arg, fits=unknown>(const<u32>(4026531840))), const<u64>(18446744069414584320))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32) -> u64>(%[[VALUE_f1]], reinterpret<i32, reason=arg, fits=unknown>(const<u32>(4026531840)) [c="int32_t"]), const<u64>(18446744069414584320))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(u32) -> i64>(%[[VALUE_f2]], const<u32>(4026531840)), const<i64>(64424509440))
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(u32) -> i64>(%[[VALUE_f2]], const<u32>(4026531840) [c="uint32_t"]), const<i64>(64424509440))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u32) -> u64>(%[[VALUE_f3]], const<u32>(4026531840)), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(64424509440)))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u32) -> u64>(%[[VALUE_f3]], const<u32>(4026531840) [c="uint32_t"]), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(64424509440)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(call<i64, signature=fn(i32) -> i64>(%[[VALUE_f4]], reinterpret<i32, reason=arg, fits=unknown>(const<u32>(4026531840)))), const<u64>(18446744069414584320))
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(call<i64, signature=fn(i32) -> i64>(%[[VALUE_f4]], reinterpret<i32, reason=arg, fits=unknown>(const<u32>(4026531840)) [c="int32_t"])), const<u64>(18446744069414584320))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

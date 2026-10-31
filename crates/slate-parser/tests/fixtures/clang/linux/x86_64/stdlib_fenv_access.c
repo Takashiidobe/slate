@@ -53,7 +53,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 19> [storage=static] = code_units<array<i8, 19>>([37, 46, 50, 48, 101, 32, 37, 46, 50, 48, 101, 32, 37, 46, 50, 48, 101, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_fesetround:[0-9]+]] @fesetround(%[[VALUE___rounding_direction:[0-9]+]] __rounding_direction: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: volatile f64 [storage=automatic] = const<f64>(3.0);
 // DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: volatile f64 [storage=automatic] = const<f64>(7.0);

@@ -47,10 +47,10 @@ _Static_assert(_Generic(&wWinMain, int(__stdcall *)(void *, void *, unsigned sho
 // DEFAULT-NEXT:     fn %[[VALUE_DllMain:[0-9]+]] @DllMain(%[[VALUE4:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE5:[0-9]+]] <unnamed>: u32, %[[VALUE6:[0-9]+]] <unnamed>: ptr<void>) -> i32 [linkage=external] [abi=x86_win32 stdcall(scalar, scalar, scalar) -> scalar];
 // DEFAULT-NEXT:     fn %[[VALUE_scope:[0-9]+]] @scope() -> void [linkage=external] [abi=x86_win32 vectorcall() -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_parameter:[0-9]+]] @parameter(%[[VALUE_WinMain_2:[0-9]+]] WinMain: ptr<fn vectorcall() -> i32>) -> void [linkage=external] [abi=x86_win32 vectorcall(scalar) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_parameter:[0-9]+]] @parameter(%[[VALUE_WinMain_2:[0-9]+]] WinMain: ptr<fn vectorcall() -> i32>) -> void [linkage=external] [abi=x86_win32 vectorcall(scalar) -> void] [fallthrough=ret_void] [c="void(int(void) __attribute__((vectorcall))) __attribute__((vectorcall))"] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_alias:[0-9]+]] @alias() -> void [linkage=external] [abi=x86_win32 vectorcall() -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<fn stdcall() -> i32> [storage=automatic] = null<ptr<fn stdcall() -> i32>>;
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<fn stdcall() -> i32> [storage=automatic] = null<ptr<fn stdcall() -> i32>> [c="WinMain *"] [c="WinMain *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

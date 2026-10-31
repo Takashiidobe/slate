@@ -50,8 +50,8 @@ struct Wrap {
 // DEFAULT-NEXT:         field0 x: @type[[TYPE_S]];
 // DEFAULT-NEXT:     } [size=64, align=64, offsets=[0]];
 // DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i8 [storage=static] [align=8192] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: i8 [storage=static] [align=8192] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_z:[0-9]+]] z: i8 [storage=static] [align=8192] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: i8 [storage=static] [align=8192] [linkage=external] [c="T"];
+// DEFAULT-NEXT:     global %[[VALUE_z:[0-9]+]] z: i8 [storage=static] [align=8192] [linkage=external] [c="T"];
 // DEFAULT-NEXT:     global %[[VALUE_redef:[0-9]+]] redef: i32 [storage=static] [align=32] = const<i32>(8) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_w:[0-9]+]] w: @type[[TYPE_Wrap]] [storage=static] [linkage=external];

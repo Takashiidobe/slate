@@ -64,8 +64,8 @@ int sum(struct outer *o) { return o->a + o->t + o->u + o->c + o->b; }
 // IR-NEXT:     type @type[[TYPE_either:[0-9]+]] either = @type[[TYPE1]];
 // IR-NEXT:     type @type[[TYPE_outer:[0-9]+]] outer = struct {
 // IR-NEXT:         field0 <anonymous>: @type[[TYPE_inner]];
-// IR-NEXT:         field1 <anonymous>: @type[[TYPE0]];
-// IR-NEXT:         field2 <anonymous>: @type[[TYPE1]];
+// IR-NEXT:         field1 <anonymous>: @type[[TYPE0]] [c="tagless"];
+// IR-NEXT:         field2 <anonymous>: @type[[TYPE1]] [c="either"];
 // IR-NEXT:         field3 <anonymous>: @type[[TYPE_nested:[0-9]+]];
 // IR-NEXT:         field4 b: i32;
 // IR-NEXT:     } [size=20, align=4, offsets=[0, 4, 8, 12, 16]];

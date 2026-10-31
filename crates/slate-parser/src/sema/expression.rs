@@ -29,6 +29,7 @@ pub(super) struct Lowerer {
     pub function_declarations: HashMap<BindingId, super::function::FunctionDeclarations>,
     pub builtin_declarations: HashMap<(&'static str, QualType), BindingId>,
     pub alias_annotations: HashMap<TypeId, Vec<(String, String)>>,
+    pub alias_c_types: HashMap<TypeId, QualType>,
     pub next_id: u32,
     pub break_targets: Vec<BindingId>,
     pub continue_targets: Vec<BindingId>,
@@ -1179,11 +1180,15 @@ impl Lowerer {
         let c = self.types.ctypes.qual(kind);
         self.operand(e, c, value)
     }
-    pub(super) fn operand<T: Clone>(&self, e: &Span<T>, c: QualType, kind: ValueKind) -> Operand {
-        Operand {
-            value: self.value(e, self.types.ir_type(c), kind),
-            c,
-        }
+    pub(super) fn operand<T: Clone>(
+        &mut self,
+        e: &Span<T>,
+        c: QualType,
+        kind: ValueKind,
+    ) -> Operand {
+        let value = self.value(e, self.types.ir_type(c), kind);
+        self.types.record_c_type(&value.node, c);
+        Operand { value, c }
     }
 
     pub(super) fn truth(&mut self, e: &Expr, kind: ValueKind) -> Operand {
@@ -1296,10 +1301,12 @@ impl Lowerer {
         reason: ConversionReason,
     ) -> Result<Operand, ResolveError> {
         let c = self.types.ctypes.unqualified(to);
-        Ok(Operand {
+        let converted = Operand {
             value: self.emit_cast(kind, value, c, reason)?,
             c,
-        })
+        };
+        self.types.record_operand_c_type(&converted);
+        Ok(converted)
     }
 
     fn emit_cast(
@@ -2508,7 +2515,9 @@ impl Lowerer {
                 .arithmetic_conversion(&self.context, lowered, c, ConversionReason::Promotion)
                 .map_err(|error| error.at(e.expansion));
         }
-        Ok(Operand { c, ..lowered })
+        let finished = Operand { c, ..lowered };
+        self.types.record_operand_c_type(&finished);
+        Ok(finished)
     }
 
     fn binary_operands(

@@ -77,8 +77,8 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_v8si:[0-9]+]] v8si = vector<i32, 8>;
 // DEFAULT-NEXT:     global %[[VALUE_g2:[0-9]+]] g2: i64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_g12:[0-9]+]] g12: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_g18:[0-9]+]] g18: vector<i64, 16> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_g3:[0-9]+]] g3: vector<i32, 8> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_g18:[0-9]+]] g18: vector<i64, 16> [storage=static] [linkage=external] [c="v16di"];
+// DEFAULT-NEXT:     global %[[VALUE_g3:[0-9]+]] g3: vector<i32, 8> [storage=static] [linkage=external] [c="v8si"];
 // DEFAULT-NEXT:     global %[[VALUE_g27:[0-9]+]] g27: ptr<void> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_dirty_stack:[0-9]+]] @dirty_stack() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: volatile array<i8, 1024> [storage=automatic] [align=16];
@@ -98,8 +98,8 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_f31:[0-9]+]] @f31() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         label %[[VALUE_lbl_br1:[0-9]+]] lbl_br1:
-// DEFAULT-NEXT:             write<vector<i64, 16>>(%[[VALUE_g18]], not<vector<i64, 16>, elementwise=true>(read<vector<i64, 16>>(%[[VALUE_g18]])));
-// DEFAULT-NEXT:         write<vector<i32, 8>>(%[[VALUE_g3]], not<vector<i32, 8>, elementwise=true>(read<vector<i32, 8>>(%[[VALUE_g3]])));
+// DEFAULT-NEXT:             write<vector<i64, 16>>(%[[VALUE_g18]], not<vector<i64, 16>, elementwise=true>(read<vector<i64, 16>>(%[[VALUE_g18]]) [c="v16di"]) [c="v16di"]) [c="v16di"];
+// DEFAULT-NEXT:         write<vector<i32, 8>>(%[[VALUE_g3]], not<vector<i32, 8>, elementwise=true>(read<vector<i32, 8>>(%[[VALUE_g3]]) [c="v8si"]) [c="v8si"]) [c="v8si"];
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE_g2]]), const<i64>(0))
 // DEFAULT-NEXT:             goto %[[VALUE_lbl_br1]];
 // DEFAULT-NEXT:         label %[[VALUE_lbl_b5:[0-9]+]] lbl_b5:
@@ -111,7 +111,7 @@ int main(void) {
 // DEFAULT-NEXT:         label %[[VALUE_lbl_sw8]] lbl_sw8:
 // DEFAULT-NEXT:             if ne<ptr<void>>(read<ptr<void>>(%[[VALUE_g27]]), null<ptr<void>>)
 // DEFAULT-NEXT:                 goto %[[VALUE_lbl_b5]];
-// DEFAULT-NEXT:         write<vector<i64, 16>>(%[[VALUE_g18]], not<vector<i64, 16>, elementwise=true>(read<vector<i64, 16>>(%[[VALUE_g18]])));
+// DEFAULT-NEXT:         write<vector<i64, 16>>(%[[VALUE_g18]], not<vector<i64, 16>, elementwise=true>(read<vector<i64, 16>>(%[[VALUE_g18]]) [c="v16di"]) [c="v16di"]) [c="v16di"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_dirty_stack]]);

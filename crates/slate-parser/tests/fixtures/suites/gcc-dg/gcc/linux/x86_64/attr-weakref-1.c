@@ -269,356 +269,356 @@ int main () {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_vtype:[0-9]+]] vtype = i32;
 // DEFAULT-NEXT:     type @type[[TYPE_ftype:[0-9]+]] ftype = fn() -> void;
-// DEFAULT-NEXT:     extern %[[VALUE_wv1:[0-9]+]] wv1: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv1a:[0-9]+]] Wv1a: i32 [storage=static] [linkage=internal] [weakref="wv1"];
-// DEFAULT-NEXT:     global %[[VALUE_pv1a:[0-9]+]] pv1a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Wv1a]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     global %[[VALUE_gv2:[0-9]+]] gv2: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv2a:[0-9]+]] Wv2a: i32 [storage=static] [linkage=internal] [weakref="gv2"];
-// DEFAULT-NEXT:     global %[[VALUE_pv2a:[0-9]+]] pv2a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Wv2a]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     global %[[VALUE_lv3:[0-9]+]] lv3: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv3a:[0-9]+]] Wv3a: i32 [storage=static] [linkage=internal] [weakref="lv3"];
-// DEFAULT-NEXT:     global %[[VALUE_pv3a:[0-9]+]] pv3a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Wv3a]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     extern %[[VALUE_uv4:[0-9]+]] uv4: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv4a:[0-9]+]] Wv4a: i32 [storage=static] [linkage=internal] [weakref="uv4"];
-// DEFAULT-NEXT:     global %[[VALUE_pv4a:[0-9]+]] pv4a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Wv4a]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     global %[[VALUE_pv4:[0-9]+]] pv4: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_uv4]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv5a:[0-9]+]] Wv5a: i32 [storage=static] [linkage=internal] [weakref="uv5"];
-// DEFAULT-NEXT:     global %[[VALUE_pv5a:[0-9]+]] pv5a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Wv5a]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     extern %[[VALUE_uv5:[0-9]+]] uv5: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_pv5:[0-9]+]] pv5: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_uv5]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv6a:[0-9]+]] Wv6a: i32 [storage=static] [linkage=internal] [weakref="wv6"];
-// DEFAULT-NEXT:     global %[[VALUE_pv6a:[0-9]+]] pv6a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Wv6a]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     extern %[[VALUE_wv6:[0-9]+]] wv6: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv7a:[0-9]+]] Wv7a: i32 [storage=static] [linkage=internal] [weakref="uv7"];
-// DEFAULT-NEXT:     extern %[[VALUE_uv7:[0-9]+]] uv7: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %[[VALUE_uv8:[0-9]+]] uv8: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv8a:[0-9]+]] Wv8a: i32 [storage=static] [linkage=internal] [weakref="uv8"];
-// DEFAULT-NEXT:     extern %[[VALUE_wv9:[0-9]+]] wv9: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv9a:[0-9]+]] Wv9a: i32 [storage=static] [linkage=internal] [weakref="wv9"];
-// DEFAULT-NEXT:     global %[[VALUE_pv9a:[0-9]+]] pv9a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Wv9a]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv10a:[0-9]+]] Wv10a: i32 [storage=static] [linkage=internal] [weakref="Wv10b"];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv10b:[0-9]+]] Wv10b: i32 [storage=static] [linkage=internal] [weakref="Wv10c"];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv10c:[0-9]+]] Wv10c: i32 [storage=static] [linkage=internal] [weakref="Wv10d"];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv10d:[0-9]+]] Wv10d: i32 [storage=static] [linkage=internal] [weakref="wv10"];
-// DEFAULT-NEXT:     extern %[[VALUE_wv10:[0-9]+]] wv10: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %[[VALUE_wv11:[0-9]+]] wv11: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv11d:[0-9]+]] Wv11d: i32 [storage=static] [linkage=internal] [weakref="wv11"];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv11c:[0-9]+]] Wv11c: i32 [storage=static] [linkage=internal] [weakref="Wv11d"];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv11b:[0-9]+]] Wv11b: i32 [storage=static] [linkage=internal] [weakref="Wv11c"];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv11a:[0-9]+]] Wv11a: i32 [storage=static] [linkage=internal] [weakref="Wv11b"];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv12:[0-9]+]] Wv12: i32 [storage=static] [linkage=internal] [weakref="wv12"];
-// DEFAULT-NEXT:     extern %[[VALUE_wv12:[0-9]+]] wv12: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv13:[0-9]+]] Wv13: i32 [storage=static] [linkage=internal] [weakref="wv13"];
-// DEFAULT-NEXT:     extern %[[VALUE_wv13:[0-9]+]] wv13: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv14a:[0-9]+]] Wv14a: i32 [storage=static] [linkage=internal] [weakref="wv14"];
-// DEFAULT-NEXT:     extern %[[VALUE_Wv14b:[0-9]+]] Wv14b: i32 [storage=static] [linkage=internal] [weakref="wv14"];
-// DEFAULT-NEXT:     extern %[[VALUE_wv14:[0-9]+]] wv14: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     global %[[VALUE_pf1a:[0-9]+]] pf1a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Wf1a:[0-9]+]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     global %[[VALUE_pf1c:[0-9]+]] pf1c: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Wf1c:[0-9]+]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     global %[[VALUE_pf2a:[0-9]+]] pf2a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Wf2a:[0-9]+]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     global %[[VALUE_pf3a:[0-9]+]] pf3a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Wf3a:[0-9]+]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     global %[[VALUE_pf4a:[0-9]+]] pf4a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Wf4a:[0-9]+]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     global %[[VALUE_pf4:[0-9]+]] pf4: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_uf4:[0-9]+]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     global %[[VALUE_pf5a:[0-9]+]] pf5a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Wf5a:[0-9]+]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     global %[[VALUE_pf5:[0-9]+]] pf5: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_uf5:[0-9]+]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     global %[[VALUE_pf6a:[0-9]+]] pf6a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Wf6a:[0-9]+]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     global %[[VALUE_pf9a:[0-9]+]] pf9a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Wf9a:[0-9]+]]) [linkage=internal] [used];
+// DEFAULT-NEXT:     extern %[[VALUE_wv1:[0-9]+]] wv1: i32 [storage=static] [linkage=external] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv1a:[0-9]+]] Wv1a: i32 [storage=static] [linkage=internal] [weakref="wv1"] [c="vtype"];
+// DEFAULT-NEXT:     global %[[VALUE_pv1a:[0-9]+]] pv1a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Wv1a]]) [c="vtype *"] [linkage=internal] [used] [c="vtype *"];
+// DEFAULT-NEXT:     global %[[VALUE_gv2:[0-9]+]] gv2: i32 [storage=static] [linkage=external] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv2a:[0-9]+]] Wv2a: i32 [storage=static] [linkage=internal] [weakref="gv2"] [c="vtype"];
+// DEFAULT-NEXT:     global %[[VALUE_pv2a:[0-9]+]] pv2a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Wv2a]]) [c="vtype *"] [linkage=internal] [used] [c="vtype *"];
+// DEFAULT-NEXT:     global %[[VALUE_lv3:[0-9]+]] lv3: i32 [storage=static] [linkage=internal] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv3a:[0-9]+]] Wv3a: i32 [storage=static] [linkage=internal] [weakref="lv3"] [c="vtype"];
+// DEFAULT-NEXT:     global %[[VALUE_pv3a:[0-9]+]] pv3a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Wv3a]]) [c="vtype *"] [linkage=internal] [used] [c="vtype *"];
+// DEFAULT-NEXT:     extern %[[VALUE_uv4:[0-9]+]] uv4: i32 [storage=static] [linkage=external] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv4a:[0-9]+]] Wv4a: i32 [storage=static] [linkage=internal] [weakref="uv4"] [c="vtype"];
+// DEFAULT-NEXT:     global %[[VALUE_pv4a:[0-9]+]] pv4a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Wv4a]]) [c="vtype *"] [linkage=internal] [used] [c="vtype *"];
+// DEFAULT-NEXT:     global %[[VALUE_pv4:[0-9]+]] pv4: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_uv4]]) [c="vtype *"] [linkage=internal] [used] [c="vtype *"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv5a:[0-9]+]] Wv5a: i32 [storage=static] [linkage=internal] [weakref="uv5"] [c="vtype"];
+// DEFAULT-NEXT:     global %[[VALUE_pv5a:[0-9]+]] pv5a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Wv5a]]) [c="vtype *"] [linkage=internal] [used] [c="vtype *"];
+// DEFAULT-NEXT:     extern %[[VALUE_uv5:[0-9]+]] uv5: i32 [storage=static] [linkage=external] [c="vtype"];
+// DEFAULT-NEXT:     global %[[VALUE_pv5:[0-9]+]] pv5: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_uv5]]) [c="vtype *"] [linkage=internal] [used] [c="vtype *"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv6a:[0-9]+]] Wv6a: i32 [storage=static] [linkage=internal] [weakref="wv6"] [c="vtype"];
+// DEFAULT-NEXT:     global %[[VALUE_pv6a:[0-9]+]] pv6a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Wv6a]]) [c="vtype *"] [linkage=internal] [used] [c="vtype *"];
+// DEFAULT-NEXT:     extern %[[VALUE_wv6:[0-9]+]] wv6: i32 [storage=static] [linkage=external] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv7a:[0-9]+]] Wv7a: i32 [storage=static] [linkage=internal] [weakref="uv7"] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_uv7:[0-9]+]] uv7: i32 [storage=static] [linkage=external] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_uv8:[0-9]+]] uv8: i32 [storage=static] [linkage=external] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv8a:[0-9]+]] Wv8a: i32 [storage=static] [linkage=internal] [weakref="uv8"] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_wv9:[0-9]+]] wv9: i32 [storage=static] [linkage=external] [weak] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv9a:[0-9]+]] Wv9a: i32 [storage=static] [linkage=internal] [weakref="wv9"] [c="vtype"];
+// DEFAULT-NEXT:     global %[[VALUE_pv9a:[0-9]+]] pv9a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Wv9a]]) [c="vtype *"] [linkage=internal] [used] [c="vtype *"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv10a:[0-9]+]] Wv10a: i32 [storage=static] [linkage=internal] [weakref="Wv10b"] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv10b:[0-9]+]] Wv10b: i32 [storage=static] [linkage=internal] [weakref="Wv10c"] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv10c:[0-9]+]] Wv10c: i32 [storage=static] [linkage=internal] [weakref="Wv10d"] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv10d:[0-9]+]] Wv10d: i32 [storage=static] [linkage=internal] [weakref="wv10"] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_wv10:[0-9]+]] wv10: i32 [storage=static] [linkage=external] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_wv11:[0-9]+]] wv11: i32 [storage=static] [linkage=external] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv11d:[0-9]+]] Wv11d: i32 [storage=static] [linkage=internal] [weakref="wv11"] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv11c:[0-9]+]] Wv11c: i32 [storage=static] [linkage=internal] [weakref="Wv11d"] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv11b:[0-9]+]] Wv11b: i32 [storage=static] [linkage=internal] [weakref="Wv11c"] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv11a:[0-9]+]] Wv11a: i32 [storage=static] [linkage=internal] [weakref="Wv11b"] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv12:[0-9]+]] Wv12: i32 [storage=static] [linkage=internal] [weakref="wv12"] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_wv12:[0-9]+]] wv12: i32 [storage=static] [linkage=external] [weak] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv13:[0-9]+]] Wv13: i32 [storage=static] [linkage=internal] [weakref="wv13"] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_wv13:[0-9]+]] wv13: i32 [storage=static] [linkage=external] [weak] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv14a:[0-9]+]] Wv14a: i32 [storage=static] [linkage=internal] [weakref="wv14"] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_Wv14b:[0-9]+]] Wv14b: i32 [storage=static] [linkage=internal] [weakref="wv14"] [c="vtype"];
+// DEFAULT-NEXT:     extern %[[VALUE_wv14:[0-9]+]] wv14: i32 [storage=static] [linkage=external] [weak] [c="vtype"];
+// DEFAULT-NEXT:     global %[[VALUE_pf1a:[0-9]+]] pf1a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Wf1a:[0-9]+]]) [c="ftype *"] [linkage=internal] [used] [c="ftype *"];
+// DEFAULT-NEXT:     global %[[VALUE_pf1c:[0-9]+]] pf1c: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Wf1c:[0-9]+]]) [c="ftype *"] [linkage=internal] [used] [c="ftype *"];
+// DEFAULT-NEXT:     global %[[VALUE_pf2a:[0-9]+]] pf2a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Wf2a:[0-9]+]]) [c="ftype *"] [linkage=internal] [used] [c="ftype *"];
+// DEFAULT-NEXT:     global %[[VALUE_pf3a:[0-9]+]] pf3a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Wf3a:[0-9]+]]) [c="ftype *"] [linkage=internal] [used] [c="ftype *"];
+// DEFAULT-NEXT:     global %[[VALUE_pf4a:[0-9]+]] pf4a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Wf4a:[0-9]+]]) [c="ftype *"] [linkage=internal] [used] [c="ftype *"];
+// DEFAULT-NEXT:     global %[[VALUE_pf4:[0-9]+]] pf4: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_uf4:[0-9]+]]) [c="ftype *"] [linkage=internal] [used] [c="ftype *"];
+// DEFAULT-NEXT:     global %[[VALUE_pf5a:[0-9]+]] pf5a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Wf5a:[0-9]+]]) [c="ftype *"] [linkage=internal] [used] [c="ftype *"];
+// DEFAULT-NEXT:     global %[[VALUE_pf5:[0-9]+]] pf5: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_uf5:[0-9]+]]) [c="ftype *"] [linkage=internal] [used] [c="ftype *"];
+// DEFAULT-NEXT:     global %[[VALUE_pf6a:[0-9]+]] pf6a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Wf6a:[0-9]+]]) [c="ftype *"] [linkage=internal] [used] [c="ftype *"];
+// DEFAULT-NEXT:     global %[[VALUE_pf9a:[0-9]+]] pf9a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Wf9a:[0-9]+]]) [c="ftype *"] [linkage=internal] [used] [c="ftype *"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_fv7:[0-9]+]] @fv7() -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<i32>>(%[[VALUE_Wv7a]]);
+// DEFAULT-NEXT:     fn %[[VALUE_fv7:[0-9]+]] @fv7() -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] [c="vtype *(void)"] {
+// DEFAULT-NEXT:         return addr_of<ptr<i32>>(%[[VALUE_Wv7a]]) [c="vtype *"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fv7a:[0-9]+]] @fv7a() -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<i32>>(%[[VALUE_uv7]]);
+// DEFAULT-NEXT:     fn %[[VALUE_fv7a:[0-9]+]] @fv7a() -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] [c="vtype *(void)"] {
+// DEFAULT-NEXT:         return addr_of<ptr<i32>>(%[[VALUE_uv7]]) [c="vtype *"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fv8a:[0-9]+]] @fv8a() -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<i32>>(%[[VALUE_uv8]]);
+// DEFAULT-NEXT:     fn %[[VALUE_fv8a:[0-9]+]] @fv8a() -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] [c="vtype *(void)"] {
+// DEFAULT-NEXT:         return addr_of<ptr<i32>>(%[[VALUE_uv8]]) [c="vtype *"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fv8:[0-9]+]] @fv8() -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<i32>>(%[[VALUE_Wv8a]]);
+// DEFAULT-NEXT:     fn %[[VALUE_fv8:[0-9]+]] @fv8() -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] [c="vtype *(void)"] {
+// DEFAULT-NEXT:         return addr_of<ptr<i32>>(%[[VALUE_Wv8a]]) [c="vtype *"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_wf1:[0-9]+]] @wf1() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf1a]] @Wf1a() -> void [linkage=internal] [weakref="wf1"];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf1c]] @Wf1c() -> void [linkage=internal] [weakref="wf1"];
+// DEFAULT-NEXT:     fn %[[VALUE_wf1:[0-9]+]] @wf1() -> void [linkage=external] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf1a]] @Wf1a() -> void [linkage=internal] [weakref="wf1"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf1c]] @Wf1c() -> void [linkage=internal] [weakref="wf1"] [c="ftype"];
 // DEFAULT-NEXT:     fn %[[VALUE_gf2:[0-9]+]] @gf2() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_Wf2a]] @Wf2a() -> void [linkage=internal] [weakref="gf2"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf2a]] @Wf2a() -> void [linkage=internal] [weakref="gf2"] [c="ftype"];
 // DEFAULT-NEXT:     fn %[[VALUE_lf3:[0-9]+]] @lf3() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_Wf3a]] @Wf3a() -> void [linkage=internal] [weakref="lf3"];
-// DEFAULT-NEXT:     fn %[[VALUE_uf4]] @uf4() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf4a]] @Wf4a() -> void [linkage=internal] [weakref="uf4"];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf5a]] @Wf5a() -> void [linkage=internal] [weakref="uf5"];
-// DEFAULT-NEXT:     fn %[[VALUE_uf5]] @uf5() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf6a]] @Wf6a() -> void [linkage=internal] [weakref="wf6"];
-// DEFAULT-NEXT:     fn %[[VALUE_wf6:[0-9]+]] @wf6() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf7a:[0-9]+]] @Wf7a() -> void [linkage=internal] [weakref="uf7"];
-// DEFAULT-NEXT:     fn %[[VALUE_ff7:[0-9]+]] @ff7() -> ptr<fn() -> void> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_Wf7a]]);
+// DEFAULT-NEXT:     fn %[[VALUE_Wf3a]] @Wf3a() -> void [linkage=internal] [weakref="lf3"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_uf4]] @uf4() -> void [linkage=external] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf4a]] @Wf4a() -> void [linkage=internal] [weakref="uf4"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf5a]] @Wf5a() -> void [linkage=internal] [weakref="uf5"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_uf5]] @uf5() -> void [linkage=external] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf6a]] @Wf6a() -> void [linkage=internal] [weakref="wf6"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_wf6:[0-9]+]] @wf6() -> void [linkage=external] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf7a:[0-9]+]] @Wf7a() -> void [linkage=internal] [weakref="uf7"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_ff7:[0-9]+]] @ff7() -> ptr<fn() -> void> [linkage=internal] [fallthrough=ub_if_used] [c="ftype *(void)"] {
+// DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_Wf7a]]) [c="ftype *"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_uf7:[0-9]+]] @uf7() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_ff7a:[0-9]+]] @ff7a() -> ptr<fn() -> void> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_uf7]]);
+// DEFAULT-NEXT:     fn %[[VALUE_uf7:[0-9]+]] @uf7() -> void [linkage=external] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_ff7a:[0-9]+]] @ff7a() -> ptr<fn() -> void> [linkage=internal] [fallthrough=ub_if_used] [c="ftype *(void)"] {
+// DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_uf7]]) [c="ftype *"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_uf8:[0-9]+]] @uf8() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_ff8a:[0-9]+]] @ff8a() -> ptr<fn() -> void> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_uf8]]);
+// DEFAULT-NEXT:     fn %[[VALUE_uf8:[0-9]+]] @uf8() -> void [linkage=external] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_ff8a:[0-9]+]] @ff8a() -> ptr<fn() -> void> [linkage=internal] [fallthrough=ub_if_used] [c="ftype *(void)"] {
+// DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_uf8]]) [c="ftype *"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_Wf8a:[0-9]+]] @Wf8a() -> void [linkage=internal] [weakref="uf8"];
-// DEFAULT-NEXT:     fn %[[VALUE_ff8:[0-9]+]] @ff8() -> ptr<fn() -> void> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_Wf8a]]);
+// DEFAULT-NEXT:     fn %[[VALUE_Wf8a:[0-9]+]] @Wf8a() -> void [linkage=internal] [weakref="uf8"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_ff8:[0-9]+]] @ff8() -> ptr<fn() -> void> [linkage=internal] [fallthrough=ub_if_used] [c="ftype *(void)"] {
+// DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_Wf8a]]) [c="ftype *"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_wf9:[0-9]+]] @wf9() -> void [linkage=external] [weak];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf9a]] @Wf9a() -> void [linkage=internal] [weakref="wf9"];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf10a:[0-9]+]] @Wf10a() -> void [linkage=internal] [weakref="Wf10b"];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf10b:[0-9]+]] @Wf10b() -> void [linkage=internal] [weakref="Wf10c"];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf10c:[0-9]+]] @Wf10c() -> void [linkage=internal] [weakref="Wf10d"];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf10d:[0-9]+]] @Wf10d() -> void [linkage=internal] [weakref="wf10"];
-// DEFAULT-NEXT:     fn %[[VALUE_wf10:[0-9]+]] @wf10() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_wf11:[0-9]+]] @wf11() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf11d:[0-9]+]] @Wf11d() -> void [linkage=internal] [weakref="wf11"];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf11c:[0-9]+]] @Wf11c() -> void [linkage=internal] [weakref="Wf11d"];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf11b:[0-9]+]] @Wf11b() -> void [linkage=internal] [weakref="Wf11c"];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf11a:[0-9]+]] @Wf11a() -> void [linkage=internal] [weakref="Wf11b"];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf12:[0-9]+]] @Wf12() -> void [linkage=internal] [weakref="wf12"];
-// DEFAULT-NEXT:     fn %[[VALUE_wf12:[0-9]+]] @wf12() -> void [linkage=external] [weak];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf13:[0-9]+]] @Wf13() -> void [linkage=internal] [weakref="wf13"];
-// DEFAULT-NEXT:     fn %[[VALUE_wf13:[0-9]+]] @wf13() -> void [linkage=external] [weak];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf14a:[0-9]+]] @Wf14a() -> void [linkage=internal] [weakref="wf14"];
-// DEFAULT-NEXT:     fn %[[VALUE_Wf14b:[0-9]+]] @Wf14b() -> void [linkage=internal] [weakref="wf14"];
-// DEFAULT-NEXT:     fn %[[VALUE_wf14:[0-9]+]] @wf14() -> void [linkage=external] [weak];
+// DEFAULT-NEXT:     fn %[[VALUE_wf9:[0-9]+]] @wf9() -> void [linkage=external] [weak] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf9a]] @Wf9a() -> void [linkage=internal] [weakref="wf9"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf10a:[0-9]+]] @Wf10a() -> void [linkage=internal] [weakref="Wf10b"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf10b:[0-9]+]] @Wf10b() -> void [linkage=internal] [weakref="Wf10c"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf10c:[0-9]+]] @Wf10c() -> void [linkage=internal] [weakref="Wf10d"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf10d:[0-9]+]] @Wf10d() -> void [linkage=internal] [weakref="wf10"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_wf10:[0-9]+]] @wf10() -> void [linkage=external] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_wf11:[0-9]+]] @wf11() -> void [linkage=external] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf11d:[0-9]+]] @Wf11d() -> void [linkage=internal] [weakref="wf11"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf11c:[0-9]+]] @Wf11c() -> void [linkage=internal] [weakref="Wf11d"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf11b:[0-9]+]] @Wf11b() -> void [linkage=internal] [weakref="Wf11c"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf11a:[0-9]+]] @Wf11a() -> void [linkage=internal] [weakref="Wf11b"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf12:[0-9]+]] @Wf12() -> void [linkage=internal] [weakref="wf12"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_wf12:[0-9]+]] @wf12() -> void [linkage=external] [weak] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf13:[0-9]+]] @Wf13() -> void [linkage=internal] [weakref="wf13"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_wf13:[0-9]+]] @wf13() -> void [linkage=external] [weak] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf14a:[0-9]+]] @Wf14a() -> void [linkage=internal] [weakref="wf14"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_Wf14b:[0-9]+]] @Wf14b() -> void [linkage=internal] [weakref="wf14"] [c="ftype"];
+// DEFAULT-NEXT:     fn %[[VALUE_wf14:[0-9]+]] @wf14() -> void [linkage=external] [weak] [c="ftype"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv1a]]), null<ptr<i32>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv1a]]) [c="vtype *"], null<ptr<i32>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv2a]]), null<ptr<i32>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv2a]]) [c="vtype *"], null<ptr<i32>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv3a]]), null<ptr<i32>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv3a]]) [c="vtype *"], null<ptr<i32>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv4a]]), null<ptr<i32>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv4a]]) [c="vtype *"], null<ptr<i32>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv4]]), null<ptr<i32>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv4]]) [c="vtype *"], null<ptr<i32>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv5a]]), null<ptr<i32>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv5a]]) [c="vtype *"], null<ptr<i32>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv5]]), null<ptr<i32>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv5]]) [c="vtype *"], null<ptr<i32>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv6a]]), null<ptr<i32>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv6a]]) [c="vtype *"], null<ptr<i32>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(call<ptr<i32>, signature=fn() -> ptr<i32>>(%[[VALUE_fv7]]), null<ptr<i32>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(call<ptr<i32>, signature=fn() -> ptr<i32>>(%[[VALUE_fv7]]) [c="vtype *"], null<ptr<i32>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(call<ptr<i32>, signature=fn() -> ptr<i32>>(%[[VALUE_fv7a]]), null<ptr<i32>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(call<ptr<i32>, signature=fn() -> ptr<i32>>(%[[VALUE_fv7a]]) [c="vtype *"], null<ptr<i32>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE10:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(call<ptr<i32>, signature=fn() -> ptr<i32>>(%[[VALUE_fv8]]), null<ptr<i32>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(call<ptr<i32>, signature=fn() -> ptr<i32>>(%[[VALUE_fv8]]) [c="vtype *"], null<ptr<i32>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE11:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(call<ptr<i32>, signature=fn() -> ptr<i32>>(%[[VALUE_fv8a]]), null<ptr<i32>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(call<ptr<i32>, signature=fn() -> ptr<i32>>(%[[VALUE_fv8a]]) [c="vtype *"], null<ptr<i32>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE12:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv9a]]), null<ptr<i32>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pv9a]]) [c="vtype *"], null<ptr<i32>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE13:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_Wv10a]]), null<ptr<i32>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_Wv10a]]) [c="vtype *"], null<ptr<i32>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE14:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_Wv11a]]), null<ptr<i32>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_Wv11a]]) [c="vtype *"], null<ptr<i32>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE15:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_Wv12]]), null<ptr<i32>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_Wv12]]) [c="vtype *"], null<ptr<i32>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE16:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_wv12]]), null<ptr<i32>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_wv12]]) [c="vtype *"], null<ptr<i32>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE17:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_wv13]]), null<ptr<i32>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_wv13]]) [c="vtype *"], null<ptr<i32>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE18:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_Wv14a]]), null<ptr<i32>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_Wv14a]]) [c="vtype *"], null<ptr<i32>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE19:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf1a]]), null<ptr<fn() -> void>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf1a]]) [c="ftype *"], null<ptr<fn() -> void>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE20:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf1c]]), null<ptr<fn() -> void>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf1c]]) [c="ftype *"], null<ptr<fn() -> void>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE21:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf2a]]), null<ptr<fn() -> void>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf2a]]) [c="ftype *"], null<ptr<fn() -> void>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE22:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf3a]]), null<ptr<fn() -> void>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf3a]]) [c="ftype *"], null<ptr<fn() -> void>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE23:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf4a]]), null<ptr<fn() -> void>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf4a]]) [c="ftype *"], null<ptr<fn() -> void>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE24:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf4]]), null<ptr<fn() -> void>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf4]]) [c="ftype *"], null<ptr<fn() -> void>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE25:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf5a]]), null<ptr<fn() -> void>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf5a]]) [c="ftype *"], null<ptr<fn() -> void>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE26:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf5]]), null<ptr<fn() -> void>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf5]]) [c="ftype *"], null<ptr<fn() -> void>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE27:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf6a]]), null<ptr<fn() -> void>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf6a]]) [c="ftype *"], null<ptr<fn() -> void>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE28:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(call<ptr<fn() -> void>, signature=fn() -> ptr<fn() -> void>>(%[[VALUE_ff7]]), null<ptr<fn() -> void>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(call<ptr<fn() -> void>, signature=fn() -> ptr<fn() -> void>>(%[[VALUE_ff7]]) [c="ftype *"], null<ptr<fn() -> void>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE29:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(call<ptr<fn() -> void>, signature=fn() -> ptr<fn() -> void>>(%[[VALUE_ff7a]]), null<ptr<fn() -> void>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(call<ptr<fn() -> void>, signature=fn() -> ptr<fn() -> void>>(%[[VALUE_ff7a]]) [c="ftype *"], null<ptr<fn() -> void>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE30:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(call<ptr<fn() -> void>, signature=fn() -> ptr<fn() -> void>>(%[[VALUE_ff8]]), null<ptr<fn() -> void>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(call<ptr<fn() -> void>, signature=fn() -> ptr<fn() -> void>>(%[[VALUE_ff8]]) [c="ftype *"], null<ptr<fn() -> void>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE31:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(call<ptr<fn() -> void>, signature=fn() -> ptr<fn() -> void>>(%[[VALUE_ff8a]]), null<ptr<fn() -> void>>))
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<fn() -> void>>(call<ptr<fn() -> void>, signature=fn() -> ptr<fn() -> void>>(%[[VALUE_ff8a]]) [c="ftype *"], null<ptr<fn() -> void>>))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE32:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf9a]]), null<ptr<fn() -> void>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_pf9a]]) [c="ftype *"], null<ptr<fn() -> void>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE33:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(addr_of<ptr<fn() -> void>>(%[[VALUE_Wf10a]]), null<ptr<fn() -> void>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(addr_of<ptr<fn() -> void>>(%[[VALUE_Wf10a]]) [c="ftype *"], null<ptr<fn() -> void>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE34:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(addr_of<ptr<fn() -> void>>(%[[VALUE_Wf11a]]), null<ptr<fn() -> void>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(addr_of<ptr<fn() -> void>>(%[[VALUE_Wf11a]]) [c="ftype *"], null<ptr<fn() -> void>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE35:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(addr_of<ptr<fn() -> void>>(%[[VALUE_Wf12]]), null<ptr<fn() -> void>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(addr_of<ptr<fn() -> void>>(%[[VALUE_Wf12]]) [c="ftype *"], null<ptr<fn() -> void>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE36:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(addr_of<ptr<fn() -> void>>(%[[VALUE_wf12]]), null<ptr<fn() -> void>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(addr_of<ptr<fn() -> void>>(%[[VALUE_wf12]]) [c="ftype *"], null<ptr<fn() -> void>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE37:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(addr_of<ptr<fn() -> void>>(%[[VALUE_wf13]]), null<ptr<fn() -> void>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(addr_of<ptr<fn() -> void>>(%[[VALUE_wf13]]) [c="ftype *"], null<ptr<fn() -> void>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE38:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(addr_of<ptr<fn() -> void>>(%[[VALUE_Wf14a]]), null<ptr<fn() -> void>>)))
+// DEFAULT-NEXT:                 if not<bool>(not<bool>(ne<ptr<fn() -> void>>(addr_of<ptr<fn() -> void>>(%[[VALUE_Wf14a]]) [c="ftype *"], null<ptr<fn() -> void>>)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));

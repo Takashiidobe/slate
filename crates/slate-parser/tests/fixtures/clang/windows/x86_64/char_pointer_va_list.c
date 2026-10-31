@@ -37,11 +37,11 @@ int first_vararg(int count, ...) {
 // IR-NEXT:     }
 // IR-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = ptr<i8>;
 // IR-NEXT:     fn %[[VALUE_first_vararg:[0-9]+]] @first_vararg(%[[VALUE_count:[0-9]+]] count: i32, ...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: ptr<i8> [storage=automatic];
+// IR-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: ptr<i8> [storage=automatic] [c="va_list"];
 // IR-NEXT:         va_start(%[[VALUE_ap]]);
 // IR-NEXT:         let %[[VALUE_value:[0-9]+]] value: i32 [storage=automatic] = va_arg<i32>(%[[VALUE_ap]]);
 // IR-NEXT:         va_end(%[[VALUE_ap]]);
-// IR-NEXT:         write<ptr<i8>>(%[[VALUE_ap]], null<ptr<i8>>);
+// IR-NEXT:         write<ptr<i8>>(%[[VALUE_ap]], null<ptr<i8>> [c="va_list"]) [c="va_list"];
 // IR-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_value]]), read<i32>(%[[VALUE_count]]));
 // IR-NEXT:     }
 // IR-NEXT: }

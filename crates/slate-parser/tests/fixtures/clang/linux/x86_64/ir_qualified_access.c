@@ -68,7 +68,7 @@ int poll(volatile int *p, struct regs *r, vu *u, int a[restrict volatile 4]) {
 // IR-NEXT:         write<i32, volatile>(%[[VALUE_g]], const<i32>(1));
 // IR-NEXT:         return read<i32, volatile>(%[[VALUE_g]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_copy:[0-9]+]] @copy(%[[VALUE_dst:[0-9]+]] dst: ptr<i32> [restrict], %[[VALUE_src:[0-9]+]] src: ptr<const i32> [restrict], %[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:     fn %[[VALUE_copy:[0-9]+]] @copy(%[[VALUE_dst:[0-9]+]] dst: ptr<i32> [restrict], %[[VALUE_src:[0-9]+]] src: ptr<const i32> [restrict], %[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] [c="void(int *restrict, const int *restrict, int)"] {
 // IR-NEXT:         for %[[VALUE0:[0-9]+]]
 // IR-NEXT:             init:
 // IR-NEXT:                 let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
@@ -89,11 +89,11 @@ int poll(volatile int *p, struct regs *r, vu *u, int a[restrict volatile 4]) {
 // IR-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(%[[VALUE_counter]], add<i32, overflow=ub>(old<i32>, const<i32>(1)));
 // IR-NEXT:         write<i64, atomic=seq_cst>(%[[VALUE_total]], widen<i64, reason=assign>(read<i32, atomic=seq_cst>(%[[VALUE_counter]])));
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_poll:[0-9]+]] @poll(%[[VALUE_p:[0-9]+]] p: ptr<volatile i32>, %[[VALUE_r:[0-9]+]] r: ptr<@type[[TYPE_regs]]>, %[[VALUE_u:[0-9]+]] u: ptr<volatile u32>, %[[VALUE_a:[0-9]+]] a: volatile ptr<i32> [restrict] [array=4]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_poll:[0-9]+]] @poll(%[[VALUE_p:[0-9]+]] p: ptr<volatile i32>, %[[VALUE_r:[0-9]+]] r: ptr<@type[[TYPE_regs]]>, %[[VALUE_u:[0-9]+]] u: ptr<volatile u32> [c="vu *"], %[[VALUE_a:[0-9]+]] a: volatile ptr<i32> [restrict] [array=4]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(volatile int *, struct regs *, vu *, int[4])"] {
 // IR-NEXT:         write<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_p]])), const<i32>(0));
 // IR-NEXT:         write<i32, volatile>(field0(deref(read<ptr<@type[[TYPE_regs]]>>(%[[VALUE_r]]))), const<i32>(1));
 // IR-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE_regs]]>>(%[[VALUE_r]]))), const<i32>(2));
-// IR-NEXT:         write<u32, volatile>(deref(read<ptr<volatile u32>>(%[[VALUE_u]])), const<u32>(3));
+// IR-NEXT:         write<u32, volatile>(deref(read<ptr<volatile u32>>(%[[VALUE_u]])), const<u32>(3)) [c="vu"];
 // IR-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>, volatile>(%[[VALUE_a]]), const<i32>(0))), const<i32>(4));
 // IR-NEXT:         let %[[VALUE_arr:[0-9]+]] arr: volatile array<i32, 2> [storage=automatic];
 // IR-NEXT:         write<i32, volatile>(deref(ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<volatile i32>, length=Some(2)>(%[[VALUE_arr]]), const<i32>(1))), const<i32>(5));

@@ -52,14 +52,14 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_Status:[0-9]+]] Status = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE_CaseData:[0-9]+]] CaseData = struct {
 // DEFAULT-NEXT:         field0 input: i32;
-// DEFAULT-NEXT:         field1 expected: @type[[TYPE0]];
+// DEFAULT-NEXT:         field1 expected: @type[[TYPE0]] [c="Status"];
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([109, 105, 115, 109, 97, 116, 99, 104, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([109, 97, 116, 99, 104, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_E_FAIL]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_E_FAIL]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_cases:[0-9]+]] cases: array<@type[[TYPE_CaseData]], 2> [storage=automatic] [align=16] = aggregate<array<@type[[TYPE_CaseData]], 2>, zero_fill=false>(index0 = aggregate<@type[[TYPE_CaseData]], zero_fill=false>(field0 = const<i32>(1), field1 = int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0)))), index1 = aggregate<@type[[TYPE_CaseData]], zero_fill=false>(field0 = const<i32>(2), field1 = int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1)))));
-// DEFAULT-NEXT:         let %[[VALUE_actual:[0-9]+]] actual: @type[[TYPE0]] [storage=automatic] = int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE_cases:[0-9]+]] cases: array<@type[[TYPE_CaseData]], 2> [storage=automatic] [align=16] = aggregate<array<@type[[TYPE_CaseData]], 2>, zero_fill=false>(index0 = aggregate<@type[[TYPE_CaseData]], zero_fill=false>(field0 = const<i32>(1), field1 = int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))) [c="Status"]), index1 = aggregate<@type[[TYPE_CaseData]], zero_fill=false>(field0 = const<i32>(2), field1 = int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))) [c="Status"]));
+// DEFAULT-NEXT:         let %[[VALUE_actual:[0-9]+]] actual: @type[[TYPE0]] [storage=automatic] = int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))) [c="Status"] [c="Status"];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
@@ -73,7 +73,7 @@ int main(void) {
 // DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..const<i32>(2)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if ne<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_actual]])), enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(field1(deref(ptr_offset<ptr<@type[[TYPE_CaseData]]>, subtract=false, element=@type[[TYPE_CaseData]], overflow=ub>(array_decay<ptr<@type[[TYPE_CaseData]]>, length=Some(2)>(%[[VALUE_cases]]), read<i32>(%[[VALUE_i]])))))))
+// DEFAULT-NEXT:                     if ne<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_actual]]) [c="Status"]), enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(field1(deref(ptr_offset<ptr<@type[[TYPE_CaseData]]>, subtract=false, element=@type[[TYPE_CaseData]], overflow=ub>(array_decay<ptr<@type[[TYPE_CaseData]]>, length=Some(2)>(%[[VALUE_cases]]), read<i32>(%[[VALUE_i]]))))) [c="Status"]))
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_E_FAIL]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str]])), read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:                         }

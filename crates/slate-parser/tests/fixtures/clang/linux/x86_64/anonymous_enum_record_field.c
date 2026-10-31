@@ -45,7 +45,7 @@ int main(void) {
 // DEFAULT-NEXT:         %[[VALUE_IN_ELSE:[0-9]+]] IN_ELSE = const<i32>(5);
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_IN_ELIF]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_IN_ELIF]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_conditional:[0-9]+]] conditional: @type[[TYPE_Conditional]] [storage=automatic] = aggregate<@type[[TYPE_Conditional]], zero_fill=false>(field0 = int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         write<@type[[TYPE0]]>(field0(%[[VALUE_conditional]]), int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(5))));

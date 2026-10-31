@@ -88,27 +88,27 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=128, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE___sigset_t:[0-9]+]] __sigset_t = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE___jmp_buf_tag:[0-9]+]] __jmp_buf_tag = struct {
-// DEFAULT-NEXT:         field0 __jmpbuf: array<i64, 8>;
+// DEFAULT-NEXT:         field0 __jmpbuf: array<i64, 8> [c="__jmp_buf"];
 // DEFAULT-NEXT:         field1 __mask_was_saved: i32;
-// DEFAULT-NEXT:         field2 __saved_mask: @type[[TYPE0]];
+// DEFAULT-NEXT:         field2 __saved_mask: @type[[TYPE0]] [c="__sigset_t"];
 // DEFAULT-NEXT:     } [size=200, align=8, offsets=[0, 64, 72]];
 // DEFAULT-NEXT:     type @type[[TYPE_jmp_buf:[0-9]+]] jmp_buf = array<@type[[TYPE___jmp_buf_tag]], 1>;
 // DEFAULT-NEXT:     type @type[[TYPE_Callback:[0-9]+]] Callback = fn(i32) -> void;
 // DEFAULT-NEXT:     type @type[[TYPE_Dispatch:[0-9]+]] Dispatch = fn(i32, i32) -> void;
 // DEFAULT-NEXT:     type @type[[TYPE_Ctx:[0-9]+]] Ctx = struct {
-// DEFAULT-NEXT:         field0 run: ptr<fn(i32, i32) -> void>;
+// DEFAULT-NEXT:         field0 run: ptr<fn(i32, i32) -> void> [c="Dispatch *"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %[[VALUE_env:[0-9]+]] env: array<@type[[TYPE___jmp_buf_tag]], 1> [storage=static] [align=16] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_env:[0-9]+]] env: array<@type[[TYPE___jmp_buf_tag]], 1> [storage=static] [align=16] [linkage=internal] [c="jmp_buf"];
 // DEFAULT-NEXT:     global %[[VALUE_failures:[0-9]+]] failures: i32 [storage=static] = const<i32>(0) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_g_callback:[0-9]+]] g_callback: ptr<fn(i32) -> void> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_g_callback:[0-9]+]] g_callback: ptr<fn(i32) -> void> [storage=static] [linkage=internal] [c="Callback *"];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([113, 117, 105, 101, 116, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 12> [storage=static] = code_units<array<i8, 12>>([112, 97, 110, 105, 99, 107, 121, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 20> [storage=static] = code_units<array<i8, 20>>([114, 101, 99, 111, 118, 101, 114, 101, 100, 32, 113, 117, 105, 101, 116, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 22> [storage=static] = code_units<array<i8, 22>>([114, 101, 99, 111, 118, 101, 114, 101, 100, 32, 112, 97, 110, 105, 99, 107, 121, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_5:[0-9]+]] .str[[VALUE_str_5]]: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([102, 97, 105, 108, 117, 114, 101, 115, 61, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE__setjmp:[0-9]+]] @_setjmp(%[[VALUE___env:[0-9]+]] __env: ptr<@type[[TYPE___jmp_buf_tag]]> [array=1]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_longjmp:[0-9]+]] @longjmp(%[[VALUE___env_2:[0-9]+]] __env: ptr<@type[[TYPE___jmp_buf_tag]]> [array=1], %[[VALUE___val:[0-9]+]] __val: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE__setjmp:[0-9]+]] @_setjmp(%[[VALUE___env:[0-9]+]] __env: ptr<@type[[TYPE___jmp_buf_tag]]> [array=1]) -> i32 [linkage=external] [c="int(struct __jmp_buf_tag[1])"];
+// DEFAULT-NEXT:     fn %[[VALUE_longjmp:[0-9]+]] @longjmp(%[[VALUE___env_2:[0-9]+]] __env: ptr<@type[[TYPE___jmp_buf_tag]]> [array=1], %[[VALUE___val:[0-9]+]] __val: i32) -> void [linkage=external] [noreturn] [c="void(struct __jmp_buf_tag[1], int)"];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_quiet_callback:[0-9]+]] @quiet_callback(%[[VALUE_x:[0-9]+]] x: i32) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])), read<i32>(%[[VALUE_x]]));
 // DEFAULT-NEXT:     }
@@ -121,12 +121,12 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_dispatcher:[0-9]+]] @dispatcher(%[[VALUE_x_3:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         read<i32>(%[[VALUE_y]]);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(read<ptr<fn(i32) -> void>>(%[[VALUE_g_callback]]), read<i32>(%[[VALUE_x_3]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(read<ptr<fn(i32) -> void>>(%[[VALUE_g_callback]]) [c="Callback *"], read<i32>(%[[VALUE_x_3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: @type[[TYPE_Ctx]] [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<fn(i32, i32) -> void>>(field0(%[[VALUE_c]]), function_decay<ptr<fn(i32, i32) -> void>>(%[[VALUE_dispatcher]]));
-// DEFAULT-NEXT:         write<ptr<fn(i32) -> void>>(%[[VALUE_g_callback]], function_decay<ptr<fn(i32) -> void>>(%[[VALUE_quiet_callback]]));
+// DEFAULT-NEXT:         write<ptr<fn(i32, i32) -> void>>(field0(%[[VALUE_c]]), function_decay<ptr<fn(i32, i32) -> void>>(%[[VALUE_dispatcher]]) [c="Dispatch *"]) [c="Dispatch *"];
+// DEFAULT-NEXT:         write<ptr<fn(i32) -> void>>(%[[VALUE_g_callback]], function_decay<ptr<fn(i32) -> void>>(%[[VALUE_quiet_callback]]) [c="Callback *"]) [c="Callback *"];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
@@ -148,9 +148,9 @@ int main(void) {
 // DEFAULT-NEXT:                             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(20)>(%[[VALUE_str_3]])), read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:                             continue %[[VALUE0]];
 // DEFAULT-NEXT:                         }
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32) -> void>(read<ptr<fn(i32, i32) -> void>>(field0(%[[VALUE_c]])), read<i32>(%[[VALUE_i]]), const<i32>(0));
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32) -> void>(read<ptr<fn(i32, i32) -> void>>(field0(%[[VALUE_c]])) [c="Dispatch *"], read<i32>(%[[VALUE_i]]), const<i32>(0));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         write<ptr<fn(i32) -> void>>(%[[VALUE_g_callback]], function_decay<ptr<fn(i32) -> void>>(%[[VALUE_panicky_callback]]));
+// DEFAULT-NEXT:         write<ptr<fn(i32) -> void>>(%[[VALUE_g_callback]], function_decay<ptr<fn(i32) -> void>>(%[[VALUE_panicky_callback]]) [c="Callback *"]) [c="Callback *"];
 // DEFAULT-NEXT:         for %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
@@ -172,7 +172,7 @@ int main(void) {
 // DEFAULT-NEXT:                             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(22)>(%[[VALUE_str_4]])), read<i32>(%[[VALUE_i_2]]));
 // DEFAULT-NEXT:                             continue %[[VALUE5]];
 // DEFAULT-NEXT:                         }
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32) -> void>(read<ptr<fn(i32, i32) -> void>>(field0(%[[VALUE_c]])), read<i32>(%[[VALUE_i_2]]), const<i32>(0));
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32) -> void>(read<ptr<fn(i32, i32) -> void>>(field0(%[[VALUE_c]])) [c="Dispatch *"], read<i32>(%[[VALUE_i_2]]), const<i32>(0));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_5]])), read<i32>(%[[VALUE_failures]]));
 // DEFAULT-NEXT:         return const<i32>(0);

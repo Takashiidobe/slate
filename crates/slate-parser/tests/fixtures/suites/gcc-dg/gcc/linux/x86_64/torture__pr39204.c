@@ -172,15 +172,15 @@ char * _do_text_substitution (char *input)
 // DEFAULT-NEXT:     type @type[[TYPE___uint64_t:[0-9]+]] __uint64_t = u64;
 // DEFAULT-NEXT:     type @type[[TYPE___quad_t:[0-9]+]] __quad_t = i64;
 // DEFAULT-NEXT:     type @type[[TYPE___u_quad_t:[0-9]+]] __u_quad_t = u64;
-// DEFAULT-NEXT:     type @type[[TYPE___dev_t:[0-9]+]] __dev_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE___dev_t:[0-9]+]] __dev_t = u64 [c="__u_quad_t"];
 // DEFAULT-NEXT:     type @type[[TYPE___uid_t:[0-9]+]] __uid_t = u32;
 // DEFAULT-NEXT:     type @type[[TYPE___gid_t:[0-9]+]] __gid_t = u32;
 // DEFAULT-NEXT:     type @type[[TYPE___ino_t:[0-9]+]] __ino_t = u64;
-// DEFAULT-NEXT:     type @type[[TYPE___ino64_t:[0-9]+]] __ino64_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE___ino64_t:[0-9]+]] __ino64_t = u64 [c="__u_quad_t"];
 // DEFAULT-NEXT:     type @type[[TYPE___mode_t:[0-9]+]] __mode_t = u32;
 // DEFAULT-NEXT:     type @type[[TYPE___nlink_t:[0-9]+]] __nlink_t = u32;
 // DEFAULT-NEXT:     type @type[[TYPE___off_t:[0-9]+]] __off_t = i64;
-// DEFAULT-NEXT:     type @type[[TYPE___off64_t:[0-9]+]] __off64_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE___off64_t:[0-9]+]] __off64_t = i64 [c="__quad_t"];
 // DEFAULT-NEXT:     type @type[[TYPE___pid_t:[0-9]+]] __pid_t = i32;
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 __val: array<i32, 2>;
@@ -201,13 +201,13 @@ char * _do_text_substitution (char *input)
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE___mbstate_t:[0-9]+]] __mbstate_t = @type[[TYPE1]];
 // DEFAULT-NEXT:     type @type[[TYPE3:[0-9]+]] = struct {
-// DEFAULT-NEXT:         field0 __pos: i64;
-// DEFAULT-NEXT:         field1 __state: @type[[TYPE1]];
+// DEFAULT-NEXT:         field0 __pos: i64 [c="__off_t"];
+// DEFAULT-NEXT:         field1 __state: @type[[TYPE1]] [c="__mbstate_t"];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE__G_fpos_t:[0-9]+]] _G_fpos_t = @type[[TYPE3]];
 // DEFAULT-NEXT:     type @type[[TYPE4:[0-9]+]] = struct {
-// DEFAULT-NEXT:         field0 __pos: i64;
-// DEFAULT-NEXT:         field1 __state: @type[[TYPE1]];
+// DEFAULT-NEXT:         field0 __pos: i64 [c="__off64_t"];
+// DEFAULT-NEXT:         field1 __state: @type[[TYPE1]] [c="__mbstate_t"];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE__G_fpos64_t:[0-9]+]] _G_fpos64_t = @type[[TYPE4]];
 // DEFAULT-NEXT:     type @type[[TYPE__G_uint16_t:[0-9]+]] _G_uint16_t = u16;
@@ -232,13 +232,13 @@ char * _do_text_substitution (char *input)
 // DEFAULT-NEXT:     extern %[[VALUE__IO_2_1_stderr_:[0-9]+]] _IO_2_1_stderr_: @type[[TYPE__IO_FILE_plus]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE__empty_count:[0-9]+]] _empty_count: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     extern %[[VALUE__word_substitution:[0-9]+]] _word_substitution: array<ptr<i8>, 256> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_fputs:[0-9]+]] @fputs(%[[VALUE___s:[0-9]+]] __s: ptr<const i8> [restrict], %[[VALUE___stream:[0-9]+]] __stream: ptr<@type[[TYPE__IO_FILE]]> [restrict]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fputs:[0-9]+]] @fputs(%[[VALUE___s:[0-9]+]] __s: ptr<const i8> [restrict], %[[VALUE___stream:[0-9]+]] __stream: ptr<@type[[TYPE__IO_FILE]]> [restrict] [c="FILE *restrict"]) -> i32 [linkage=external] [c="int(const char *restrict, FILE *restrict)"];
 // DEFAULT-NEXT:     fn %[[VALUE_strstr:[0-9]+]] @strstr(%[[VALUE___haystack:[0-9]+]] __haystack: ptr<const i8>, %[[VALUE___needle:[0-9]+]] __needle: ptr<const i8>) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_rindex:[0-9]+]] @rindex(%[[VALUE___s_2:[0-9]+]] __s: ptr<const i8>, %[[VALUE___c:[0-9]+]] __c: i32) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE___s_3:[0-9]+]] __s: ptr<const i8>) -> u64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE___s_3:[0-9]+]] __s: ptr<const i8>) -> u64 [linkage=external] [memory=read] [c="size_t(const char *)"];
 // DEFAULT-NEXT:     fn %[[VALUE_mystrlwr:[0-9]+]] @mystrlwr(%[[VALUE_string:[0-9]+]] string: ptr<i8>) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_m_replace_filename:[0-9]+]] @m_replace_filename(%[[VALUE_path:[0-9]+]] path: ptr<const i8>, %[[VALUE_filename:[0-9]+]] filename: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE__output_sorted_nested_toc:[0-9]+]] @_output_sorted_nested_toc(%[[VALUE_list:[0-9]+]] list: ptr<ptr<@type[[TYPE_TOC]]>>, %[[VALUE_num_items:[0-9]+]] num_items: u32) -> void [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE__output_sorted_nested_toc:[0-9]+]] @_output_sorted_nested_toc(%[[VALUE_list:[0-9]+]] list: ptr<ptr<@type[[TYPE_TOC]]>> [c="TOC **"], %[[VALUE_num_items:[0-9]+]] num_items: u32) -> void [linkage=internal] [c="void(TOC **, unsigned int)"];
 // DEFAULT-NEXT:     fn %[[VALUE__do_text_substitution:[0-9]+]] @_do_text_substitution(%[[VALUE_input:[0-9]+]] input: ptr<i8>) -> ptr<i8> [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_start:[0-9]+]] start: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_end:[0-9]+]] end: i32 [storage=automatic];
@@ -275,8 +275,8 @@ char * _do_text_substitution (char *input)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_mystricmp:[0-9]+]] @mystricmp(unprototyped) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE__toc_scmp:[0-9]+]] @_toc_scmp(%[[VALUE_e1:[0-9]+]] e1: ptr<const void>, %[[VALUE_e2:[0-9]+]] e2: ptr<const void>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_t1:[0-9]+]] t1: ptr<@type[[TYPE_TOC]]> [storage=automatic] = read<ptr<@type[[TYPE_TOC]]>>(deref(pointer_cast<ptr<ptr<@type[[TYPE_TOC]]>>, reason=explicit>(read<ptr<const void>>(%[[VALUE_e1]]))));
-// DEFAULT-NEXT:         let %[[VALUE_t2:[0-9]+]] t2: ptr<@type[[TYPE_TOC]]> [storage=automatic] = read<ptr<@type[[TYPE_TOC]]>>(deref(pointer_cast<ptr<ptr<@type[[TYPE_TOC]]>>, reason=explicit>(read<ptr<const void>>(%[[VALUE_e2]]))));
+// DEFAULT-NEXT:         let %[[VALUE_t1:[0-9]+]] t1: ptr<@type[[TYPE_TOC]]> [storage=automatic] = read<ptr<@type[[TYPE_TOC]]>>(deref(pointer_cast<ptr<ptr<@type[[TYPE_TOC]]>>, reason=explicit>(read<ptr<const void>>(%[[VALUE_e1]])))) [c="TOC *"] [c="TOC *"];
+// DEFAULT-NEXT:         let %[[VALUE_t2:[0-9]+]] t2: ptr<@type[[TYPE_TOC]]> [storage=automatic] = read<ptr<@type[[TYPE_TOC]]>>(deref(pointer_cast<ptr<ptr<@type[[TYPE_TOC]]>>, reason=explicit>(read<ptr<const void>>(%[[VALUE_e2]])))) [c="TOC *"] [c="TOC *"];
 // DEFAULT-NEXT:         return call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_mystricmp]], read<ptr<i8>>(field0(deref(read<ptr<@type[[TYPE_TOC]]>>(%[[VALUE_t1]])))), read<ptr<i8>>(field0(deref(read<ptr<@type[[TYPE_TOC]]>>(%[[VALUE_t2]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE__output_buffered_text:[0-9]+]] @_output_buffered_text() -> void [linkage=internal] [fallthrough=ret_void] {
@@ -290,28 +290,28 @@ char * _do_text_substitution (char *input)
 // DEFAULT-NEXT:         let %[[VALUE_new_filename:[0-9]+]] new_filename: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_line:[0-9]+]] line: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_f1:[0-9]+]] f1: ptr<@type[[TYPE__IO_FILE]]> [storage=automatic] = null<ptr<@type[[TYPE__IO_FILE]]>>;
-// DEFAULT-NEXT:         let %[[VALUE_f2:[0-9]+]] f2: ptr<@type[[TYPE__IO_FILE]]> [storage=automatic] = null<ptr<@type[[TYPE__IO_FILE]]>>;
+// DEFAULT-NEXT:         let %[[VALUE_f1:[0-9]+]] f1: ptr<@type[[TYPE__IO_FILE]]> [storage=automatic] = null<ptr<@type[[TYPE__IO_FILE]]>> [c="FILE *"] [c="FILE *"];
+// DEFAULT-NEXT:         let %[[VALUE_f2:[0-9]+]] f2: ptr<@type[[TYPE__IO_FILE]]> [storage=automatic] = null<ptr<@type[[TYPE__IO_FILE]]>> [c="FILE *"] [c="FILE *"];
 // DEFAULT-NEXT:         if logical_or<bool>(not<bool>(ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_new_filename]]), null<ptr<i8>>)), lt<u64>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_new_filename]]))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
 // DEFAULT-NEXT:             write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_new_filename]]), sub<u64, overflow=wrap>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_filename_2]]))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))), truncate<i8, reason=assign, fits=always>(const<i32>(120)));
-// DEFAULT-NEXT:         if logical_or<bool>(not<bool>(ne<ptr<@type[[TYPE__IO_FILE]]>>(read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f1]]), null<ptr<@type[[TYPE__IO_FILE]]>>)), not<bool>(ne<ptr<@type[[TYPE__IO_FILE]]>>(read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f2]]), null<ptr<@type[[TYPE__IO_FILE]]>>)))
+// DEFAULT-NEXT:         if logical_or<bool>(not<bool>(ne<ptr<@type[[TYPE__IO_FILE]]>>(read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f1]]) [c="FILE *"], null<ptr<@type[[TYPE__IO_FILE]]>>)), not<bool>(ne<ptr<@type[[TYPE__IO_FILE]]>>(read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f2]]) [c="FILE *"], null<ptr<@type[[TYPE__IO_FILE]]>>)))
 // DEFAULT-NEXT:             while %[[VALUE5:[0-9]+]] {
-// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: ptr<i8> [synthetic] = int_to_ptr<ptr<i8>, reason=assign>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_m_fgets]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f1]])));
+// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: ptr<i8> [synthetic] = int_to_ptr<ptr<i8>, reason=assign>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_m_fgets]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f1]]) [c="FILE *"]));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_line]], read<ptr<i8>>(%[[VALUE6]]));
 // DEFAULT-NEXT:                 yield ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE6]]), null<ptr<i8>>);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_line]], call<ptr<i8>, signature=fn(ptr<i8>) -> ptr<i8>>(%[[VALUE__do_text_substitution]], read<ptr<i8>>(%[[VALUE_line]])));
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<const i8>, ptr<@type[[TYPE__IO_FILE]]>) -> i32>(%[[VALUE_fputs]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_line]])), read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f2]]));
+// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<const i8>, ptr<@type[[TYPE__IO_FILE]]>) -> i32>(%[[VALUE_fputs]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_line]])), read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f2]]) [c="FILE *"]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_remove]], read<ptr<i8>>(%[[VALUE_filename_2]])), const<i32>(0))
 // DEFAULT-NEXT:             label %[[VALUE_cancel:[0-9]+]] cancel:
-// DEFAULT-NEXT:                 if ne<ptr<@type[[TYPE__IO_FILE]]>>(read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f1]]), null<ptr<@type[[TYPE__IO_FILE]]>>)
-// DEFAULT-NEXT:                     if ne<ptr<@type[[TYPE__IO_FILE]]>>(read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f2]]), null<ptr<@type[[TYPE__IO_FILE]]>>)
+// DEFAULT-NEXT:                 if ne<ptr<@type[[TYPE__IO_FILE]]>>(read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f1]]) [c="FILE *"], null<ptr<@type[[TYPE__IO_FILE]]>>)
+// DEFAULT-NEXT:                     if ne<ptr<@type[[TYPE__IO_FILE]]>>(read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f2]]) [c="FILE *"], null<ptr<@type[[TYPE__IO_FILE]]>>)
 // DEFAULT-NEXT:                         if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_new_filename]]), null<ptr<i8>>)
 // DEFAULT-NEXT:                             ;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE__close_html_file:[0-9]+]] @_close_html_file(%[[VALUE_file:[0-9]+]] file: ptr<@type[[TYPE__IO_FILE]]>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE__close_html_file:[0-9]+]] @_close_html_file(%[[VALUE_file:[0-9]+]] file: ptr<@type[[TYPE__IO_FILE]]> [c="FILE *"]) -> void [linkage=internal] [fallthrough=ret_void] [c="void(FILE *)"] {
 // DEFAULT-NEXT:         let %[[VALUE_f_2:[0-9]+]] f: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:             init:

@@ -57,7 +57,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([120, 121, 122, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_check_target:[0-9]+]] @check_target(%[[VALUE_ptr:[0-9]+]] ptr: ptr<const i8>, %[[VALUE_end:[0-9]+]] end: ptr<const i8>, %[[VALUE_tokPtr:[0-9]+]] tokPtr: ptr<i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_upper:[0-9]+]] upper: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_tokPtr]])), const<i32>(7));

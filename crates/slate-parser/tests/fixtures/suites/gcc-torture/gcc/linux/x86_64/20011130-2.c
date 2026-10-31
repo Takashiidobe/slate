@@ -84,7 +84,7 @@ int foo (S1 *x, float y)
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1]];
 // DEFAULT-NEXT:     type @type[[TYPE_S0:[0-9]+]] S0 = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
-// DEFAULT-NEXT:         field0 c: ptr<@type[[TYPE0]]>;
+// DEFAULT-NEXT:         field0 c: ptr<@type[[TYPE0]]> [c="S0 *"];
 // DEFAULT-NEXT:         field1 d: i32;
 // DEFAULT-NEXT:         field2 e: u32;
 // DEFAULT-NEXT:         field3 f: array<ptr<u8>, 3>;
@@ -92,8 +92,8 @@ int foo (S1 *x, float y)
 // DEFAULT-NEXT:     } [size=48, align=8, offsets=[0, 8, 12, 16, 40]];
 // DEFAULT-NEXT:     type @type[[TYPE_S1:[0-9]+]] S1 = @type[[TYPE1]];
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE1:[0-9]+]] <unnamed>: ptr<void>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<@type[[TYPE1]]>, %[[VALUE_y:[0-9]+]] y: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: ptr<@type[[TYPE0]]> [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<@type[[TYPE1]]> [c="S1 *"], %[[VALUE_y:[0-9]+]] y: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(S1 *, float)"] {
+// DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: ptr<@type[[TYPE0]]> [storage=automatic] [c="S0 *"];
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_k:[0-9]+]] k: i32 [storage=automatic];
@@ -104,7 +104,7 @@ int foo (S1 *x, float y)
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: f32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<u8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: array<ptr<u8>, 3> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_h]], read<ptr<@type[[TYPE0]]>>(field0(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE_x]])))));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_h]], read<ptr<@type[[TYPE0]]>>(field0(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE_x]])))) [c="S0 *"]) [c="S0 *"];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_m]], reinterpret<i32, reason=assign, fits=unknown>(widen<u32, reason=assign>(read<u8>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_h]])))))));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_l]], reinterpret<i32, reason=assign, fits=unknown>(widen<u32, reason=assign>(read<u8>(field1(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_h]])))))));
 // DEFAULT-NEXT:         write<f32>(%[[VALUE_n]], read<f32>(%[[VALUE_y]]));

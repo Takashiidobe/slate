@@ -57,7 +57,7 @@ int read_member(int x) { return ((union U)x).i; }
 // IR-NEXT:         field3 j: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 0, 0, 0], bit_offsets=[Some(0), None, None, None], bit_units=[(0, 1)], field_units=[Some(0), None, None, None]];
 // IR-NEXT:     type @type[[TYPE_V:[0-9]+]] V = union {
-// IR-NEXT:         field0 t: const i32;
+// IR-NEXT:         field0 t: const i32 [c="const T"];
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
 // IR-NEXT:     type @type[[TYPE_A:[0-9]+]] A = union {
 // IR-NEXT:         field0 p: ptr<i8>;
@@ -78,7 +78,7 @@ int read_member(int x) { return ((union U)x).i; }
 // IR-NEXT:     fn %[[VALUE_cast_float:[0-9]+]] @cast_float(%[[VALUE_x_2:[0-9]+]] x: f32) -> @type[[TYPE_U]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type[[TYPE_U]], reason=return>(aggregate<@type[[TYPE_U]], zero_fill=false>(field2 = read<f32>(%[[VALUE_x_2]])));
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_cast_const:[0-9]+]] @cast_const(%[[VALUE_x_3:[0-9]+]] x: i32 [const]) -> @type[[TYPE_V]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_cast_const:[0-9]+]] @cast_const(%[[VALUE_x_3:[0-9]+]] x: i32 [const]) -> @type[[TYPE_V]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] [c="union V(const int)"] {
 // IR-NEXT:         return copy<@type[[TYPE_V]], reason=return>(aggregate<@type[[TYPE_V]], zero_fill=false>(field0 = read<i32>(%[[VALUE_x_3]])));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_cast_array:[0-9]+]] @cast_array() -> @type[[TYPE_A]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {

@@ -158,10 +158,10 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_bar_arg:[0-9]+]] bar_arg: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_gap:[0-9]+]] gap: va_list [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_pap:[0-9]+]] pap: ptr<va_list> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_gap:[0-9]+]] gap: va_list [storage=static] [linkage=external] [c="va_list"];
+// DEFAULT-NEXT:     global %[[VALUE_pap:[0-9]+]] pap: ptr<va_list> [storage=static] [linkage=external] [c="va_list *"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_v:[0-9]+]] v: i32, %[[VALUE_ap:[0-9]+]] ap: va_list) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_v:[0-9]+]] v: i32, %[[VALUE_ap:[0-9]+]] ap: va_list [c="va_list"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(int, va_list)"] {
 // DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<i32>(%[[VALUE_v]])
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(5):
@@ -203,12 +203,12 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_f0:[0-9]+]] @f0(%[[VALUE_i:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_i_2:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_i_3:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_3:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_3:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], float_to_int<i32, reason=arg, out_of_range=ub, exceptions=ignore>(read<f64>(%[[VALUE_d]])));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x]], va_arg<i64>(%[[VALUE_ap_3]]));
@@ -216,20 +216,20 @@ int main(void) {
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_i_4:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_4:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_4:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_4]]);
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_d]], va_arg<f64>(%[[VALUE_ap_4]]));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_4]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_i_5:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_5:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_5:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x]], float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap_5]])));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, va_list) -> void>(%[[VALUE_foo]], read<i32>(%[[VALUE_i_5]]), read<va_list>(%[[VALUE_ap_5]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, va_list) -> void>(%[[VALUE_foo]], read<i32>(%[[VALUE_i_5]]), read<va_list>(%[[VALUE_ap_5]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5(%[[VALUE_i_6:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_6:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_6:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_6]]);
 // DEFAULT-NEXT:         va_copy(%[[VALUE_gap]], %[[VALUE_ap_6]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], read<i32>(%[[VALUE_i_6]]));
@@ -237,7 +237,7 @@ int main(void) {
 // DEFAULT-NEXT:         va_end(%[[VALUE_gap]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6(%[[VALUE_i_7:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_7:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_7:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_7]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], float_to_int<i32, reason=arg, out_of_range=ub, exceptions=ignore>(read<f64>(%[[VALUE_d]])));
 // DEFAULT-NEXT:         va_arg<i64>(%[[VALUE_ap_7]]);
@@ -247,16 +247,16 @@ int main(void) {
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_7]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7(%[[VALUE_i_8:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_8:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_8:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_8]]);
-// DEFAULT-NEXT:         write<ptr<va_list>>(%[[VALUE_pap]], addr_of<ptr<va_list>>(%[[VALUE_ap_8]]));
+// DEFAULT-NEXT:         write<ptr<va_list>>(%[[VALUE_pap]], addr_of<ptr<va_list>>(%[[VALUE_ap_8]]) [c="va_list *"]) [c="va_list *"];
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], read<i32>(%[[VALUE_i_8]]));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_8]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8(%[[VALUE_i_9:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_9:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_9:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_9]]);
-// DEFAULT-NEXT:         write<ptr<va_list>>(%[[VALUE_pap]], addr_of<ptr<va_list>>(%[[VALUE_ap_9]]));
+// DEFAULT-NEXT:         write<ptr<va_list>>(%[[VALUE_pap]], addr_of<ptr<va_list>>(%[[VALUE_ap_9]]) [c="va_list *"]) [c="va_list *"];
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], read<i32>(%[[VALUE_i_9]]));
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_d]], va_arg<f64>(%[[VALUE_ap_9]]));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_9]]);

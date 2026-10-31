@@ -71,16 +71,16 @@ void vararg_struct(int a, ...) {
 // DEFAULT-NEXT:     type @type[[TYPE_Align16:[0-9]+]] Align16 = struct {
 // DEFAULT-NEXT:         field0 x: array<i8, 16>;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0]];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i128 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return widen<i128, reason=return>(const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i128 [linkage=external] [fallthrough=ub_if_used] [c="int128_t(void)"] {
+// DEFAULT-NEXT:         return widen<i128, reason=return>(const<i32>(0)) [c="int128_t"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_a:[0-9]+]] a: i128, %[[VALUE_b:[0-9]+]] b: i128) -> i128 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<i128, overflow=ub>(read<i128>(%[[VALUE_a]]), read<i128>(%[[VALUE_b]]));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_a:[0-9]+]] a: i128 [c="int128_t"], %[[VALUE_b:[0-9]+]] b: i128 [c="int128_t"]) -> i128 [linkage=external] [fallthrough=ub_if_used] [c="int128_t(int128_t, int128_t)"] {
+// DEFAULT-NEXT:         return mul<i128, overflow=ub>(read<i128>(%[[VALUE_a]]) [c="int128_t"], read<i128>(%[[VALUE_b]]) [c="int128_t"]) [c="int128_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_vararg:[0-9]+]] @vararg(%[[VALUE_a_2:[0-9]+]] a: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
-// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i128 [storage=automatic] = va_arg<i128>(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i128 [storage=automatic] = va_arg<i128>(%[[VALUE_ap]]) [c="int128_t"] [c="int128_t"];
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_vararg_struct:[0-9]+]] @vararg_struct(%[[VALUE_a_3:[0-9]+]] a: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {

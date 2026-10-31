@@ -56,15 +56,15 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type[[TYPE_XML_Status:[0-9]+]] XML_Status = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE_Case:[0-9]+]] Case = struct {
-// DEFAULT-NEXT:         field0 expectedStatus: @type[[TYPE0]];
+// DEFAULT-NEXT:         field0 expectedStatus: @type[[TYPE0]] [c="XML_Status"];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([111, 107, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([101, 114, 114, 111, 114, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_XML_STATUS_OK]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_XML_STATUS_OK]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_cases:[0-9]+]] cases: array<@type[[TYPE_Case]], 2> [storage=automatic];
-// DEFAULT-NEXT:         write<@type[[TYPE0]]>(field0(deref(ptr_offset<ptr<@type[[TYPE_Case]]>, subtract=false, element=@type[[TYPE_Case]], overflow=ub>(array_decay<ptr<@type[[TYPE_Case]]>, length=Some(2)>(%[[VALUE_cases]]), const<i32>(0)))), int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         write<@type[[TYPE0]]>(field0(deref(ptr_offset<ptr<@type[[TYPE_Case]]>, subtract=false, element=@type[[TYPE_Case]], overflow=ub>(array_decay<ptr<@type[[TYPE_Case]]>, length=Some(2)>(%[[VALUE_cases]]), const<i32>(1)))), int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         write<@type[[TYPE0]]>(field0(deref(ptr_offset<ptr<@type[[TYPE_Case]]>, subtract=false, element=@type[[TYPE_Case]], overflow=ub>(array_decay<ptr<@type[[TYPE_Case]]>, length=Some(2)>(%[[VALUE_cases]]), const<i32>(0)))), int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))) [c="XML_Status"]) [c="XML_Status"];
+// DEFAULT-NEXT:         write<@type[[TYPE0]]>(field0(deref(ptr_offset<ptr<@type[[TYPE_Case]]>, subtract=false, element=@type[[TYPE_Case]], overflow=ub>(array_decay<ptr<@type[[TYPE_Case]]>, length=Some(2)>(%[[VALUE_cases]]), const<i32>(1)))), int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))) [c="XML_Status"]) [c="XML_Status"];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
@@ -78,8 +78,8 @@ int main(void) {
 // DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..const<i32>(2)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %[[VALUE_expectedStatus:[0-9]+]] expectedStatus: @type[[TYPE0]] [storage=automatic] [const] = read<@type[[TYPE0]]>(field0(deref(ptr_offset<ptr<@type[[TYPE_Case]]>, subtract=false, element=@type[[TYPE_Case]], overflow=ub>(array_decay<ptr<@type[[TYPE_Case]]>, length=Some(2)>(%[[VALUE_cases]]), read<i32>(%[[VALUE_i]])))));
-// DEFAULT-NEXT:                     if eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_expectedStatus]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
+// DEFAULT-NEXT:                     let %[[VALUE_expectedStatus:[0-9]+]] expectedStatus: @type[[TYPE0]] [storage=automatic] [const] = read<@type[[TYPE0]]>(field0(deref(ptr_offset<ptr<@type[[TYPE_Case]]>, subtract=false, element=@type[[TYPE_Case]], overflow=ub>(array_decay<ptr<@type[[TYPE_Case]]>, length=Some(2)>(%[[VALUE_cases]]), read<i32>(%[[VALUE_i]]))))) [c="XML_Status"] [c="const XML_Status"];
+// DEFAULT-NEXT:                     if eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_expectedStatus]]) [c="XML_Status"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_XML_STATUS_OK]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])));
 // DEFAULT-NEXT:                         }

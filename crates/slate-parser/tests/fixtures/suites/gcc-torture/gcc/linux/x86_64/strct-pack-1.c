@@ -56,16 +56,16 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_TRIAL:[0-9]+]] TRIAL = @type[[TYPE0]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_check:[0-9]+]] @check(%[[VALUE_t:[0-9]+]] t: ptr<@type[[TYPE0]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_check:[0-9]+]] @check(%[[VALUE_t:[0-9]+]] t: ptr<@type[[TYPE0]]> [c="TRIAL *"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(TRIAL *)"] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(read<i16>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i32>(1)), ne<f64, exceptions=observable>(read<f64>(field1(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]])))), const<f64>(16.0)))
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_trial:[0-9]+]] trial: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_trial:[0-9]+]] trial: @type[[TYPE0]] [storage=automatic] [c="TRIAL"];
 // DEFAULT-NEXT:         write<i16>(field0(%[[VALUE_trial]]), truncate<i16, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         write<f64>(field1(%[[VALUE_trial]]), const<f64>(16.0));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE0]]>) -> i32>(%[[VALUE_check]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_trial]])), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE0]]>) -> i32>(%[[VALUE_check]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_trial]]) [c="TRIAL *"]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

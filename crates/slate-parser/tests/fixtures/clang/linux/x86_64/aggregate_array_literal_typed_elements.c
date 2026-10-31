@@ -66,7 +66,7 @@ int main(void) {
 // DEFAULT-NEXT:         field1 value: ptr<const i8>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_count_null_pairs:[0-9]+]] @count_null_pairs() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_pairs:[0-9]+]] pairs: array<@type[[TYPE_pair]], 1> [storage=automatic] [align=16] = aggregate<array<@type[[TYPE_pair]], 1>, zero_fill=false>(index0 = aggregate<@type[[TYPE_pair]], zero_fill=false>(field0 = null<ptr<const i8>>, field1 = null<ptr<const i8>>));
 // DEFAULT-NEXT:         let %[[VALUE_total:[0-9]+]] total: i32 [storage=automatic] = const<i32>(0);
@@ -97,15 +97,15 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_total_2:[0-9]+]] total: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         for %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %[[VALUE_i_2:[0-9]+]] i: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%[[VALUE_i_2]]), div<u64, by_zero=ub>(const<u64>(2), const<u64>(1)))
+// DEFAULT-NEXT:                 let %[[VALUE_i_2:[0-9]+]] i: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%[[VALUE_i_2]]) [c="size_t"], div<u64, by_zero=ub>(const<u64>(2), const<u64>(1)) [c="size_t"])
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_i_2]]);
-// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE6]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:                 write<u64>(%[[VALUE_i_2]], read<u64>(%[[VALUE7]]));
+// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_i_2]]) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE6]]) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="size_t"]) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                 write<u64>(%[[VALUE_i_2]], read<u64>(%[[VALUE7]]) [c="size_t"]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             counted: %[[VALUE_i_2]] in reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)))..div<u64, by_zero=ub>(const<u64>(2), const<u64>(1))
+// DEFAULT-NEXT:             counted: %[[VALUE_i_2]] in reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"]..div<u64, by_zero=ub>(const<u64>(2), const<u64>(1)) [c="size_t"]
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if read<bool>(deref(ptr_offset<ptr<bool>, subtract=false, element=bool, overflow=ub>(array_decay<ptr<bool>, length=Some(2)>(%[[VALUE_values]]), read<u64>(%[[VALUE_i_2]]))))

@@ -103,17 +103,17 @@ void caller(void) {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:         field1 b: f32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// IR-NEXT:     fn %[[VALUE_atomic_three:[0-9]+]] @atomic_three(%[[VALUE_v:[0-9]+]] v: atomic @type[[TYPE_three]]) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_atomic_three:[0-9]+]] @atomic_three(%[[VALUE_v:[0-9]+]] v: atomic @type[[TYPE_three]]) -> void [linkage=external] [abi=win64(native_c) -> void] [c="void(_Atomic struct three)"];
 // IR-NEXT:     fn %[[VALUE_plain_three:[0-9]+]] @plain_three(%[[VALUE_v_2:[0-9]+]] v: @type[[TYPE_three]]) -> void [linkage=external] [abi=win64(native_c) -> void];
-// IR-NEXT:     fn %[[VALUE_atomic_arr3:[0-9]+]] @atomic_arr3(%[[VALUE_v_3:[0-9]+]] v: atomic @type[[TYPE_arr3]]) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_atomic_arr3:[0-9]+]] @atomic_arr3(%[[VALUE_v_3:[0-9]+]] v: atomic @type[[TYPE_arr3]]) -> void [linkage=external] [abi=win64(native_c) -> void] [c="void(_Atomic struct arr3)"];
 // IR-NEXT:     fn %[[VALUE_plain_arr3:[0-9]+]] @plain_arr3(%[[VALUE_v_4:[0-9]+]] v: @type[[TYPE_arr3]]) -> void [linkage=external] [abi=win64(native_c) -> void];
-// IR-NEXT:     fn %[[VALUE_atomic_one:[0-9]+]] @atomic_one(%[[VALUE_v_5:[0-9]+]] v: atomic @type[[TYPE_one]]) -> void [linkage=external] [abi=win64(native_c) -> void];
-// IR-NEXT:     fn %[[VALUE_atomic_pair:[0-9]+]] @atomic_pair(%[[VALUE_v_6:[0-9]+]] v: atomic @type[[TYPE_pair]]) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_atomic_one:[0-9]+]] @atomic_one(%[[VALUE_v_5:[0-9]+]] v: atomic @type[[TYPE_one]]) -> void [linkage=external] [abi=win64(native_c) -> void] [c="void(_Atomic struct one)"];
+// IR-NEXT:     fn %[[VALUE_atomic_pair:[0-9]+]] @atomic_pair(%[[VALUE_v_6:[0-9]+]] v: atomic @type[[TYPE_pair]]) -> void [linkage=external] [abi=win64(native_c) -> void] [c="void(_Atomic struct pair)"];
 // IR-NEXT:     fn %[[VALUE_plain_pair:[0-9]+]] @plain_pair(%[[VALUE_v_7:[0-9]+]] v: @type[[TYPE_pair]]) -> void [linkage=external] [abi=win64(native_c) -> void];
-// IR-NEXT:     fn %[[VALUE_atomic_five:[0-9]+]] @atomic_five(%[[VALUE_v_8:[0-9]+]] v: atomic @type[[TYPE_five]]) -> void [linkage=external] [abi=win64(native_c) -> void];
-// IR-NEXT:     fn %[[VALUE_atomic_wide:[0-9]+]] @atomic_wide(%[[VALUE_v_9:[0-9]+]] v: atomic @type[[TYPE_wide]]) -> void [linkage=external] [abi=win64(native_c) -> void];
-// IR-NEXT:     fn %[[VALUE_atomic_union:[0-9]+]] @atomic_union(%[[VALUE_v_10:[0-9]+]] v: atomic @type[[TYPE_choice]]) -> void [linkage=external] [abi=win64(native_c) -> void];
-// IR-NEXT:     fn %[[VALUE_atomic_scalar:[0-9]+]] @atomic_scalar(%[[VALUE_v_11:[0-9]+]] v: atomic i64) -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_atomic_five:[0-9]+]] @atomic_five(%[[VALUE_v_8:[0-9]+]] v: atomic @type[[TYPE_five]]) -> void [linkage=external] [abi=win64(native_c) -> void] [c="void(_Atomic struct five)"];
+// IR-NEXT:     fn %[[VALUE_atomic_wide:[0-9]+]] @atomic_wide(%[[VALUE_v_9:[0-9]+]] v: atomic @type[[TYPE_wide]]) -> void [linkage=external] [abi=win64(native_c) -> void] [c="void(_Atomic struct wide)"];
+// IR-NEXT:     fn %[[VALUE_atomic_union:[0-9]+]] @atomic_union(%[[VALUE_v_10:[0-9]+]] v: atomic @type[[TYPE_choice]]) -> void [linkage=external] [abi=win64(native_c) -> void] [c="void(_Atomic union choice)"];
+// IR-NEXT:     fn %[[VALUE_atomic_scalar:[0-9]+]] @atomic_scalar(%[[VALUE_v_11:[0-9]+]] v: atomic i64) -> void [linkage=external] [c="void(_Atomic long long)"];
 // IR-NEXT:     fn %[[VALUE_atomic_result:[0-9]+]] @atomic_result() -> @type[[TYPE_three]] [linkage=external] [abi=win64() -> native_c];
 // IR-NEXT:     fn %[[VALUE_atomic_result_indirect:[0-9]+]] @atomic_result_indirect() -> @type[[TYPE_five]] [linkage=external] [abi=win64() -> native_c];
 // IR-NEXT:     fn %[[VALUE_caller:[0-9]+]] @caller() -> void [linkage=external] [fallthrough=ret_void] {

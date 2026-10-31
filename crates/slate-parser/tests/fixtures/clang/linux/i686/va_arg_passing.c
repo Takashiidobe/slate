@@ -63,10 +63,10 @@ void g(int n, ...) {
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE_v4:[0-9]+]] v4 = vector<i32, 4>;
 // DEFAULT-NEXT:     type @type[[TYPE_v:[0-9]+]] v = struct {
-// DEFAULT-NEXT:         field0 x: vector<i32, 4>;
+// DEFAULT-NEXT:         field0 x: vector<i32, 4> [c="v4"];
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0]];
 // DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_n:[0-9]+]] n: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: ptr<i8> [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_a]] [storage=automatic] = copy<@type[[TYPE_a]], reason=assign>(va_arg<@type[[TYPE_a]], memory>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_b]] [storage=automatic] = copy<@type[[TYPE_b]], reason=assign>(va_arg<@type[[TYPE_b]], memory>(%[[VALUE_ap]]));

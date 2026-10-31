@@ -40,14 +40,14 @@ void *take(int n, ...) {
 // DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
 // DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] = const<i32>(9) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_take:[0-9]+]] @take(%[[VALUE_n:[0-9]+]] n: i32, ...) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<void> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE0]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE1]]));
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = reinterpret<u64>(widen<i64>(read<i32>(%[[VALUE1]])));
-// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], pointer_cast<ptr<void>>(va_arg<ptr<vla<i32, %[[VALUE2]]>>>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], pointer_cast<ptr<void>>(va_arg<ptr<vla<i32, %[[VALUE2]]>>>(%[[VALUE_ap]]) [c="typeof(int (*)[*])"]));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         return read<ptr<void>>(%[[VALUE_p]]);
 // DEFAULT-NEXT:     }

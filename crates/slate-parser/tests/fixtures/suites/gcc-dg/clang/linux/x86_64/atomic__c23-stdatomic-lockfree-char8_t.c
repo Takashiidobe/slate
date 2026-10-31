@@ -69,7 +69,7 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_atomic_char8_t:[0-9]+]] atomic_char8_t = u8;
 // DEFAULT-NEXT:     global %[[VALUE_ac8a:[0-9]+]] ac8a: atomic u8 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_ac8t:[0-9]+]] ac8t: atomic u8 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ac8t:[0-9]+]] ac8t: atomic u8 [storage=static] [linkage=external] [c="atomic_char8_t"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]

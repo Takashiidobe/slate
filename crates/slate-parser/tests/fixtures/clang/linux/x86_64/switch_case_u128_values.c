@@ -65,10 +65,10 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_u128:[0-9]+]] u128 = u128b;
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 22> [storage=static] = code_units<array<i8, 22>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_classify:[0-9]+]] @classify(%[[VALUE_seed:[0-9]+]] seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: u128b [storage=automatic] = add<u128b, overflow=wrap>(const<u128b>(340282366920938463463374607431768211440), reinterpret<u128b, reason=explicit, fits=unknown>(widen<i128b, reason=explicit>(read<i32>(%[[VALUE_seed]]))));
-// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<u128b>(%[[VALUE_v]])
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: u128b [storage=automatic] = add<u128b, overflow=wrap>(const<u128b>(340282366920938463463374607431768211440) [c="u128"], reinterpret<u128b, reason=explicit, fits=unknown>(widen<i128b, reason=explicit>(read<i32>(%[[VALUE_seed]]))) [c="u128"]) [c="u128"] [c="u128"];
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<u128b>(%[[VALUE_v]]) [c="u128"]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<u128b>(340282366920938463463374607431768211441):
 // DEFAULT-NEXT:                     case %[[VALUE0]] const<u128b>(340282366920938463463374607431768211443):
@@ -80,8 +80,8 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_classify_run:[0-9]+]] @classify_run(%[[VALUE_seed_2:[0-9]+]] seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_v_2:[0-9]+]] v: u128b [storage=automatic] = add<u128b, overflow=wrap>(const<u128b>(340282366920938463463374607431768211440), reinterpret<u128b, reason=explicit, fits=unknown>(widen<i128b, reason=explicit>(read<i32>(%[[VALUE_seed_2]]))));
-// DEFAULT-NEXT:         switch %[[VALUE1:[0-9]+]] read<u128b>(%[[VALUE_v_2]])
+// DEFAULT-NEXT:         let %[[VALUE_v_2:[0-9]+]] v: u128b [storage=automatic] = add<u128b, overflow=wrap>(const<u128b>(340282366920938463463374607431768211440) [c="u128"], reinterpret<u128b, reason=explicit, fits=unknown>(widen<i128b, reason=explicit>(read<i32>(%[[VALUE_seed_2]]))) [c="u128"]) [c="u128"] [c="u128"];
+// DEFAULT-NEXT:         switch %[[VALUE1:[0-9]+]] read<u128b>(%[[VALUE_v_2]]) [c="u128"]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %[[VALUE1]] const<u128b>(340282366920938463463374607431768211441):
 // DEFAULT-NEXT:                     case %[[VALUE1]] const<u128b>(340282366920938463463374607431768211442):

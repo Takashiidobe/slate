@@ -137,36 +137,36 @@ RW (2, 3) void g1 (int n, int[n], int);     // { dg-warning "16: attribute 'acce
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type[[TYPE_G1:[0-9]+]] G1 = fn(i32, ptr<i32>, i32) -> void;
-// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_n:[0-9]+]] n: i32, %[[VALUE0:[0-9]+]] <unnamed>: ptr<i32> [array=*], %[[VALUE1:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE2:[0-9]+]] <unnamed>: i32, %[[VALUE3:[0-9]+]] <unnamed>: ptr<i32> [array=*], %[[VALUE4:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE5:[0-9]+]] <unnamed>: i32, %[[VALUE6:[0-9]+]] <unnamed>: ptr<i32> [array=*], %[[VALUE7:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE8:[0-9]+]] <unnamed>: i32, %[[VALUE9:[0-9]+]] <unnamed>: ptr<i32> [array=*], %[[VALUE10:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5(%[[VALUE11:[0-9]+]] <unnamed>: ptr<i32> [array=*], %[[VALUE12:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE13:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8(%[[VALUE_n_3:[0-9]+]] n: i32, %[[VALUE14:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f9:[0-9]+]] @f9(%[[VALUE_n_4:[0-9]+]] n: i32, %[[VALUE_a:[0-9]+]] a: ptr<i8> [array=%[[VALUE15:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     type @type[[TYPE_G1:[0-9]+]] G1 = fn(i32, ptr<i32>, i32) -> void [c="void(int, int[*], int)"];
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_n:[0-9]+]] n: i32, %[[VALUE0:[0-9]+]] <unnamed>: ptr<i32> [array=*], %[[VALUE1:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [c="void(int, int[*], int)"];
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE2:[0-9]+]] <unnamed>: i32, %[[VALUE3:[0-9]+]] <unnamed>: ptr<i32> [array=*], %[[VALUE4:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [c="void(int, int[*], int)"];
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE5:[0-9]+]] <unnamed>: i32, %[[VALUE6:[0-9]+]] <unnamed>: ptr<i32> [array=*], %[[VALUE7:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [c="void(int, int[*], int)"];
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE8:[0-9]+]] <unnamed>: i32, %[[VALUE9:[0-9]+]] <unnamed>: ptr<i32> [array=*], %[[VALUE10:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [c="void(int, int[*], int)"];
+// DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5(%[[VALUE11:[0-9]+]] <unnamed>: ptr<i32> [array=*], %[[VALUE12:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [c="void(int[*], int)"];
+// DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE13:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external] [c="void(int, int[*])"];
+// DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8(%[[VALUE_n_3:[0-9]+]] n: i32, %[[VALUE14:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external] [c="void(int, int[*])"];
+// DEFAULT-NEXT:     fn %[[VALUE_f9:[0-9]+]] @f9(%[[VALUE_n_4:[0-9]+]] n: i32, %[[VALUE_a:[0-9]+]] a: ptr<i8> [array=%[[VALUE15:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] [c="void(int, char[])"] {
 // DEFAULT-NEXT:         let %[[VALUE15]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_4]])));
 // DEFAULT-NEXT:         addr_of<ptr<i32>>(%[[VALUE_n_4]]);
 // DEFAULT-NEXT:         addr_of<ptr<ptr<i8>>>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f10:[0-9]+]] @f10(%[[VALUE_n_5:[0-9]+]] n: i32, %[[VALUE_a_2:[0-9]+]] a: ptr<i8> [array=%[[VALUE16:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f10:[0-9]+]] @f10(%[[VALUE_n_5:[0-9]+]] n: i32, %[[VALUE_a_2:[0-9]+]] a: ptr<i8> [array=%[[VALUE16:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] [c="void(int, char[])"] {
 // DEFAULT-NEXT:         let %[[VALUE16]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_5]])));
 // DEFAULT-NEXT:         addr_of<ptr<i32>>(%[[VALUE_n_5]]);
 // DEFAULT-NEXT:         addr_of<ptr<ptr<i8>>>(%[[VALUE_a_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f12__:[0-9]+]] @f12__(%[[VALUE17:[0-9]+]] <unnamed>: i32, %[[VALUE18:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f12_3:[0-9]+]] @f12_3(%[[VALUE19:[0-9]+]] <unnamed>: i32, %[[VALUE20:[0-9]+]] <unnamed>: ptr<i32> [array=3]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f12_n:[0-9]+]] @f12_n(%[[VALUE_n_6:[0-9]+]] n: i32, %[[VALUE21:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f12_x:[0-9]+]] @f12_x(%[[VALUE22:[0-9]+]] <unnamed>: i32, %[[VALUE23:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f13__:[0-9]+]] @f13__(%[[VALUE24:[0-9]+]] <unnamed>: i32, %[[VALUE25:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f13_5:[0-9]+]] @f13_5(%[[VALUE26:[0-9]+]] <unnamed>: i32, %[[VALUE27:[0-9]+]] <unnamed>: ptr<i32> [array=5]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f13_n:[0-9]+]] @f13_n(%[[VALUE_n_7:[0-9]+]] n: i32, %[[VALUE28:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f13_x:[0-9]+]] @f13_x(%[[VALUE29:[0-9]+]] <unnamed>: i32, %[[VALUE30:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f14__:[0-9]+]] @f14__(%[[VALUE31:[0-9]+]] <unnamed>: i32, %[[VALUE32:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f14_7:[0-9]+]] @f14_7(%[[VALUE33:[0-9]+]] <unnamed>: i32, %[[VALUE34:[0-9]+]] <unnamed>: ptr<i32> [array=7]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f14_n:[0-9]+]] @f14_n(%[[VALUE_n_8:[0-9]+]] n: i32, %[[VALUE35:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f14_x:[0-9]+]] @f14_x(%[[VALUE36:[0-9]+]] <unnamed>: i32, %[[VALUE37:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_g1:[0-9]+]] @g1(%[[VALUE38:[0-9]+]] <unnamed>: i32, %[[VALUE39:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE40:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f12__:[0-9]+]] @f12__(%[[VALUE17:[0-9]+]] <unnamed>: i32, %[[VALUE18:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external] [c="void(int, int[])"];
+// DEFAULT-NEXT:     fn %[[VALUE_f12_3:[0-9]+]] @f12_3(%[[VALUE19:[0-9]+]] <unnamed>: i32, %[[VALUE20:[0-9]+]] <unnamed>: ptr<i32> [array=3]) -> void [linkage=external] [c="void(int, int[3])"];
+// DEFAULT-NEXT:     fn %[[VALUE_f12_n:[0-9]+]] @f12_n(%[[VALUE_n_6:[0-9]+]] n: i32, %[[VALUE21:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external] [c="void(int, int[*])"];
+// DEFAULT-NEXT:     fn %[[VALUE_f12_x:[0-9]+]] @f12_x(%[[VALUE22:[0-9]+]] <unnamed>: i32, %[[VALUE23:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external] [c="void(int, int[*])"];
+// DEFAULT-NEXT:     fn %[[VALUE_f13__:[0-9]+]] @f13__(%[[VALUE24:[0-9]+]] <unnamed>: i32, %[[VALUE25:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external] [c="void(int, int[])"];
+// DEFAULT-NEXT:     fn %[[VALUE_f13_5:[0-9]+]] @f13_5(%[[VALUE26:[0-9]+]] <unnamed>: i32, %[[VALUE27:[0-9]+]] <unnamed>: ptr<i32> [array=5]) -> void [linkage=external] [c="void(int, int[5])"];
+// DEFAULT-NEXT:     fn %[[VALUE_f13_n:[0-9]+]] @f13_n(%[[VALUE_n_7:[0-9]+]] n: i32, %[[VALUE28:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external] [c="void(int, int[*])"];
+// DEFAULT-NEXT:     fn %[[VALUE_f13_x:[0-9]+]] @f13_x(%[[VALUE29:[0-9]+]] <unnamed>: i32, %[[VALUE30:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external] [c="void(int, int[*])"];
+// DEFAULT-NEXT:     fn %[[VALUE_f14__:[0-9]+]] @f14__(%[[VALUE31:[0-9]+]] <unnamed>: i32, %[[VALUE32:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external] [c="void(int, int[])"];
+// DEFAULT-NEXT:     fn %[[VALUE_f14_7:[0-9]+]] @f14_7(%[[VALUE33:[0-9]+]] <unnamed>: i32, %[[VALUE34:[0-9]+]] <unnamed>: ptr<i32> [array=7]) -> void [linkage=external] [c="void(int, int[7])"];
+// DEFAULT-NEXT:     fn %[[VALUE_f14_n:[0-9]+]] @f14_n(%[[VALUE_n_8:[0-9]+]] n: i32, %[[VALUE35:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external] [c="void(int, int[*])"];
+// DEFAULT-NEXT:     fn %[[VALUE_f14_x:[0-9]+]] @f14_x(%[[VALUE36:[0-9]+]] <unnamed>: i32, %[[VALUE37:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external] [c="void(int, int[*])"];
+// DEFAULT-NEXT:     fn %[[VALUE_g1:[0-9]+]] @g1(%[[VALUE38:[0-9]+]] <unnamed>: i32, %[[VALUE39:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE40:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [c="G1"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -144,42 +144,42 @@ main ()
 // DEFAULT-NEXT:     type @type[[TYPE_dw_cfi_node:[0-9]+]] dw_cfi_node = @type[[TYPE_dw_cfi_struct]];
 // DEFAULT-NEXT:     type @type[[TYPE_dw_fde_struct:[0-9]+]] dw_fde_struct = struct {
 // DEFAULT-NEXT:         field0 dw_fde_current_label: ptr<const i8>;
-// DEFAULT-NEXT:         field1 dw_fde_cfi: ptr<@type[[TYPE_dw_cfi_struct]]>;
+// DEFAULT-NEXT:         field1 dw_fde_cfi: ptr<@type[[TYPE_dw_cfi_struct]]> [c="dw_cfi_node *"];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_dw_fde_node:[0-9]+]] dw_fde_node = @type[[TYPE_dw_fde_struct]];
-// DEFAULT-NEXT:     global %[[VALUE_cie_cfi_head:[0-9]+]] cie_cfi_head: ptr<@type[[TYPE_dw_cfi_struct]]> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_cie_cfi_head:[0-9]+]] cie_cfi_head: ptr<@type[[TYPE_dw_cfi_struct]]> [storage=static] [linkage=external] [c="dw_cfi_node *"];
 // DEFAULT-NEXT:     global %[[VALUE_fde_table_in_use:[0-9]+]] fde_table_in_use: u32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_fde_table:[0-9]+]] fde_table: ptr<@type[[TYPE_dw_fde_struct]]> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_fde_table:[0-9]+]] fde_table: ptr<@type[[TYPE_dw_fde_struct]]> [storage=static] [linkage=external] [c="dw_fde_node *"];
 // DEFAULT-NEXT:     global %[[VALUE_label:[0-9]+]] label: array<i8, 20> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_label_num:[0-9]+]] label_num: u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([42, 46, 37, 115, 37, 117, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([76, 67, 70, 73, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 8> [storage=static] = code_units<array<i8, 8>>([42, 46, 76, 67, 70, 73, 48, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_sprintf:[0-9]+]] @sprintf(%[[VALUE___s:[0-9]+]] __s: ptr<i8> [restrict], %[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_realloc:[0-9]+]] @realloc(%[[VALUE___ptr:[0-9]+]] __ptr: ptr<void>, %[[VALUE___size_2:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_sprintf:[0-9]+]] @sprintf(%[[VALUE___s:[0-9]+]] __s: ptr<i8> [restrict], %[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(char *restrict, const char *restrict, ...)"];
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];
+// DEFAULT-NEXT:     fn %[[VALUE_realloc:[0-9]+]] @realloc(%[[VALUE___ptr:[0-9]+]] __ptr: ptr<void>, %[[VALUE___size_2:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(void *, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE___s_2:[0-9]+]] __s: ptr<void>, %[[VALUE___c:[0-9]+]] __c: i32, %[[VALUE___n:[0-9]+]] __n: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE___s_2:[0-9]+]] __s: ptr<void>, %[[VALUE___c:[0-9]+]] __c: i32, %[[VALUE___n:[0-9]+]] __n: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(void *, int, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_strcmp:[0-9]+]] @strcmp(%[[VALUE___s1:[0-9]+]] __s1: ptr<const i8>, %[[VALUE___s2:[0-9]+]] __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %[[VALUE_strdup:[0-9]+]] @strdup(%[[VALUE___s_3:[0-9]+]] __s: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_add_cfi:[0-9]+]] @add_cfi(%[[VALUE_list_head:[0-9]+]] list_head: ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>, %[[VALUE_cfi:[0-9]+]] cfi: ptr<@type[[TYPE_dw_cfi_struct]]>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<ptr<@type[[TYPE_dw_cfi_struct]]>> [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_add_cfi:[0-9]+]] @add_cfi(%[[VALUE_list_head:[0-9]+]] list_head: ptr<ptr<@type[[TYPE_dw_cfi_struct]]>> [c="dw_cfi_node **"], %[[VALUE_cfi:[0-9]+]] cfi: ptr<@type[[TYPE_dw_cfi_struct]]> [c="dw_cfi_node *"]) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] [c="void(dw_cfi_node **, dw_cfi_node *)"] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<ptr<@type[[TYPE_dw_cfi_struct]]>> [storage=automatic] [c="dw_cfi_node **"];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(%[[VALUE_p]], read<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(%[[VALUE_list_head]]));
-// DEFAULT-NEXT:             condition: ne<ptr<@type[[TYPE_dw_cfi_struct]]>>(read<ptr<@type[[TYPE_dw_cfi_struct]]>>(deref(read<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(%[[VALUE_p]]))), null<ptr<@type[[TYPE_dw_cfi_struct]]>>)
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(%[[VALUE_p]], read<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(%[[VALUE_list_head]]) [c="dw_cfi_node **"]) [c="dw_cfi_node **"];
+// DEFAULT-NEXT:             condition: ne<ptr<@type[[TYPE_dw_cfi_struct]]>>(read<ptr<@type[[TYPE_dw_cfi_struct]]>>(deref(read<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(%[[VALUE_p]]))) [c="dw_cfi_node *"], null<ptr<@type[[TYPE_dw_cfi_struct]]>> [c="dw_cfi_node *"])
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(%[[VALUE_p]], addr_of<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(field0(deref(read<ptr<@type[[TYPE_dw_cfi_struct]]>>(deref(read<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(%[[VALUE_p]])))))));
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(%[[VALUE_p]], addr_of<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(field0(deref(read<ptr<@type[[TYPE_dw_cfi_struct]]>>(deref(read<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(%[[VALUE_p]])))))) [c="dw_cfi_node **"]) [c="dw_cfi_node **"];
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 ;
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE_dw_cfi_struct]]>>(deref(read<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(%[[VALUE_p]])), read<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi]]));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_dw_cfi_struct]]>>(deref(read<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(%[[VALUE_p]])), read<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi]]) [c="dw_cfi_node *"]) [c="dw_cfi_node *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_new_cfi:[0-9]+]] @new_cfi() -> ptr<@type[[TYPE_dw_cfi_struct]]> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_cfi_2:[0-9]+]] cfi: ptr<@type[[TYPE_dw_cfi_struct]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_dw_cfi_struct]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(16)));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi_2]])), const<i32>(0), const<u64>(16));
+// DEFAULT-NEXT:         let %[[VALUE_cfi_2:[0-9]+]] cfi: ptr<@type[[TYPE_dw_cfi_struct]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_dw_cfi_struct]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(16))) [c="dw_cfi_node *"] [c="dw_cfi_node *"];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi_2]]) [c="dw_cfi_node *"]), const<i32>(0), const<u64>(16));
 // DEFAULT-NEXT:         return read<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_dwarf2out_cfi_label:[0-9]+]] @dwarf2out_cfi_label() -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
@@ -189,38 +189,38 @@ main ()
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(%[[VALUE_sprintf]], array_decay<ptr<i8>, length=Some(20)>(%[[VALUE_label]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]])), array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_2]]), truncate<u32, reason=explicit, fits=unknown>(read<u64>(%[[VALUE1]])));
 // DEFAULT-NEXT:         return array_decay<ptr<i8>, length=Some(20)>(%[[VALUE_label]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_add_fde_cfi:[0-9]+]] @add_fde_cfi(%[[VALUE_label_2:[0-9]+]] label: ptr<const i8>, %[[VALUE_cfi_3:[0-9]+]] cfi: ptr<@type[[TYPE_dw_cfi_struct]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_add_fde_cfi:[0-9]+]] @add_fde_cfi(%[[VALUE_label_2:[0-9]+]] label: ptr<const i8>, %[[VALUE_cfi_3:[0-9]+]] cfi: ptr<@type[[TYPE_dw_cfi_struct]]> [c="dw_cfi_node *"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(const char *, dw_cfi_node *)"] {
 // DEFAULT-NEXT:         if ne<ptr<const i8>>(read<ptr<const i8>>(%[[VALUE_label_2]]), null<ptr<const i8>>)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_fde:[0-9]+]] fde: ptr<@type[[TYPE_dw_fde_struct]]> [storage=automatic] = ptr_offset<ptr<@type[[TYPE_dw_fde_struct]]>, subtract=true, element=@type[[TYPE_dw_fde_struct]], overflow=ub>(ptr_offset<ptr<@type[[TYPE_dw_fde_struct]]>, subtract=false, element=@type[[TYPE_dw_fde_struct]], overflow=ub>(read<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde_table]]), read<u32>(%[[VALUE_fde_table_in_use]])), const<i32>(1));
+// DEFAULT-NEXT:                 let %[[VALUE_fde:[0-9]+]] fde: ptr<@type[[TYPE_dw_fde_struct]]> [storage=automatic] = ptr_offset<ptr<@type[[TYPE_dw_fde_struct]]>, subtract=true, element=@type[[TYPE_dw_fde_struct]], overflow=ub>(ptr_offset<ptr<@type[[TYPE_dw_fde_struct]]>, subtract=false, element=@type[[TYPE_dw_fde_struct]], overflow=ub>(read<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde_table]]) [c="dw_fde_node *"], read<u32>(%[[VALUE_fde_table_in_use]])) [c="dw_fde_node *"], const<i32>(1)) [c="dw_fde_node *"] [c="dw_fde_node *"];
 // DEFAULT-NEXT:                 if eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<const i8>>(%[[VALUE_label_2]])))), const<i32>(0))
 // DEFAULT-NEXT:                     write<ptr<const i8>>(%[[VALUE_label_2]], pointer_cast<ptr<const i8>, reason=assign>(call<ptr<i8>, signature=fn() -> ptr<i8>>(%[[VALUE_dwarf2out_cfi_label]])));
 // DEFAULT-NEXT:                 if logical_or<bool>(eq<ptr<const i8>>(read<ptr<const i8>>(field0(deref(read<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde]])))), null<ptr<const i8>>), ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%[[VALUE_strcmp]], read<ptr<const i8>>(%[[VALUE_label_2]]), read<ptr<const i8>>(field0(deref(read<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde]]))))), const<i32>(0)))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %[[VALUE_xcfi:[0-9]+]] xcfi: ptr<@type[[TYPE_dw_cfi_struct]]> [storage=automatic];
+// DEFAULT-NEXT:                         let %[[VALUE_xcfi:[0-9]+]] xcfi: ptr<@type[[TYPE_dw_cfi_struct]]> [storage=automatic] [c="dw_cfi_node *"];
 // DEFAULT-NEXT:                         let %[[VALUE3:[0-9]+]]: ptr<const i8> [synthetic] = pointer_cast<ptr<const i8>, reason=assign>(call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_strdup]], read<ptr<const i8>>(%[[VALUE_label_2]])));
 // DEFAULT-NEXT:                         write<ptr<const i8>>(%[[VALUE_label_2]], read<ptr<const i8>>(%[[VALUE3]]));
 // DEFAULT-NEXT:                         write<ptr<const i8>>(field0(deref(read<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde]]))), read<ptr<const i8>>(%[[VALUE3]]));
-// DEFAULT-NEXT:                         write<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_xcfi]], call<ptr<@type[[TYPE_dw_cfi_struct]]>, signature=fn() -> ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_new_cfi]]));
+// DEFAULT-NEXT:                         write<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_xcfi]], call<ptr<@type[[TYPE_dw_cfi_struct]]>, signature=fn() -> ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_new_cfi]]) [c="dw_cfi_node *"]) [c="dw_cfi_node *"];
 // DEFAULT-NEXT:                         write<ptr<const i8>>(field1(deref(read<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_xcfi]]))), read<ptr<const i8>>(%[[VALUE_label_2]]));
-// DEFAULT-NEXT:                         call<void, signature=fn(ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>, ptr<@type[[TYPE_dw_cfi_struct]]>) -> void>(%[[VALUE_add_cfi]], addr_of<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(field1(deref(read<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde]])))), read<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_xcfi]]));
+// DEFAULT-NEXT:                         call<void, signature=fn(ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>, ptr<@type[[TYPE_dw_cfi_struct]]>) -> void>(%[[VALUE_add_cfi]], addr_of<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(field1(deref(read<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde]])))) [c="dw_cfi_node **"], read<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_xcfi]]) [c="dw_cfi_node *"]);
 // DEFAULT-NEXT:                     }
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>, ptr<@type[[TYPE_dw_cfi_struct]]>) -> void>(%[[VALUE_add_cfi]], addr_of<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(field1(deref(read<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde]])))), read<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi_3]]));
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>, ptr<@type[[TYPE_dw_cfi_struct]]>) -> void>(%[[VALUE_add_cfi]], addr_of<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(field1(deref(read<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde]])))) [c="dw_cfi_node **"], read<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi_3]]) [c="dw_cfi_node *"]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn(ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>, ptr<@type[[TYPE_dw_cfi_struct]]>) -> void>(%[[VALUE_add_cfi]], addr_of<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(%[[VALUE_cie_cfi_head]]), read<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi_3]]));
+// DEFAULT-NEXT:             call<void, signature=fn(ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>, ptr<@type[[TYPE_dw_cfi_struct]]>) -> void>(%[[VALUE_add_cfi]], addr_of<ptr<ptr<@type[[TYPE_dw_cfi_struct]]>>>(%[[VALUE_cie_cfi_head]]) [c="dw_cfi_node **"], read<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi_3]]) [c="dw_cfi_node *"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_cfi_4:[0-9]+]] cfi: ptr<@type[[TYPE_dw_cfi_struct]]> [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_fde_2:[0-9]+]] fde: ptr<@type[[TYPE_dw_fde_struct]]> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_cfi_4:[0-9]+]] cfi: ptr<@type[[TYPE_dw_cfi_struct]]> [storage=automatic] [c="dw_cfi_node *"];
+// DEFAULT-NEXT:         let %[[VALUE_fde_2:[0-9]+]] fde: ptr<@type[[TYPE_dw_fde_struct]]> [storage=automatic] [c="dw_fde_node *"];
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_fde_table_in_use]], reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde_table]], pointer_cast<ptr<@type[[TYPE_dw_fde_struct]]>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde_table]])), const<u64>(16))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde_table]])), const<i32>(0), const<u64>(16));
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi_4]], call<ptr<@type[[TYPE_dw_cfi_struct]]>, signature=fn() -> ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_new_cfi]]));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<@type[[TYPE_dw_cfi_struct]]>) -> void>(%[[VALUE_add_fde_cfi]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_3]])), read<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi_4]]));
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde_2]], addr_of<ptr<@type[[TYPE_dw_fde_struct]]>>(deref(ptr_offset<ptr<@type[[TYPE_dw_fde_struct]]>, subtract=false, element=@type[[TYPE_dw_fde_struct]], overflow=ub>(read<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde_table]]), const<i32>(0)))));
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi_4]], read<ptr<@type[[TYPE_dw_cfi_struct]]>>(field1(deref(read<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde_2]])))));
-// DEFAULT-NEXT:         if eq<ptr<@type[[TYPE_dw_cfi_struct]]>>(read<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi_4]]), null<ptr<@type[[TYPE_dw_cfi_struct]]>>)
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde_table]], pointer_cast<ptr<@type[[TYPE_dw_fde_struct]]>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde_table]]) [c="dw_fde_node *"]), const<u64>(16))) [c="dw_fde_node *"]) [c="dw_fde_node *"];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde_table]]) [c="dw_fde_node *"]), const<i32>(0), const<u64>(16));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi_4]], call<ptr<@type[[TYPE_dw_cfi_struct]]>, signature=fn() -> ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_new_cfi]]) [c="dw_cfi_node *"]) [c="dw_cfi_node *"];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<@type[[TYPE_dw_cfi_struct]]>) -> void>(%[[VALUE_add_fde_cfi]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_3]])), read<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi_4]]) [c="dw_cfi_node *"]);
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde_2]], addr_of<ptr<@type[[TYPE_dw_fde_struct]]>>(deref(ptr_offset<ptr<@type[[TYPE_dw_fde_struct]]>, subtract=false, element=@type[[TYPE_dw_fde_struct]], overflow=ub>(read<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde_table]]), const<i32>(0)))) [c="dw_fde_node *"]) [c="dw_fde_node *"];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi_4]], read<ptr<@type[[TYPE_dw_cfi_struct]]>>(field1(deref(read<ptr<@type[[TYPE_dw_fde_struct]]>>(%[[VALUE_fde_2]])))) [c="dw_cfi_node *"]) [c="dw_cfi_node *"];
+// DEFAULT-NEXT:         if eq<ptr<@type[[TYPE_dw_cfi_struct]]>>(read<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi_4]]) [c="dw_cfi_node *"], null<ptr<@type[[TYPE_dw_cfi_struct]]>> [c="dw_cfi_node *"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if eq<ptr<const i8>>(read<ptr<const i8>>(field1(deref(read<ptr<@type[[TYPE_dw_cfi_struct]]>>(%[[VALUE_cfi_4]])))), null<ptr<const i8>>)
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

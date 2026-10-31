@@ -109,8 +109,8 @@ int run(struct efi_boot_services *services) {
 // DEFAULT-NEXT:     global %[[VALUE_single:[0-9]+]] single: ptr<fn(i32) -> void> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_double_pointer:[0-9]+]] double_pointer: ptr<ptr<fn(i32) -> void>> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_table:[0-9]+]] table: array<ptr<fn(i32) -> void>, 2> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_typedef_pointer:[0-9]+]] typedef_pointer: ptr<fn(i32) -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_typedef_table:[0-9]+]] typedef_table: array<ptr<fn(i32) -> void>, 2> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_typedef_pointer:[0-9]+]] typedef_pointer: ptr<fn(i32) -> void> [storage=static] [linkage=external] [c="handler_fn"];
+// DEFAULT-NEXT:     global %[[VALUE_typedef_table:[0-9]+]] typedef_table: array<ptr<fn(i32) -> void>, 2> [storage=static] [align=16] [linkage=external] [c="handler_fn[2]"];
 // DEFAULT-NEXT:     global %[[VALUE_plain:[0-9]+]] plain: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_declared:[0-9]+]] @declared() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_take:[0-9]+]] @take(%[[VALUE_callback:[0-9]+]] callback: ptr<fn(i32) -> void>) -> void [linkage=external];
@@ -152,8 +152,8 @@ int run(struct efi_boot_services *services) {
 // IR-WARN-NEXT:     global %[[VALUE_single:[0-9]+]] single: ptr<fn(i32) -> void> [storage=static] [linkage=external];
 // IR-WARN-NEXT:     global %[[VALUE_double_pointer:[0-9]+]] double_pointer: ptr<ptr<fn(i32) -> void>> [storage=static] [linkage=external];
 // IR-WARN-NEXT:     global %[[VALUE_table:[0-9]+]] table: array<ptr<fn(i32) -> void>, 2> [storage=static] [align=16] [linkage=external];
-// IR-WARN-NEXT:     global %[[VALUE_typedef_pointer:[0-9]+]] typedef_pointer: ptr<fn(i32) -> void> [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %[[VALUE_typedef_table:[0-9]+]] typedef_table: array<ptr<fn(i32) -> void>, 2> [storage=static] [align=16] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_typedef_pointer:[0-9]+]] typedef_pointer: ptr<fn(i32) -> void> [storage=static] [linkage=external] [c="handler_fn"];
+// IR-WARN-NEXT:     global %[[VALUE_typedef_table:[0-9]+]] typedef_table: array<ptr<fn(i32) -> void>, 2> [storage=static] [align=16] [linkage=external] [c="handler_fn[2]"];
 // IR-WARN-NEXT:     global %[[VALUE_plain:[0-9]+]] plain: i32 [storage=static] [linkage=external];
 // IR-WARN-NEXT:     fn %[[VALUE_declared:[0-9]+]] @declared() -> void [linkage=external] [noreturn];
 // IR-WARN-NEXT:     fn %[[VALUE_take:[0-9]+]] @take(%[[VALUE_callback:[0-9]+]] callback: ptr<fn(i32) -> void>) -> void [linkage=external];

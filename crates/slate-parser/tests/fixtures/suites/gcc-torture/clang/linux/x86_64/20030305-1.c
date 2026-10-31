@@ -48,9 +48,9 @@ static s2_t s2_array[]= {
 // DEFAULT-NEXT:     type @type[[TYPE_s1_t:[0-9]+]] s1_t = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 bbb: i32;
-// DEFAULT-NEXT:         field1 s1_array: array<@type[[TYPE0]], incomplete>;
+// DEFAULT-NEXT:         field1 s1_array: array<@type[[TYPE0]], incomplete> [c="s1_t[]"];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type[[TYPE_s2_t:[0-9]+]] s2_t = @type[[TYPE1]];
-// DEFAULT-NEXT:     global %[[VALUE_s2_array:[0-9]+]] s2_array: array<@type[[TYPE1]], 3> [storage=static] = aggregate<array<@type[[TYPE1]], 3>, zero_fill=false>(index0 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<i32>(1), field1 = aggregate<array<@type[[TYPE0]], 1>, zero_fill=false>(index0 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(4)))), index1 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<i32>(2), field1 = aggregate<array<@type[[TYPE0]], 1>, zero_fill=false>(index0 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(5)))), index2 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<i32>(3), field1 = aggregate<array<@type[[TYPE0]], 1>, zero_fill=false>(index0 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(6))))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_s2_array:[0-9]+]] s2_array: array<@type[[TYPE1]], 3> [storage=static] = aggregate<array<@type[[TYPE1]], 3>, zero_fill=false>(index0 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<i32>(1), field1 = aggregate<array<@type[[TYPE0]], 1>, zero_fill=false>(index0 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(4)))), index1 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<i32>(2), field1 = aggregate<array<@type[[TYPE0]], 1>, zero_fill=false>(index0 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(5)))), index2 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<i32>(3), field1 = aggregate<array<@type[[TYPE0]], 1>, zero_fill=false>(index0 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(6))))) [linkage=internal] [c="s2_t[]"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

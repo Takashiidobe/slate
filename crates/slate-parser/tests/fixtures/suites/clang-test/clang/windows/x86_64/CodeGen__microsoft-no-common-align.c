@@ -33,8 +33,8 @@ TooLargeAlignment *IsAPointer;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_TooLargeAlignment:[0-9]+]] TooLargeAlignment = vector<f32, 16>;
 // DEFAULT-NEXT:     type @type[[TYPE_NormalAlignment:[0-9]+]] NormalAlignment = vector<f32, 1>;
-// DEFAULT-NEXT:     global %[[VALUE_TooBig:[0-9]+]] TooBig: vector<f32, 16> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_JustRight:[0-9]+]] JustRight: vector<f32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_IsAPointer:[0-9]+]] IsAPointer: ptr<vector<f32, 16>> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_TooBig:[0-9]+]] TooBig: vector<f32, 16> [storage=static] [linkage=external] [c="TooLargeAlignment"];
+// DEFAULT-NEXT:     global %[[VALUE_JustRight:[0-9]+]] JustRight: vector<f32, 1> [storage=static] [linkage=external] [c="NormalAlignment"];
+// DEFAULT-NEXT:     global %[[VALUE_IsAPointer:[0-9]+]] IsAPointer: ptr<vector<f32, 16>> [storage=static] [linkage=external] [c="TooLargeAlignment *"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

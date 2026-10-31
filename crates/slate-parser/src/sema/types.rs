@@ -99,6 +99,7 @@ pub struct TypeResolver {
     pub(super) inferred: Option<QualType>,
     pub(super) function_names: Option<FunctionNames>,
     pub(super) locals: HashMap<BindingId, QualType>,
+    pub(super) c_nodes: HashMap<crate::ast::NodeId, QualType>,
     pub(super) constants: HashMap<BindingId, Operand>,
     folded_objects: HashMap<BindingId, Operand>,
     pub(super) fold_object_bounds: bool,
@@ -211,6 +212,7 @@ impl TypeResolver {
             inferred: None,
             function_names: None,
             locals: HashMap::new(),
+            c_nodes: HashMap::new(),
             constants: HashMap::new(),
             folded_objects: HashMap::new(),
             fold_object_bounds: false,
@@ -240,6 +242,16 @@ impl TypeResolver {
 
     pub fn ir_type(&self, q: QualType) -> Type {
         self.ctypes.ir_type(q, self.dialect.target())
+    }
+
+    pub(super) fn record_c_type<T>(&mut self, node: &crate::ast::Span<T>, c: QualType) {
+        self.c_nodes.insert(node.id, c);
+    }
+
+    pub(super) fn record_operand_c_type(&mut self, operand: &Operand) {
+        if self.ir_type(operand.c) == operand.value.ty {
+            self.record_c_type(&operand.value.node, operand.c);
+        }
     }
 
     pub fn is_va_list(&mut self, ty: &Type) -> bool {
@@ -3035,13 +3047,15 @@ impl TypeResolver {
                             resolved,
                             DeclaredAs::Other,
                         );
-                        fields.push(item.derive(Field {
+                        let field = item.derive(Field {
                             name: None,
                             ty: self.object_type(resolved, "void record field")?,
                             is_const: self.ctypes.quals(resolved).is_const,
                             access: self.access_of(resolved),
                             bit_width: None,
-                        }));
+                        });
+                        self.record_c_type(&field, resolved);
+                        fields.push(field);
                         field_types.push(resolved);
                         counters.push(None);
                         self.collect_member_names(resolved, &mut members);
@@ -3095,13 +3109,15 @@ impl TypeResolver {
                                     .map_err(|_| ResolveError::Rejected("invalid bit-field width"))
                             })
                             .transpose()?;
-                        fields.push(declarator.derive(Field {
+                        let field = declarator.derive(Field {
                             name: declarator.declarator.name().map(str::to_owned),
                             ty,
                             is_const: self.ctypes.quals(resolved).is_const,
                             access: self.access_of(resolved),
                             bit_width,
-                        }));
+                        });
+                        self.record_c_type(&field, resolved);
+                        fields.push(field);
                         field_types.push(resolved);
                         let attributes = declaration
                             .specifiers

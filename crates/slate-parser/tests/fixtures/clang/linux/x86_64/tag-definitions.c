@@ -84,6 +84,6 @@ void takes(struct inner *p, pair q);
 // DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_t]]), read<i32>(%[[VALUE0]]));
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(field0(%[[VALUE_t]])))), const<u64>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_takes:[0-9]+]] @takes(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_inner]]>, %[[VALUE_q:[0-9]+]] q: @type[[TYPE2]]) -> void [linkage=external] [abi=sysv64(scalar, native_c) -> void];
+// DEFAULT-NEXT:     fn %[[VALUE_takes:[0-9]+]] @takes(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_inner]]>, %[[VALUE_q:[0-9]+]] q: @type[[TYPE2]] [c="pair"]) -> void [linkage=external] [abi=sysv64(scalar, native_c) -> void] [c="void(struct inner *, pair)"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

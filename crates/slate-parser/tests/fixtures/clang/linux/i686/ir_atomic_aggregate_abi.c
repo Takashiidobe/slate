@@ -85,15 +85,15 @@ void caller(void) {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:         field1 b: f32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// IR-NEXT:     fn %[[VALUE_atomic_pair:[0-9]+]] @atomic_pair(%[[VALUE_v:[0-9]+]] v: atomic @type[[TYPE_pair]]) -> void [linkage=external] [abi=x86_cdecl(byval<align=4>) -> void];
+// IR-NEXT:     fn %[[VALUE_atomic_pair:[0-9]+]] @atomic_pair(%[[VALUE_v:[0-9]+]] v: atomic @type[[TYPE_pair]]) -> void [linkage=external] [abi=x86_cdecl(byval<align=4>) -> void] [c="void(_Atomic struct pair)"];
 // IR-NEXT:     fn %[[VALUE_plain_pair:[0-9]+]] @plain_pair(%[[VALUE_v_2:[0-9]+]] v: @type[[TYPE_pair]]) -> void [linkage=external] [abi=x86_cdecl(native_c) -> void];
-// IR-NEXT:     fn %[[VALUE_atomic_one:[0-9]+]] @atomic_one(%[[VALUE_v_3:[0-9]+]] v: atomic @type[[TYPE_one]]) -> void [linkage=external] [abi=x86_cdecl(byval<align=4>) -> void];
+// IR-NEXT:     fn %[[VALUE_atomic_one:[0-9]+]] @atomic_one(%[[VALUE_v_3:[0-9]+]] v: atomic @type[[TYPE_one]]) -> void [linkage=external] [abi=x86_cdecl(byval<align=4>) -> void] [c="void(_Atomic struct one)"];
 // IR-NEXT:     fn %[[VALUE_plain_one:[0-9]+]] @plain_one(%[[VALUE_v_4:[0-9]+]] v: @type[[TYPE_one]]) -> void [linkage=external] [abi=x86_cdecl(native_c) -> void];
-// IR-NEXT:     fn %[[VALUE_atomic_wide:[0-9]+]] @atomic_wide(%[[VALUE_v_5:[0-9]+]] v: atomic @type[[TYPE_wide]]) -> void [linkage=external] [abi=x86_cdecl(byval<align=4>) -> void];
-// IR-NEXT:     fn %[[VALUE_atomic_wrapped:[0-9]+]] @atomic_wrapped(%[[VALUE_v_6:[0-9]+]] v: atomic @type[[TYPE_wrapped]]) -> void [linkage=external] [abi=x86_cdecl(byval<align=4>) -> void];
-// IR-NEXT:     fn %[[VALUE_atomic_union:[0-9]+]] @atomic_union(%[[VALUE_v_7:[0-9]+]] v: atomic @type[[TYPE_choice]]) -> void [linkage=external] [abi=x86_cdecl(byval<align=4>) -> void];
-// IR-NEXT:     fn %[[VALUE_atomic_complex:[0-9]+]] @atomic_complex(%[[VALUE_v_8:[0-9]+]] v: atomic complex<f64>) -> void [linkage=external] [abi=x86_cdecl(byval<align=4>) -> void];
-// IR-NEXT:     fn %[[VALUE_atomic_scalar:[0-9]+]] @atomic_scalar(%[[VALUE_v_9:[0-9]+]] v: atomic i64) -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_atomic_wide:[0-9]+]] @atomic_wide(%[[VALUE_v_5:[0-9]+]] v: atomic @type[[TYPE_wide]]) -> void [linkage=external] [abi=x86_cdecl(byval<align=4>) -> void] [c="void(_Atomic struct wide)"];
+// IR-NEXT:     fn %[[VALUE_atomic_wrapped:[0-9]+]] @atomic_wrapped(%[[VALUE_v_6:[0-9]+]] v: atomic @type[[TYPE_wrapped]]) -> void [linkage=external] [abi=x86_cdecl(byval<align=4>) -> void] [c="void(_Atomic struct wrapped)"];
+// IR-NEXT:     fn %[[VALUE_atomic_union:[0-9]+]] @atomic_union(%[[VALUE_v_7:[0-9]+]] v: atomic @type[[TYPE_choice]]) -> void [linkage=external] [abi=x86_cdecl(byval<align=4>) -> void] [c="void(_Atomic union choice)"];
+// IR-NEXT:     fn %[[VALUE_atomic_complex:[0-9]+]] @atomic_complex(%[[VALUE_v_8:[0-9]+]] v: atomic complex<f64>) -> void [linkage=external] [abi=x86_cdecl(byval<align=4>) -> void] [c="void(_Atomic _Complex double)"];
+// IR-NEXT:     fn %[[VALUE_atomic_scalar:[0-9]+]] @atomic_scalar(%[[VALUE_v_9:[0-9]+]] v: atomic i64) -> void [linkage=external] [c="void(_Atomic long long)"];
 // IR-NEXT:     fn %[[VALUE_atomic_result:[0-9]+]] @atomic_result() -> @type[[TYPE_pair]] [linkage=external] [abi=x86_cdecl() -> sret<align=8>];
 // IR-NEXT:     fn %[[VALUE_plain_result:[0-9]+]] @plain_result() -> @type[[TYPE_pair]] [linkage=external] [abi=x86_cdecl() -> native_c];
 // IR-NEXT:     fn %[[VALUE_caller:[0-9]+]] @caller() -> void [linkage=external] [fallthrough=ret_void] {

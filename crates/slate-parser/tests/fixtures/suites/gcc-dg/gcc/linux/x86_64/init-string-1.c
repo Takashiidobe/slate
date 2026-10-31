@@ -89,7 +89,7 @@ wchar_t *p = (wchar_t [5]){ (L"p") }; /* { dg-bogus "warning" "warning in place 
 // DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 a: array<i8, 10>;
 // DEFAULT-NEXT:         field1 b: i32;
-// DEFAULT-NEXT:         field2 c: array<i32, 10>;
+// DEFAULT-NEXT:         field2 c: array<i32, 10> [c="wchar_t[10]"];
 // DEFAULT-NEXT:     } [size=56, align=4, offsets=[0, 12, 16]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str]]) [linkage=external];
@@ -109,6 +109,6 @@ wchar_t *p = (wchar_t [5]){ (L"p") }; /* { dg-bogus "warning" "warning in place 
 // DEFAULT-NEXT:     global %[[VALUE_m:[0-9]+]] m: @type[[TYPE_s]] [storage=static] = aggregate<@type[[TYPE_s]], zero_fill=true>(field0 = code_units<array<i8, 10>>([109, 0, 0, 0, 0, 0, 0, 0, 0, 0]), field2 = code_units<array<i32, 10>>([109, 0, 0, 0, 0, 0, 0, 0, 0, 0])) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_n:[0-9]+]] n: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(2)>(compound_literal %[[VALUE0:[0-9]+]] [storage=static] = code_units<array<i8, 2>>([110, 0])) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_o:[0-9]+]] o: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(2)>(compound_literal %[[VALUE1:[0-9]+]] [storage=static] = code_units<array<i8, 2>>([111, 0])) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=static] = array_decay<ptr<i32>, length=Some(5)>(compound_literal %[[VALUE2:[0-9]+]] [storage=static] = code_units<array<i32, 5>>([112, 0, 0, 0, 0])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=static] = array_decay<ptr<i32>, length=Some(5)>(compound_literal %[[VALUE2:[0-9]+]] [storage=static] = code_units<array<i32, 5>>([112, 0, 0, 0, 0])) [c="wchar_t *"] [linkage=external] [c="wchar_t *"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -60,7 +60,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 117, 32, 37, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 117, 32, 37, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 117, 32, 37, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_addc:[0-9]+]] @__builtin_addc(%[[VALUE0:[0-9]+]] <unnamed>: u32, %[[VALUE1:[0-9]+]] <unnamed>: u32, %[[VALUE2:[0-9]+]] <unnamed>: u32, %[[VALUE3:[0-9]+]] <unnamed>: ptr<u32>) -> u32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_add_with_carry:[0-9]+]] @add_with_carry(%[[VALUE_a:[0-9]+]] a: u32, %[[VALUE_b:[0-9]+]] b: u32, %[[VALUE_carry_in:[0-9]+]] carry_in: u32, %[[VALUE_carry_out:[0-9]+]] carry_out: ptr<u32>) -> u32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<u32, signature=fn(u32, u32, u32, ptr<u32>) -> u32>(%[[VALUE___builtin_addc]], read<u32>(%[[VALUE_a]]), read<u32>(%[[VALUE_b]]), read<u32>(%[[VALUE_carry_in]]), read<ptr<u32>>(%[[VALUE_carry_out]]));

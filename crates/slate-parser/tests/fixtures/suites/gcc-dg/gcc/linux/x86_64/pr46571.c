@@ -179,12 +179,12 @@ gfc_trans_omp_parallel_workshare (gfc_code * code)
 // DEFAULT-NEXT:     type @type[[TYPE_symbol_attribute:[0-9]+]] symbol_attribute = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE_gfc_char_t:[0-9]+]] gfc_char_t = u32;
 // DEFAULT-NEXT:     type @type[[TYPE_gfc_linebuf:[0-9]+]] gfc_linebuf = struct {
-// DEFAULT-NEXT:         field0 location: u32;
+// DEFAULT-NEXT:         field0 location: u32 [c="source_location"];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_gfc_linebuf_2:[0-9]+]] gfc_linebuf = @type[[TYPE_gfc_linebuf]];
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
-// DEFAULT-NEXT:         field0 nextc: ptr<u32>;
-// DEFAULT-NEXT:         field1 lb: ptr<@type[[TYPE_gfc_linebuf]]>;
+// DEFAULT-NEXT:         field0 nextc: ptr<u32> [c="gfc_char_t *"];
+// DEFAULT-NEXT:         field1 lb: ptr<@type[[TYPE_gfc_linebuf]]> [c="gfc_linebuf *"];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_locus:[0-9]+]] locus = @type[[TYPE1]];
 // DEFAULT-NEXT:     type @type[[TYPE2:[0-9]+]] = struct {
@@ -192,7 +192,7 @@ gfc_trans_omp_parallel_workshare (gfc_code * code)
 // DEFAULT-NEXT:         field1 next: ptr<@type[[TYPE_gfc_namelist:[0-9]+]]>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_gfc_symbol]] gfc_symbol = struct {
-// DEFAULT-NEXT:         field0 attr: @type[[TYPE0]];
+// DEFAULT-NEXT:         field0 attr: @type[[TYPE0]] [c="symbol_attribute"];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_gfc_namelist]] gfc_namelist = struct incomplete;
 // DEFAULT-NEXT:     type @type[[TYPE_gfc_namelist_2:[0-9]+]] gfc_namelist = @type[[TYPE2]];
@@ -204,16 +204,16 @@ gfc_trans_omp_parallel_workshare (gfc_code * code)
 // DEFAULT-NEXT:         %[[VALUE_OMP_LIST_NUM:[0-9]+]] OMP_LIST_NUM = const<i32>(3);
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type[[TYPE_gfc_omp_clauses:[0-9]+]] gfc_omp_clauses = struct {
-// DEFAULT-NEXT:         field0 lists: array<ptr<@type[[TYPE2]]>, 3>;
+// DEFAULT-NEXT:         field0 lists: array<ptr<@type[[TYPE2]]>, 3> [c="gfc_namelist *[3]"];
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_gfc_omp_clauses_2:[0-9]+]] gfc_omp_clauses = @type[[TYPE_gfc_omp_clauses]];
 // DEFAULT-NEXT:     type @type[[TYPE_gfc_symbol_2:[0-9]+]] gfc_symbol = @type[[TYPE_gfc_symbol]];
 // DEFAULT-NEXT:     type @type[[TYPE_gfc_code:[0-9]+]] gfc_code = struct {
-// DEFAULT-NEXT:         field0 loc: @type[[TYPE1]];
+// DEFAULT-NEXT:         field0 loc: @type[[TYPE1]] [c="locus"];
 // DEFAULT-NEXT:         field1 ext: @type[[TYPE4:[0-9]+]];
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 16]];
 // DEFAULT-NEXT:     type @type[[TYPE4]] = union {
-// DEFAULT-NEXT:         field0 omp_clauses: ptr<@type[[TYPE_gfc_omp_clauses]]>;
+// DEFAULT-NEXT:         field0 omp_clauses: ptr<@type[[TYPE_gfc_omp_clauses]]> [c="gfc_omp_clauses *"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_gfc_code_2:[0-9]+]] gfc_code = @type[[TYPE_gfc_code]];
 // DEFAULT-NEXT:     type @type[[TYPE5:[0-9]+]] = struct {
@@ -221,24 +221,24 @@ gfc_trans_omp_parallel_workshare (gfc_code * code)
 // DEFAULT-NEXT:     type @type[[TYPE_stmtblock_t:[0-9]+]] stmtblock_t = @type[[TYPE5]];
 // DEFAULT-NEXT:     fn %[[VALUE_build_omp_clause:[0-9]+]] @build_omp_clause(unprototyped) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_gfc_trans_omp_array_reduction:[0-9]+]] @gfc_trans_omp_array_reduction(unprototyped) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_gfc_trans_omp_reduction_list:[0-9]+]] @gfc_trans_omp_reduction_list(%[[VALUE_namelist:[0-9]+]] namelist: ptr<@type[[TYPE2]]>, %[[VALUE_list:[0-9]+]] list: ptr<@type[[TYPE_tree_node]]>, %[[VALUE_reduction_code:[0-9]+]] reduction_code: @type[[TYPE_tree_code]], %[[VALUE_where:[0-9]+]] where: @type[[TYPE1]]) -> ptr<@type[[TYPE_tree_node]]> [linkage=internal] [abi=sysv64(scalar, scalar, scalar, native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_gfc_trans_omp_reduction_list:[0-9]+]] @gfc_trans_omp_reduction_list(%[[VALUE_namelist:[0-9]+]] namelist: ptr<@type[[TYPE2]]> [c="gfc_namelist *"], %[[VALUE_list:[0-9]+]] list: ptr<@type[[TYPE_tree_node]]> [c="tree"], %[[VALUE_reduction_code:[0-9]+]] reduction_code: @type[[TYPE_tree_code]], %[[VALUE_where:[0-9]+]] where: @type[[TYPE1]] [c="locus"]) -> ptr<@type[[TYPE_tree_node]]> [linkage=internal] [abi=sysv64(scalar, scalar, scalar, native_c) -> scalar] [fallthrough=ub_if_used] [c="tree(gfc_namelist *, tree, enum tree_code, locus)"] {
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:             condition: ne<ptr<@type[[TYPE2]]>>(read<ptr<@type[[TYPE2]]>>(%[[VALUE_namelist]]), null<ptr<@type[[TYPE2]]>>)
+// DEFAULT-NEXT:             condition: ne<ptr<@type[[TYPE2]]>>(read<ptr<@type[[TYPE2]]>>(%[[VALUE_namelist]]) [c="gfc_namelist *"], null<ptr<@type[[TYPE2]]>> [c="gfc_namelist *"])
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 write<ptr<@type[[TYPE2]]>>(%[[VALUE_namelist]], pointer_cast<ptr<@type[[TYPE2]]>, reason=assign>(read<ptr<@type[[TYPE_gfc_namelist]]>>(field1(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_namelist]]))))));
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE2]]>>(%[[VALUE_namelist]], pointer_cast<ptr<@type[[TYPE2]]>, reason=assign>(read<ptr<@type[[TYPE_gfc_namelist]]>>(field1(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_namelist]]))))) [c="gfc_namelist *"]) [c="gfc_namelist *"];
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield7<unit=0, bytes=0..1, bits=7..8>(field0(deref(read<ptr<@type[[TYPE_gfc_symbol]]>>(field0(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_namelist]]))))))))), const<i32>(0))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %[[VALUE_node:[0-9]+]] node: ptr<@type[[TYPE_tree_node]]> [storage=automatic] = int_to_ptr<ptr<@type[[TYPE_tree_node]]>, reason=assign>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_build_omp_clause]], read<u32>(field0(deref(read<ptr<@type[[TYPE_gfc_linebuf]]>>(field1(%[[VALUE_where]])))))));
+// DEFAULT-NEXT:                         let %[[VALUE_node:[0-9]+]] node: ptr<@type[[TYPE_tree_node]]> [storage=automatic] = int_to_ptr<ptr<@type[[TYPE_tree_node]]>, reason=assign>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_build_omp_clause]], read<u32>(field0(deref(read<ptr<@type[[TYPE_gfc_linebuf]]>>(field1(%[[VALUE_where]]))))))) [c="tree"] [c="tree"];
 // DEFAULT-NEXT:                         write<@type[[TYPE_tree_code]]>(field0(field0(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_node]]))))), read<@type[[TYPE_tree_code]]>(%[[VALUE_reduction_code]]));
-// DEFAULT-NEXT:                         call<i32, signature=fn(unprototyped) -> i32, abi=sysv64(scalar, native_c) -> scalar>(%[[VALUE_gfc_trans_omp_array_reduction]], read<ptr<@type[[TYPE_gfc_symbol]]>>(field0(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_namelist]])))), copy<@type[[TYPE1]], reason=vararg>(read<@type[[TYPE1]]>(%[[VALUE_where]])));
+// DEFAULT-NEXT:                         call<i32, signature=fn(unprototyped) -> i32, abi=sysv64(scalar, native_c) -> scalar>(%[[VALUE_gfc_trans_omp_array_reduction]], read<ptr<@type[[TYPE_gfc_symbol]]>>(field0(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_namelist]])))), copy<@type[[TYPE1]], reason=vararg>(read<@type[[TYPE1]]>(%[[VALUE_where]]) [c="locus"]) [c="locus"]);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_gfc_trans_omp_clauses:[0-9]+]] @gfc_trans_omp_clauses(%[[VALUE_block:[0-9]+]] block: ptr<@type[[TYPE5]]>, %[[VALUE_clauses:[0-9]+]] clauses: ptr<@type[[TYPE_gfc_omp_clauses]]>, %[[VALUE_where_2:[0-9]+]] where: @type[[TYPE1]]) -> ptr<@type[[TYPE_tree_node]]> [linkage=internal] [abi=sysv64(scalar, scalar, native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_omp_clauses:[0-9]+]] omp_clauses: ptr<@type[[TYPE_tree_node]]> [storage=automatic] = null<ptr<@type[[TYPE_tree_node]]>>;
+// DEFAULT-NEXT:     fn %[[VALUE_gfc_trans_omp_clauses:[0-9]+]] @gfc_trans_omp_clauses(%[[VALUE_block:[0-9]+]] block: ptr<@type[[TYPE5]]> [c="stmtblock_t *"], %[[VALUE_clauses:[0-9]+]] clauses: ptr<@type[[TYPE_gfc_omp_clauses]]> [c="gfc_omp_clauses *"], %[[VALUE_where_2:[0-9]+]] where: @type[[TYPE1]] [c="locus"]) -> ptr<@type[[TYPE_tree_node]]> [linkage=internal] [abi=sysv64(scalar, scalar, native_c) -> scalar] [fallthrough=ub_if_used] [c="tree(stmtblock_t *, gfc_omp_clauses *, locus)"] {
+// DEFAULT-NEXT:         let %[[VALUE_omp_clauses:[0-9]+]] omp_clauses: ptr<@type[[TYPE_tree_node]]> [storage=automatic] = null<ptr<@type[[TYPE_tree_node]]>> [c="tree"] [c="tree"];
 // DEFAULT-NEXT:         let %[[VALUE_list_2:[0-9]+]] list: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -252,9 +252,9 @@ gfc_trans_omp_parallel_workshare (gfc_code * code)
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %[[VALUE_n:[0-9]+]] n: ptr<@type[[TYPE2]]> [storage=automatic] = read<ptr<@type[[TYPE2]]>>(deref(ptr_offset<ptr<ptr<@type[[TYPE2]]>>, subtract=false, element=ptr<@type[[TYPE2]]>, overflow=ub>(array_decay<ptr<ptr<@type[[TYPE2]]>>, length=Some(3)>(field0(deref(read<ptr<@type[[TYPE_gfc_omp_clauses]]>>(%[[VALUE_clauses]])))), read<i32>(%[[VALUE_list_2]]))));
+// DEFAULT-NEXT:                     let %[[VALUE_n:[0-9]+]] n: ptr<@type[[TYPE2]]> [storage=automatic] = read<ptr<@type[[TYPE2]]>>(deref(ptr_offset<ptr<ptr<@type[[TYPE2]]>>, subtract=false, element=ptr<@type[[TYPE2]]>, overflow=ub>(array_decay<ptr<ptr<@type[[TYPE2]]>>, length=Some(3)>(field0(deref(read<ptr<@type[[TYPE_gfc_omp_clauses]]>>(%[[VALUE_clauses]])))), read<i32>(%[[VALUE_list_2]])))) [c="gfc_namelist *"] [c="gfc_namelist *"];
 // DEFAULT-NEXT:                     let %[[VALUE_reduction_code_2:[0-9]+]] reduction_code: @type[[TYPE_tree_code]] [storage=automatic];
-// DEFAULT-NEXT:                     if eq<ptr<@type[[TYPE2]]>>(read<ptr<@type[[TYPE2]]>>(%[[VALUE_n]]), null<ptr<@type[[TYPE2]]>>)
+// DEFAULT-NEXT:                     if eq<ptr<@type[[TYPE2]]>>(read<ptr<@type[[TYPE2]]>>(%[[VALUE_n]]) [c="gfc_namelist *"], null<ptr<@type[[TYPE2]]>> [c="gfc_namelist *"])
 // DEFAULT-NEXT:                         continue %[[VALUE1]];
 // DEFAULT-NEXT:                     switch %[[VALUE4:[0-9]+]] read<i32>(%[[VALUE_list_2]])
 // DEFAULT-NEXT:                         {
@@ -264,12 +264,12 @@ gfc_trans_omp_parallel_workshare (gfc_code * code)
 // DEFAULT-NEXT:                             case %[[VALUE4]] const<i32>(2):
 // DEFAULT-NEXT:                                 write<@type[[TYPE_tree_code]]>(%[[VALUE_reduction_code_2]], int_to_enum<@type[[TYPE_tree_code]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:                         }
-// DEFAULT-NEXT:                     call<ptr<@type[[TYPE_tree_node]]>, signature=fn(ptr<@type[[TYPE2]]>, ptr<@type[[TYPE_tree_node]]>, @type[[TYPE_tree_code]], @type[[TYPE1]]) -> ptr<@type[[TYPE_tree_node]]>, abi=sysv64(scalar, scalar, scalar, native_c) -> scalar>(%[[VALUE_gfc_trans_omp_reduction_list]], read<ptr<@type[[TYPE2]]>>(%[[VALUE_n]]), read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_omp_clauses]]), read<@type[[TYPE_tree_code]]>(%[[VALUE_reduction_code_2]]), copy<@type[[TYPE1]], reason=arg>(read<@type[[TYPE1]]>(%[[VALUE_where_2]])));
+// DEFAULT-NEXT:                     call<ptr<@type[[TYPE_tree_node]]>, signature=fn(ptr<@type[[TYPE2]]>, ptr<@type[[TYPE_tree_node]]>, @type[[TYPE_tree_code]], @type[[TYPE1]]) -> ptr<@type[[TYPE_tree_node]]>, abi=sysv64(scalar, scalar, scalar, native_c) -> scalar>(%[[VALUE_gfc_trans_omp_reduction_list]], read<ptr<@type[[TYPE2]]>>(%[[VALUE_n]]) [c="gfc_namelist *"], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_omp_clauses]]) [c="tree"], read<@type[[TYPE_tree_code]]>(%[[VALUE_reduction_code_2]]), copy<@type[[TYPE1]], reason=arg>(read<@type[[TYPE1]]>(%[[VALUE_where_2]]) [c="locus"]) [c="locus"]) [c="tree"];
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_gfc_trans_omp_parallel_workshare:[0-9]+]] @gfc_trans_omp_parallel_workshare(%[[VALUE_code:[0-9]+]] code: ptr<@type[[TYPE_gfc_code]]>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_block_2:[0-9]+]] block: @type[[TYPE5]] [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_tree_node]]>, signature=fn(ptr<@type[[TYPE5]]>, ptr<@type[[TYPE_gfc_omp_clauses]]>, @type[[TYPE1]]) -> ptr<@type[[TYPE_tree_node]]>, abi=sysv64(scalar, scalar, native_c) -> scalar>(%[[VALUE_gfc_trans_omp_clauses]], addr_of<ptr<@type[[TYPE5]]>>(%[[VALUE_block_2]]), read<ptr<@type[[TYPE_gfc_omp_clauses]]>>(field0(field1(deref(read<ptr<@type[[TYPE_gfc_code]]>>(%[[VALUE_code]]))))), copy<@type[[TYPE1]], reason=arg>(read<@type[[TYPE1]]>(field0(deref(read<ptr<@type[[TYPE_gfc_code]]>>(%[[VALUE_code]]))))));
+// DEFAULT-NEXT:     fn %[[VALUE_gfc_trans_omp_parallel_workshare:[0-9]+]] @gfc_trans_omp_parallel_workshare(%[[VALUE_code:[0-9]+]] code: ptr<@type[[TYPE_gfc_code]]> [c="gfc_code *"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(gfc_code *)"] {
+// DEFAULT-NEXT:         let %[[VALUE_block_2:[0-9]+]] block: @type[[TYPE5]] [storage=automatic] [c="stmtblock_t"];
+// DEFAULT-NEXT:         call<ptr<@type[[TYPE_tree_node]]>, signature=fn(ptr<@type[[TYPE5]]>, ptr<@type[[TYPE_gfc_omp_clauses]]>, @type[[TYPE1]]) -> ptr<@type[[TYPE_tree_node]]>, abi=sysv64(scalar, scalar, native_c) -> scalar>(%[[VALUE_gfc_trans_omp_clauses]], addr_of<ptr<@type[[TYPE5]]>>(%[[VALUE_block_2]]) [c="stmtblock_t *"], read<ptr<@type[[TYPE_gfc_omp_clauses]]>>(field0(field1(deref(read<ptr<@type[[TYPE_gfc_code]]>>(%[[VALUE_code]]))))) [c="gfc_omp_clauses *"], copy<@type[[TYPE1]], reason=arg>(read<@type[[TYPE1]]>(field0(deref(read<ptr<@type[[TYPE_gfc_code]]>>(%[[VALUE_code]])))) [c="locus"]) [c="locus"]) [c="tree"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

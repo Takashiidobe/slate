@@ -1,6 +1,6 @@
 use super::{
-    AbiSignature, Atomicity, BindingId, Comments, CompareOp, FenceScope, Global, InlineAsm,
-    Parameters, Place, Type, TypeDefinition, Value, Variable,
+    AbiSignature, Atomicity, BindingId, CTypeTable, Comments, CompareOp, FenceScope, Global,
+    InlineAsm, Parameters, Place, Type, TypeDefinition, Value, Variable,
 };
 use crate::ast::{CommentAttach, CommentGroup, NodeId, Span};
 pub use crate::ast::{OmpScheduleKind, OmpScheduleModifier};
@@ -18,6 +18,7 @@ pub struct Module {
     pub functions: Vec<Span<Function>>,
     pub metadata: Metadata,
     pub comments: Comments,
+    pub c_types: CTypeTable,
 }
 
 #[derive(Debug, Clone)]
@@ -361,6 +362,7 @@ impl Module {
             functions: Vec::new(),
             metadata: Metadata::new(),
             comments: Comments::default(),
+            c_types: CTypeTable::default(),
         }
     }
 

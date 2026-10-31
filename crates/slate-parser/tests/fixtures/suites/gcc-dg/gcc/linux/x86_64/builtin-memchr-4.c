@@ -88,7 +88,7 @@ void test_memchr_cst_char (void)
 // DEFAULT-NEXT:     global %[[VALUE_str_16:[0-9]+]] .str[[VALUE_str_16]]: array<i8, 26> [storage=static] = code_units<array<i8, 26>>([38, 99, 91, 51, 93, 32, 61, 61, 32, 109, 101, 109, 99, 104, 114, 32, 40, 99, 44, 32, 48, 44, 32, 52, 41, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_17:[0-9]+]] .str[[VALUE_str_17]]: array<i8, 33> [storage=static] = code_units<array<i8, 33>>([97, 115, 115, 101, 114, 116, 105, 111, 110, 32, 102, 97, 105, 108, 101, 100, 32, 111, 110, 32, 108, 105, 110, 101, 32, 37, 105, 58, 32, 37, 115, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_18:[0-9]+]] .str[[VALUE_str_18]]: array<i8, 33> [storage=static] = code_units<array<i8, 33>>([38, 99, 91, 51, 93, 32, 61, 61, 32, 109, 101, 109, 99, 104, 114, 32, 40, 99, 44, 32, 48, 44, 32, 115, 105, 122, 101, 111, 102, 32, 97, 41, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_memchr:[0-9]+]] @memchr(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_memchr:[0-9]+]] @memchr(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(const void *, int, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE3:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_test_memchr_cst_char:[0-9]+]] @test_memchr_cst_char() -> void [linkage=external] [fallthrough=ret_void] {

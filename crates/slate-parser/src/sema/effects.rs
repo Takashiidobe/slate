@@ -73,6 +73,8 @@ pub(super) struct Hoister {
     pub(super) access: HashMap<BindingId, Access>,
     effect_free: HashSet<BindingId>,
     inlined: HashMap<BindingId, Value>,
+    pub(super) c_nodes: HashMap<crate::ast::NodeId, super::ctype::QualType>,
+    pub(super) c_bindings: HashMap<BindingId, super::ctype::QualType>,
 }
 
 impl Hoister {
@@ -89,6 +91,8 @@ impl Hoister {
             access,
             effect_free,
             inlined: HashMap::new(),
+            c_nodes: HashMap::new(),
+            c_bindings: HashMap::new(),
         }
     }
 
@@ -105,12 +109,20 @@ impl Hoister {
 
     fn temporary(&mut self, value: Value, out: &mut Vec<Span<Statement>>) -> Value {
         let place = self.declare(&value, Some(value.clone()), out);
+        let read = value.node.derive(ValueKind::Read {
+            place,
+            ordering: None,
+        });
+        self.inherit_c_type(value.node.id, read.id);
         Value {
             ty: value.ty,
-            node: value.node.derive(ValueKind::Read {
-                place,
-                ordering: None,
-            }),
+            node: read,
+        }
+    }
+
+    fn inherit_c_type(&mut self, from: crate::ast::NodeId, to: crate::ast::NodeId) {
+        if let Some(c) = self.c_nodes.get(&from).copied() {
+            self.c_nodes.insert(to, c);
         }
     }
 
@@ -122,12 +134,17 @@ impl Hoister {
     ) -> Place {
         let id = BindingId(self.next_id);
         self.next_id += 1;
-        out.push(source.node.derive(Statement::Temporary {
+        let temporary = source.node.derive(Statement::Temporary {
             id,
             ty: source.ty.clone(),
             initializer,
             unsequenced: self.unsequenced,
-        }));
+        });
+        self.inherit_c_type(source.node.id, temporary.id);
+        if let Some(c) = self.c_nodes.get(&source.node.id).copied() {
+            self.c_bindings.insert(id, c);
+        }
+        out.push(temporary);
         Place {
             ty: source.ty.clone(),
             kind: PlaceKind::Binding(id),
@@ -408,9 +425,11 @@ impl Hoister {
                 ordering: Some(ordering),
             } => {
                 let place = self.place(place, out)?;
+                let old = source.derive(ValueKind::OldValue);
+                self.inherit_c_type(source.id, old.id);
                 self.old.push(Value {
                     ty: place.ty.clone(),
-                    node: source.derive(ValueKind::OldValue),
+                    node: old,
                 });
                 let computation = self.value(*computation, out);
                 self.old.pop();
@@ -483,12 +502,14 @@ impl Hoister {
             } => {
                 let conflict = super::sequencing::assignment(&place, &computation);
                 let place = self.stable_place(place, out)?;
+                let old = source.derive(ValueKind::Read {
+                    place: place.clone(),
+                    ordering: None,
+                });
+                self.inherit_c_type(source.id, old.id);
                 let old = Value {
                     ty: place.ty.clone(),
-                    node: source.derive(ValueKind::Read {
-                        place: place.clone(),
-                        ordering: None,
-                    }),
+                    node: old,
                 };
                 let (old, result) = self.grouped(conflict, |this| {
                     let old = this.temporary(old, out);

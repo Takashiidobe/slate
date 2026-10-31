@@ -36,7 +36,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 34> [storage=static] = code_units<array<i8, 34>>([37, 56, 46, 50, 102, 124, 37, 43, 56, 46, 50, 102, 124, 37, 48, 56, 46, 50, 102, 124, 37, 45, 56, 46, 50, 102, 124, 37, 43, 46, 50, 102, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: f64 [storage=automatic] = const<f64>(3.14159);
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: f64 [storage=automatic] = neg<f64>(const<f64>(3.14159));

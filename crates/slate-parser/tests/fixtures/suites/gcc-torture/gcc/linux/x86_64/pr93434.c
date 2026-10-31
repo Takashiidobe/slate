@@ -71,7 +71,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_k:[0-9]+]] k: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_t2:[0-9]+]] t2: array<@type[[TYPE_creal_T]], 16> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_t2:[0-9]+]] t2: array<@type[[TYPE_creal_T]], 16> [storage=automatic] [align=16] [c="creal_T[16]"];
 // DEFAULT-NEXT:         let %[[VALUE_inval:[0-9]+]] inval: f64 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_inval]], const<f64>(1.0));
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
@@ -107,7 +107,7 @@ int main() {
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_k]], add<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(3)));
 // DEFAULT-NEXT:                     write<f64>(field0(deref(ptr_offset<ptr<@type[[TYPE_creal_T]]>, subtract=false, element=@type[[TYPE_creal_T]], overflow=ub>(array_decay<ptr<@type[[TYPE_creal_T]]>, length=Some(16)>(%[[VALUE_t2]]), read<i32>(%[[VALUE_k]])))), read<f64>(%[[VALUE_inval]]));
 // DEFAULT-NEXT:                     write<f64>(field1(deref(ptr_offset<ptr<@type[[TYPE_creal_T]]>, subtract=false, element=@type[[TYPE_creal_T]], overflow=ub>(array_decay<ptr<@type[[TYPE_creal_T]]>, length=Some(16)>(%[[VALUE_t2]]), read<i32>(%[[VALUE_k]])))), read<f64>(%[[VALUE_inval]]));
-// DEFAULT-NEXT:                     write<@type[[TYPE_creal_T]]>(deref(ptr_offset<ptr<@type[[TYPE_creal_T]]>, subtract=false, element=@type[[TYPE_creal_T]], overflow=ub>(array_decay<ptr<@type[[TYPE_creal_T]]>, length=Some(16)>(%[[VALUE_t2]]), read<i32>(%[[VALUE_i]]))), copy<@type[[TYPE_creal_T]], reason=assign>(read<@type[[TYPE_creal_T]]>(deref(ptr_offset<ptr<@type[[TYPE_creal_T]]>, subtract=false, element=@type[[TYPE_creal_T]], overflow=ub>(array_decay<ptr<@type[[TYPE_creal_T]]>, length=Some(16)>(%[[VALUE_t2]]), read<i32>(%[[VALUE_k]]))))));
+// DEFAULT-NEXT:                     write<@type[[TYPE_creal_T]]>(deref(ptr_offset<ptr<@type[[TYPE_creal_T]]>, subtract=false, element=@type[[TYPE_creal_T]], overflow=ub>(array_decay<ptr<@type[[TYPE_creal_T]]>, length=Some(16)>(%[[VALUE_t2]]), read<i32>(%[[VALUE_i]]))), copy<@type[[TYPE_creal_T]], reason=assign>(read<@type[[TYPE_creal_T]]>(deref(ptr_offset<ptr<@type[[TYPE_creal_T]]>, subtract=false, element=@type[[TYPE_creal_T]], overflow=ub>(array_decay<ptr<@type[[TYPE_creal_T]]>, length=Some(16)>(%[[VALUE_t2]]), read<i32>(%[[VALUE_k]])))) [c="creal_T"]) [c="creal_T"]) [c="creal_T"];
 // DEFAULT-NEXT:                     write<f64>(field0(deref(ptr_offset<ptr<@type[[TYPE_creal_T]]>, subtract=false, element=@type[[TYPE_creal_T]], overflow=ub>(array_decay<ptr<@type[[TYPE_creal_T]]>, length=Some(16)>(%[[VALUE_t2]]), read<i32>(%[[VALUE_k]])))), read<f64>(%[[VALUE_inval]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %[[VALUE6:[0-9]+]]

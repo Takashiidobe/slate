@@ -53,7 +53,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_inttostr:[0-9]+]] @inttostr(%[[VALUE_i:[0-9]+]] i: i64, %[[VALUE_buf:[0-9]+]] buf: ptr<i8> [array=128]) -> ptr<i8> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_inttostr:[0-9]+]] @inttostr(%[[VALUE_i:[0-9]+]] i: i64, %[[VALUE_buf:[0-9]+]] buf: ptr<i8> [array=128]) -> ptr<i8> [linkage=internal] [fallthrough=ub_if_used] [c="char *(long, char[128])"] {
 // DEFAULT-NEXT:         let %[[VALUE_ui:[0-9]+]] ui: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(read<i64>(%[[VALUE_i]]));
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_buf]]), const<i32>(127));
 // DEFAULT-NEXT:         write<i8>(deref(read<ptr<i8>>(%[[VALUE_p]])), truncate<i8, reason=assign, fits=always>(const<i32>(0)));

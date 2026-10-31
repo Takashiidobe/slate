@@ -70,12 +70,12 @@ void checkit(int a) {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: u64 [storage=automatic] [const] = const<u64>(85899345920);
-// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u64 [storage=automatic] [const] = const<u64>(2147483648);
-// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: u64 [storage=automatic] [const] = div<u64, by_zero=ub>(read<u64>(%[[VALUE_a_2]]), read<u64>(%[[VALUE_b]]));
-// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: u64 [storage=automatic] [const] = div<u64, by_zero=ub>(const<u64>(85899345920), const<u64>(2147483648));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_checkit]], reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_c]]))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_checkit]], reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_d]]))));
+// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: u64 [storage=automatic] [const] = const<u64>(85899345920) [c="ull"] [c="const ull"];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u64 [storage=automatic] [const] = const<u64>(2147483648) [c="ull"] [c="const ull"];
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: u64 [storage=automatic] [const] = div<u64, by_zero=ub>(read<u64>(%[[VALUE_a_2]]) [c="ull"], read<u64>(%[[VALUE_b]]) [c="ull"]) [c="ull"] [c="const ull"];
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: u64 [storage=automatic] [const] = div<u64, by_zero=ub>(const<u64>(85899345920), const<u64>(2147483648)) [c="ull"] [c="const ull"];
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_checkit]], reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_c]]) [c="ull"])));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_checkit]], reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_d]]) [c="ull"])));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

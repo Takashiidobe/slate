@@ -42,6 +42,6 @@ const __NSConstantString *s = __builtin___CFStringMakeConstantString("");
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
 // DEFAULT-NEXT:     extern %[[VALUE___CFConstantStringClassReference:[0-9]+]] __CFConstantStringClassReference: array<i32, incomplete> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE__unnamed_cfstring_5:[0-9]+]] _unnamed_cfstring_5: @type[[TYPE___NSConstantString_tag]] [storage=static] = aggregate<@type[[TYPE___NSConstantString_tag]], zero_fill=false>(field0 = array_decay<ptr<const i32>, length=None>(%[[VALUE___CFConstantStringClassReference]]), field1 = const<i32>(1992), field2 = array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str]]), field3 = const<i32>(0)) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: ptr<const @type[[TYPE___NSConstantString_tag]]> [storage=static] = addr_of<ptr<const @type[[TYPE___NSConstantString_tag]]>>(%[[VALUE__unnamed_cfstring_5]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: ptr<const @type[[TYPE___NSConstantString_tag]]> [storage=static] = addr_of<ptr<const @type[[TYPE___NSConstantString_tag]]>>(%[[VALUE__unnamed_cfstring_5]]) [c="const __NSConstantString *"] [linkage=external] [c="const __NSConstantString *"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

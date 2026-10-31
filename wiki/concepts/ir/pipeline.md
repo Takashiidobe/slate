@@ -94,6 +94,31 @@ from strings:
   function types with adjusted parameters, and prints a C23 `()` as `(void)`.
 - Function types carry no qualifier metadata.
 
+`Module::c_types` (`CTypeTable`, `src/ir/c_types.rs`) holds the same C types in
+structured form, next to the resolved `ir::Type`, which stays the only type
+that decides semantics:
+
+- `types` and `definitions` are the sema interner and tag definitions, so a
+  consumer can walk a typedef chain or desugar without parsing strings.
+- `nodes` maps a `NodeId` to its C type: values, record fields, parameters,
+  locals, globals, functions, and alias definitions. `bindings` maps a
+  `BindingId` to its declared type, including hoisted temporaries. `place()`
+  derives a place's type from these, since places have no node id; a swizzle
+  has none.
+- An entry always erases to its node's `ir::Type`, so comparisons (C `int`, IR
+  `bool`) have none. Nodes that don't correspond to a C expression, such as the
+  inner `widen` of `reinterpret(widen(x))`, have none either; use the width.
+- Typedefs survive arithmetic: the usual arithmetic conversions return the
+  operand with the higher rank, sugar included, so `uLong + int` is `uLong`.
+  A no-op conversion replaces the entry with the target type.
+- `--dump-ir-types` builds its module without lowering, so its table is empty.
+
+Dumps print an entry as `[c="..."]` only when the written spelling differs from
+the canonical one, because `const<u64>(1) [c="unsigned long"]` says nothing the
+reader needs next to `u64`. `unsigned long` is still in the table. A `write`
+prints its place's type after the statement. This needs no flag, and
+`--show-metadata` adds the rest of the metadata above.
+
 Macro expansion chains are not in the IR yet (only atomic builtins record
 `c_macro`); see [open design](open-design.md#macro-provenance).
 

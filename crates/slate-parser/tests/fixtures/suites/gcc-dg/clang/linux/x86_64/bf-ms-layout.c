@@ -313,7 +313,7 @@ int main(){
 // DEFAULT-NEXT:         field1 b: i64 : 3;
 // DEFAULT-NEXT:         field2 c: i8;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0, 1], bit_offsets=[Some(0), Some(3), None], bit_units=[(0, 1)], field_units=[Some(0), Some(0), None]];
-// DEFAULT-NEXT:     fn %[[VALUE_memcpy:[0-9]+]] @memcpy(%[[VALUE___dest:[0-9]+]] __dest: ptr<void> [restrict], %[[VALUE___src:[0-9]+]] __src: ptr<const void> [restrict], %[[VALUE___n:[0-9]+]] __n: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_memcpy:[0-9]+]] @memcpy(%[[VALUE___dest:[0-9]+]] __dest: ptr<void> [restrict], %[[VALUE___src:[0-9]+]] __src: ptr<const void> [restrict], %[[VALUE___n:[0-9]+]] __n: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(void *restrict, const void *restrict, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_filler:[0-9]+]] filler: array<u8, 16> [storage=automatic] [align=16];
@@ -327,16 +327,16 @@ int main(){
 // DEFAULT-NEXT:         let %[[VALUE_test_eight:[0-9]+]] test_eight: @type[[TYPE_eight]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_test_nine:[0-9]+]] test_nine: @type[[TYPE_nine]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_test_ten:[0-9]+]] test_ten: @type[[TYPE_ten]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_one:[0-9]+]] exp_sizeof_one: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(12)));
-// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_two:[0-9]+]] exp_sizeof_two: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(16)));
-// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_three:[0-9]+]] exp_sizeof_three: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(6)));
-// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_four:[0-9]+]] exp_sizeof_four: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(8)));
-// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_five:[0-9]+]] exp_sizeof_five: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(3)));
-// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_six:[0-9]+]] exp_sizeof_six: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(8)));
-// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_seven:[0-9]+]] exp_sizeof_seven: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(3)));
-// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_eight:[0-9]+]] exp_sizeof_eight: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(4)));
-// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_nine:[0-9]+]] exp_sizeof_nine: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(8)));
-// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_ten:[0-9]+]] exp_sizeof_ten: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(16)));
+// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_one:[0-9]+]] exp_sizeof_one: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(12))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_two:[0-9]+]] exp_sizeof_two: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(16))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_three:[0-9]+]] exp_sizeof_three: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(6))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_four:[0-9]+]] exp_sizeof_four: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(8))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_five:[0-9]+]] exp_sizeof_five: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(3))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_six:[0-9]+]] exp_sizeof_six: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(8))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_seven:[0-9]+]] exp_sizeof_seven: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(3))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_eight:[0-9]+]] exp_sizeof_eight: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(4))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_nine:[0-9]+]] exp_sizeof_nine: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(8))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:         let %[[VALUE_exp_sizeof_ten:[0-9]+]] exp_sizeof_ten: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(16))) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:         let %[[VALUE_exp_one_c:[0-9]+]] exp_one_c: u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(8)));
 // DEFAULT-NEXT:         let %[[VALUE_exp_two_c:[0-9]+]] exp_two_c: u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(12)));
 // DEFAULT-NEXT:         let %[[VALUE_exp_three_c:[0-9]+]] exp_three_c: u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(4)));

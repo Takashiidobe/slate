@@ -43,7 +43,7 @@ __atomic_is_lock_free (size_t s, void *p)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
-// DEFAULT-NEXT:     fn %[[VALUE___atomic_is_lock_free:[0-9]+]] @__atomic_is_lock_free(%[[VALUE_s:[0-9]+]] s: u64, %[[VALUE_p:[0-9]+]] p: ptr<void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE___atomic_is_lock_free:[0-9]+]] @__atomic_is_lock_free(%[[VALUE_s:[0-9]+]] s: u64 [c="size_t"], %[[VALUE_p:[0-9]+]] p: ptr<void>) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(size_t, void *)"] {
 // DEFAULT-NEXT:         return const<i32>(2);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

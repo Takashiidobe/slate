@@ -41,10 +41,10 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = const<i32>(0) [c="I"] [c="I"];
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_b]]);
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = or<i32>(read<i32>(%[[VALUE0]]), const<i32>(2));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = or<i32>(read<i32>(%[[VALUE0]]), const<i32>(2)) [c="I"] [c="I"];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], read<i32>(%[[VALUE1]]) [c="I"]) [c="I"];
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(2))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

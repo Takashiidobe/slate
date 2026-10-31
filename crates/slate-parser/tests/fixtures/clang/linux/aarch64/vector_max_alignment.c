@@ -40,7 +40,7 @@ int sizes[] = {sizeof(v8u8), _Alignof(v8u8), sizeof(v32u8), _Alignof(v32u8),
 // IR-NEXT:     type @type[[TYPE_v64f:[0-9]+]] v64f = vector<f32, 64>;
 // IR-NEXT:     type @type[[TYPE_holder:[0-9]+]] holder = struct {
 // IR-NEXT:         field0 tag: u8;
-// IR-NEXT:         field1 lanes: vector<u8, 32>;
+// IR-NEXT:         field1 lanes: vector<u8, 32> [c="v32u8"];
 // IR-NEXT:     } [size=48, align=16, offsets=[0, 16]];
 // IR-NEXT:     global %[[VALUE_sizes:[0-9]+]] sizes: array<i32, 8> [storage=static] = aggregate<array<i32, 8>, zero_fill=false>(index0 = reinterpret<i32>(truncate<u32>(const<u64>(8))), index1 = reinterpret<i32>(truncate<u32>(const<u64>(8))), index2 = reinterpret<i32>(truncate<u32>(const<u64>(32))), index3 = reinterpret<i32>(truncate<u32>(const<u64>(16))), index4 = reinterpret<i32>(truncate<u32>(const<u64>(256))), index5 = reinterpret<i32>(truncate<u32>(const<u64>(16))), index6 = reinterpret<i32>(truncate<u32>(const<u64>(48))), index7 = reinterpret<i32>(truncate<u32>(const<u64>(16)))) [linkage=external];
 // IR-NEXT: }

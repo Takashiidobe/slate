@@ -39,7 +39,7 @@ int main(void) { return frame_address_is_plausible() ? 0 : 1; }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_frame_address:[0-9]+]] @__builtin_frame_address(%[[VALUE0:[0-9]+]] <unnamed>: u32) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_frame_address_is_plausible:[0-9]+]] @frame_address_is_plausible() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_fp:[0-9]+]] fp: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE___builtin_frame_address]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<void>>(%[[VALUE_fp]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4096)))));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<void>>(%[[VALUE_fp]])) [c="uintptr_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4096))) [c="uintptr_t"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         return conditional<i32>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_frame_address_is_plausible]]), const<i32>(0)), const<i32>(0), const<i32>(1));

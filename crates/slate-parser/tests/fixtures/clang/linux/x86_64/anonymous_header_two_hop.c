@@ -41,7 +41,7 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE_anonymous_header_state:[0-9]+]] anonymous_header_state = @type[[TYPE0]];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_state:[0-9]+]] state: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=true>(field0 = const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE_state:[0-9]+]] state: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=true>(field0 = const<i32>(0)) [c="anonymous_header_state"];
 // DEFAULT-NEXT:         write<i32>(field0(field1(%[[VALUE_state]])), const<i32>(7));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(field0(%[[VALUE_state]])), from_bool<i32, reason=promotion>(ne<i32>(read<i32>(field0(field1(%[[VALUE_state]]))), const<i32>(7))));
 // DEFAULT-NEXT:     }

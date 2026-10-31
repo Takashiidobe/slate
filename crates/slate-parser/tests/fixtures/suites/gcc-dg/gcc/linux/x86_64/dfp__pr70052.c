@@ -54,16 +54,16 @@ D256_add_finite (void)
 // DEFAULT-NEXT:         field1 td1: d128;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 16]];
 // DEFAULT-NEXT:     type @type[[TYPE_TDx2_t:[0-9]+]] TDx2_t = @type[[TYPE0]];
-// DEFAULT-NEXT:     fn %[[VALUE_D256_add_finite:[0-9]+]] @D256_add_finite() -> @type[[TYPE0]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_D256_add_finite:[0-9]+]] @D256_add_finite() -> @type[[TYPE0]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] [c="TDx2_t(void)"] {
 // DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: d128 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_zz:[0-9]+]] zz: d128 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<d128>(0.), field1 = const<d128>(0.));
+// DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<d128>(0.), field1 = const<d128>(0.)) [c="TDx2_t"];
 // DEFAULT-NEXT:         if eq<d128, exceptions=observable>(read<d128>(%[[VALUE_zz]]), const<d128>(0.))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<d128>(field0(%[[VALUE_result]]), read<d128>(%[[VALUE_z]]));
-// DEFAULT-NEXT:                 return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_result]]));
+// DEFAULT-NEXT:                 return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_result]]) [c="TDx2_t"]) [c="TDx2_t"];
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_result]]));
+// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_result]]) [c="TDx2_t"]) [c="TDx2_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

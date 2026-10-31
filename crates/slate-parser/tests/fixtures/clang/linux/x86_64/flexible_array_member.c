@@ -60,10 +60,10 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
 // DEFAULT-NEXT:     type @type[[TYPE_FlexibleArray:[0-9]+]] FlexibleArray = struct {
-// DEFAULT-NEXT:         field0 count: u64;
+// DEFAULT-NEXT:         field0 count: u64 [c="size_t"];
 // DEFAULT-NEXT:         field1 values: array<i32, incomplete>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_free:[0-9]+]] @free(%[[VALUE___ptr:[0-9]+]] __ptr: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(8), const<u64>(8))
@@ -75,30 +75,30 @@ int main(void) {
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(2);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<u64>(field0(deref(read<ptr<@type[[TYPE_FlexibleArray]]>>(%[[VALUE_flexible]]))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(3))));
+// DEFAULT-NEXT:         write<u64>(field0(deref(read<ptr<@type[[TYPE_FlexibleArray]]>>(%[[VALUE_flexible]]))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(3))) [c="size_t"]) [c="size_t"];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %[[VALUE_index:[0-9]+]] index: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%[[VALUE_index]]), read<u64>(field0(deref(read<ptr<@type[[TYPE_FlexibleArray]]>>(%[[VALUE_flexible]])))))
+// DEFAULT-NEXT:                 let %[[VALUE_index:[0-9]+]] index: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%[[VALUE_index]]) [c="size_t"], read<u64>(field0(deref(read<ptr<@type[[TYPE_FlexibleArray]]>>(%[[VALUE_flexible]])))) [c="size_t"])
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_index]]);
-// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE1]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:                 write<u64>(%[[VALUE_index]], read<u64>(%[[VALUE2]]));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_index]]) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE1]]) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="size_t"]) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                 write<u64>(%[[VALUE_index]], read<u64>(%[[VALUE2]]) [c="size_t"]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(field1(deref(read<ptr<@type[[TYPE_FlexibleArray]]>>(%[[VALUE_flexible]])))), read<u64>(%[[VALUE_index]]))), add<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_index]]))), const<i32>(1)));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(field1(deref(read<ptr<@type[[TYPE_FlexibleArray]]>>(%[[VALUE_flexible]])))), read<u64>(%[[VALUE_index]]))), add<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_index]]) [c="size_t"])), const<i32>(1)));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         let %[[VALUE_total:[0-9]+]] total: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %[[VALUE_index_2:[0-9]+]] index: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%[[VALUE_index_2]]), read<u64>(field0(deref(read<ptr<@type[[TYPE_FlexibleArray]]>>(%[[VALUE_flexible]])))))
+// DEFAULT-NEXT:                 let %[[VALUE_index_2:[0-9]+]] index: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%[[VALUE_index_2]]) [c="size_t"], read<u64>(field0(deref(read<ptr<@type[[TYPE_FlexibleArray]]>>(%[[VALUE_flexible]])))) [c="size_t"])
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_index_2]]);
-// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE4]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:                 write<u64>(%[[VALUE_index_2]], read<u64>(%[[VALUE5]]));
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_index_2]]) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE4]]) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="size_t"]) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                 write<u64>(%[[VALUE_index_2]], read<u64>(%[[VALUE5]]) [c="size_t"]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:

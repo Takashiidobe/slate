@@ -47,7 +47,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_combine:[0-9]+]] @combine(%[[VALUE_left:[0-9]+]] left: ptr<i32>, %[[VALUE_scale:[0-9]+]] scale: i32, %[[VALUE_right:[0-9]+]] right: ptr<i32>, %[[VALUE_optional:[0-9]+]] optional: ptr<i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_left]]))), mul<i32, overflow=ub>(read<i32>(%[[VALUE_scale]]), read<i32>(deref(read<ptr<i32>>(%[[VALUE_right]]))))), conditional<i32>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_optional]]), null<ptr<i32>>), read<i32>(deref(read<ptr<i32>>(%[[VALUE_optional]]))), const<i32>(0)));
 // DEFAULT-NEXT:     }

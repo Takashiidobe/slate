@@ -147,16 +147,16 @@ int main()
 // DEFAULT-NEXT:     type @type[[TYPE___uid_t:[0-9]+]] __uid_t = u32;
 // DEFAULT-NEXT:     type @type[[TYPE___pid_t:[0-9]+]] __pid_t = i32;
 // DEFAULT-NEXT:     type @type[[TYPE___clock_t:[0-9]+]] __clock_t = i64;
-// DEFAULT-NEXT:     type @type[[TYPE_uint64_t:[0-9]+]] uint64_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_uint64_t:[0-9]+]] uint64_t = u64 [c="__uint64_t"];
 // DEFAULT-NEXT:     type @type[[TYPE_uintptr_t:[0-9]+]] uintptr_t = u64;
 // DEFAULT-NEXT:     type @type[[TYPE__Unwind_Word:[0-9]+]] _Unwind_Word = u64;
-// DEFAULT-NEXT:     type @type[[TYPE__Unwind_Exception_Class:[0-9]+]] _Unwind_Exception_Class = u64;
+// DEFAULT-NEXT:     type @type[[TYPE__Unwind_Exception_Class:[0-9]+]] _Unwind_Exception_Class = u64 [c="uint64_t"];
 // DEFAULT-NEXT:     type @type[[TYPE__Unwind_Context:[0-9]+]] _Unwind_Context = struct incomplete;
 // DEFAULT-NEXT:     type @type[[TYPE__Unwind_Exception:[0-9]+]] _Unwind_Exception = struct {
-// DEFAULT-NEXT:         field0 exception_class: u64;
-// DEFAULT-NEXT:         field1 exception_cleanup: ptr<fn(@type[[TYPE0:[0-9]+]], ptr<@type[[TYPE__Unwind_Exception]]>) -> void>;
-// DEFAULT-NEXT:         field2 private_1: u64;
-// DEFAULT-NEXT:         field3 private_2: u64;
+// DEFAULT-NEXT:         field0 exception_class: u64 [c="_Unwind_Exception_Class"];
+// DEFAULT-NEXT:         field1 exception_cleanup: ptr<fn(@type[[TYPE0:[0-9]+]], ptr<@type[[TYPE__Unwind_Exception]]>) -> void> [c="_Unwind_Exception_Cleanup_Fn"];
+// DEFAULT-NEXT:         field2 private_1: u64 [c="_Unwind_Word"];
+// DEFAULT-NEXT:         field3 private_2: u64 [c="_Unwind_Word"];
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 8, 16, 24]];
 // DEFAULT-NEXT:     type @type[[TYPE__Unwind_Exception_2:[0-9]+]] _Unwind_Exception = @type[[TYPE__Unwind_Exception]];
 // DEFAULT-NEXT:     type @type[[TYPE0]] = enum : u32 {
@@ -179,14 +179,14 @@ int main()
 // DEFAULT-NEXT:         %[[VALUE__URC_NORMAL_STOP]] _UA_END_OF_STACK = const<i32>(16);
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type[[TYPE__Unwind_Action:[0-9]+]] _Unwind_Action = @type[[TYPE1]];
-// DEFAULT-NEXT:     type @type[[TYPE__Unwind_Exception_Cleanup_Fn:[0-9]+]] _Unwind_Exception_Cleanup_Fn = ptr<fn(@type[[TYPE0]], ptr<@type[[TYPE__Unwind_Exception]]>) -> void>;
-// DEFAULT-NEXT:     type @type[[TYPE__Unwind_Stop_Fn:[0-9]+]] _Unwind_Stop_Fn = ptr<fn(i32, @type[[TYPE1]], u64, ptr<@type[[TYPE__Unwind_Exception]]>, ptr<@type[[TYPE__Unwind_Context]]>, ptr<void>) -> @type[[TYPE0]]>;
+// DEFAULT-NEXT:     type @type[[TYPE__Unwind_Exception_Cleanup_Fn:[0-9]+]] _Unwind_Exception_Cleanup_Fn = ptr<fn(@type[[TYPE0]], ptr<@type[[TYPE__Unwind_Exception]]>) -> void> [c="void (*)(_Unwind_Reason_Code, _Unwind_Exception *)"];
+// DEFAULT-NEXT:     type @type[[TYPE__Unwind_Stop_Fn:[0-9]+]] _Unwind_Stop_Fn = ptr<fn(i32, @type[[TYPE1]], u64, ptr<@type[[TYPE__Unwind_Exception]]>, ptr<@type[[TYPE__Unwind_Context]]>, ptr<void>) -> @type[[TYPE0]]> [c="_Unwind_Reason_Code (*)(int, _Unwind_Action, _Unwind_Exception_Class, _Unwind_Exception *, struct _Unwind_Context *, void *)"];
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
 // DEFAULT-NEXT:     type @type[[TYPE2:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 __val: array<u64, 16>;
 // DEFAULT-NEXT:     } [size=128, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE___sigset_t:[0-9]+]] __sigset_t = @type[[TYPE2]];
-// DEFAULT-NEXT:     type @type[[TYPE_sigset_t:[0-9]+]] sigset_t = @type[[TYPE2]];
+// DEFAULT-NEXT:     type @type[[TYPE_sigset_t:[0-9]+]] sigset_t = @type[[TYPE2]] [c="__sigset_t"];
 // DEFAULT-NEXT:     type @type[[TYPE_sigval:[0-9]+]] sigval = union {
 // DEFAULT-NEXT:         field0 sival_int: i32;
 // DEFAULT-NEXT:         field1 sival_ptr: ptr<void>;
@@ -210,25 +210,25 @@ int main()
 // DEFAULT-NEXT:         field7 _sigsys: @type[[TYPE13:[0-9]+]];
 // DEFAULT-NEXT:     } [size=112, align=8, offsets=[0, 0, 0, 0, 0, 0, 0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE5]] = struct {
-// DEFAULT-NEXT:         field0 si_pid: i32;
-// DEFAULT-NEXT:         field1 si_uid: u32;
+// DEFAULT-NEXT:         field0 si_pid: i32 [c="__pid_t"];
+// DEFAULT-NEXT:         field1 si_uid: u32 [c="__uid_t"];
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type[[TYPE6]] = struct {
 // DEFAULT-NEXT:         field0 si_tid: i32;
 // DEFAULT-NEXT:         field1 si_overrun: i32;
-// DEFAULT-NEXT:         field2 si_sigval: @type[[TYPE_sigval]];
+// DEFAULT-NEXT:         field2 si_sigval: @type[[TYPE_sigval]] [c="__sigval_t"];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 4, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE7]] = struct {
-// DEFAULT-NEXT:         field0 si_pid: i32;
-// DEFAULT-NEXT:         field1 si_uid: u32;
-// DEFAULT-NEXT:         field2 si_sigval: @type[[TYPE_sigval]];
+// DEFAULT-NEXT:         field0 si_pid: i32 [c="__pid_t"];
+// DEFAULT-NEXT:         field1 si_uid: u32 [c="__uid_t"];
+// DEFAULT-NEXT:         field2 si_sigval: @type[[TYPE_sigval]] [c="__sigval_t"];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 4, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE8]] = struct {
-// DEFAULT-NEXT:         field0 si_pid: i32;
-// DEFAULT-NEXT:         field1 si_uid: u32;
+// DEFAULT-NEXT:         field0 si_pid: i32 [c="__pid_t"];
+// DEFAULT-NEXT:         field1 si_uid: u32 [c="__uid_t"];
 // DEFAULT-NEXT:         field2 si_status: i32;
-// DEFAULT-NEXT:         field3 si_utime: i64;
-// DEFAULT-NEXT:         field4 si_stime: i64;
+// DEFAULT-NEXT:         field3 si_utime: i64 [c="__clock_t"];
+// DEFAULT-NEXT:         field4 si_stime: i64 [c="__clock_t"];
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 4, 8, 16, 24]];
 // DEFAULT-NEXT:     type @type[[TYPE9]] = struct {
 // DEFAULT-NEXT:         field0 si_addr: ptr<void>;
@@ -237,7 +237,7 @@ int main()
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 8, 16]];
 // DEFAULT-NEXT:     type @type[[TYPE10]] = union {
 // DEFAULT-NEXT:         field0 _addr_bnd: @type[[TYPE11:[0-9]+]];
-// DEFAULT-NEXT:         field1 _pkey: u32;
+// DEFAULT-NEXT:         field1 _pkey: u32 [c="__uint32_t"];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE11]] = struct {
 // DEFAULT-NEXT:         field0 _lower: ptr<void>;
@@ -256,18 +256,18 @@ int main()
 // DEFAULT-NEXT:     type @type[[TYPE___sighandler_t:[0-9]+]] __sighandler_t = ptr<fn(i32) -> void>;
 // DEFAULT-NEXT:     type @type[[TYPE_sigaction:[0-9]+]] sigaction = struct {
 // DEFAULT-NEXT:         field0 __sigaction_handler: @type[[TYPE14:[0-9]+]];
-// DEFAULT-NEXT:         field1 sa_mask: @type[[TYPE2]];
+// DEFAULT-NEXT:         field1 sa_mask: @type[[TYPE2]] [c="__sigset_t"];
 // DEFAULT-NEXT:         field2 sa_flags: i32;
 // DEFAULT-NEXT:         field3 sa_restorer: ptr<fn() -> void>;
 // DEFAULT-NEXT:     } [size=152, align=8, offsets=[0, 8, 136, 144]];
 // DEFAULT-NEXT:     type @type[[TYPE14]] = union {
-// DEFAULT-NEXT:         field0 sa_handler: ptr<fn(i32) -> void>;
-// DEFAULT-NEXT:         field1 sa_sigaction: ptr<fn(i32, ptr<@type[[TYPE3]]>, ptr<void>) -> void>;
+// DEFAULT-NEXT:         field0 sa_handler: ptr<fn(i32) -> void> [c="__sighandler_t"];
+// DEFAULT-NEXT:         field1 sa_sigaction: ptr<fn(i32, ptr<@type[[TYPE3]]>, ptr<void>) -> void> [c="void (*)(int, siginfo_t *, void *)"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE15:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 ss_sp: ptr<void>;
 // DEFAULT-NEXT:         field1 ss_flags: i32;
-// DEFAULT-NEXT:         field2 ss_size: u64;
+// DEFAULT-NEXT:         field2 ss_size: u64 [c="size_t"];
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
 // DEFAULT-NEXT:     type @type[[TYPE_stack_t:[0-9]+]] stack_t = @type[[TYPE15]];
 // DEFAULT-NEXT:     type @type[[TYPE16:[0-9]+]] = enum : u32 {
@@ -491,25 +491,25 @@ int main()
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     global %[[VALUE_count:[0-9]+]] count: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_null:[0-9]+]] null: ptr<i8> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE__SC_SEM_NSEMS_MAX]] @_Unwind_ForcedUnwind(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE__Unwind_Exception]]>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<fn(i32, @type[[TYPE1]], u64, ptr<@type[[TYPE__Unwind_Exception]]>, ptr<@type[[TYPE__Unwind_Context]]>, ptr<void>) -> @type[[TYPE0]]>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<void>) -> @type[[TYPE0]] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE__SC_BC_SCALE_MAX]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE__SC_SEM_NSEMS_MAX]] @_Unwind_ForcedUnwind(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE__Unwind_Exception]]> [c="_Unwind_Exception *"], %[[VALUE1:[0-9]+]] <unnamed>: ptr<fn(i32, @type[[TYPE1]], u64, ptr<@type[[TYPE__Unwind_Exception]]>, ptr<@type[[TYPE__Unwind_Context]]>, ptr<void>) -> @type[[TYPE0]]> [c="_Unwind_Stop_Fn"], %[[VALUE2:[0-9]+]] <unnamed>: ptr<void>) -> @type[[TYPE0]] [linkage=external] [c="_Unwind_Reason_Code(_Unwind_Exception *, _Unwind_Stop_Fn, void *)"];
+// DEFAULT-NEXT:     fn %[[VALUE__SC_BC_SCALE_MAX]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE__SC_BC_STRING_MAX]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE__SC_EQUIV_CLASS_MAX]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE__SC_POLL]] @sigemptyset(%[[VALUE___set:[0-9]+]] __set: ptr<@type[[TYPE2]]>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE__SC_PII_OSI_COTS]] @sigaction(%[[VALUE___sig:[0-9]+]] __sig: i32, %[[VALUE___act:[0-9]+]] __act: ptr<const @type[[TYPE_sigaction]]> [restrict], %[[VALUE___oact:[0-9]+]] __oact: ptr<@type[[TYPE_sigaction]]> [restrict]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE__SC_THREAD_SAFE_FUNCTIONS]] @sigaltstack(%[[VALUE___ss:[0-9]+]] __ss: ptr<const @type[[TYPE15]]> [restrict], %[[VALUE___oss:[0-9]+]] __oss: ptr<@type[[TYPE15]]> [restrict]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE__SC_POLL]] @sigemptyset(%[[VALUE___set:[0-9]+]] __set: ptr<@type[[TYPE2]]> [c="sigset_t *"]) -> i32 [linkage=external] [c="int(sigset_t *)"];
+// DEFAULT-NEXT:     fn %[[VALUE__SC_PII_OSI_COTS]] @sigaction(%[[VALUE___sig:[0-9]+]] __sig: i32, %[[VALUE___act:[0-9]+]] __act: ptr<const @type[[TYPE_sigaction]]> [restrict], %[[VALUE___oact:[0-9]+]] __oact: ptr<@type[[TYPE_sigaction]]> [restrict]) -> i32 [linkage=external] [c="int(int, const struct sigaction *restrict, struct sigaction *restrict)"];
+// DEFAULT-NEXT:     fn %[[VALUE__SC_THREAD_SAFE_FUNCTIONS]] @sigaltstack(%[[VALUE___ss:[0-9]+]] __ss: ptr<const @type[[TYPE15]]> [restrict] [c="const stack_t *restrict"], %[[VALUE___oss:[0-9]+]] __oss: ptr<@type[[TYPE15]]> [restrict] [c="stack_t *restrict"]) -> i32 [linkage=external] [c="int(const stack_t *restrict, stack_t *restrict)"];
 // DEFAULT-NEXT:     fn %[[VALUE_sysconf:[0-9]+]] @sysconf(%[[VALUE___name:[0-9]+]] __name: i32) -> i64 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE___s:[0-9]+]] __s: ptr<void>, %[[VALUE___c:[0-9]+]] __c: i32, %[[VALUE___n:[0-9]+]] __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_force_unwind_stop:[0-9]+]] @force_unwind_stop(%[[VALUE_version:[0-9]+]] version: i32, %[[VALUE_actions:[0-9]+]] actions: @type[[TYPE1]], %[[VALUE_exc_class:[0-9]+]] exc_class: u64, %[[VALUE_exc_obj:[0-9]+]] exc_obj: ptr<@type[[TYPE__Unwind_Exception]]>, %[[VALUE_context:[0-9]+]] context: ptr<@type[[TYPE__Unwind_Context]]>, %[[VALUE_stop_parameter:[0-9]+]] stop_parameter: ptr<void>) -> @type[[TYPE0]] [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<u32>(and<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE1]]>(%[[VALUE_actions]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(16))), const<u32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE___s:[0-9]+]] __s: ptr<void>, %[[VALUE___c:[0-9]+]] __c: i32, %[[VALUE___n:[0-9]+]] __n: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(void *, int, size_t)"];
+// DEFAULT-NEXT:     fn %[[VALUE_force_unwind_stop:[0-9]+]] @force_unwind_stop(%[[VALUE_version:[0-9]+]] version: i32, %[[VALUE_actions:[0-9]+]] actions: @type[[TYPE1]] [c="_Unwind_Action"], %[[VALUE_exc_class:[0-9]+]] exc_class: u64 [c="_Unwind_Exception_Class"], %[[VALUE_exc_obj:[0-9]+]] exc_obj: ptr<@type[[TYPE__Unwind_Exception]]>, %[[VALUE_context:[0-9]+]] context: ptr<@type[[TYPE__Unwind_Context]]>, %[[VALUE_stop_parameter:[0-9]+]] stop_parameter: ptr<void>) -> @type[[TYPE0]] [linkage=internal] [fallthrough=ub_if_used] [c="_Unwind_Reason_Code(int, _Unwind_Action, _Unwind_Exception_Class, struct _Unwind_Exception *, struct _Unwind_Context *, void *)"] {
+// DEFAULT-NEXT:         if ne<u32>(and<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE1]]>(%[[VALUE_actions]]) [c="_Unwind_Action"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(16))), const<u32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE__SC_BC_STRING_MAX]]);
-// DEFAULT-NEXT:         return int_to_enum<@type[[TYPE0]], reason=return>(reinterpret<u32, reason=return, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         return int_to_enum<@type[[TYPE0]], reason=return>(reinterpret<u32, reason=return, fits=always>(const<i32>(0))) [c="_Unwind_Reason_Code"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_force_unwind:[0-9]+]] @force_unwind() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_exc:[0-9]+]] exc: ptr<@type[[TYPE__Unwind_Exception]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE__Unwind_Exception]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE__SC_BC_SCALE_MAX]], const<u64>(32)));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u64>>(field0(deref(read<ptr<@type[[TYPE__Unwind_Exception]]>>(%[[VALUE_exc]]))))), const<i32>(0), const<u64>(8));
-// DEFAULT-NEXT:         write<ptr<fn(@type[[TYPE0]], ptr<@type[[TYPE__Unwind_Exception]]>) -> void>>(field1(deref(read<ptr<@type[[TYPE__Unwind_Exception]]>>(%[[VALUE_exc]]))), null<ptr<fn(@type[[TYPE0]], ptr<@type[[TYPE__Unwind_Exception]]>) -> void>>);
-// DEFAULT-NEXT:         call<@type[[TYPE0]], signature=fn(ptr<@type[[TYPE__Unwind_Exception]]>, ptr<fn(i32, @type[[TYPE1]], u64, ptr<@type[[TYPE__Unwind_Exception]]>, ptr<@type[[TYPE__Unwind_Context]]>, ptr<void>) -> @type[[TYPE0]]>, ptr<void>) -> @type[[TYPE0]]>(%[[VALUE__SC_SEM_NSEMS_MAX]], read<ptr<@type[[TYPE__Unwind_Exception]]>>(%[[VALUE_exc]]), function_decay<ptr<fn(i32, @type[[TYPE1]], u64, ptr<@type[[TYPE__Unwind_Exception]]>, ptr<@type[[TYPE__Unwind_Context]]>, ptr<void>) -> @type[[TYPE0]]>>(%[[VALUE_force_unwind_stop]]), null<ptr<void>>);
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u64>>(field0(deref(read<ptr<@type[[TYPE__Unwind_Exception]]>>(%[[VALUE_exc]])))) [c="_Unwind_Exception_Class *"]), const<i32>(0), const<u64>(8));
+// DEFAULT-NEXT:         write<ptr<fn(@type[[TYPE0]], ptr<@type[[TYPE__Unwind_Exception]]>) -> void>>(field1(deref(read<ptr<@type[[TYPE__Unwind_Exception]]>>(%[[VALUE_exc]]))), null<ptr<fn(@type[[TYPE0]], ptr<@type[[TYPE__Unwind_Exception]]>) -> void>> [c="_Unwind_Exception_Cleanup_Fn"]) [c="_Unwind_Exception_Cleanup_Fn"];
+// DEFAULT-NEXT:         call<@type[[TYPE0]], signature=fn(ptr<@type[[TYPE__Unwind_Exception]]>, ptr<fn(i32, @type[[TYPE1]], u64, ptr<@type[[TYPE__Unwind_Exception]]>, ptr<@type[[TYPE__Unwind_Context]]>, ptr<void>) -> @type[[TYPE0]]>, ptr<void>) -> @type[[TYPE0]]>(%[[VALUE__SC_SEM_NSEMS_MAX]], read<ptr<@type[[TYPE__Unwind_Exception]]>>(%[[VALUE_exc]]) [c="_Unwind_Exception *"], function_decay<ptr<fn(i32, @type[[TYPE1]], u64, ptr<@type[[TYPE__Unwind_Exception]]>, ptr<@type[[TYPE__Unwind_Context]]>, ptr<void>) -> @type[[TYPE0]]>>(%[[VALUE_force_unwind_stop]]) [c="_Unwind_Stop_Fn"], null<ptr<void>>) [c="_Unwind_Reason_Code"];
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE__SC_BC_STRING_MAX]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_counter:[0-9]+]] @counter(%[[VALUE_p:[0-9]+]] p: ptr<void>) -> void [linkage=internal] [fallthrough=ret_void] {
@@ -527,7 +527,7 @@ int main()
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_force_unwind]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fn4:[0-9]+]] @fn4(%[[VALUE_sig:[0-9]+]] sig: i32, %[[VALUE_info:[0-9]+]] info: ptr<@type[[TYPE3]]>, %[[VALUE_ctx:[0-9]+]] ctx: ptr<void>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_fn4:[0-9]+]] @fn4(%[[VALUE_sig:[0-9]+]] sig: i32, %[[VALUE_info:[0-9]+]] info: ptr<@type[[TYPE3]]> [c="siginfo_t *"], %[[VALUE_ctx:[0-9]+]] ctx: ptr<void>) -> void [linkage=internal] [fallthrough=ret_void] [c="void(int, siginfo_t *, void *)"] {
 // DEFAULT-NEXT:         let %[[VALUE_dummy_2:[0-9]+]] dummy: i8 [storage=automatic] [cleanup=%[[VALUE_counter]]];
 // DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_fn5]]);
 // DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_null]], null<ptr<i8>>);
@@ -541,19 +541,19 @@ int main()
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1() -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_ss:[0-9]+]] ss: @type[[TYPE15]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ss:[0-9]+]] ss: @type[[TYPE15]] [storage=automatic] [c="stack_t"];
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_sigaction]] [storage=automatic];
-// DEFAULT-NEXT:         write<u64>(field2(%[[VALUE_ss]]), reinterpret<u64, reason=assign, fits=unknown>(mul<i64, overflow=ub>(widen<i64, reason=usual_arith>(const<i32>(4)), call<i64, signature=fn(i32) -> i64>(%[[VALUE_sysconf]], const<i32>(30)))));
-// DEFAULT-NEXT:         if lt<u64>(read<u64>(field2(%[[VALUE_ss]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8192))))
-// DEFAULT-NEXT:             write<u64>(field2(%[[VALUE_ss]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(8192))));
+// DEFAULT-NEXT:         write<u64>(field2(%[[VALUE_ss]]), reinterpret<u64, reason=assign, fits=unknown>(mul<i64, overflow=ub>(widen<i64, reason=usual_arith>(const<i32>(4)), call<i64, signature=fn(i32) -> i64>(%[[VALUE_sysconf]], const<i32>(30)))) [c="size_t"]) [c="size_t"];
+// DEFAULT-NEXT:         if lt<u64>(read<u64>(field2(%[[VALUE_ss]])) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8192))) [c="size_t"])
+// DEFAULT-NEXT:             write<u64>(field2(%[[VALUE_ss]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(8192))) [c="size_t"]) [c="size_t"];
 // DEFAULT-NEXT:         write<ptr<void>>(field0(%[[VALUE_ss]]), call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE__SC_BC_SCALE_MAX]], read<u64>(field2(%[[VALUE_ss]]))));
 // DEFAULT-NEXT:         if eq<ptr<void>>(read<ptr<void>>(field0(%[[VALUE_ss]])), null<ptr<void>>)
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE__SC_EQUIV_CLASS_MAX]], const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_ss]]), const<i32>(0));
-// DEFAULT-NEXT:         if lt<i32>(call<i32, signature=fn(ptr<const @type[[TYPE15]]>, ptr<@type[[TYPE15]]>) -> i32>(%[[VALUE__SC_THREAD_SAFE_FUNCTIONS]], pointer_cast<ptr<const @type[[TYPE15]]>, reason=arg>(addr_of<ptr<@type[[TYPE15]]>>(%[[VALUE_ss]])), null<ptr<@type[[TYPE15]]>>), const<i32>(0))
+// DEFAULT-NEXT:         if lt<i32>(call<i32, signature=fn(ptr<const @type[[TYPE15]]>, ptr<@type[[TYPE15]]>) -> i32>(%[[VALUE__SC_THREAD_SAFE_FUNCTIONS]], pointer_cast<ptr<const @type[[TYPE15]]>, reason=arg>(addr_of<ptr<@type[[TYPE15]]>>(%[[VALUE_ss]]) [c="stack_t *"]) [c="const stack_t *"], null<ptr<@type[[TYPE15]]>> [c="stack_t *"]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE__SC_EQUIV_CLASS_MAX]], const<i32>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type[[TYPE2]]>) -> i32>(%[[VALUE__SC_POLL]], addr_of<ptr<@type[[TYPE2]]>>(field1(%[[VALUE_s]])));
-// DEFAULT-NEXT:         write<ptr<fn(i32, ptr<@type[[TYPE3]]>, ptr<void>) -> void>>(field1(field0(%[[VALUE_s]])), function_decay<ptr<fn(i32, ptr<@type[[TYPE3]]>, ptr<void>) -> void>>(%[[VALUE_fn4]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type[[TYPE2]]>) -> i32>(%[[VALUE__SC_POLL]], addr_of<ptr<@type[[TYPE2]]>>(field1(%[[VALUE_s]])) [c="sigset_t *"]);
+// DEFAULT-NEXT:         write<ptr<fn(i32, ptr<@type[[TYPE3]]>, ptr<void>) -> void>>(field1(field0(%[[VALUE_s]])), function_decay<ptr<fn(i32, ptr<@type[[TYPE3]]>, ptr<void>) -> void>>(%[[VALUE_fn4]]) [c="void (*)(int, siginfo_t *, void *)"]) [c="void (*)(int, siginfo_t *, void *)"];
 // DEFAULT-NEXT:         write<i32>(field2(%[[VALUE_s]]), reinterpret<i32, reason=assign, fits=unknown>(or<u32>(or<u32>(const<u32>(2147483648), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(134217728))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4)))));
 // DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const @type[[TYPE_sigaction]]>, ptr<@type[[TYPE_sigaction]]>) -> i32>(%[[VALUE__SC_PII_OSI_COTS]], const<i32>(11), pointer_cast<ptr<const @type[[TYPE_sigaction]]>, reason=arg>(addr_of<ptr<@type[[TYPE_sigaction]]>>(%[[VALUE_s]])), null<ptr<@type[[TYPE_sigaction]]>>);
 // DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const @type[[TYPE_sigaction]]>, ptr<@type[[TYPE_sigaction]]>) -> i32>(%[[VALUE__SC_PII_OSI_COTS]], const<i32>(7), pointer_cast<ptr<const @type[[TYPE_sigaction]]>, reason=arg>(addr_of<ptr<@type[[TYPE_sigaction]]>>(%[[VALUE_s]])), null<ptr<@type[[TYPE_sigaction]]>>);

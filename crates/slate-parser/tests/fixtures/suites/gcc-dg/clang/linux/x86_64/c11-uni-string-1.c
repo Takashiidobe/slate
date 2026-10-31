@@ -142,10 +142,10 @@ main (void)
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
 // DEFAULT-NEXT:     global %[[VALUE_su8:[0-9]+]] su8: array<i8, 4> [storage=static] [const] = code_units<array<i8, 4>>([97, 196, 141, 0]) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_su8a:[0-9]+]] su8a: array<i8, 4> [storage=static] [const] = code_units<array<i8, 4>>([97, 196, 141, 0]) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_su16:[0-9]+]] su16: array<u16, 2> [storage=static] [const] = code_units<array<u16, 2>>([1383, 0]) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_su16a:[0-9]+]] su16a: array<u16, 2> [storage=static] [const] = aggregate<array<u16, 2>, zero_fill=false>(index0 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(1383))), index1 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0)))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_su32:[0-9]+]] su32: array<u32, 2> [storage=static] [const] = code_units<array<u32, 2>>([291, 0]) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_su32a:[0-9]+]] su32a: array<u32, 2> [storage=static] [const] = aggregate<array<u32, 2>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(291)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_su16:[0-9]+]] su16: array<u16, 2> [storage=static] [const] = code_units<array<u16, 2>>([1383, 0]) [linkage=external] [c="const char16_t[]"];
+// DEFAULT-NEXT:     global %[[VALUE_su16a:[0-9]+]] su16a: array<u16, 2> [storage=static] [const] = aggregate<array<u16, 2>, zero_fill=false>(index0 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(1383))) [c="char16_t"], index1 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))) [c="char16_t"]) [linkage=external] [c="const char16_t[]"];
+// DEFAULT-NEXT:     global %[[VALUE_su32:[0-9]+]] su32: array<u32, 2> [storage=static] [const] = code_units<array<u32, 2>>([291, 0]) [linkage=external] [c="const char32_t[]"];
+// DEFAULT-NEXT:     global %[[VALUE_su32a:[0-9]+]] su32a: array<u32, 2> [storage=static] [const] = aggregate<array<u32, 2>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(291)) [c="char32_t"], index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)) [c="char32_t"]) [linkage=external] [c="const char32_t[]"];
 // DEFAULT-NEXT:     global %[[VALUE_tu:[0-9]+]] tu: array<i8, 5> [storage=static] [const] = code_units<array<i8, 5>>([40, 82, 41, 97, 0]) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_tua:[0-9]+]] tua: array<i8, 5> [storage=static] [const] = code_units<array<i8, 5>>([40, 82, 41, 97, 0]) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_tu8:[0-9]+]] tu8: array<i8, 7> [storage=static] [const] = code_units<array<i8, 7>>([40, 117, 56, 82, 41, 98, 0]) [linkage=external];
@@ -164,7 +164,7 @@ main (void)
 // DEFAULT-NEXT:     global %[[VALUE_tm32a:[0-9]+]] tm32a: array<i8, 2> [storage=static] [const] = code_units<array<i8, 2>>([49, 0]) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_memcmp:[0-9]+]] @memcmp(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_memcmp:[0-9]+]] @memcmp(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> i32 [linkage=external] [c="int(const void *, const void *, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(4), const<u64>(4))
@@ -177,14 +177,14 @@ main (void)
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(4), const<u64>(4))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE5]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const u16>, length=Some(2)>(%[[VALUE_su16]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const u16>, length=Some(2)>(%[[VALUE_su16a]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const u16>, length=Some(2)>(%[[VALUE_su16]]) [c="const char16_t *"]), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const u16>, length=Some(2)>(%[[VALUE_su16a]]) [c="const char16_t *"]), const<u64>(4)), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE5]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(8), const<u64>(8))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE6]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const u32>, length=Some(2)>(%[[VALUE_su32]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const u32>, length=Some(2)>(%[[VALUE_su32a]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const u32>, length=Some(2)>(%[[VALUE_su32]]) [c="const char32_t *"]), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const u32>, length=Some(2)>(%[[VALUE_su32a]]) [c="const char32_t *"]), const<u64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE6]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: bool [synthetic];

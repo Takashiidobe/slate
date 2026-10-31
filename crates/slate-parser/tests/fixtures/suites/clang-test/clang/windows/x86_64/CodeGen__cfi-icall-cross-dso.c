@@ -65,11 +65,11 @@ void bar() { foo(); }
 // DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_g1:[0-9]+]] @g1(unprototyped) -> ptr<fn() -> void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_g]]);
+// DEFAULT-NEXT:     fn %[[VALUE_g1:[0-9]+]] @g1(unprototyped) -> ptr<fn() -> void> [linkage=external] [fallthrough=ub_if_used] [c="Fn()"] {
+// DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_g]]) [c="Fn"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_h1:[0-9]+]] @h1(unprototyped) -> ptr<fn() -> void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_h]]);
+// DEFAULT-NEXT:     fn %[[VALUE_h1:[0-9]+]] @h1(unprototyped) -> ptr<fn() -> void> [linkage=external] [fallthrough=ub_if_used] [c="Fn()"] {
+// DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_h]]) [c="Fn"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }

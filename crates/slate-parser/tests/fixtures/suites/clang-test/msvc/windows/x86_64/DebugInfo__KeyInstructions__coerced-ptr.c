@@ -35,9 +35,9 @@ void f() {
 // DEFAULT-NEXT:         field0 p: ptr<i32>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_Ptr:[0-9]+]] Ptr = @type[[TYPE0]];
-// DEFAULT-NEXT:     fn %[[VALUE_getPtr:[0-9]+]] @getPtr(unprototyped) -> @type[[TYPE0]] [linkage=external] [abi=win64() -> native_c];
+// DEFAULT-NEXT:     fn %[[VALUE_getPtr:[0-9]+]] @getPtr(unprototyped) -> @type[[TYPE0]] [linkage=external] [abi=win64() -> native_c] [c="Ptr()"];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: @type[[TYPE0]] [storage=automatic] = copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(unprototyped) -> @type[[TYPE0]], abi=win64() -> native_c>(%[[VALUE_getPtr]]));
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: @type[[TYPE0]] [storage=automatic] = copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(unprototyped) -> @type[[TYPE0]], abi=win64() -> native_c>(%[[VALUE_getPtr]]) [c="Ptr"]) [c="Ptr"] [c="Ptr"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

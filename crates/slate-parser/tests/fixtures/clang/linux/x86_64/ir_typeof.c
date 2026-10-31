@@ -83,14 +83,14 @@ int extents(int n) {
 // DEFAULT-NEXT:     fn %[[VALUE_nothing:[0-9]+]] @nothing() -> void [linkage=external] [c="typeof(void)(void)"] [c_canon="void(void)"];
 // DEFAULT-NEXT:     fn %[[VALUE_returns_alias:[0-9]+]] @returns_alias() -> u64 [linkage=external] [c="alias(void)"] [c_canon="unsigned long(void)"] [typedef_chain="alias -> word"];
 // DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_x_2:[0-9]+]] x: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int)"] {
-// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: i32 [storage=automatic] = const<i32>(1) [c="typeof(x++)"] [c_canon="int"];
-// DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: i32 [storage=automatic] = const<i32>(2) [c="typeof(function(x++))"] [c_canon="int"];
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: i32 [storage=automatic] = const<i32>(1) [c="typeof(x++)"] [c="typeof(x++)"] [c_canon="int"];
+// DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: i32 [storage=automatic] = const<i32>(2) [c="typeof(function(x++))"] [c="typeof(function(x++))"] [c_canon="int"];
 // DEFAULT-NEXT:         let %[[VALUE_text:[0-9]+]] text: array<i8, 7> [storage=automatic] [c="typeof(\"unused\")"] [c_canon="char[7]"];
 // DEFAULT-NEXT:         let %[[VALUE_string_pointer:[0-9]+]] string_pointer: ptr<i8> [storage=automatic] [c="typeof((x++, \"discarded\"))"] [c_canon="char *"];
-// DEFAULT-NEXT:         let %[[VALUE_compound:[0-9]+]] compound: i32 [storage=automatic] = const<i32>(3) [c="typeof((compound literal))"] [c_canon="int"];
+// DEFAULT-NEXT:         let %[[VALUE_compound:[0-9]+]] compound: i32 [storage=automatic] = const<i32>(3) [c="typeof((compound literal))"] [c="typeof((compound literal))"] [c_canon="int"];
 // DEFAULT-NEXT:         let %[[VALUE_local_array:[0-9]+]] local_array: array<i32, 3> [storage=automatic] [c="typeof(array)"] [c_canon="int[3]"];
-// DEFAULT-NEXT:         let %[[VALUE_pointer:[0-9]+]] pointer: ptr<fn(i32) -> i32> [storage=automatic] = function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_function]]) [c="typeof(&function)"] [c_canon="int (*)(int)"];
-// DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: i32 [storage=automatic] = const<i32>(4) [c="typeof_unqual(qualified)"] [c_canon="int"];
+// DEFAULT-NEXT:         let %[[VALUE_pointer:[0-9]+]] pointer: ptr<fn(i32) -> i32> [storage=automatic] = function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_function]]) [c="typeof(&function)"] [c="typeof(&function)"] [c_canon="int (*)(int)"];
+// DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: i32 [storage=automatic] = const<i32>(4) [c="typeof_unqual(qualified)"] [c="typeof_unqual(qualified)"] [c_canon="int"];
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE_y]]), read<i32>(%[[VALUE_z]])), read<i32>(%[[VALUE_compound]])), read<i32>(%[[VALUE_local]])))), const<u64>(7) [size_of="array<i8, 7>"]), const<u64>(12) [size_of="array<i32, 3>"])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_extents:[0-9]+]] @extents(%[[VALUE_n:[0-9]+]] n: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int)"] {

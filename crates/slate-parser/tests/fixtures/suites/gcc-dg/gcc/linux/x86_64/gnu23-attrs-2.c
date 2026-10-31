@@ -59,29 +59,29 @@ __typeof__ (int [3] [[gnu::deprecated]]) var3; /* { dg-warning "deprecated" } */
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_va_type:[0-9]+]] va_type = fn(ptr<const i8>, ...) -> void;
-// DEFAULT-NEXT:     type @type[[TYPE_printf_like_1:[0-9]+]] printf_like_1 = fn(ptr<const i8>, ...) -> void;
+// DEFAULT-NEXT:     type @type[[TYPE_printf_like_1:[0-9]+]] printf_like_1 = fn(ptr<const i8>, ...) -> void [c="va_type"];
 // DEFAULT-NEXT:     type @type[[TYPE_printf_like_2:[0-9]+]] printf_like_2 = fn(ptr<const i8>, ...) -> void;
-// DEFAULT-NEXT:     type @type[[TYPE_printf_like_3:[0-9]+]] printf_like_3 = fn(ptr<const i8>, ...) -> void;
+// DEFAULT-NEXT:     type @type[[TYPE_printf_like_3:[0-9]+]] printf_like_3 = fn(ptr<const i8>, ...) -> void [c="typeof(void(const char *, ...))"];
 // DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = array<i32, 2>;
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_5:[0-9]+]] .str[[VALUE_str_5]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_var1:[0-9]+]] var1: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_var2:[0-9]+]] var2: array<i32, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_var3:[0-9]+]] var3: array<i32, 3> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_func1:[0-9]+]] @func1(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_func2:[0-9]+]] @func2(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_func3:[0-9]+]] @func3(%[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_func4:[0-9]+]] @func4(%[[VALUE3:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_func5:[0-9]+]] @func5() -> ptr<fn(ptr<const i8>, ...) -> void> [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_var1:[0-9]+]] var1: i32 [storage=static] [linkage=external] [c="typeof(int)"];
+// DEFAULT-NEXT:     global %[[VALUE_var2:[0-9]+]] var2: array<i32, 2> [storage=static] [linkage=external] [c="typeof(A)"];
+// DEFAULT-NEXT:     global %[[VALUE_var3:[0-9]+]] var3: array<i32, 3> [storage=static] [linkage=external] [c="typeof(int[3])"];
+// DEFAULT-NEXT:     fn %[[VALUE_func1:[0-9]+]] @func1(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> void [linkage=external] [c="va_type"];
+// DEFAULT-NEXT:     fn %[[VALUE_func2:[0-9]+]] @func2(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> void [linkage=external] [c="printf_like_1"];
+// DEFAULT-NEXT:     fn %[[VALUE_func3:[0-9]+]] @func3(%[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> void [linkage=external] [c="printf_like_2"];
+// DEFAULT-NEXT:     fn %[[VALUE_func4:[0-9]+]] @func4(%[[VALUE3:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> void [linkage=external] [c="printf_like_3"];
+// DEFAULT-NEXT:     fn %[[VALUE_func5:[0-9]+]] @func5() -> ptr<fn(ptr<const i8>, ...) -> void> [linkage=external] [c="va_type *(void)"];
 // DEFAULT-NEXT:     fn %[[VALUE_func_test:[0-9]+]] @func_test() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ...) -> void>(%[[VALUE_func1]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])), const<i32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ...) -> void>(%[[VALUE_func2]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_2]])), const<i32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ...) -> void>(%[[VALUE_func3]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_3]])), const<i32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ...) -> void>(%[[VALUE_func4]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_4]])), const<i32>(1));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ...) -> void>(call<ptr<fn(ptr<const i8>, ...) -> void>, signature=fn() -> ptr<fn(ptr<const i8>, ...) -> void>>(%[[VALUE_func5]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_5]])), const<i32>(1));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ...) -> void>(call<ptr<fn(ptr<const i8>, ...) -> void>, signature=fn() -> ptr<fn(ptr<const i8>, ...) -> void>>(%[[VALUE_func5]]) [c="va_type *"], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_5]])), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -58,7 +58,7 @@ __rt_mutex_slowlock (int p1) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: ptr<i32> [storage=static] [linkage=external] [c="typeof(int *)"];
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_rt_mutex_owner:[0-9]+]] @rt_mutex_owner() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_rt_mutex_deadlock_account_lock:[0-9]+]] @rt_mutex_deadlock_account_lock(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
@@ -84,9 +84,9 @@ __rt_mutex_slowlock (int p1) {
 // DEFAULT-NEXT:                         asm "" [dialect=att] [options=pure,nomem,nostack] {
 // DEFAULT-NEXT:                             lateout 0 "r" [reg] width 64 place<ptr<i32>>(%[[VALUE_a]]);
 // DEFAULT-NEXT:                         }
-// DEFAULT-NEXT:                         write<ptr<i32>>(%[[VALUE4]], read<ptr<i32>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:                         write<ptr<i32>>(%[[VALUE4]], read<ptr<i32>>(%[[VALUE_a]]) [c="typeof(int *)"]);
 // DEFAULT-NEXT:                     }
-// DEFAULT-NEXT:                     write<i32>(%[[VALUE_c]], ptr_to_int<i32, reason=assign>(read<ptr<i32>>(%[[VALUE4]])));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_c]], ptr_to_int<i32, reason=assign>(read<ptr<i32>>(%[[VALUE4]]) [c="typeof(int *)"]));
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_try_to_take_rt_mutex]], read<i32>(%[[VALUE_c]])), const<i32>(0))
 // DEFAULT-NEXT:                         break %[[VALUE3]];
 // DEFAULT-NEXT:                     if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%[[VALUE___builtin_expect]], from_bool<i64, reason=arg>(eq<i32>(read<i32>(%[[VALUE_p1_2]]), const<i32>(0))), widen<i64, reason=arg>(const<i32>(0))), const<i64>(0))

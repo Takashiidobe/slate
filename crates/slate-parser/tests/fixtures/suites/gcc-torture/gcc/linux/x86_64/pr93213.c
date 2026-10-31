@@ -73,15 +73,15 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_u32:[0-9]+]] u32 = u32;
 // DEFAULT-NEXT:     type @type[[TYPE_u128:[0-9]+]] u128 = u128;
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memmove:[0-9]+]] @__builtin_memmove(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_u16_1:[0-9]+]] u16_1: u16, %[[VALUE_u32_1:[0-9]+]] u32_1: u32, %[[VALUE_u128_1:[0-9]+]] u128_1: u128) -> u128 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_u128_0:[0-9]+]] u128_0: u128 [storage=automatic] = reinterpret<u128, reason=assign, fits=unknown>(widen<i128, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: bool [synthetic] = overflow_mul<bool>(read<u32>(%[[VALUE_u32_1]]), read<u16>(%[[VALUE_u16_1]]), deref(addr_of<ptr<u32>>(%[[VALUE_u32_1]])));
-// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u128 [synthetic] = read<u128>(%[[VALUE_u128_1]]);
-// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: u128 [synthetic] = sub<u128, overflow=wrap>(read<u128>(%[[VALUE4]]), reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE3]])))));
-// DEFAULT-NEXT:         write<u128>(%[[VALUE_u128_1]], read<u128>(%[[VALUE5]]));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memmove]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u16>>(%[[VALUE_u16_1]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<u128>>(%[[VALUE_u128_0]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memmove]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u16>>(%[[VALUE_u16_1]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<u128>>(%[[VALUE_u128_1]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))));
-// DEFAULT-NEXT:         return widen<u128, reason=return>(read<u16>(%[[VALUE_u16_1]]));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_u16_1:[0-9]+]] u16_1: u16 [c="u16"], %[[VALUE_u32_1:[0-9]+]] u32_1: u32 [c="u32"], %[[VALUE_u128_1:[0-9]+]] u128_1: u128 [c="u128"]) -> u128 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] [c="u128(u16, u32, u128)"] {
+// DEFAULT-NEXT:         let %[[VALUE_u128_0:[0-9]+]] u128_0: u128 [storage=automatic] = reinterpret<u128, reason=assign, fits=unknown>(widen<i128, reason=assign>(const<i32>(0))) [c="u128"] [c="u128"];
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: bool [synthetic] = overflow_mul<bool>(read<u32>(%[[VALUE_u32_1]]) [c="u32"], read<u16>(%[[VALUE_u16_1]]) [c="u16"], deref(addr_of<ptr<u32>>(%[[VALUE_u32_1]])));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u128 [synthetic] = read<u128>(%[[VALUE_u128_1]]) [c="u128"] [c="u128"];
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: u128 [synthetic] = sub<u128, overflow=wrap>(read<u128>(%[[VALUE4]]) [c="u128"], reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE3]])))) [c="u128"]) [c="u128"] [c="u128"];
+// DEFAULT-NEXT:         write<u128>(%[[VALUE_u128_1]], read<u128>(%[[VALUE5]]) [c="u128"]) [c="u128"] [c="u128"];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memmove]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u16>>(%[[VALUE_u16_1]]) [c="u16 *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<u128>>(%[[VALUE_u128_0]]) [c="u128 *"]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memmove]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u16>>(%[[VALUE_u16_1]]) [c="u16 *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<u128>>(%[[VALUE_u128_1]]) [c="u128 *"]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))));
+// DEFAULT-NEXT:         return widen<u128, reason=return>(read<u16>(%[[VALUE_u16_1]]) [c="u16"]) [c="u128"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE6:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE7:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE8:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
@@ -96,8 +96,8 @@ int main(void) {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u16 [storage=automatic] = truncate<u16, reason=assign, fits=unknown>(call<u128, signature=fn(u16, u32, u128) -> u128>(%[[VALUE_foo]], reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))), reinterpret<u32, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0)))));
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_x]]))), const<i32>(255))
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u16 [storage=automatic] = truncate<u16, reason=assign, fits=unknown>(call<u128, signature=fn(u16, u32, u128) -> u128>(%[[VALUE_foo]], reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))) [c="u16"], reinterpret<u32, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))) [c="u32"], reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))) [c="u128"]) [c="u128"]) [c="u16"] [c="u16"];
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_x]]) [c="u16"])), const<i32>(255))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_bar]]);
 // DEFAULT-NEXT:         return const<i32>(0);

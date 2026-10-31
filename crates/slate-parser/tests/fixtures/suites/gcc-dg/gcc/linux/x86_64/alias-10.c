@@ -61,17 +61,17 @@ void foo (bitmap head, bitmap_element *elt)
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_bitmap_element:[0-9]+]] bitmap_element = @type[[TYPE_bitmap_element_def]];
 // DEFAULT-NEXT:     type @type[[TYPE_bitmap_head_def:[0-9]+]] bitmap_head_def = struct {
-// DEFAULT-NEXT:         field0 first: ptr<@type[[TYPE_bitmap_element_def]]>;
+// DEFAULT-NEXT:         field0 first: ptr<@type[[TYPE_bitmap_element_def]]> [c="bitmap_element *"];
 // DEFAULT-NEXT:         field1 using_obstack: i32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_bitmap_head:[0-9]+]] bitmap_head = @type[[TYPE_bitmap_head_def]];
 // DEFAULT-NEXT:     type @type[[TYPE_bitmap:[0-9]+]] bitmap = ptr<@type[[TYPE_bitmap_head_def]]>;
-// DEFAULT-NEXT:     global %[[VALUE_bitmap_free:[0-9]+]] bitmap_free: ptr<@type[[TYPE_bitmap_element_def]]> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_head:[0-9]+]] head: ptr<@type[[TYPE_bitmap_head_def]]>, %[[VALUE_elt:[0-9]+]] elt: ptr<@type[[TYPE_bitmap_element_def]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_bitmap_free:[0-9]+]] bitmap_free: ptr<@type[[TYPE_bitmap_element_def]]> [storage=static] [linkage=external] [c="bitmap_element *"];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_head:[0-9]+]] head: ptr<@type[[TYPE_bitmap_head_def]]> [c="bitmap"], %[[VALUE_elt:[0-9]+]] elt: ptr<@type[[TYPE_bitmap_element_def]]> [c="bitmap_element *"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(bitmap, bitmap_element *)"] {
 // DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<i32>(const<i32>(1), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(field1(deref(read<ptr<@type[[TYPE_bitmap_head_def]]>>(%[[VALUE_head]])))), const<i32>(0))
-// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_bitmap_free]], read<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elt]]));
+// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_bitmap_free]], read<ptr<@type[[TYPE_bitmap_element_def]]>>(%[[VALUE_elt]]) [c="bitmap_element *"]) [c="bitmap_element *"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

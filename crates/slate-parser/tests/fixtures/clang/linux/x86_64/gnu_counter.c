@@ -63,7 +63,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_stringized:[0-9]+]] stringized: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(12)>(%[[VALUE_str]])) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE___COUNTER___tail:[0-9]+]] __COUNTER___tail: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 22> [storage=static] = code_units<array<i8, 22>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 115, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_local_four:[0-9]+]] local_four: i32 [storage=automatic] = const<i32>(4);
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(22)>(%[[VALUE_str_2]])), read<i32>(%[[VALUE_direct_zero]]), read<i32>(%[[VALUE_macro_one]]), read<i32>(%[[VALUE_pair]]), read<i32>(%[[VALUE_local_four]]), read<i32>(%[[VALUE_dropped]]), read<ptr<const i8>>(%[[VALUE_stringized]]), read<i32>(%[[VALUE___COUNTER___tail]]));

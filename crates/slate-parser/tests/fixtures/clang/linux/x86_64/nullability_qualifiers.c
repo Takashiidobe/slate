@@ -47,15 +47,15 @@ int use(int *_Nullable p) {
 // DEFAULT-NEXT:     type @type[[TYPE_plain_int:[0-9]+]] plain_int = ptr<i32>;
 // DEFAULT-NEXT:     global %[[VALUE_function_pointer:[0-9]+]] function_pointer: ptr<fn() -> i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_repeated:[0-9]+]] repeated: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_before_typedef:[0-9]+]] before_typedef: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_after_typedef:[0-9]+]] after_typedef: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_before_typedef:[0-9]+]] before_typedef: ptr<i32> [storage=static] [linkage=external] [c="plain_int"];
+// DEFAULT-NEXT:     global %[[VALUE_after_typedef:[0-9]+]] after_typedef: ptr<i32> [storage=static] [linkage=external] [c="maybe_int"];
 // DEFAULT-NEXT:     global %[[VALUE_levels:[0-9]+]] levels: ptr<ptr<ptr<i32>>> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_parameter:[0-9]+]] @parameter(%[[VALUE_p:[0-9]+]] p: ptr<const i8>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_callback:[0-9]+]] @callback(%[[VALUE_compare:[0-9]+]] compare: ptr<fn(ptr<const void>, ptr<const void>) -> i32>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_returned:[0-9]+]] @returned() -> ptr<i32> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_qualified:[0-9]+]] @qualified(%[[VALUE_p_2:[0-9]+]] p: ptr<i32> [const]) -> ptr<i32> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_array_parameter:[0-9]+]] @array_parameter(%[[VALUE_a:[0-9]+]] a: ptr<i32>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_sized_array_parameter:[0-9]+]] @sized_array_parameter(%[[VALUE_a_2:[0-9]+]] a: ptr<i32> [array=3]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_qualified:[0-9]+]] @qualified(%[[VALUE_p_2:[0-9]+]] p: ptr<i32> [const]) -> ptr<i32> [linkage=external] [c="int *const(int *const)"];
+// DEFAULT-NEXT:     fn %[[VALUE_array_parameter:[0-9]+]] @array_parameter(%[[VALUE_a:[0-9]+]] a: ptr<i32>) -> i32 [linkage=external] [c="int(int[])"];
+// DEFAULT-NEXT:     fn %[[VALUE_sized_array_parameter:[0-9]+]] @sized_array_parameter(%[[VALUE_a_2:[0-9]+]] a: ptr<i32> [array=3]) -> i32 [linkage=external] [c="int(int[3])"];
 // DEFAULT-NEXT:     fn %[[VALUE_use:[0-9]+]] @use(%[[VALUE_p_3:[0-9]+]] p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: ptr<i32> [storage=automatic] = read<ptr<i32>>(%[[VALUE_p_3]]);
 // DEFAULT-NEXT:         return add<i32>(add<i32>(reinterpret<i32>(truncate<u32>(const<u64>(8))), reinterpret<i32>(truncate<u32>(const<u64>(8)))), read<i32>(deref(read<ptr<i32>>(%[[VALUE_local]]))));

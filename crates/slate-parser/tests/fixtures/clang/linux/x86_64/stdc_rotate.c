@@ -67,8 +67,8 @@ int bound[__builtin_stdc_rotate_left((byte)129, 1)];
 // C11-NEXT:     type @type[[TYPE_byte:[0-9]+]] byte = u8;
 // C11-NEXT:     global %[[VALUE_bound:[0-9]+]] bound: array<i32, 3> [storage=static] [linkage=external];
 // C11-NEXT:     fn %[[VALUE___builtin_stdc_rotate_left:[0-9]+]] @__builtin_stdc_rotate_left(%[[VALUE0:[0-9]+]] <unnamed>: u8, %[[VALUE1:[0-9]+]] <unnamed>: i8) -> u8 [linkage=external] [memory=none];
-// C11-NEXT:     fn %[[VALUE_left8:[0-9]+]] @left8(%[[VALUE_value:[0-9]+]] value: u8, %[[VALUE_count:[0-9]+]] count: i8) -> u8 [linkage=external] [fallthrough=ub_if_used] {
-// C11-NEXT:         return call<u8, signature=fn(u8, i8) -> u8>(%[[VALUE___builtin_stdc_rotate_left]], read<u8>(%[[VALUE_value]]), read<i8>(%[[VALUE_count]]));
+// C11-NEXT:     fn %[[VALUE_left8:[0-9]+]] @left8(%[[VALUE_value:[0-9]+]] value: u8 [c="byte"], %[[VALUE_count:[0-9]+]] count: i8) -> u8 [linkage=external] [fallthrough=ub_if_used] [c="unsigned char(byte, signed char)"] {
+// C11-NEXT:         return call<u8, signature=fn(u8, i8) -> u8>(%[[VALUE___builtin_stdc_rotate_left]], read<u8>(%[[VALUE_value]]) [c="byte"], read<i8>(%[[VALUE_count]]));
 // C11-NEXT:     }
 // C11-NEXT:     fn %[[VALUE___builtin_stdc_rotate_right:[0-9]+]] @__builtin_stdc_rotate_right(%[[VALUE2:[0-9]+]] <unnamed>: u16, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> u16 [linkage=external] [memory=none];
 // C11-NEXT:     fn %[[VALUE_right16:[0-9]+]] @right16(%[[VALUE_value_2:[0-9]+]] value: u16, %[[VALUE_count_2:[0-9]+]] count: u64) -> u16 [linkage=external] [fallthrough=ub_if_used] {
@@ -129,8 +129,8 @@ int bound[__builtin_stdc_rotate_left((byte)129, 1)];
 // C2Y-NEXT:     type @type[[TYPE_byte:[0-9]+]] byte = u8;
 // C2Y-NEXT:     global %[[VALUE_bound:[0-9]+]] bound: array<i32, 3> [storage=static] [linkage=external];
 // C2Y-NEXT:     fn %[[VALUE___builtin_stdc_rotate_left:[0-9]+]] @__builtin_stdc_rotate_left(%[[VALUE0:[0-9]+]] <unnamed>: u8, %[[VALUE1:[0-9]+]] <unnamed>: i8) -> u8 [linkage=external] [memory=none];
-// C2Y-NEXT:     fn %[[VALUE_left8:[0-9]+]] @left8(%[[VALUE_value:[0-9]+]] value: u8, %[[VALUE_count:[0-9]+]] count: i8) -> u8 [linkage=external] [fallthrough=ub_if_used] {
-// C2Y-NEXT:         return call<u8, signature=fn(u8, i8) -> u8>(%[[VALUE___builtin_stdc_rotate_left]], read<u8>(%[[VALUE_value]]), read<i8>(%[[VALUE_count]]));
+// C2Y-NEXT:     fn %[[VALUE_left8:[0-9]+]] @left8(%[[VALUE_value:[0-9]+]] value: u8 [c="byte"], %[[VALUE_count:[0-9]+]] count: i8) -> u8 [linkage=external] [fallthrough=ub_if_used] [c="unsigned char(byte, signed char)"] {
+// C2Y-NEXT:         return call<u8, signature=fn(u8, i8) -> u8>(%[[VALUE___builtin_stdc_rotate_left]], read<u8>(%[[VALUE_value]]) [c="byte"], read<i8>(%[[VALUE_count]]));
 // C2Y-NEXT:     }
 // C2Y-NEXT:     fn %[[VALUE___builtin_stdc_rotate_right:[0-9]+]] @__builtin_stdc_rotate_right(%[[VALUE2:[0-9]+]] <unnamed>: u16, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> u16 [linkage=external] [memory=none];
 // C2Y-NEXT:     fn %[[VALUE_right16:[0-9]+]] @right16(%[[VALUE_value_2:[0-9]+]] value: u16, %[[VALUE_count_2:[0-9]+]] count: u64) -> u16 [linkage=external] [fallthrough=ub_if_used] {

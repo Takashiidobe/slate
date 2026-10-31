@@ -48,6 +48,6 @@ const smrdd_memory_blocks_t smrdd_memory_blocks =
 // DEFAULT-NEXT:         field1 block: array<i32, incomplete>;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type[[TYPE_smrdd_memory_blocks_t:[0-9]+]] smrdd_memory_blocks_t = @type[[TYPE_smrdd_memory_blocks_s]];
-// DEFAULT-NEXT:     global %[[VALUE_smrdd_memory_blocks:[0-9]+]] smrdd_memory_blocks: @type[[TYPE_smrdd_memory_blocks_s]] [storage=static] [const] = aggregate<@type[[TYPE_smrdd_memory_blocks_s]], zero_fill=false>(field0 = const<i32>(3), field1 = aggregate<array<i32, 6>, zero_fill=true>(index1 = const<i32>(2), index5 = const<i32>(5))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_smrdd_memory_blocks:[0-9]+]] smrdd_memory_blocks: @type[[TYPE_smrdd_memory_blocks_s]] [storage=static] [const] = aggregate<@type[[TYPE_smrdd_memory_blocks_s]], zero_fill=false>(field0 = const<i32>(3), field1 = aggregate<array<i32, 6>, zero_fill=true>(index1 = const<i32>(2), index5 = const<i32>(5))) [linkage=external] [c="const smrdd_memory_blocks_t"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

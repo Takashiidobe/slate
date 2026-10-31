@@ -65,7 +65,7 @@ main ()
 // DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: u64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: u64 [storage=static] [linkage=external] [c="size_t"];
 // DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: bool [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=relaxed, failure=seq_cst>(deref(addr_of<ptr<i32>>(%[[VALUE_i]])), addr_of<ptr<i32>>(%[[VALUE_e]]), const<i32>(1));

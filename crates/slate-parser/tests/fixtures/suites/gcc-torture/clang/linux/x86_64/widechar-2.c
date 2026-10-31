@@ -38,7 +38,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_wchar_t:[0-9]+]] wchar_t = i32;
-// DEFAULT-NEXT:     global %[[VALUE_ws:[0-9]+]] ws: array<i32, 4> [storage=static] [const] [align=16] = code_units<array<i32, 4>>([102, 111, 111, 0]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ws:[0-9]+]] ws: array<i32, 4> [storage=static] [const] [align=16] = code_units<array<i32, 4>>([102, 111, 111, 0]) [linkage=external] [c="const wchar_t[]"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

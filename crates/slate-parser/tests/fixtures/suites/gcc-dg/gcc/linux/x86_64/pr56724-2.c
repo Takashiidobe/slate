@@ -84,9 +84,9 @@ void f1 (nrfp); void f2 (fp x) { f1 (x); } extern int e; /* { dg-warning "38:pas
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, ptr<i8>) -> void>(%[[VALUE_foo_sc]], ptr_to_int<i32, reason=arg>(read<ptr<u8>>(%[[VALUE_uc]])), const<i32>(2), addr_of<ptr<i8>>(%[[VALUE_sc]]));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, ptr<i8>) -> void>(%[[VALUE_foo_sc]], const<i32>(1), const<i32>(2), pointer_cast<ptr<i8>, reason=arg>(read<ptr<const i8>>(%[[VALUE_csc]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE4:[0-9]+]] <unnamed>: ptr<fn() -> void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_x:[0-9]+]] x: ptr<fn() -> void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<fn() -> void>) -> void>(%[[VALUE_f1]], read<ptr<fn() -> void>>(%[[VALUE_x]]));
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE4:[0-9]+]] <unnamed>: ptr<fn() -> void> [c="nrfp"]) -> void [linkage=external] [c="void(nrfp)"];
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_x:[0-9]+]] x: ptr<fn() -> void> [c="fp"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(fp)"] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<fn() -> void>) -> void>(%[[VALUE_f1]], read<ptr<fn() -> void>>(%[[VALUE_x]]) [c="nrfp"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

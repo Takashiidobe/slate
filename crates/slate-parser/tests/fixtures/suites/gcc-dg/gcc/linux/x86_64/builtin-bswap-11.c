@@ -77,17 +77,17 @@ main (void)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___uint64_t:[0-9]+]] __uint64_t = u64;
-// DEFAULT-NEXT:     type @type[[TYPE_uint64_t:[0-9]+]] uint64_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_uint64_t:[0-9]+]] uint64_t = u64 [c="__uint64_t"];
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 s: @type[[TYPE1:[0-9]+]];
 // DEFAULT-NEXT:         field1 n: u128;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE1]] = struct {
-// DEFAULT-NEXT:         field0 lo: u64;
-// DEFAULT-NEXT:         field1 hi: u64;
+// DEFAULT-NEXT:         field0 lo: u64 [c="uint64_t"];
+// DEFAULT-NEXT:         field1 hi: u64 [c="uint64_t"];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_u:[0-9]+]] u = @type[[TYPE0]];
-// DEFAULT-NEXT:     global %[[VALUE_uint128_ts:[0-9]+]] uint128_ts: array<@type[[TYPE0]], 3> [storage=static] = aggregate<array<@type[[TYPE0]], 3>, zero_fill=false>(index0 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<u64>(0), field1 = const<u64>(1234605616436508552))), index1 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<u64>(1234605616436508552), field1 = const<u64>(18446744073709551615))), index2 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<u64>(18446744073709551615), field1 = const<u64>(0)))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_uint128_ts:[0-9]+]] uint128_ts: array<@type[[TYPE0]], 3> [storage=static] = aggregate<array<@type[[TYPE0]], 3>, zero_fill=false>(index0 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<u64>(0) [c="uint64_t"], field1 = const<u64>(1234605616436508552) [c="uint64_t"])), index1 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<u64>(1234605616436508552) [c="uint64_t"], field1 = const<u64>(18446744073709551615) [c="uint64_t"])), index2 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<u64>(18446744073709551615) [c="uint64_t"], field1 = const<u64>(0) [c="uint64_t"]))) [linkage=external] [c="u[]"];
 // DEFAULT-NEXT:     fn %[[VALUE_my_bswap128:[0-9]+]] @my_bswap128(%[[VALUE_x:[0-9]+]] x: u128) -> u128 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: u128 [storage=automatic] = reinterpret<u128, reason=assign, fits=unknown>(widen<i128, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         let %[[VALUE_shift:[0-9]+]] shift: i32 [storage=automatic];

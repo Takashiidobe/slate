@@ -48,11 +48,11 @@ int main(void) {
 // DEFAULT-NEXT:         field0 value: i32;
 // DEFAULT-NEXT:     } [size=32, align=32, offsets=[0]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 19> [storage=static] = code_units<array<i8, 19>>([37, 122, 117, 32, 37, 122, 117, 32, 37, 122, 117, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_object:[0-9]+]] object: @type[[TYPE_OverAligned]] [storage=automatic] = aggregate<@type[[TYPE_OverAligned]], zero_fill=false>(field0 = const<i32>(7));
 // DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: i32 [storage=automatic] [align=64] = const<i32>(11);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%[[VALUE_str]])), const<u64>(32), rem<u64, by_zero=ub>(ptr_to_int<u64, reason=explicit>(addr_of<ptr<@type[[TYPE_OverAligned]]>>(%[[VALUE_object]])), widen<u64, reason=usual_arith>(const<u32>(32))), rem<u64, by_zero=ub>(ptr_to_int<u64, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_local]])), widen<u64, reason=usual_arith>(const<u32>(64))), read<i32>(field0(%[[VALUE_object]])), read<i32>(%[[VALUE_local]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%[[VALUE_str]])), const<u64>(32), rem<u64, by_zero=ub>(ptr_to_int<u64, reason=explicit>(addr_of<ptr<@type[[TYPE_OverAligned]]>>(%[[VALUE_object]])) [c="uintptr_t"], widen<u64, reason=usual_arith>(const<u32>(32)) [c="uintptr_t"]) [c="uintptr_t"], rem<u64, by_zero=ub>(ptr_to_int<u64, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_local]])) [c="uintptr_t"], widen<u64, reason=usual_arith>(const<u32>(64)) [c="uintptr_t"]) [c="uintptr_t"], read<i32>(field0(%[[VALUE_object]])), read<i32>(%[[VALUE_local]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -183,7 +183,7 @@ int nested_typedef(void) {
 // C89-NEXT:     fn %[[VALUE_nested_typedef:[0-9]+]] @nested_typedef() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // C89-NEXT:         if ne<u64>(const<u64>(4), const<u64>(0))
 // C89-NEXT:             {
-// C89-NEXT:                 let %[[VALUE_x_2:[0-9]+]] x: i32 [storage=automatic];
+// C89-NEXT:                 let %[[VALUE_x_2:[0-9]+]] x: i32 [storage=automatic] [c="T"];
 // C89-NEXT:             }
 // C89-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
 // C89-NEXT:     }
@@ -335,7 +335,7 @@ int nested_typedef(void) {
 // C99-NEXT:     fn %[[VALUE_nested_typedef:[0-9]+]] @nested_typedef() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // C99-NEXT:         if ne<u64>(const<u64>(4), const<u64>(0))
 // C99-NEXT:             {
-// C99-NEXT:                 let %[[VALUE_x_2:[0-9]+]] x: i32 [storage=automatic];
+// C99-NEXT:                 let %[[VALUE_x_2:[0-9]+]] x: i32 [storage=automatic] [c="T"];
 // C99-NEXT:             }
 // C99-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
 // C99-NEXT:     }

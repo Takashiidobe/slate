@@ -95,8 +95,8 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_error_at_line:[0-9]+]] @error_at_line(%[[VALUE___status_2:[0-9]+]] __status: i32, %[[VALUE___errnum_2:[0-9]+]] __errnum: i32, %[[VALUE___fname:[0-9]+]] __fname: ptr<const i8>, %[[VALUE___lineno:[0-9]+]] __lineno: u32, %[[VALUE___format_2:[0-9]+]] __format: ptr<const i8>, ...) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_mcheck:[0-9]+]] @mcheck(%[[VALUE___abortfunc:[0-9]+]] __abortfunc: ptr<fn(@type[[TYPE_mcheck_status]]) -> void>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_mprobe:[0-9]+]] @mprobe(%[[VALUE___ptr:[0-9]+]] __ptr: ptr<void>) -> @type[[TYPE_mcheck_status]] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format_3:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format_3:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_free:[0-9]+]] @free(%[[VALUE___ptr_2:[0-9]+]] __ptr: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_on_exit:[0-9]+]] @on_exit(%[[VALUE___func:[0-9]+]] __func: ptr<fn(i32, ptr<void>) -> void>, %[[VALUE___arg:[0-9]+]] __arg: ptr<void>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_handle_exit:[0-9]+]] @handle_exit(%[[VALUE_status:[0-9]+]] status: i32, %[[VALUE_arg:[0-9]+]] arg: ptr<void>) -> void [linkage=internal] [fallthrough=ret_void] {

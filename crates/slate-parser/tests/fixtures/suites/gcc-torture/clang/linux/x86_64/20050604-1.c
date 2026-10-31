@@ -66,11 +66,11 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_v4hi:[0-9]+]] v4hi = vector<u16, 4>;
 // DEFAULT-NEXT:     type @type[[TYPE_v4sf:[0-9]+]] v4sf = vector<f32, 4>;
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
-// DEFAULT-NEXT:         field0 v: vector<u16, 4>;
+// DEFAULT-NEXT:         field0 v: vector<u16, 4> [c="v4hi"];
 // DEFAULT-NEXT:         field1 s: array<i16, 4>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = union {
-// DEFAULT-NEXT:         field0 v: vector<f32, 4>;
+// DEFAULT-NEXT:         field0 v: vector<f32, 4> [c="v4sf"];
 // DEFAULT-NEXT:         field1 f: array<f32, 4>;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0, 0]];
 // DEFAULT-NEXT:     global %[[VALUE_u:[0-9]+]] u: @type[[TYPE0]] [storage=static] [linkage=external];
@@ -89,9 +89,9 @@ int main(void) {
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: vector<u16, 4> [synthetic] = read<vector<u16, 4>>(field0(%[[VALUE_u]]));
-// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: vector<u16, 4> [synthetic] = add<vector<u16, 4>, elementwise=true, overflow=wrap>(read<vector<u16, 4>>(%[[VALUE3]]), read<vector<u16, 4>>(compound_literal %[[VALUE5:[0-9]+]] [storage=automatic] = aggregate<vector<u16, 4>, zero_fill=true>(index0 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(12))), index1 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(const<i32>(32768))))));
-// DEFAULT-NEXT:                 write<vector<u16, 4>>(field0(%[[VALUE_u]]), read<vector<u16, 4>>(%[[VALUE4]]));
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: vector<u16, 4> [synthetic] = read<vector<u16, 4>>(field0(%[[VALUE_u]])) [c="v4hi"] [c="v4hi"];
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: vector<u16, 4> [synthetic] = add<vector<u16, 4>, elementwise=true, overflow=wrap>(read<vector<u16, 4>>(%[[VALUE3]]) [c="v4hi"], read<vector<u16, 4>>(compound_literal %[[VALUE5:[0-9]+]] [storage=automatic] = aggregate<vector<u16, 4>, zero_fill=true>(index0 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(12))), index1 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(const<i32>(32768))))) [c="v4hi"]) [c="v4hi"] [c="v4hi"];
+// DEFAULT-NEXT:                 write<vector<u16, 4>>(field0(%[[VALUE_u]]), read<vector<u16, 4>>(%[[VALUE4]]) [c="v4hi"]) [c="v4hi"] [c="v4hi"];
 // DEFAULT-NEXT:         for %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<u32>(%[[VALUE_i]], reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
@@ -103,9 +103,9 @@ int main(void) {
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: vector<f32, 4> [synthetic] = read<vector<f32, 4>>(field0(%[[VALUE_v]]));
-// DEFAULT-NEXT:                 let %[[VALUE10:[0-9]+]]: vector<f32, 4> [synthetic] = add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 4>>(%[[VALUE9]]), read<vector<f32, 4>>(compound_literal %[[VALUE11:[0-9]+]] [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=true>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(18.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(20.0)), index2 = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(22)))));
-// DEFAULT-NEXT:                 write<vector<f32, 4>>(field0(%[[VALUE_v]]), read<vector<f32, 4>>(%[[VALUE10]]));
+// DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: vector<f32, 4> [synthetic] = read<vector<f32, 4>>(field0(%[[VALUE_v]])) [c="v4sf"] [c="v4sf"];
+// DEFAULT-NEXT:                 let %[[VALUE10:[0-9]+]]: vector<f32, 4> [synthetic] = add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 4>>(%[[VALUE9]]) [c="v4sf"], read<vector<f32, 4>>(compound_literal %[[VALUE11:[0-9]+]] [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=true>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(18.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(20.0)), index2 = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(22)))) [c="v4sf"]) [c="v4sf"] [c="v4sf"];
+// DEFAULT-NEXT:                 write<vector<f32, 4>>(field0(%[[VALUE_v]]), read<vector<f32, 4>>(%[[VALUE10]]) [c="v4sf"]) [c="v4sf"] [c="v4sf"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);

@@ -35,7 +35,7 @@ int tst[__alignof__ (bar) >= __alignof__ (int) ? 1 : -1];
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = @type[[TYPE__foo]];
-// DEFAULT-NEXT:     extern %[[VALUE_bar:[0-9]+]] bar: @type[[TYPE__foo]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_bar:[0-9]+]] bar: @type[[TYPE__foo]] [storage=static] [linkage=external] [c="foo"];
 // DEFAULT-NEXT:     global %[[VALUE_tst:[0-9]+]] tst: array<i32, 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -47,20 +47,20 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
 // DEFAULT-NEXT:     type @type[[TYPE_raw_spinlock_t:[0-9]+]] raw_spinlock_t = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
-// DEFAULT-NEXT:         field0 raw_lock: @type[[TYPE0]];
+// DEFAULT-NEXT:         field0 raw_lock: @type[[TYPE0]] [c="raw_spinlock_t"];
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_spinlock_t:[0-9]+]] spinlock_t = @type[[TYPE1]];
 // DEFAULT-NEXT:     global %[[VALUE_ii:[0-9]+]] ii: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_one_raw_spinlock:[0-9]+]] @one_raw_spinlock() -> @type[[TYPE0]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_raw_lock:[0-9]+]] raw_lock: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_one_raw_spinlock:[0-9]+]] @one_raw_spinlock() -> @type[[TYPE0]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] [c="raw_spinlock_t(void)"] {
+// DEFAULT-NEXT:         let %[[VALUE_raw_lock:[0-9]+]] raw_lock: @type[[TYPE0]] [storage=automatic] [c="raw_spinlock_t"];
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_ii]]);
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_ii]], read<i32>(%[[VALUE1]]));
-// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_raw_lock]]));
+// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_raw_lock]]) [c="raw_spinlock_t"]) [c="raw_spinlock_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_lock:[0-9]+]] lock: @type[[TYPE1]] [storage=automatic] = copy<@type[[TYPE1]], reason=assign>(read<@type[[TYPE1]]>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn() -> @type[[TYPE0]], abi=sysv64() -> native_c>(%[[VALUE_one_raw_spinlock]])))));
+// DEFAULT-NEXT:         let %[[VALUE_lock:[0-9]+]] lock: @type[[TYPE1]] [storage=automatic] = copy<@type[[TYPE1]], reason=assign>(read<@type[[TYPE1]]>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn() -> @type[[TYPE0]], abi=sysv64() -> native_c>(%[[VALUE_one_raw_spinlock]])))) [c="spinlock_t"]) [c="spinlock_t"] [c="spinlock_t"];
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_ii]]), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

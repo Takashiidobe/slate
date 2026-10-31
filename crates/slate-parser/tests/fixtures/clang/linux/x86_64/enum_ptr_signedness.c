@@ -53,20 +53,20 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type[[TYPE_color_t:[0-9]+]] color_t = @type[[TYPE_color_e]];
 // DEFAULT-NEXT:     type @type[[TYPE_palette:[0-9]+]] palette = struct {
-// DEFAULT-NEXT:         field0 start: ptr<@type[[TYPE_color_e]]>;
-// DEFAULT-NEXT:         field1 top: ptr<@type[[TYPE_color_e]]>;
+// DEFAULT-NEXT:         field0 start: ptr<@type[[TYPE_color_e]]> [c="color_t *"];
+// DEFAULT-NEXT:         field1 top: ptr<@type[[TYPE_color_e]]> [c="color_t *"];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_GREEN]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_GREEN]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_data:[0-9]+]] data: array<@type[[TYPE_color_e]], 3> [storage=automatic] = aggregate<array<@type[[TYPE_color_e]], 3>, zero_fill=false>(index0 = int_to_enum<@type[[TYPE_color_e]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))), index1 = int_to_enum<@type[[TYPE_color_e]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))), index2 = int_to_enum<@type[[TYPE_color_e]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2))));
+// DEFAULT-NEXT:         let %[[VALUE_data:[0-9]+]] data: array<@type[[TYPE_color_e]], 3> [storage=automatic] = aggregate<array<@type[[TYPE_color_e]], 3>, zero_fill=false>(index0 = int_to_enum<@type[[TYPE_color_e]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))) [c="color_t"], index1 = int_to_enum<@type[[TYPE_color_e]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))) [c="color_t"], index2 = int_to_enum<@type[[TYPE_color_e]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2))) [c="color_t"]) [c="color_t[3]"];
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: @type[[TYPE_palette]] [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE_color_e]]>>(field0(%[[VALUE_p]]), array_decay<ptr<@type[[TYPE_color_e]]>, length=Some(3)>(%[[VALUE_data]]));
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE_color_e]]>>(field1(%[[VALUE_p]]), ptr_offset<ptr<@type[[TYPE_color_e]]>, subtract=false, element=@type[[TYPE_color_e]], overflow=ub>(array_decay<ptr<@type[[TYPE_color_e]]>, length=Some(3)>(%[[VALUE_data]]), const<i32>(3)));
-// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: @type[[TYPE_color_e]] [storage=automatic] = read<@type[[TYPE_color_e]]>(deref(ptr_offset<ptr<@type[[TYPE_color_e]]>, subtract=false, element=@type[[TYPE_color_e]], overflow=ub>(read<ptr<@type[[TYPE_color_e]]>>(field0(%[[VALUE_p]])), const<i32>(1))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_GREEN]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_color_e]]>(%[[VALUE_c]]))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_GREEN]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), truncate<i32, reason=explicit, fits=unknown>(ptr_diff<i64, element=@type[[TYPE_color_e]], same_array=required, overflow=ub>(read<ptr<@type[[TYPE_color_e]]>>(field1(%[[VALUE_p]])), read<ptr<@type[[TYPE_color_e]]>>(field0(%[[VALUE_p]])))));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_color_e]]>>(field0(%[[VALUE_p]]), array_decay<ptr<@type[[TYPE_color_e]]>, length=Some(3)>(%[[VALUE_data]]) [c="color_t *"]) [c="color_t *"];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_color_e]]>>(field1(%[[VALUE_p]]), ptr_offset<ptr<@type[[TYPE_color_e]]>, subtract=false, element=@type[[TYPE_color_e]], overflow=ub>(array_decay<ptr<@type[[TYPE_color_e]]>, length=Some(3)>(%[[VALUE_data]]) [c="color_t *"], const<i32>(3)) [c="color_t *"]) [c="color_t *"];
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: @type[[TYPE_color_e]] [storage=automatic] = read<@type[[TYPE_color_e]]>(deref(ptr_offset<ptr<@type[[TYPE_color_e]]>, subtract=false, element=@type[[TYPE_color_e]], overflow=ub>(read<ptr<@type[[TYPE_color_e]]>>(field0(%[[VALUE_p]])), const<i32>(1)))) [c="color_t"] [c="color_t"];
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_GREEN]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_color_e]]>(%[[VALUE_c]]) [c="color_t"])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_GREEN]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), truncate<i32, reason=explicit, fits=unknown>(ptr_diff<i64, element=@type[[TYPE_color_e]], same_array=required, overflow=ub>(read<ptr<@type[[TYPE_color_e]]>>(field1(%[[VALUE_p]])) [c="color_t *"], read<ptr<@type[[TYPE_color_e]]>>(field0(%[[VALUE_p]])) [c="color_t *"])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

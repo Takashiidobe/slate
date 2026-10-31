@@ -180,19 +180,19 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list [c="__gnuc_va_list"];
 // DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 i: i32;
-// DEFAULT-NEXT:         field1 g: va_list;
-// DEFAULT-NEXT:         field2 h: array<va_list, 2>;
+// DEFAULT-NEXT:         field1 g: va_list [c="va_list"];
+// DEFAULT-NEXT:         field2 h: array<va_list, 2> [c="va_list[2]"];
 // DEFAULT-NEXT:     } [size=80, align=8, offsets=[0, 8, 32]];
 // DEFAULT-NEXT:     global %[[VALUE_foo_arg:[0-9]+]] foo_arg: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_bar_arg:[0-9]+]] bar_arg: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_gap:[0-9]+]] gap: va_list [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_gap:[0-9]+]] gap: va_list [storage=static] [linkage=external] [c="va_list"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_v:[0-9]+]] v: i32, %[[VALUE_ap:[0-9]+]] ap: va_list) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_v:[0-9]+]] v: i32, %[[VALUE_ap:[0-9]+]] ap: va_list [c="va_list"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(int, va_list)"] {
 // DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<i32>(%[[VALUE_v]])
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(5):
@@ -248,21 +248,21 @@ int main(void) {
 // DEFAULT-NEXT:         va_end(%[[VALUE_gap]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_i_3:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_aps:[0-9]+]] aps: array<va_list, 10> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_aps:[0-9]+]] aps: array<va_list, 10> [storage=automatic] [align=16] [c="va_list[10]"];
 // DEFAULT-NEXT:         va_start(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%[[VALUE_aps]]), const<i32>(4))));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x]], va_arg<i64>(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%[[VALUE_aps]]), const<i32>(4)))));
 // DEFAULT-NEXT:         va_end(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%[[VALUE_aps]]), const<i32>(4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_i_4:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_aps_2:[0-9]+]] aps: array<va_list, 10> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_aps_2:[0-9]+]] aps: array<va_list, 10> [storage=automatic] [align=16] [c="va_list[10]"];
 // DEFAULT-NEXT:         va_start(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%[[VALUE_aps_2]]), const<i32>(4))));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], read<i32>(%[[VALUE_i_4]]));
 // DEFAULT-NEXT:         va_end(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%[[VALUE_aps_2]]), const<i32>(4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5(%[[VALUE_i_5:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_aps_3:[0-9]+]] aps: array<va_list, 10> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_aps_3:[0-9]+]] aps: array<va_list, 10> [storage=automatic] [align=16] [c="va_list[10]"];
 // DEFAULT-NEXT:         va_start(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%[[VALUE_aps_3]]), const<i32>(4))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, va_list) -> void>(%[[VALUE_foo]], read<i32>(%[[VALUE_i_5]]), read<va_list>(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%[[VALUE_aps_3]]), const<i32>(4)))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, va_list) -> void>(%[[VALUE_foo]], read<i32>(%[[VALUE_i_5]]), read<va_list>(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%[[VALUE_aps_3]]), const<i32>(4)))) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%[[VALUE_aps_3]]), const<i32>(4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6(%[[VALUE_i_6:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
@@ -280,7 +280,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8(%[[VALUE_i_8:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_a_3:[0-9]+]] a: @type[[TYPE_A]] [storage=automatic];
 // DEFAULT-NEXT:         va_start(field1(%[[VALUE_a_3]]));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, va_list) -> void>(%[[VALUE_foo]], read<i32>(%[[VALUE_i_8]]), read<va_list>(field1(%[[VALUE_a_3]])));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, va_list) -> void>(%[[VALUE_foo]], read<i32>(%[[VALUE_i_8]]), read<va_list>(field1(%[[VALUE_a_3]])) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(field1(%[[VALUE_a_3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f10:[0-9]+]] @f10(%[[VALUE_i_9:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
@@ -298,7 +298,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_f12:[0-9]+]] @f12(%[[VALUE_i_11:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_a_6:[0-9]+]] a: @type[[TYPE_A]] [storage=automatic];
 // DEFAULT-NEXT:         va_start(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(2)>(field2(%[[VALUE_a_6]])), const<i32>(1))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, va_list) -> void>(%[[VALUE_foo]], read<i32>(%[[VALUE_i_11]]), read<va_list>(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(2)>(field2(%[[VALUE_a_6]])), const<i32>(1)))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, va_list) -> void>(%[[VALUE_foo]], read<i32>(%[[VALUE_i_11]]), read<va_list>(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(2)>(field2(%[[VALUE_a_6]])), const<i32>(1)))) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(2)>(field2(%[[VALUE_a_6]])), const<i32>(1))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

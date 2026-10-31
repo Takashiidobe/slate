@@ -221,7 +221,7 @@ int main(void) {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return widen<i32, reason=return>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(17)>(%[[VALUE_hex]]), read<u32>(%[[VALUE_a]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fap:[0-9]+]] @fap(%[[VALUE_i:[0-9]+]] i: i32, %[[VALUE_format:[0-9]+]] format: ptr<i8>, %[[VALUE_ap:[0-9]+]] ap: va_list) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_fap:[0-9]+]] @fap(%[[VALUE_i:[0-9]+]] i: i32, %[[VALUE_format:[0-9]+]] format: ptr<i8>, %[[VALUE_ap:[0-9]+]] ap: va_list [c="va_list"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(int, char *, va_list)"] {
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_format]]))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(sub<i32, overflow=ub>(const<i32>(16), read<i32>(%[[VALUE_i]])))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         while %[[VALUE2:[0-9]+]] ne<i8>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_format]]))), const<i8>(0))
@@ -232,99 +232,99 @@ int main(void) {
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f0:[0-9]+]] @f0(%[[VALUE_format_2:[0-9]+]] format: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(0), read<ptr<i8>>(%[[VALUE_format_2]]), read<va_list>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(0), read<ptr<i8>>(%[[VALUE_format_2]]), read<va_list>(%[[VALUE_ap_2]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_a1:[0-9]+]] a1: i32, %[[VALUE_format_3:[0-9]+]] format: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_3:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_3:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_3]]);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(1), read<ptr<i8>>(%[[VALUE_format_3]]), read<va_list>(%[[VALUE_ap_3]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(1), read<ptr<i8>>(%[[VALUE_format_3]]), read<va_list>(%[[VALUE_ap_3]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_a1_2:[0-9]+]] a1: i32, %[[VALUE_a2:[0-9]+]] a2: i32, %[[VALUE_format_4:[0-9]+]] format: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_4:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_4:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_4]]);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(2), read<ptr<i8>>(%[[VALUE_format_4]]), read<va_list>(%[[VALUE_ap_4]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(2), read<ptr<i8>>(%[[VALUE_format_4]]), read<va_list>(%[[VALUE_ap_4]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_4]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_a1_3:[0-9]+]] a1: i32, %[[VALUE_a2_2:[0-9]+]] a2: i32, %[[VALUE_a3:[0-9]+]] a3: i32, %[[VALUE_format_5:[0-9]+]] format: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_5:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_5:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_5]]);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(3), read<ptr<i8>>(%[[VALUE_format_5]]), read<va_list>(%[[VALUE_ap_5]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(3), read<ptr<i8>>(%[[VALUE_format_5]]), read<va_list>(%[[VALUE_ap_5]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_a1_4:[0-9]+]] a1: i32, %[[VALUE_a2_3:[0-9]+]] a2: i32, %[[VALUE_a3_2:[0-9]+]] a3: i32, %[[VALUE_a4:[0-9]+]] a4: i32, %[[VALUE_format_6:[0-9]+]] format: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_6:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_6:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_6]]);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(4), read<ptr<i8>>(%[[VALUE_format_6]]), read<va_list>(%[[VALUE_ap_6]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(4), read<ptr<i8>>(%[[VALUE_format_6]]), read<va_list>(%[[VALUE_ap_6]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_6]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5(%[[VALUE_a1_5:[0-9]+]] a1: i32, %[[VALUE_a2_4:[0-9]+]] a2: i32, %[[VALUE_a3_3:[0-9]+]] a3: i32, %[[VALUE_a4_2:[0-9]+]] a4: i32, %[[VALUE_a5:[0-9]+]] a5: i32, %[[VALUE_format_7:[0-9]+]] format: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_7:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_7:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_7]]);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(5), read<ptr<i8>>(%[[VALUE_format_7]]), read<va_list>(%[[VALUE_ap_7]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(5), read<ptr<i8>>(%[[VALUE_format_7]]), read<va_list>(%[[VALUE_ap_7]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_7]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6(%[[VALUE_a1_6:[0-9]+]] a1: i32, %[[VALUE_a2_5:[0-9]+]] a2: i32, %[[VALUE_a3_4:[0-9]+]] a3: i32, %[[VALUE_a4_3:[0-9]+]] a4: i32, %[[VALUE_a5_2:[0-9]+]] a5: i32, %[[VALUE_a6:[0-9]+]] a6: i32, %[[VALUE_format_8:[0-9]+]] format: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_8:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_8:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_8]]);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(6), read<ptr<i8>>(%[[VALUE_format_8]]), read<va_list>(%[[VALUE_ap_8]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(6), read<ptr<i8>>(%[[VALUE_format_8]]), read<va_list>(%[[VALUE_ap_8]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_8]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7(%[[VALUE_a1_7:[0-9]+]] a1: i32, %[[VALUE_a2_6:[0-9]+]] a2: i32, %[[VALUE_a3_5:[0-9]+]] a3: i32, %[[VALUE_a4_4:[0-9]+]] a4: i32, %[[VALUE_a5_3:[0-9]+]] a5: i32, %[[VALUE_a6_2:[0-9]+]] a6: i32, %[[VALUE_a7:[0-9]+]] a7: i32, %[[VALUE_format_9:[0-9]+]] format: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_9:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_9:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_9]]);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(7), read<ptr<i8>>(%[[VALUE_format_9]]), read<va_list>(%[[VALUE_ap_9]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(7), read<ptr<i8>>(%[[VALUE_format_9]]), read<va_list>(%[[VALUE_ap_9]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_9]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8(%[[VALUE_a1_8:[0-9]+]] a1: i32, %[[VALUE_a2_7:[0-9]+]] a2: i32, %[[VALUE_a3_6:[0-9]+]] a3: i32, %[[VALUE_a4_5:[0-9]+]] a4: i32, %[[VALUE_a5_4:[0-9]+]] a5: i32, %[[VALUE_a6_3:[0-9]+]] a6: i32, %[[VALUE_a7_2:[0-9]+]] a7: i32, %[[VALUE_a8:[0-9]+]] a8: i32, %[[VALUE_format_10:[0-9]+]] format: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_10:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_10:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_10]]);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(8), read<ptr<i8>>(%[[VALUE_format_10]]), read<va_list>(%[[VALUE_ap_10]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(8), read<ptr<i8>>(%[[VALUE_format_10]]), read<va_list>(%[[VALUE_ap_10]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_10]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f9:[0-9]+]] @f9(%[[VALUE_a1_9:[0-9]+]] a1: i32, %[[VALUE_a2_8:[0-9]+]] a2: i32, %[[VALUE_a3_7:[0-9]+]] a3: i32, %[[VALUE_a4_6:[0-9]+]] a4: i32, %[[VALUE_a5_5:[0-9]+]] a5: i32, %[[VALUE_a6_4:[0-9]+]] a6: i32, %[[VALUE_a7_3:[0-9]+]] a7: i32, %[[VALUE_a8_2:[0-9]+]] a8: i32, %[[VALUE_a9:[0-9]+]] a9: i32, %[[VALUE_format_11:[0-9]+]] format: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_11:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_11:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_11]]);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(9), read<ptr<i8>>(%[[VALUE_format_11]]), read<va_list>(%[[VALUE_ap_11]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(9), read<ptr<i8>>(%[[VALUE_format_11]]), read<va_list>(%[[VALUE_ap_11]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_11]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f10:[0-9]+]] @f10(%[[VALUE_a1_10:[0-9]+]] a1: i32, %[[VALUE_a2_9:[0-9]+]] a2: i32, %[[VALUE_a3_8:[0-9]+]] a3: i32, %[[VALUE_a4_7:[0-9]+]] a4: i32, %[[VALUE_a5_6:[0-9]+]] a5: i32, %[[VALUE_a6_5:[0-9]+]] a6: i32, %[[VALUE_a7_4:[0-9]+]] a7: i32, %[[VALUE_a8_3:[0-9]+]] a8: i32, %[[VALUE_a9_2:[0-9]+]] a9: i32, %[[VALUE_a10:[0-9]+]] a10: i32, %[[VALUE_format_12:[0-9]+]] format: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_12:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_12:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_12]]);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(10), read<ptr<i8>>(%[[VALUE_format_12]]), read<va_list>(%[[VALUE_ap_12]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(10), read<ptr<i8>>(%[[VALUE_format_12]]), read<va_list>(%[[VALUE_ap_12]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_12]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f11:[0-9]+]] @f11(%[[VALUE_a1_11:[0-9]+]] a1: i32, %[[VALUE_a2_10:[0-9]+]] a2: i32, %[[VALUE_a3_9:[0-9]+]] a3: i32, %[[VALUE_a4_8:[0-9]+]] a4: i32, %[[VALUE_a5_7:[0-9]+]] a5: i32, %[[VALUE_a6_6:[0-9]+]] a6: i32, %[[VALUE_a7_5:[0-9]+]] a7: i32, %[[VALUE_a8_4:[0-9]+]] a8: i32, %[[VALUE_a9_3:[0-9]+]] a9: i32, %[[VALUE_a10_2:[0-9]+]] a10: i32, %[[VALUE_a11:[0-9]+]] a11: i32, %[[VALUE_format_13:[0-9]+]] format: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_13:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_13:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_13]]);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(11), read<ptr<i8>>(%[[VALUE_format_13]]), read<va_list>(%[[VALUE_ap_13]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(11), read<ptr<i8>>(%[[VALUE_format_13]]), read<va_list>(%[[VALUE_ap_13]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_13]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f12:[0-9]+]] @f12(%[[VALUE_a1_12:[0-9]+]] a1: i32, %[[VALUE_a2_11:[0-9]+]] a2: i32, %[[VALUE_a3_10:[0-9]+]] a3: i32, %[[VALUE_a4_9:[0-9]+]] a4: i32, %[[VALUE_a5_8:[0-9]+]] a5: i32, %[[VALUE_a6_7:[0-9]+]] a6: i32, %[[VALUE_a7_6:[0-9]+]] a7: i32, %[[VALUE_a8_5:[0-9]+]] a8: i32, %[[VALUE_a9_4:[0-9]+]] a9: i32, %[[VALUE_a10_3:[0-9]+]] a10: i32, %[[VALUE_a11_2:[0-9]+]] a11: i32, %[[VALUE_a12:[0-9]+]] a12: i32, %[[VALUE_format_14:[0-9]+]] format: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_14:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_14:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_14]]);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(12), read<ptr<i8>>(%[[VALUE_format_14]]), read<va_list>(%[[VALUE_ap_14]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(12), read<ptr<i8>>(%[[VALUE_format_14]]), read<va_list>(%[[VALUE_ap_14]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_14]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f13:[0-9]+]] @f13(%[[VALUE_a1_13:[0-9]+]] a1: i32, %[[VALUE_a2_12:[0-9]+]] a2: i32, %[[VALUE_a3_11:[0-9]+]] a3: i32, %[[VALUE_a4_10:[0-9]+]] a4: i32, %[[VALUE_a5_9:[0-9]+]] a5: i32, %[[VALUE_a6_8:[0-9]+]] a6: i32, %[[VALUE_a7_7:[0-9]+]] a7: i32, %[[VALUE_a8_6:[0-9]+]] a8: i32, %[[VALUE_a9_5:[0-9]+]] a9: i32, %[[VALUE_a10_4:[0-9]+]] a10: i32, %[[VALUE_a11_3:[0-9]+]] a11: i32, %[[VALUE_a12_2:[0-9]+]] a12: i32, %[[VALUE_a13:[0-9]+]] a13: i32, %[[VALUE_format_15:[0-9]+]] format: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_15:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_15:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_15]]);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(13), read<ptr<i8>>(%[[VALUE_format_15]]), read<va_list>(%[[VALUE_ap_15]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(13), read<ptr<i8>>(%[[VALUE_format_15]]), read<va_list>(%[[VALUE_ap_15]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_15]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f14:[0-9]+]] @f14(%[[VALUE_a1_14:[0-9]+]] a1: i32, %[[VALUE_a2_13:[0-9]+]] a2: i32, %[[VALUE_a3_12:[0-9]+]] a3: i32, %[[VALUE_a4_11:[0-9]+]] a4: i32, %[[VALUE_a5_10:[0-9]+]] a5: i32, %[[VALUE_a6_9:[0-9]+]] a6: i32, %[[VALUE_a7_8:[0-9]+]] a7: i32, %[[VALUE_a8_7:[0-9]+]] a8: i32, %[[VALUE_a9_6:[0-9]+]] a9: i32, %[[VALUE_a10_5:[0-9]+]] a10: i32, %[[VALUE_a11_4:[0-9]+]] a11: i32, %[[VALUE_a12_3:[0-9]+]] a12: i32, %[[VALUE_a13_2:[0-9]+]] a13: i32, %[[VALUE_a14:[0-9]+]] a14: i32, %[[VALUE_format_16:[0-9]+]] format: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_16:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_16:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_16]]);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(14), read<ptr<i8>>(%[[VALUE_format_16]]), read<va_list>(%[[VALUE_ap_16]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(14), read<ptr<i8>>(%[[VALUE_format_16]]), read<va_list>(%[[VALUE_ap_16]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_16]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f15:[0-9]+]] @f15(%[[VALUE_a1_15:[0-9]+]] a1: i32, %[[VALUE_a2_14:[0-9]+]] a2: i32, %[[VALUE_a3_13:[0-9]+]] a3: i32, %[[VALUE_a4_12:[0-9]+]] a4: i32, %[[VALUE_a5_11:[0-9]+]] a5: i32, %[[VALUE_a6_10:[0-9]+]] a6: i32, %[[VALUE_a7_9:[0-9]+]] a7: i32, %[[VALUE_a8_8:[0-9]+]] a8: i32, %[[VALUE_a9_7:[0-9]+]] a9: i32, %[[VALUE_a10_6:[0-9]+]] a10: i32, %[[VALUE_a11_5:[0-9]+]] a11: i32, %[[VALUE_a12_4:[0-9]+]] a12: i32, %[[VALUE_a13_3:[0-9]+]] a13: i32, %[[VALUE_a14_2:[0-9]+]] a14: i32, %[[VALUE_a15:[0-9]+]] a15: i32, %[[VALUE_format_17:[0-9]+]] format: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_17:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_17:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_17]]);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(15), read<ptr<i8>>(%[[VALUE_format_17]]), read<va_list>(%[[VALUE_ap_17]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i8>, va_list) -> void>(%[[VALUE_fap]], const<i32>(15), read<ptr<i8>>(%[[VALUE_format_17]]), read<va_list>(%[[VALUE_ap_17]]) [c="va_list"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_17]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         if ne<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_a]]), read<u32>(%[[VALUE_b]])), const<u32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] [c="int(int, char *[])"] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u32 [storage=automatic] = const<u32>(2147483648);
 // DEFAULT-NEXT:         call<void, signature=fn(u32, u32) -> void>(%[[VALUE_test]], read<u32>(%[[VALUE_x]]), read<u32>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

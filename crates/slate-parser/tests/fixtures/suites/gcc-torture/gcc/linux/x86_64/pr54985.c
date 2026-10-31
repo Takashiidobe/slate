@@ -61,10 +61,10 @@ int main() {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_ST:[0-9]+]] ST = @type[[TYPE_st]];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE_st]]>, %[[VALUE_c:[0-9]+]] c: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE_st]]> [c="ST *"], %[[VALUE_c:[0-9]+]] c: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="int(ST *, int)"] {
 // DEFAULT-NEXT:         let %[[VALUE_first:[0-9]+]] first: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         let %[[VALUE_count:[0-9]+]] count: i32 [storage=automatic] = read<i32>(%[[VALUE_c]]);
-// DEFAULT-NEXT:         let %[[VALUE_item:[0-9]+]] item: ptr<@type[[TYPE_st]]> [storage=automatic] = read<ptr<@type[[TYPE_st]]>>(%[[VALUE_s]]);
+// DEFAULT-NEXT:         let %[[VALUE_item:[0-9]+]] item: ptr<@type[[TYPE_st]]> [storage=automatic] = read<ptr<@type[[TYPE_st]]>>(%[[VALUE_s]]) [c="ST *"] [c="ST *"];
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = read<i32>(field0(deref(read<ptr<@type[[TYPE_st]]>>(%[[VALUE_s]]))));
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic];
 // DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] {
@@ -81,16 +81,16 @@ int main() {
 // DEFAULT-NEXT:                     if ge<i32>(read<i32>(%[[VALUE_x]]), read<i32>(%[[VALUE_a]]))
 // DEFAULT-NEXT:                         return const<i32>(1);
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE_x]]));
-// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: ptr<@type[[TYPE_st]]> [synthetic] = read<ptr<@type[[TYPE_st]]>>(%[[VALUE_item]]);
-// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: ptr<@type[[TYPE_st]]> [synthetic] = ptr_offset<ptr<@type[[TYPE_st]]>, subtract=false, element=@type[[TYPE_st]], overflow=ub>(read<ptr<@type[[TYPE_st]]>>(%[[VALUE3]]), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_st]]>>(%[[VALUE_item]], read<ptr<@type[[TYPE_st]]>>(%[[VALUE4]]));
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: ptr<@type[[TYPE_st]]> [synthetic] = read<ptr<@type[[TYPE_st]]>>(%[[VALUE_item]]) [c="ST *"] [c="ST *"];
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: ptr<@type[[TYPE_st]]> [synthetic] = ptr_offset<ptr<@type[[TYPE_st]]>, subtract=false, element=@type[[TYPE_st]], overflow=ub>(read<ptr<@type[[TYPE_st]]>>(%[[VALUE3]]) [c="ST *"], const<i32>(1)) [c="ST *"] [c="ST *"];
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_st]]>>(%[[VALUE_item]], read<ptr<@type[[TYPE_st]]>>(%[[VALUE4]]) [c="ST *"]) [c="ST *"] [c="ST *"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE__1:[0-9]+]] _1: array<@type[[TYPE_st]], 2> [storage=automatic] = aggregate<array<@type[[TYPE_st]], 2>, zero_fill=false>(index0 = aggregate<@type[[TYPE_st]], zero_fill=false>(field0 = const<i32>(2)), index1 = aggregate<@type[[TYPE_st]], zero_fill=false>(field0 = const<i32>(1)));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE_st]]>, i32) -> i32>(%[[VALUE_foo]], array_decay<ptr<@type[[TYPE_st]]>, length=Some(2)>(%[[VALUE__1]]), const<i32>(2)), const<i32>(0))
+// DEFAULT-NEXT:         let %[[VALUE__1:[0-9]+]] _1: array<@type[[TYPE_st]], 2> [storage=automatic] = aggregate<array<@type[[TYPE_st]], 2>, zero_fill=false>(index0 = aggregate<@type[[TYPE_st]], zero_fill=false>(field0 = const<i32>(2)), index1 = aggregate<@type[[TYPE_st]], zero_fill=false>(field0 = const<i32>(1))) [c="ST[2]"];
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE_st]]>, i32) -> i32>(%[[VALUE_foo]], array_decay<ptr<@type[[TYPE_st]]>, length=Some(2)>(%[[VALUE__1]]) [c="ST *"], const<i32>(2)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

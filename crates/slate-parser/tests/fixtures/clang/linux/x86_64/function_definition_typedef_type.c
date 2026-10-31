@@ -52,20 +52,20 @@ static void epilog(int *next) {
 // DEFAULT-NEXT:     type @type[[TYPE_F:[0-9]+]] F = fn(i32) -> i32;
 // DEFAULT-NEXT:     type @type[[TYPE_Processor:[0-9]+]] Processor = fn(ptr<i32>) -> void;
 // DEFAULT-NEXT:     type @type[[TYPE_parser:[0-9]+]] parser = struct {
-// DEFAULT-NEXT:         field0 processor: ptr<fn(ptr<i32>) -> void>;
+// DEFAULT-NEXT:         field0 processor: ptr<fn(ptr<i32>) -> void> [c="Processor *"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<fn(i32) -> i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<ptr<fn(i32) -> i32>>(%[[VALUE_p]], function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_f]]));
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<fn(i32) -> i32> [storage=static] [linkage=external] [c="F *"];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] [c="F"] {
+// DEFAULT-NEXT:         write<ptr<fn(i32) -> i32>>(%[[VALUE_p]], function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_f]]) [c="F *"]) [c="F *"];
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_after:[0-9]+]] @after() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<ptr<fn(i32) -> i32>>(%[[VALUE_p]], function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_f]]));
+// DEFAULT-NEXT:         write<ptr<fn(i32) -> i32>>(%[[VALUE_p]], function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_f]]) [c="F *"]) [c="F *"];
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_epilog:[0-9]+]] @epilog(%[[VALUE_next:[0-9]+]] next: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_epilog:[0-9]+]] @epilog(%[[VALUE_next:[0-9]+]] next: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] [c="Processor"] {
 // DEFAULT-NEXT:         let %[[VALUE_self:[0-9]+]] self: @type[[TYPE_parser]] [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<fn(ptr<i32>) -> void>>(field0(%[[VALUE_self]]), function_decay<ptr<fn(ptr<i32>) -> void>>(%[[VALUE_epilog]]));
+// DEFAULT-NEXT:         write<ptr<fn(ptr<i32>) -> void>>(field0(%[[VALUE_self]]), function_decay<ptr<fn(ptr<i32>) -> void>>(%[[VALUE_epilog]]) [c="Processor *"]) [c="Processor *"];
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_next]])), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

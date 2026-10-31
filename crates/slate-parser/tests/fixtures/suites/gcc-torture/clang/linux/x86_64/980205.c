@@ -52,7 +52,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_fdouble:[0-9]+]] @fdouble(%[[VALUE_one:[0-9]+]] one: f64, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_value:[0-9]+]] value: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_value]], va_arg<f64>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);

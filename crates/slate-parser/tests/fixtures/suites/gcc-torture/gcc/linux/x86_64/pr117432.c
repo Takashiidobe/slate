@@ -75,10 +75,10 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list [c="__gnuc_va_list"];
 // DEFAULT-NEXT:     global %[[VALUE_r:[0-9]+]] r: i64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_tag:[0-9]+]] tag: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         if not<bool>(ne<i64>(read<i64>(%[[VALUE_r]]), const<i64>(0)))
 // DEFAULT-NEXT:             write<i64>(%[[VALUE_r]], va_arg<i64>(%[[VALUE_ap]]));
@@ -93,7 +93,7 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_baz]], const<i32>(1), neg<i64, overflow=ub>(const<i64>(1)), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_qux:[0-9]+]] @qux(...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:         if not<bool>(ne<i64>(read<i64>(%[[VALUE_r]]), const<i64>(0)))
 // DEFAULT-NEXT:             write<i64>(%[[VALUE_r]], va_arg<i64>(%[[VALUE_ap_2]]));

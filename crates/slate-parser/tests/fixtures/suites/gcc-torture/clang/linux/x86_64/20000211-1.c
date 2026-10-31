@@ -133,19 +133,19 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:     type @type[[TYPE_Bytecount:[0-9]+]] Bytecount = i32;
 // DEFAULT-NEXT:     type @type[[TYPE_Charcount:[0-9]+]] Charcount = i32;
 // DEFAULT-NEXT:     type @type[[TYPE_lstream:[0-9]+]] lstream = struct {
-// DEFAULT-NEXT:         field0 buffering: @type[[TYPE_lstream_buffering:[0-9]+]];
+// DEFAULT-NEXT:         field0 buffering: @type[[TYPE_lstream_buffering:[0-9]+]] [c="Lstream_buffering"];
 // DEFAULT-NEXT:         field1 out_buffer: ptr<u8>;
-// DEFAULT-NEXT:         field2 out_buffer_size: u64;
-// DEFAULT-NEXT:         field3 out_buffer_ind: u64;
-// DEFAULT-NEXT:         field4 byte_count: u64;
+// DEFAULT-NEXT:         field2 out_buffer_size: u64 [c="size_t"];
+// DEFAULT-NEXT:         field3 out_buffer_ind: u64 [c="size_t"];
+// DEFAULT-NEXT:         field4 byte_count: u64 [c="size_t"];
 // DEFAULT-NEXT:         field5 flags: i64;
 // DEFAULT-NEXT:         field6 data: array<i8, 1>;
 // DEFAULT-NEXT:     } [size=56, align=8, offsets=[0, 8, 16, 24, 32, 40, 48]];
 // DEFAULT-NEXT:     type @type[[TYPE_Lstream:[0-9]+]] Lstream = @type[[TYPE_lstream]];
 // DEFAULT-NEXT:     type @type[[TYPE_Lisp_Object:[0-9]+]] Lisp_Object = i32;
 // DEFAULT-NEXT:     type @type[[TYPE_Lisp_String:[0-9]+]] Lisp_String = struct {
-// DEFAULT-NEXT:         field0 _size: i32;
-// DEFAULT-NEXT:         field1 _data: ptr<u8>;
+// DEFAULT-NEXT:         field0 _size: i32 [c="Bytecount"];
+// DEFAULT-NEXT:         field1 _data: ptr<u8> [c="Bufbyte *"];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_lstream_buffering]] lstream_buffering = enum : u32 {
 // DEFAULT-NEXT:         %[[VALUE_LSTREAM_LINE_BUFFERED:[0-9]+]] LSTREAM_LINE_BUFFERED = const<i32>(0);
@@ -164,39 +164,39 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
 // DEFAULT-NEXT:     type @type[[TYPE_printf_arg_dynarr:[0-9]+]] printf_arg_dynarr = @type[[TYPE1]];
-// DEFAULT-NEXT:     extern %[[VALUE_Qnil:[0-9]+]] Qnil: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_TRUE_LIST_P:[0-9]+]] @TRUE_LIST_P(%[[VALUE_object:[0-9]+]] object: i32) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     extern %[[VALUE_Qnil:[0-9]+]] Qnil: i32 [storage=static] [linkage=external] [c="Lisp_Object"];
+// DEFAULT-NEXT:     fn %[[VALUE_TRUE_LIST_P:[0-9]+]] @TRUE_LIST_P(%[[VALUE_object:[0-9]+]] object: i32 [c="Lisp_Object"]) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] [c="int(Lisp_Object)"] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%[[VALUE_object]]), read<i32>(%[[VALUE_Qnil]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_Lstream_fputc:[0-9]+]] @Lstream_fputc(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE_lstream]]>, %[[VALUE1:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_Lstream_write:[0-9]+]] @Lstream_write(%[[VALUE2:[0-9]+]] <unnamed>: ptr<@type[[TYPE_lstream]]>, %[[VALUE3:[0-9]+]] <unnamed>: ptr<const u8>, %[[VALUE4:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_Lstream_write:[0-9]+]] @Lstream_write(%[[VALUE2:[0-9]+]] <unnamed>: ptr<@type[[TYPE_lstream]]>, %[[VALUE3:[0-9]+]] <unnamed>: ptr<const u8> [c="const Bufbyte *"], %[[VALUE4:[0-9]+]] <unnamed>: i32 [c="Bytecount"]) -> void [linkage=external] [c="void(struct lstream *, const Bufbyte *, Bytecount)"];
 // DEFAULT-NEXT:     fn %[[VALUE_Lstream_flush_out:[0-9]+]] @Lstream_flush_out(%[[VALUE5:[0-9]+]] <unnamed>: ptr<@type[[TYPE_lstream]]>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_parse_doprnt_spec:[0-9]+]] @parse_doprnt_spec(%[[VALUE6:[0-9]+]] <unnamed>: ptr<u8>, %[[VALUE7:[0-9]+]] <unnamed>: i32) -> ptr<@type[[TYPE0]]> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_doprnt_1:[0-9]+]] @doprnt_1(%[[VALUE_stream:[0-9]+]] stream: i32, %[[VALUE_string:[0-9]+]] string: ptr<const u8>, %[[VALUE_len:[0-9]+]] len: i32, %[[VALUE_minlen:[0-9]+]] minlen: i32, %[[VALUE_maxlen:[0-9]+]] maxlen: i32, %[[VALUE_minus_flag:[0-9]+]] minus_flag: i32, %[[VALUE_zero_flag:[0-9]+]] zero_flag: i32) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_cclen:[0-9]+]] cclen: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_pad:[0-9]+]] pad: u8 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_lstr:[0-9]+]] lstr: ptr<@type[[TYPE_lstream]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_lstream]]>, reason=explicit>(int_to_ptr<ptr<void>, reason=explicit>(or<u64>(and<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_stream]]))), sub<u64, overflow=wrap>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), sub<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(4), const<i32>(8)), const<i32>(4))), const<u64>(1))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1073741824))))));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_cclen]], read<i32>(%[[VALUE_len]]));
+// DEFAULT-NEXT:     fn %[[VALUE_parse_doprnt_spec:[0-9]+]] @parse_doprnt_spec(%[[VALUE6:[0-9]+]] <unnamed>: ptr<u8> [c="Bufbyte *"], %[[VALUE7:[0-9]+]] <unnamed>: i32 [c="Bytecount"]) -> ptr<@type[[TYPE0]]> [linkage=external] [c="printf_spec_dynarr *(Bufbyte *, Bytecount)"];
+// DEFAULT-NEXT:     fn %[[VALUE_doprnt_1:[0-9]+]] @doprnt_1(%[[VALUE_stream:[0-9]+]] stream: i32 [c="Lisp_Object"], %[[VALUE_string:[0-9]+]] string: ptr<const u8> [c="const Bufbyte *"], %[[VALUE_len:[0-9]+]] len: i32 [c="Bytecount"], %[[VALUE_minlen:[0-9]+]] minlen: i32 [c="Charcount"], %[[VALUE_maxlen:[0-9]+]] maxlen: i32 [c="Charcount"], %[[VALUE_minus_flag:[0-9]+]] minus_flag: i32, %[[VALUE_zero_flag:[0-9]+]] zero_flag: i32) -> void [linkage=internal] [fallthrough=ret_void] [c="void(Lisp_Object, const Bufbyte *, Bytecount, Charcount, Charcount, int, int)"] {
+// DEFAULT-NEXT:         let %[[VALUE_cclen:[0-9]+]] cclen: i32 [storage=automatic] [c="Charcount"];
+// DEFAULT-NEXT:         let %[[VALUE_pad:[0-9]+]] pad: u8 [storage=automatic] [c="Bufbyte"];
+// DEFAULT-NEXT:         let %[[VALUE_lstr:[0-9]+]] lstr: ptr<@type[[TYPE_lstream]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_lstream]]>, reason=explicit>(int_to_ptr<ptr<void>, reason=explicit>(or<u64>(and<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_stream]]))), sub<u64, overflow=wrap>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), sub<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(4), const<i32>(8)), const<i32>(4))), const<u64>(1))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1073741824)))))) [c="Lstream *"] [c="Lstream *"];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_cclen]], read<i32>(%[[VALUE_len]]) [c="Charcount"]) [c="Charcount"];
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_zero_flag]]), const<i32>(0))
-// DEFAULT-NEXT:             write<u8>(%[[VALUE_pad]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(48))));
-// DEFAULT-NEXT:         write<u8>(%[[VALUE_pad]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(32))));
+// DEFAULT-NEXT:             write<u8>(%[[VALUE_pad]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(48))) [c="Bufbyte"]) [c="Bufbyte"];
+// DEFAULT-NEXT:         write<u8>(%[[VALUE_pad]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(32))) [c="Bufbyte"]) [c="Bufbyte"];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_to_add:[0-9]+]] to_add: i32 [storage=automatic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE_minlen]]), read<i32>(%[[VALUE_cclen]]));
 // DEFAULT-NEXT:             while %[[VALUE8:[0-9]+]] gt<i32>(read<i32>(%[[VALUE_to_add]]), const<i32>(0))
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if ge<u64>(read<u64>(field3(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))), read<u64>(field2(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))))
-// DEFAULT-NEXT:                         call<void, signature=fn(ptr<@type[[TYPE_lstream]]>, i32) -> void>(%[[VALUE_Lstream_fputc]], read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]), reinterpret<i32, reason=arg, fits=unknown>(widen<u32, reason=arg>(read<u8>(%[[VALUE_pad]]))));
+// DEFAULT-NEXT:                     if ge<u64>(read<u64>(field3(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))) [c="size_t"], read<u64>(field2(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))) [c="size_t"])
+// DEFAULT-NEXT:                         call<void, signature=fn(ptr<@type[[TYPE_lstream]]>, i32) -> void>(%[[VALUE_Lstream_fputc]], read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]), reinterpret<i32, reason=arg, fits=unknown>(widen<u32, reason=arg>(read<u8>(%[[VALUE_pad]]) [c="Bufbyte"])));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         let %[[VALUE9:[0-9]+]]: ptr<@type[[TYPE_lstream]]> [synthetic] = read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]);
-// DEFAULT-NEXT:                         let %[[VALUE10:[0-9]+]]: u64 [synthetic] = read<u64>(field3(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE9]]))));
-// DEFAULT-NEXT:                         let %[[VALUE11:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE10]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:                         write<u64>(field3(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE9]]))), read<u64>(%[[VALUE11]]));
+// DEFAULT-NEXT:                         let %[[VALUE9:[0-9]+]]: ptr<@type[[TYPE_lstream]]> [synthetic] = read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]) [c="Lstream *"] [c="Lstream *"];
+// DEFAULT-NEXT:                         let %[[VALUE10:[0-9]+]]: u64 [synthetic] = read<u64>(field3(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE9]])))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                         let %[[VALUE11:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE10]]) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="size_t"]) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                         write<u64>(field3(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE9]]))), read<u64>(%[[VALUE11]]) [c="size_t"]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                         write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(field1(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))), read<u64>(%[[VALUE10]]))), read<u8>(%[[VALUE_pad]]));
-// DEFAULT-NEXT:                         let %[[VALUE12:[0-9]+]]: ptr<@type[[TYPE_lstream]]> [synthetic] = read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]);
-// DEFAULT-NEXT:                         let %[[VALUE13:[0-9]+]]: u64 [synthetic] = read<u64>(field4(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE12]]))));
-// DEFAULT-NEXT:                         let %[[VALUE14:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE13]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:                         write<u64>(field4(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE12]]))), read<u64>(%[[VALUE14]]));
-// DEFAULT-NEXT:                         if logical_and<bool>(eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_lstream_buffering]]>(field0(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))), eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(field1(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))), sub<u64, overflow=wrap>(read<u64>(field3(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))))))), const<i32>(10)))
+// DEFAULT-NEXT:                         let %[[VALUE12:[0-9]+]]: ptr<@type[[TYPE_lstream]]> [synthetic] = read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]) [c="Lstream *"] [c="Lstream *"];
+// DEFAULT-NEXT:                         let %[[VALUE13:[0-9]+]]: u64 [synthetic] = read<u64>(field4(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE12]])))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                         let %[[VALUE14:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE13]]) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="size_t"]) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                         write<u64>(field4(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE12]]))), read<u64>(%[[VALUE14]]) [c="size_t"]) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                         if logical_and<bool>(eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_lstream_buffering]]>(field0(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))) [c="Lstream_buffering"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))), eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(field1(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))), sub<u64, overflow=wrap>(read<u64>(field3(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))))))), const<i32>(10)))
 // DEFAULT-NEXT:                             call<void, signature=fn(ptr<@type[[TYPE_lstream]]>) -> void>(%[[VALUE_Lstream_flush_out]], read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]));
 // DEFAULT-NEXT:                         else
 // DEFAULT-NEXT:                             const<i32>(0);
@@ -206,26 +206,26 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if ge<i32>(read<i32>(%[[VALUE_maxlen]]), const<i32>(0))
-// DEFAULT-NEXT:             write<i32>(%[[VALUE_len]], conditional<i32>(le<i32>(read<i32>(%[[VALUE_maxlen]]), read<i32>(%[[VALUE_cclen]])), read<i32>(%[[VALUE_maxlen]]), read<i32>(%[[VALUE_cclen]])));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_lstream]]>, ptr<const u8>, i32) -> void>(%[[VALUE_Lstream_write]], read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]), read<ptr<const u8>>(%[[VALUE_string]]), read<i32>(%[[VALUE_len]]));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_len]], conditional<i32>(le<i32>(read<i32>(%[[VALUE_maxlen]]), read<i32>(%[[VALUE_cclen]])), read<i32>(%[[VALUE_maxlen]]), read<i32>(%[[VALUE_cclen]])) [c="Bytecount"]) [c="Bytecount"];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_lstream]]>, ptr<const u8>, i32) -> void>(%[[VALUE_Lstream_write]], read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]), read<ptr<const u8>>(%[[VALUE_string]]) [c="const Bufbyte *"], read<i32>(%[[VALUE_len]]) [c="Bytecount"]);
 // DEFAULT-NEXT:         if logical_and<bool>(gt<i32>(read<i32>(%[[VALUE_minlen]]), read<i32>(%[[VALUE_cclen]])), ne<i32>(read<i32>(%[[VALUE_minus_flag]]), const<i32>(0)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_to_add_2:[0-9]+]] to_add: i32 [storage=automatic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE_minlen]]), read<i32>(%[[VALUE_cclen]]));
 // DEFAULT-NEXT:                 while %[[VALUE17:[0-9]+]] gt<i32>(read<i32>(%[[VALUE_to_add_2]]), const<i32>(0))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ge<u64>(read<u64>(field3(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))), read<u64>(field2(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))))
-// DEFAULT-NEXT:                             call<void, signature=fn(ptr<@type[[TYPE_lstream]]>, i32) -> void>(%[[VALUE_Lstream_fputc]], read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]), reinterpret<i32, reason=arg, fits=unknown>(widen<u32, reason=arg>(read<u8>(%[[VALUE_pad]]))));
+// DEFAULT-NEXT:                         if ge<u64>(read<u64>(field3(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))) [c="size_t"], read<u64>(field2(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))) [c="size_t"])
+// DEFAULT-NEXT:                             call<void, signature=fn(ptr<@type[[TYPE_lstream]]>, i32) -> void>(%[[VALUE_Lstream_fputc]], read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]), reinterpret<i32, reason=arg, fits=unknown>(widen<u32, reason=arg>(read<u8>(%[[VALUE_pad]]) [c="Bufbyte"])));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             let %[[VALUE18:[0-9]+]]: ptr<@type[[TYPE_lstream]]> [synthetic] = read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]);
-// DEFAULT-NEXT:                             let %[[VALUE19:[0-9]+]]: u64 [synthetic] = read<u64>(field3(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE18]]))));
-// DEFAULT-NEXT:                             let %[[VALUE20:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE19]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:                             write<u64>(field3(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE18]]))), read<u64>(%[[VALUE20]]));
+// DEFAULT-NEXT:                             let %[[VALUE18:[0-9]+]]: ptr<@type[[TYPE_lstream]]> [synthetic] = read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]) [c="Lstream *"] [c="Lstream *"];
+// DEFAULT-NEXT:                             let %[[VALUE19:[0-9]+]]: u64 [synthetic] = read<u64>(field3(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE18]])))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                             let %[[VALUE20:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE19]]) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="size_t"]) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                             write<u64>(field3(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE18]]))), read<u64>(%[[VALUE20]]) [c="size_t"]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                             write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(field1(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))), read<u64>(%[[VALUE19]]))), read<u8>(%[[VALUE_pad]]));
-// DEFAULT-NEXT:                             let %[[VALUE21:[0-9]+]]: ptr<@type[[TYPE_lstream]]> [synthetic] = read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]);
-// DEFAULT-NEXT:                             let %[[VALUE22:[0-9]+]]: u64 [synthetic] = read<u64>(field4(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE21]]))));
-// DEFAULT-NEXT:                             let %[[VALUE23:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE22]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:                             write<u64>(field4(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE21]]))), read<u64>(%[[VALUE23]]));
-// DEFAULT-NEXT:                             if logical_and<bool>(eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_lstream_buffering]]>(field0(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))), eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(field1(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))), sub<u64, overflow=wrap>(read<u64>(field3(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))))))), const<i32>(10)))
+// DEFAULT-NEXT:                             let %[[VALUE21:[0-9]+]]: ptr<@type[[TYPE_lstream]]> [synthetic] = read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]) [c="Lstream *"] [c="Lstream *"];
+// DEFAULT-NEXT:                             let %[[VALUE22:[0-9]+]]: u64 [synthetic] = read<u64>(field4(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE21]])))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                             let %[[VALUE23:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE22]]) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="size_t"]) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                             write<u64>(field4(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE21]]))), read<u64>(%[[VALUE23]]) [c="size_t"]) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                             if logical_and<bool>(eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_lstream_buffering]]>(field0(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))) [c="Lstream_buffering"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))), eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(field1(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))), sub<u64, overflow=wrap>(read<u64>(field3(deref(read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]])))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))))))), const<i32>(10)))
 // DEFAULT-NEXT:                                 call<void, signature=fn(ptr<@type[[TYPE_lstream]]>) -> void>(%[[VALUE_Lstream_flush_out]], read<ptr<@type[[TYPE_lstream]]>>(%[[VALUE_lstr]]));
 // DEFAULT-NEXT:                             else
 // DEFAULT-NEXT:                                 const<i32>(0);
@@ -235,12 +235,12 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_emacs_doprnt_1:[0-9]+]] @emacs_doprnt_1(%[[VALUE_stream_2:[0-9]+]] stream: i32, %[[VALUE_format_nonreloc:[0-9]+]] format_nonreloc: ptr<const u8>, %[[VALUE_format_reloc:[0-9]+]] format_reloc: i32, %[[VALUE_format_length:[0-9]+]] format_length: i32, %[[VALUE_nargs:[0-9]+]] nargs: i32, %[[VALUE_largs:[0-9]+]] largs: ptr<const i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_emacs_doprnt_1:[0-9]+]] @emacs_doprnt_1(%[[VALUE_stream_2:[0-9]+]] stream: i32 [c="Lisp_Object"], %[[VALUE_format_nonreloc:[0-9]+]] format_nonreloc: ptr<const u8> [c="const Bufbyte *"], %[[VALUE_format_reloc:[0-9]+]] format_reloc: i32 [c="Lisp_Object"], %[[VALUE_format_length:[0-9]+]] format_length: i32 [c="Bytecount"], %[[VALUE_nargs:[0-9]+]] nargs: i32, %[[VALUE_largs:[0-9]+]] largs: ptr<const i32> [c="const Lisp_Object *"]) -> i32 [linkage=internal] [fallthrough=ub_if_used] [c="Bytecount(Lisp_Object, const Bufbyte *, Lisp_Object, Bytecount, int, const Lisp_Object *)"] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_specs:[0-9]+]] specs: ptr<@type[[TYPE0]]> [storage=automatic] = null<ptr<@type[[TYPE0]]>>;
-// DEFAULT-NEXT:         write<ptr<const u8>>(%[[VALUE_format_nonreloc]], pointer_cast<ptr<const u8>, reason=assign>(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(field1(deref(pointer_cast<ptr<@type[[TYPE_Lisp_String]]>, reason=explicit>(int_to_ptr<ptr<void>, reason=explicit>(or<u64>(and<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_format_reloc]]))), sub<u64, overflow=wrap>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), sub<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(4), const<i32>(8)), const<i32>(4))), const<u64>(1))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1073741824))))))))), const<i32>(0))));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_format_length]], read<i32>(field0(deref(pointer_cast<ptr<@type[[TYPE_Lisp_String]]>, reason=explicit>(int_to_ptr<ptr<void>, reason=explicit>(or<u64>(and<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_format_reloc]]))), sub<u64, overflow=wrap>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), sub<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(4), const<i32>(8)), const<i32>(4))), const<u64>(1))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1073741824))))))))));
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_specs]], call<ptr<@type[[TYPE0]]>, signature=fn(ptr<u8>, i32) -> ptr<@type[[TYPE0]]>>(%[[VALUE_parse_doprnt_spec]], pointer_cast<ptr<u8>, reason=arg>(read<ptr<const u8>>(%[[VALUE_format_nonreloc]])), read<i32>(%[[VALUE_format_length]])));
+// DEFAULT-NEXT:         let %[[VALUE_specs:[0-9]+]] specs: ptr<@type[[TYPE0]]> [storage=automatic] = null<ptr<@type[[TYPE0]]>> [c="printf_spec_dynarr *"] [c="printf_spec_dynarr *"];
+// DEFAULT-NEXT:         write<ptr<const u8>>(%[[VALUE_format_nonreloc]], pointer_cast<ptr<const u8>, reason=assign>(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(field1(deref(pointer_cast<ptr<@type[[TYPE_Lisp_String]]>, reason=explicit>(int_to_ptr<ptr<void>, reason=explicit>(or<u64>(and<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_format_reloc]]))), sub<u64, overflow=wrap>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), sub<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(4), const<i32>(8)), const<i32>(4))), const<u64>(1))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1073741824))))))))) [c="Bufbyte *"], const<i32>(0)) [c="Bufbyte *"]) [c="const Bufbyte *"]) [c="const Bufbyte *"];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_format_length]], read<i32>(field0(deref(pointer_cast<ptr<@type[[TYPE_Lisp_String]]>, reason=explicit>(int_to_ptr<ptr<void>, reason=explicit>(or<u64>(and<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_format_reloc]]))), sub<u64, overflow=wrap>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), sub<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(4), const<i32>(8)), const<i32>(4))), const<u64>(1))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1073741824))))))))) [c="Bytecount"]) [c="Bytecount"];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_specs]], call<ptr<@type[[TYPE0]]>, signature=fn(ptr<u8>, i32) -> ptr<@type[[TYPE0]]>>(%[[VALUE_parse_doprnt_spec]], pointer_cast<ptr<u8>, reason=arg>(read<ptr<const u8>>(%[[VALUE_format_nonreloc]]) [c="const Bufbyte *"]) [c="Bufbyte *"], read<i32>(%[[VALUE_format_length]]) [c="Bytecount"]) [c="printf_spec_dynarr *"]) [c="printf_spec_dynarr *"];
 // DEFAULT-NEXT:         for %[[VALUE26:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -254,7 +254,7 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %[[VALUE_ch:[0-9]+]] ch: i8 [storage=automatic];
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, ptr<const u8>, i32, i32, i32, i32, i32) -> void>(%[[VALUE_doprnt_1]], read<i32>(%[[VALUE_stream_2]]), pointer_cast<ptr<const u8>, reason=arg>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<i8>>(%[[VALUE_ch]]))), const<i32>(1), const<i32>(0), neg<i32, overflow=ub>(const<i32>(1)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, ptr<const u8>, i32, i32, i32, i32, i32) -> void>(%[[VALUE_doprnt_1]], read<i32>(%[[VALUE_stream_2]]) [c="Lisp_Object"], pointer_cast<ptr<const u8>, reason=arg>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<i8>>(%[[VALUE_ch]])) [c="Bufbyte *"]) [c="const Bufbyte *"], const<i32>(1) [c="Bytecount"], const<i32>(0) [c="Charcount"], neg<i32, overflow=ub>(const<i32>(1)) [c="Charcount"], const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

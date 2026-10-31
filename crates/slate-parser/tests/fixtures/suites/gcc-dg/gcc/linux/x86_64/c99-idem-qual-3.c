@@ -35,7 +35,7 @@ const cia b[2]; /* { dg-bogus "duplicate" "duplicate type qualifier warning" } *
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_cia:[0-9]+]] cia = array<i32, 2>;
-// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: array<i32, 2> [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: array<array<i32, 2>, 2> [storage=static] [const] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: array<i32, 2> [storage=static] [const] [linkage=external] [c="const cia"];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: array<array<i32, 2>, 2> [storage=static] [const] [align=16] [linkage=external] [c="const cia[2]"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -44,7 +44,7 @@ int zip(void)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_uch:[0-9]+]] uch = u8;
-// DEFAULT-NEXT:     extern %[[VALUE_outbuf:[0-9]+]] outbuf: array<u8, incomplete> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_outbuf:[0-9]+]] outbuf: array<u8, incomplete> [storage=static] [linkage=external] [c="uch[]"];
 // DEFAULT-NEXT:     extern %[[VALUE_outcnt:[0-9]+]] outcnt: u32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([31, 139, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([31, 139, 0]) [linkage=internal];
@@ -55,7 +55,7 @@ int zip(void)
 // DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_outcnt]]);
 // DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE0]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:             write<u32>(%[[VALUE_outcnt]], read<u32>(%[[VALUE1]]));
-// DEFAULT-NEXT:             write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=None>(%[[VALUE_outbuf]]), read<u32>(%[[VALUE0]]))), reinterpret<u8, reason=explicit, fits=unknown>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]]), const<i32>(0))))));
+// DEFAULT-NEXT:             write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=None>(%[[VALUE_outbuf]]), read<u32>(%[[VALUE0]]))), reinterpret<u8, reason=explicit, fits=unknown>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]]), const<i32>(0))))) [c="uch"]) [c="uch"];
 // DEFAULT-NEXT:             if eq<u32>(read<u32>(%[[VALUE_outcnt]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(16384)))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_flush_outbuf]]);
 // DEFAULT-NEXT:         }
@@ -64,7 +64,7 @@ int zip(void)
 // DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_outcnt]]);
 // DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE2]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:             write<u32>(%[[VALUE_outcnt]], read<u32>(%[[VALUE3]]));
-// DEFAULT-NEXT:             write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=None>(%[[VALUE_outbuf]]), read<u32>(%[[VALUE2]]))), reinterpret<u8, reason=explicit, fits=unknown>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_2]]), const<i32>(1))))));
+// DEFAULT-NEXT:             write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=None>(%[[VALUE_outbuf]]), read<u32>(%[[VALUE2]]))), reinterpret<u8, reason=explicit, fits=unknown>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_2]]), const<i32>(1))))) [c="uch"]) [c="uch"];
 // DEFAULT-NEXT:             if eq<u32>(read<u32>(%[[VALUE_outcnt]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(16384)))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_flush_outbuf]]);
 // DEFAULT-NEXT:         }

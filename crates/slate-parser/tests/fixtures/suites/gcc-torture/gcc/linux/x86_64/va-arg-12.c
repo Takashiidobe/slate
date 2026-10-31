@@ -52,23 +52,23 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list [c="__gnuc_va_list"];
 // DEFAULT-NEXT:     type @type[[TYPE_L:[0-9]+]] L = f64;
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_p0:[0-9]+]] p0: f64, %[[VALUE_p1:[0-9]+]] p1: f64, %[[VALUE_p2:[0-9]+]] p2: f64, %[[VALUE_p3:[0-9]+]] p3: f64, %[[VALUE_p4:[0-9]+]] p4: f64, %[[VALUE_p5:[0-9]+]] p5: f64, %[[VALUE_p6:[0-9]+]] p6: f64, %[[VALUE_p7:[0-9]+]] p7: f64, %[[VALUE_p8:[0-9]+]] p8: f64, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_select:[0-9]+]] select: va_list [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_p0:[0-9]+]] p0: f64 [c="L"], %[[VALUE_p1:[0-9]+]] p1: f64 [c="L"], %[[VALUE_p2:[0-9]+]] p2: f64 [c="L"], %[[VALUE_p3:[0-9]+]] p3: f64 [c="L"], %[[VALUE_p4:[0-9]+]] p4: f64 [c="L"], %[[VALUE_p5:[0-9]+]] p5: f64 [c="L"], %[[VALUE_p6:[0-9]+]] p6: f64 [c="L"], %[[VALUE_p7:[0-9]+]] p7: f64 [c="L"], %[[VALUE_p8:[0-9]+]] p8: f64 [c="L"], ...) -> void [linkage=external] [fallthrough=ret_void] [c="void(L, L, L, L, L, L, L, L, L, ...)"] {
+// DEFAULT-NEXT:         let %[[VALUE_select:[0-9]+]] select: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_select]]);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(va_arg<f64>(%[[VALUE_select]]), const<f64>(10.0))
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(va_arg<f64>(%[[VALUE_select]]) [c="L"], const<f64>(10.0) [c="L"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(va_arg<f64>(%[[VALUE_select]]), const<f64>(11.0))
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(va_arg<f64>(%[[VALUE_select]]) [c="L"], const<f64>(11.0) [c="L"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(va_arg<f64>(%[[VALUE_select]]), const<f64>(0.0))
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(va_arg<f64>(%[[VALUE_select]]) [c="L"], const<f64>(0.0) [c="L"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_select]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(f64, f64, f64, f64, f64, f64, f64, f64, f64, ...) -> void>(%[[VALUE_f]], const<f64>(1.0), const<f64>(2.0), const<f64>(3.0), const<f64>(4.0), const<f64>(5.0), const<f64>(6.0), const<f64>(7.0), const<f64>(8.0), const<f64>(9.0), const<f64>(10.0), const<f64>(11.0), const<f64>(0.0));
+// DEFAULT-NEXT:         call<void, signature=fn(f64, f64, f64, f64, f64, f64, f64, f64, f64, ...) -> void>(%[[VALUE_f]], const<f64>(1.0) [c="L"], const<f64>(2.0) [c="L"], const<f64>(3.0) [c="L"], const<f64>(4.0) [c="L"], const<f64>(5.0) [c="L"], const<f64>(6.0) [c="L"], const<f64>(7.0) [c="L"], const<f64>(8.0) [c="L"], const<f64>(9.0) [c="L"], const<f64>(10.0), const<f64>(11.0), const<f64>(0.0));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

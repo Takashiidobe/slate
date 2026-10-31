@@ -165,10 +165,10 @@ void pass_vectors(v4sf, v2si, v4sf, v4sf, v2si);
 // IR-NEXT:     fn %[[VALUE_pass_nested_aligned:[0-9]+]] @pass_nested_aligned(%[[VALUE3:[0-9]+]] <unnamed>: @type[[TYPE_nested_aligned]]) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
 // IR-NEXT:     fn %[[VALUE_pass_aligned16:[0-9]+]] @pass_aligned16(%[[VALUE4:[0-9]+]] <unnamed>: @type[[TYPE_aligned16]]) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
 // IR-NEXT:     fn %[[VALUE_pass_complex_double:[0-9]+]] @pass_complex_double(%[[VALUE5:[0-9]+]] <unnamed>: complex<f64>) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
-// IR-NEXT:     fn %[[VALUE_pass_atomic_pair:[0-9]+]] @pass_atomic_pair(%[[VALUE6:[0-9]+]] <unnamed>: atomic @type[[TYPE_int_pair]]) -> void [linkage=external] [abi=x86_win32(byval<align=4>) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_atomic_pair:[0-9]+]] @pass_atomic_pair(%[[VALUE6:[0-9]+]] <unnamed>: atomic @type[[TYPE_int_pair]]) -> void [linkage=external] [abi=x86_win32(byval<align=4>) -> void] [c="void(_Atomic struct int_pair)"];
 // IR-NEXT:     fn %[[VALUE_pass_aligned_variadic:[0-9]+]] @pass_aligned_variadic(%[[VALUE7:[0-9]+]] <unnamed>: @type[[TYPE_aligned]], ...) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
-// IR-NEXT:     fn %[[VALUE_return_v2si:[0-9]+]] @return_v2si() -> vector<i32, 2> [linkage=external] [abi=x86_win32() -> direct];
-// IR-NEXT:     fn %[[VALUE_return_v4sf:[0-9]+]] @return_v4sf() -> vector<f32, 4> [linkage=external] [abi=x86_win32() -> direct];
-// IR-NEXT:     fn %[[VALUE_pass_vectors:[0-9]+]] @pass_vectors(%[[VALUE8:[0-9]+]] <unnamed>: vector<f32, 4>, %[[VALUE9:[0-9]+]] <unnamed>: vector<i32, 2>, %[[VALUE10:[0-9]+]] <unnamed>: vector<f32, 4>, %[[VALUE11:[0-9]+]] <unnamed>: vector<f32, 4>, %[[VALUE12:[0-9]+]] <unnamed>: vector<i32, 2>) -> void [linkage=external] [abi=x86_win32(direct, direct, direct, byref<align=16>, byref<align=8>) -> void];
+// IR-NEXT:     fn %[[VALUE_return_v2si:[0-9]+]] @return_v2si() -> vector<i32, 2> [linkage=external] [abi=x86_win32() -> direct] [c="v2si(void)"];
+// IR-NEXT:     fn %[[VALUE_return_v4sf:[0-9]+]] @return_v4sf() -> vector<f32, 4> [linkage=external] [abi=x86_win32() -> direct] [c="v4sf(void)"];
+// IR-NEXT:     fn %[[VALUE_pass_vectors:[0-9]+]] @pass_vectors(%[[VALUE8:[0-9]+]] <unnamed>: vector<f32, 4> [c="v4sf"], %[[VALUE9:[0-9]+]] <unnamed>: vector<i32, 2> [c="v2si"], %[[VALUE10:[0-9]+]] <unnamed>: vector<f32, 4> [c="v4sf"], %[[VALUE11:[0-9]+]] <unnamed>: vector<f32, 4> [c="v4sf"], %[[VALUE12:[0-9]+]] <unnamed>: vector<i32, 2> [c="v2si"]) -> void [linkage=external] [abi=x86_win32(direct, direct, direct, byref<align=16>, byref<align=8>) -> void] [c="void(v4sf, v2si, v4sf, v4sf, v2si)"];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

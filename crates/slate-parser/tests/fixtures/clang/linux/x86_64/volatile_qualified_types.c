@@ -65,11 +65,11 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 99, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 102, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 102, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_bump_return:[0-9]+]] @bump_return(%[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_value]]), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_read_volatile_param:[0-9]+]] @read_volatile_param(%[[VALUE_value_2:[0-9]+]] value: volatile f64) -> f64 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_read_volatile_param:[0-9]+]] @read_volatile_param(%[[VALUE_value_2:[0-9]+]] value: volatile f64) -> f64 [linkage=internal] [fallthrough=ub_if_used] [c="double(volatile double)"] {
 // DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64, volatile>(%[[VALUE_value_2]]), const<f64>(0.5));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_use_volatile_fields:[0-9]+]] @use_volatile_fields(%[[VALUE_input:[0-9]+]] input: f64) -> f64 [linkage=internal] [fallthrough=ub_if_used] {

@@ -46,11 +46,11 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_reach_called:[0-9]+]] @reach_called(%[[VALUE_point:[0-9]+]] point: ptr<@type[[TYPE_reach_point]]>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_point_2:[0-9]+]] point: @type[[TYPE_reach_point]] [storage=automatic] = aggregate<@type[[TYPE_reach_point]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2));
-// DEFAULT-NEXT:         let %[[VALUE_size:[0-9]+]] size: u64 [storage=automatic] = const<u64>(8);
+// DEFAULT-NEXT:         let %[[VALUE_size:[0-9]+]] size: u64 [storage=automatic] = const<u64>(8) [c="reach_size_t"] [c="reach_size_t"];
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_reach_counter]]);
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_reach_counter]], read<i32>(%[[VALUE1]]));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn(ptr<@type[[TYPE_reach_point]]>) -> i32>(%[[VALUE_reach_called]], addr_of<ptr<@type[[TYPE_reach_point]]>>(%[[VALUE_point_2]])), truncate<i32, reason=explicit, fits=unknown>(reinterpret<i64, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_size]]))));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn(ptr<@type[[TYPE_reach_point]]>) -> i32>(%[[VALUE_reach_called]], addr_of<ptr<@type[[TYPE_reach_point]]>>(%[[VALUE_point_2]])), truncate<i32, reason=explicit, fits=unknown>(reinterpret<i64, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_size]]) [c="reach_size_t"]) [c="reach_cast_t"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

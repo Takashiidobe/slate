@@ -72,12 +72,12 @@ int main(void)
 // DEFAULT-NEXT:     } [size=128, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE___sigset_t:[0-9]+]] __sigset_t = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE___jmp_buf_tag:[0-9]+]] __jmp_buf_tag = struct {
-// DEFAULT-NEXT:         field0 __jmpbuf: array<i64, 8>;
+// DEFAULT-NEXT:         field0 __jmpbuf: array<i64, 8> [c="__jmp_buf"];
 // DEFAULT-NEXT:         field1 __mask_was_saved: i32;
-// DEFAULT-NEXT:         field2 __saved_mask: @type[[TYPE0]];
+// DEFAULT-NEXT:         field2 __saved_mask: @type[[TYPE0]] [c="__sigset_t"];
 // DEFAULT-NEXT:     } [size=200, align=8, offsets=[0, 64, 72]];
 // DEFAULT-NEXT:     type @type[[TYPE_jmp_buf:[0-9]+]] jmp_buf = array<@type[[TYPE___jmp_buf_tag]], 1>;
-// DEFAULT-NEXT:     global %[[VALUE_buf:[0-9]+]] buf: array<@type[[TYPE___jmp_buf_tag]], 1> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_buf:[0-9]+]] buf: array<@type[[TYPE___jmp_buf_tag]], 1> [storage=static] [align=16] [linkage=external] [c="jmp_buf"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_longjmp:[0-9]+]] @__builtin_longjmp(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_raise0:[0-9]+]] @raise0() -> void [linkage=external] [fallthrough=ret_void] {

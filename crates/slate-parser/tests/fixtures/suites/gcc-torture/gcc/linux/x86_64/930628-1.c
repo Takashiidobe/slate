@@ -62,7 +62,7 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 16]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x:[0-9]+]] x: ptr<f64> [array=2], %[[VALUE_y:[0-9]+]] y: ptr<f64> [array=2]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x:[0-9]+]] x: ptr<f64> [array=2], %[[VALUE_y:[0-9]+]] y: ptr<f64> [array=2]) -> void [linkage=external] [fallthrough=ret_void] [c="void(double[2], double[2])"] {
 // DEFAULT-NEXT:         if eq<ptr<f64>>(read<ptr<f64>>(%[[VALUE_x]]), read<ptr<f64>>(%[[VALUE_y]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }

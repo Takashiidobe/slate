@@ -73,7 +73,7 @@ int main()
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_f:[0-9]+]] f = struct {
-// DEFAULT-NEXT:         field0 buf: volatile array<i8, 4>;
+// DEFAULT-NEXT:         field0 buf: volatile array<i8, 4> [c="typeof(volatile char)[4]"];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_f2:[0-9]+]] f2 = struct {
 // DEFAULT-NEXT:         field0 x: @type[[TYPE_f]];
@@ -99,10 +99,10 @@ int main()
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_p_4:[0-9]+]] p: @type[[TYPE_f]] [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(0), call<i32, signature=fn(ptr<@type[[TYPE_f]]>, ptr<i32>) -> i32>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_f]]>>(%[[VALUE_p_4]]), pointer_cast<ptr<i32>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<volatile array<i8, 4>>>(field0(%[[VALUE_p_4]]))))))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(0), call<i32, signature=fn(ptr<@type[[TYPE_f]]>, ptr<i32>) -> i32>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_f]]>>(%[[VALUE_p_4]]), pointer_cast<ptr<i32>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<volatile array<i8, 4>>>(field0(%[[VALUE_p_4]])) [c="typeof(volatile char) (*)[4]"]))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE_p2:[0-9]+]] p2: @type[[TYPE_f2]] [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(0), call<i32, signature=fn(ptr<@type[[TYPE_f2]]>, ptr<i32>) -> i32>(%[[VALUE_foo2]], addr_of<ptr<@type[[TYPE_f2]]>>(%[[VALUE_p2]]), pointer_cast<ptr<i32>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<volatile array<i8, 4>>>(field0(field0(%[[VALUE_p2]])))))))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(0), call<i32, signature=fn(ptr<@type[[TYPE_f2]]>, ptr<i32>) -> i32>(%[[VALUE_foo2]], addr_of<ptr<@type[[TYPE_f2]]>>(%[[VALUE_p2]]), pointer_cast<ptr<i32>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<volatile array<i8, 4>>>(field0(field0(%[[VALUE_p2]]))) [c="typeof(volatile char) (*)[4]"]))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE_q_4:[0-9]+]] q: @type[[TYPE_g]] [storage=automatic];
 // DEFAULT-NEXT:         if ne<i32>(const<i32>(0), call<i32, signature=fn(ptr<@type[[TYPE_g]]>, ptr<i32>) -> i32>(%[[VALUE_bar]], addr_of<ptr<@type[[TYPE_g]]>>(%[[VALUE_q_4]]), pointer_cast<ptr<i32>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<volatile array<i8, 4>>>(field0(%[[VALUE_q_4]]))))))

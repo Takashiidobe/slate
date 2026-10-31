@@ -34,6 +34,6 @@ const cint foo; /* { dg-bogus "warning" "warning in place of error" } */
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_cint:[0-9]+]] cint = i32;
-// DEFAULT-NEXT:     global %[[VALUE_foo:[0-9]+]] foo: i32 [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_foo:[0-9]+]] foo: i32 [storage=static] [const] [linkage=external] [c="const cint"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

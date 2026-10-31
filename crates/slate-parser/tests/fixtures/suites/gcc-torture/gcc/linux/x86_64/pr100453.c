@@ -48,7 +48,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: @type[[TYPE_a]] [storage=static] [const] [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_h:[0-9]+]] h: @type[[TYPE_a]] [const]) -> void [linkage=internal] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_h:[0-9]+]] h: @type[[TYPE_a]] [const]) -> void [linkage=internal] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] [c="void(const struct a)"] {
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_c]]), const<i32>(1))

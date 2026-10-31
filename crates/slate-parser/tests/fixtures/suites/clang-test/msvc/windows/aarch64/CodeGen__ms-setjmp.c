@@ -49,9 +49,9 @@ int test_setjmpex(void) {
 // CFG0-NEXT:         storage d128 [size=16, align=16];
 // CFG0-NEXT:     }
 // CFG0-NEXT:     type @type[[TYPE_jmp_buf:[0-9]+]] jmp_buf = array<i8, 1>;
-// CFG0-NEXT:     global %[[VALUE_jb:[0-9]+]] jb: array<i8, 1> [storage=static] [linkage=external];
-// CFG0-NEXT:     fn %[[VALUE__setjmp:[0-9]+]] @_setjmp(%[[VALUE_env:[0-9]+]] env: ptr<i8> [array=1]) -> i32 [linkage=external];
-// CFG0-NEXT:     fn %[[VALUE__setjmpex:[0-9]+]] @_setjmpex(%[[VALUE_env_2:[0-9]+]] env: ptr<i8> [array=1]) -> i32 [linkage=external];
+// CFG0-NEXT:     global %[[VALUE_jb:[0-9]+]] jb: array<i8, 1> [storage=static] [linkage=external] [c="jmp_buf"];
+// CFG0-NEXT:     fn %[[VALUE__setjmp:[0-9]+]] @_setjmp(%[[VALUE_env:[0-9]+]] env: ptr<i8> [array=1] [c="jmp_buf"]) -> i32 [linkage=external] [c="int(jmp_buf)"];
+// CFG0-NEXT:     fn %[[VALUE__setjmpex:[0-9]+]] @_setjmpex(%[[VALUE_env_2:[0-9]+]] env: ptr<i8> [array=1] [c="jmp_buf"]) -> i32 [linkage=external] [c="int(jmp_buf)"];
 // CFG0-NEXT:     fn %[[VALUE_test_setjmp:[0-9]+]] @test_setjmp() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // CFG0-NEXT:         return call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE__setjmp]], array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_jb]]));
 // CFG0-NEXT:     }
@@ -83,7 +83,7 @@ int test_setjmpex(void) {
 // CFG1-NEXT:         storage d128 [size=16, align=16];
 // CFG1-NEXT:     }
 // CFG1-NEXT:     type @type[[TYPE_jmp_buf:[0-9]+]] jmp_buf = array<i8, 1>;
-// CFG1-NEXT:     global %[[VALUE_jb:[0-9]+]] jb: array<i8, 1> [storage=static] [linkage=external];
+// CFG1-NEXT:     global %[[VALUE_jb:[0-9]+]] jb: array<i8, 1> [storage=static] [linkage=external] [c="jmp_buf"];
 // CFG1-NEXT:     fn %[[VALUE__setjmp:[0-9]+]] @_setjmp(%[[VALUE0:[0-9]+]] <unnamed>: ptr<i8>) -> i32 [linkage=external];
 // CFG1-NEXT:     fn %[[VALUE_test_setjmp:[0-9]+]] @test_setjmp() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // CFG1-NEXT:         return call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE__setjmp]], array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_jb]]));

@@ -121,8 +121,8 @@ struct nested_hfa return_nested_hfa(void);
 // IR-NEXT:     fn %[[VALUE_pass_float_one:[0-9]+]] @pass_float_one(%[[VALUE_v_9:[0-9]+]] v: @type[[TYPE_float_one]]) -> void [linkage=external] [abi=win_arm64(native_c) -> void];
 // IR-NEXT:     fn %[[VALUE_pass_union_hfa:[0-9]+]] @pass_union_hfa(%[[VALUE_v_10:[0-9]+]] v: @type[[TYPE_union_hfa]]) -> void [linkage=external] [abi=win_arm64(native_c) -> void];
 // IR-NEXT:     fn %[[VALUE_pass_mixed:[0-9]+]] @pass_mixed(%[[VALUE_v_11:[0-9]+]] v: @type[[TYPE_mixed]]) -> void [linkage=external] [abi=win_arm64(native_c) -> void];
-// IR-NEXT:     fn %[[VALUE_pass_atomic_hfa:[0-9]+]] @pass_atomic_hfa(%[[VALUE_v_12:[0-9]+]] v: atomic @type[[TYPE_float_pair]]) -> void [linkage=external] [abi=win_arm64(coerce<i64>) -> void];
-// IR-NEXT:     fn %[[VALUE_pass_atomic_wide:[0-9]+]] @pass_atomic_wide(%[[VALUE_v_13:[0-9]+]] v: atomic @type[[TYPE_atomic_wide]]) -> void [linkage=external] [abi=win_arm64(byref<align=8>) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_atomic_hfa:[0-9]+]] @pass_atomic_hfa(%[[VALUE_v_12:[0-9]+]] v: atomic @type[[TYPE_float_pair]]) -> void [linkage=external] [abi=win_arm64(coerce<i64>) -> void] [c="void(_Atomic struct float_pair)"];
+// IR-NEXT:     fn %[[VALUE_pass_atomic_wide:[0-9]+]] @pass_atomic_wide(%[[VALUE_v_13:[0-9]+]] v: atomic @type[[TYPE_atomic_wide]]) -> void [linkage=external] [abi=win_arm64(byref<align=8>) -> void] [c="void(_Atomic struct atomic_wide)"];
 // IR-NEXT:     fn %[[VALUE_return_arr16:[0-9]+]] @return_arr16() -> @type[[TYPE_arr16]] [linkage=external] [abi=win_arm64() -> native_c];
 // IR-NEXT:     fn %[[VALUE_return_nested_hfa:[0-9]+]] @return_nested_hfa() -> @type[[TYPE_nested_hfa]] [linkage=external] [abi=win_arm64() -> native_c];
 // IR-NEXT: }

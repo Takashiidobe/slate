@@ -85,7 +85,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list [c="__gnuc_va_list"];
 // DEFAULT-NEXT:     type @type[[TYPE_spurious:[0-9]+]] spurious = struct {
 // DEFAULT-NEXT:         field0 anumber: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
@@ -95,14 +95,14 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([105, 32, 105, 32, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_5:[0-9]+]] .str[[VALUE_str_5]]: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([53, 32, 50, 48, 32, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_6:[0-9]+]] .str[[VALUE_str_6]]: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([53, 32, 50, 48, 32, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_sprintf:[0-9]+]] @sprintf(%[[VALUE___s:[0-9]+]] __s: ptr<i8> [restrict], %[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_sprintf:[0-9]+]] @sprintf(%[[VALUE___s:[0-9]+]] __s: ptr<i8> [restrict], %[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(char *restrict, const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_strlen:[0-9]+]] @__builtin_strlen(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_first:[0-9]+]] @first(%[[VALUE_buf:[0-9]+]] buf: ptr<i8>, %[[VALUE_fmt:[0-9]+]] fmt: ptr<i8>, ...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_pos:[0-9]+]] pos: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_number:[0-9]+]] number: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_args:[0-9]+]] args: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_args:[0-9]+]] args: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         let %[[VALUE_dummy:[0-9]+]] dummy: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_bp:[0-9]+]] bp: ptr<i8> [storage=automatic] = read<ptr<i8>>(%[[VALUE_buf]]);
 // DEFAULT-NEXT:         va_start(%[[VALUE_args]]);
@@ -138,7 +138,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_second:[0-9]+]] @second(%[[VALUE_buf_2:[0-9]+]] buf: ptr<i8>, %[[VALUE_fmt_2:[0-9]+]] fmt: ptr<i8>, ...) -> @type[[TYPE_spurious]] [linkage=external] [abi=sysv64(scalar, scalar) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_pos_2:[0-9]+]] pos: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_number_2:[0-9]+]] number: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_args_2:[0-9]+]] args: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_args_2:[0-9]+]] args: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         let %[[VALUE_dummy_2:[0-9]+]] dummy: @type[[TYPE_spurious]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_bp_2:[0-9]+]] bp: ptr<i8> [storage=automatic] = read<ptr<i8>>(%[[VALUE_buf_2]]);
 // DEFAULT-NEXT:         va_start(%[[VALUE_args_2]]);

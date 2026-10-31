@@ -208,8 +208,8 @@ int read_units(struct S2 *s2, struct S13 *s13) { return s2->b + s13->c; }
 // IR-NEXT:     type @type[[TYPE_LL:[0-9]+]] LL = i64;
 // IR-NEXT:     type @type[[TYPE_S30:[0-9]+]] S30 = struct {
 // IR-NEXT:         field0 c: i8;
-// IR-NEXT:         field1 a: i64;
-// IR-NEXT:         field2 b: i64 : 3;
+// IR-NEXT:         field1 a: i64 [c="LL"];
+// IR-NEXT:         field2 b: i64 : 3 [c="LL"];
 // IR-NEXT:     } [size=24, align=8, offsets=[0, 8, 16], bit_offsets=[None, None, Some(128)], bit_units=[(16, 8)], field_units=[None, None, Some(0)]];
 // IR-NEXT:     fn %[[VALUE_read_units:[0-9]+]] @read_units(%[[VALUE_s2:[0-9]+]] s2: ptr<@type[[TYPE_S2]]>, %[[VALUE_s13:[0-9]+]] s13: ptr<@type[[TYPE_S13]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return add<i32, overflow=ub>(read<i32>(bitfield1<unit=1, bytes=4..8, bits=0..3>(deref(read<ptr<@type[[TYPE_S2]]>>(%[[VALUE_s2]])))), widen<i32, reason=promotion>(read<i16>(bitfield2<unit=2, bytes=16..18, bits=0..5>(deref(read<ptr<@type[[TYPE_S13]]>>(%[[VALUE_s13]]))))));

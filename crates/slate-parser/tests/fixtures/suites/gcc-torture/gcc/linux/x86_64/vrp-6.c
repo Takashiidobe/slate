@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                 if lt<u32>(sub<u32, overflow=wrap>(read<u32>(%[[VALUE_a_2]]), read<u32>(%[[VALUE_b_2]])), sub<u32, overflow=wrap>(add<u32, overflow=wrap>(mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647)), const<u32>(2)), const<u32>(1)), const<u32>(15)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] [c="int(int, char *[])"] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u32 [storage=automatic] = const<u32>(2147483648);
 // DEFAULT-NEXT:         call<void, signature=fn(u32, u32) -> void>(%[[VALUE_test01]], add<u32, overflow=wrap>(read<u32>(%[[VALUE_x]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5))), read<u32>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         call<void, signature=fn(u32, u32) -> void>(%[[VALUE_test02]], reinterpret<u32, reason=arg, fits=always>(const<i32>(14)), reinterpret<u32, reason=arg, fits=always>(const<i32>(16)));

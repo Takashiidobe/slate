@@ -43,8 +43,8 @@ RightOnly right_value;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_Value:[0-9]+]] Value = i8;
 // DEFAULT-NEXT:     type @type[[TYPE_RightOnly:[0-9]+]] RightOnly = i32;
-// DEFAULT-NEXT:     global %[[VALUE_value:[0-9]+]] value: i8 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_right_value:[0-9]+]] right_value: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_value:[0-9]+]] value: i8 [storage=static] [linkage=external] [c="Value"];
+// DEFAULT-NEXT:     global %[[VALUE_right_value:[0-9]+]] right_value: i32 [storage=static] [linkage=external] [c="RightOnly"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN INT
@@ -72,8 +72,8 @@ RightOnly right_value;
 // INT-NEXT:     }
 // INT-NEXT:     type @type[[TYPE_Value:[0-9]+]] Value = i32;
 // INT-NEXT:     type @type[[TYPE_RightOnly:[0-9]+]] RightOnly = i32;
-// INT-NEXT:     global %[[VALUE_value:[0-9]+]] value: i32 [storage=static] [linkage=external];
-// INT-NEXT:     global %[[VALUE_right_value:[0-9]+]] right_value: i32 [storage=static] [linkage=external];
+// INT-NEXT:     global %[[VALUE_value:[0-9]+]] value: i32 [storage=static] [linkage=external] [c="Value"];
+// INT-NEXT:     global %[[VALUE_right_value:[0-9]+]] right_value: i32 [storage=static] [linkage=external] [c="RightOnly"];
 // INT-NEXT: }
 // SLATE-FILECHECK-END INT
 // SLATE-FILECHECK-BEGIN LEFT
@@ -101,7 +101,7 @@ RightOnly right_value;
 // LEFT-NEXT:     }
 // LEFT-NEXT:     type @type[[TYPE_Value:[0-9]+]] Value = i8;
 // LEFT-NEXT:     type @type[[TYPE_LeftOnly:[0-9]+]] LeftOnly = i32;
-// LEFT-NEXT:     global %[[VALUE_value:[0-9]+]] value: i8 [storage=static] [linkage=external];
-// LEFT-NEXT:     global %[[VALUE_left_value:[0-9]+]] left_value: i32 [storage=static] [linkage=external];
+// LEFT-NEXT:     global %[[VALUE_value:[0-9]+]] value: i8 [storage=static] [linkage=external] [c="Value"];
+// LEFT-NEXT:     global %[[VALUE_left_value:[0-9]+]] left_value: i32 [storage=static] [linkage=external] [c="LeftOnly"];
 // LEFT-NEXT: }
 // SLATE-FILECHECK-END LEFT

@@ -42,7 +42,7 @@ void f()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_xs:[0-9]+]] xs: i16 [const], %[[VALUE_xe:[0-9]+]] xe: i16 [const]) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_xs:[0-9]+]] xs: i16 [const], %[[VALUE_xe:[0-9]+]] xe: i16 [const]) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] [c="void(const short, const short)"] {
 // DEFAULT-NEXT:         if logical_and<bool>(ne<i16>(read<i16>(%[[VALUE_xe]]), const<i16>(0)), lt<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_xs]])), widen<i32, reason=promotion>(read<i16>(%[[VALUE_xe]]))))
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }

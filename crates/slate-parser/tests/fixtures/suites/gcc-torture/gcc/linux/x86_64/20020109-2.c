@@ -61,7 +61,7 @@ main (void)
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE_UNI02:[0-9]+]] UNI02 = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE_srt_dat_t:[0-9]+]] srt_dat_t = struct {
-// DEFAULT-NEXT:         field0 un2: @type[[TYPE0]];
+// DEFAULT-NEXT:         field0 un2: @type[[TYPE0]] [c="UNI02"];
 // DEFAULT-NEXT:         field1 member1: u64;
 // DEFAULT-NEXT:         field2 member2: i16;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];

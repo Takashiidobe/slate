@@ -70,7 +70,7 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=1, align=1];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_value:[0-9]+]] value: @type[[TYPE_local]] [storage=automatic] = int_to_enum<@type[[TYPE_local]], reason=assign>(const<i8>(-1));
-// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(widen<i32, reason=promotion>(enum_to_int<i8, reason=promotion>(read<@type[[TYPE_local]]>(%[[VALUE_value]]))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(const<u8>(1))))), const<i64>(2)), widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(const<u16>(3))))), widen<i64, reason=usual_arith>(const<i32>(4))));
+// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(widen<i32, reason=promotion>(enum_to_int<i8, reason=promotion>(read<@type[[TYPE_local]]>(%[[VALUE_value]]))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(const<u8>(1))))), const<i64>(2)), widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(const<u16>(3) [c="narrow"])))), widen<i64, reason=usual_arith>(const<i32>(4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

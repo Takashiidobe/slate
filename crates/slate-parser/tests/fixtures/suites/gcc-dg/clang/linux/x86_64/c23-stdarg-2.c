@@ -50,15 +50,15 @@ int t () { return f () + f (1) + f (1, 2) + h () + h (1.5, 2, f1) + g (f); }
 // DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = array<i32, incomplete>;
 // DEFAULT-NEXT:     type @type[[TYPE_A2:[0-9]+]] A2 = array<i32, 2>;
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE0:[0-9]+]] <unnamed>: ptr<fn(...) -> i32>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE0:[0-9]+]] <unnamed>: ptr<fn(...) -> i32>) -> i32 [linkage=external] [c="int(int(...))"];
 // DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h(...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(...) -> ptr<array<i32, incomplete>> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return null<ptr<array<i32, incomplete>>>;
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(...) -> ptr<array<i32, incomplete>> [linkage=external] [fallthrough=ub_if_used] [c="A *(...)"] {
+// DEFAULT-NEXT:         return null<ptr<array<i32, incomplete>>> [c="A *"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(...) -> ptr<array<i32, 2>> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return null<ptr<array<i32, 2>>>;
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(...) -> ptr<array<i32, 2>> [linkage=external] [fallthrough=ub_if_used] [c="A2 *(...)"] {
+// DEFAULT-NEXT:         return null<ptr<array<i32, 2>>> [c="A2 *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_t:[0-9]+]] @t() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(...) -> i32>(%[[VALUE_f]]), call<i32, signature=fn(...) -> i32>(%[[VALUE_f]], const<i32>(1))), call<i32, signature=fn(...) -> i32>(%[[VALUE_f]], const<i32>(1), const<i32>(2))), call<i32, signature=fn(...) -> i32>(%[[VALUE_h]])), call<i32, signature=fn(...) -> i32>(%[[VALUE_h]], const<f64>(1.5), const<i32>(2), function_decay<ptr<fn(...) -> ptr<array<i32, 2>>>>(%[[VALUE_f1]]))), call<i32, signature=fn(ptr<fn(...) -> i32>) -> i32>(%[[VALUE_g]], function_decay<ptr<fn(...) -> i32>>(%[[VALUE_f]])));

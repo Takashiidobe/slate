@@ -48,13 +48,13 @@ static int mmap_mem (void)
 // DEFAULT-NEXT:         field0 p: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_pt:[0-9]+]] pt = @type[[TYPE0]];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE__p:[0-9]+]] _p: @type[[TYPE0]]) -> @type[[TYPE0]] [linkage=external] [inline=hint] [definition=inline_only] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE__p:[0-9]+]] _p: @type[[TYPE0]] [c="pt"]) -> @type[[TYPE0]] [linkage=external] [inline=hint] [definition=inline_only] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] [c="pt(pt)"] {
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: i64 [storage=automatic] = read<i64>(field0(%[[VALUE__p]]));
-// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = read<i64>(%[[VALUE_p]]))));
+// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = read<i64>(%[[VALUE_p]]))) [c="pt"]) [c="pt"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_mmap_mem:[0-9]+]] @mmap_mem() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_p_2]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(@type[[TYPE0]]) -> @type[[TYPE0]], abi=sysv64(native_c) -> native_c>(%[[VALUE_f]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_p_2]])))));
+// DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: @type[[TYPE0]] [storage=automatic] [c="pt"];
+// DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_p_2]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(@type[[TYPE0]]) -> @type[[TYPE0]], abi=sysv64(native_c) -> native_c>(%[[VALUE_f]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_p_2]]) [c="pt"]) [c="pt"]) [c="pt"]) [c="pt"]) [c="pt"];
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

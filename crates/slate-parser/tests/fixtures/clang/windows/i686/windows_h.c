@@ -43,22 +43,22 @@ ULONGLONG shift_left(ULONGLONG value, DWORD count) {
 // IR-NEXT:     type @type[[TYPE__LARGE_INTEGER:[0-9]+]] _LARGE_INTEGER = union {
 // IR-NEXT:         field0 <anonymous>: @type[[TYPE0:[0-9]+]];
 // IR-NEXT:         field1 u: @type[[TYPE1:[0-9]+]];
-// IR-NEXT:         field2 QuadPart: i64;
+// IR-NEXT:         field2 QuadPart: i64 [c="LONGLONG"];
 // IR-NEXT:     } [size=8, align=8, offsets=[0, 0, 0]];
 // IR-NEXT:     type @type[[TYPE0]] = struct {
-// IR-NEXT:         field0 LowPart: u32;
-// IR-NEXT:         field1 HighPart: i32;
+// IR-NEXT:         field0 LowPart: u32 [c="DWORD"];
+// IR-NEXT:         field1 HighPart: i32 [c="LONG"];
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // IR-NEXT:     type @type[[TYPE1]] = struct {
-// IR-NEXT:         field0 LowPart: u32;
-// IR-NEXT:         field1 HighPart: i32;
+// IR-NEXT:         field0 LowPart: u32 [c="DWORD"];
+// IR-NEXT:         field1 HighPart: i32 [c="LONG"];
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // IR-NEXT:     type @type[[TYPE_LARGE_INTEGER:[0-9]+]] LARGE_INTEGER = @type[[TYPE__LARGE_INTEGER]];
 // IR-NEXT:     global %[[VALUE_handle_size:[0-9]+]] handle_size: u32 [storage=static] = const<u32>(4) [linkage=external];
 // IR-NEXT:     global %[[VALUE_long_ptr_size:[0-9]+]] long_ptr_size: u32 [storage=static] = const<u32>(4) [linkage=external];
 // IR-NEXT:     global %[[VALUE_large_integer_size:[0-9]+]] large_integer_size: u32 [storage=static] = const<u32>(8) [linkage=external];
 // IR-NEXT:     global %[[VALUE_large_integer_align:[0-9]+]] large_integer_align: u32 [storage=static] = const<u32>(8) [linkage=external];
-// IR-NEXT:     fn %[[VALUE_Int64ShllMod32:[0-9]+]] @Int64ShllMod32(%[[VALUE_Value:[0-9]+]] Value: u64, %[[VALUE_ShiftCount:[0-9]+]] ShiftCount: u32) -> u64 [linkage=external] [inline=hint] [definition=discardable] [abi=x86_win32 stdcall(scalar, scalar) -> scalar] [fallthrough=ret(or<u64>(widen<u64, reason=return>(read<u32>(%[[VALUE0:[0-9]+]])), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%[[VALUE1:[0-9]+]])), const<u32>(32))))] {
+// IR-NEXT:     fn %[[VALUE_Int64ShllMod32:[0-9]+]] @Int64ShllMod32(%[[VALUE_Value:[0-9]+]] Value: u64 [c="ULONGLONG"], %[[VALUE_ShiftCount:[0-9]+]] ShiftCount: u32 [c="DWORD"]) -> u64 [linkage=external] [inline=hint] [definition=discardable] [abi=x86_win32 stdcall(scalar, scalar) -> scalar] [fallthrough=ret(or<u64>(widen<u64, reason=return>(read<u32>(%[[VALUE0:[0-9]+]])), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%[[VALUE1:[0-9]+]])), const<u32>(32))))] [c="ULONGLONG(ULONGLONG, DWORD) __attribute__((stdcall))"] {
 // IR-NEXT:         let %[[VALUE0]]: u32 [synthetic] = const<u32>(0);
 // IR-NEXT:         let %[[VALUE1]]: u32 [synthetic] = const<u32>(0);
 // IR-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshld edx, eax, cl\nshl eax, cl" [dialect=intel] {
@@ -70,8 +70,8 @@ ULONGLONG shift_left(ULONGLONG value, DWORD count) {
 // IR-NEXT:             clobbers: "ecx" as cx;
 // IR-NEXT:         }
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_shift_left:[0-9]+]] @shift_left(%[[VALUE_value:[0-9]+]] value: u64, %[[VALUE_count:[0-9]+]] count: u32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<u64, signature=fn stdcall(u64, u32) -> u64, abi=x86_win32 stdcall(scalar, scalar) -> scalar>(%[[VALUE_Int64ShllMod32]], read<u64>(%[[VALUE_value]]), read<u32>(%[[VALUE_count]]));
+// IR-NEXT:     fn %[[VALUE_shift_left:[0-9]+]] @shift_left(%[[VALUE_value:[0-9]+]] value: u64 [c="ULONGLONG"], %[[VALUE_count:[0-9]+]] count: u32 [c="DWORD"]) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="ULONGLONG(ULONGLONG, DWORD)"] {
+// IR-NEXT:         return call<u64, signature=fn stdcall(u64, u32) -> u64, abi=x86_win32 stdcall(scalar, scalar) -> scalar>(%[[VALUE_Int64ShllMod32]], read<u64>(%[[VALUE_value]]) [c="ULONGLONG"], read<u32>(%[[VALUE_count]]) [c="DWORD"]) [c="ULONGLONG"];
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

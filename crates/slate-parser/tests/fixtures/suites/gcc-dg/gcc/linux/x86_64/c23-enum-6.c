@@ -256,7 +256,7 @@ main ()
 // DEFAULT-NEXT:     extern %[[VALUE_e5v:[0-9]+]] e5v: @type[[TYPE_e5]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_e6v:[0-9]+]] e6v: @type[[TYPE0]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_np:[0-9]+]] np: ptr<void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_np:[0-9]+]] np: ptr<void> [storage=static] [linkage=external] [c="typeof(nullptr)"];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
@@ -331,9 +331,9 @@ main ()
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]))), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<ptr<void>, reason=assign>(read<ptr<void>>(%[[VALUE_p]]), null<ptr<void>>)));
-// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<ptr<void>, reason=assign>(read<ptr<void>>(%[[VALUE_np]]), null<ptr<void>>)));
+// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<ptr<void>, reason=assign>(read<ptr<void>>(%[[VALUE_np]]) [c="typeof(nullptr)"], null<ptr<void>>)));
 // DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<ptr<void>, reason=explicit>(read<ptr<void>>(%[[VALUE_p]]), null<ptr<void>>)));
-// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<ptr<void>, reason=explicit>(read<ptr<void>>(%[[VALUE_np]]), null<ptr<void>>)));
+// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<ptr<void>, reason=explicit>(read<ptr<void>>(%[[VALUE_np]]) [c="typeof(nullptr)"], null<ptr<void>>)));
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]))), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

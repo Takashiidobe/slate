@@ -44,7 +44,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_V:[0-9]+]] V = vector<f32, 4>;
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<vector<f32, 4>>, %[[VALUE_value:[0-9]+]] value: vector<f32, 4>) -> void [linkage=internal] [inline=hint] [definition=emitted] [abi=sysv64(scalar, direct) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<vector<f32, 4>> [c="V *"], %[[VALUE_value:[0-9]+]] value: vector<f32, 4> [c="V"]) -> void [linkage=internal] [inline=hint] [definition=emitted] [abi=sysv64(scalar, direct) -> void] [fallthrough=ret_void] [c="void(V *, V)"] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -57,13 +57,13 @@ int main() {
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 write<vector<f32, 4>>(deref(ptr_offset<ptr<vector<f32, 4>>, subtract=false, element=vector<f32, 4>, overflow=ub>(read<ptr<vector<f32, 4>>>(%[[VALUE_x]]), read<i32>(%[[VALUE_i]]))), read<vector<f32, 4>>(%[[VALUE_value]]));
+// DEFAULT-NEXT:                 write<vector<f32, 4>>(deref(ptr_offset<ptr<vector<f32, 4>>, subtract=false, element=vector<f32, 4>, overflow=ub>(read<ptr<vector<f32, 4>>>(%[[VALUE_x]]), read<i32>(%[[VALUE_i]]))), read<vector<f32, 4>>(%[[VALUE_value]]) [c="V"]) [c="V"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_copysignf:[0-9]+]] @__builtin_copysignf(%[[VALUE3:[0-9]+]] <unnamed>: f32, %[[VALUE4:[0-9]+]] <unnamed>: f32) -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: array<vector<f32, 4>, 32> [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<vector<f32, 4>>, vector<f32, 4>) -> void, abi=sysv64(scalar, direct) -> void>(%[[VALUE_foo]], array_decay<ptr<vector<f32, 4>>, length=Some(32)>(%[[VALUE_x_2]]), read<vector<f32, 4>>(compound_literal %[[VALUE5:[0-9]+]] [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = const<f32>(0.0), index1 = neg<f32>(const<f32>(0.0)), index2 = const<f32>(0.0), index3 = neg<f32>(const<f32>(0.0)))));
+// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: array<vector<f32, 4>, 32> [storage=automatic] [c="V[32]"];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<vector<f32, 4>>, vector<f32, 4>) -> void, abi=sysv64(scalar, direct) -> void>(%[[VALUE_foo]], array_decay<ptr<vector<f32, 4>>, length=Some(32)>(%[[VALUE_x_2]]) [c="V *"], read<vector<f32, 4>>(compound_literal %[[VALUE5:[0-9]+]] [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = const<f32>(0.0), index1 = neg<f32>(const<f32>(0.0)), index2 = const<f32>(0.0), index3 = neg<f32>(const<f32>(0.0)))) [c="V"]);
 // DEFAULT-NEXT:         if ne<f32, exceptions=observable>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE___builtin_copysignf]], float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.0)), read<f32>(lane(deref(ptr_offset<ptr<vector<f32, 4>>, subtract=false, element=vector<f32, 4>, overflow=ub>(array_decay<ptr<vector<f32, 4>>, length=Some(32)>(%[[VALUE_x_2]]), const<i32>(3))), const<i32>(1)))), neg<f32>(const<f32>(1.0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

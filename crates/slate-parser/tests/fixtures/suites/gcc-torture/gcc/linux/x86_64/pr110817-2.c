@@ -41,11 +41,11 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_u8:[0-9]+]] u8 = u8;
 // DEFAULT-NEXT:     type @type[[TYPE_V:[0-9]+]] V = vector<u32, 2>;
-// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: vector<u32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: vector<u32, 2> [storage=static] [linkage=external] [c="V"];
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: u8 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: vector<u32, 2> [storage=automatic] = vector_bit_cast<vector<u32, 2>, reason=assign>(gt<vector<i32, 2>, result=vector<i32, 2>>(gt<vector<u32, 2>, result=vector<i32, 2>>(read<vector<u32, 2>>(%[[VALUE_v]]), vector_splat<vector<u32, 2>, reason=usual_arith>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))), ne<vector<u32, 2>, result=vector<i32, 2>>(read<vector<u32, 2>>(%[[VALUE_v]]), vector_splat<vector<u32, 2>, reason=usual_arith>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_c]]))))))));
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: vector<u32, 2> [storage=automatic] = vector_bit_cast<vector<u32, 2>, reason=assign>(gt<vector<i32, 2>, result=vector<i32, 2>>(gt<vector<u32, 2>, result=vector<i32, 2>>(read<vector<u32, 2>>(%[[VALUE_v]]) [c="V"], vector_splat<vector<u32, 2>, reason=usual_arith>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))), ne<vector<u32, 2>, result=vector<i32, 2>>(read<vector<u32, 2>>(%[[VALUE_v]]) [c="V"], vector_splat<vector<u32, 2>, reason=usual_arith>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_c]])))))))) [c="V"] [c="V"];
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u32>(read<u32>(lane(%[[VALUE_x]], const<i32>(0))), const<u32>(0)), ne<u32>(read<u32>(lane(%[[VALUE_x]], const<i32>(1))), const<u32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

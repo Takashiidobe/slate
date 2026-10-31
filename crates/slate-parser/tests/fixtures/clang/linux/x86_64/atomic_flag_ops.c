@@ -53,27 +53,27 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_memory_order_2:[0-9]+]] memory_order = @type[[TYPE_memory_order]];
 // DEFAULT-NEXT:     type @type[[TYPE_atomic_bool:[0-9]+]] atomic_bool = bool;
 // DEFAULT-NEXT:     type @type[[TYPE_atomic_flag:[0-9]+]] atomic_flag = struct {
-// DEFAULT-NEXT:         field0 _Value: atomic bool;
+// DEFAULT-NEXT:         field0 _Value: atomic bool [c="atomic_bool"];
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_atomic_flag_2:[0-9]+]] atomic_flag = @type[[TYPE_atomic_flag]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_flag:[0-9]+]] flag: @type[[TYPE_atomic_flag]] [storage=automatic] = aggregate<@type[[TYPE_atomic_flag]], zero_fill=false>(field0 = ne<i32, reason=assign>(const<i32>(0), const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE_flag:[0-9]+]] flag: @type[[TYPE_atomic_flag]] [storage=automatic] = aggregate<@type[[TYPE_atomic_flag]], zero_fill=false>(field0 = ne<i32, reason=assign>(const<i32>(0), const<i32>(0))) [c="atomic_flag"];
 // DEFAULT-NEXT:         let %[[VALUE_first:[0-9]+]] first: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_flag]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_first]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE0]])));
-// DEFAULT-NEXT:         write<bool, atomic=release>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_flag]]))))), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_flag]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0))) [c="atomic_bool"] [c="atomic_bool"];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_first]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE0]]) [c="atomic_bool"]));
+// DEFAULT-NEXT:         write<bool, atomic=release>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_flag]]))))), ne<i32, reason=arg>(const<i32>(0), const<i32>(0))) [c="atomic_bool"];
 // DEFAULT-NEXT:         let %[[VALUE_second:[0-9]+]] second: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=acquire>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_flag]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_second]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE1]])));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=acquire>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_flag]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0))) [c="atomic_bool"] [c="atomic_bool"];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_second]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE1]]) [c="atomic_bool"]));
 // DEFAULT-NEXT:         let %[[VALUE_third:[0-9]+]] third: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_flag]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_third]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE2]])));
-// DEFAULT-NEXT:         write<bool, atomic=seq_cst>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_flag]]))))), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_flag]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0))) [c="atomic_bool"] [c="atomic_bool"];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_third]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE2]]) [c="atomic_bool"]));
+// DEFAULT-NEXT:         write<bool, atomic=seq_cst>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_flag]]))))), ne<i32, reason=arg>(const<i32>(0), const<i32>(0))) [c="atomic_bool"];
 // DEFAULT-NEXT:         let %[[VALUE_fourth:[0-9]+]] fourth: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_flag]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_fourth]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE3]])));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_flag]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0))) [c="atomic_bool"] [c="atomic_bool"];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_fourth]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE3]]) [c="atomic_bool"]));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str]])), read<i32>(%[[VALUE_first]]), read<i32>(%[[VALUE_second]]), read<i32>(%[[VALUE_third]]), read<i32>(%[[VALUE_fourth]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

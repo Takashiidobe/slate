@@ -31,7 +31,7 @@ int         main(void) { exit(0); }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: ptr<i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_a:[0-9]+]] a: ptr<vla<i8, %[[VALUE1:[0-9]+]]>> [array=2]) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_a:[0-9]+]] a: ptr<vla<i8, %[[VALUE1:[0-9]+]]>> [array=2]) -> void [linkage=internal] [fallthrough=ret_void] [c="void(char[2][*])"] {
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: ptr<i32> [synthetic] = read<ptr<i32>>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%[[VALUE2]])));
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), const<i32>(1));

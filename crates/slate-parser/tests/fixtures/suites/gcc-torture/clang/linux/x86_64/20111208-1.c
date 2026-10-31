@@ -105,18 +105,18 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_int16_t:[0-9]+]] int16_t = i16;
 // DEFAULT-NEXT:     type @type[[TYPE_int32_t:[0-9]+]] int32_t = i32;
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
-// DEFAULT-NEXT:         field0 i: i16;
+// DEFAULT-NEXT:         field0 i: i16 [c="int16_t"];
 // DEFAULT-NEXT:         field1 a: array<i8, 2>;
 // DEFAULT-NEXT:     } [size=2, align=2, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = union {
-// DEFAULT-NEXT:         field0 i: i32;
+// DEFAULT-NEXT:         field0 i: i32 [c="int32_t"];
 // DEFAULT-NEXT:         field1 a: array<i8, 4>;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([128, 1, 255, 254, 29, 192, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([115, 108, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_memcpy:[0-9]+]] @memcpy(%[[VALUE___dest:[0-9]+]] __dest: ptr<void> [restrict], %[[VALUE___src:[0-9]+]] __src: ptr<const void> [restrict], %[[VALUE___n:[0-9]+]] __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE___s:[0-9]+]] __s: ptr<const i8>) -> u64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %[[VALUE_memcpy:[0-9]+]] @memcpy(%[[VALUE___dest:[0-9]+]] __dest: ptr<void> [restrict], %[[VALUE___src:[0-9]+]] __src: ptr<const void> [restrict], %[[VALUE___n:[0-9]+]] __n: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(void *restrict, const void *restrict, size_t)"];
+// DEFAULT-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE___s:[0-9]+]] __s: ptr<const i8>) -> u64 [linkage=external] [memory=read] [c="size_t(const char *)"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_do_something:[0-9]+]] @do_something(%[[VALUE_item:[0-9]+]] item: i32) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE_item]]));
@@ -152,7 +152,7 @@ int main(void) {
 // DEFAULT-NEXT:                                             let %[[VALUE5:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_s]]);
 // DEFAULT-NEXT:                                             let %[[VALUE6:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE5]]), const<u64>(2));
 // DEFAULT-NEXT:                                             write<ptr<i8>>(%[[VALUE_s]], read<ptr<i8>>(%[[VALUE6]]));
-// DEFAULT-NEXT:                                             call<void, signature=fn(i32) -> void>(%[[VALUE_do_something]], widen<i32, reason=arg>(read<i16>(field0(%[[VALUE_v]]))));
+// DEFAULT-NEXT:                                             call<void, signature=fn(i32) -> void>(%[[VALUE_do_something]], widen<i32, reason=arg>(read<i16>(field0(%[[VALUE_v]])) [c="int16_t"]));
 // DEFAULT-NEXT:                                         }
 // DEFAULT-NEXT:                                     break %[[VALUE4]];
 // DEFAULT-NEXT:                                     case %[[VALUE4]] const<i32>(4):

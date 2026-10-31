@@ -104,13 +104,13 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_entity_state_t:[0-9]+]] entity_state_t = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 num_entities: i32;
-// DEFAULT-NEXT:         field1 entities: ptr<@type[[TYPE0]]>;
+// DEFAULT-NEXT:         field1 entities: ptr<@type[[TYPE0]]> [c="entity_state_t *"];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_packet_entities_t:[0-9]+]] packet_entities_t = @type[[TYPE1]];
 // DEFAULT-NEXT:     type @type[[TYPE2:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 senttime: f64;
 // DEFAULT-NEXT:         field1 ping_time: f32;
-// DEFAULT-NEXT:         field2 entities: @type[[TYPE1]];
+// DEFAULT-NEXT:         field2 entities: @type[[TYPE1]] [c="packet_entities_t"];
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 8, 16]];
 // DEFAULT-NEXT:     type @type[[TYPE_client_frame_t:[0-9]+]] client_frame_t = @type[[TYPE2]];
 // DEFAULT-NEXT:     type @type[[TYPE3:[0-9]+]] = enum : u32 {
@@ -122,34 +122,34 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type[[TYPE_sv_client_state_t:[0-9]+]] sv_client_state_t = @type[[TYPE3]];
 // DEFAULT-NEXT:     type @type[[TYPE_client_s:[0-9]+]] client_s = struct {
-// DEFAULT-NEXT:         field0 state: @type[[TYPE3]];
+// DEFAULT-NEXT:         field0 state: @type[[TYPE3]] [c="sv_client_state_t"];
 // DEFAULT-NEXT:         field1 ping: i32;
-// DEFAULT-NEXT:         field2 frames: array<@type[[TYPE2]], 64>;
+// DEFAULT-NEXT:         field2 frames: array<@type[[TYPE2]], 64> [c="client_frame_t[64]"];
 // DEFAULT-NEXT:     } [size=2056, align=8, offsets=[0, 4, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_client_t:[0-9]+]] client_t = @type[[TYPE_client_s]];
 // DEFAULT-NEXT:     fn %[[VALUE_cs_free]] @memset(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_cs_server]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_CalcPing:[0-9]+]] @CalcPing(%[[VALUE_cl:[0-9]+]] cl: ptr<@type[[TYPE_client_s]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_CalcPing:[0-9]+]] @CalcPing(%[[VALUE_cl:[0-9]+]] cl: ptr<@type[[TYPE_client_s]]> [c="client_t *"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(client_t *)"] {
 // DEFAULT-NEXT:         let %[[VALUE_ping:[0-9]+]] ping: f32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_count:[0-9]+]] count: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_frame:[0-9]+]] frame: ptr<@type[[TYPE2]]> [storage=automatic];
-// DEFAULT-NEXT:         if eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE3]]>(field0(deref(read<ptr<@type[[TYPE_client_s]]>>(%[[VALUE_cl]]))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
+// DEFAULT-NEXT:         let %[[VALUE_frame:[0-9]+]] frame: ptr<@type[[TYPE2]]> [storage=automatic] [c="client_frame_t *"];
+// DEFAULT-NEXT:         if eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE3]]>(field0(deref(read<ptr<@type[[TYPE_client_s]]>>(%[[VALUE_cl]])))) [c="sv_client_state_t"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
 // DEFAULT-NEXT:             return read<i32>(field1(deref(read<ptr<@type[[TYPE_client_s]]>>(%[[VALUE_cl]]))));
 // DEFAULT-NEXT:         write<f32>(%[[VALUE_ping]], int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0)));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_count]], const<i32>(0));
 // DEFAULT-NEXT:         for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<ptr<@type[[TYPE2]]>>(%[[VALUE_frame]], array_decay<ptr<@type[[TYPE2]]>, length=Some(64)>(field2(deref(read<ptr<@type[[TYPE_client_s]]>>(%[[VALUE_cl]])))));
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE2]]>>(%[[VALUE_frame]], array_decay<ptr<@type[[TYPE2]]>, length=Some(64)>(field2(deref(read<ptr<@type[[TYPE_client_s]]>>(%[[VALUE_cl]])))) [c="client_frame_t *"]) [c="client_frame_t *"];
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(64))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE5]]));
-// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: ptr<@type[[TYPE2]]> [synthetic] = read<ptr<@type[[TYPE2]]>>(%[[VALUE_frame]]);
-// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: ptr<@type[[TYPE2]]> [synthetic] = ptr_offset<ptr<@type[[TYPE2]]>, subtract=false, element=@type[[TYPE2]], overflow=ub>(read<ptr<@type[[TYPE2]]>>(%[[VALUE6]]), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<@type[[TYPE2]]>>(%[[VALUE_frame]], read<ptr<@type[[TYPE2]]>>(%[[VALUE7]]));
+// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: ptr<@type[[TYPE2]]> [synthetic] = read<ptr<@type[[TYPE2]]>>(%[[VALUE_frame]]) [c="client_frame_t *"] [c="client_frame_t *"];
+// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: ptr<@type[[TYPE2]]> [synthetic] = ptr_offset<ptr<@type[[TYPE2]]>, subtract=false, element=@type[[TYPE2]], overflow=ub>(read<ptr<@type[[TYPE2]]>>(%[[VALUE6]]) [c="client_frame_t *"], const<i32>(1)) [c="client_frame_t *"] [c="client_frame_t *"];
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE2]]>>(%[[VALUE_frame]], read<ptr<@type[[TYPE2]]>>(%[[VALUE7]]) [c="client_frame_t *"]) [c="client_frame_t *"] [c="client_frame_t *"];
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -172,10 +172,10 @@ int main(void) {
 // DEFAULT-NEXT:         return float_to_int<i32, reason=return, out_of_range=ub, exceptions=observable>(mul<f32, rounding=nearest_even, exceptions=observable, contract=fast>(read<f32>(%[[VALUE_ping]]), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1000))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_cl_2:[0-9]+]] cl: @type[[TYPE_client_s]] [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_cs_free]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_client_s]]>>(%[[VALUE_cl_2]])), const<i32>(0), const<u64>(2056));
+// DEFAULT-NEXT:         let %[[VALUE_cl_2:[0-9]+]] cl: @type[[TYPE_client_s]] [storage=automatic] [c="client_t"];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_cs_free]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_client_s]]>>(%[[VALUE_cl_2]]) [c="client_t *"]), const<i32>(0), const<u64>(2056));
 // DEFAULT-NEXT:         write<f32>(field1(deref(ptr_offset<ptr<@type[[TYPE2]]>, subtract=false, element=@type[[TYPE2]], overflow=ub>(array_decay<ptr<@type[[TYPE2]]>, length=Some(64)>(field2(%[[VALUE_cl_2]])), const<i32>(0)))), const<f32>(1.0));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE_client_s]]>) -> i32>(%[[VALUE_CalcPing]], addr_of<ptr<@type[[TYPE_client_s]]>>(%[[VALUE_cl_2]])), const<i32>(1000))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE_client_s]]>) -> i32>(%[[VALUE_CalcPing]], addr_of<ptr<@type[[TYPE_client_s]]>>(%[[VALUE_cl_2]]) [c="client_t *"]), const<i32>(1000))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_cs_server]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

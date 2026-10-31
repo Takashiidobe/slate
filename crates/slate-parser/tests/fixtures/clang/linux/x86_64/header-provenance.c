@@ -37,10 +37,10 @@ int use_wrapper(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_local_int:[0-9]+]] local_int = i32;
 // DEFAULT-NEXT:     type @type[[TYPE_nested_int:[0-9]+]] nested_int = i64;
-// DEFAULT-NEXT:     type @type[[TYPE_outer_int:[0-9]+]] outer_int = i64;
-// DEFAULT-NEXT:     global %[[VALUE_from_outer:[0-9]+]] from_outer: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_from_nested:[0-9]+]] from_nested: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_from_local:[0-9]+]] from_local: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_outer_int:[0-9]+]] outer_int = i64 [c="nested_int"];
+// DEFAULT-NEXT:     global %[[VALUE_from_outer:[0-9]+]] from_outer: i64 [storage=static] [linkage=external] [c="outer_int"];
+// DEFAULT-NEXT:     global %[[VALUE_from_nested:[0-9]+]] from_nested: i64 [storage=static] [linkage=external] [c="nested_int"];
+// DEFAULT-NEXT:     global %[[VALUE_from_local:[0-9]+]] from_local: i32 [storage=static] [linkage=external] [c="local_int"];
 // DEFAULT-NEXT:     fn %[[VALUE_system_call:[0-9]+]] @system_call(%[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_local_wrapper:[0-9]+]] @local_wrapper(%[[VALUE_value_2:[0-9]+]] value: i32) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%[[VALUE_system_call]], read<i32>(%[[VALUE_value_2]]));

@@ -112,7 +112,7 @@ int jumps(int *p, int n) {
 // IR-NEXT:     global %[[VALUE_limit:[0-9]+]] limit: i32 [storage=static] [linkage=external];
 // IR-NEXT:     fn %[[VALUE_bound:[0-9]+]] @bound() -> i32 [linkage=external];
 // IR-NEXT:     fn %[[VALUE_take:[0-9]+]] @take(%[[VALUE_pointer:[0-9]+]] pointer: ptr<i32>) -> void [linkage=external];
-// IR-NEXT:     fn %[[VALUE_rejected:[0-9]+]] @rejected(%[[VALUE_p:[0-9]+]] p: ptr<i32>, %[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_vn:[0-9]+]] vn: volatile i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_rejected:[0-9]+]] @rejected(%[[VALUE_p:[0-9]+]] p: ptr<i32>, %[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_vn:[0-9]+]] vn: volatile i32) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int *, int, volatile int)"] {
 // IR-NEXT:         let %[[VALUE_s:[0-9]+]] s: i32 [storage=automatic] = const<i32>(0);
 // IR-NEXT:         for %[[VALUE0:[0-9]+]]
 // IR-NEXT:             init:

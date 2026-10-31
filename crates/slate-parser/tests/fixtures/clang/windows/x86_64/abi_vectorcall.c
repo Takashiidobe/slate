@@ -118,12 +118,12 @@ d2 use(d2 x, f2 y) { exhaust(1, 2, 3, 4, 5, x, y); return fd2(x); }
 // IR-NEXT:     type @type[[TYPE_e0:[0-9]+]] e0 = @type[[TYPE9]];
 // IR-NEXT:     type @type[[TYPE_v4f:[0-9]+]] v4f = vector<f32, 4>;
 // IR-NEXT:     type @type[[TYPE10:[0-9]+]] = struct {
-// IR-NEXT:         field0 a: vector<f32, 4>;
-// IR-NEXT:         field1 b: vector<f32, 4>;
+// IR-NEXT:         field0 a: vector<f32, 4> [c="v4f"];
+// IR-NEXT:         field1 b: vector<f32, 4> [c="v4f"];
 // IR-NEXT:     } [size=32, align=16, offsets=[0, 16]];
 // IR-NEXT:     type @type[[TYPE_hv2:[0-9]+]] hv2 = @type[[TYPE10]];
 // IR-NEXT:     type @type[[TYPE11:[0-9]+]] = struct {
-// IR-NEXT:         field0 a: vector<f32, 4>;
+// IR-NEXT:         field0 a: vector<f32, 4> [c="v4f"];
 // IR-NEXT:         field1 b: array<f32, 4>;
 // IR-NEXT:     } [size=32, align=16, offsets=[0, 16]];
 // IR-NEXT:     type @type[[TYPE_mix:[0-9]+]] mix = @type[[TYPE11]];
@@ -147,33 +147,33 @@ d2 use(d2 x, f2 y) { exhaust(1, 2, 3, 4, 5, x, y); return fd2(x); }
 // IR-NEXT:         field1 d: f32;
 // IR-NEXT:     } [size=12, align=4, offsets=[0, 8]];
 // IR-NEXT:     type @type[[TYPE_cx:[0-9]+]] cx = @type[[TYPE15]];
-// IR-NEXT:     fn %[[VALUE_fr3:[0-9]+]] @fr3(%[[VALUE_x:[0-9]+]] x: @type[[TYPE0]]) -> @type[[TYPE0]] [linkage=external] [abi=win64 vectorcall(native_c) -> native_c];
-// IR-NEXT:     fn %[[VALUE_fr2:[0-9]+]] @fr2(%[[VALUE_x_2:[0-9]+]] x: @type[[TYPE1]]) -> @type[[TYPE1]] [linkage=external] [abi=win64 vectorcall(native_c) -> native_c];
-// IR-NEXT:     fn %[[VALUE_fd2:[0-9]+]] @fd2(%[[VALUE_x_3:[0-9]+]] x: @type[[TYPE2]]) -> @type[[TYPE2]] [linkage=external] [abi=win64 vectorcall(coerce<f64, f64>) -> coerce<f64, f64>];
-// IR-NEXT:     fn %[[VALUE_fd4:[0-9]+]] @fd4(%[[VALUE_x_4:[0-9]+]] x: @type[[TYPE3]]) -> @type[[TYPE3]] [linkage=external] [abi=win64 vectorcall(coerce<f64, f64, f64, f64>) -> coerce<f64, f64, f64, f64>];
-// IR-NEXT:     fn %[[VALUE_ff2:[0-9]+]] @ff2(%[[VALUE_x_5:[0-9]+]] x: @type[[TYPE4]]) -> @type[[TYPE4]] [linkage=external] [abi=win64 vectorcall(coerce<f32, f32>) -> coerce<f32, f32>];
-// IR-NEXT:     fn %[[VALUE_ff3:[0-9]+]] @ff3(%[[VALUE_x_6:[0-9]+]] x: @type[[TYPE5]]) -> @type[[TYPE5]] [linkage=external] [abi=win64 vectorcall(coerce<f32, f32, f32>) -> coerce<f32, f32, f32>];
-// IR-NEXT:     fn %[[VALUE_fc1:[0-9]+]] @fc1(%[[VALUE_x_7:[0-9]+]] x: @type[[TYPE6]]) -> @type[[TYPE6]] [linkage=external] [abi=win64 vectorcall(native_c) -> native_c];
-// IR-NEXT:     fn %[[VALUE_fd1:[0-9]+]] @fd1(%[[VALUE_x_8:[0-9]+]] x: @type[[TYPE7]]) -> @type[[TYPE7]] [linkage=external] [abi=win64 vectorcall(coerce<f64>) -> coerce<f64>];
-// IR-NEXT:     fn %[[VALUE_fl2:[0-9]+]] @fl2(%[[VALUE_x_9:[0-9]+]] x: @type[[TYPE8]]) -> @type[[TYPE8]] [linkage=external] [abi=win64 vectorcall(native_c) -> native_c];
-// IR-NEXT:     fn %[[VALUE_fe0:[0-9]+]] @fe0(%[[VALUE_x_10:[0-9]+]] x: @type[[TYPE9]]) -> @type[[TYPE9]] [linkage=external] [abi=win64 vectorcall(native_c) -> native_c];
-// IR-NEXT:     fn %[[VALUE_fhv2:[0-9]+]] @fhv2(%[[VALUE_x_11:[0-9]+]] x: @type[[TYPE10]]) -> @type[[TYPE10]] [linkage=external] [abi=win64 vectorcall(coerce<vector<f32, 4>, vector<f32, 4>>) -> coerce<vector<f32, 4>, vector<f32, 4>>];
-// IR-NEXT:     fn %[[VALUE_fmix:[0-9]+]] @fmix(%[[VALUE_x_12:[0-9]+]] x: @type[[TYPE11]]) -> @type[[TYPE11]] [linkage=external] [abi=win64 vectorcall(native_c) -> native_c];
-// IR-NEXT:     fn %[[VALUE_fpad:[0-9]+]] @fpad(%[[VALUE_x_13:[0-9]+]] x: @type[[TYPE12]]) -> @type[[TYPE12]] [linkage=external] [abi=win64 vectorcall(native_c) -> native_c];
-// IR-NEXT:     fn %[[VALUE_fu2:[0-9]+]] @fu2(%[[VALUE_x_14:[0-9]+]] x: @type[[TYPE13]]) -> @type[[TYPE13]] [linkage=external] [abi=win64 vectorcall(coerce<f32, f32>) -> coerce<f32, f32>];
-// IR-NEXT:     fn %[[VALUE_fza:[0-9]+]] @fza(%[[VALUE_x_15:[0-9]+]] x: @type[[TYPE14]]) -> @type[[TYPE14]] [linkage=external] [abi=win64 vectorcall(native_c) -> native_c];
-// IR-NEXT:     fn %[[VALUE_fcx:[0-9]+]] @fcx(%[[VALUE_x_16:[0-9]+]] x: @type[[TYPE15]]) -> @type[[TYPE15]] [linkage=external] [abi=win64 vectorcall(coerce<f32, f32, f32>) -> coerce<f32, f32, f32>];
-// IR-NEXT:     fn %[[VALUE_fv4f:[0-9]+]] @fv4f(%[[VALUE_x_17:[0-9]+]] x: vector<f32, 4>) -> vector<f32, 4> [linkage=external] [abi=win64 vectorcall(direct) -> direct];
+// IR-NEXT:     fn %[[VALUE_fr3:[0-9]+]] @fr3(%[[VALUE_x:[0-9]+]] x: @type[[TYPE0]] [c="r3"]) -> @type[[TYPE0]] [linkage=external] [abi=win64 vectorcall(native_c) -> native_c] [c="r3(r3) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_fr2:[0-9]+]] @fr2(%[[VALUE_x_2:[0-9]+]] x: @type[[TYPE1]] [c="r2"]) -> @type[[TYPE1]] [linkage=external] [abi=win64 vectorcall(native_c) -> native_c] [c="r2(r2) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_fd2:[0-9]+]] @fd2(%[[VALUE_x_3:[0-9]+]] x: @type[[TYPE2]] [c="d2"]) -> @type[[TYPE2]] [linkage=external] [abi=win64 vectorcall(coerce<f64, f64>) -> coerce<f64, f64>] [c="d2(d2) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_fd4:[0-9]+]] @fd4(%[[VALUE_x_4:[0-9]+]] x: @type[[TYPE3]] [c="d4"]) -> @type[[TYPE3]] [linkage=external] [abi=win64 vectorcall(coerce<f64, f64, f64, f64>) -> coerce<f64, f64, f64, f64>] [c="d4(d4) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_ff2:[0-9]+]] @ff2(%[[VALUE_x_5:[0-9]+]] x: @type[[TYPE4]] [c="f2"]) -> @type[[TYPE4]] [linkage=external] [abi=win64 vectorcall(coerce<f32, f32>) -> coerce<f32, f32>] [c="f2(f2) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_ff3:[0-9]+]] @ff3(%[[VALUE_x_6:[0-9]+]] x: @type[[TYPE5]] [c="f3"]) -> @type[[TYPE5]] [linkage=external] [abi=win64 vectorcall(coerce<f32, f32, f32>) -> coerce<f32, f32, f32>] [c="f3(f3) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_fc1:[0-9]+]] @fc1(%[[VALUE_x_7:[0-9]+]] x: @type[[TYPE6]] [c="c1"]) -> @type[[TYPE6]] [linkage=external] [abi=win64 vectorcall(native_c) -> native_c] [c="c1(c1) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_fd1:[0-9]+]] @fd1(%[[VALUE_x_8:[0-9]+]] x: @type[[TYPE7]] [c="d1"]) -> @type[[TYPE7]] [linkage=external] [abi=win64 vectorcall(coerce<f64>) -> coerce<f64>] [c="d1(d1) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_fl2:[0-9]+]] @fl2(%[[VALUE_x_9:[0-9]+]] x: @type[[TYPE8]] [c="l2"]) -> @type[[TYPE8]] [linkage=external] [abi=win64 vectorcall(native_c) -> native_c] [c="l2(l2) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_fe0:[0-9]+]] @fe0(%[[VALUE_x_10:[0-9]+]] x: @type[[TYPE9]] [c="e0"]) -> @type[[TYPE9]] [linkage=external] [abi=win64 vectorcall(native_c) -> native_c] [c="e0(e0) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_fhv2:[0-9]+]] @fhv2(%[[VALUE_x_11:[0-9]+]] x: @type[[TYPE10]] [c="hv2"]) -> @type[[TYPE10]] [linkage=external] [abi=win64 vectorcall(coerce<vector<f32, 4>, vector<f32, 4>>) -> coerce<vector<f32, 4>, vector<f32, 4>>] [c="hv2(hv2) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_fmix:[0-9]+]] @fmix(%[[VALUE_x_12:[0-9]+]] x: @type[[TYPE11]] [c="mix"]) -> @type[[TYPE11]] [linkage=external] [abi=win64 vectorcall(native_c) -> native_c] [c="mix(mix) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_fpad:[0-9]+]] @fpad(%[[VALUE_x_13:[0-9]+]] x: @type[[TYPE12]] [c="pad"]) -> @type[[TYPE12]] [linkage=external] [abi=win64 vectorcall(native_c) -> native_c] [c="pad(pad) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_fu2:[0-9]+]] @fu2(%[[VALUE_x_14:[0-9]+]] x: @type[[TYPE13]] [c="u2"]) -> @type[[TYPE13]] [linkage=external] [abi=win64 vectorcall(coerce<f32, f32>) -> coerce<f32, f32>] [c="u2(u2) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_fza:[0-9]+]] @fza(%[[VALUE_x_15:[0-9]+]] x: @type[[TYPE14]] [c="za"]) -> @type[[TYPE14]] [linkage=external] [abi=win64 vectorcall(native_c) -> native_c] [c="za(za) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_fcx:[0-9]+]] @fcx(%[[VALUE_x_16:[0-9]+]] x: @type[[TYPE15]] [c="cx"]) -> @type[[TYPE15]] [linkage=external] [abi=win64 vectorcall(coerce<f32, f32, f32>) -> coerce<f32, f32, f32>] [c="cx(cx) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_fv4f:[0-9]+]] @fv4f(%[[VALUE_x_17:[0-9]+]] x: vector<f32, 4> [c="v4f"]) -> vector<f32, 4> [linkage=external] [abi=win64 vectorcall(direct) -> direct] [c="v4f(v4f) __attribute__((vectorcall))"];
 // IR-NEXT:     fn %[[VALUE_fll:[0-9]+]] @fll(%[[VALUE_x_18:[0-9]+]] x: i64) -> i64 [linkage=external] [abi=win64 vectorcall(scalar) -> scalar];
 // IR-NEXT:     fn %[[VALUE_fcd:[0-9]+]] @fcd(%[[VALUE_x_19:[0-9]+]] x: complex<f64>) -> complex<f64> [linkage=external] [abi=win64 vectorcall(coerce<f64, f64>) -> coerce<f64, f64>];
 // IR-NEXT:     fn %[[VALUE_fcf:[0-9]+]] @fcf(%[[VALUE_x_20:[0-9]+]] x: complex<f32>) -> complex<f32> [linkage=external] [abi=win64 vectorcall(coerce<f32, f32>) -> coerce<f32, f32>];
 // IR-NEXT:     fn %[[VALUE_fdd:[0-9]+]] @fdd(%[[VALUE_x_21:[0-9]+]] x: f64) -> f64 [linkage=external] [abi=win64 vectorcall(scalar) -> scalar];
-// IR-NEXT:     fn %[[VALUE_exhaust:[0-9]+]] @exhaust(%[[VALUE_a:[0-9]+]] a: f64, %[[VALUE_b:[0-9]+]] b: f64, %[[VALUE_c:[0-9]+]] c: f64, %[[VALUE_d:[0-9]+]] d: f64, %[[VALUE_e:[0-9]+]] e: f64, %[[VALUE_x_22:[0-9]+]] x: @type[[TYPE2]], %[[VALUE_y:[0-9]+]] y: @type[[TYPE4]]) -> void [linkage=external] [abi=win64 vectorcall(scalar, scalar, scalar, scalar, scalar, native_c, byref<align=4>) -> void];
-// IR-NEXT:     fn %[[VALUE_hvas:[0-9]+]] @hvas(%[[VALUE_x_23:[0-9]+]] x: @type[[TYPE2]], %[[VALUE_y_2:[0-9]+]] y: @type[[TYPE2]], %[[VALUE_z:[0-9]+]] z: @type[[TYPE2]], %[[VALUE_w:[0-9]+]] w: @type[[TYPE4]]) -> void [linkage=external] [abi=win64 vectorcall(coerce<f64, f64>, coerce<f64, f64>, coerce<f64, f64>, byref<align=4>) -> void];
-// IR-NEXT:     fn %[[VALUE_position:[0-9]+]] @position(%[[VALUE_a_2:[0-9]+]] a: i32, %[[VALUE_b_2:[0-9]+]] b: i32, %[[VALUE_c_2:[0-9]+]] c: i32, %[[VALUE_d_2:[0-9]+]] d: i32, %[[VALUE_e_2:[0-9]+]] e: i32, %[[VALUE_f:[0-9]+]] f: i32, %[[VALUE_g:[0-9]+]] g: f64, %[[VALUE_h:[0-9]+]] h: @type[[TYPE4]]) -> void [linkage=external] [abi=win64 vectorcall(scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f32, f32>) -> void];
-// IR-NEXT:     fn %[[VALUE_use:[0-9]+]] @use(%[[VALUE_x_24:[0-9]+]] x: @type[[TYPE2]], %[[VALUE_y_3:[0-9]+]] y: @type[[TYPE4]]) -> @type[[TYPE2]] [linkage=external] [abi=win64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         call<void, abi=win64 vectorcall(scalar, scalar, scalar, scalar, scalar, native_c, byref<align=4>) -> void>(%[[VALUE_exhaust]], int_to_float<f64>(const<i32>(1)), int_to_float<f64>(const<i32>(2)), int_to_float<f64>(const<i32>(3)), int_to_float<f64>(const<i32>(4)), int_to_float<f64>(const<i32>(5)), copy<@type[[TYPE2]], reason=arg>(read<@type[[TYPE2]]>(%[[VALUE_x_24]])), copy<@type[[TYPE4]], reason=arg>(read<@type[[TYPE4]]>(%[[VALUE_y_3]])));
-// IR-NEXT:         return copy<@type[[TYPE2]], reason=return>(call<@type[[TYPE2]], abi=win64 vectorcall(coerce<f64, f64>) -> coerce<f64, f64>>(%[[VALUE_fd2]], copy<@type[[TYPE2]], reason=arg>(read<@type[[TYPE2]]>(%[[VALUE_x_24]]))));
+// IR-NEXT:     fn %[[VALUE_exhaust:[0-9]+]] @exhaust(%[[VALUE_a:[0-9]+]] a: f64, %[[VALUE_b:[0-9]+]] b: f64, %[[VALUE_c:[0-9]+]] c: f64, %[[VALUE_d:[0-9]+]] d: f64, %[[VALUE_e:[0-9]+]] e: f64, %[[VALUE_x_22:[0-9]+]] x: @type[[TYPE2]] [c="d2"], %[[VALUE_y:[0-9]+]] y: @type[[TYPE4]] [c="f2"]) -> void [linkage=external] [abi=win64 vectorcall(scalar, scalar, scalar, scalar, scalar, native_c, byref<align=4>) -> void] [c="void(double, double, double, double, double, d2, f2) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_hvas:[0-9]+]] @hvas(%[[VALUE_x_23:[0-9]+]] x: @type[[TYPE2]] [c="d2"], %[[VALUE_y_2:[0-9]+]] y: @type[[TYPE2]] [c="d2"], %[[VALUE_z:[0-9]+]] z: @type[[TYPE2]] [c="d2"], %[[VALUE_w:[0-9]+]] w: @type[[TYPE4]] [c="f2"]) -> void [linkage=external] [abi=win64 vectorcall(coerce<f64, f64>, coerce<f64, f64>, coerce<f64, f64>, byref<align=4>) -> void] [c="void(d2, d2, d2, f2) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_position:[0-9]+]] @position(%[[VALUE_a_2:[0-9]+]] a: i32, %[[VALUE_b_2:[0-9]+]] b: i32, %[[VALUE_c_2:[0-9]+]] c: i32, %[[VALUE_d_2:[0-9]+]] d: i32, %[[VALUE_e_2:[0-9]+]] e: i32, %[[VALUE_f:[0-9]+]] f: i32, %[[VALUE_g:[0-9]+]] g: f64, %[[VALUE_h:[0-9]+]] h: @type[[TYPE4]] [c="f2"]) -> void [linkage=external] [abi=win64 vectorcall(scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f32, f32>) -> void] [c="void(int, int, int, int, int, int, double, f2) __attribute__((vectorcall))"];
+// IR-NEXT:     fn %[[VALUE_use:[0-9]+]] @use(%[[VALUE_x_24:[0-9]+]] x: @type[[TYPE2]] [c="d2"], %[[VALUE_y_3:[0-9]+]] y: @type[[TYPE4]] [c="f2"]) -> @type[[TYPE2]] [linkage=external] [abi=win64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] [c="d2(d2, f2)"] {
+// IR-NEXT:         call<void, abi=win64 vectorcall(scalar, scalar, scalar, scalar, scalar, native_c, byref<align=4>) -> void>(%[[VALUE_exhaust]], int_to_float<f64>(const<i32>(1)), int_to_float<f64>(const<i32>(2)), int_to_float<f64>(const<i32>(3)), int_to_float<f64>(const<i32>(4)), int_to_float<f64>(const<i32>(5)), copy<@type[[TYPE2]], reason=arg>(read<@type[[TYPE2]]>(%[[VALUE_x_24]]) [c="d2"]) [c="d2"], copy<@type[[TYPE4]], reason=arg>(read<@type[[TYPE4]]>(%[[VALUE_y_3]]) [c="f2"]) [c="f2"]);
+// IR-NEXT:         return copy<@type[[TYPE2]], reason=return>(call<@type[[TYPE2]], abi=win64 vectorcall(coerce<f64, f64>) -> coerce<f64, f64>>(%[[VALUE_fd2]], copy<@type[[TYPE2]], reason=arg>(read<@type[[TYPE2]]>(%[[VALUE_x_24]]) [c="d2"]) [c="d2"]) [c="d2"]) [c="d2"];
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

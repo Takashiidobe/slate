@@ -113,7 +113,7 @@ f (void)
 // DEFAULT-NEXT:     fn %[[VALUE_c2:[0-9]+]] @c2() -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_cs1:[0-9]+]] @cs1() -> @type[[TYPE_s1]] [linkage=external] [abi=sysv64() -> native_c];
 // DEFAULT-NEXT:     fn %[[VALUE_cs2:[0-9]+]] @cs2() -> @type[[TYPE_s2]] [linkage=external] [abi=sysv64() -> native_c];
-// DEFAULT-NEXT:     fn %[[VALUE_cs3:[0-9]+]] @cs3() -> @type[[TYPE_s2]] [linkage=external] [abi=sysv64() -> native_c];
+// DEFAULT-NEXT:     fn %[[VALUE_cs3:[0-9]+]] @cs3() -> @type[[TYPE_s2]] [linkage=external] [abi=sysv64() -> native_c] [c="s2t(void)"];
 // DEFAULT-NEXT:     fn %[[VALUE_cu1:[0-9]+]] @cu1() -> @type[[TYPE_u1]] [linkage=external] [abi=sysv64() -> native_c];
 // DEFAULT-NEXT:     fn %[[VALUE_cu2:[0-9]+]] @cu2() -> @type[[TYPE_u2]] [linkage=external] [abi=sysv64() -> native_c];
 // DEFAULT-NEXT:     fn %[[VALUE_ce1:[0-9]+]] @ce1() -> @type[[TYPE_e1]] [linkage=external];
@@ -126,7 +126,7 @@ f (void)
 // DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_c2]]);
 // DEFAULT-NEXT:         call<@type[[TYPE_s1]], signature=fn() -> @type[[TYPE_s1]], abi=sysv64() -> native_c>(%[[VALUE_cs1]]);
 // DEFAULT-NEXT:         call<@type[[TYPE_s2]], signature=fn() -> @type[[TYPE_s2]], abi=sysv64() -> native_c>(%[[VALUE_cs2]]);
-// DEFAULT-NEXT:         call<@type[[TYPE_s2]], signature=fn() -> @type[[TYPE_s2]], abi=sysv64() -> native_c>(%[[VALUE_cs3]]);
+// DEFAULT-NEXT:         call<@type[[TYPE_s2]], signature=fn() -> @type[[TYPE_s2]], abi=sysv64() -> native_c>(%[[VALUE_cs3]]) [c="s2t"];
 // DEFAULT-NEXT:         call<@type[[TYPE_u1]], signature=fn() -> @type[[TYPE_u1]], abi=sysv64() -> native_c>(%[[VALUE_cu1]]);
 // DEFAULT-NEXT:         call<@type[[TYPE_u2]], signature=fn() -> @type[[TYPE_u2]], abi=sysv64() -> native_c>(%[[VALUE_cu2]]);
 // DEFAULT-NEXT:         call<@type[[TYPE_e1]], signature=fn() -> @type[[TYPE_e1]]>(%[[VALUE_ce1]]);
@@ -151,7 +151,7 @@ f (void)
 // DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_c2]]);
 // DEFAULT-NEXT:         call<@type[[TYPE_s1]], signature=fn() -> @type[[TYPE_s1]], abi=sysv64() -> native_c>(%[[VALUE_cs1]]);
 // DEFAULT-NEXT:         call<@type[[TYPE_s2]], signature=fn() -> @type[[TYPE_s2]], abi=sysv64() -> native_c>(%[[VALUE_cs2]]);
-// DEFAULT-NEXT:         call<@type[[TYPE_s2]], signature=fn() -> @type[[TYPE_s2]], abi=sysv64() -> native_c>(%[[VALUE_cs3]]);
+// DEFAULT-NEXT:         call<@type[[TYPE_s2]], signature=fn() -> @type[[TYPE_s2]], abi=sysv64() -> native_c>(%[[VALUE_cs3]]) [c="s2t"];
 // DEFAULT-NEXT:         call<@type[[TYPE_u1]], signature=fn() -> @type[[TYPE_u1]], abi=sysv64() -> native_c>(%[[VALUE_cu1]]);
 // DEFAULT-NEXT:         call<@type[[TYPE_u2]], signature=fn() -> @type[[TYPE_u2]], abi=sysv64() -> native_c>(%[[VALUE_cu2]]);
 // DEFAULT-NEXT:         call<@type[[TYPE_e1]], signature=fn() -> @type[[TYPE_e1]]>(%[[VALUE_ce1]]);

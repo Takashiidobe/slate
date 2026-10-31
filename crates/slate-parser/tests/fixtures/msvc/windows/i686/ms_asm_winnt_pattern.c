@@ -63,7 +63,7 @@ ULONGLONG shift(ULONGLONG value, DWORD count) {
 // DEFAULT-NEXT:     type @type[[TYPE_ULONGLONG:[0-9]+]] ULONGLONG = u64;
 // DEFAULT-NEXT:     type @type[[TYPE_LONGLONG:[0-9]+]] LONGLONG = i64;
 // DEFAULT-NEXT:     type @type[[TYPE_DWORD:[0-9]+]] DWORD = u32;
-// DEFAULT-NEXT:     fn %[[VALUE_Int64ShllMod32:[0-9]+]] @Int64ShllMod32(%[[VALUE_Value:[0-9]+]] Value: u64, %[[VALUE_ShiftCount:[0-9]+]] ShiftCount: u32) -> u64 [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ret(or<u64>(widen<u64, reason=return>(read<u32>(%[[VALUE0:[0-9]+]])), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%[[VALUE1:[0-9]+]])), const<u32>(32))))] {
+// DEFAULT-NEXT:     fn %[[VALUE_Int64ShllMod32:[0-9]+]] @Int64ShllMod32(%[[VALUE_Value:[0-9]+]] Value: u64 [c="ULONGLONG"], %[[VALUE_ShiftCount:[0-9]+]] ShiftCount: u32 [c="DWORD"]) -> u64 [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ret(or<u64>(widen<u64, reason=return>(read<u32>(%[[VALUE0:[0-9]+]])), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%[[VALUE1:[0-9]+]])), const<u32>(32))))] [c="ULONGLONG(ULONGLONG, DWORD)"] {
 // DEFAULT-NEXT:         let %[[VALUE0]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         let %[[VALUE1]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshld edx, eax, cl\nshl eax, cl" [dialect=intel] {
@@ -75,7 +75,7 @@ ULONGLONG shift(ULONGLONG value, DWORD count) {
 // DEFAULT-NEXT:             clobbers: "ecx" as cx;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_Int64ShraMod32:[0-9]+]] @Int64ShraMod32(%[[VALUE_Value_2:[0-9]+]] Value: i64, %[[VALUE_ShiftCount_2:[0-9]+]] ShiftCount: u32) -> i64 [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ret(reinterpret<i64, reason=return, fits=unknown>(or<u64>(widen<u64, reason=return>(read<u32>(%[[VALUE2:[0-9]+]])), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%[[VALUE3:[0-9]+]])), const<u32>(32)))))] {
+// DEFAULT-NEXT:     fn %[[VALUE_Int64ShraMod32:[0-9]+]] @Int64ShraMod32(%[[VALUE_Value_2:[0-9]+]] Value: i64 [c="LONGLONG"], %[[VALUE_ShiftCount_2:[0-9]+]] ShiftCount: u32 [c="DWORD"]) -> i64 [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ret(reinterpret<i64, reason=return, fits=unknown>(or<u64>(widen<u64, reason=return>(read<u32>(%[[VALUE2:[0-9]+]])), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%[[VALUE3:[0-9]+]])), const<u32>(32)))))] [c="LONGLONG(LONGLONG, DWORD)"] {
 // DEFAULT-NEXT:         let %[[VALUE2]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         let %[[VALUE3]]: u32 [synthetic] = const<u32>(0);
 // DEFAULT-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshrd eax, edx, cl\nsar edx, cl" [dialect=intel] {
@@ -92,9 +92,9 @@ ULONGLONG shift(ULONGLONG value, DWORD count) {
 // DEFAULT-NEXT:             template: "int 44";
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_shift:[0-9]+]] @shift(%[[VALUE_value:[0-9]+]] value: u64, %[[VALUE_count:[0-9]+]] count: u32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_shift:[0-9]+]] @shift(%[[VALUE_value:[0-9]+]] value: u64 [c="ULONGLONG"], %[[VALUE_count:[0-9]+]] count: u32 [c="DWORD"]) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="ULONGLONG(ULONGLONG, DWORD)"] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_DbgRaiseAssertionFailure]]);
-// DEFAULT-NEXT:         return add<u64, overflow=wrap>(call<u64, signature=fn(u64, u32) -> u64>(%[[VALUE_Int64ShllMod32]], read<u64>(%[[VALUE_value]]), read<u32>(%[[VALUE_count]])), reinterpret<u64, reason=explicit, fits=unknown>(call<i64, signature=fn(i64, u32) -> i64>(%[[VALUE_Int64ShraMod32]], reinterpret<i64, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_value]])), read<u32>(%[[VALUE_count]]))));
+// DEFAULT-NEXT:         return add<u64, overflow=wrap>(call<u64, signature=fn(u64, u32) -> u64>(%[[VALUE_Int64ShllMod32]], read<u64>(%[[VALUE_value]]) [c="ULONGLONG"], read<u32>(%[[VALUE_count]]) [c="DWORD"]) [c="ULONGLONG"], reinterpret<u64, reason=explicit, fits=unknown>(call<i64, signature=fn(i64, u32) -> i64>(%[[VALUE_Int64ShraMod32]], reinterpret<i64, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_value]]) [c="ULONGLONG"]) [c="LONGLONG"], read<u32>(%[[VALUE_count]]) [c="DWORD"]) [c="LONGLONG"]) [c="ULONGLONG"]) [c="ULONGLONG"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

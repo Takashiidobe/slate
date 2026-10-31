@@ -42,7 +42,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_global_value:[0-9]+]] global_value: complex<i32> [storage=static] = add<complex<i32>, complex=true, overflow=ub>(const<i32>(17), aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(19))) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 25> [storage=static] = code_units<array<i8, 25>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_first:[0-9]+]] first: complex<i32> [storage=automatic] = add<complex<i32>, complex=true, overflow=ub>(const<i32>(5), aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(7)));
 // DEFAULT-NEXT:         let %[[VALUE_second:[0-9]+]] second: complex<i32> [storage=automatic] = add<complex<i32>, complex=true, overflow=ub>(neg<i32, overflow=ub>(const<i32>(3)), aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(11)));

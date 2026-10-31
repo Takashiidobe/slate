@@ -43,7 +43,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_tolower:[0-9]+]] @tolower(%[[VALUE___c:[0-9]+]] __c: i32) -> i32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %[[VALUE_toupper:[0-9]+]] @toupper(%[[VALUE___c_2:[0-9]+]] __c: i32) -> i32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %[[VALUE_setlocale:[0-9]+]] @setlocale(%[[VALUE___category:[0-9]+]] __category: i32, %[[VALUE___locale:[0-9]+]] __locale: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<ptr<i8>, signature=fn(i32, ptr<const i8>) -> ptr<i8>>(%[[VALUE_setlocale]], const<i32>(6), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str]])));
 // DEFAULT-NEXT:         let %[[VALUE_lower:[0-9]+]] lower: i32 [storage=automatic] = const<i32>(113);

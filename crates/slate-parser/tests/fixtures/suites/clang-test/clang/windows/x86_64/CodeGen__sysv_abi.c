@@ -82,21 +82,21 @@ void use_target_attr_vectors(void) {
 // DEFAULT-NEXT:         let %[[VALUE_s_2:[0-9]+]] s: @type[[TYPE_StringRef]] [storage=automatic] = aggregate<@type[[TYPE_StringRef]], zero_fill=false>(field0 = array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str]]), field1 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(4))));
 // DEFAULT-NEXT:         call<void, signature=fn sysv_abi(@type[[TYPE_StringRef]]) -> void, abi=sysv64 sysv_abi(native_c) -> void>(%[[VALUE_take_stringref]], copy<@type[[TYPE_StringRef]], reason=arg>(read<@type[[TYPE_StringRef]]>(%[[VALUE_s_2]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_get_m256:[0-9]+]] @get_m256() -> vector<f32, 8> [linkage=external] [abi=sysv64 sysv_abi() -> direct];
-// DEFAULT-NEXT:     fn %[[VALUE_take_m256:[0-9]+]] @take_m256(%[[VALUE0:[0-9]+]] <unnamed>: vector<f32, 8>) -> void [linkage=external] [abi=sysv64 sysv_abi(byval<align=32>) -> void];
-// DEFAULT-NEXT:     fn %[[VALUE_get_m512:[0-9]+]] @get_m512() -> vector<f32, 16> [linkage=external] [abi=sysv64 sysv_abi() -> direct];
-// DEFAULT-NEXT:     fn %[[VALUE_take_m512:[0-9]+]] @take_m512(%[[VALUE1:[0-9]+]] <unnamed>: vector<f32, 16>) -> void [linkage=external] [abi=sysv64 sysv_abi(byval<align=64>) -> void];
+// DEFAULT-NEXT:     fn %[[VALUE_get_m256:[0-9]+]] @get_m256() -> vector<f32, 8> [linkage=external] [abi=sysv64 sysv_abi() -> direct] [c="my_m256(void) __attribute__((sysv_abi))"];
+// DEFAULT-NEXT:     fn %[[VALUE_take_m256:[0-9]+]] @take_m256(%[[VALUE0:[0-9]+]] <unnamed>: vector<f32, 8> [c="my_m256"]) -> void [linkage=external] [abi=sysv64 sysv_abi(byval<align=32>) -> void] [c="void(my_m256) __attribute__((sysv_abi))"];
+// DEFAULT-NEXT:     fn %[[VALUE_get_m512:[0-9]+]] @get_m512() -> vector<f32, 16> [linkage=external] [abi=sysv64 sysv_abi() -> direct] [c="my_m512(void) __attribute__((sysv_abi))"];
+// DEFAULT-NEXT:     fn %[[VALUE_take_m512:[0-9]+]] @take_m512(%[[VALUE1:[0-9]+]] <unnamed>: vector<f32, 16> [c="my_m512"]) -> void [linkage=external] [abi=sysv64 sysv_abi(byval<align=64>) -> void] [c="void(my_m512) __attribute__((sysv_abi))"];
 // DEFAULT-NEXT:     fn %[[VALUE_use_vectors:[0-9]+]] @use_vectors() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_v1:[0-9]+]] v1: vector<f32, 8> [storage=automatic] = call<vector<f32, 8>, signature=fn sysv_abi() -> vector<f32, 8>, abi=sysv64 sysv_abi() -> direct>(%[[VALUE_get_m256]]);
-// DEFAULT-NEXT:         call<void, signature=fn sysv_abi(vector<f32, 8>) -> void, abi=sysv64 sysv_abi(byval<align=32>) -> void>(%[[VALUE_take_m256]], read<vector<f32, 8>>(%[[VALUE_v1]]));
-// DEFAULT-NEXT:         let %[[VALUE_v2:[0-9]+]] v2: vector<f32, 16> [storage=automatic] = call<vector<f32, 16>, signature=fn sysv_abi() -> vector<f32, 16>, abi=sysv64 sysv_abi() -> direct>(%[[VALUE_get_m512]]);
-// DEFAULT-NEXT:         call<void, signature=fn sysv_abi(vector<f32, 16>) -> void, abi=sysv64 sysv_abi(byval<align=64>) -> void>(%[[VALUE_take_m512]], read<vector<f32, 16>>(%[[VALUE_v2]]));
+// DEFAULT-NEXT:         let %[[VALUE_v1:[0-9]+]] v1: vector<f32, 8> [storage=automatic] = call<vector<f32, 8>, signature=fn sysv_abi() -> vector<f32, 8>, abi=sysv64 sysv_abi() -> direct>(%[[VALUE_get_m256]]) [c="my_m256"] [c="my_m256"];
+// DEFAULT-NEXT:         call<void, signature=fn sysv_abi(vector<f32, 8>) -> void, abi=sysv64 sysv_abi(byval<align=32>) -> void>(%[[VALUE_take_m256]], read<vector<f32, 8>>(%[[VALUE_v1]]) [c="my_m256"]);
+// DEFAULT-NEXT:         let %[[VALUE_v2:[0-9]+]] v2: vector<f32, 16> [storage=automatic] = call<vector<f32, 16>, signature=fn sysv_abi() -> vector<f32, 16>, abi=sysv64 sysv_abi() -> direct>(%[[VALUE_get_m512]]) [c="my_m512"] [c="my_m512"];
+// DEFAULT-NEXT:         call<void, signature=fn sysv_abi(vector<f32, 16>) -> void, abi=sysv64 sysv_abi(byval<align=64>) -> void>(%[[VALUE_take_m512]], read<vector<f32, 16>>(%[[VALUE_v2]]) [c="my_m512"]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_get_avx_m256:[0-9]+]] @get_avx_m256() -> vector<f32, 8> [linkage=external] [target=+avx] [abi=sysv64 sysv_abi() -> direct];
-// DEFAULT-NEXT:     fn %[[VALUE_take_avx_m256:[0-9]+]] @take_avx_m256(%[[VALUE2:[0-9]+]] <unnamed>: vector<f32, 8>) -> void [linkage=external] [target=+avx] [abi=sysv64 sysv_abi(direct) -> void];
+// DEFAULT-NEXT:     fn %[[VALUE_get_avx_m256:[0-9]+]] @get_avx_m256() -> vector<f32, 8> [linkage=external] [target=+avx] [abi=sysv64 sysv_abi() -> direct] [c="my_m256(void) __attribute__((sysv_abi))"];
+// DEFAULT-NEXT:     fn %[[VALUE_take_avx_m256:[0-9]+]] @take_avx_m256(%[[VALUE2:[0-9]+]] <unnamed>: vector<f32, 8> [c="my_m256"]) -> void [linkage=external] [target=+avx] [abi=sysv64 sysv_abi(direct) -> void] [c="void(my_m256) __attribute__((sysv_abi))"];
 // DEFAULT-NEXT:     fn %[[VALUE_use_target_attr_vectors:[0-9]+]] @use_target_attr_vectors() -> void [linkage=external] [target=+avx] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: vector<f32, 8> [storage=automatic] = call<vector<f32, 8>, signature=fn sysv_abi() -> vector<f32, 8>, abi=sysv64 sysv_abi() -> direct>(%[[VALUE_get_avx_m256]]);
-// DEFAULT-NEXT:         call<void, signature=fn sysv_abi(vector<f32, 8>) -> void, abi=sysv64 sysv_abi(direct) -> void>(%[[VALUE_take_avx_m256]], read<vector<f32, 8>>(%[[VALUE_v]]));
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: vector<f32, 8> [storage=automatic] = call<vector<f32, 8>, signature=fn sysv_abi() -> vector<f32, 8>, abi=sysv64 sysv_abi() -> direct>(%[[VALUE_get_avx_m256]]) [c="my_m256"] [c="my_m256"];
+// DEFAULT-NEXT:         call<void, signature=fn sysv_abi(vector<f32, 8>) -> void, abi=sysv64 sysv_abi(direct) -> void>(%[[VALUE_take_avx_m256]], read<vector<f32, 8>>(%[[VALUE_v]]) [c="my_m256"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

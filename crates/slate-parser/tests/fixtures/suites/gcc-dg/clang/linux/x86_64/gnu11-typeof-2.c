@@ -64,8 +64,8 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: volatile ptr<fn() -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_pp:[0-9]+]] pp: volatile ptr<volatile ptr<fn() -> void>> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: volatile ptr<fn() -> void> [storage=static] [linkage=external] [c="volatile typeof(&f)"];
+// DEFAULT-NEXT:     global %[[VALUE_pp:[0-9]+]] pp: volatile ptr<volatile ptr<fn() -> void>> [storage=static] [linkage=external] [c="volatile typeof(&p)"];
 // DEFAULT-NEXT:     global %[[VALUE_flag:[0-9]+]] flag: volatile i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: volatile i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [noreturn];

@@ -112,10 +112,10 @@ union rf4 a4[1]; /* { dg-bogus "warning" "warning in place of error" } */
 // DEFAULT-NEXT:     global %[[VALUE_a2:[0-9]+]] a2: array<@type[[TYPE_rf2]], 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_a3:[0-9]+]] a3: array<@type[[TYPE_rf3]], 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_a4:[0-9]+]] a4: array<@type[[TYPE_rf4]], 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f0:[0-9]+]] @f0(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE_flex]]>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE1:[0-9]+]] <unnamed>: ptr<@type[[TYPE_rf1]]>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE2:[0-9]+]] <unnamed>: ptr<@type[[TYPE_rf2]]>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE3:[0-9]+]] <unnamed>: ptr<@type[[TYPE_rf3]]>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE4:[0-9]+]] <unnamed>: ptr<@type[[TYPE_rf4]]>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f0:[0-9]+]] @f0(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE_flex]]>) -> void [linkage=external] [c="void(struct flex[])"];
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE1:[0-9]+]] <unnamed>: ptr<@type[[TYPE_rf1]]>) -> void [linkage=external] [c="void(union rf1[])"];
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE2:[0-9]+]] <unnamed>: ptr<@type[[TYPE_rf2]]>) -> void [linkage=external] [c="void(union rf2[])"];
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE3:[0-9]+]] <unnamed>: ptr<@type[[TYPE_rf3]]>) -> void [linkage=external] [c="void(union rf3[])"];
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE4:[0-9]+]] <unnamed>: ptr<@type[[TYPE_rf4]]>) -> void [linkage=external] [c="void(union rf4[])"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

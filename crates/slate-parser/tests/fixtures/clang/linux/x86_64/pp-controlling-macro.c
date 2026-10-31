@@ -36,8 +36,8 @@ trailing_t trailing;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_guarded_t:[0-9]+]] guarded_t = i32;
 // DEFAULT-NEXT:     type @type[[TYPE_trailing_t:[0-9]+]] trailing_t = i32;
-// DEFAULT-NEXT:     global %[[VALUE_value:[0-9]+]] value: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_trailing:[0-9]+]] trailing: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_value:[0-9]+]] value: i32 [storage=static] [linkage=external] [c="guarded_t"];
+// DEFAULT-NEXT:     global %[[VALUE_trailing:[0-9]+]] trailing: i32 [storage=static] [linkage=external] [c="trailing_t"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN A
@@ -65,8 +65,8 @@ trailing_t trailing;
 // A-NEXT:     }
 // A-NEXT:     type @type[[TYPE_guarded_t:[0-9]+]] guarded_t = i32;
 // A-NEXT:     type @type[[TYPE_trailing_t:[0-9]+]] trailing_t = i32;
-// A-NEXT:     global %[[VALUE_value:[0-9]+]] value: i32 [storage=static] [linkage=external];
-// A-NEXT:     global %[[VALUE_trailing:[0-9]+]] trailing: i32 [storage=static] [linkage=external];
+// A-NEXT:     global %[[VALUE_value:[0-9]+]] value: i32 [storage=static] [linkage=external] [c="guarded_t"];
+// A-NEXT:     global %[[VALUE_trailing:[0-9]+]] trailing: i32 [storage=static] [linkage=external] [c="trailing_t"];
 // A-NEXT: }
 // SLATE-FILECHECK-END A
 // SLATE-FILECHECK-BEGIN SKIP
@@ -94,7 +94,7 @@ trailing_t trailing;
 // SKIP-NEXT:     }
 // SKIP-NEXT:     type @type[[TYPE_guarded_t:[0-9]+]] guarded_t = i32;
 // SKIP-NEXT:     type @type[[TYPE_trailing_t:[0-9]+]] trailing_t = i32;
-// SKIP-NEXT:     global %[[VALUE_value:[0-9]+]] value: i32 [storage=static] [linkage=external];
-// SKIP-NEXT:     global %[[VALUE_trailing:[0-9]+]] trailing: i32 [storage=static] [linkage=external];
+// SKIP-NEXT:     global %[[VALUE_value:[0-9]+]] value: i32 [storage=static] [linkage=external] [c="guarded_t"];
+// SKIP-NEXT:     global %[[VALUE_trailing:[0-9]+]] trailing: i32 [storage=static] [linkage=external] [c="trailing_t"];
 // SKIP-NEXT: }
 // SLATE-FILECHECK-END SKIP

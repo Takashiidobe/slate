@@ -37,7 +37,7 @@ void foo11e(int x[1 ? 0 : sizeof(int *[*])]); /* { dg-warning "not in a declarat
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_foo11d:[0-9]+]] @foo11d(%[[VALUE_x:[0-9]+]] x: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo11e:[0-9]+]] @foo11e(%[[VALUE_x_2:[0-9]+]] x: ptr<i32> [array=0]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo11d:[0-9]+]] @foo11d(%[[VALUE_x:[0-9]+]] x: ptr<i32> [array=*]) -> void [linkage=external] [c="void(int[*])"];
+// DEFAULT-NEXT:     fn %[[VALUE_foo11e:[0-9]+]] @foo11e(%[[VALUE_x_2:[0-9]+]] x: ptr<i32> [array=0]) -> void [linkage=external] [c="void(int[0])"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

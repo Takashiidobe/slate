@@ -33,6 +33,6 @@ T value;
 // IR-NEXT:     type @type[[TYPE_U_2:[0-9]+]] U = i32;
 // IR-NEXT:     type @type[[TYPE_T:[0-9]+]] T = u32;
 // IR-NEXT:     type @type[[TYPE_T_2:[0-9]+]] T = i32;
-// IR-NEXT:     global %[[VALUE_value:[0-9]+]] value: i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_value:[0-9]+]] value: i32 [storage=static] [linkage=external] [c="T"];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -72,12 +72,12 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
-// DEFAULT-NEXT:     global %[[VALUE_global:[0-9]+]] global: va_list [storage=static] [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list [c="__gnuc_va_list"];
+// DEFAULT-NEXT:     global %[[VALUE_global:[0-9]+]] global: va_list [storage=static] [linkage=external] [c="va_list"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_vat:[0-9]+]] @vat(%[[VALUE_param:[0-9]+]] param: va_list, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: va_list [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_vat:[0-9]+]] @vat(%[[VALUE_param:[0-9]+]] param: va_list [c="va_list"], ...) -> void [linkage=external] [fallthrough=ret_void] [c="void(va_list, ...)"] {
+// DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_local]]);
 // DEFAULT-NEXT:         va_copy(%[[VALUE_global]], %[[VALUE_local]]);
 // DEFAULT-NEXT:         va_copy(%[[VALUE_param]], %[[VALUE_local]]);
@@ -108,8 +108,8 @@ int main(void) {
 // DEFAULT-NEXT:         va_end(%[[VALUE_param]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: va_list [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(va_list, ...) -> void>(%[[VALUE_vat]], read<va_list>(%[[VALUE_t]]), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: va_list [storage=automatic] [c="va_list"];
+// DEFAULT-NEXT:         call<void, signature=fn(va_list, ...) -> void>(%[[VALUE_vat]], read<va_list>(%[[VALUE_t]]) [c="va_list"], const<i32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -59,11 +59,11 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=56, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE_pthread_attr_t_2:[0-9]+]] pthread_attr_t = @type[[TYPE_pthread_attr_t]];
 // DEFAULT-NEXT:     type @type[[TYPE_atomic_int:[0-9]+]] atomic_int = i32;
-// DEFAULT-NEXT:     global %[[VALUE_counter:[0-9]+]] counter: atomic i32 [storage=static] = const<i32>(0) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_counter:[0-9]+]] counter: atomic i32 [storage=static] = const<i32>(0) [linkage=internal] [c="atomic_int"];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_pthread_create:[0-9]+]] @pthread_create(%[[VALUE___newthread:[0-9]+]] __newthread: ptr<u64> [restrict], %[[VALUE___attr:[0-9]+]] __attr: ptr<const @type[[TYPE_pthread_attr_t]]> [restrict], %[[VALUE___start_routine:[0-9]+]] __start_routine: ptr<fn(ptr<void>) -> ptr<void>>, %[[VALUE___arg:[0-9]+]] __arg: ptr<void> [restrict]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_pthread_join:[0-9]+]] @pthread_join(%[[VALUE___th:[0-9]+]] __th: u64, %[[VALUE___thread_return:[0-9]+]] __thread_return: ptr<ptr<void>>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_pthread_create:[0-9]+]] @pthread_create(%[[VALUE___newthread:[0-9]+]] __newthread: ptr<u64> [restrict] [c="pthread_t *restrict"], %[[VALUE___attr:[0-9]+]] __attr: ptr<const @type[[TYPE_pthread_attr_t]]> [restrict] [c="const pthread_attr_t *restrict"], %[[VALUE___start_routine:[0-9]+]] __start_routine: ptr<fn(ptr<void>) -> ptr<void>>, %[[VALUE___arg:[0-9]+]] __arg: ptr<void> [restrict]) -> i32 [linkage=external] [c="int(pthread_t *restrict, const pthread_attr_t *restrict, void *(*)(void *), void *restrict)"];
+// DEFAULT-NEXT:     fn %[[VALUE_pthread_join:[0-9]+]] @pthread_join(%[[VALUE___th:[0-9]+]] __th: u64 [c="pthread_t"], %[[VALUE___thread_return:[0-9]+]] __thread_return: ptr<ptr<void>>) -> i32 [linkage=external] [c="int(pthread_t, void **)"];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_worker:[0-9]+]] @worker(%[[VALUE_arg:[0-9]+]] arg: ptr<void>) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         read<ptr<void>>(%[[VALUE_arg]]);
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
@@ -79,12 +79,12 @@ int main(void) {
 // DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..const<i32>(100000)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_counter]])), add<i32, overflow=wrap>(old<i32>, const<i32>(1)));
+// DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_counter]])), add<i32, overflow=wrap>(old<i32> [c="atomic_int"], const<i32>(1)) [c="atomic_int"]) [c="atomic_int"] [c="atomic_int"];
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return null<ptr<void>>;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_threads:[0-9]+]] threads: array<u64, 4> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_threads:[0-9]+]] threads: array<u64, 4> [storage=automatic] [align=16] [c="pthread_t[4]"];
 // DEFAULT-NEXT:         for %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
@@ -98,7 +98,7 @@ int main(void) {
 // DEFAULT-NEXT:             counted: %[[VALUE_i_2]] in const<i32>(0)..const<i32>(4)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<u64>, ptr<const @type[[TYPE_pthread_attr_t]]>, ptr<fn(ptr<void>) -> ptr<void>>, ptr<void>) -> i32>(%[[VALUE_pthread_create]], addr_of<ptr<u64>>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(4)>(%[[VALUE_threads]]), read<i32>(%[[VALUE_i_2]])))), null<ptr<const @type[[TYPE_pthread_attr_t]]>>, function_decay<ptr<fn(ptr<void>) -> ptr<void>>>(%[[VALUE_worker]]), null<ptr<void>>);
+// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<u64>, ptr<const @type[[TYPE_pthread_attr_t]]>, ptr<fn(ptr<void>) -> ptr<void>>, ptr<void>) -> i32>(%[[VALUE_pthread_create]], addr_of<ptr<u64>>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(4)>(%[[VALUE_threads]]), read<i32>(%[[VALUE_i_2]])))) [c="pthread_t *"], null<ptr<const @type[[TYPE_pthread_attr_t]]>> [c="const pthread_attr_t *"], function_decay<ptr<fn(ptr<void>) -> ptr<void>>>(%[[VALUE_worker]]), null<ptr<void>>);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -113,7 +113,7 @@ int main(void) {
 // DEFAULT-NEXT:             counted: %[[VALUE_i_3]] in const<i32>(0)..const<i32>(4)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<i32, signature=fn(u64, ptr<ptr<void>>) -> i32>(%[[VALUE_pthread_join]], read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(4)>(%[[VALUE_threads]]), read<i32>(%[[VALUE_i_3]])))), null<ptr<ptr<void>>>);
+// DEFAULT-NEXT:                     call<i32, signature=fn(u64, ptr<ptr<void>>) -> i32>(%[[VALUE_pthread_join]], read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(4)>(%[[VALUE_threads]]), read<i32>(%[[VALUE_i_3]])))) [c="pthread_t"], null<ptr<ptr<void>>>);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), read<i32, atomic=seq_cst>(%[[VALUE_counter]]));
 // DEFAULT-NEXT:         return const<i32>(0);

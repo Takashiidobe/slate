@@ -56,11 +56,11 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_empty:[0-9]+]] empty = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 i: i32;
-// DEFAULT-NEXT:         field1 e: @type[[TYPE0]];
+// DEFAULT-NEXT:         field1 e: @type[[TYPE0]] [c="empty"];
 // DEFAULT-NEXT:         field2 i2: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4, 4]];
 // DEFAULT-NEXT:     type @type[[TYPE_st:[0-9]+]] st = @type[[TYPE1]];
-// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE1]] [storage=static] = aggregate<@type[[TYPE1]], zero_fill=true>(field0 = const<i32>(0), field2 = const<i32>(1)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE1]] [storage=static] = aggregate<@type[[TYPE1]], zero_fill=true>(field0 = const<i32>(0), field2 = const<i32>(1)) [linkage=external] [c="st"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

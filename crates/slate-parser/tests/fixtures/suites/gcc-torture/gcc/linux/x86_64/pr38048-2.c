@@ -50,7 +50,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_inv_J:[0-9]+]] @inv_J(%[[VALUE_a:[0-9]+]] a: ptr<array<i32, 2>>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_inv_J:[0-9]+]] @inv_J(%[[VALUE_a:[0-9]+]] a: ptr<array<i32, 2>>) -> i32 [linkage=internal] [fallthrough=ub_if_used] [c="int(int[][2])"] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_det:[0-9]+]] det: i32 [storage=automatic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(0.0));

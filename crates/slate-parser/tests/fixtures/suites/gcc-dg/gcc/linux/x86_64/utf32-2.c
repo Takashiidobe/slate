@@ -58,13 +58,13 @@ int main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_char32_t:[0-9]+]] char32_t = u32;
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<u32, 3> [storage=static] = code_units<array<u32, 3>>([97, 98, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_s0:[0-9]+]] s0: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s0:[0-9]+]] s0: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str]]) [c="char32_t *"] [linkage=external] [c="char32_t *"];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<u32, 3> [storage=static] = code_units<array<u32, 3>>([97, 36, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_s1:[0-9]+]] s1: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_2]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s1:[0-9]+]] s1: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_2]]) [c="char32_t *"] [linkage=external] [c="char32_t *"];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<u32, 3> [storage=static] = code_units<array<u32, 3>>([97, 8233, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_s2:[0-9]+]] s2: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_3]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s2:[0-9]+]] s2: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_3]]) [c="char32_t *"] [linkage=external] [c="char32_t *"];
 // DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<u32, 3> [storage=static] = code_units<array<u32, 3>>([97, 410401, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_s3:[0-9]+]] s3: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_4]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s3:[0-9]+]] s3: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_4]]) [c="char32_t *"] [linkage=external] [c="char32_t *"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(%[[VALUE_s0]]), const<i32>(0)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(97))), ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(%[[VALUE_s0]]), const<i32>(1)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(98)))), ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(%[[VALUE_s0]]), const<i32>(2)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))))

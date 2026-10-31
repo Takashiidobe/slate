@@ -43,11 +43,11 @@ foo (void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = i129b;
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
-// DEFAULT-NEXT:         field0 b: i129b;
+// DEFAULT-NEXT:         field0 b: i129b [c="B"];
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0]];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i129b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i129b [linkage=external] [fallthrough=ub_if_used] [c="B(void)"] {
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=true>();
-// DEFAULT-NEXT:         return read<i129b>(field0(%[[VALUE_s]]));
+// DEFAULT-NEXT:         return read<i129b>(field0(%[[VALUE_s]])) [c="B"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

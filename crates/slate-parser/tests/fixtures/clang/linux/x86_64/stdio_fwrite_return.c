@@ -65,12 +65,12 @@ int main(void) {
 // DEFAULT-NEXT:         field14 _fileno: i32;
 // DEFAULT-NEXT:         field15 _flags2: i32 : 24;
 // DEFAULT-NEXT:         field16 _short_backupbuf: array<i8, 1>;
-// DEFAULT-NEXT:         field17 _old_offset: i64;
+// DEFAULT-NEXT:         field17 _old_offset: i64 [c="__off_t"];
 // DEFAULT-NEXT:         field18 _cur_column: u16;
 // DEFAULT-NEXT:         field19 _vtable_offset: i8;
 // DEFAULT-NEXT:         field20 _shortbuf: array<i8, 1>;
-// DEFAULT-NEXT:         field21 _lock: ptr<void>;
-// DEFAULT-NEXT:         field22 _offset: i64;
+// DEFAULT-NEXT:         field21 _lock: ptr<void> [c="_IO_lock_t *"];
+// DEFAULT-NEXT:         field22 _offset: i64 [c="__off64_t"];
 // DEFAULT-NEXT:         field23 _codecvt: ptr<@type[[TYPE__IO_codecvt:[0-9]+]]>;
 // DEFAULT-NEXT:         field24 _wide_data: ptr<@type[[TYPE__IO_wide_data:[0-9]+]]>;
 // DEFAULT-NEXT:         field25 _freeres_list: ptr<@type[[TYPE__IO_FILE]]>;
@@ -78,7 +78,7 @@ int main(void) {
 // DEFAULT-NEXT:         field27 _prevchain: ptr<ptr<@type[[TYPE__IO_FILE]]>>;
 // DEFAULT-NEXT:         field28 _mode: i32;
 // DEFAULT-NEXT:         field29 _unused3: i32;
-// DEFAULT-NEXT:         field30 _total_written: u64;
+// DEFAULT-NEXT:         field30 _total_written: u64 [c="__uint64_t"];
 // DEFAULT-NEXT:         field31 _unused2: array<i8, 8>;
 // DEFAULT-NEXT:     } [size=216, align=8, offsets=[0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 116, 119, 120, 128, 130, 131, 136, 144, 152, 160, 168, 176, 184, 192, 196, 200, 208], bit_offsets=[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, Some(928), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], bit_units=[(116, 3)], field_units=[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, Some(0), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]];
 // DEFAULT-NEXT:     type @type[[TYPE_FILE:[0-9]+]] FILE = @type[[TYPE__IO_FILE]];
@@ -93,23 +93,23 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str_5:[0-9]+]] .str[[VALUE_str_5]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([37, 122, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_6:[0-9]+]] .str[[VALUE_str_6]]: array<i8, 30> [storage=static] = code_units<array<i8, 30>>([115, 108, 97, 116, 101, 95, 115, 116, 100, 105, 111, 95, 102, 119, 114, 105, 116, 101, 95, 114, 101, 116, 117, 114, 110, 46, 116, 109, 112, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_remove:[0-9]+]] @remove(%[[VALUE___filename:[0-9]+]] __filename: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_fclose:[0-9]+]] @fclose(%[[VALUE___stream:[0-9]+]] __stream: ptr<@type[[TYPE__IO_FILE]]>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_fopen:[0-9]+]] @fopen(%[[VALUE___filename_2:[0-9]+]] __filename: ptr<const i8> [restrict], %[[VALUE___modes:[0-9]+]] __modes: ptr<const i8> [restrict]) -> ptr<@type[[TYPE__IO_FILE]]> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fclose:[0-9]+]] @fclose(%[[VALUE___stream:[0-9]+]] __stream: ptr<@type[[TYPE__IO_FILE]]> [c="FILE *"]) -> i32 [linkage=external] [c="int(FILE *)"];
+// DEFAULT-NEXT:     fn %[[VALUE_fopen:[0-9]+]] @fopen(%[[VALUE___filename_2:[0-9]+]] __filename: ptr<const i8> [restrict], %[[VALUE___modes:[0-9]+]] __modes: ptr<const i8> [restrict]) -> ptr<@type[[TYPE__IO_FILE]]> [linkage=external] [c="FILE *(const char *restrict, const char *restrict)"];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_puts:[0-9]+]] @puts(%[[VALUE___s:[0-9]+]] __s: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_fwrite:[0-9]+]] @fwrite(%[[VALUE___ptr:[0-9]+]] __ptr: ptr<const void> [restrict], %[[VALUE___size:[0-9]+]] __size: u64, %[[VALUE___n:[0-9]+]] __n: u64, %[[VALUE___s_2:[0-9]+]] __s: ptr<@type[[TYPE__IO_FILE]]> [restrict]) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fwrite:[0-9]+]] @fwrite(%[[VALUE___ptr:[0-9]+]] __ptr: ptr<const void> [restrict], %[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"], %[[VALUE___n:[0-9]+]] __n: u64 [c="size_t"], %[[VALUE___s_2:[0-9]+]] __s: ptr<@type[[TYPE__IO_FILE]]> [restrict] [c="FILE *restrict"]) -> u64 [linkage=external] [c="size_t(const void *restrict, size_t, size_t, FILE *restrict)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_remove]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(30)>(%[[VALUE_str]])));
-// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: ptr<@type[[TYPE__IO_FILE]]> [storage=automatic] = call<ptr<@type[[TYPE__IO_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_fopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(30)>(%[[VALUE_str_2]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_3]])));
-// DEFAULT-NEXT:         if not<bool>(ne<ptr<@type[[TYPE__IO_FILE]]>>(read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f]]), null<ptr<@type[[TYPE__IO_FILE]]>>))
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: ptr<@type[[TYPE__IO_FILE]]> [storage=automatic] = call<ptr<@type[[TYPE__IO_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_fopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(30)>(%[[VALUE_str_2]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_3]]))) [c="FILE *"] [c="FILE *"];
+// DEFAULT-NEXT:         if not<bool>(ne<ptr<@type[[TYPE__IO_FILE]]>>(read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f]]) [c="FILE *"], null<ptr<@type[[TYPE__IO_FILE]]>>))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_puts]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str_4]])));
 // DEFAULT-NEXT:                 return const<i32>(0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: array<i8, 16> [storage=automatic] [align=16] = code_units<array<i8, 16>>([48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 0]);
-// DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: u64 [storage=automatic] = call<u64, signature=fn(ptr<const void>, u64, u64, ptr<@type[[TYPE__IO_FILE]]>) -> u64>(%[[VALUE_fwrite]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%[[VALUE_buf]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(15))), read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f]]));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_5]])), read<u64>(%[[VALUE_n]]));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>) -> i32>(%[[VALUE_fclose]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f]]));
+// DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: u64 [storage=automatic] = call<u64, signature=fn(ptr<const void>, u64, u64, ptr<@type[[TYPE__IO_FILE]]>) -> u64>(%[[VALUE_fwrite]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%[[VALUE_buf]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(15))), read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f]]) [c="FILE *"]) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_5]])), read<u64>(%[[VALUE_n]]) [c="size_t"]);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>) -> i32>(%[[VALUE_fclose]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f]]) [c="FILE *"]);
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_remove]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(30)>(%[[VALUE_str_6]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

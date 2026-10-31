@@ -46,7 +46,7 @@ unsigned int foo (A *x)
 // DEFAULT-NEXT:         field0 a: u8;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = @type[[TYPE0]];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<@type[[TYPE0]]>) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<@type[[TYPE0]]> [c="A *"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="unsigned int(A *)"] {
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: array<u8, 2> [storage=automatic] = aggregate<array<u8, 2>, zero_fill=false>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))), index1 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_c]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(conditional<i32>(ne<u8>(read<u8>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_x]])))), const<u8>(0)), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(2)>(%[[VALUE_b]]), const<i32>(1)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(2)>(%[[VALUE_b]]), const<i32>(0))))))))));

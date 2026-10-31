@@ -76,12 +76,12 @@ v4 low16(v4 a) {
 // IR-NEXT:         }
 // IR-NEXT:         return read<f64>(%[[VALUE_d]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_low16:[0-9]+]] @low16(%[[VALUE_a_4:[0-9]+]] a: vector<f32, 4>) -> vector<f32, 4> [linkage=external] [abi=aapcs64(direct) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_q:[0-9]+]] q: vector<f32, 4> [storage=automatic] [register="v15"] = read<vector<f32, 4>>(%[[VALUE_a_4]]);
+// IR-NEXT:     fn %[[VALUE_low16:[0-9]+]] @low16(%[[VALUE_a_4:[0-9]+]] a: vector<f32, 4> [c="v4"]) -> vector<f32, 4> [linkage=external] [abi=aapcs64(direct) -> direct] [fallthrough=ub_if_used] [c="v4(v4)"] {
+// IR-NEXT:         let %[[VALUE_q:[0-9]+]] q: vector<f32, 4> [storage=automatic] [register="v15"] = read<vector<f32, 4>>(%[[VALUE_a_4]]) [c="v4"] [c="v4"];
 // IR-NEXT:         asm "" [options=pure,nomem,nostack,preserves_flags] {
 // IR-NEXT:             inlateout 0 "x" [vreg_low16] -> {v15} width 128 place<vector<f32, 4>>(%[[VALUE_q]]);
 // IR-NEXT:         }
-// IR-NEXT:         return read<vector<f32, 4>>(%[[VALUE_q]]);
+// IR-NEXT:         return read<vector<f32, 4>>(%[[VALUE_q]]) [c="v4"];
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

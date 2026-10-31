@@ -217,8 +217,8 @@ int main ()
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE_wc_array:[0-9]+]] wc_array: ptr<const i32> [storage=automatic] = pointer_cast<ptr<const i32>, reason=assign>(array_decay<ptr<i32>, length=Some(12)>(%[[VALUE_str]]));
-// DEFAULT-NEXT:             let %[[VALUE_wc:[0-9]+]] wc: i32 [storage=automatic] = const<i32>(119);
+// DEFAULT-NEXT:             let %[[VALUE_wc_array:[0-9]+]] wc_array: ptr<const i32> [storage=automatic] = pointer_cast<ptr<const i32>, reason=assign>(array_decay<ptr<i32>, length=Some(12)>(%[[VALUE_str]])) [c="const wchar_t *"] [c="const wchar_t *"];
+// DEFAULT-NEXT:             let %[[VALUE_wc:[0-9]+]] wc: i32 [storage=automatic] = const<i32>(119) [c="wchar_t"] [c="wchar_t"];
 // DEFAULT-NEXT:             let %[[VALUE_hh:[0-9]+]] hh: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_2]]));
 // DEFAULT-NEXT:             let %[[VALUE_array:[0-9]+]] array: array<i32, 1> [storage=automatic] = aggregate<array<i32, 1>, zero_fill=false>(index0 = const<i32>(1));
 // DEFAULT-NEXT:             let %[[VALUE_x_2:[0-9]+]] x: i32 [storage=automatic] = const<i32>(4);

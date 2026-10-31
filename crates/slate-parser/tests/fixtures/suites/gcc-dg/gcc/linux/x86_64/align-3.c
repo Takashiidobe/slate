@@ -42,7 +42,7 @@ unsigned short get16_unaligned(const void *p) {
 // DEFAULT-NEXT:     type @type[[TYPE_TU2:[0-9]+]] TU2 = @type[[TYPE0]];
 // DEFAULT-NEXT:     fn %[[VALUE_get16_unaligned:[0-9]+]] @get16_unaligned(%[[VALUE_p:[0-9]+]] p: ptr<const void>) -> u16 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: u16 [storage=automatic];
-// DEFAULT-NEXT:         write<@type[[TYPE0]]>(deref(pointer_cast<ptr<@type[[TYPE0]]>, reason=explicit>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<u16>>(%[[VALUE_v]])))), copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(deref(pointer_cast<ptr<const @type[[TYPE0]]>, reason=explicit>(read<ptr<const void>>(%[[VALUE_p]]))))));
+// DEFAULT-NEXT:         write<@type[[TYPE0]]>(deref(pointer_cast<ptr<@type[[TYPE0]]>, reason=explicit>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<u16>>(%[[VALUE_v]])))), copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(deref(pointer_cast<ptr<const @type[[TYPE0]]>, reason=explicit>(read<ptr<const void>>(%[[VALUE_p]])))) [c="TU2"]) [c="TU2"]) [c="TU2"];
 // DEFAULT-NEXT:         return read<u16>(%[[VALUE_v]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

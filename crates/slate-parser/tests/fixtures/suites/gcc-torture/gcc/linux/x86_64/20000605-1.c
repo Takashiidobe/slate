@@ -46,9 +46,9 @@ int x()
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = void;
-// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [c="foo(void)"];
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_bar]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_bar]]) [c="foo"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_x:[0-9]+]] @x() -> i32 [linkage=external] [fallthrough=ub_if_used] {

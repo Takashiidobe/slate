@@ -49,13 +49,13 @@ int main ()
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([39, 101, 114, 101, 32, 73, 32, 97, 109, 32, 74, 72, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_implementation:[0-9]+]] @implementation() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%[[VALUE_str]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_resolver:[0-9]+]] @resolver() -> ptr<fn() -> i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return function_decay<ptr<fn() -> i32>>(%[[VALUE_implementation]]);
+// DEFAULT-NEXT:     fn %[[VALUE_resolver:[0-9]+]] @resolver() -> ptr<fn() -> i32> [linkage=internal] [fallthrough=ub_if_used] [c="typeof(implementation) *(void)"] {
+// DEFAULT-NEXT:         return function_decay<ptr<fn() -> i32>>(%[[VALUE_implementation]]) [c="typeof(implementation) *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_magic:[0-9]+]] @magic() -> i32 [linkage=internal] [ifunc="resolver"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

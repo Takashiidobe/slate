@@ -63,10 +63,10 @@ void locals(int n) {
 // IR-NEXT:     } [size=20, align=1, offsets=[0]];
 // IR-NEXT:     global %[[VALUE_sixteen:[0-9]+]] sixteen: array<i64, 2> [storage=static] [align=16] [linkage=external];
 // IR-NEXT:     global %[[VALUE_fifteen:[0-9]+]] fifteen: array<i8, 15> [storage=static] [linkage=external];
-// IR-NEXT:     global %[[VALUE_lowered_elements:[0-9]+]] lowered_elements: array<i32, 4> [storage=static] [align=16] [linkage=external];
+// IR-NEXT:     global %[[VALUE_lowered_elements:[0-9]+]] lowered_elements: array<i32, 4> [storage=static] [align=16] [linkage=external] [c="lowered[4]"];
 // IR-NEXT:     global %[[VALUE_requested:[0-9]+]] requested: array<i64, 2> [storage=static] [align=4] [linkage=external];
 // IR-NEXT:     global %[[VALUE_alignas_requested:[0-9]+]] alignas_requested: array<i8, 32> [storage=static] [align=4] [linkage=external];
-// IR-NEXT:     global %[[VALUE_typedef_buffer:[0-9]+]] typedef_buffer: array<i8, 32> [storage=static] [align=16] [linkage=external];
+// IR-NEXT:     global %[[VALUE_typedef_buffer:[0-9]+]] typedef_buffer: array<i8, 32> [storage=static] [align=16] [linkage=external] [c="aligned_buffer"];
 // IR-NEXT:     global %[[VALUE_record:[0-9]+]] record: @type[[TYPE_twenty]] [storage=static] [linkage=external];
 // IR-NEXT:     global %[[VALUE_records:[0-9]+]] records: array<@type[[TYPE_twenty]], 1> [storage=static] [align=16] [linkage=external];
 // IR-NEXT:     global %[[VALUE_completed:[0-9]+]] completed: array<i8, 20> [storage=static] [align=16] = code_units<array<i8, 20>>([48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 88, 89, 90, 0]) [linkage=external];

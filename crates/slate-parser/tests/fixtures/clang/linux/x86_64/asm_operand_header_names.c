@@ -44,7 +44,7 @@ long operands(void) {
 // IR-NEXT:             lateout 0 "r" [reg] width 64 place<i64>(%[[VALUE_out]]);
 // IR-NEXT:             in 1 "r" [reg] width 32 read<i32>(%[[VALUE_asm_header_constant]]);
 // IR-NEXT:             in 2 "i" [imm | sym] -> imm width 32 const<i32>(7);
-// IR-NEXT:             in 3 "r" [reg] width 64 reinterpret<i64, reason=explicit, fits=always>(const<u64>(8));
+// IR-NEXT:             in 3 "r" [reg] width 64 reinterpret<i64, reason=explicit, fits=always>(const<u64>(8)) [c="asm_header_word"];
 // IR-NEXT:         }
 // IR-NEXT:         return read<i64>(%[[VALUE_out]]);
 // IR-NEXT:     }

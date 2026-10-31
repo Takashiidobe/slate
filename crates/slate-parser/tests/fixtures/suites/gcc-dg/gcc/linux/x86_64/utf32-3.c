@@ -75,19 +75,19 @@ int main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_char32_t:[0-9]+]] char32_t = u32;
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<u32, 3> [storage=static] = code_units<array<u32, 3>>([97, 98, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_s0:[0-9]+]] s0: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s0:[0-9]+]] s0: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str]]) [c="char32_t *"] [linkage=external] [c="char32_t *"];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<u32, 3> [storage=static] = code_units<array<u32, 3>>([97, 98, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_s1:[0-9]+]] s1: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_2]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s1:[0-9]+]] s1: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_2]]) [c="char32_t *"] [linkage=external] [c="char32_t *"];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<u32, 3> [storage=static] = code_units<array<u32, 3>>([97, 98, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_s2:[0-9]+]] s2: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_3]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s2:[0-9]+]] s2: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_3]]) [c="char32_t *"] [linkage=external] [c="char32_t *"];
 // DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<u32, 3> [storage=static] = code_units<array<u32, 3>>([97, 8233, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_s3:[0-9]+]] s3: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_4]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s3:[0-9]+]] s3: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_4]]) [c="char32_t *"] [linkage=external] [c="char32_t *"];
 // DEFAULT-NEXT:     global %[[VALUE_str_5:[0-9]+]] .str[[VALUE_str_5]]: array<u32, 3> [storage=static] = code_units<array<u32, 3>>([8233, 98, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_s4:[0-9]+]] s4: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_5]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s4:[0-9]+]] s4: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_5]]) [c="char32_t *"] [linkage=external] [c="char32_t *"];
 // DEFAULT-NEXT:     global %[[VALUE_str_6:[0-9]+]] .str[[VALUE_str_6]]: array<u32, 3> [storage=static] = code_units<array<u32, 3>>([97, 410401, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_s5:[0-9]+]] s5: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_6]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s5:[0-9]+]] s5: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_6]]) [c="char32_t *"] [linkage=external] [c="char32_t *"];
 // DEFAULT-NEXT:     global %[[VALUE_str_7:[0-9]+]] .str[[VALUE_str_7]]: array<u32, 3> [storage=static] = code_units<array<u32, 3>>([410401, 98, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_s6:[0-9]+]] s6: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_7]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s6:[0-9]+]] s6: ptr<u32> [storage=static] = array_decay<ptr<u32>, length=Some(3)>(%[[VALUE_str_7]]) [c="char32_t *"] [linkage=external] [c="char32_t *"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(4), const<u64>(4))

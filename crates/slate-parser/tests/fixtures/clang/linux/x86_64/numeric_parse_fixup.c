@@ -51,12 +51,12 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 29> [storage=static] = code_units<array<i8, 29>>([37, 100, 32, 37, 108, 100, 32, 37, 108, 117, 32, 37, 108, 100, 32, 37, 108, 100, 32, 37, 108, 117, 32, 37, 46, 49, 102, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 8> [storage=static] = code_units<array<i8, 8>>([37, 108, 100, 32, 37, 99, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_atoi:[0-9]+]] @atoi(%[[VALUE___nptr:[0-9]+]] __nptr: ptr<const i8>) -> i32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %[[VALUE_atol:[0-9]+]] @atol(%[[VALUE___nptr_2:[0-9]+]] __nptr: ptr<const i8>) -> i64 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %[[VALUE_strtod:[0-9]+]] @strtod(%[[VALUE___nptr_3:[0-9]+]] __nptr: ptr<const i8> [restrict], %[[VALUE___endptr:[0-9]+]] __endptr: ptr<ptr<i8>> [restrict]) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_strtol:[0-9]+]] @strtol(%[[VALUE___nptr_4:[0-9]+]] __nptr: ptr<const i8> [restrict], %[[VALUE___endptr_2:[0-9]+]] __endptr: ptr<ptr<i8>> [restrict], %[[VALUE___base:[0-9]+]] __base: i32) -> i64 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_strtoul:[0-9]+]] @strtoul(%[[VALUE___nptr_5:[0-9]+]] __nptr: ptr<const i8> [restrict], %[[VALUE___endptr_3:[0-9]+]] __endptr: ptr<ptr<i8>> [restrict], %[[VALUE___base_2:[0-9]+]] __base: i32) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strtod:[0-9]+]] @strtod(%[[VALUE___nptr_3:[0-9]+]] __nptr: ptr<const i8> [restrict], %[[VALUE___endptr:[0-9]+]] __endptr: ptr<ptr<i8>> [restrict]) -> f64 [linkage=external] [c="double(const char *restrict, char **restrict)"];
+// DEFAULT-NEXT:     fn %[[VALUE_strtol:[0-9]+]] @strtol(%[[VALUE___nptr_4:[0-9]+]] __nptr: ptr<const i8> [restrict], %[[VALUE___endptr_2:[0-9]+]] __endptr: ptr<ptr<i8>> [restrict], %[[VALUE___base:[0-9]+]] __base: i32) -> i64 [linkage=external] [c="long(const char *restrict, char **restrict, int)"];
+// DEFAULT-NEXT:     fn %[[VALUE_strtoul:[0-9]+]] @strtoul(%[[VALUE___nptr_5:[0-9]+]] __nptr: ptr<const i8> [restrict], %[[VALUE___endptr_3:[0-9]+]] __endptr: ptr<ptr<i8>> [restrict], %[[VALUE___base_2:[0-9]+]] __base: i32) -> u64 [linkage=external] [c="unsigned long(const char *restrict, char **restrict, int)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_whole:[0-9]+]] whole: array<i8, 3> [storage=automatic] = code_units<array<i8, 3>>([52, 50, 0]);
 // DEFAULT-NEXT:         let %[[VALUE_whole_long:[0-9]+]] whole_long: array<i8, 7> [storage=automatic] = code_units<array<i8, 7>>([45, 49, 50, 51, 52, 53, 0]);

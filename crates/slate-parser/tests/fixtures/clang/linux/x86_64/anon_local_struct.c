@@ -68,11 +68,11 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([37, 108, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([37, 108, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_point:[0-9]+]] point: @type[[TYPE1]] [storage=automatic] = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4));
 // DEFAULT-NEXT:         let %[[VALUE_storage:[0-9]+]] storage: array<i32, 4> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = null<ptr<i32>>, field1 = null<ptr<i32>>, field2 = null<ptr<i32>>);
+// DEFAULT-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = null<ptr<i32>>, field1 = null<ptr<i32>>, field2 = null<ptr<i32>>) [c="buffer_t"];
 // DEFAULT-NEXT:         write<ptr<i32>>(field0(%[[VALUE_buf]]), array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_storage]]));
 // DEFAULT-NEXT:         write<ptr<i32>>(field2(%[[VALUE_buf]]), array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_storage]]));
 // DEFAULT-NEXT:         write<ptr<i32>>(field1(%[[VALUE_buf]]), ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_storage]]), const<i32>(4)));

@@ -181,12 +181,12 @@ int main() {
 // DEFAULT-NEXT:         field14 _fileno: i32;
 // DEFAULT-NEXT:         field15 _flags2: i32 : 24;
 // DEFAULT-NEXT:         field16 _short_backupbuf: array<i8, 1>;
-// DEFAULT-NEXT:         field17 _old_offset: i64;
+// DEFAULT-NEXT:         field17 _old_offset: i64 [c="__off_t"];
 // DEFAULT-NEXT:         field18 _cur_column: u16;
 // DEFAULT-NEXT:         field19 _vtable_offset: i8;
 // DEFAULT-NEXT:         field20 _shortbuf: array<i8, 1>;
-// DEFAULT-NEXT:         field21 _lock: ptr<void>;
-// DEFAULT-NEXT:         field22 _offset: i64;
+// DEFAULT-NEXT:         field21 _lock: ptr<void> [c="_IO_lock_t *"];
+// DEFAULT-NEXT:         field22 _offset: i64 [c="__off64_t"];
 // DEFAULT-NEXT:         field23 _codecvt: ptr<@type[[TYPE__IO_codecvt:[0-9]+]]>;
 // DEFAULT-NEXT:         field24 _wide_data: ptr<@type[[TYPE__IO_wide_data:[0-9]+]]>;
 // DEFAULT-NEXT:         field25 _freeres_list: ptr<@type[[TYPE__IO_FILE]]>;
@@ -194,7 +194,7 @@ int main() {
 // DEFAULT-NEXT:         field27 _prevchain: ptr<ptr<@type[[TYPE__IO_FILE]]>>;
 // DEFAULT-NEXT:         field28 _mode: i32;
 // DEFAULT-NEXT:         field29 _unused3: i32;
-// DEFAULT-NEXT:         field30 _total_written: u64;
+// DEFAULT-NEXT:         field30 _total_written: u64 [c="__uint64_t"];
 // DEFAULT-NEXT:         field31 _unused2: array<i8, 8>;
 // DEFAULT-NEXT:     } [size=216, align=8, offsets=[0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 116, 119, 120, 128, 130, 131, 136, 144, 152, 160, 168, 176, 184, 192, 196, 200, 208], bit_offsets=[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, Some(928), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], bit_units=[(116, 3)], field_units=[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, Some(0), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]];
 // DEFAULT-NEXT:     type @type[[TYPE_FILE:[0-9]+]] FILE = @type[[TYPE__IO_FILE]];
@@ -202,7 +202,7 @@ int main() {
 // DEFAULT-NEXT:     type @type[[TYPE__IO_codecvt]] _IO_codecvt = struct incomplete;
 // DEFAULT-NEXT:     type @type[[TYPE__IO_wide_data]] _IO_wide_data = struct incomplete;
 // DEFAULT-NEXT:     type @type[[TYPE__IO_lock_t:[0-9]+]] _IO_lock_t = void;
-// DEFAULT-NEXT:     extern %[[VALUE_stderr:[0-9]+]] stderr: ptr<@type[[TYPE__IO_FILE]]> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_stderr:[0-9]+]] stderr: ptr<@type[[TYPE__IO_FILE]]> [storage=static] [linkage=external] [c="FILE *"];
 // DEFAULT-NEXT:     global %[[VALUE_fail_count:[0-9]+]] fail_count: i32 [storage=static] = const<i32>(0) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 17> [storage=static] = code_units<array<i8, 17>>([84, 101, 115, 116, 32, 102, 97, 105, 108, 101, 100, 58, 32, 37, 115, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([102, 112, 95, 97, 100, 100, 32, 49, 43, 49, 0]) [linkage=internal];
@@ -239,7 +239,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_str_33:[0-9]+]] .str[[VALUE_str_33]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([108, 101, 115, 102, 50, 32, 49, 60, 61, 50, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_34:[0-9]+]] .str[[VALUE_str_34]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([108, 101, 115, 102, 50, 32, 49, 60, 61, 49, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_35:[0-9]+]] .str[[VALUE_str_35]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([108, 101, 115, 102, 50, 32, 49, 60, 61, 48, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_fprintf:[0-9]+]] @fprintf(%[[VALUE___stream:[0-9]+]] __stream: ptr<@type[[TYPE__IO_FILE]]> [restrict], %[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fprintf:[0-9]+]] @fprintf(%[[VALUE___stream:[0-9]+]] __stream: ptr<@type[[TYPE__IO_FILE]]> [restrict] [c="FILE *restrict"], %[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(FILE *restrict, const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_fp_add:[0-9]+]] @fp_add(%[[VALUE_a:[0-9]+]] a: f32, %[[VALUE_b:[0-9]+]] b: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
@@ -336,7 +336,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_fail_count]]);
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_fail_count]], read<i32>(%[[VALUE2]]));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, ptr<const i8>, ...) -> i32>(%[[VALUE_fprintf]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stderr]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%[[VALUE_str]])), read<ptr<i8>>(%[[VALUE_msg]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, ptr<const i8>, ...) -> i32>(%[[VALUE_fprintf]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stderr]]) [c="FILE *"], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%[[VALUE_str]])), read<ptr<i8>>(%[[VALUE_msg]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_fp_add]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1))), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(2)))

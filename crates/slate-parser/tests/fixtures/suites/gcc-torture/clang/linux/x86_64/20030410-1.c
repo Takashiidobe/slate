@@ -55,7 +55,7 @@ static inline void zend_ptr_stack_clear_multiple(void)
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
 // DEFAULT-NEXT:     type @type[[TYPE__zend_executor_globals:[0-9]+]] _zend_executor_globals = struct {
 // DEFAULT-NEXT:         field0 uninitialized_zval_ptr: ptr<i32>;
-// DEFAULT-NEXT:         field1 argument_stack: @type[[TYPE__zend_ptr_stack:[0-9]+]];
+// DEFAULT-NEXT:         field1 argument_stack: @type[[TYPE__zend_ptr_stack:[0-9]+]] [c="zend_ptr_stack"];
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_zend_executor_globals:[0-9]+]] zend_executor_globals = @type[[TYPE__zend_executor_globals]];
 // DEFAULT-NEXT:     type @type[[TYPE__zend_ptr_stack]] _zend_ptr_stack = struct {
@@ -64,7 +64,7 @@ static inline void zend_ptr_stack_clear_multiple(void)
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_zend_ptr_stack:[0-9]+]] zend_ptr_stack = @type[[TYPE__zend_ptr_stack]];
 // DEFAULT-NEXT:     extern %[[VALUE_compiler_globals:[0-9]+]] compiler_globals: @type[[TYPE__zend_compiler_globals]] [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_executor_globals:[0-9]+]] executor_globals: @type[[TYPE__zend_executor_globals]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_executor_globals:[0-9]+]] executor_globals: @type[[TYPE__zend_executor_globals]] [storage=static] [linkage=external] [c="zend_executor_globals"];
 // DEFAULT-NEXT:     fn %[[VALUE_safe_free_zval_ptr:[0-9]+]] @safe_free_zval_ptr(%[[VALUE_p:[0-9]+]] p: ptr<i32>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), read<ptr<i32>>(field0(%[[VALUE_executor_globals]])))
 // DEFAULT-NEXT:             {

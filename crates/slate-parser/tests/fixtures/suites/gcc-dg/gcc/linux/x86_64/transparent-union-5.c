@@ -73,11 +73,11 @@ int main()
 // DEFAULT-NEXT:     global %[[VALUE_status:[0-9]+]] status: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_wstatus:[0-9]+]] wstatus: @type[[TYPE_wait]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_s:[0-9]+]] s: @type[[TYPE0]]) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_s:[0-9]+]] s: @type[[TYPE0]] [c="WAIT_STATUS"]) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] [c="void(WAIT_STATUS)"] {
 // DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(field1(%[[VALUE_s]])), addr_of<ptr<i32>>(%[[VALUE_status]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_s_2:[0-9]+]] s: @type[[TYPE0]]) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_s_2:[0-9]+]] s: @type[[TYPE0]] [c="WAIT_STATUS"]) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] [c="void(WAIT_STATUS)"] {
 // DEFAULT-NEXT:         if ne<ptr<@type[[TYPE_wait]]>>(read<ptr<@type[[TYPE_wait]]>>(field0(%[[VALUE_s_2]])), addr_of<ptr<@type[[TYPE_wait]]>>(%[[VALUE_wstatus]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }

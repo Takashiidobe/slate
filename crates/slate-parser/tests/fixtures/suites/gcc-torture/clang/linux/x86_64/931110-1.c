@@ -51,7 +51,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_small:[0-9]+]] small = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 i: i32;
-// DEFAULT-NEXT:         field1 s: array<@type[[TYPE0]], 10>;
+// DEFAULT-NEXT:         field1 s: array<@type[[TYPE0]], 10> [c="small[10]"];
 // DEFAULT-NEXT:     } [size=24, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: @type[[TYPE1]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];

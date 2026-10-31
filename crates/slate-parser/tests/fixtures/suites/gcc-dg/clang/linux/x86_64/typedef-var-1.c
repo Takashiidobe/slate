@@ -41,7 +41,7 @@ t v = 4.5f;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_t:[0-9]+]] t = f32;
 // DEFAULT-NEXT:     extern %[[VALUE_t:[0-9]+]] t: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: f32 [storage=static] = const<f32>(4.5) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: f32 [storage=static] = const<f32>(4.5) [c="t"] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<f32, exceptions=ignore>(read<f32>(%[[VALUE_v]]), const<f32>(0.0)));
 // DEFAULT-NEXT:     }

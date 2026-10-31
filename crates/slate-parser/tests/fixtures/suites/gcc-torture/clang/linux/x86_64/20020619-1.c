@@ -57,21 +57,21 @@ int main() {
 // DEFAULT-NEXT:     type @type[[TYPE_int32:[0-9]+]] int32 = i32;
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 c: array<i8, 5>;
-// DEFAULT-NEXT:         field1 i: i32;
+// DEFAULT-NEXT:         field1 i: i32 [c="int32"];
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 0]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memset:[0-9]+]] @__builtin_memset(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_ref:[0-9]+]] @ref() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_ref:[0-9]+]] @ref() -> i32 [linkage=internal] [fallthrough=ub_if_used] [c="int32(void)"] {
 // DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_u]])), const<i32>(0), const<u64>(8));
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(5)>(field0(%[[VALUE_u]])), const<i32>(0))), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(5)>(field0(%[[VALUE_u]])), const<i32>(1))), truncate<i8, reason=assign, fits=always>(const<i32>(2)));
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(5)>(field0(%[[VALUE_u]])), const<i32>(2))), truncate<i8, reason=assign, fits=always>(const<i32>(3)));
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(5)>(field0(%[[VALUE_u]])), const<i32>(3))), truncate<i8, reason=assign, fits=always>(const<i32>(4)));
-// DEFAULT-NEXT:         return read<i32>(field1(%[[VALUE_u]]));
+// DEFAULT-NEXT:         return read<i32>(field1(%[[VALUE_u]])) [c="int32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = call<i32, signature=fn() -> i32>(%[[VALUE_ref]]);
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = call<i32, signature=fn() -> i32>(%[[VALUE_ref]]) [c="int32"] [c="int32"];
 // DEFAULT-NEXT:         if logical_and<bool>(ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(16909060)), ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(67305985)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

@@ -43,7 +43,7 @@ void a (void)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_sscanf:[0-9]+]] @sscanf(%[[VALUE0:[0-9]+]] <unnamed>: i64, %[[VALUE1:[0-9]+]] <unnamed>: ptr<u32>, ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_sscanf:[0-9]+]] @sscanf(%[[VALUE0:[0-9]+]] <unnamed>: i64, %[[VALUE1:[0-9]+]] <unnamed>: ptr<u32>, ...) -> i32 [linkage=external] [c="int(long, unsigned int[], ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_a:[0-9]+]] @a() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<i32, signature=fn(i64, ptr<u32>, ...) -> i32>(%[[VALUE_sscanf]], widen<i64, reason=arg>(const<i32>(0)), pointer_cast<ptr<u32>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str]])));
 // DEFAULT-NEXT:     }

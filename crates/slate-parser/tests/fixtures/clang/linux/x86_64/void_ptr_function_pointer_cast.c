@@ -49,21 +49,21 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_Callback:[0-9]+]] Callback = ptr<fn(i32) -> i32>;
 // DEFAULT-NEXT:     type @type[[TYPE_FnBox:[0-9]+]] FnBox = union {
-// DEFAULT-NEXT:         field0 fn: ptr<fn(i32) -> i32>;
+// DEFAULT-NEXT:         field0 fn: ptr<fn(i32) -> i32> [c="Callback"];
 // DEFAULT-NEXT:         field1 ptr: ptr<void>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_add_one:[0-9]+]] @add_one(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_x]]), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_box:[0-9]+]] box: @type[[TYPE_FnBox]] [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<fn(i32) -> i32>>(field0(%[[VALUE_box]]), function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_add_one]]));
+// DEFAULT-NEXT:         write<ptr<fn(i32) -> i32>>(field0(%[[VALUE_box]]), function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_add_one]]) [c="Callback"]) [c="Callback"];
 // DEFAULT-NEXT:         let %[[VALUE_slot:[0-9]+]] slot: ptr<void> [storage=automatic] = read<ptr<void>>(field1(%[[VALUE_box]]));
-// DEFAULT-NEXT:         let %[[VALUE_cb:[0-9]+]] cb: ptr<fn(i32) -> i32> [storage=automatic] = pointer_cast<ptr<fn(i32) -> i32>, reason=explicit>(read<ptr<void>>(%[[VALUE_slot]]));
-// DEFAULT-NEXT:         let %[[VALUE_none:[0-9]+]] none: ptr<fn(i32) -> i32> [storage=automatic] = null<ptr<fn(i32) -> i32>>;
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]])), call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%[[VALUE_cb]]), const<i32>(41)), from_bool<i32, reason=vararg>(ne<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(%[[VALUE_none]]), null<ptr<fn(i32) -> i32>>)));
+// DEFAULT-NEXT:         let %[[VALUE_cb:[0-9]+]] cb: ptr<fn(i32) -> i32> [storage=automatic] = pointer_cast<ptr<fn(i32) -> i32>, reason=explicit>(read<ptr<void>>(%[[VALUE_slot]])) [c="Callback"] [c="Callback"];
+// DEFAULT-NEXT:         let %[[VALUE_none:[0-9]+]] none: ptr<fn(i32) -> i32> [storage=automatic] = null<ptr<fn(i32) -> i32>> [c="Callback"] [c="Callback"];
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]])), call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%[[VALUE_cb]]) [c="Callback"], const<i32>(41)), from_bool<i32, reason=vararg>(ne<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(%[[VALUE_none]]) [c="Callback"], null<ptr<fn(i32) -> i32>> [c="Callback"])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

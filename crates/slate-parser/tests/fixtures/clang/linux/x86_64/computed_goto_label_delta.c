@@ -59,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_offsets:[0-9]+]] offsets: array<i32, 3> [storage=static] [const] = aggregate<array<i32, 3>, zero_fill=false>(index0 = truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=void, same_array=required, overflow=ub>(label_addr<ptr<void>>(%[[VALUE_add:[0-9]+]]), label_addr<ptr<void>>(%[[VALUE_dispatch:[0-9]+]]))), index1 = truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=void, same_array=required, overflow=ub>(label_addr<ptr<void>>(%[[VALUE_double_it:[0-9]+]]), label_addr<ptr<void>>(%[[VALUE_dispatch]]))), index2 = truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=void, same_array=required, overflow=ub>(label_addr<ptr<void>>(%[[VALUE_subtract:[0-9]+]]), label_addr<ptr<void>>(%[[VALUE_dispatch]])))) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_interpret:[0-9]+]] @interpret(%[[VALUE_code:[0-9]+]] code: ptr<const u8>, %[[VALUE_length:[0-9]+]] length: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_index:[0-9]+]] index: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_value:[0-9]+]] value: i32 [storage=automatic] = const<i32>(1);

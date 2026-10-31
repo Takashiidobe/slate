@@ -66,7 +66,7 @@ int side_effect_branch(int i) { int n = _Generic(i, int: i++, default: 0); retur
 // IR-NEXT:     fn %[[VALUE_function_decays:[0-9]+]] @function_decays() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<i32>(1);
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_qualifier_stripped:[0-9]+]] @qualifier_stripped(%[[VALUE_c:[0-9]+]] c: i32 [const]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_qualifier_stripped:[0-9]+]] @qualifier_stripped(%[[VALUE_c:[0-9]+]] c: i32 [const]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(const int)"] {
 // IR-NEXT:         return const<i32>(1);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_record_tag:[0-9]+]] @record_tag(%[[VALUE_t:[0-9]+]] t: @type[[TYPE_Tag]]) -> i32 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {

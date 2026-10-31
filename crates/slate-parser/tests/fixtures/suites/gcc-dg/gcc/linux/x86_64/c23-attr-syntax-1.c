@@ -102,7 +102,7 @@ void func3 () [[]] { }
 // DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<ptr<volatile ptr<const ptr<i32>>>> [storage=static] [const] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: ptr<i32> [storage=static] = null<ptr<i32>> [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_z:[0-9]+]] z: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(4))) [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE0:[0-9]+]] <unnamed>: i64, %[[VALUE1:[0-9]+]] <unnamed>: ptr<ptr<i16>> [array=3], %[[VALUE2:[0-9]+]] <unnamed>: ptr<fn(i32) -> i32>, %[[VALUE3:[0-9]+]] <unnamed>: ptr<fn(i32) -> i32>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE0:[0-9]+]] <unnamed>: i64, %[[VALUE1:[0-9]+]] <unnamed>: ptr<ptr<i16>> [array=3], %[[VALUE2:[0-9]+]] <unnamed>: ptr<fn(i32) -> i32>, %[[VALUE3:[0-9]+]] <unnamed>: ptr<fn(i32) -> i32>) -> i32 [linkage=external] [c="int(int, long, short *[3], int(int), int (*)(int))"];
 // DEFAULT-NEXT:     fn %[[VALUE_func:[0-9]+]] @func() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_var:[0-9]+]] var: i32 [storage=automatic];
 // DEFAULT-NEXT:         {

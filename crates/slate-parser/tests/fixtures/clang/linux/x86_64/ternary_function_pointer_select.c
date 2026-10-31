@@ -47,7 +47,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_BinaryOp:[0-9]+]] BinaryOp = ptr<fn(i32, i32) -> i32>;
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_add:[0-9]+]] @add(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
@@ -59,8 +59,8 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_useAdd_2:[0-9]+]] useAdd: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         let %[[VALUE_op:[0-9]+]] op: ptr<fn(i32, i32) -> i32> [storage=automatic] = conditional<ptr<fn(i32, i32) -> i32>>(ne<i32>(read<i32>(%[[VALUE_useAdd_2]]), const<i32>(0)), function_decay<ptr<fn(i32, i32) -> i32>>(%[[VALUE_add]]), function_decay<ptr<fn(i32, i32) -> i32>>(%[[VALUE_sub]]));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str]])), call<i32, signature=fn(i32, i32) -> i32>(read<ptr<fn(i32, i32) -> i32>>(%[[VALUE_op]]), const<i32>(10), const<i32>(3)), call<i32, signature=fn(i32, i32, i32) -> i32>(%[[VALUE_apply]], const<i32>(0), const<i32>(10), const<i32>(3)), call<i32, signature=fn(i32, i32, i32) -> i32>(%[[VALUE_apply]], const<i32>(1), const<i32>(4), const<i32>(4)), call<i32, signature=fn(i32, i32) -> i32>(conditional<ptr<fn(i32, i32) -> i32>>(ne<i32>(read<i32>(%[[VALUE_useAdd_2]]), const<i32>(0)), function_decay<ptr<fn(i32, i32) -> i32>>(%[[VALUE_sub]]), function_decay<ptr<fn(i32, i32) -> i32>>(%[[VALUE_add]])), const<i32>(9), const<i32>(2)));
+// DEFAULT-NEXT:         let %[[VALUE_op:[0-9]+]] op: ptr<fn(i32, i32) -> i32> [storage=automatic] = conditional<ptr<fn(i32, i32) -> i32>>(ne<i32>(read<i32>(%[[VALUE_useAdd_2]]), const<i32>(0)), function_decay<ptr<fn(i32, i32) -> i32>>(%[[VALUE_add]]), function_decay<ptr<fn(i32, i32) -> i32>>(%[[VALUE_sub]])) [c="BinaryOp"] [c="BinaryOp"];
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str]])), call<i32, signature=fn(i32, i32) -> i32>(read<ptr<fn(i32, i32) -> i32>>(%[[VALUE_op]]) [c="BinaryOp"], const<i32>(10), const<i32>(3)), call<i32, signature=fn(i32, i32, i32) -> i32>(%[[VALUE_apply]], const<i32>(0), const<i32>(10), const<i32>(3)), call<i32, signature=fn(i32, i32, i32) -> i32>(%[[VALUE_apply]], const<i32>(1), const<i32>(4), const<i32>(4)), call<i32, signature=fn(i32, i32) -> i32>(conditional<ptr<fn(i32, i32) -> i32>>(ne<i32>(read<i32>(%[[VALUE_useAdd_2]]), const<i32>(0)), function_decay<ptr<fn(i32, i32) -> i32>>(%[[VALUE_sub]]), function_decay<ptr<fn(i32, i32) -> i32>>(%[[VALUE_add]])), const<i32>(9), const<i32>(2)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

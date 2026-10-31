@@ -111,7 +111,7 @@ func (void) [[unknown_attribute]] { /* { dg-error "attribute ignored" } */
 // DEFAULT-NEXT:     global %[[VALUE_z:[0-9]+]] z: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(4))) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_a:[0-9]+]] a: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h(%[[VALUE0:[0-9]+]] <unnamed>: ptr<fn() -> i32>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h(%[[VALUE0:[0-9]+]] <unnamed>: ptr<fn() -> i32>) -> i32 [linkage=external] [c="int(int(void))"];
 // DEFAULT-NEXT:     fn %[[VALUE_func:[0-9]+]] @func() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_var:[0-9]+]] var: i32 [storage=automatic];
 // DEFAULT-NEXT:         {

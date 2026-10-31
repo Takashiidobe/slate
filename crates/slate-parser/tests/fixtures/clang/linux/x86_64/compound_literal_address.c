@@ -57,7 +57,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([115, 108, 97, 116, 101, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 12> [storage=static] = code_units<array<i8, 12>>([116, 114, 97, 110, 115, 108, 97, 116, 105, 111, 110, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([37, 99, 32, 37, 108, 117, 32, 37, 99, 32, 37, 108, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_make_slice:[0-9]+]] @make_slice(%[[VALUE_result:[0-9]+]] result: ptr<@type[[TYPE_Slice]]>, %[[VALUE_data:[0-9]+]] data: ptr<const i8>, %[[VALUE_length:[0-9]+]] length: u64) -> ptr<@type[[TYPE_Slice]]> [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<ptr<const i8>>(field0(deref(read<ptr<@type[[TYPE_Slice]]>>(%[[VALUE_result]]))), read<ptr<const i8>>(%[[VALUE_data]]));
 // DEFAULT-NEXT:         write<u64>(field1(deref(read<ptr<@type[[TYPE_Slice]]>>(%[[VALUE_result]]))), read<u64>(%[[VALUE_length]]));

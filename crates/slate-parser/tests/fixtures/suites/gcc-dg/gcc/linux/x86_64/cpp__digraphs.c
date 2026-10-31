@@ -63,7 +63,7 @@ glue (%, >) /* } */
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([37, 58, 37, 58, 60, 58, 58, 62, 60, 37, 37, 62, 37, 58, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_strcmp:[0-9]+]] @strcmp(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] [c="int(int, char *[])"] {
 // DEFAULT-NEXT:         let %[[VALUE_di_str:[0-9]+]] di_str: array<i8, 15> [storage=automatic] [const] = code_units<array<i8, 15>>([37, 58, 37, 58, 60, 58, 58, 62, 60, 37, 37, 62, 37, 58, 0]);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%[[VALUE_strcmp]], array_decay<ptr<const i8>, length=Some(15)>(%[[VALUE_di_str]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(15)>(%[[VALUE_str]]))), const<i32>(0))
 // DEFAULT-NEXT:             do %[[VALUE2:[0-9]+]]

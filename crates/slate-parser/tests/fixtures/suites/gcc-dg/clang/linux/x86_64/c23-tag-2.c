@@ -84,9 +84,9 @@ void test5(void)
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_y0:[0-9]+]] y0: @type[[TYPE_p]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_y0:[0-9]+]] y0: @type[[TYPE_p]] [storage=automatic] [c="pd_t"];
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: @type[[TYPE_p_2]] [storage=automatic];
-// DEFAULT-NEXT:         write<@type[[TYPE_p]]>(%[[VALUE_y0]], copy<@type[[TYPE_p]], reason=assign>(read<@type[[TYPE_p_2]]>(%[[VALUE_x]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_p]]>(%[[VALUE_y0]], copy<@type[[TYPE_p]], reason=assign>(read<@type[[TYPE_p_2]]>(%[[VALUE_x]])) [c="pd_t"]) [c="pd_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: @type[[TYPE_p_3]] [storage=automatic];
@@ -94,11 +94,11 @@ void test5(void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_x_3:[0-9]+]] x: @type[[TYPE_p_4]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_y0_3:[0-9]+]] y0: @type[[TYPE_p]] [storage=automatic] = copy<@type[[TYPE_p]], reason=assign>(read<@type[[TYPE_p_4]]>(%[[VALUE_x_3]]));
+// DEFAULT-NEXT:         let %[[VALUE_y0_3:[0-9]+]] y0: @type[[TYPE_p]] [storage=automatic] = copy<@type[[TYPE_p]], reason=assign>(read<@type[[TYPE_p_4]]>(%[[VALUE_x_3]])) [c="pd_t"] [c="pd_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_x_4:[0-9]+]] x: @type[[TYPE_p]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_y0_4:[0-9]+]] y0: @type[[TYPE_p]] [storage=automatic] = copy<@type[[TYPE_p]], reason=assign>(read<@type[[TYPE_p]]>(%[[VALUE_x_4]]));
+// DEFAULT-NEXT:         let %[[VALUE_x_4:[0-9]+]] x: @type[[TYPE_p]] [storage=automatic] [c="p2_t"];
+// DEFAULT-NEXT:         let %[[VALUE_y0_4:[0-9]+]] y0: @type[[TYPE_p]] [storage=automatic] = copy<@type[[TYPE_p]], reason=assign>(read<@type[[TYPE_p]]>(%[[VALUE_x_4]]) [c="p2_t"]) [c="pd_t"] [c="pd_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test5:[0-9]+]] @test5() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_q]] [storage=automatic];

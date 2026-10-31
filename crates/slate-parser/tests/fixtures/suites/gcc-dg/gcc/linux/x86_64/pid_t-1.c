@@ -45,12 +45,12 @@ pt (void)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___pid_t:[0-9]+]] __pid_t = i32;
-// DEFAULT-NEXT:     type @type[[TYPE_pid_t:[0-9]+]] pid_t = i32;
-// DEFAULT-NEXT:     type @type[[TYPE___builtin_pid_t:[0-9]+]] __builtin_pid_t = i32;
-// DEFAULT-NEXT:     global %[[VALUE___p_t__:[0-9]+]] __p_t__: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_p_t_p:[0-9]+]] p_t_p: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_pid_t:[0-9]+]] pid_t = i32 [c="__pid_t"];
+// DEFAULT-NEXT:     type @type[[TYPE___builtin_pid_t:[0-9]+]] __builtin_pid_t = i32 [c="typeof(__builtin_fork())"];
+// DEFAULT-NEXT:     global %[[VALUE___p_t__:[0-9]+]] __p_t__: i32 [storage=static] [linkage=external] [c="__builtin_pid_t"];
+// DEFAULT-NEXT:     global %[[VALUE_p_t_p:[0-9]+]] p_t_p: ptr<i32> [storage=static] [linkage=external] [c="pid_t *"];
 // DEFAULT-NEXT:     fn %[[VALUE_pt:[0-9]+]] @pt() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_p_t_p]], addr_of<ptr<i32>>(%[[VALUE___p_t__]]));
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_p_t_p]], addr_of<ptr<i32>>(%[[VALUE___p_t__]]) [c="pid_t *"]) [c="pid_t *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

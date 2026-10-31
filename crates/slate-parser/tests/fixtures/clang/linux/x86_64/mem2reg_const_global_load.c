@@ -50,7 +50,7 @@ int main(void) {
 // DEFAULT-NEXT:         field0 value: i8;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_make_byte:[0-9]+]] @make_byte() -> @type[[TYPE_Byte]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: @type[[TYPE_Byte]] [storage=automatic] = aggregate<@type[[TYPE_Byte]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(7)));
 // DEFAULT-NEXT:         return copy<@type[[TYPE_Byte]], reason=return>(read<@type[[TYPE_Byte]]>(%[[VALUE_result]]));

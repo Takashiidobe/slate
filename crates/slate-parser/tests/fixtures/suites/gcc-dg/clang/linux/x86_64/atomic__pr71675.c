@@ -72,7 +72,7 @@ void f (void)
 // DEFAULT-NEXT:     global %[[VALUE_x_7:[0-9]+]] x: u64 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_x_8:[0-9]+]] x: i64 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_x_9:[0-9]+]] x: u64 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_x_10:[0-9]+]] x: @type[[TYPE_E]] [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_x_10:[0-9]+]] x: @type[[TYPE_E]] [storage=static] [linkage=internal] [c="E"];
 // DEFAULT-NEXT:     fn %[[VALUE_e]] @f() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {

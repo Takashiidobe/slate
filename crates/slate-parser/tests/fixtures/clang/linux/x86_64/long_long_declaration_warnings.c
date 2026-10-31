@@ -99,7 +99,7 @@ ll_t typedef_use_does_not_warn;
 // IR-C89-NEXT:     } [size=8, align=8, offsets=[0]];
 // IR-C89-NEXT:     global %[[VALUE_file_scope:[0-9]+]] file_scope: i64 [storage=static] [linkage=external];
 // IR-C89-NEXT:     global %[[VALUE_unsigned_file_scope:[0-9]+]] unsigned_file_scope: u64 [storage=static] [linkage=external];
-// IR-C89-NEXT:     global %[[VALUE_typedef_use_does_not_warn:[0-9]+]] typedef_use_does_not_warn: i64 [storage=static] [linkage=external];
+// IR-C89-NEXT:     global %[[VALUE_typedef_use_does_not_warn:[0-9]+]] typedef_use_does_not_warn: i64 [storage=static] [linkage=external] [c="ll_t"];
 // IR-C89-NEXT:     fn %[[VALUE_returns_long_long:[0-9]+]] @returns_long_long(%[[VALUE_parameter:[0-9]+]] parameter: i64) -> i64 [linkage=external];
 // IR-C89-NEXT:     fn %[[VALUE_body:[0-9]+]] @body() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-C89-NEXT:         let %[[VALUE_local:[0-9]+]] local: i64 [storage=automatic];

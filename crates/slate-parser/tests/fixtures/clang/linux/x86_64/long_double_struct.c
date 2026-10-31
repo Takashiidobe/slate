@@ -51,7 +51,7 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 16]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_sum_box:[0-9]+]] @sum_box(%[[VALUE_b:[0-9]+]] b: @type[[TYPE_box]]) -> i32 [linkage=internal] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(field1(%[[VALUE_b]])), int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(field0(%[[VALUE_b]])))));
 // DEFAULT-NEXT:     }

@@ -282,14 +282,14 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE___uint32_t:[0-9]+]] __uint32_t = u32;
 // DEFAULT-NEXT:     type @type[[TYPE___int64_t:[0-9]+]] __int64_t = i64;
 // DEFAULT-NEXT:     type @type[[TYPE___uint64_t:[0-9]+]] __uint64_t = u64;
-// DEFAULT-NEXT:     type @type[[TYPE_int8_t:[0-9]+]] int8_t = i8;
-// DEFAULT-NEXT:     type @type[[TYPE_int16_t:[0-9]+]] int16_t = i16;
-// DEFAULT-NEXT:     type @type[[TYPE_int32_t:[0-9]+]] int32_t = i32;
-// DEFAULT-NEXT:     type @type[[TYPE_int64_t:[0-9]+]] int64_t = i64;
-// DEFAULT-NEXT:     type @type[[TYPE_uint8_t:[0-9]+]] uint8_t = u8;
-// DEFAULT-NEXT:     type @type[[TYPE_uint16_t:[0-9]+]] uint16_t = u16;
-// DEFAULT-NEXT:     type @type[[TYPE_uint32_t:[0-9]+]] uint32_t = u32;
-// DEFAULT-NEXT:     type @type[[TYPE_uint64_t:[0-9]+]] uint64_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_int8_t:[0-9]+]] int8_t = i8 [c="__int8_t"];
+// DEFAULT-NEXT:     type @type[[TYPE_int16_t:[0-9]+]] int16_t = i16 [c="__int16_t"];
+// DEFAULT-NEXT:     type @type[[TYPE_int32_t:[0-9]+]] int32_t = i32 [c="__int32_t"];
+// DEFAULT-NEXT:     type @type[[TYPE_int64_t:[0-9]+]] int64_t = i64 [c="__int64_t"];
+// DEFAULT-NEXT:     type @type[[TYPE_uint8_t:[0-9]+]] uint8_t = u8 [c="__uint8_t"];
+// DEFAULT-NEXT:     type @type[[TYPE_uint16_t:[0-9]+]] uint16_t = u16 [c="__uint16_t"];
+// DEFAULT-NEXT:     type @type[[TYPE_uint32_t:[0-9]+]] uint32_t = u32 [c="__uint32_t"];
+// DEFAULT-NEXT:     type @type[[TYPE_uint64_t:[0-9]+]] uint64_t = u64 [c="__uint64_t"];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 8> [storage=static] = code_units<array<i8, 8>>([37, 115, 61, 37, 76, 97, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 59> [storage=static] = code_units<array<i8, 59>>([105, 56, 61, 37, 100, 32, 117, 56, 61, 37, 117, 32, 105, 49, 54, 61, 37, 100, 32, 117, 49, 54, 61, 37, 117, 32, 105, 51, 50, 61, 37, 100, 32, 117, 51, 50, 61, 37, 117, 32, 105, 54, 52, 61, 37, 108, 108, 100, 32, 117, 54, 52, 61, 37, 108, 108, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 37> [storage=static] = code_units<array<i8, 37>>([105, 49, 50, 56, 61, 37, 108, 108, 100, 32, 117, 49, 50, 56, 95, 104, 105, 61, 37, 108, 108, 117, 32, 117, 49, 50, 56, 95, 108, 111, 61, 37, 108, 108, 117, 10, 0]) [linkage=internal];
@@ -412,7 +412,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_fminl:[0-9]+]] @fminl(%[[VALUE___x_47:[0-9]+]] __x: f80, %[[VALUE___y_12:[0-9]+]] __y: f80) -> f80 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_fmal:[0-9]+]] @fmal(%[[VALUE___x_48:[0-9]+]] __x: f80, %[[VALUE___y_13:[0-9]+]] __y: f80, %[[VALUE___z:[0-9]+]] __z: f80) -> f80 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_canonicalizel:[0-9]+]] @canonicalizel(%[[VALUE___cx:[0-9]+]] __cx: ptr<f80>, %[[VALUE___x_49:[0-9]+]] __x: ptr<const f80>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_mix_long_double:[0-9]+]] @mix_long_double(%[[VALUE_a:[0-9]+]] a: f80, %[[VALUE_b:[0-9]+]] b: f80) -> f80 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: f80 [storage=automatic] = div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%[[VALUE_a]]), read<f80>(%[[VALUE_b]])), const<f80>(2));
@@ -425,31 +425,31 @@ int main(void) {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_str]])), read<ptr<const i8>>(%[[VALUE_name]]), read<f80>(%[[VALUE_v]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_check_int_casts:[0-9]+]] @check_int_casts() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_i8:[0-9]+]] i8: i8 [storage=automatic] = float_to_int<i8, reason=explicit, out_of_range=ub, exceptions=ignore>(neg<f80>(const<f80>(100)));
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i8>(%[[VALUE_i8]])), neg<f80>(const<f80>(100)))
+// DEFAULT-NEXT:         let %[[VALUE_i8:[0-9]+]] i8: i8 [storage=automatic] = float_to_int<i8, reason=explicit, out_of_range=ub, exceptions=ignore>(neg<f80>(const<f80>(100))) [c="int8_t"] [c="int8_t"];
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i8>(%[[VALUE_i8]]) [c="int8_t"]), neg<f80>(const<f80>(100)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         let %[[VALUE_u8:[0-9]+]] u8: u8 [storage=automatic] = float_to_int<u8, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(200));
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<u8>(%[[VALUE_u8]])), const<f80>(200))
+// DEFAULT-NEXT:         let %[[VALUE_u8:[0-9]+]] u8: u8 [storage=automatic] = float_to_int<u8, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(200)) [c="uint8_t"] [c="uint8_t"];
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<u8>(%[[VALUE_u8]]) [c="uint8_t"]), const<f80>(200))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         let %[[VALUE_i16:[0-9]+]] i16: i16 [storage=automatic] = float_to_int<i16, reason=explicit, out_of_range=ub, exceptions=ignore>(neg<f80>(const<f80>(12345)));
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i16>(%[[VALUE_i16]])), neg<f80>(const<f80>(12345)))
+// DEFAULT-NEXT:         let %[[VALUE_i16:[0-9]+]] i16: i16 [storage=automatic] = float_to_int<i16, reason=explicit, out_of_range=ub, exceptions=ignore>(neg<f80>(const<f80>(12345))) [c="int16_t"] [c="int16_t"];
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i16>(%[[VALUE_i16]]) [c="int16_t"]), neg<f80>(const<f80>(12345)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         let %[[VALUE_u16:[0-9]+]] u16: u16 [storage=automatic] = float_to_int<u16, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(54321));
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<u16>(%[[VALUE_u16]])), const<f80>(54321))
+// DEFAULT-NEXT:         let %[[VALUE_u16:[0-9]+]] u16: u16 [storage=automatic] = float_to_int<u16, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(54321)) [c="uint16_t"] [c="uint16_t"];
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<u16>(%[[VALUE_u16]]) [c="uint16_t"]), const<f80>(54321))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         let %[[VALUE_i32:[0-9]+]] i32: i32 [storage=automatic] = float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(neg<f80>(const<f80>(1234567890)));
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%[[VALUE_i32]])), neg<f80>(const<f80>(1234567890)))
+// DEFAULT-NEXT:         let %[[VALUE_i32:[0-9]+]] i32: i32 [storage=automatic] = float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(neg<f80>(const<f80>(1234567890))) [c="int32_t"] [c="int32_t"];
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%[[VALUE_i32]]) [c="int32_t"]), neg<f80>(const<f80>(1234567890)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         let %[[VALUE_u32:[0-9]+]] u32: u32 [storage=automatic] = float_to_int<u32, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(3456789012));
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<u32>(%[[VALUE_u32]])), const<f80>(3456789012))
+// DEFAULT-NEXT:         let %[[VALUE_u32:[0-9]+]] u32: u32 [storage=automatic] = float_to_int<u32, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(3456789012)) [c="uint32_t"] [c="uint32_t"];
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<u32>(%[[VALUE_u32]]) [c="uint32_t"]), const<f80>(3456789012))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         let %[[VALUE_i64:[0-9]+]] i64: i64 [storage=automatic] = neg<i64, overflow=ub>(const<i64>(123456789012345));
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i64>(%[[VALUE_i64]])), neg<f80>(const<f80>(123456789012345)))
+// DEFAULT-NEXT:         let %[[VALUE_i64:[0-9]+]] i64: i64 [storage=automatic] = neg<i64, overflow=ub>(const<i64>(123456789012345)) [c="int64_t"] [c="int64_t"];
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i64>(%[[VALUE_i64]]) [c="int64_t"]), neg<f80>(const<f80>(123456789012345)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         let %[[VALUE_u64:[0-9]+]] u64: u64 [storage=automatic] = float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(12345678901234567890));
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<u64>(%[[VALUE_u64]])), const<f80>(12345678901234567890))
+// DEFAULT-NEXT:         let %[[VALUE_u64:[0-9]+]] u64: u64 [storage=automatic] = float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(12345678901234567890)) [c="uint64_t"] [c="uint64_t"];
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<u64>(%[[VALUE_u64]]) [c="uint64_t"]), const<f80>(12345678901234567890))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(59)>(%[[VALUE_str_2]])), widen<i32, reason=vararg>(read<i8>(%[[VALUE_i8]])), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(%[[VALUE_u8]]))), widen<i32, reason=vararg>(read<i16>(%[[VALUE_i16]])), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u16>(%[[VALUE_u16]]))), read<i32>(%[[VALUE_i32]]), read<u32>(%[[VALUE_u32]]), read<i64>(%[[VALUE_i64]]), read<u64>(%[[VALUE_u64]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(59)>(%[[VALUE_str_2]])), widen<i32, reason=vararg>(read<i8>(%[[VALUE_i8]]) [c="int8_t"]), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(%[[VALUE_u8]]) [c="uint8_t"])), widen<i32, reason=vararg>(read<i16>(%[[VALUE_i16]]) [c="int16_t"]), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u16>(%[[VALUE_u16]]) [c="uint16_t"])), read<i32>(%[[VALUE_i32]]), read<u32>(%[[VALUE_u32]]), read<i64>(%[[VALUE_i64]]), read<u64>(%[[VALUE_u64]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_check_i128_casts:[0-9]+]] @check_i128_casts() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_i128:[0-9]+]] i128: i128 [storage=automatic] = float_to_int<i128, reason=explicit, out_of_range=ub, exceptions=ignore>(neg<f80>(const<f80>(9223372036854775807)));
@@ -569,14 +569,14 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_vsub:[0-9]+]] vsub: volatile f80 [storage=automatic] = const<f80>(3.64519953188247460253E-4951);
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___u:[0-9]+]] __u: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vnan]]);
-// DEFAULT-NEXT:             let %[[VALUE___v:[0-9]+]] __v: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vone]]);
+// DEFAULT-NEXT:             let %[[VALUE___u:[0-9]+]] __u: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vnan]]) [c="typeof(vnan)"];
+// DEFAULT-NEXT:             let %[[VALUE___v:[0-9]+]] __v: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vone]]) [c="typeof(vone)"];
 // DEFAULT-NEXT:             write<bool>(%[[VALUE4]], logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___u]]), read<f80, volatile>(%[[VALUE___v]])), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___u]]), read<f80, volatile>(%[[VALUE___u]])), ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___v]]), read<f80, volatile>(%[[VALUE___v]])))));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___u_2:[0-9]+]] __u: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vone]]);
-// DEFAULT-NEXT:             let %[[VALUE___v_2:[0-9]+]] __v: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vzero]]);
+// DEFAULT-NEXT:             let %[[VALUE___u_2:[0-9]+]] __u: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vone]]) [c="typeof(vone)"];
+// DEFAULT-NEXT:             let %[[VALUE___v_2:[0-9]+]] __v: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vzero]]) [c="typeof(vzero)"];
 // DEFAULT-NEXT:             write<bool>(%[[VALUE5]], logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___u_2]]), read<f80, volatile>(%[[VALUE___v_2]])), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___u_2]]), read<f80, volatile>(%[[VALUE___u_2]])), ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___v_2]]), read<f80, volatile>(%[[VALUE___v_2]])))));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(86)>(%[[VALUE_str_58]])), from_bool<i32, reason=vararg>(float_class<bool, test=nan>(read<f80, volatile>(%[[VALUE_vnan]]))), conditional<i32>(float_class<bool, test=infinite>(read<f80, volatile>(%[[VALUE_vinf]])), conditional<i32>(float_class<bool, test=sign_bit>(read<f80, volatile>(%[[VALUE_vinf]])), const<i32>(-1), const<i32>(1)), const<i32>(0)), from_bool<i32, reason=vararg>(float_class<bool, test=finite>(read<f80, volatile>(%[[VALUE_vone]]))), from_bool<i32, reason=vararg>(float_class<bool, test=normal>(read<f80, volatile>(%[[VALUE_vone]]))), from_bool<i32, reason=vararg>(read<bool>(%[[VALUE4]])), from_bool<i32, reason=vararg>(read<bool>(%[[VALUE5]])));
@@ -584,36 +584,36 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_vtwo:[0-9]+]] vtwo: volatile f80 [storage=automatic] = const<f80>(2);
 // DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___x_50:[0-9]+]] __x: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vone]]);
-// DEFAULT-NEXT:             let %[[VALUE___y_14:[0-9]+]] __y: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vtwo]]);
+// DEFAULT-NEXT:             let %[[VALUE___x_50:[0-9]+]] __x: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vone]]) [c="typeof(vone)"];
+// DEFAULT-NEXT:             let %[[VALUE___y_14:[0-9]+]] __y: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vtwo]]) [c="typeof(vtwo)"];
 // DEFAULT-NEXT:             let %[[VALUE7:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE___u_3:[0-9]+]] __u: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE___x_50]]);
-// DEFAULT-NEXT:                 let %[[VALUE___v_3:[0-9]+]] __v: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE___y_14]]);
+// DEFAULT-NEXT:                 let %[[VALUE___u_3:[0-9]+]] __u: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE___x_50]]) [c="typeof(__x)"];
+// DEFAULT-NEXT:                 let %[[VALUE___v_3:[0-9]+]] __v: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE___y_14]]) [c="typeof(__y)"];
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE7]], logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___u_3]]), read<f80, volatile>(%[[VALUE___v_3]])), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___u_3]]), read<f80, volatile>(%[[VALUE___u_3]])), ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___v_3]]), read<f80, volatile>(%[[VALUE___v_3]])))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             write<bool>(%[[VALUE6]], logical_and<bool>(not<bool>(read<bool>(%[[VALUE7]])), ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___x_50]]), read<f80, volatile>(%[[VALUE___y_14]]))));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___x_51:[0-9]+]] __x: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vone]]);
-// DEFAULT-NEXT:             let %[[VALUE___y_15:[0-9]+]] __y: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vone]]);
+// DEFAULT-NEXT:             let %[[VALUE___x_51:[0-9]+]] __x: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vone]]) [c="typeof(vone)"];
+// DEFAULT-NEXT:             let %[[VALUE___y_15:[0-9]+]] __y: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vone]]) [c="typeof(vone)"];
 // DEFAULT-NEXT:             let %[[VALUE9:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE___u_4:[0-9]+]] __u: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE___x_51]]);
-// DEFAULT-NEXT:                 let %[[VALUE___v_4:[0-9]+]] __v: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE___y_15]]);
+// DEFAULT-NEXT:                 let %[[VALUE___u_4:[0-9]+]] __u: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE___x_51]]) [c="typeof(__x)"];
+// DEFAULT-NEXT:                 let %[[VALUE___v_4:[0-9]+]] __v: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE___y_15]]) [c="typeof(__y)"];
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE9]], logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___u_4]]), read<f80, volatile>(%[[VALUE___v_4]])), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___u_4]]), read<f80, volatile>(%[[VALUE___u_4]])), ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___v_4]]), read<f80, volatile>(%[[VALUE___v_4]])))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             write<bool>(%[[VALUE8]], logical_and<bool>(not<bool>(read<bool>(%[[VALUE9]])), ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___x_51]]), read<f80, volatile>(%[[VALUE___y_15]]))));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___x_52:[0-9]+]] __x: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vnan]]);
-// DEFAULT-NEXT:             let %[[VALUE___y_16:[0-9]+]] __y: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vone]]);
+// DEFAULT-NEXT:             let %[[VALUE___x_52:[0-9]+]] __x: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vnan]]) [c="typeof(vnan)"];
+// DEFAULT-NEXT:             let %[[VALUE___y_16:[0-9]+]] __y: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_vone]]) [c="typeof(vone)"];
 // DEFAULT-NEXT:             let %[[VALUE11:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE___u_5:[0-9]+]] __u: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE___x_52]]);
-// DEFAULT-NEXT:                 let %[[VALUE___v_5:[0-9]+]] __v: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE___y_16]]);
+// DEFAULT-NEXT:                 let %[[VALUE___u_5:[0-9]+]] __u: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE___x_52]]) [c="typeof(__x)"];
+// DEFAULT-NEXT:                 let %[[VALUE___v_5:[0-9]+]] __v: volatile f80 [storage=automatic] = read<f80, volatile>(%[[VALUE___y_16]]) [c="typeof(__y)"];
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE11]], logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___u_5]]), read<f80, volatile>(%[[VALUE___v_5]])), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___u_5]]), read<f80, volatile>(%[[VALUE___u_5]])), ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___v_5]]), read<f80, volatile>(%[[VALUE___v_5]])))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             write<bool>(%[[VALUE10]], logical_and<bool>(not<bool>(read<bool>(%[[VALUE11]])), ne<f80, exceptions=ignore>(read<f80, volatile>(%[[VALUE___x_52]]), read<f80, volatile>(%[[VALUE___y_16]]))));

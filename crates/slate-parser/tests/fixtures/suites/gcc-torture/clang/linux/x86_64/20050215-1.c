@@ -53,11 +53,11 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=8, align=1, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_V:[0-9]+]] V = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
-// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: @type[[TYPE0]] [storage=static] [align=8] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: @type[[TYPE0]] [storage=static] [align=8] [linkage=external] [c="V"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_w:[0-9]+]] w: ptr<@type[[TYPE0]]> [storage=automatic] = addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(rem<u64, by_zero=ub>(ptr_to_int<u64, reason=explicit>(int_to_ptr<ptr<f32>, reason=explicit>(and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<@type[[TYPE0]]>>(%[[VALUE_w]])), not<u64>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(3))))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0)))), ne<u64>(and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<@type[[TYPE0]]>>(%[[VALUE_w]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))), const<u64>(0)))
+// DEFAULT-NEXT:         let %[[VALUE_w:[0-9]+]] w: ptr<@type[[TYPE0]]> [storage=automatic] = addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_v]]) [c="V *"] [c="V *"];
+// DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(rem<u64, by_zero=ub>(ptr_to_int<u64, reason=explicit>(int_to_ptr<ptr<f32>, reason=explicit>(and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<@type[[TYPE0]]>>(%[[VALUE_w]]) [c="V *"]) [c="size_t"], not<u64>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(3))) [c="size_t"]) [c="size_t"]) [c="size_t"])) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))) [c="size_t"]) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))) [c="size_t"]), ne<u64>(and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<@type[[TYPE0]]>>(%[[VALUE_w]]) [c="V *"]) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="size_t"]) [c="size_t"], const<u64>(0)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }

@@ -51,20 +51,20 @@ int main() {
 // DEFAULT-NEXT:     type @type[[TYPE_V:[0-9]+]] V = u128;
 // DEFAULT-NEXT:     type @type[[TYPE_H:[0-9]+]] H = u64;
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_b:[0-9]+]] b: u128, %[[VALUE_c:[0-9]+]] c: u128) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: u128 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u128 [synthetic] = read<u128>(%[[VALUE_b]]);
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u128 [synthetic] = and<u128>(read<u128>(%[[VALUE0]]), widen<u128, reason=usual_arith>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))))));
-// DEFAULT-NEXT:         write<u128>(%[[VALUE_b]], read<u128>(%[[VALUE1]]));
-// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u128 [synthetic] = read<u128>(%[[VALUE_c]]);
-// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u128 [synthetic] = and<u128>(read<u128>(%[[VALUE2]]), widen<u128, reason=usual_arith>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))))));
-// DEFAULT-NEXT:         write<u128>(%[[VALUE_c]], read<u128>(%[[VALUE3]]));
-// DEFAULT-NEXT:         write<u128>(%[[VALUE_a]], mul<u128, overflow=wrap>(read<u128>(%[[VALUE_b]]), read<u128>(%[[VALUE_c]])));
-// DEFAULT-NEXT:         if ne<u128>(read<u128>(%[[VALUE_a]]), reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(const<i32>(1))))
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_b:[0-9]+]] b: u128 [c="V"], %[[VALUE_c:[0-9]+]] c: u128 [c="V"]) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] [c="void(V, V)"] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: u128 [storage=automatic] [c="V"];
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u128 [synthetic] = read<u128>(%[[VALUE_b]]) [c="V"] [c="V"];
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u128 [synthetic] = and<u128>(read<u128>(%[[VALUE0]]) [c="V"], widen<u128, reason=usual_arith>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))) [c="H"]) [c="V"]) [c="V"] [c="V"];
+// DEFAULT-NEXT:         write<u128>(%[[VALUE_b]], read<u128>(%[[VALUE1]]) [c="V"]) [c="V"] [c="V"];
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u128 [synthetic] = read<u128>(%[[VALUE_c]]) [c="V"] [c="V"];
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u128 [synthetic] = and<u128>(read<u128>(%[[VALUE2]]) [c="V"], widen<u128, reason=usual_arith>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))) [c="H"]) [c="V"]) [c="V"] [c="V"];
+// DEFAULT-NEXT:         write<u128>(%[[VALUE_c]], read<u128>(%[[VALUE3]]) [c="V"]) [c="V"] [c="V"];
+// DEFAULT-NEXT:         write<u128>(%[[VALUE_a]], mul<u128, overflow=wrap>(read<u128>(%[[VALUE_b]]) [c="V"], read<u128>(%[[VALUE_c]]) [c="V"]) [c="V"]) [c="V"];
+// DEFAULT-NEXT:         if ne<u128>(read<u128>(%[[VALUE_a]]) [c="V"], reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(const<i32>(1))) [c="V"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(u128, u128) -> void>(%[[VALUE_foo]], reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(1))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(1))));
+// DEFAULT-NEXT:         call<void, signature=fn(u128, u128) -> void>(%[[VALUE_foo]], reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(1))) [c="V"], reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(1))) [c="V"]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

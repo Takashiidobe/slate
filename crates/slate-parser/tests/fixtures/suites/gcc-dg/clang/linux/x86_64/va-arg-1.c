@@ -39,7 +39,7 @@ void foo()
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
-// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: va_list [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: va_list [storage=static] [linkage=external] [c="va_list"];
 // DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: volatile i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_i]], widen<i32, reason=assign>(va_arg<i8>(%[[VALUE_v]])));

@@ -64,9 +64,9 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_uint32_t:[0-9]+]] uint32_t = u32;
 // DEFAULT-NEXT:     type @type[[TYPE_lock_chain:[0-9]+]] lock_chain = struct {
-// DEFAULT-NEXT:         field0 irq_context: u32 : 2;
-// DEFAULT-NEXT:         field1 depth: u32 : 6;
-// DEFAULT-NEXT:         field2 base: u32 : 24;
+// DEFAULT-NEXT:         field0 irq_context: u32 : 2 [c="uint32_t"];
+// DEFAULT-NEXT:         field1 depth: u32 : 6 [c="uint32_t"];
+// DEFAULT-NEXT:         field2 base: u32 : 24 [c="uint32_t"];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 1], bit_offsets=[Some(0), Some(2), Some(8)], bit_units=[(0, 4)], field_units=[Some(0), Some(0), Some(0)]];
 // DEFAULT-NEXT:     type @type[[TYPE_lock_chain1:[0-9]+]] lock_chain1 = struct {
 // DEFAULT-NEXT:         field0 x: i8;
@@ -88,7 +88,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<u32>(bitfield2<unit=0, bytes=0..4, bits=8..32>(deref(ptr_offset<ptr<@type[[TYPE_lock_chain]]>, subtract=false, element=@type[[TYPE_lock_chain]], overflow=ub>(read<ptr<@type[[TYPE_lock_chain]]>>(%[[VALUE_chain]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(1))))), reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=8..32>(deref(ptr_offset<ptr<@type[[TYPE_lock_chain]]>, subtract=false, element=@type[[TYPE_lock_chain]], overflow=ub>(read<ptr<@type[[TYPE_lock_chain]]>>(%[[VALUE_chain]]), read<i32>(%[[VALUE_i]]))))))));
+// DEFAULT-NEXT:                     write<u32>(bitfield2<unit=0, bytes=0..4, bits=8..32>(deref(ptr_offset<ptr<@type[[TYPE_lock_chain]]>, subtract=false, element=@type[[TYPE_lock_chain]], overflow=ub>(read<ptr<@type[[TYPE_lock_chain]]>>(%[[VALUE_chain]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(1))))), reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=8..32>(deref(ptr_offset<ptr<@type[[TYPE_lock_chain]]>, subtract=false, element=@type[[TYPE_lock_chain]], overflow=ub>(read<ptr<@type[[TYPE_lock_chain]]>>(%[[VALUE_chain]]), read<i32>(%[[VALUE_i]]))))) [c="uint32_t"])) [c="uint32_t"]) [c="uint32_t"];
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return read<ptr<@type[[TYPE_lock_chain]]>>(%[[VALUE_chain]]);
 // DEFAULT-NEXT:     }

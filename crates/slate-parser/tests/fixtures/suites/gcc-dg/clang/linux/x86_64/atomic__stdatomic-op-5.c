@@ -170,7 +170,7 @@ main (void)
 // DEFAULT-NEXT:     type @type[[TYPE_atomic_int:[0-9]+]] atomic_int = i32;
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_test_inc_dec:[0-9]+]] @test_inc_dec() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(1) [c="atomic_int"];
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(%[[VALUE_i]], add<i32, overflow=ub>(old<i32>, const<i32>(1)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_i]]), const<i32>(2))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -198,7 +198,7 @@ main (void)
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_add_sub:[0-9]+]] @test_add_sub() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(1) [c="atomic_int"];
 // DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_i_2]], add<i32, overflow=ub>(old<i32>, const<i32>(2)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_i_2]]), const<i32>(3))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -213,7 +213,7 @@ main (void)
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_and:[0-9]+]] @test_and() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_i_3:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(5);
+// DEFAULT-NEXT:         let %[[VALUE_i_3:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(5) [c="atomic_int"];
 // DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_i_3]], and<i32>(old<i32>, const<i32>(4)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_i_3]]), const<i32>(4))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -222,7 +222,7 @@ main (void)
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_xor:[0-9]+]] @test_xor() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_i_4:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(5);
+// DEFAULT-NEXT:         let %[[VALUE_i_4:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(5) [c="atomic_int"];
 // DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_i_4]], xor<i32>(old<i32>, const<i32>(2)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_i_4]]), const<i32>(7))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -231,7 +231,7 @@ main (void)
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_or:[0-9]+]] @test_or() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_i_5:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(5);
+// DEFAULT-NEXT:         let %[[VALUE_i_5:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(5) [c="atomic_int"];
 // DEFAULT-NEXT:         let %[[VALUE15:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_i_5]], or<i32>(old<i32>, const<i32>(2)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_i_5]]), const<i32>(7))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -239,7 +239,7 @@ main (void)
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE16]]), const<i32>(15))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_test_ptr:[0-9]+]] @test_ptr(%[[VALUE_p:[0-9]+]] p: ptr<atomic i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_test_ptr:[0-9]+]] @test_ptr(%[[VALUE_p:[0-9]+]] p: ptr<atomic i32> [c="atomic_int *"]) -> void [linkage=internal] [fallthrough=ret_void] [c="void(atomic_int *)"] {
 // DEFAULT-NEXT:         let %[[VALUE17:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]])), add<i32, overflow=ub>(old<i32>, const<i32>(1)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]]))), const<i32>(2))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -258,7 +258,7 @@ main (void)
 // DEFAULT-NEXT:         let %[[VALUE22:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]])), sub<i32, overflow=ub>(old<i32>, const<i32>(2)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]]))), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: atomic i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: atomic i32 [storage=automatic] = const<i32>(0) [c="atomic_int"];
 // DEFAULT-NEXT:         let %[[VALUE23:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_j]], add<i32, overflow=ub>(old<i32>, read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]])))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_j]]), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -267,13 +267,13 @@ main (void)
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_i_6:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:         let %[[VALUE_i_6:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(1) [c="atomic_int"];
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_inc_dec]]);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_add_sub]]);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_and]]);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_xor]]);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_or]]);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<atomic i32>) -> void>(%[[VALUE_test_ptr]], addr_of<ptr<atomic i32>>(%[[VALUE_i_6]]));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<atomic i32>) -> void>(%[[VALUE_test_ptr]], addr_of<ptr<atomic i32>>(%[[VALUE_i_6]]) [c="atomic_int *"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

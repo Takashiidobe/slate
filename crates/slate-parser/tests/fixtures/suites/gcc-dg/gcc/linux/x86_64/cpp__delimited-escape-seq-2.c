@@ -37,10 +37,10 @@ const char32_t *c = U"\o{1234}";	/* { dg-error "delimited escape sequences are o
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_char32_t:[0-9]+]] char32_t = u32;
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<u32, 2> [storage=static] = code_units<array<u32, 2>>([4660, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: ptr<const u32> [storage=static] = pointer_cast<ptr<const u32>, reason=assign>(array_decay<ptr<u32>, length=Some(2)>(%[[VALUE_str]])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: ptr<const u32> [storage=static] = pointer_cast<ptr<const u32>, reason=assign>(array_decay<ptr<u32>, length=Some(2)>(%[[VALUE_str]])) [c="const char32_t *"] [linkage=external] [c="const char32_t *"];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<u32, 2> [storage=static] = code_units<array<u32, 2>>([4660, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: ptr<const u32> [storage=static] = pointer_cast<ptr<const u32>, reason=assign>(array_decay<ptr<u32>, length=Some(2)>(%[[VALUE_str_2]])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: ptr<const u32> [storage=static] = pointer_cast<ptr<const u32>, reason=assign>(array_decay<ptr<u32>, length=Some(2)>(%[[VALUE_str_2]])) [c="const char32_t *"] [linkage=external] [c="const char32_t *"];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<u32, 2> [storage=static] = code_units<array<u32, 2>>([668, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: ptr<const u32> [storage=static] = pointer_cast<ptr<const u32>, reason=assign>(array_decay<ptr<u32>, length=Some(2)>(%[[VALUE_str_3]])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: ptr<const u32> [storage=static] = pointer_cast<ptr<const u32>, reason=assign>(array_decay<ptr<u32>, length=Some(2)>(%[[VALUE_str_3]])) [c="const char32_t *"] [linkage=external] [c="const char32_t *"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

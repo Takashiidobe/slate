@@ -51,16 +51,16 @@ int main() {
 // DEFAULT-NEXT:         field0 x: i16;
 // DEFAULT-NEXT:     } [size=2, align=2, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_test:[0-9]+]] test = @type[[TYPE0]];
-// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE0]]> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE0]]> [storage=static] [linkage=external] [c="test *"];
 // DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_a:[0-9]+]] a: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_p]], pointer_cast<ptr<@type[[TYPE0]]>, reason=explicit>(read<ptr<i32>>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_p]], pointer_cast<ptr<@type[[TYPE0]]>, reason=explicit>(read<ptr<i32>>(%[[VALUE_a]])) [c="test *"]) [c="test *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: i32 [storage=automatic];
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<i32>) -> i32>(%[[VALUE_g]], addr_of<ptr<i32>>(%[[VALUE_a_2]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_a_2]], const<i32>(10));
-// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         write<@type[[TYPE0]]>(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_p]])), copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(%[[VALUE_s]])));
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(1))) [c="test"];
+// DEFAULT-NEXT:         write<@type[[TYPE0]]>(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_p]])), copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(%[[VALUE_s]]) [c="test"]) [c="test"]) [c="test"];
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_a_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];

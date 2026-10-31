@@ -423,7 +423,7 @@ int nested_bound(int (*callback)(int T, int a[sizeof(int[(T) + 1])]), int b[size
 // DEFAULT-NEXT:         let %[[VALUE_result_10:[0-9]+]] result: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE58:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_result_10]]);
-// DEFAULT-NEXT:             let %[[VALUE59:[0-9]+]]: i32 [synthetic] = truncate<i32, reason=assign, fits=unknown>(add<i64, overflow=ub>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE58]])), widen<i64, reason=explicit>(const<i32>(1))));
+// DEFAULT-NEXT:             let %[[VALUE59:[0-9]+]]: i32 [synthetic] = truncate<i32, reason=assign, fits=unknown>(add<i64, overflow=ub>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE58]])) [c="T"], widen<i64, reason=explicit>(const<i32>(1)) [c="T"]));
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_result_10]], read<i32>(%[[VALUE59]]));
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE60:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_result_10]]);
@@ -431,7 +431,7 @@ int nested_bound(int (*callback)(int T, int a[sizeof(int[(T) + 1])]), int b[size
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_result_10]], read<i32>(%[[VALUE61]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             let %[[VALUE62:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_result_10]]);
-// DEFAULT-NEXT:             let %[[VALUE63:[0-9]+]]: i32 [synthetic] = truncate<i32, reason=assign, fits=unknown>(add<i64, overflow=ub>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE62]])), widen<i64, reason=explicit>(const<i32>(1))));
+// DEFAULT-NEXT:             let %[[VALUE63:[0-9]+]]: i32 [synthetic] = truncate<i32, reason=assign, fits=unknown>(add<i64, overflow=ub>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE62]])) [c="T"], widen<i64, reason=explicit>(const<i32>(1)) [c="T"]));
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_result_10]], read<i32>(%[[VALUE63]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_result_10]]), const<i32>(1));
@@ -488,8 +488,8 @@ int nested_bound(int (*callback)(int T, int a[sizeof(int[(T) + 1])]), int b[size
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_value]], read<i32>(%[[VALUE80]]));
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_parameter_sizeof:[0-9]+]] @parameter_sizeof(%[[VALUE_T_7:[0-9]+]] T: i32, %[[VALUE_a:[0-9]+]] a: ptr<i32> [array=*]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_nested_sizeof:[0-9]+]] @nested_sizeof(%[[VALUE_callback:[0-9]+]] callback: ptr<fn(i32, ptr<i32>) -> i32>, %[[VALUE_b:[0-9]+]] b: ptr<i32> [array=4]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_parameter_sizeof:[0-9]+]] @parameter_sizeof(%[[VALUE_T_7:[0-9]+]] T: i32, %[[VALUE_a:[0-9]+]] a: ptr<i32> [array=*]) -> i32 [linkage=external] [c="int(int, int[*])"];
+// DEFAULT-NEXT:     fn %[[VALUE_nested_sizeof:[0-9]+]] @nested_sizeof(%[[VALUE_callback:[0-9]+]] callback: ptr<fn(i32, ptr<i32>) -> i32> [c="int (*)(int, int[*])"], %[[VALUE_b:[0-9]+]] b: ptr<i32> [array=4]) -> i32 [linkage=external] [c="int(int (*)(int, int[*]), int[4])"];
 // DEFAULT-NEXT:     fn %[[VALUE_loop_cast:[0-9]+]] @loop_cast() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         for %[[VALUE81:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -508,8 +508,8 @@ int nested_bound(int (*callback)(int T, int a[sizeof(int[(T) + 1])]), int b[size
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_value_2]], read<i32>(%[[VALUE85]]));
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_parameter_cast:[0-9]+]] @parameter_cast(%[[VALUE_T_9:[0-9]+]] T: i32, %[[VALUE_a_2:[0-9]+]] a: ptr<i32> [array=*]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_nested_cast:[0-9]+]] @nested_cast(%[[VALUE_callback_2:[0-9]+]] callback: ptr<fn(i32, ptr<i32>) -> i32>, %[[VALUE_b_2:[0-9]+]] b: ptr<i32> [array=1]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_parameter_cast:[0-9]+]] @parameter_cast(%[[VALUE_T_9:[0-9]+]] T: i32, %[[VALUE_a_2:[0-9]+]] a: ptr<i32> [array=*]) -> i32 [linkage=external] [c="int(int, int[*])"];
+// DEFAULT-NEXT:     fn %[[VALUE_nested_cast:[0-9]+]] @nested_cast(%[[VALUE_callback_2:[0-9]+]] callback: ptr<fn(i32, ptr<i32>) -> i32> [c="int (*)(int, int[*])"], %[[VALUE_b_2:[0-9]+]] b: ptr<i32> [array=1]) -> i32 [linkage=external] [c="int(int (*)(int, int[*]), int[1])"];
 // DEFAULT-NEXT:     fn %[[VALUE_loop_generic:[0-9]+]] @loop_generic() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         for %[[VALUE86:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -528,8 +528,8 @@ int nested_bound(int (*callback)(int T, int a[sizeof(int[(T) + 1])]), int b[size
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_value_3]], read<i32>(%[[VALUE90]]));
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_parameter_generic:[0-9]+]] @parameter_generic(%[[VALUE_T_11:[0-9]+]] T: i32, %[[VALUE_a_3:[0-9]+]] a: ptr<i32> [array=*]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_nested_generic:[0-9]+]] @nested_generic(%[[VALUE_callback_3:[0-9]+]] callback: ptr<fn(i32, ptr<i32>) -> i32>, %[[VALUE_b_3:[0-9]+]] b: ptr<i32> [array=1]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_parameter_generic:[0-9]+]] @parameter_generic(%[[VALUE_T_11:[0-9]+]] T: i32, %[[VALUE_a_3:[0-9]+]] a: ptr<i32> [array=*]) -> i32 [linkage=external] [c="int(int, int[*])"];
+// DEFAULT-NEXT:     fn %[[VALUE_nested_generic:[0-9]+]] @nested_generic(%[[VALUE_callback_3:[0-9]+]] callback: ptr<fn(i32, ptr<i32>) -> i32> [c="int (*)(int, int[*])"], %[[VALUE_b_3:[0-9]+]] b: ptr<i32> [array=1]) -> i32 [linkage=external] [c="int(int (*)(int, int[*]), int[1])"];
 // DEFAULT-NEXT:     fn %[[VALUE_loop_bound:[0-9]+]] @loop_bound() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         for %[[VALUE91:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -557,7 +557,7 @@ int nested_bound(int (*callback)(int T, int a[sizeof(int[(T) + 1])]), int b[size
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_value_4]], read<i32>(%[[VALUE101]]));
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_parameter_bound:[0-9]+]] @parameter_bound(%[[VALUE_T_13:[0-9]+]] T: i32, %[[VALUE_a_4:[0-9]+]] a: ptr<i32> [array=*]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_nested_bound:[0-9]+]] @nested_bound(%[[VALUE_callback_4:[0-9]+]] callback: ptr<fn(i32, ptr<i32>) -> i32>, %[[VALUE_b_4:[0-9]+]] b: ptr<i32> [array=4]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_parameter_bound:[0-9]+]] @parameter_bound(%[[VALUE_T_13:[0-9]+]] T: i32, %[[VALUE_a_4:[0-9]+]] a: ptr<i32> [array=*]) -> i32 [linkage=external] [c="int(int, int[*])"];
+// DEFAULT-NEXT:     fn %[[VALUE_nested_bound:[0-9]+]] @nested_bound(%[[VALUE_callback_4:[0-9]+]] callback: ptr<fn(i32, ptr<i32>) -> i32> [c="int (*)(int, int[*])"], %[[VALUE_b_4:[0-9]+]] b: ptr<i32> [array=4]) -> i32 [linkage=external] [c="int(int (*)(int, int[*]), int[4])"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

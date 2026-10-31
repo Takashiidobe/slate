@@ -160,19 +160,19 @@ void atomic_init_lval (struct Atomic *pa, const struct Value *pv)
 // DEFAULT-NEXT:     type @type[[TYPE_atomic_ullong:[0-9]+]] atomic_ullong = u64;
 // DEFAULT-NEXT:     type @type[[TYPE_atomic_size_t:[0-9]+]] atomic_size_t = u64;
 // DEFAULT-NEXT:     type @type[[TYPE_Atomic:[0-9]+]] Atomic = struct {
-// DEFAULT-NEXT:         field0 b: volatile atomic bool;
-// DEFAULT-NEXT:         field1 c: volatile atomic i8;
-// DEFAULT-NEXT:         field2 sc: volatile atomic i8;
-// DEFAULT-NEXT:         field3 uc: volatile atomic u8;
-// DEFAULT-NEXT:         field4 ss: volatile atomic i16;
-// DEFAULT-NEXT:         field5 us: volatile atomic u16;
-// DEFAULT-NEXT:         field6 si: volatile atomic i32;
-// DEFAULT-NEXT:         field7 ui: volatile atomic u32;
-// DEFAULT-NEXT:         field8 sl: volatile atomic i64;
-// DEFAULT-NEXT:         field9 ul: volatile atomic u64;
-// DEFAULT-NEXT:         field10 sll: volatile atomic i64;
-// DEFAULT-NEXT:         field11 ull: volatile atomic u64;
-// DEFAULT-NEXT:         field12 sz: volatile atomic u64;
+// DEFAULT-NEXT:         field0 b: volatile atomic bool [c="volatile atomic_bool"];
+// DEFAULT-NEXT:         field1 c: volatile atomic i8 [c="volatile atomic_char"];
+// DEFAULT-NEXT:         field2 sc: volatile atomic i8 [c="volatile atomic_schar"];
+// DEFAULT-NEXT:         field3 uc: volatile atomic u8 [c="volatile atomic_uchar"];
+// DEFAULT-NEXT:         field4 ss: volatile atomic i16 [c="volatile atomic_short"];
+// DEFAULT-NEXT:         field5 us: volatile atomic u16 [c="volatile atomic_ushort"];
+// DEFAULT-NEXT:         field6 si: volatile atomic i32 [c="volatile atomic_int"];
+// DEFAULT-NEXT:         field7 ui: volatile atomic u32 [c="volatile atomic_uint"];
+// DEFAULT-NEXT:         field8 sl: volatile atomic i64 [c="volatile atomic_long"];
+// DEFAULT-NEXT:         field9 ul: volatile atomic u64 [c="volatile atomic_ulong"];
+// DEFAULT-NEXT:         field10 sll: volatile atomic i64 [c="volatile atomic_llong"];
+// DEFAULT-NEXT:         field11 ull: volatile atomic u64 [c="volatile atomic_ullong"];
+// DEFAULT-NEXT:         field12 sz: volatile atomic u64 [c="volatile atomic_size_t"];
 // DEFAULT-NEXT:     } [size=56, align=8, offsets=[0, 1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 40, 48]];
 // DEFAULT-NEXT:     type @type[[TYPE_Value:[0-9]+]] Value = struct {
 // DEFAULT-NEXT:         field0 b: bool;
@@ -191,276 +191,276 @@ void atomic_init_lval (struct Atomic *pa, const struct Value *pv)
 // DEFAULT-NEXT:     } [size=56, align=8, offsets=[0, 1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 40, 48]];
 // DEFAULT-NEXT:     fn %[[VALUE_atomic_init_lit:[0-9]+]] @atomic_init_lit(%[[VALUE_pa:[0-9]+]] pa: ptr<@type[[TYPE_Atomic]]>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic bool> [storage=automatic] = addr_of<ptr<volatile atomic bool>>(field0(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp:[0-9]+]] __atomic_store_tmp: bool [storage=automatic] = ne<i32, reason=assign>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:             write<bool, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic bool>>(%[[VALUE___atomic_store_ptr]])), read<bool>(deref(addr_of<ptr<bool>>(%[[VALUE___atomic_store_tmp]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic bool> [storage=automatic] = addr_of<ptr<volatile atomic bool>>(field0(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_bool *"] [c="volatile atomic_bool *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp:[0-9]+]] __atomic_store_tmp: bool [storage=automatic] = ne<i32, reason=assign>(const<i32>(0), const<i32>(0)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<bool, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic bool>>(%[[VALUE___atomic_store_ptr]])), read<bool>(deref(addr_of<ptr<bool>>(%[[VALUE___atomic_store_tmp]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_bool"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_2:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic bool> [storage=automatic] = addr_of<ptr<volatile atomic bool>>(field0(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_2:[0-9]+]] __atomic_store_tmp: bool [storage=automatic] = ne<i32, reason=assign>(const<i32>(1), const<i32>(0));
-// DEFAULT-NEXT:             write<bool, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic bool>>(%[[VALUE___atomic_store_ptr_2]])), read<bool>(deref(addr_of<ptr<bool>>(%[[VALUE___atomic_store_tmp_2]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_2:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic bool> [storage=automatic] = addr_of<ptr<volatile atomic bool>>(field0(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_bool *"] [c="volatile atomic_bool *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_2:[0-9]+]] __atomic_store_tmp: bool [storage=automatic] = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<bool, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic bool>>(%[[VALUE___atomic_store_ptr_2]])), read<bool>(deref(addr_of<ptr<bool>>(%[[VALUE___atomic_store_tmp_2]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_bool"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_3:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_3:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(120));
-// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_3]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_3]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_3:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_char *"] [c="volatile atomic_char *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_3:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(120)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_3]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_3]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_char"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_4:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_4:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_4]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_4]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_4:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_char *"] [c="volatile atomic_char *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_4:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(0)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_4]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_4]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_char"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_5:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_5:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(1));
-// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_5]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_5]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_5:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_char *"] [c="volatile atomic_char *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_5:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(1)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_5]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_5]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_char"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_6:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_6:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(const<i32>(255));
-// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_6]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_6]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_6:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_char *"] [c="volatile atomic_char *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_6:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(const<i32>(255)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_6]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_6]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_char"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_7:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_7:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=explicit, fits=always>(const<i32>(120));
-// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_7]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_7]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_7:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_schar *"] [c="volatile atomic_schar *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_7:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=explicit, fits=always>(const<i32>(120)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_7]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_7]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_schar"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_8:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_8:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=explicit, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_8]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_8]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_8:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_schar *"] [c="volatile atomic_schar *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_8:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=explicit, fits=always>(const<i32>(0)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_8]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_8]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_schar"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_9:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_9:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=explicit, fits=always>(const<i32>(1));
-// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_9]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_9]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_9:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_schar *"] [c="volatile atomic_schar *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_9:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=explicit, fits=always>(const<i32>(1)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_9]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_9]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_schar"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_10:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_10:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=explicit, fits=always>(const<i32>(127));
-// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_10]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_10]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_10:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_schar *"] [c="volatile atomic_schar *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_10:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = truncate<i8, reason=explicit, fits=always>(const<i32>(127)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_10]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_10]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_schar"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_11:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u8> [storage=automatic] = addr_of<ptr<volatile atomic u8>>(field3(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_11:[0-9]+]] __atomic_store_tmp: u8 [storage=automatic] = reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(120)));
-// DEFAULT-NEXT:             write<u8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u8>>(%[[VALUE___atomic_store_ptr_11]])), read<u8>(deref(addr_of<ptr<u8>>(%[[VALUE___atomic_store_tmp_11]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_11:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u8> [storage=automatic] = addr_of<ptr<volatile atomic u8>>(field3(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_uchar *"] [c="volatile atomic_uchar *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_11:[0-9]+]] __atomic_store_tmp: u8 [storage=automatic] = reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(120))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u8>>(%[[VALUE___atomic_store_ptr_11]])), read<u8>(deref(addr_of<ptr<u8>>(%[[VALUE___atomic_store_tmp_11]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_uchar"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_12:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u8> [storage=automatic] = addr_of<ptr<volatile atomic u8>>(field3(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_12:[0-9]+]] __atomic_store_tmp: u8 [storage=automatic] = reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:             write<u8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u8>>(%[[VALUE___atomic_store_ptr_12]])), read<u8>(deref(addr_of<ptr<u8>>(%[[VALUE___atomic_store_tmp_12]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_12:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u8> [storage=automatic] = addr_of<ptr<volatile atomic u8>>(field3(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_uchar *"] [c="volatile atomic_uchar *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_12:[0-9]+]] __atomic_store_tmp: u8 [storage=automatic] = reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(0))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u8>>(%[[VALUE___atomic_store_ptr_12]])), read<u8>(deref(addr_of<ptr<u8>>(%[[VALUE___atomic_store_tmp_12]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_uchar"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_13:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u8> [storage=automatic] = addr_of<ptr<volatile atomic u8>>(field3(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_13:[0-9]+]] __atomic_store_tmp: u8 [storage=automatic] = reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:             write<u8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u8>>(%[[VALUE___atomic_store_ptr_13]])), read<u8>(deref(addr_of<ptr<u8>>(%[[VALUE___atomic_store_tmp_13]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_13:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u8> [storage=automatic] = addr_of<ptr<volatile atomic u8>>(field3(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_uchar *"] [c="volatile atomic_uchar *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_13:[0-9]+]] __atomic_store_tmp: u8 [storage=automatic] = reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(1))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u8>>(%[[VALUE___atomic_store_ptr_13]])), read<u8>(deref(addr_of<ptr<u8>>(%[[VALUE___atomic_store_tmp_13]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_uchar"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_14:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_14:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = reinterpret<i8, reason=assign, fits=unknown>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(127))));
-// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_14]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_14]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_14:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_schar *"] [c="volatile atomic_schar *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_14:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = reinterpret<i8, reason=assign, fits=unknown>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(127)))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_14]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_14]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_schar"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_15:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i16> [storage=automatic] = addr_of<ptr<volatile atomic i16>>(field4(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_15:[0-9]+]] __atomic_store_tmp: i16 [storage=automatic] = truncate<i16, reason=explicit, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:             write<i16, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i16>>(%[[VALUE___atomic_store_ptr_15]])), read<i16>(deref(addr_of<ptr<i16>>(%[[VALUE___atomic_store_tmp_15]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_15:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i16> [storage=automatic] = addr_of<ptr<volatile atomic i16>>(field4(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_short *"] [c="volatile atomic_short *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_15:[0-9]+]] __atomic_store_tmp: i16 [storage=automatic] = truncate<i16, reason=explicit, fits=always>(const<i32>(0)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i16, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i16>>(%[[VALUE___atomic_store_ptr_15]])), read<i16>(deref(addr_of<ptr<i16>>(%[[VALUE___atomic_store_tmp_15]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_short"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_16:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i16> [storage=automatic] = addr_of<ptr<volatile atomic i16>>(field4(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_16:[0-9]+]] __atomic_store_tmp: i16 [storage=automatic] = truncate<i16, reason=explicit, fits=always>(const<i32>(1));
-// DEFAULT-NEXT:             write<i16, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i16>>(%[[VALUE___atomic_store_ptr_16]])), read<i16>(deref(addr_of<ptr<i16>>(%[[VALUE___atomic_store_tmp_16]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_16:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i16> [storage=automatic] = addr_of<ptr<volatile atomic i16>>(field4(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_short *"] [c="volatile atomic_short *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_16:[0-9]+]] __atomic_store_tmp: i16 [storage=automatic] = truncate<i16, reason=explicit, fits=always>(const<i32>(1)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i16, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i16>>(%[[VALUE___atomic_store_ptr_16]])), read<i16>(deref(addr_of<ptr<i16>>(%[[VALUE___atomic_store_tmp_16]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_short"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_17:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i16> [storage=automatic] = addr_of<ptr<volatile atomic i16>>(field4(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_17:[0-9]+]] __atomic_store_tmp: i16 [storage=automatic] = truncate<i16, reason=explicit, fits=always>(const<i32>(32767));
-// DEFAULT-NEXT:             write<i16, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i16>>(%[[VALUE___atomic_store_ptr_17]])), read<i16>(deref(addr_of<ptr<i16>>(%[[VALUE___atomic_store_tmp_17]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_17:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i16> [storage=automatic] = addr_of<ptr<volatile atomic i16>>(field4(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_short *"] [c="volatile atomic_short *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_17:[0-9]+]] __atomic_store_tmp: i16 [storage=automatic] = truncate<i16, reason=explicit, fits=always>(const<i32>(32767)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i16, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i16>>(%[[VALUE___atomic_store_ptr_17]])), read<i16>(deref(addr_of<ptr<i16>>(%[[VALUE___atomic_store_tmp_17]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_short"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_18:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u16> [storage=automatic] = addr_of<ptr<volatile atomic u16>>(field5(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_18:[0-9]+]] __atomic_store_tmp: u16 [storage=automatic] = reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:             write<u16, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u16>>(%[[VALUE___atomic_store_ptr_18]])), read<u16>(deref(addr_of<ptr<u16>>(%[[VALUE___atomic_store_tmp_18]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_18:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u16> [storage=automatic] = addr_of<ptr<volatile atomic u16>>(field5(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_ushort *"] [c="volatile atomic_ushort *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_18:[0-9]+]] __atomic_store_tmp: u16 [storage=automatic] = reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(0))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u16, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u16>>(%[[VALUE___atomic_store_ptr_18]])), read<u16>(deref(addr_of<ptr<u16>>(%[[VALUE___atomic_store_tmp_18]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_ushort"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_19:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u16> [storage=automatic] = addr_of<ptr<volatile atomic u16>>(field5(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_19:[0-9]+]] __atomic_store_tmp: u16 [storage=automatic] = reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:             write<u16, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u16>>(%[[VALUE___atomic_store_ptr_19]])), read<u16>(deref(addr_of<ptr<u16>>(%[[VALUE___atomic_store_tmp_19]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_19:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u16> [storage=automatic] = addr_of<ptr<volatile atomic u16>>(field5(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_ushort *"] [c="volatile atomic_ushort *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_19:[0-9]+]] __atomic_store_tmp: u16 [storage=automatic] = reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(1))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u16, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u16>>(%[[VALUE___atomic_store_ptr_19]])), read<u16>(deref(addr_of<ptr<u16>>(%[[VALUE___atomic_store_tmp_19]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_ushort"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_20:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u16> [storage=automatic] = addr_of<ptr<volatile atomic u16>>(field5(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_20:[0-9]+]] __atomic_store_tmp: u16 [storage=automatic] = reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(32767)));
-// DEFAULT-NEXT:             write<u16, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u16>>(%[[VALUE___atomic_store_ptr_20]])), read<u16>(deref(addr_of<ptr<u16>>(%[[VALUE___atomic_store_tmp_20]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_20:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u16> [storage=automatic] = addr_of<ptr<volatile atomic u16>>(field5(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_ushort *"] [c="volatile atomic_ushort *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_20:[0-9]+]] __atomic_store_tmp: u16 [storage=automatic] = reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(32767))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u16, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u16>>(%[[VALUE___atomic_store_ptr_20]])), read<u16>(deref(addr_of<ptr<u16>>(%[[VALUE___atomic_store_tmp_20]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_ushort"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_21:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i32> [storage=automatic] = addr_of<ptr<volatile atomic i32>>(field6(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_21:[0-9]+]] __atomic_store_tmp: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:             write<i32, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i32>>(%[[VALUE___atomic_store_ptr_21]])), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_store_tmp_21]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_21:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i32> [storage=automatic] = addr_of<ptr<volatile atomic i32>>(field6(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_int *"] [c="volatile atomic_int *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_21:[0-9]+]] __atomic_store_tmp: i32 [storage=automatic] = const<i32>(0) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i32, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i32>>(%[[VALUE___atomic_store_ptr_21]])), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_store_tmp_21]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_int"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_22:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i32> [storage=automatic] = addr_of<ptr<volatile atomic i32>>(field6(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_22:[0-9]+]] __atomic_store_tmp: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:             write<i32, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i32>>(%[[VALUE___atomic_store_ptr_22]])), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_store_tmp_22]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_22:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i32> [storage=automatic] = addr_of<ptr<volatile atomic i32>>(field6(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_int *"] [c="volatile atomic_int *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_22:[0-9]+]] __atomic_store_tmp: i32 [storage=automatic] = const<i32>(1) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i32, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i32>>(%[[VALUE___atomic_store_ptr_22]])), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_store_tmp_22]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_int"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_23:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i32> [storage=automatic] = addr_of<ptr<volatile atomic i32>>(field6(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_23:[0-9]+]] __atomic_store_tmp: i32 [storage=automatic] = const<i32>(2147483647);
-// DEFAULT-NEXT:             write<i32, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i32>>(%[[VALUE___atomic_store_ptr_23]])), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_store_tmp_23]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_23:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i32> [storage=automatic] = addr_of<ptr<volatile atomic i32>>(field6(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_int *"] [c="volatile atomic_int *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_23:[0-9]+]] __atomic_store_tmp: i32 [storage=automatic] = const<i32>(2147483647) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i32, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i32>>(%[[VALUE___atomic_store_ptr_23]])), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_store_tmp_23]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_int"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_24:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u32> [storage=automatic] = addr_of<ptr<volatile atomic u32>>(field7(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_24:[0-9]+]] __atomic_store_tmp: u32 [storage=automatic] = reinterpret<u32, reason=explicit, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:             write<u32, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u32>>(%[[VALUE___atomic_store_ptr_24]])), read<u32>(deref(addr_of<ptr<u32>>(%[[VALUE___atomic_store_tmp_24]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_24:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u32> [storage=automatic] = addr_of<ptr<volatile atomic u32>>(field7(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_uint *"] [c="volatile atomic_uint *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_24:[0-9]+]] __atomic_store_tmp: u32 [storage=automatic] = reinterpret<u32, reason=explicit, fits=always>(const<i32>(0)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u32, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u32>>(%[[VALUE___atomic_store_ptr_24]])), read<u32>(deref(addr_of<ptr<u32>>(%[[VALUE___atomic_store_tmp_24]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_uint"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_25:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u32> [storage=automatic] = addr_of<ptr<volatile atomic u32>>(field7(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_25:[0-9]+]] __atomic_store_tmp: u32 [storage=automatic] = reinterpret<u32, reason=explicit, fits=always>(const<i32>(1));
-// DEFAULT-NEXT:             write<u32, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u32>>(%[[VALUE___atomic_store_ptr_25]])), read<u32>(deref(addr_of<ptr<u32>>(%[[VALUE___atomic_store_tmp_25]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_25:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u32> [storage=automatic] = addr_of<ptr<volatile atomic u32>>(field7(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_uint *"] [c="volatile atomic_uint *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_25:[0-9]+]] __atomic_store_tmp: u32 [storage=automatic] = reinterpret<u32, reason=explicit, fits=always>(const<i32>(1)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u32, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u32>>(%[[VALUE___atomic_store_ptr_25]])), read<u32>(deref(addr_of<ptr<u32>>(%[[VALUE___atomic_store_tmp_25]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_uint"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_26:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u32> [storage=automatic] = addr_of<ptr<volatile atomic u32>>(field7(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_26:[0-9]+]] __atomic_store_tmp: u32 [storage=automatic] = reinterpret<u32, reason=explicit, fits=always>(const<i32>(2147483647));
-// DEFAULT-NEXT:             write<u32, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u32>>(%[[VALUE___atomic_store_ptr_26]])), read<u32>(deref(addr_of<ptr<u32>>(%[[VALUE___atomic_store_tmp_26]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_26:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u32> [storage=automatic] = addr_of<ptr<volatile atomic u32>>(field7(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_uint *"] [c="volatile atomic_uint *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_26:[0-9]+]] __atomic_store_tmp: u32 [storage=automatic] = reinterpret<u32, reason=explicit, fits=always>(const<i32>(2147483647)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u32, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u32>>(%[[VALUE___atomic_store_ptr_26]])), read<u32>(deref(addr_of<ptr<u32>>(%[[VALUE___atomic_store_tmp_26]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_uint"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_27:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i64> [storage=automatic] = addr_of<ptr<volatile atomic i64>>(field8(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_27:[0-9]+]] __atomic_store_tmp: i64 [storage=automatic] = widen<i64, reason=explicit>(const<i32>(0));
-// DEFAULT-NEXT:             write<i64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i64>>(%[[VALUE___atomic_store_ptr_27]])), read<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_store_tmp_27]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_27:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i64> [storage=automatic] = addr_of<ptr<volatile atomic i64>>(field8(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_long *"] [c="volatile atomic_long *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_27:[0-9]+]] __atomic_store_tmp: i64 [storage=automatic] = widen<i64, reason=explicit>(const<i32>(0)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i64>>(%[[VALUE___atomic_store_ptr_27]])), read<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_store_tmp_27]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_long"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_28:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i64> [storage=automatic] = addr_of<ptr<volatile atomic i64>>(field8(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_28:[0-9]+]] __atomic_store_tmp: i64 [storage=automatic] = widen<i64, reason=explicit>(const<i32>(1));
-// DEFAULT-NEXT:             write<i64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i64>>(%[[VALUE___atomic_store_ptr_28]])), read<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_store_tmp_28]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_28:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i64> [storage=automatic] = addr_of<ptr<volatile atomic i64>>(field8(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_long *"] [c="volatile atomic_long *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_28:[0-9]+]] __atomic_store_tmp: i64 [storage=automatic] = widen<i64, reason=explicit>(const<i32>(1)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i64>>(%[[VALUE___atomic_store_ptr_28]])), read<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_store_tmp_28]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_long"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_29:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i64> [storage=automatic] = addr_of<ptr<volatile atomic i64>>(field8(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_29:[0-9]+]] __atomic_store_tmp: i64 [storage=automatic] = const<i64>(9223372036854775807);
-// DEFAULT-NEXT:             write<i64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i64>>(%[[VALUE___atomic_store_ptr_29]])), read<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_store_tmp_29]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_29:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i64> [storage=automatic] = addr_of<ptr<volatile atomic i64>>(field8(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_long *"] [c="volatile atomic_long *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_29:[0-9]+]] __atomic_store_tmp: i64 [storage=automatic] = const<i64>(9223372036854775807) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i64>>(%[[VALUE___atomic_store_ptr_29]])), read<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_store_tmp_29]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_long"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_30:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field9(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_30:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(0)));
-// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_30]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_30]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_30:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field9(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_ulong *"] [c="volatile atomic_ulong *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_30:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(0))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_30]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_30]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_ulong"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_31:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field9(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_31:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1)));
-// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_31]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_31]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_31:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field9(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_ulong *"] [c="volatile atomic_ulong *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_31:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_31]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_31]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_ulong"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_32:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field9(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_32:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = reinterpret<u64, reason=explicit, fits=always>(const<i64>(9223372036854775807));
-// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_32]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_32]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_32:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field9(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_ulong *"] [c="volatile atomic_ulong *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_32:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = reinterpret<u64, reason=explicit, fits=always>(const<i64>(9223372036854775807)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_32]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_32]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_ulong"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_33:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i64> [storage=automatic] = addr_of<ptr<volatile atomic i64>>(field10(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_33:[0-9]+]] __atomic_store_tmp: i64 [storage=automatic] = widen<i64, reason=explicit>(const<i32>(0));
-// DEFAULT-NEXT:             write<i64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i64>>(%[[VALUE___atomic_store_ptr_33]])), read<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_store_tmp_33]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_33:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i64> [storage=automatic] = addr_of<ptr<volatile atomic i64>>(field10(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_llong *"] [c="volatile atomic_llong *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_33:[0-9]+]] __atomic_store_tmp: i64 [storage=automatic] = widen<i64, reason=explicit>(const<i32>(0)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i64>>(%[[VALUE___atomic_store_ptr_33]])), read<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_store_tmp_33]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_llong"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_34:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i64> [storage=automatic] = addr_of<ptr<volatile atomic i64>>(field10(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_34:[0-9]+]] __atomic_store_tmp: i64 [storage=automatic] = widen<i64, reason=explicit>(const<i32>(1));
-// DEFAULT-NEXT:             write<i64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i64>>(%[[VALUE___atomic_store_ptr_34]])), read<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_store_tmp_34]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_34:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i64> [storage=automatic] = addr_of<ptr<volatile atomic i64>>(field10(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_llong *"] [c="volatile atomic_llong *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_34:[0-9]+]] __atomic_store_tmp: i64 [storage=automatic] = widen<i64, reason=explicit>(const<i32>(1)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i64>>(%[[VALUE___atomic_store_ptr_34]])), read<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_store_tmp_34]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_llong"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_35:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i64> [storage=automatic] = addr_of<ptr<volatile atomic i64>>(field10(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_35:[0-9]+]] __atomic_store_tmp: i64 [storage=automatic] = const<i64>(9223372036854775807);
-// DEFAULT-NEXT:             write<i64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i64>>(%[[VALUE___atomic_store_ptr_35]])), read<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_store_tmp_35]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_35:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i64> [storage=automatic] = addr_of<ptr<volatile atomic i64>>(field10(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_llong *"] [c="volatile atomic_llong *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_35:[0-9]+]] __atomic_store_tmp: i64 [storage=automatic] = const<i64>(9223372036854775807) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i64>>(%[[VALUE___atomic_store_ptr_35]])), read<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_store_tmp_35]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_llong"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_36:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field11(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_36:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(0)));
-// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_36]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_36]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_36:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field11(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_ullong *"] [c="volatile atomic_ullong *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_36:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(0))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_36]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_36]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_ullong"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_37:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field11(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_37:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1)));
-// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_37]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_37]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_37:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field11(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_ullong *"] [c="volatile atomic_ullong *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_37:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_37]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_37]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_ullong"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_38:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field11(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_38:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = reinterpret<u64, reason=explicit, fits=always>(const<i64>(9223372036854775807));
-// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_38]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_38]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_38:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field11(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_ullong *"] [c="volatile atomic_ullong *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_38:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = reinterpret<u64, reason=explicit, fits=always>(const<i64>(9223372036854775807)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_38]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_38]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_ullong"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_39:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field12(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_39:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_39]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_39]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_39:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field12(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_size_t *"] [c="volatile atomic_size_t *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_39:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_39]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_39]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_size_t"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_40:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field12(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_40:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1)));
-// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_40]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_40]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_40:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field12(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_size_t *"] [c="volatile atomic_size_t *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_40:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_40]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_40]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_size_t"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_41:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field12(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_41:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = const<u64>(18446744073709551615);
-// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_41]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_41]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_41:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field12(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]])))) [c="volatile atomic_size_t *"] [c="volatile atomic_size_t *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_41:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = const<u64>(18446744073709551615) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_41]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_41]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_size_t"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_atomic_init_lval:[0-9]+]] @atomic_init_lval(%[[VALUE_pa_2:[0-9]+]] pa: ptr<@type[[TYPE_Atomic]]>, %[[VALUE_pv:[0-9]+]] pv: ptr<const @type[[TYPE_Value]]>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_42:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic bool> [storage=automatic] = addr_of<ptr<volatile atomic bool>>(field0(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_42:[0-9]+]] __atomic_store_tmp: bool [storage=automatic] = read<bool>(field0(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]]))));
-// DEFAULT-NEXT:             write<bool, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic bool>>(%[[VALUE___atomic_store_ptr_42]])), read<bool>(deref(addr_of<ptr<bool>>(%[[VALUE___atomic_store_tmp_42]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_42:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic bool> [storage=automatic] = addr_of<ptr<volatile atomic bool>>(field0(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]])))) [c="volatile atomic_bool *"] [c="volatile atomic_bool *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_42:[0-9]+]] __atomic_store_tmp: bool [storage=automatic] = read<bool>(field0(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<bool, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic bool>>(%[[VALUE___atomic_store_ptr_42]])), read<bool>(deref(addr_of<ptr<bool>>(%[[VALUE___atomic_store_tmp_42]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_bool"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_43:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_43:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = read<i8>(field1(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]]))));
-// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_43]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_43]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_43:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]])))) [c="volatile atomic_char *"] [c="volatile atomic_char *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_43:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = read<i8>(field1(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_43]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_43]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_char"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_44:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_44:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = read<i8>(field2(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]]))));
-// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_44]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_44]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_44:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i8> [storage=automatic] = addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]])))) [c="volatile atomic_schar *"] [c="volatile atomic_schar *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_44:[0-9]+]] __atomic_store_tmp: i8 [storage=automatic] = read<i8>(field2(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i8>>(%[[VALUE___atomic_store_ptr_44]])), read<i8>(deref(addr_of<ptr<i8>>(%[[VALUE___atomic_store_tmp_44]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_schar"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_45:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u8> [storage=automatic] = addr_of<ptr<volatile atomic u8>>(field3(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_45:[0-9]+]] __atomic_store_tmp: u8 [storage=automatic] = read<u8>(field3(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]]))));
-// DEFAULT-NEXT:             write<u8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u8>>(%[[VALUE___atomic_store_ptr_45]])), read<u8>(deref(addr_of<ptr<u8>>(%[[VALUE___atomic_store_tmp_45]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_45:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u8> [storage=automatic] = addr_of<ptr<volatile atomic u8>>(field3(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]])))) [c="volatile atomic_uchar *"] [c="volatile atomic_uchar *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_45:[0-9]+]] __atomic_store_tmp: u8 [storage=automatic] = read<u8>(field3(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u8, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u8>>(%[[VALUE___atomic_store_ptr_45]])), read<u8>(deref(addr_of<ptr<u8>>(%[[VALUE___atomic_store_tmp_45]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_uchar"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_46:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i16> [storage=automatic] = addr_of<ptr<volatile atomic i16>>(field4(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_46:[0-9]+]] __atomic_store_tmp: i16 [storage=automatic] = read<i16>(field4(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]]))));
-// DEFAULT-NEXT:             write<i16, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i16>>(%[[VALUE___atomic_store_ptr_46]])), read<i16>(deref(addr_of<ptr<i16>>(%[[VALUE___atomic_store_tmp_46]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_46:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i16> [storage=automatic] = addr_of<ptr<volatile atomic i16>>(field4(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]])))) [c="volatile atomic_short *"] [c="volatile atomic_short *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_46:[0-9]+]] __atomic_store_tmp: i16 [storage=automatic] = read<i16>(field4(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i16, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i16>>(%[[VALUE___atomic_store_ptr_46]])), read<i16>(deref(addr_of<ptr<i16>>(%[[VALUE___atomic_store_tmp_46]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_short"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_47:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u16> [storage=automatic] = addr_of<ptr<volatile atomic u16>>(field5(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_47:[0-9]+]] __atomic_store_tmp: u16 [storage=automatic] = read<u16>(field5(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]]))));
-// DEFAULT-NEXT:             write<u16, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u16>>(%[[VALUE___atomic_store_ptr_47]])), read<u16>(deref(addr_of<ptr<u16>>(%[[VALUE___atomic_store_tmp_47]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_47:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u16> [storage=automatic] = addr_of<ptr<volatile atomic u16>>(field5(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]])))) [c="volatile atomic_ushort *"] [c="volatile atomic_ushort *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_47:[0-9]+]] __atomic_store_tmp: u16 [storage=automatic] = read<u16>(field5(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u16, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u16>>(%[[VALUE___atomic_store_ptr_47]])), read<u16>(deref(addr_of<ptr<u16>>(%[[VALUE___atomic_store_tmp_47]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_ushort"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_48:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i32> [storage=automatic] = addr_of<ptr<volatile atomic i32>>(field6(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_48:[0-9]+]] __atomic_store_tmp: i32 [storage=automatic] = read<i32>(field6(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]]))));
-// DEFAULT-NEXT:             write<i32, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i32>>(%[[VALUE___atomic_store_ptr_48]])), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_store_tmp_48]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_48:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i32> [storage=automatic] = addr_of<ptr<volatile atomic i32>>(field6(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]])))) [c="volatile atomic_int *"] [c="volatile atomic_int *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_48:[0-9]+]] __atomic_store_tmp: i32 [storage=automatic] = read<i32>(field6(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i32, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i32>>(%[[VALUE___atomic_store_ptr_48]])), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_store_tmp_48]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_int"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_49:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u32> [storage=automatic] = addr_of<ptr<volatile atomic u32>>(field7(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_49:[0-9]+]] __atomic_store_tmp: u32 [storage=automatic] = read<u32>(field7(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]]))));
-// DEFAULT-NEXT:             write<u32, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u32>>(%[[VALUE___atomic_store_ptr_49]])), read<u32>(deref(addr_of<ptr<u32>>(%[[VALUE___atomic_store_tmp_49]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_49:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u32> [storage=automatic] = addr_of<ptr<volatile atomic u32>>(field7(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]])))) [c="volatile atomic_uint *"] [c="volatile atomic_uint *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_49:[0-9]+]] __atomic_store_tmp: u32 [storage=automatic] = read<u32>(field7(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u32, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u32>>(%[[VALUE___atomic_store_ptr_49]])), read<u32>(deref(addr_of<ptr<u32>>(%[[VALUE___atomic_store_tmp_49]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_uint"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_50:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i64> [storage=automatic] = addr_of<ptr<volatile atomic i64>>(field8(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_50:[0-9]+]] __atomic_store_tmp: i64 [storage=automatic] = read<i64>(field8(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]]))));
-// DEFAULT-NEXT:             write<i64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i64>>(%[[VALUE___atomic_store_ptr_50]])), read<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_store_tmp_50]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_50:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i64> [storage=automatic] = addr_of<ptr<volatile atomic i64>>(field8(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]])))) [c="volatile atomic_long *"] [c="volatile atomic_long *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_50:[0-9]+]] __atomic_store_tmp: i64 [storage=automatic] = read<i64>(field8(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i64>>(%[[VALUE___atomic_store_ptr_50]])), read<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_store_tmp_50]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_long"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_51:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field9(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_51:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = read<u64>(field9(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]]))));
-// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_51]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_51]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_51:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field9(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]])))) [c="volatile atomic_ulong *"] [c="volatile atomic_ulong *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_51:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = read<u64>(field9(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_51]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_51]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_ulong"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_52:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i64> [storage=automatic] = addr_of<ptr<volatile atomic i64>>(field10(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_52:[0-9]+]] __atomic_store_tmp: i64 [storage=automatic] = read<i64>(field10(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]]))));
-// DEFAULT-NEXT:             write<i64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i64>>(%[[VALUE___atomic_store_ptr_52]])), read<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_store_tmp_52]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_52:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic i64> [storage=automatic] = addr_of<ptr<volatile atomic i64>>(field10(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]])))) [c="volatile atomic_llong *"] [c="volatile atomic_llong *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_52:[0-9]+]] __atomic_store_tmp: i64 [storage=automatic] = read<i64>(field10(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<i64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic i64>>(%[[VALUE___atomic_store_ptr_52]])), read<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_store_tmp_52]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_llong"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_53:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field11(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_53:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = read<u64>(field11(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]]))));
-// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_53]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_53]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_53:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field11(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]])))) [c="volatile atomic_ullong *"] [c="volatile atomic_ullong *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_53:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = read<u64>(field11(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_53]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_53]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_ullong"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_54:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field12(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))));
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_54:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = read<u64>(field12(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]]))));
-// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_54]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_54]]))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_54:[0-9]+]] __atomic_store_ptr: ptr<volatile atomic u64> [storage=automatic] = addr_of<ptr<volatile atomic u64>>(field12(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]])))) [c="volatile atomic_size_t *"] [c="volatile atomic_size_t *"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_54:[0-9]+]] __atomic_store_tmp: u64 [storage=automatic] = read<u64>(field12(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             write<u64, volatile, atomic=relaxed>(deref(read<ptr<volatile atomic u64>>(%[[VALUE___atomic_store_ptr_54]])), read<u64>(deref(addr_of<ptr<u64>>(%[[VALUE___atomic_store_tmp_54]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="volatile atomic_size_t"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

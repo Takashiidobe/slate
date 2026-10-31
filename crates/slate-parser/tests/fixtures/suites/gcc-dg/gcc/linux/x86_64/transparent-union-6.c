@@ -46,7 +46,7 @@ double f (void)
 // DEFAULT-NEXT:         field0 u: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_m30_t:[0-9]+]] m30_t = @type[[TYPE_m30_u]];
-// DEFAULT-NEXT:     fn %[[VALUE_make_double:[0-9]+]] @make_double(%[[VALUE0:[0-9]+]] <unnamed>: @type[[TYPE_m30_u]]) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_make_double:[0-9]+]] @make_double(%[[VALUE0:[0-9]+]] <unnamed>: @type[[TYPE_m30_u]] [c="m30_t"]) -> f64 [linkage=external] [c="double(m30_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_bar:[0-9]+]] bar: i32 [storage=automatic] = const<i32>(17);
 // DEFAULT-NEXT:         return call<f64, signature=fn(@type[[TYPE_m30_u]]) -> f64>(%[[VALUE_make_double]], aggregate<@type[[TYPE_m30_u]], zero_fill=false>(field0 = read<i32>(%[[VALUE_bar]])));

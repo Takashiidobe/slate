@@ -42,16 +42,16 @@ unsigned long size(void) { return sizeof(__NSConstantString); }
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([104, 105, 0]) [linkage=internal];
 // DEFAULT-NEXT:     extern %[[VALUE___CFConstantStringClassReference:[0-9]+]] __CFConstantStringClassReference: array<i32, incomplete> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE__unnamed_cfstring_8:[0-9]+]] _unnamed_cfstring_8: @type[[TYPE___NSConstantString_tag]] [storage=static] = aggregate<@type[[TYPE___NSConstantString_tag]], zero_fill=false>(field0 = array_decay<ptr<const i32>, length=None>(%[[VALUE___CFConstantStringClassReference]]), field1 = const<i32>(1992), field2 = array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]]), field3 = const<i64>(2)) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_file_scope:[0-9]+]] file_scope: ptr<const @type[[TYPE___NSConstantString_tag]]> [storage=static] = addr_of<ptr<const @type[[TYPE___NSConstantString_tag]]>>(%[[VALUE__unnamed_cfstring_8]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_file_scope:[0-9]+]] file_scope: ptr<const @type[[TYPE___NSConstantString_tag]]> [storage=static] = addr_of<ptr<const @type[[TYPE___NSConstantString_tag]]>>(%[[VALUE__unnamed_cfstring_8]]) [c="const __NSConstantString *"] [linkage=external] [c="const __NSConstantString *"];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([97, 98, 99, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE__unnamed_cfstring_10:[0-9]+]] _unnamed_cfstring_10: @type[[TYPE___NSConstantString_tag]] [storage=static] = aggregate<@type[[TYPE___NSConstantString_tag]], zero_fill=false>(field0 = array_decay<ptr<const i32>, length=None>(%[[VALUE___CFConstantStringClassReference]]), field1 = const<i32>(1992), field2 = array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]]), field3 = const<i64>(3)) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([97, 98, 99, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE__unnamed_cfstring_12:[0-9]+]] _unnamed_cfstring_12: @type[[TYPE___NSConstantString_tag]] [storage=static] = aggregate<@type[[TYPE___NSConstantString_tag]], zero_fill=false>(field0 = array_decay<ptr<const i32>, length=None>(%[[VALUE___CFConstantStringClassReference]]), field1 = const<i32>(1992), field2 = array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_3]]), field3 = const<i64>(3)) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_local:[0-9]+]] @local() -> ptr<const void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<const void>, reason=return>(addr_of<ptr<const @type[[TYPE___NSConstantString_tag]]>>(%[[VALUE__unnamed_cfstring_10]]));
+// DEFAULT-NEXT:         return pointer_cast<ptr<const void>, reason=return>(addr_of<ptr<const @type[[TYPE___NSConstantString_tag]]>>(%[[VALUE__unnamed_cfstring_10]]) [c="const __NSConstantString *"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_again:[0-9]+]] @again() -> ptr<const void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<const void>, reason=return>(addr_of<ptr<const @type[[TYPE___NSConstantString_tag]]>>(%[[VALUE__unnamed_cfstring_12]]));
+// DEFAULT-NEXT:         return pointer_cast<ptr<const void>, reason=return>(addr_of<ptr<const @type[[TYPE___NSConstantString_tag]]>>(%[[VALUE__unnamed_cfstring_12]]) [c="const __NSConstantString *"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_size:[0-9]+]] @size() -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<u64>(32);

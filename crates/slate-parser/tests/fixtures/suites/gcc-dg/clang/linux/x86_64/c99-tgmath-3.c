@@ -47,7 +47,7 @@ complex double foo(complex double x)
 // DEFAULT-NEXT:     fn %[[VALUE_cexp:[0-9]+]] @cexp(%[[VALUE___z:[0-9]+]] __z: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c) -> native_c];
 // DEFAULT-NEXT:     fn %[[VALUE_cexpf:[0-9]+]] @cexpf(%[[VALUE___z_2:[0-9]+]] __z: complex<f32>) -> complex<f32> [linkage=external] [abi=sysv64(native_c) -> native_c];
 // DEFAULT-NEXT:     fn %[[VALUE_cexpl:[0-9]+]] @cexpl(%[[VALUE___z_3:[0-9]+]] __z: complex<f80>) -> complex<f80> [linkage=external] [abi=sysv64(byval<align=16>) -> coerce<f80, f80>];
-// DEFAULT-NEXT:     fn %[[VALUE___tg_promote:[0-9]+]] @__tg_promote(...) -> void [linkage=internal] [overloadable];
+// DEFAULT-NEXT:     fn %[[VALUE___tg_promote:[0-9]+]] @__tg_promote(...) -> void [linkage=internal] [overloadable] [c="_Argument_type_is_not_arithmetic(...)"];
 // DEFAULT-NEXT:     fn %[[VALUE___tg_promote_2:[0-9]+]] @__tg_promote(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> f64 [linkage=internal] [overloadable];
 // DEFAULT-NEXT:     fn %[[VALUE___tg_promote_3:[0-9]+]] @__tg_promote(%[[VALUE1:[0-9]+]] <unnamed>: u32) -> f64 [linkage=internal] [overloadable];
 // DEFAULT-NEXT:     fn %[[VALUE___tg_promote_4:[0-9]+]] @__tg_promote(%[[VALUE2:[0-9]+]] <unnamed>: i64) -> f64 [linkage=internal] [overloadable];

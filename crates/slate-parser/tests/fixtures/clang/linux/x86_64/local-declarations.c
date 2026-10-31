@@ -48,7 +48,7 @@ int main(void) {
 // DEFAULT-NEXT:             let %[[VALUE_scratch:[0-9]+]] scratch: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%[[VALUE_total]]), const<i32>(1));
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE_scratch]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %[[VALUE_doubled:[0-9]+]] doubled: i32 [storage=automatic] = mul<i32, overflow=ub>(read<i32>(%[[VALUE_total]]), const<i32>(2));
+// DEFAULT-NEXT:         let %[[VALUE_doubled:[0-9]+]] doubled: i32 [storage=automatic] = mul<i32, overflow=ub>(read<i32>(%[[VALUE_total]]), const<i32>(2)) [c="MyInt"] [c="MyInt"];
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_doubled]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

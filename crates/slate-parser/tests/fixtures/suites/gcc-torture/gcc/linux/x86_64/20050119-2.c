@@ -76,12 +76,12 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 1, 2, 3]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE_S]]>) -> @type[[TYPE0]] [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE_S]]>) -> @type[[TYPE0]] [linkage=external] [fallthrough=ub_if_used] [c="E(struct S *)"] {
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_s]])))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field1(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_s]])))))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field2(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_s]])))))), const<i32>(2))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         return int_to_enum<@type[[TYPE0]], reason=return>(widen<u32, reason=return>(read<u8>(field3(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_s]]))))));
+// DEFAULT-NEXT:         return int_to_enum<@type[[TYPE0]], reason=return>(widen<u32, reason=return>(read<u8>(field3(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_s]])))))) [c="E"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_s_2:[0-9]+]] s: array<@type[[TYPE_S]], 2> [storage=automatic];
@@ -93,7 +93,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<u8>(field1(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(2)>(%[[VALUE_s_2]]), const<i32>(1)))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))));
 // DEFAULT-NEXT:         write<u8>(field2(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(2)>(%[[VALUE_s_2]]), const<i32>(1)))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u8>(field3(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(2)>(%[[VALUE_s_2]]), const<i32>(1)))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<u32>(enum_to_int<u32, reason=promotion>(call<@type[[TYPE0]], signature=fn(ptr<@type[[TYPE_S]]>) -> @type[[TYPE0]]>(%[[VALUE_foo]], array_decay<ptr<@type[[TYPE_S]]>, length=Some(2)>(%[[VALUE_s_2]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))
+// DEFAULT-NEXT:         if ne<u32>(enum_to_int<u32, reason=promotion>(call<@type[[TYPE0]], signature=fn(ptr<@type[[TYPE_S]]>) -> @type[[TYPE0]]>(%[[VALUE_foo]], array_decay<ptr<@type[[TYPE_S]]>, length=Some(2)>(%[[VALUE_s_2]])) [c="E"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

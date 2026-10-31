@@ -138,13 +138,13 @@ void arg_bitint129(_BitInt(129) x) {}
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_arg_void_ptr:[0-9]+]] @arg_void_ptr(%[[VALUE_pv:[0-9]+]] pv: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_arg_matrix:[0-9]+]] @arg_matrix(%[[VALUE_m:[0-9]+]] m: f32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_arg_matrix:[0-9]+]] @arg_matrix(%[[VALUE_m:[0-9]+]] m: f32 [c="fx2x2_t"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(fx2x2_t)"] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_arg_transparent_union_int:[0-9]+]] @arg_transparent_union_int(%[[VALUE_tu:[0-9]+]] tu: @type[[TYPE0]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_arg_transparent_union_int:[0-9]+]] @arg_transparent_union_int(%[[VALUE_tu:[0-9]+]] tu: @type[[TYPE0]] [c="tu_int_t"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(tu_int_t)"] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_arg_transparent_union_char:[0-9]+]] @arg_transparent_union_char(%[[VALUE_tu_2:[0-9]+]] tu: @type[[TYPE1]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_arg_transparent_union_char:[0-9]+]] @arg_transparent_union_char(%[[VALUE_tu_2:[0-9]+]] tu: @type[[TYPE1]] [c="tu_char_t"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(tu_char_t)"] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_arg_transparent_union_ptr:[0-9]+]] @arg_transparent_union_ptr(%[[VALUE_tu_3:[0-9]+]] tu: @type[[TYPE2]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_arg_transparent_union_ptr:[0-9]+]] @arg_transparent_union_ptr(%[[VALUE_tu_3:[0-9]+]] tu: @type[[TYPE2]] [c="tu_ptr_t"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(tu_ptr_t)"] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_arg_bitint7:[0-9]+]] @arg_bitint7(%[[VALUE_x:[0-9]+]] x: i7b) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }

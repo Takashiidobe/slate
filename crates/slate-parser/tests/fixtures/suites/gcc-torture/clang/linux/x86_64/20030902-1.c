@@ -78,7 +78,7 @@ foo (bufp)
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE_p]]);
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE0]]), const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<u8>>(%[[VALUE_p]], read<ptr<u8>>(%[[VALUE1]]));
-// DEFAULT-NEXT:         switch %[[VALUE2:[0-9]+]] enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE0]], reason=explicit>(widen<u32, reason=explicit>(read<u8>(deref(read<ptr<u8>>(%[[VALUE0]]))))))
+// DEFAULT-NEXT:         switch %[[VALUE2:[0-9]+]] enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE0]], reason=explicit>(widen<u32, reason=explicit>(read<u8>(deref(read<ptr<u8>>(%[[VALUE0]]))))) [c="re_opcode_t"])
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 label %[[VALUE_unconditional_jump:[0-9]+]] unconditional_jump:
 // DEFAULT-NEXT:                     ;

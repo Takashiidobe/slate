@@ -112,7 +112,7 @@ struct Const { unsigned x; };
 // VALID-NEXT:     } [size=8, align=4, offsets=[0]];
 // VALID-NEXT:     type @type[[TYPE_I:[0-9]+]] I = i32;
 // VALID-NEXT:     type @type[[TYPE_Typedef:[0-9]+]] Typedef = struct {
-// VALID-NEXT:         field0 x: i32;
+// VALID-NEXT:         field0 x: i32 [c="I"];
 // VALID-NEXT:     } [size=4, align=4, offsets=[0]];
 // VALID-NEXT:     global %[[VALUE_direct:[0-9]+]] direct: @type[[TYPE_Direct]] [storage=static] [linkage=external];
 // VALID-NEXT:     global %[[VALUE_pointer:[0-9]+]] pointer: @type[[TYPE_Pointer]] [storage=static] [linkage=external];

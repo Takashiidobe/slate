@@ -110,19 +110,19 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=30, align=1, offsets=[0, 2, 4, 6, 14, 22]];
 // DEFAULT-NEXT:     type @type[[TYPE_Struct2:[0-9]+]] Struct2 = @type[[TYPE1]];
 // DEFAULT-NEXT:     type @type[[TYPE2:[0-9]+]] = union {
-// DEFAULT-NEXT:         field0 a: @type[[TYPE0]];
-// DEFAULT-NEXT:         field1 b: @type[[TYPE1]];
+// DEFAULT-NEXT:         field0 a: @type[[TYPE0]] [c="Struct1"];
+// DEFAULT-NEXT:         field1 b: @type[[TYPE1]] [c="Struct2"];
 // DEFAULT-NEXT:     } [size=30, align=1, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE_Union:[0-9]+]] Union = @type[[TYPE2]];
 // DEFAULT-NEXT:     type @type[[TYPE3:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 Count: i32;
-// DEFAULT-NEXT:         field1 List: array<@type[[TYPE2]], 0>;
+// DEFAULT-NEXT:         field1 List: array<@type[[TYPE2]], 0> [c="Union[0]"];
 // DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type[[TYPE_Struct3:[0-9]+]] Struct3 = @type[[TYPE3]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE0:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: i32, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_Sum:[0-9]+]] @Sum(%[[VALUE_instrs:[0-9]+]] instrs: ptr<@type[[TYPE3]]>) -> u64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_Sum:[0-9]+]] @Sum(%[[VALUE_instrs:[0-9]+]] instrs: ptr<@type[[TYPE3]]> [c="Struct3 *"]) -> u64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="unsigned long long(Struct3 *)"] {
 // DEFAULT-NEXT:         let %[[VALUE_count:[0-9]+]] count: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE4:[0-9]+]]
@@ -143,7 +143,7 @@ int main(void) {
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return read<u64>(%[[VALUE_count]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_Sum2:[0-9]+]] @Sum2(%[[VALUE_instrs_2:[0-9]+]] instrs: ptr<@type[[TYPE3]]>) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_Sum2:[0-9]+]] @Sum2(%[[VALUE_instrs_2:[0-9]+]] instrs: ptr<@type[[TYPE3]]> [c="Struct3 *"]) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="long long(Struct3 *)"] {
 // DEFAULT-NEXT:         let %[[VALUE_count_2:[0-9]+]] count: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
 // DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE9:[0-9]+]]
@@ -165,8 +165,8 @@ int main(void) {
 // DEFAULT-NEXT:         return read<i64>(%[[VALUE_count_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE3]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE3]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], add<u64, overflow=wrap>(const<u64>(4), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3))), const<u64>(30)))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE3]]>>(%[[VALUE_p]])), const<i32>(0), add<u64, overflow=wrap>(const<u64>(4), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3))), const<u64>(30))));
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE3]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE3]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], add<u64, overflow=wrap>(const<u64>(4), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3))), const<u64>(30))))) [c="Struct3 *"] [c="Struct3 *"];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE3]]>>(%[[VALUE_p]]) [c="Struct3 *"]), const<i32>(0), add<u64, overflow=wrap>(const<u64>(4), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3))), const<u64>(30))));
 // DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_p]]))), const<i32>(3));
 // DEFAULT-NEXT:         write<u64>(field3(field0(deref(ptr_offset<ptr<@type[[TYPE2]]>, subtract=false, element=@type[[TYPE2]], overflow=ub>(array_decay<ptr<@type[[TYPE2]]>, length=Some(0)>(field1(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_p]])))), const<i32>(0))))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(555))));
 // DEFAULT-NEXT:         write<u64>(field3(field0(deref(ptr_offset<ptr<@type[[TYPE2]]>, subtract=false, element=@type[[TYPE2]], overflow=ub>(array_decay<ptr<@type[[TYPE2]]>, length=Some(0)>(field1(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_p]])))), const<i32>(1))))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(999))));
@@ -174,9 +174,9 @@ int main(void) {
 // DEFAULT-NEXT:         write<i64>(field4(field0(deref(ptr_offset<ptr<@type[[TYPE2]]>, subtract=false, element=@type[[TYPE2]], overflow=ub>(array_decay<ptr<@type[[TYPE2]]>, length=Some(0)>(field1(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_p]])))), const<i32>(0))))), widen<i64, reason=assign>(const<i32>(555)));
 // DEFAULT-NEXT:         write<i64>(field4(field0(deref(ptr_offset<ptr<@type[[TYPE2]]>, subtract=false, element=@type[[TYPE2]], overflow=ub>(array_decay<ptr<@type[[TYPE2]]>, length=Some(0)>(field1(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_p]])))), const<i32>(1))))), widen<i64, reason=assign>(const<i32>(999)));
 // DEFAULT-NEXT:         write<i64>(field4(field0(deref(ptr_offset<ptr<@type[[TYPE2]]>, subtract=false, element=@type[[TYPE2]], overflow=ub>(array_decay<ptr<@type[[TYPE2]]>, length=Some(0)>(field1(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_p]])))), const<i32>(2))))), const<i64>(4311810305));
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(ptr<@type[[TYPE3]]>) -> u64>(%[[VALUE_Sum]], read<ptr<@type[[TYPE3]]>>(%[[VALUE_p]])), add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(555), const<i32>(999)))), const<u64>(4311810305)))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(ptr<@type[[TYPE3]]>) -> u64>(%[[VALUE_Sum]], read<ptr<@type[[TYPE3]]>>(%[[VALUE_p]]) [c="Struct3 *"]), add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(555), const<i32>(999)))), const<u64>(4311810305)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(ptr<@type[[TYPE3]]>) -> i64>(%[[VALUE_Sum2]], read<ptr<@type[[TYPE3]]>>(%[[VALUE_p]])), add<i64, overflow=ub>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(555), const<i32>(999))), const<i64>(4311810305)))
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(ptr<@type[[TYPE3]]>) -> i64>(%[[VALUE_Sum2]], read<ptr<@type[[TYPE3]]>>(%[[VALUE_p]]) [c="Struct3 *"]), add<i64, overflow=ub>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(555), const<i32>(999))), const<i64>(4311810305)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

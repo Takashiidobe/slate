@@ -43,7 +43,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_le:[0-9]+]] le: f64 [const], %[[VALUE_ri:[0-9]+]] ri: f64 [const]) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_le:[0-9]+]] le: f64 [const], %[[VALUE_ri:[0-9]+]] ri: f64 [const]) -> f64 [linkage=external] [fallthrough=ub_if_used] [c="double(const double, const double)"] {
 // DEFAULT-NEXT:         let %[[VALUE_val:[0-9]+]] val: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_ri]]), read<f64>(%[[VALUE_le]])), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_ri]]), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_le]]), const<f64>(1.0))));
 // DEFAULT-NEXT:         return read<f64>(%[[VALUE_val]]);
 // DEFAULT-NEXT:     }

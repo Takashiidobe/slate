@@ -53,7 +53,7 @@ void crashIt(int id, FUNC_P *func, unsigned char *funcparm)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_FUNC_P:[0-9]+]] FUNC_P = fn(ptr<void>, ptr<u8>, u16) -> u16;
-// DEFAULT-NEXT:     fn %[[VALUE_crashIt:[0-9]+]] @crashIt(%[[VALUE_id:[0-9]+]] id: i32, %[[VALUE_func:[0-9]+]] func: ptr<fn(ptr<void>, ptr<u8>, u16) -> u16>, %[[VALUE_funcparm:[0-9]+]] funcparm: ptr<u8>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_crashIt:[0-9]+]] @crashIt(%[[VALUE_id:[0-9]+]] id: i32, %[[VALUE_func:[0-9]+]] func: ptr<fn(ptr<void>, ptr<u8>, u16) -> u16> [c="FUNC_P *"], %[[VALUE_funcparm:[0-9]+]] funcparm: ptr<u8>) -> void [linkage=external] [fallthrough=ret_void] [c="void(int, FUNC_P *, unsigned char *)"] {
 // DEFAULT-NEXT:         let %[[VALUE_buff:[0-9]+]] buff: array<u8, 5> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_reverse:[0-9]+]] reverse: array<u8, 4> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_bp:[0-9]+]] bp: ptr<u8> [storage=automatic] = array_decay<ptr<u8>, length=Some(5)>(%[[VALUE_buff]]);
@@ -96,7 +96,7 @@ void crashIt(int id, FUNC_P *func, unsigned char *funcparm)
 // DEFAULT-NEXT:         let %[[VALUE17:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE16]]), const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<u8>>(%[[VALUE_bp]], read<ptr<u8>>(%[[VALUE17]]));
 // DEFAULT-NEXT:         write<u8>(deref(read<ptr<u8>>(%[[VALUE16]])), read<u8>(deref(read<ptr<u8>>(%[[VALUE15]]))));
-// DEFAULT-NEXT:         call<u16, signature=fn(ptr<void>, ptr<u8>, u16) -> u16>(read<ptr<fn(ptr<void>, ptr<u8>, u16) -> u16>>(%[[VALUE_func]]), pointer_cast<ptr<void>, reason=arg>(read<ptr<u8>>(%[[VALUE_funcparm]])), array_decay<ptr<u8>, length=Some(5)>(%[[VALUE_buff]]), read<u16>(%[[VALUE_cnt]]));
+// DEFAULT-NEXT:         call<u16, signature=fn(ptr<void>, ptr<u8>, u16) -> u16>(read<ptr<fn(ptr<void>, ptr<u8>, u16) -> u16>>(%[[VALUE_func]]) [c="FUNC_P *"], pointer_cast<ptr<void>, reason=arg>(read<ptr<u8>>(%[[VALUE_funcparm]])), array_decay<ptr<u8>, length=Some(5)>(%[[VALUE_buff]]), read<u16>(%[[VALUE_cnt]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

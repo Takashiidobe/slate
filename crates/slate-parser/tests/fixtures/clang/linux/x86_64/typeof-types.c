@@ -29,8 +29,8 @@ __typeof__(unsigned long) gnu_type_name_type;
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_source_value:[0-9]+]] source_value: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_expression_type:[0-9]+]] expression_type: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_type_name_type:[0-9]+]] type_name_type: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_gnu_type_name_type:[0-9]+]] gnu_type_name_type: u64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_expression_type:[0-9]+]] expression_type: i32 [storage=static] [linkage=external] [c="typeof(source_value)"];
+// DEFAULT-NEXT:     global %[[VALUE_type_name_type:[0-9]+]] type_name_type: i32 [storage=static] [linkage=external] [c="typeof(int)"];
+// DEFAULT-NEXT:     global %[[VALUE_gnu_type_name_type:[0-9]+]] gnu_type_name_type: u64 [storage=static] [linkage=external] [c="typeof(unsigned long)"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

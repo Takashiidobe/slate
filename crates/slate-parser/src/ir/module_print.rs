@@ -1,8 +1,9 @@
 use super::{
-    ArrayExtent, AsmConstraintLocation, AsmOperandKind, AutoInit, Comment, Comments, DllStorage,
-    Evaluation, FloatType, InlineAsm, Inlining, Linkage, MemoryEffects, Metadata, Module,
-    NumericType, Parameters, PatternFill, RecordKind, SehHandler, Statement, StorageDuration,
-    SymbolAttributes, TargetFeature, TlsModel, Type, TypeDefinitionKind, Variable, Visibility,
+    ArrayExtent, AsmConstraintLocation, AsmOperandKind, AutoInit, CTypeTable, Comment, Comments,
+    DllStorage, Evaluation, FloatType, InlineAsm, Inlining, Linkage, MemoryEffects, Metadata,
+    Module, NumericType, Parameters, PatternFill, RecordKind, SehHandler, Statement,
+    StorageDuration, SymbolAttributes, TargetFeature, TlsModel, Type, TypeDefinitionKind, Variable,
+    Visibility,
 };
 use crate::{
     ast::{CommentAttach, Loc, NodeId, Span},
@@ -177,15 +178,35 @@ fn asm_attributes(f: &mut fmt::Formatter<'_>, asm: &InlineAsm) -> fmt::Result {
 #[derive(Clone, Copy)]
 struct Printer<'a> {
     metadata: Option<&'a Metadata>,
+    c_types: Option<&'a CTypeTable>,
     comments: Option<&'a Comments>,
     show_comments: bool,
     compact: bool,
 }
 
 impl DisplayModule<'_> {
-    fn printer(&self) -> Printer<'_> {
+    fn metadata(&self) -> Metadata {
+        let mut table = if self.show_metadata {
+            self.module.metadata.clone()
+        } else {
+            Metadata::new()
+        };
+        let c_types = &self.module.c_types;
+        for (id, c) in &c_types.nodes {
+            let shown = table
+                .get(id)
+                .is_some_and(|entries| entries.iter().any(|(key, _)| key == "c"));
+            if !shown && let Some(spelling) = c_types.written_spelling(*c) {
+                table.entry(*id).or_default().push(("c".into(), spelling));
+            }
+        }
+        table
+    }
+
+    fn printer<'a>(&'a self, metadata: &'a Metadata) -> Printer<'a> {
         Printer {
-            metadata: self.show_metadata.then_some(&self.module.metadata),
+            metadata: Some(metadata),
+            c_types: Some(&self.module.c_types),
             comments: self.show_comments.then_some(&self.module.comments),
             show_comments: self.show_comments,
             compact: self.compact,
@@ -209,6 +230,7 @@ impl fmt::Display for StatementLines<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         Printer {
             metadata: None,
+            c_types: None,
             comments: None,
             show_comments: false,
             compact: false,
@@ -503,7 +525,12 @@ impl Printer<'_> {
                         value
                             .display_metadata(false, self.table())
                             .with_compact(self.compact)
-                    )?
+                    )?;
+                    if let Some(spelling) = self.c_types.and_then(|table| {
+                        table.place(place).and_then(|c| table.written_spelling(c))
+                    }) {
+                        write!(f, " [c={spelling:?}]")?;
+                    }
                 }
                 Statement::Fence { ordering, scope } => write!(
                     f,
@@ -872,7 +899,8 @@ impl fmt::Display for Comment {
 
 impl fmt::Display for DisplayModule<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let printer = self.printer();
+        let table = self.metadata();
+        let printer = self.printer(&table);
         writeln!(f, "module {{")?;
         if self.show_comments {
             for detached in &self.module.comments.detached {

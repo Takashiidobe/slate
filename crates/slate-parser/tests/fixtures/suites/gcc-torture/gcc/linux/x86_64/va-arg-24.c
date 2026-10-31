@@ -114,7 +114,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list [c="__gnuc_va_list"];
 // DEFAULT-NEXT:     global %[[VALUE_errors:[0-9]+]] errors: i32 [storage=static] = const<i32>(0) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 29> [storage=static] = code_units<array<i8, 29>>([32, 37, 115, 58, 32, 110, 91, 37, 100, 93, 32, 61, 32, 37, 100, 32, 101, 120, 112, 101, 99, 116, 101, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([118, 97, 114, 97, 114, 103, 115, 48, 0]) [linkage=internal];
@@ -127,10 +127,10 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str_9:[0-9]+]] .str[[VALUE_str_9]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([118, 97, 114, 97, 114, 103, 115, 55, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_10:[0-9]+]] .str[[VALUE_str_10]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([118, 97, 114, 97, 114, 103, 115, 56, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_11:[0-9]+]] .str[[VALUE_str_11]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([118, 97, 114, 97, 114, 103, 115, 57, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_verify:[0-9]+]] @verify(%[[VALUE_tcase:[0-9]+]] tcase: ptr<const i8>, %[[VALUE_n:[0-9]+]] n: ptr<i32> [array=11]) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_verify:[0-9]+]] @verify(%[[VALUE_tcase:[0-9]+]] tcase: ptr<const i8>, %[[VALUE_n:[0-9]+]] n: ptr<i32> [array=11]) -> void [linkage=internal] [fallthrough=ret_void] [c="void(const char *, int[11])"] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -152,7 +152,7 @@ int main(void) {
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_varargs0:[0-9]+]] @varargs0(%[[VALUE_q0:[0-9]+]] q0: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         let %[[VALUE_n_2:[0-9]+]] n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
@@ -173,7 +173,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_2]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_varargs1:[0-9]+]] @varargs1(%[[VALUE_q0_2:[0-9]+]] q0: i32, %[[VALUE_q1:[0-9]+]] q1: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         let %[[VALUE_n_3:[0-9]+]] n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_i_3:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
@@ -195,7 +195,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_3]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_varargs2:[0-9]+]] @varargs2(%[[VALUE_q0_3:[0-9]+]] q0: i32, %[[VALUE_q1_2:[0-9]+]] q1: i32, %[[VALUE_q2:[0-9]+]] q2: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_3:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_3:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         let %[[VALUE_n_4:[0-9]+]] n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_i_4:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_3]]);
@@ -218,7 +218,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_4]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_4]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_varargs3:[0-9]+]] @varargs3(%[[VALUE_q0_4:[0-9]+]] q0: i32, %[[VALUE_q1_3:[0-9]+]] q1: i32, %[[VALUE_q2_2:[0-9]+]] q2: i32, %[[VALUE_q3:[0-9]+]] q3: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_4:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_4:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         let %[[VALUE_n_5:[0-9]+]] n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_i_5:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_4]]);
@@ -242,7 +242,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_5]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_5]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_varargs4:[0-9]+]] @varargs4(%[[VALUE_q0_5:[0-9]+]] q0: i32, %[[VALUE_q1_4:[0-9]+]] q1: i32, %[[VALUE_q2_3:[0-9]+]] q2: i32, %[[VALUE_q3_2:[0-9]+]] q3: i32, %[[VALUE_q4:[0-9]+]] q4: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_5:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_5:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         let %[[VALUE_n_6:[0-9]+]] n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_i_6:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_5]]);
@@ -267,7 +267,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_6]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_6]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_varargs5:[0-9]+]] @varargs5(%[[VALUE_q0_6:[0-9]+]] q0: i32, %[[VALUE_q1_5:[0-9]+]] q1: i32, %[[VALUE_q2_4:[0-9]+]] q2: i32, %[[VALUE_q3_3:[0-9]+]] q3: i32, %[[VALUE_q4_2:[0-9]+]] q4: i32, %[[VALUE_q5:[0-9]+]] q5: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_6:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_6:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         let %[[VALUE_n_7:[0-9]+]] n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_i_7:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_6]]);
@@ -293,7 +293,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_7]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_7]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_varargs6:[0-9]+]] @varargs6(%[[VALUE_q0_7:[0-9]+]] q0: i32, %[[VALUE_q1_6:[0-9]+]] q1: i32, %[[VALUE_q2_5:[0-9]+]] q2: i32, %[[VALUE_q3_4:[0-9]+]] q3: i32, %[[VALUE_q4_3:[0-9]+]] q4: i32, %[[VALUE_q5_2:[0-9]+]] q5: i32, %[[VALUE_q6:[0-9]+]] q6: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_7:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_7:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         let %[[VALUE_n_8:[0-9]+]] n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_i_8:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_7]]);
@@ -320,7 +320,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_8]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_8]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_varargs7:[0-9]+]] @varargs7(%[[VALUE_q0_8:[0-9]+]] q0: i32, %[[VALUE_q1_7:[0-9]+]] q1: i32, %[[VALUE_q2_6:[0-9]+]] q2: i32, %[[VALUE_q3_5:[0-9]+]] q3: i32, %[[VALUE_q4_4:[0-9]+]] q4: i32, %[[VALUE_q5_3:[0-9]+]] q5: i32, %[[VALUE_q6_2:[0-9]+]] q6: i32, %[[VALUE_q7:[0-9]+]] q7: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_8:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_8:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         let %[[VALUE_n_9:[0-9]+]] n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_i_9:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_8]]);
@@ -348,7 +348,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_9]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_9]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_varargs8:[0-9]+]] @varargs8(%[[VALUE_q0_9:[0-9]+]] q0: i32, %[[VALUE_q1_8:[0-9]+]] q1: i32, %[[VALUE_q2_7:[0-9]+]] q2: i32, %[[VALUE_q3_6:[0-9]+]] q3: i32, %[[VALUE_q4_5:[0-9]+]] q4: i32, %[[VALUE_q5_4:[0-9]+]] q5: i32, %[[VALUE_q6_3:[0-9]+]] q6: i32, %[[VALUE_q7_2:[0-9]+]] q7: i32, %[[VALUE_q8:[0-9]+]] q8: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_9:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_9:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         let %[[VALUE_n_10:[0-9]+]] n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_i_10:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_9]]);
@@ -377,7 +377,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_10]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_10]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_varargs9:[0-9]+]] @varargs9(%[[VALUE_q0_10:[0-9]+]] q0: i32, %[[VALUE_q1_9:[0-9]+]] q1: i32, %[[VALUE_q2_8:[0-9]+]] q2: i32, %[[VALUE_q3_7:[0-9]+]] q3: i32, %[[VALUE_q4_6:[0-9]+]] q4: i32, %[[VALUE_q5_5:[0-9]+]] q5: i32, %[[VALUE_q6_4:[0-9]+]] q6: i32, %[[VALUE_q7_3:[0-9]+]] q7: i32, %[[VALUE_q8_2:[0-9]+]] q8: i32, %[[VALUE_q9:[0-9]+]] q9: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_10:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_10:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         let %[[VALUE_n_11:[0-9]+]] n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_i_11:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_10]]);

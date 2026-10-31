@@ -86,29 +86,29 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: atomic f32 [storage=static] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(5)) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_j:[0-9]+]] j: atomic f32 [storage=static] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(2)) [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1(%[[VALUE_a:[0-9]+]] a: ptr<f32> [array=%[[VALUE0:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1(%[[VALUE_a:[0-9]+]] a: ptr<f32> [array=%[[VALUE0:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] [c="void(float[*])"] {
 // DEFAULT-NEXT:         write<f32, atomic=seq_cst>(%[[VALUE_i]], int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)));
 // DEFAULT-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fn2:[0-9]+]] @fn2(%[[VALUE_a_2:[0-9]+]] a: ptr<f32> [array=%[[VALUE1:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_fn2:[0-9]+]] @fn2(%[[VALUE_a_2:[0-9]+]] a: ptr<f32> [array=%[[VALUE1:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] [c="void(float[*])"] {
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: f32 [synthetic] = update<f32, result=new, atomic=seq_cst>(%[[VALUE_i]], add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(old<f32>, int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(2))));
 // DEFAULT-NEXT:         let %[[VALUE1]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(%[[VALUE2]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fn3:[0-9]+]] @fn3(%[[VALUE_a_3:[0-9]+]] a: ptr<f32> [array=%[[VALUE3:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_fn3:[0-9]+]] @fn3(%[[VALUE_a_3:[0-9]+]] a: ptr<f32> [array=%[[VALUE3:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] [c="void(float[*])"] {
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: f32 [synthetic] = update<f32, result=new, atomic=seq_cst>(%[[VALUE_i]], add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(old<f32>, int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1))));
 // DEFAULT-NEXT:         let %[[VALUE3]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(%[[VALUE4]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fn4:[0-9]+]] @fn4(%[[VALUE_a_4:[0-9]+]] a: ptr<f32> [array=%[[VALUE5:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_fn4:[0-9]+]] @fn4(%[[VALUE_a_4:[0-9]+]] a: ptr<f32> [array=%[[VALUE5:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] [c="void(float[*])"] {
 // DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: f32 [synthetic] = update<f32, result=new, atomic=seq_cst>(%[[VALUE_i]], add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(old<f32>, int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1))));
 // DEFAULT-NEXT:         let %[[VALUE5]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(%[[VALUE6]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fn5:[0-9]+]] @fn5(%[[VALUE_a_5:[0-9]+]] a: ptr<vla<f32, %[[VALUE7:[0-9]+]]>> [array=%[[VALUE8:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_fn5:[0-9]+]] @fn5(%[[VALUE_a_5:[0-9]+]] a: ptr<vla<f32, %[[VALUE7:[0-9]+]]>> [array=%[[VALUE8:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] [c="void(float[*][*])"] {
 // DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: f32 [synthetic] = update<f32, result=new, atomic=seq_cst>(%[[VALUE_i]], add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(old<f32>, int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1))));
 // DEFAULT-NEXT:         let %[[VALUE8]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(%[[VALUE9]]))));
 // DEFAULT-NEXT:         write<f32, atomic=seq_cst>(%[[VALUE_j]], int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(10)));
 // DEFAULT-NEXT:         let %[[VALUE7]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(10)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fn6:[0-9]+]] @fn6(%[[VALUE_a_6:[0-9]+]] a: ptr<vla<f32, %[[VALUE10:[0-9]+]]>> [array=%[[VALUE11:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_fn6:[0-9]+]] @fn6(%[[VALUE_a_6:[0-9]+]] a: ptr<vla<f32, %[[VALUE10:[0-9]+]]>> [array=%[[VALUE11:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] [c="void(float[*][*])"] {
 // DEFAULT-NEXT:         write<f32, atomic=seq_cst>(%[[VALUE_i]], int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(7)));
 // DEFAULT-NEXT:         let %[[VALUE11]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(7)))));
 // DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: f32 [synthetic] = update<f32, result=old, atomic=seq_cst>(%[[VALUE_j]], sub<f32, rounding=nearest_even, exceptions=ignore, contract=on>(old<f32>, int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1))));

@@ -43,11 +43,11 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_qualified:[0-9]+]] qualified: volatile i32 [storage=automatic] [const] = const<i32>(9);
-// DEFAULT-NEXT:         let %[[VALUE_copy:[0-9]+]] copy: i32 [storage=automatic] = read<i32, volatile>(%[[VALUE_qualified]]);
-// DEFAULT-NEXT:         let %[[VALUE_preserved:[0-9]+]] preserved: volatile i32 [storage=automatic] [const] = const<i32>(12);
+// DEFAULT-NEXT:         let %[[VALUE_copy:[0-9]+]] copy: i32 [storage=automatic] = read<i32, volatile>(%[[VALUE_qualified]]) [c="typeof_unqual(qualified)"] [c="typeof_unqual(qualified)"];
+// DEFAULT-NEXT:         let %[[VALUE_preserved:[0-9]+]] preserved: volatile i32 [storage=automatic] [const] = const<i32>(12) [c="typeof(qualified)"];
 // DEFAULT-NEXT:         let %[[VALUE_pointer:[0-9]+]] pointer: ptr<i32> [storage=automatic] = null<ptr<i32>>;
 // DEFAULT-NEXT:         let %[[VALUE_width:[0-9]+]] width: i32 [storage=automatic] [const] [constexpr] = const<i32>(7);
 // DEFAULT-NEXT:         let %[[VALUE_narrow:[0-9]+]] narrow: u7b [storage=automatic] = reinterpret<u7b, reason=assign, fits=unknown>(truncate<i7b, reason=assign, fits=unknown>(const<i32>(100)));

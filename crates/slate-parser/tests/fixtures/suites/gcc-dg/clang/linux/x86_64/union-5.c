@@ -75,29 +75,29 @@ int main(void)
 // DEFAULT-NEXT:     type @type[[TYPE_uint32_t:[0-9]+]] uint32_t = u32;
 // DEFAULT-NEXT:     type @type[[TYPE_uint64_t:[0-9]+]] uint64_t = u64;
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
-// DEFAULT-NEXT:         field0 thread: u16;
-// DEFAULT-NEXT:         field1 phase: u16;
+// DEFAULT-NEXT:         field0 thread: u16 [c="uint16_t"];
+// DEFAULT-NEXT:         field1 phase: u16 [c="uint16_t"];
 // DEFAULT-NEXT:     } [size=4, align=2, offsets=[0, 2]];
 // DEFAULT-NEXT:     type @type[[TYPE_s32:[0-9]+]] s32 = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = union {
-// DEFAULT-NEXT:         field0 i: u32;
-// DEFAULT-NEXT:         field1 s: @type[[TYPE0]];
+// DEFAULT-NEXT:         field0 i: u32 [c="uint32_t"];
+// DEFAULT-NEXT:         field1 s: @type[[TYPE0]] [c="s32"];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE_u32:[0-9]+]] u32 = @type[[TYPE1]];
 // DEFAULT-NEXT:     type @type[[TYPE2:[0-9]+]] = union {
-// DEFAULT-NEXT:         field0 i: u64;
-// DEFAULT-NEXT:         field1 u: @type[[TYPE1]];
+// DEFAULT-NEXT:         field0 i: u64 [c="uint64_t"];
+// DEFAULT-NEXT:         field1 u: @type[[TYPE1]] [c="u32"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE_u64:[0-9]+]] u64 = @type[[TYPE2]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_val:[0-9]+]] val: i32) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_data:[0-9]+]] data: @type[[TYPE2]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_thread:[0-9]+]] thread: u32 [storage=automatic];
-// DEFAULT-NEXT:         write<u32>(field0(field1(%[[VALUE_data]])), reinterpret<u32, reason=assign, fits=unknown>(truncate<i32, reason=assign, fits=always>(const<i64>(65536))));
-// DEFAULT-NEXT:         write<u32>(%[[VALUE_thread]], widen<u32, reason=assign>(read<u16>(field0(field1(field1(%[[VALUE_data]]))))));
+// DEFAULT-NEXT:         let %[[VALUE_data:[0-9]+]] data: @type[[TYPE2]] [storage=automatic] [c="u64"];
+// DEFAULT-NEXT:         let %[[VALUE_thread:[0-9]+]] thread: u32 [storage=automatic] [c="uint32_t"];
+// DEFAULT-NEXT:         write<u32>(field0(field1(%[[VALUE_data]])), reinterpret<u32, reason=assign, fits=unknown>(truncate<i32, reason=assign, fits=always>(const<i64>(65536))) [c="uint32_t"]) [c="uint32_t"];
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_thread]], widen<u32, reason=assign>(read<u16>(field0(field1(field1(%[[VALUE_data]])))) [c="uint16_t"]) [c="uint32_t"]) [c="uint32_t"];
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_val]]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_thread]]), const<u32>(0))
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_thread]]) [c="uint32_t"], const<u32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

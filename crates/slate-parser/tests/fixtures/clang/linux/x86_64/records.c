@@ -69,6 +69,6 @@ PointAlias alias;
 // DEFAULT-NEXT:     type @type[[TYPE_PointAlias:[0-9]+]] PointAlias = @type[[TYPE_Point]];
 // DEFAULT-NEXT:     global %[[VALUE_point:[0-9]+]] point: @type[[TYPE_Point]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_color:[0-9]+]] color: @type[[TYPE_Color]] [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_alias:[0-9]+]] alias: @type[[TYPE_Point]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_alias:[0-9]+]] alias: @type[[TYPE_Point]] [storage=static] [linkage=external] [c="PointAlias"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

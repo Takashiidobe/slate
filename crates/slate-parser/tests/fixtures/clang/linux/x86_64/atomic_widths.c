@@ -60,20 +60,20 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_atomic_uint:[0-9]+]] atomic_uint = u32;
 // DEFAULT-NEXT:     type @type[[TYPE_atomic_llong:[0-9]+]] atomic_llong = i64;
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 29> [storage=static] = code_units<array<i8, 29>>([37, 117, 32, 37, 100, 32, 37, 117, 32, 37, 108, 108, 100, 32, 37, 117, 32, 37, 100, 32, 37, 117, 32, 37, 108, 108, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_u8:[0-9]+]] u8: atomic u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(250)));
-// DEFAULT-NEXT:         let %[[VALUE_i8:[0-9]+]] i8: atomic i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(5)));
-// DEFAULT-NEXT:         let %[[VALUE_u32:[0-9]+]] u32: atomic u32 [storage=automatic] = const<u32>(1000);
-// DEFAULT-NEXT:         let %[[VALUE_i64:[0-9]+]] i64: atomic i64 [storage=automatic] = neg<i64, overflow=ub>(const<i64>(10000000000));
+// DEFAULT-NEXT:         let %[[VALUE_u8:[0-9]+]] u8: atomic u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(250))) [c="atomic_uchar"];
+// DEFAULT-NEXT:         let %[[VALUE_i8:[0-9]+]] i8: atomic i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(5))) [c="atomic_schar"];
+// DEFAULT-NEXT:         let %[[VALUE_u32:[0-9]+]] u32: atomic u32 [storage=automatic] = const<u32>(1000) [c="atomic_uint"];
+// DEFAULT-NEXT:         let %[[VALUE_i64:[0-9]+]] i64: atomic i64 [storage=automatic] = neg<i64, overflow=ub>(const<i64>(10000000000)) [c="atomic_llong"];
 // DEFAULT-NEXT:         let %[[VALUE_old_u8:[0-9]+]] old_u8: u8 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u8 [synthetic] = update<u8, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic u8>>(%[[VALUE_u8]])), add<u8, overflow=wrap>(old<u8>, reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(3)))));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u8 [synthetic] = update<u8, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic u8>>(%[[VALUE_u8]])), add<u8, overflow=wrap>(old<u8>, reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(3)))) [c="atomic_uchar"]);
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_old_u8]], read<u8>(%[[VALUE0]]));
 // DEFAULT-NEXT:         let %[[VALUE_old_i8:[0-9]+]] old_i8: i8 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i8 [synthetic] = update<i8, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i8>>(%[[VALUE_i8]])), sub<i8, overflow=wrap>(old<i8>, truncate<i8, reason=arg, fits=always>(const<i32>(7))));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i8 [synthetic] = update<i8, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i8>>(%[[VALUE_i8]])), sub<i8, overflow=wrap>(old<i8>, truncate<i8, reason=arg, fits=always>(const<i32>(7))) [c="atomic_schar"]);
 // DEFAULT-NEXT:         write<i8>(%[[VALUE_old_i8]], read<i8>(%[[VALUE1]]));
 // DEFAULT-NEXT:         let %[[VALUE_old_u32:[0-9]+]] old_u32: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u32 [synthetic] = update<u32, result=old, atomic=release>(deref(addr_of<ptr<atomic u32>>(%[[VALUE_u32]])), xor<u32>(old<u32>, const<u32>(255)));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u32 [synthetic] = update<u32, result=old, atomic=release>(deref(addr_of<ptr<atomic u32>>(%[[VALUE_u32]])), xor<u32>(old<u32>, const<u32>(255)) [c="atomic_uint"]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_old_u32]], read<u32>(%[[VALUE2]]));
 // DEFAULT-NEXT:         let %[[VALUE_old_i64:[0-9]+]] old_i64: i64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i64 [synthetic] = update<i64, result=old, atomic=acquire>(deref(addr_of<ptr<atomic i64>>(%[[VALUE_i64]])), const<i64>(1234567890123));

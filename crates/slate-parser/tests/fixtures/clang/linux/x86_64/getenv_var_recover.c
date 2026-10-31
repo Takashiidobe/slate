@@ -82,7 +82,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str_10:[0-9]+]] .str[[VALUE_str_10]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_11:[0-9]+]] .str[[VALUE_str_11]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_12:[0-9]+]] .str[[VALUE_str_12]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_getenv:[0-9]+]] @getenv(%[[VALUE___name:[0-9]+]] __name: ptr<const i8>) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_setenv:[0-9]+]] @setenv(%[[VALUE___name_2:[0-9]+]] __name: ptr<const i8>, %[[VALUE___value:[0-9]+]] __value: ptr<const i8>, %[[VALUE___replace:[0-9]+]] __replace: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_unsetenv:[0-9]+]] @unsetenv(%[[VALUE___name_3:[0-9]+]] __name: ptr<const i8>) -> i32 [linkage=external];

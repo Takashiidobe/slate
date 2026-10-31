@@ -108,31 +108,31 @@ int h(v4si v, float4 q, int *p) {
 // IR-NEXT:     global %[[VALUE_flag:[0-9]+]] flag: atomic bool [storage=static] [linkage=external];
 // IR-NEXT:     global %[[VALUE_counter:[0-9]+]] counter: i32 [storage=static] [linkage=external];
 // IR-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_n:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_array:[0-9]+]] array: array<i32, 2> [storage=automatic];
-// IR-NEXT:         let %[[VALUE_promoted:[0-9]+]] promoted: i32 [storage=automatic] = const<i32>(1);
+// IR-NEXT:         let %[[VALUE_array:[0-9]+]] array: array<i32, 2> [storage=automatic] [c="typeof(s.a)"];
+// IR-NEXT:         let %[[VALUE_promoted:[0-9]+]] promoted: i32 [storage=automatic] = const<i32>(1) [c="typeof(s.b + 0)"] [c="typeof(s.b + 0)"];
 // IR-NEXT:         let %[[VALUE_sum:[0-9]+]] sum: u32 [storage=automatic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..1, bits=0..3>(%[[VALUE_s]])))), const<u32>(1));
-// IR-NEXT:         let %[[VALUE_fixed:[0-9]+]] fixed: i64 [storage=automatic] [const] = widen<i64, reason=assign>(const<i32>(2));
-// IR-NEXT:         let %[[VALUE_cast:[0-9]+]] cast: @type[[TYPE_U]] [storage=automatic];
+// IR-NEXT:         let %[[VALUE_fixed:[0-9]+]] fixed: i64 [storage=automatic] [const] = widen<i64, reason=assign>(const<i32>(2)) [c="typeof(s.c)"];
+// IR-NEXT:         let %[[VALUE_cast:[0-9]+]] cast: @type[[TYPE_U]] [storage=automatic] [c="typeof((cast)1)"];
 // IR-NEXT:         write<i32>(field0(%[[VALUE_cast]]), read<i32>(%[[VALUE_n]]));
-// IR-NEXT:         let %[[VALUE_element:[0-9]+]] element: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%[[VALUE_array]]), const<i32>(1))));
-// IR-NEXT:         let %[[VALUE_mixed:[0-9]+]] mixed: f32 [storage=automatic] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0));
+// IR-NEXT:         let %[[VALUE_element:[0-9]+]] element: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%[[VALUE_array]]), const<i32>(1)))) [c="typeof(&s.a[1])"] [c="typeof(&s.a[1])"];
+// IR-NEXT:         let %[[VALUE_mixed:[0-9]+]] mixed: f32 [storage=automatic] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)) [c="typeof(n ? 1.0f : 2)"] [c="typeof(n ? 1.0f : 2)"];
 // IR-NEXT:         let %[[VALUE_bits:[0-9]+]] bits: i32 [storage=automatic] = const<i32>(1);
 // IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(8), const<u64>(8)), const<u64>(4)), const<u64>(4)))), read<i32>(%[[VALUE_promoted]])), truncate<i32, reason=explicit, fits=unknown>(read<i64>(%[[VALUE_fixed]]))), read<i32>(field0(%[[VALUE_cast]]))), read<i32>(deref(read<ptr<i32>>(%[[VALUE_element]])))), read<i32>(%[[VALUE_bits]]));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_make:[0-9]+]] @make() -> @type[[TYPE_P]] [linkage=external] [abi=sysv64() -> native_c];
 // IR-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_c:[0-9]+]] c: i32, %[[VALUE_p:[0-9]+]] p: ptr<i32>) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_made:[0-9]+]] made: @type[[TYPE_P]] [storage=automatic] = copy<@type[[TYPE_P]], reason=assign>(call<@type[[TYPE_P]], signature=fn() -> @type[[TYPE_P]], abi=sysv64() -> native_c>(%[[VALUE_make]]));
-// IR-NEXT:         let %[[VALUE_chosen:[0-9]+]] chosen: ptr<i32> [storage=automatic] = read<ptr<i32>>(%[[VALUE_p]]);
-// IR-NEXT:         let %[[VALUE_nulled:[0-9]+]] nulled: ptr<i32> [storage=automatic] = read<ptr<i32>>(%[[VALUE_p]]);
+// IR-NEXT:         let %[[VALUE_made:[0-9]+]] made: @type[[TYPE_P]] [storage=automatic] = copy<@type[[TYPE_P]], reason=assign>(call<@type[[TYPE_P]], signature=fn() -> @type[[TYPE_P]], abi=sysv64() -> native_c>(%[[VALUE_make]])) [c="typeof(make())"] [c="typeof(make())"];
+// IR-NEXT:         let %[[VALUE_chosen:[0-9]+]] chosen: ptr<i32> [storage=automatic] = read<ptr<i32>>(%[[VALUE_p]]) [c="typeof(c ? p : 0)"] [c="typeof(c ? p : 0)"];
+// IR-NEXT:         let %[[VALUE_nulled:[0-9]+]] nulled: ptr<i32> [storage=automatic] = read<ptr<i32>>(%[[VALUE_p]]) [c="typeof(c ? p : (cast)0)"] [c="typeof(c ? p : (cast)0)"];
 // IR-NEXT:         let %[[VALUE_loaded:[0-9]+]] loaded: i32 [storage=automatic] = read<i32, atomic=seq_cst>(deref(addr_of<ptr<i32>>(%[[VALUE_counter]])));
-// IR-NEXT:         let %[[VALUE_fetched:[0-9]+]] fetched: bool [storage=automatic] = ne<i32, reason=assign>(const<i32>(1), const<i32>(0));
-// IR-NEXT:         let %[[VALUE_wide:[0-9]+]] wide: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(3));
-// IR-NEXT:         let %[[VALUE_bits_2:[0-9]+]] bits: i32 [storage=automatic] = const<i32>(0);
-// IR-NEXT:         return add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(field0(%[[VALUE_made]]))), widen<i64, reason=usual_arith>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_chosen]]))))), widen<i64, reason=usual_arith>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_nulled]]))))), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_loaded]]))), widen<i64, reason=usual_arith>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_fetched]])))), read<i64>(%[[VALUE_wide]])), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_bits_2]]))), reinterpret<i64, reason=explicit, fits=always>(const<u64>(4)));
+// IR-NEXT:         let %[[VALUE_fetched:[0-9]+]] fetched: bool [storage=automatic] = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)) [c="typeof(__c11_atomic_fetch_add(&flag, 1, 5))"] [c="typeof(__c11_atomic_fetch_add(&flag, 1, 5))"];
+// IR-NEXT:         let %[[VALUE_wide:[0-9]+]] wide: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(3)) [c="typeof(__builtin_choose_expr(1, 1L, 1.0))"] [c="typeof(__builtin_choose_expr(1, 1L, 1.0))"];
+// IR-NEXT:         let %[[VALUE_bits_2:[0-9]+]] bits: i32 [storage=automatic] = const<i32>(0) [c="typeof(__builtin_popcount(c))"] [c="typeof(__builtin_popcount(c))"];
+// IR-NEXT:         return add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(field0(%[[VALUE_made]]))), widen<i64, reason=usual_arith>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_chosen]]))))), widen<i64, reason=usual_arith>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_nulled]]))))), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_loaded]]))), widen<i64, reason=usual_arith>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_fetched]]) [c="typeof(__c11_atomic_fetch_add(&flag, 1, 5))"]))), read<i64>(%[[VALUE_wide]])), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_bits_2]]))), reinterpret<i64, reason=explicit, fits=always>(const<u64>(4)));
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_h:[0-9]+]] @h(%[[VALUE_v:[0-9]+]] v: vector<i32, 4>, %[[VALUE_q:[0-9]+]] q: vector<f32, 4>, %[[VALUE_p_2:[0-9]+]] p: ptr<i32>) -> i32 [linkage=external] [abi=sysv64(direct, direct, scalar) -> scalar] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_sum_2:[0-9]+]] sum: vector<i32, 4> [storage=automatic] = read<vector<i32, 4>>(%[[VALUE_v]]);
-// IR-NEXT:         let %[[VALUE_value:[0-9]+]] value: i32 [storage=automatic] = const<i32>(2);
+// IR-NEXT:     fn %[[VALUE_h:[0-9]+]] @h(%[[VALUE_v:[0-9]+]] v: vector<i32, 4> [c="v4si"], %[[VALUE_q:[0-9]+]] q: vector<f32, 4> [c="float4"], %[[VALUE_p_2:[0-9]+]] p: ptr<i32>) -> i32 [linkage=external] [abi=sysv64(direct, direct, scalar) -> scalar] [fallthrough=ub_if_used] [c="int(v4si, float4, int *)"] {
+// IR-NEXT:         let %[[VALUE_sum_2:[0-9]+]] sum: vector<i32, 4> [storage=automatic] = read<vector<i32, 4>>(%[[VALUE_v]]) [c="typeof(v += 1)"] [c="typeof(v += 1)"];
+// IR-NEXT:         let %[[VALUE_value:[0-9]+]] value: i32 [storage=automatic] = const<i32>(2) [c="typeof(({ ... }))"] [c="typeof(({ ... }))"];
 // IR-NEXT:         let %[[VALUE_nulled_2:[0-9]+]] nulled: i32 [storage=automatic] = read<i32>(deref(conditional<ptr<i32>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<i32>>(%[[VALUE_p_2]]), null<ptr<i32>>)));
 // IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(lane(%[[VALUE_sum_2]], const<i32>(0))), read<i32>(%[[VALUE_value]])), read<i32>(%[[VALUE_nulled_2]]));
 // IR-NEXT:     }

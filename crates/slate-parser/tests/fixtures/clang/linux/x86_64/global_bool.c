@@ -39,7 +39,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_enabled:[0-9]+]] enabled: bool [storage=static] = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_disabled:[0-9]+]] disabled: bool [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]])), from_bool<i32, reason=vararg>(read<bool>(%[[VALUE_enabled]])), from_bool<i32, reason=vararg>(read<bool>(%[[VALUE_disabled]])));
 // DEFAULT-NEXT:     }

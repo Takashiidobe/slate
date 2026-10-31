@@ -47,20 +47,20 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
-// DEFAULT-NEXT:     type @type[[TYPE_ReallocFn:[0-9]+]] ReallocFn = ptr<fn(ptr<void>, u64) -> ptr<void>>;
+// DEFAULT-NEXT:     type @type[[TYPE_ReallocFn:[0-9]+]] ReallocFn = ptr<fn(ptr<void>, u64) -> ptr<void>> [c="void *(*)(void *, size_t)"];
 // DEFAULT-NEXT:     type @type[[TYPE_FreeFn:[0-9]+]] FreeFn = ptr<fn(ptr<void>) -> void>;
 // DEFAULT-NEXT:     type @type[[TYPE_Allocator:[0-9]+]] Allocator = struct {
-// DEFAULT-NEXT:         field0 realloc_fn: ptr<fn(ptr<void>, u64) -> ptr<void>>;
-// DEFAULT-NEXT:         field1 free_fn: ptr<fn(ptr<void>) -> void>;
+// DEFAULT-NEXT:         field0 realloc_fn: ptr<fn(ptr<void>, u64) -> ptr<void>> [c="ReallocFn"];
+// DEFAULT-NEXT:         field1 free_fn: ptr<fn(ptr<void>) -> void> [c="FreeFn"];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %[[VALUE_alloc:[0-9]+]] alloc: @type[[TYPE_Allocator]] [storage=static] = aggregate<@type[[TYPE_Allocator]], zero_fill=false>(field0 = function_decay<ptr<fn(ptr<void>, u64) -> ptr<void>>>(%[[VALUE_realloc:[0-9]+]]), field1 = function_decay<ptr<fn(ptr<void>) -> void>>(%[[VALUE_free:[0-9]+]])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_alloc:[0-9]+]] alloc: @type[[TYPE_Allocator]] [storage=static] = aggregate<@type[[TYPE_Allocator]], zero_fill=false>(field0 = function_decay<ptr<fn(ptr<void>, u64) -> ptr<void>>>(%[[VALUE_realloc:[0-9]+]]) [c="ReallocFn"], field1 = function_decay<ptr<fn(ptr<void>) -> void>>(%[[VALUE_free:[0-9]+]]) [c="FreeFn"]) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([111, 107, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_realloc]] @realloc(%[[VALUE___ptr:[0-9]+]] __ptr: ptr<void>, %[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
+// DEFAULT-NEXT:     fn %[[VALUE_realloc]] @realloc(%[[VALUE___ptr:[0-9]+]] __ptr: ptr<void>, %[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(void *, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_free]] @free(%[[VALUE___ptr_2:[0-9]+]] __ptr: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(read<ptr<fn(ptr<void>, u64) -> ptr<void>>>(field0(%[[VALUE_alloc]])), null<ptr<void>>, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(read<ptr<fn(ptr<void>) -> void>>(field1(%[[VALUE_alloc]])), read<ptr<void>>(%[[VALUE_p]]));
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(read<ptr<fn(ptr<void>, u64) -> ptr<void>>>(field0(%[[VALUE_alloc]])) [c="ReallocFn"], null<ptr<void>>, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))) [c="size_t"]);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(read<ptr<fn(ptr<void>) -> void>>(field1(%[[VALUE_alloc]])) [c="FreeFn"], read<ptr<void>>(%[[VALUE_p]]));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

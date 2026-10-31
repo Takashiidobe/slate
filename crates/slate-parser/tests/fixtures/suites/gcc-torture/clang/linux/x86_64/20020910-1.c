@@ -49,7 +49,7 @@ static void foo (void)
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 2], bit_offsets=[Some(0), Some(20)], bit_units=[(0, 4)], field_units=[Some(0), Some(0)]];
 // DEFAULT-NEXT:     type @type[[TYPE_XX:[0-9]+]] XX = @type[[TYPE0]];
 // DEFAULT-NEXT:     global %[[VALUE_x0:[0-9]+]] x0: u32 [storage=static] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_yy:[0-9]+]] yy: @type[[TYPE0]] [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_yy:[0-9]+]] yy: @type[[TYPE0]] [storage=static] [linkage=internal] [c="XX"];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..20>(%[[VALUE_yy]]), ptr_to_int<u32, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_x0]])));
 // DEFAULT-NEXT:     }

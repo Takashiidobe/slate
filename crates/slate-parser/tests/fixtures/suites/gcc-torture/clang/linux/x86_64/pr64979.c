@@ -56,8 +56,8 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_ap:[0-9]+]] ap: ptr<va_list>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<ptr<va_list>>(read<ptr<va_list>>(%[[VALUE_ap]]), null<ptr<va_list>>)
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_ap:[0-9]+]] ap: ptr<va_list> [c="va_list *"]) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] [c="void(int, va_list *)"] {
+// DEFAULT-NEXT:         if ne<ptr<va_list>>(read<ptr<va_list>>(%[[VALUE_ap]]) [c="va_list *"], null<ptr<va_list>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:                 for %[[VALUE0:[0-9]+]]
@@ -78,11 +78,11 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x_2:[0-9]+]] x: i32, ...) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_n]], va_arg<i32>(%[[VALUE_ap_2]]));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<va_list>) -> void>(%[[VALUE_bar]], read<i32>(%[[VALUE_x_2]]), conditional<ptr<va_list>>(eq<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0)), null<ptr<va_list>>, addr_of<ptr<va_list>>(%[[VALUE_ap_2]])));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<va_list>) -> void>(%[[VALUE_bar]], read<i32>(%[[VALUE_x_2]]), conditional<ptr<va_list>>(eq<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0)), null<ptr<va_list>> [c="va_list *"], addr_of<ptr<va_list>>(%[[VALUE_ap_2]]) [c="va_list *"]) [c="va_list *"]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {

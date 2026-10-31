@@ -54,9 +54,9 @@ int         main() {
 // DEFAULT-NEXT:         field2 miter_limit: f32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_gs_imager_state:[0-9]+]] gs_imager_state = @type[[TYPE_gs_imager_state_s]];
-// DEFAULT-NEXT:     global %[[VALUE_gstate_initial:[0-9]+]] gstate_initial: @type[[TYPE_gs_imager_state_s]] [storage=static] [const] = aggregate<@type[[TYPE_gs_imager_state_s]], zero_fill=false>(field0 = aggregate<@type[[TYPE0]], zero_fill=true>(field0 = const<i32>(1))) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_gstate_path_memory:[0-9]+]] @gstate_path_memory(%[[VALUE_pgs:[0-9]+]] pgs: ptr<@type[[TYPE_gs_imager_state_s]]>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<@type[[TYPE_gs_imager_state_s]]>(deref(read<ptr<@type[[TYPE_gs_imager_state_s]]>>(%[[VALUE_pgs]])), copy<@type[[TYPE_gs_imager_state_s]], reason=assign>(read<@type[[TYPE_gs_imager_state_s]]>(%[[VALUE_gstate_initial]])));
+// DEFAULT-NEXT:     global %[[VALUE_gstate_initial:[0-9]+]] gstate_initial: @type[[TYPE_gs_imager_state_s]] [storage=static] [const] = aggregate<@type[[TYPE_gs_imager_state_s]], zero_fill=false>(field0 = aggregate<@type[[TYPE0]], zero_fill=true>(field0 = const<i32>(1))) [linkage=internal] [c="const gs_imager_state"];
+// DEFAULT-NEXT:     fn %[[VALUE_gstate_path_memory:[0-9]+]] @gstate_path_memory(%[[VALUE_pgs:[0-9]+]] pgs: ptr<@type[[TYPE_gs_imager_state_s]]> [c="gs_imager_state *"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(gs_imager_state *)"] {
+// DEFAULT-NEXT:         write<@type[[TYPE_gs_imager_state_s]]>(deref(read<ptr<@type[[TYPE_gs_imager_state_s]]>>(%[[VALUE_pgs]])), copy<@type[[TYPE_gs_imager_state_s]], reason=assign>(read<@type[[TYPE_gs_imager_state_s]]>(%[[VALUE_gstate_initial]]) [c="gs_imager_state"]) [c="gs_imager_state"]) [c="gs_imager_state"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_gs_state_update_overprint:[0-9]+]] @gs_state_update_overprint() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<i32>(field0(field0(%[[VALUE_gstate_initial]])));

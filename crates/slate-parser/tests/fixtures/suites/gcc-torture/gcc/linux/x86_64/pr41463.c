@@ -94,7 +94,7 @@ int main() {
 // DEFAULT-NEXT:         field2 a: array<ptr<@type[[TYPE_tree_node]]>, 1>;
 // DEFAULT-NEXT:     } [size=56, align=8, offsets=[0, 40, 48]];
 // DEFAULT-NEXT:     global %[[VALUE_global:[0-9]+]] global: @type[[TYPE_tree_node]] [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_tree_node]]>, %[[VALUE_i:[0-9]+]] i: i32) -> ptr<@type[[TYPE_tree_node]]> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<ptr<@type[[TYPE_tree_node]]>> [storage=automatic];

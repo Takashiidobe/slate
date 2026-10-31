@@ -53,6 +53,6 @@ extern __typeof (__rawmemchr_ppc) __EI___rawmemchr_ppc
 // DEFAULT-NEXT:             return call<ptr<void>, signature=fn(ptr<const void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memchr]], read<ptr<const void>>(%[[VALUE_s]]), read<i32>(%[[VALUE_c]]), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<const void>>(%[[VALUE_s]])), call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<const void>>(%[[VALUE_s]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE___EI___rawmemchr_ppc:[0-9]+]] @__EI___rawmemchr_ppc(%[[VALUE4:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE5:[0-9]+]] <unnamed>: i32) -> ptr<void> [linkage=external] [alias="__rawmemchr_ppc"];
+// DEFAULT-NEXT:     fn %[[VALUE___EI___rawmemchr_ppc:[0-9]+]] @__EI___rawmemchr_ppc(%[[VALUE4:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE5:[0-9]+]] <unnamed>: i32) -> ptr<void> [linkage=external] [alias="__rawmemchr_ppc"] [c="typeof(__rawmemchr_ppc)"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -46,7 +46,7 @@ void foo (D *y)
 // DEFAULT-NEXT:     } [size=20, align=4, offsets=[0, 4, 8, 12, 16]];
 // DEFAULT-NEXT:     type @type[[TYPE_D:[0-9]+]] D = @type[[TYPE0]];
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: u64, %[[VALUE1:[0-9]+]] <unnamed>: u64) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_y:[0-9]+]] y: ptr<@type[[TYPE0]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_y:[0-9]+]] y: ptr<@type[[TYPE0]]> [c="D *"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(D *)"] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_y]])))), const<i32>(0))
 // DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);

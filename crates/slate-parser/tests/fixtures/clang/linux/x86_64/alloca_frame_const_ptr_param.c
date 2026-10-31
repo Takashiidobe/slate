@@ -46,16 +46,16 @@ int main(void) {
 // DEFAULT-NEXT:         field0 windowLog: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_Params:[0-9]+]] Params = @type[[TYPE0]];
-// DEFAULT-NEXT:     fn %[[VALUE_use_params:[0-9]+]] @use_params(%[[VALUE_params:[0-9]+]] params: ptr<const @type[[TYPE0]]>, %[[VALUE_out:[0-9]+]] out: ptr<u32>, %[[VALUE_lo:[0-9]+]] lo: ptr<const i8>, %[[VALUE_hi:[0-9]+]] hi: ptr<const i8>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_use_params:[0-9]+]] @use_params(%[[VALUE_params:[0-9]+]] params: ptr<const @type[[TYPE0]]> [c="const Params *"], %[[VALUE_out:[0-9]+]] out: ptr<u32>, %[[VALUE_lo:[0-9]+]] lo: ptr<const i8>, %[[VALUE_hi:[0-9]+]] hi: ptr<const i8>) -> void [linkage=internal] [fallthrough=ret_void] [c="void(const Params *, unsigned int *, const char *, const char *)"] {
 // DEFAULT-NEXT:         let %[[VALUE_diff:[0-9]+]] diff: i64 [storage=automatic] = ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<const i8>>(%[[VALUE_hi]]), read<ptr<const i8>>(%[[VALUE_lo]]));
 // DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%[[VALUE_out]])), reinterpret<u32, reason=explicit, fits=unknown>(add<i32, overflow=ub>(read<i32>(field0(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_params]])))), truncate<i32, reason=explicit, fits=unknown>(read<i64>(%[[VALUE_diff]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: @type[[TYPE0]] [storage=automatic] [c="Params"];
 // DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_p]]), const<i32>(5));
 // DEFAULT-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: array<i8, 8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_out_2:[0-9]+]] out: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const @type[[TYPE0]]>, ptr<u32>, ptr<const i8>, ptr<const i8>) -> void>(%[[VALUE_use_params]], pointer_cast<ptr<const @type[[TYPE0]]>, reason=arg>(addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_p]])), addr_of<ptr<u32>>(%[[VALUE_out_2]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_buf]])), pointer_cast<ptr<const i8>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_buf]]), const<i32>(4))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const @type[[TYPE0]]>, ptr<u32>, ptr<const i8>, ptr<const i8>) -> void>(%[[VALUE_use_params]], pointer_cast<ptr<const @type[[TYPE0]]>, reason=arg>(addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_p]]) [c="Params *"]) [c="const Params *"], addr_of<ptr<u32>>(%[[VALUE_out_2]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_buf]])), pointer_cast<ptr<const i8>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_buf]]), const<i32>(4))));
 // DEFAULT-NEXT:         return reinterpret<i32, reason=explicit, fits=unknown>(read<u32>(%[[VALUE_out_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

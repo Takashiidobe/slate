@@ -55,13 +55,13 @@ __m128i get_vec(void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___m128i:[0-9]+]] __m128i = vector<i64, 2>;
 // DEFAULT-NEXT:     global %[[VALUE_tbl:[0-9]+]] tbl: array<i16, 8> [storage=static] [const] [align=16] = aggregate<array<i16, 8>, zero_fill=false>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(1)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(2)), index2 = truncate<i16, reason=assign, fits=always>(const<i32>(3)), index3 = truncate<i16, reason=assign, fits=always>(const<i32>(4)), index4 = truncate<i16, reason=assign, fits=always>(const<i32>(5)), index5 = truncate<i16, reason=assign, fits=always>(const<i32>(6)), index6 = truncate<i16, reason=assign, fits=always>(const<i32>(7)), index7 = truncate<i16, reason=assign, fits=always>(const<i32>(8))) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE__mm_load_si128:[0-9]+]] @_mm_load_si128(%[[VALUE___P:[0-9]+]] __P: ptr<const vector<i64, 2>>) -> vector<i64, 2> [linkage=external] [inline=always] [definition=inline_only] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<vector<i64, 2>>(deref(read<ptr<const vector<i64, 2>>>(%[[VALUE___P]])));
+// DEFAULT-NEXT:     fn %[[VALUE__mm_load_si128:[0-9]+]] @_mm_load_si128(%[[VALUE___P:[0-9]+]] __P: ptr<const vector<i64, 2>> [c="const __m128i *"]) -> vector<i64, 2> [linkage=external] [inline=always] [definition=inline_only] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] [c="__m128i(const __m128i *)"] {
+// DEFAULT-NEXT:         return read<vector<i64, 2>>(deref(read<ptr<const vector<i64, 2>>>(%[[VALUE___P]]))) [c="__m128i"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_get_vec:[0-9]+]] @get_vec() -> vector<i64, 2> [linkage=external] [abi=sysv64() -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_ret:[0-9]+]] ret: vector<i64, 2> [storage=automatic];
-// DEFAULT-NEXT:         write<vector<i64, 2>>(%[[VALUE_ret]], call<vector<i64, 2>, signature=fn(ptr<const vector<i64, 2>>) -> vector<i64, 2>, abi=sysv64(scalar) -> direct>(%[[VALUE__mm_load_si128]], pointer_cast<ptr<const vector<i64, 2>>, reason=arg>(pointer_cast<ptr<vector<i64, 2>>, reason=explicit>(array_decay<ptr<const i16>, length=Some(8)>(%[[VALUE_tbl]])))));
-// DEFAULT-NEXT:         return read<vector<i64, 2>>(%[[VALUE_ret]]);
+// DEFAULT-NEXT:     fn %[[VALUE_get_vec:[0-9]+]] @get_vec() -> vector<i64, 2> [linkage=external] [abi=sysv64() -> direct] [fallthrough=ub_if_used] [c="__m128i(void)"] {
+// DEFAULT-NEXT:         let %[[VALUE_ret:[0-9]+]] ret: vector<i64, 2> [storage=automatic] [c="__m128i"];
+// DEFAULT-NEXT:         write<vector<i64, 2>>(%[[VALUE_ret]], call<vector<i64, 2>, signature=fn(ptr<const vector<i64, 2>>) -> vector<i64, 2>, abi=sysv64(scalar) -> direct>(%[[VALUE__mm_load_si128]], pointer_cast<ptr<const vector<i64, 2>>, reason=arg>(pointer_cast<ptr<vector<i64, 2>>, reason=explicit>(array_decay<ptr<const i16>, length=Some(8)>(%[[VALUE_tbl]])) [c="__m128i *"]) [c="const __m128i *"]) [c="__m128i"]) [c="__m128i"];
+// DEFAULT-NEXT:         return read<vector<i64, 2>>(%[[VALUE_ret]]) [c="__m128i"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

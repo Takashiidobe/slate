@@ -50,14 +50,14 @@ void foo(void)
 // DEFAULT-NEXT:     type @type[[TYPE_uint32:[0-9]+]] uint32 = u32;
 // DEFAULT-NEXT:     type @type[[TYPE_uint64:[0-9]+]] uint64 = u64;
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
-// DEFAULT-NEXT:         field0 i32: u32;
-// DEFAULT-NEXT:         field1 i64: u64;
+// DEFAULT-NEXT:         field0 i32: u32 [c="uint32"];
+// DEFAULT-NEXT:         field1 i64: u64 [c="uint64"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE_u64:[0-9]+]] u64 = @type[[TYPE0]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_data:[0-9]+]] data: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         write<u64>(field1(%[[VALUE_data]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1))));
+// DEFAULT-NEXT:         let %[[VALUE_data:[0-9]+]] data: @type[[TYPE0]] [storage=automatic] [c="u64"];
+// DEFAULT-NEXT:         write<u64>(field1(%[[VALUE_data]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1))) [c="uint64"]) [c="uint64"];
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(field0(%[[VALUE_data]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }

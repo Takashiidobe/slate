@@ -85,24 +85,24 @@ main (void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE___m128i:[0-9]+]] __m128i = vector<i32, 4>;
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
-// DEFAULT-NEXT:         field0 v: vector<i32, 4>;
+// DEFAULT-NEXT:         field0 v: vector<i32, 4> [c="__m128i"];
 // DEFAULT-NEXT:         field1 i: array<i32, 4>;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0, 0]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> vector<i32, 4> [linkage=external] [abi=sysv64() -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: vector<i32, 4> [storage=automatic] = aggregate<vector<i32, 4>, zero_fill=true>(index0 = const<i32>(286331153), index1 = const<i32>(572662306), index2 = const<i32>(1145324612));
-// DEFAULT-NEXT:         return read<vector<i32, 4>>(%[[VALUE_x]]);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> vector<i32, 4> [linkage=external] [abi=sysv64() -> direct] [fallthrough=ub_if_used] [c="__m128i(void)"] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: vector<i32, 4> [storage=automatic] = aggregate<vector<i32, 4>, zero_fill=true>(index0 = const<i32>(286331153), index1 = const<i32>(572662306), index2 = const<i32>(1145324612)) [c="__m128i"];
+// DEFAULT-NEXT:         return read<vector<i32, 4>>(%[[VALUE_x]]) [c="__m128i"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> vector<i32, 4> [linkage=external] [abi=sysv64() -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: vector<i32, 4> [storage=automatic] = aggregate<vector<i32, 4>, zero_fill=true>(index0 = const<i32>(286331153), index1 = const<i32>(572662306), index2 = const<i32>(1145324612));
-// DEFAULT-NEXT:         return not<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x_2]]));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> vector<i32, 4> [linkage=external] [abi=sysv64() -> direct] [fallthrough=ub_if_used] [c="__m128i(void)"] {
+// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: vector<i32, 4> [storage=automatic] = aggregate<vector<i32, 4>, zero_fill=true>(index0 = const<i32>(286331153), index1 = const<i32>(572662306), index2 = const<i32>(1145324612)) [c="__m128i"];
+// DEFAULT-NEXT:         return not<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%[[VALUE_x_2]]) [c="__m128i"]) [c="__m128i"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<vector<i32, 4>>(field0(%[[VALUE_u]]), call<vector<i32, 4>, signature=fn() -> vector<i32, 4>, abi=sysv64() -> direct>(%[[VALUE_foo]]));
-// DEFAULT-NEXT:         write<vector<i32, 4>>(field0(%[[VALUE_v]]), call<vector<i32, 4>, signature=fn() -> vector<i32, 4>, abi=sysv64() -> direct>(%[[VALUE_bar]]));
+// DEFAULT-NEXT:         write<vector<i32, 4>>(field0(%[[VALUE_u]]), call<vector<i32, 4>, signature=fn() -> vector<i32, 4>, abi=sysv64() -> direct>(%[[VALUE_foo]]) [c="__m128i"]) [c="__m128i"];
+// DEFAULT-NEXT:         write<vector<i32, 4>>(field0(%[[VALUE_v]]), call<vector<i32, 4>, signature=fn() -> vector<i32, 4>, abi=sysv64() -> direct>(%[[VALUE_bar]]) [c="__m128i"]) [c="__m128i"];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));

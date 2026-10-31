@@ -48,10 +48,10 @@ redeclaration_error_message (olddecl)
 // DEFAULT-NEXT:         field0 decl: @type[[TYPE_tree_decl]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_tree:[0-9]+]] tree = ptr<@type[[TYPE_tree_node]]>;
-// DEFAULT-NEXT:     fn %[[VALUE_redeclaration_error_message:[0-9]+]] @redeclaration_error_message(%[[VALUE_olddecl:[0-9]+]] olddecl: ptr<@type[[TYPE_tree_node]]>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_redeclaration_error_message:[0-9]+]] @redeclaration_error_message(%[[VALUE_olddecl:[0-9]+]] olddecl: ptr<@type[[TYPE_tree_node]]> [c="tree"]) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<@type[[TYPE_tree_node]]> [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE0]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_olddecl]]));
+// DEFAULT-NEXT:             write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE0]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_olddecl]]) [c="tree"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE0]])))))), const<i32>(0))
 // DEFAULT-NEXT:             ;

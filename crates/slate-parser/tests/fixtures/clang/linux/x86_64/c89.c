@@ -230,7 +230,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
 // DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
 // DEFAULT-NEXT:     type @type[[TYPE_wchar_t:[0-9]+]] wchar_t = i32;
-// DEFAULT-NEXT:     type @type[[TYPE_va_list_2:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list_2:[0-9]+]] va_list = va_list [c="__gnuc_va_list"];
 // DEFAULT-NEXT:     type @type[[TYPE_C89Color:[0-9]+]] C89Color = enum : u32 {
 // DEFAULT-NEXT:         %[[VALUE_C89_RED:[0-9]+]] C89_RED = const<i32>(3);
 // DEFAULT-NEXT:         %[[VALUE_C89_GREEN:[0-9]+]] C89_GREEN = const<i32>(5);
@@ -256,7 +256,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_c89_joined_value:[0-9]+]] c89_joined_value: i32 [storage=static] = const<i32>(23) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_calls:[0-9]+]] calls: i32 [storage=static] = const<i32>(0) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 88> [storage=static] = code_units<array<i8, 88>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_c89_add:[0-9]+]] @c89_add(%[[VALUE_left:[0-9]+]] left: i32, %[[VALUE_right:[0-9]+]] right: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_left]]), read<i32>(%[[VALUE_right]]));
 // DEFAULT-NEXT:     }
@@ -268,7 +268,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_output]])), read<i32>(deref(read<ptr<const i32>>(%[[VALUE_input]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_c89_variadic_sum:[0-9]+]] @c89_variadic_sum(%[[VALUE_count:[0-9]+]] count: i32, ...) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_arguments:[0-9]+]] arguments: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_arguments:[0-9]+]] arguments: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         let %[[VALUE_index:[0-9]+]] index: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_total:[0-9]+]] total: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_total]], const<i32>(0));
@@ -353,13 +353,13 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_automatic_value:[0-9]+]] automatic_value: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_register_value:[0-9]+]] register_value: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_signed_value:[0-9]+]] signed_value: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_signed_value:[0-9]+]] signed_value: i32 [storage=automatic] [c="C89SignedInt"];
 // DEFAULT-NEXT:         let %[[VALUE_unsigned_value:[0-9]+]] unsigned_value: u64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_signed_character:[0-9]+]] signed_character: i8 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_float_value:[0-9]+]] float_value: f32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_double_value:[0-9]+]] double_value: f64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_long_double_value:[0-9]+]] long_double_value: f80 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_wide_character:[0-9]+]] wide_character: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_wide_character:[0-9]+]] wide_character: i32 [storage=automatic] [c="wchar_t"];
 // DEFAULT-NEXT:         let %[[VALUE_color:[0-9]+]] color: @type[[TYPE_C89Color]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_point:[0-9]+]] point: @type[[TYPE_C89Point]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_bits:[0-9]+]] bits: @type[[TYPE_C89Bits]] [storage=automatic];
@@ -369,7 +369,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_source_value:[0-9]+]] source_value: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_pointer:[0-9]+]] pointer: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_const_pointer:[0-9]+]] const_pointer: ptr<const i32> [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_operation:[0-9]+]] operation: ptr<fn(i32, i32) -> i32> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_operation:[0-9]+]] operation: ptr<fn(i32, i32) -> i32> [storage=automatic] [c="C89BinaryOperation"];
 // DEFAULT-NEXT:         let %[[VALUE_arithmetic:[0-9]+]] arithmetic: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_bitwise:[0-9]+]] bitwise: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_logical:[0-9]+]] logical: i32 [storage=automatic];
@@ -382,13 +382,13 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_standard_macro:[0-9]+]] standard_macro: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_automatic_value]], const<i32>(2));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_register_value]], const<i32>(3));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_signed_value]], neg<i32, overflow=ub>(const<i32>(5)));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_signed_value]], neg<i32, overflow=ub>(const<i32>(5)) [c="C89SignedInt"]) [c="C89SignedInt"];
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_unsigned_value]], const<u64>(29));
 // DEFAULT-NEXT:         write<i8>(%[[VALUE_signed_character]], truncate<i8, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(7))));
 // DEFAULT-NEXT:         write<f32>(%[[VALUE_float_value]], const<f32>(2.5));
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_double_value]], const<f64>(3.5));
 // DEFAULT-NEXT:         write<f80>(%[[VALUE_long_double_value]], const<f80>(4.5));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_wide_character]], const<i32>(90));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_wide_character]], const<i32>(90) [c="wchar_t"]) [c="wchar_t"];
 // DEFAULT-NEXT:         write<@type[[TYPE_C89Color]]>(%[[VALUE_color]], int_to_enum<@type[[TYPE_C89Color]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(5))));
 // DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_point]]), const<i32>(31));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_point]]), const<i32>(37));
@@ -404,7 +404,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_source_value]], const<i32>(43));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_copied_value]], const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ptr<const void>) -> void>(%[[VALUE_c89_store]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_copied_value]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_source_value]])));
-// DEFAULT-NEXT:         write<ptr<fn(i32, i32) -> i32>>(%[[VALUE_operation]], function_decay<ptr<fn(i32, i32) -> i32>>(%[[VALUE_c89_add]]));
+// DEFAULT-NEXT:         write<ptr<fn(i32, i32) -> i32>>(%[[VALUE_operation]], function_decay<ptr<fn(i32, i32) -> i32>>(%[[VALUE_c89_add]]) [c="C89BinaryOperation"]) [c="C89BinaryOperation"];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_arithmetic]], sub<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE_automatic_value]]), read<i32>(%[[VALUE_register_value]])), const<i32>(4)), const<i32>(3)));
 // DEFAULT-NEXT:         let %[[VALUE21:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_arithmetic]]);
 // DEFAULT-NEXT:         let %[[VALUE22:[0-9]+]]: i32 [synthetic] = div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE21]]), const<i32>(17));
@@ -427,7 +427,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_variadic_total]], call<i32, signature=fn(i32, ...) -> i32>(%[[VALUE_c89_variadic_sum]], const<i32>(4), const<i32>(2), const<i32>(3), const<i32>(5), const<i32>(7)));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_control_total]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_c89_control_flow]], const<i32>(4)));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_standard_macro]], const<i32>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(88)>(%[[VALUE_str]])), read<i32>(%[[VALUE_c89_external_value]]), read<i32>(%[[VALUE_c89_const_global]]), read<i32, volatile>(%[[VALUE_c89_volatile_global]]), read<i32>(%[[VALUE_c89_joined_value]]), const<i32>(13), read<i32>(%[[VALUE_standard_macro]]), read<i32>(%[[VALUE_signed_value]]), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_unsigned_value]]))), widen<i32, reason=explicit>(read<i8>(%[[VALUE_signed_character]])), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(%[[VALUE_float_value]])), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%[[VALUE_double_value]])), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f80>(%[[VALUE_long_double_value]])), read<i32>(%[[VALUE_wide_character]]), enum_to_int<u32, reason=promotion>(read<@type[[TYPE_C89Color]]>(%[[VALUE_color]])), add<i32, overflow=ub>(read<i32>(field0(%[[VALUE_point]])), read<i32>(field1(%[[VALUE_point]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..1, bits=0..3>(%[[VALUE_bits]]))), read<i32>(bitfield1<unit=0, bytes=0..1, bits=3..7>(%[[VALUE_bits]])), read<i32>(field0(%[[VALUE_number]])), add<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(read<ptr<const i32>>(%[[VALUE_const_pointer]]), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(read<ptr<const i32>>(%[[VALUE_const_pointer]]), const<i32>(3))))), read<i32>(%[[VALUE_copied_value]]), call<i32, signature=fn(i32, i32) -> i32>(read<ptr<fn(i32, i32) -> i32>>(%[[VALUE_operation]]), const<i32>(53), const<i32>(6)), read<i32>(%[[VALUE_arithmetic]]), read<i32>(%[[VALUE_bitwise]]), read<i32>(%[[VALUE_logical]]), read<i32>(%[[VALUE_conditional]]), read<i32>(%[[VALUE_comma_value]]), read<i32>(%[[VALUE_string_length]]), read<i32>(%[[VALUE_static_calls]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_variadic_total]]), read<i32>(%[[VALUE_control_total]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(88)>(%[[VALUE_str]])), read<i32>(%[[VALUE_c89_external_value]]), read<i32>(%[[VALUE_c89_const_global]]), read<i32, volatile>(%[[VALUE_c89_volatile_global]]), read<i32>(%[[VALUE_c89_joined_value]]), const<i32>(13), read<i32>(%[[VALUE_standard_macro]]), read<i32>(%[[VALUE_signed_value]]), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_unsigned_value]]))), widen<i32, reason=explicit>(read<i8>(%[[VALUE_signed_character]])), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(%[[VALUE_float_value]])), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%[[VALUE_double_value]])), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f80>(%[[VALUE_long_double_value]])), read<i32>(%[[VALUE_wide_character]]), enum_to_int<u32, reason=promotion>(read<@type[[TYPE_C89Color]]>(%[[VALUE_color]])), add<i32, overflow=ub>(read<i32>(field0(%[[VALUE_point]])), read<i32>(field1(%[[VALUE_point]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..1, bits=0..3>(%[[VALUE_bits]]))), read<i32>(bitfield1<unit=0, bytes=0..1, bits=3..7>(%[[VALUE_bits]])), read<i32>(field0(%[[VALUE_number]])), add<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(read<ptr<const i32>>(%[[VALUE_const_pointer]]), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(read<ptr<const i32>>(%[[VALUE_const_pointer]]), const<i32>(3))))), read<i32>(%[[VALUE_copied_value]]), call<i32, signature=fn(i32, i32) -> i32>(read<ptr<fn(i32, i32) -> i32>>(%[[VALUE_operation]]) [c="C89BinaryOperation"], const<i32>(53), const<i32>(6)), read<i32>(%[[VALUE_arithmetic]]), read<i32>(%[[VALUE_bitwise]]), read<i32>(%[[VALUE_logical]]), read<i32>(%[[VALUE_conditional]]), read<i32>(%[[VALUE_comma_value]]), read<i32>(%[[VALUE_string_length]]), read<i32>(%[[VALUE_static_calls]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_variadic_total]]), read<i32>(%[[VALUE_control_total]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -67,8 +67,8 @@ int main(void) {
 // DEFAULT-NEXT:         field2 ch: array<i8, 3>;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_pstr:[0-9]+]] pstr = @type[[TYPE0]];
-// DEFAULT-NEXT:     global %[[VALUE_ao:[0-9]+]] ao: @type[[TYPE0]] [storage=static] [const] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(2), field1 = const<i32>(2), field2 = code_units<array<i8, 3>>([79, 75, 0])) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: ptr<const @type[[TYPE0]]> [storage=static] [const] = addr_of<ptr<const @type[[TYPE0]]>>(%[[VALUE_ao]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ao:[0-9]+]] ao: @type[[TYPE0]] [storage=static] [const] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(2), field1 = const<i32>(2), field2 = code_units<array<i8, 3>>([79, 75, 0])) [linkage=external] [c="const pstr"];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: ptr<const @type[[TYPE0]]> [storage=static] [const] = addr_of<ptr<const @type[[TYPE0]]>>(%[[VALUE_ao]]) [c="const pstr *"] [linkage=external] [c="const pstr *const"];
 // DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i8>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(3)>(field2(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]])))), read<i32>(field1(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]]))))))), const<i8>(0))
 // DEFAULT-NEXT:             {

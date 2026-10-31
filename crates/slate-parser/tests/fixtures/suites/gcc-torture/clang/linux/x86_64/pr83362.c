@@ -50,32 +50,32 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_u8:[0-9]+]] u8 = u8;
 // DEFAULT-NEXT:     type @type[[TYPE_u32:[0-9]+]] u32 = u32;
-// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: u32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: u32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: u32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: u32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: u8 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: u32) -> u32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: u32 [storage=static] [linkage=external] [c="u32"];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: u32 [storage=static] [linkage=external] [c="u32"];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: u32 [storage=static] [linkage=external] [c="u32"];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: u32 [storage=static] [linkage=external] [c="u32"];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: u8 [storage=static] [linkage=external] [c="u8"];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: u32 [c="u32"]) -> u32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="u32(u32)"] {
 // DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_e]]);
-// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u32 [synthetic] = div<u32, by_zero=ub>(read<u32>(%[[VALUE1]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4095)));
-// DEFAULT-NEXT:                 write<u32>(%[[VALUE_e]], read<u32>(%[[VALUE2]]));
-// DEFAULT-NEXT:                 if gt<u32>(read<u32>(%[[VALUE_p]]), reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_c]])))))
-// DEFAULT-NEXT:                     write<u32>(%[[VALUE_d]], reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_e]]);
-// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: u32 [synthetic] = sub<u32, overflow=wrap>(read<u32>(%[[VALUE3]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)));
-// DEFAULT-NEXT:                 write<u32>(%[[VALUE_e]], read<u32>(%[[VALUE4]]));
-// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_e]]);
-// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: u32 [synthetic] = mul<u32, overflow=wrap>(read<u32>(%[[VALUE5]]), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(le<u32>(read<u32>(%[[VALUE_b]]), read<u32>(%[[VALUE_a]])))));
-// DEFAULT-NEXT:                 write<u32>(%[[VALUE_e]], read<u32>(%[[VALUE6]]));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_e]]) [c="u32"] [c="u32"];
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u32 [synthetic] = div<u32, by_zero=ub>(read<u32>(%[[VALUE1]]) [c="u32"], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4095))) [c="u32"] [c="u32"];
+// DEFAULT-NEXT:                 write<u32>(%[[VALUE_e]], read<u32>(%[[VALUE2]]) [c="u32"]) [c="u32"] [c="u32"];
+// DEFAULT-NEXT:                 if gt<u32>(read<u32>(%[[VALUE_p]]), reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_c]]) [c="u8"]))))
+// DEFAULT-NEXT:                     write<u32>(%[[VALUE_d]], reinterpret<u32, reason=assign, fits=always>(const<i32>(0)) [c="u32"]) [c="u32"];
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_e]]) [c="u32"] [c="u32"];
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: u32 [synthetic] = sub<u32, overflow=wrap>(read<u32>(%[[VALUE3]]) [c="u32"], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3))) [c="u32"] [c="u32"];
+// DEFAULT-NEXT:                 write<u32>(%[[VALUE_e]], read<u32>(%[[VALUE4]]) [c="u32"]) [c="u32"] [c="u32"];
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_e]]) [c="u32"] [c="u32"];
+// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: u32 [synthetic] = mul<u32, overflow=wrap>(read<u32>(%[[VALUE5]]) [c="u32"], reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(le<u32>(read<u32>(%[[VALUE_b]]), read<u32>(%[[VALUE_a]]))))) [c="u32"] [c="u32"];
+// DEFAULT-NEXT:                 write<u32>(%[[VALUE_e]], read<u32>(%[[VALUE6]]) [c="u32"]) [c="u32"] [c="u32"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ge<u32>(read<u32>(%[[VALUE_e]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(88030)));
-// DEFAULT-NEXT:         return read<u32>(%[[VALUE_e]]);
+// DEFAULT-NEXT:         return read<u32>(%[[VALUE_e]]) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%[[VALUE_foo]], reinterpret<u32, reason=arg, fits=always>(const<i32>(1164)));
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%[[VALUE_foo]], reinterpret<u32, reason=arg, fits=always>(const<i32>(1164)) [c="u32"]) [c="u32"] [c="u32"];
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_x]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(253)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

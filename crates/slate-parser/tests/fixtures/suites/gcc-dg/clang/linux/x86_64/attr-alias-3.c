@@ -102,22 +102,22 @@ main() {
 // DEFAULT-NEXT:     global %[[VALUE_lv4:[0-9]+]] lv4: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_Av4a:[0-9]+]] Av4a: i32 [storage=static] [linkage=external] [alias="lv4"];
 // DEFAULT-NEXT:     global %[[VALUE_pv4a:[0-9]+]] pv4a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Av4a]]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_pf1a:[0-9]+]] pf1a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Af1a:[0-9]+]]) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_pf2a:[0-9]+]] pf2a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Af2a:[0-9]+]]) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_pf3a:[0-9]+]] pf3a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Af3a:[0-9]+]]) [linkage=internal] [used];
-// DEFAULT-NEXT:     global %[[VALUE_pf4a:[0-9]+]] pf4a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Af4a:[0-9]+]]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_pf1a:[0-9]+]] pf1a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Af1a:[0-9]+]]) [c="ftype *"] [linkage=external] [c="ftype *"];
+// DEFAULT-NEXT:     global %[[VALUE_pf2a:[0-9]+]] pf2a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Af2a:[0-9]+]]) [c="ftype *"] [linkage=external] [c="ftype *"];
+// DEFAULT-NEXT:     global %[[VALUE_pf3a:[0-9]+]] pf3a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Af3a:[0-9]+]]) [c="ftype *"] [linkage=internal] [used] [c="ftype *"];
+// DEFAULT-NEXT:     global %[[VALUE_pf4a:[0-9]+]] pf4a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Af4a:[0-9]+]]) [c="ftype *"] [linkage=internal] [c="ftype *"];
 // DEFAULT-NEXT:     fn %[[VALUE_lf1:[0-9]+]] @lf1() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_Af1a]] @Af1a() -> void [linkage=external] [alias="lf1"];
+// DEFAULT-NEXT:     fn %[[VALUE_Af1a]] @Af1a() -> void [linkage=external] [alias="lf1"] [c="ftype"];
 // DEFAULT-NEXT:     fn %[[VALUE_lf2:[0-9]+]] @lf2() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_Af2a]] @Af2a() -> void [linkage=external] [alias="lf2"];
+// DEFAULT-NEXT:     fn %[[VALUE_Af2a]] @Af2a() -> void [linkage=external] [alias="lf2"] [c="ftype"];
 // DEFAULT-NEXT:     fn %[[VALUE_lf3:[0-9]+]] @lf3() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_Af3a]] @Af3a() -> void [linkage=external] [alias="lf3"];
+// DEFAULT-NEXT:     fn %[[VALUE_Af3a]] @Af3a() -> void [linkage=external] [alias="lf3"] [c="ftype"];
 // DEFAULT-NEXT:     fn %[[VALUE_lf4:[0-9]+]] @lf4() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_Af4a]] @Af4a() -> void [linkage=external] [alias="lf4"];
+// DEFAULT-NEXT:     fn %[[VALUE_Af4a]] @Af4a() -> void [linkage=external] [alias="lf4"] [c="ftype"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             in 0 "m" [mem] width 64 place<ptr<i32>>(%[[VALUE_pv4a]]);

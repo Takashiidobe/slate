@@ -182,7 +182,7 @@ int main(void) {
 // DEFAULT-NEXT:         field1 second: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type[[TYPE_C99Flexible:[0-9]+]] C99Flexible = struct {
-// DEFAULT-NEXT:         field0 count: u64;
+// DEFAULT-NEXT:         field0 count: u64 [c="size_t"];
 // DEFAULT-NEXT:         field1 values: array<i32, incomplete>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_C99TrailingComma:[0-9]+]] C99TrailingComma = enum : u32 {
@@ -197,8 +197,8 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([109, 97, 105, 110, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_feclearexcept:[0-9]+]] @feclearexcept(%[[VALUE___excepts:[0-9]+]] __excepts: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_fetestexcept:[0-9]+]] @fetestexcept(%[[VALUE___excepts_2:[0-9]+]] __excepts: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_free:[0-9]+]] @free(%[[VALUE___ptr:[0-9]+]] __ptr: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_c99_inline_square:[0-9]+]] @c99_inline_square(%[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return mul<i32, overflow=ub>(read<i32>(%[[VALUE_value]]), read<i32>(%[[VALUE_value]]));
@@ -206,10 +206,10 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_sum3:[0-9]+]] @sum3(%[[VALUE_first:[0-9]+]] first: i32, %[[VALUE_second:[0-9]+]] second: i32, %[[VALUE_third:[0-9]+]] third: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE_first]]), read<i32>(%[[VALUE_second]])), read<i32>(%[[VALUE_third]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_c99_restrict_sum:[0-9]+]] @c99_restrict_sum(%[[VALUE_left:[0-9]+]] left: ptr<const i32> [restrict], %[[VALUE_right:[0-9]+]] right: ptr<const i32> [restrict]) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_c99_restrict_sum:[0-9]+]] @c99_restrict_sum(%[[VALUE_left:[0-9]+]] left: ptr<const i32> [restrict], %[[VALUE_right:[0-9]+]] right: ptr<const i32> [restrict]) -> i32 [linkage=internal] [fallthrough=ub_if_used] [c="int(const int *restrict, const int *restrict)"] {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(read<ptr<const i32>>(%[[VALUE_left]]))), read<i32>(deref(read<ptr<const i32>>(%[[VALUE_right]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_c99_qualified_array_sum:[0-9]+]] @c99_qualified_array_sum(%[[VALUE_values:[0-9]+]] values: ptr<i32> [restrict] [const] [array=static 3]) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_c99_qualified_array_sum:[0-9]+]] @c99_qualified_array_sum(%[[VALUE_values:[0-9]+]] values: ptr<i32> [restrict] [const] [array=static 3]) -> i32 [linkage=internal] [fallthrough=ub_if_used] [c="int(int[3])"] {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_values]]), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_values]]), const<i32>(1))))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_values]]), const<i32>(2)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_c99_vm_sum:[0-9]+]] @c99_vm_sum(%[[VALUE_length:[0-9]+]] length: i32, %[[VALUE_values_2:[0-9]+]] values: ptr<vla<i32, %[[VALUE0:[0-9]+]]>>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
@@ -252,20 +252,20 @@ int main(void) {
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(2);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<u64>(field0(deref(read<ptr<@type[[TYPE_C99Flexible]]>>(%[[VALUE_flexible]]))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(3))));
+// DEFAULT-NEXT:         write<u64>(field0(deref(read<ptr<@type[[TYPE_C99Flexible]]>>(%[[VALUE_flexible]]))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(3))) [c="size_t"]) [c="size_t"];
 // DEFAULT-NEXT:         for %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %[[VALUE_index_2:[0-9]+]] index: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%[[VALUE_index_2]]), read<u64>(field0(deref(read<ptr<@type[[TYPE_C99Flexible]]>>(%[[VALUE_flexible]])))))
+// DEFAULT-NEXT:                 let %[[VALUE_index_2:[0-9]+]] index: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%[[VALUE_index_2]]) [c="size_t"], read<u64>(field0(deref(read<ptr<@type[[TYPE_C99Flexible]]>>(%[[VALUE_flexible]])))) [c="size_t"])
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %[[VALUE8:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_index_2]]);
-// DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE8]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:                 write<u64>(%[[VALUE_index_2]], read<u64>(%[[VALUE9]]));
+// DEFAULT-NEXT:                 let %[[VALUE8:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_index_2]]) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE8]]) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="size_t"]) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:                 write<u64>(%[[VALUE_index_2]], read<u64>(%[[VALUE9]]) [c="size_t"]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(field1(deref(read<ptr<@type[[TYPE_C99Flexible]]>>(%[[VALUE_flexible]])))), read<u64>(%[[VALUE_index_2]]))), add<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_index_2]]))), const<i32>(1)));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(field1(deref(read<ptr<@type[[TYPE_C99Flexible]]>>(%[[VALUE_flexible]])))), read<u64>(%[[VALUE_index_2]]))), add<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_index_2]]) [c="size_t"])), const<i32>(1)));
 // DEFAULT-NEXT:                     let %[[VALUE10:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_flexible_total]]);
 // DEFAULT-NEXT:                     let %[[VALUE11:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE10]]), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(field1(deref(read<ptr<@type[[TYPE_C99Flexible]]>>(%[[VALUE_flexible]])))), read<u64>(%[[VALUE_index_2]])))));
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_flexible_total]], read<i32>(%[[VALUE11]]));
@@ -294,12 +294,12 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_nonconstant_initializer:[0-9]+]] nonconstant_initializer: @type[[TYPE_C99Pair]] [storage=automatic] = aggregate<@type[[TYPE_C99Pair]], zero_fill=false>(field0 = read<i32>(%[[VALUE_initializer_seed]]), field1 = add<i32, overflow=ub>(read<i32>(%[[VALUE_initializer_seed]]), const<i32>(1)));
 // DEFAULT-NEXT:         let %[[VALUE_designated_initializer:[0-9]+]] designated_initializer: @type[[TYPE_C99Pair]] [storage=automatic] = aggregate<@type[[TYPE_C99Pair]], zero_fill=false>(field0 = const<i32>(22), field1 = const<i32>(23));
 // DEFAULT-NEXT:         let %[[VALUE_designated_array:[0-9]+]] designated_array: array<i32, 4> [storage=automatic] [align=16] = aggregate<array<i32, 4>, zero_fill=true>(index0 = const<i32>(27), index2 = const<i32>(29));
-// DEFAULT-NEXT:         let %[[VALUE_const_value:[0-9]+]] const_value: i32 [storage=automatic] [const] = const<i32>(31);
-// DEFAULT-NEXT:         let %[[VALUE_idempotent_const_value:[0-9]+]] idempotent_const_value: i32 [storage=automatic] [const] = read<i32>(%[[VALUE_const_value]]);
-// DEFAULT-NEXT:         let %[[VALUE_volatile_value:[0-9]+]] volatile_value: volatile i32 [storage=automatic] = const<i32>(37);
-// DEFAULT-NEXT:         let %[[VALUE_idempotent_volatile_value:[0-9]+]] idempotent_volatile_value: volatile i32 [storage=automatic] = read<i32, volatile>(%[[VALUE_volatile_value]]);
+// DEFAULT-NEXT:         let %[[VALUE_const_value:[0-9]+]] const_value: i32 [storage=automatic] [const] = const<i32>(31) [c="C99ConstInt"];
+// DEFAULT-NEXT:         let %[[VALUE_idempotent_const_value:[0-9]+]] idempotent_const_value: i32 [storage=automatic] [const] = read<i32>(%[[VALUE_const_value]]) [c="const C99ConstInt"];
+// DEFAULT-NEXT:         let %[[VALUE_volatile_value:[0-9]+]] volatile_value: volatile i32 [storage=automatic] = const<i32>(37) [c="C99VolatileInt"];
+// DEFAULT-NEXT:         let %[[VALUE_idempotent_volatile_value:[0-9]+]] idempotent_volatile_value: volatile i32 [storage=automatic] = read<i32, volatile>(%[[VALUE_volatile_value]]) [c="volatile C99VolatileInt"];
 // DEFAULT-NEXT:         let %[[VALUE_restricted_value:[0-9]+]] restricted_value: i32 [storage=automatic] = const<i32>(41);
-// DEFAULT-NEXT:         let %[[VALUE_restricted_pointer:[0-9]+]] restricted_pointer: ptr<i32> [storage=automatic] [restrict] = addr_of<ptr<i32>>(%[[VALUE_restricted_value]]);
+// DEFAULT-NEXT:         let %[[VALUE_restricted_pointer:[0-9]+]] restricted_pointer: ptr<i32> [storage=automatic] [restrict] = addr_of<ptr<i32>>(%[[VALUE_restricted_value]]) [c="restrict C99RestrictedIntPointer"];
 // DEFAULT-NEXT:         let %[[VALUE_hexadecimal_float:[0-9]+]] hexadecimal_float: f64 [storage=automatic] = const<f64>(3.0);
 // DEFAULT-NEXT:         let %[[VALUE_compound_pair:[0-9]+]] compound_pair: @type[[TYPE_C99Pair]] [storage=automatic] = copy<@type[[TYPE_C99Pair]], reason=assign>(read<@type[[TYPE_C99Pair]]>(compound_literal %[[VALUE16:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_C99Pair]], zero_fill=false>(field0 = const<i32>(43), field1 = const<i32>(47))));
 // DEFAULT-NEXT:         let %[[VALUE_compound_array_value:[0-9]+]] compound_array_value: i32 [storage=automatic] = read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(compound_literal %[[VALUE17:[0-9]+]] [storage=automatic] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(51), index1 = const<i32>(53))), const<i32>(1))));

@@ -112,9 +112,9 @@ f (const char* p1, const char* p2, char p3)
 // DEFAULT-NEXT:     fn %[[VALUE_atoi:[0-9]+]] @atoi(%[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_strchr:[0-9]+]] @strchr(%[[VALUE3:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE4:[0-9]+]] <unnamed>: i32) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_strcmp:[0-9]+]] @strcmp(%[[VALUE5:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE6:[0-9]+]] <unnamed>: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE7:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE7:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external] [c="size_t(const char *)"];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE8:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE9:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE10:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_p1:[0-9]+]] p1: ptr<const i8>, %[[VALUE_p2:[0-9]+]] p2: ptr<const i8>, %[[VALUE_p3:[0-9]+]] p3: i8) -> @type[[TYPE0]] [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_p1:[0-9]+]] p1: ptr<const i8>, %[[VALUE_p2:[0-9]+]] p2: ptr<const i8>, %[[VALUE_p3:[0-9]+]] p3: i8) -> @type[[TYPE0]] [linkage=internal] [fallthrough=ub_if_used] [c="t1(const char *, const char *, char)"] {
 // DEFAULT-NEXT:         let %[[VALUE_v1:[0-9]+]] v1: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_v2:[0-9]+]] v2: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: ptr<i8> [storage=automatic];
@@ -123,7 +123,7 @@ f (const char* p1, const char* p2, char p3)
 // DEFAULT-NEXT:         let %[[VALUE_v5:[0-9]+]] v5: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_v6:[0-9]+]] v6: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: @type[[TYPE0]] [storage=automatic] = int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2)));
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: @type[[TYPE0]] [storage=automatic] = int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2))) [c="t1"] [c="t1"];
 // DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_v1]], call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_C]], read<ptr<const i8>>(%[[VALUE_p2]])));
 // DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_v4]], call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_C]], read<ptr<const i8>>(%[[VALUE_p1]])));
 // DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_v1]]);
@@ -146,9 +146,9 @@ f (const char* p1, const char* p2, char p3)
 // DEFAULT-NEXT:         if logical_and<bool>(eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_a]]), read<ptr<i8>>(%[[VALUE_v3]])), eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_e]]), read<ptr<i8>>(%[[VALUE_v6]])))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if ne<i8>(read<i8>(%[[VALUE_p3]]), const<i8>(0))
-// DEFAULT-NEXT:                     write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(lt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]]))), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])))), const<i32>(1), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(lt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]]))), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])))), const<i32>(1), const<i32>(0)))) [c="t1"]) [c="t1"];
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(gt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]]))), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])))), const<i32>(1), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(gt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]]))), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])))), const<i32>(1), const<i32>(0)))) [c="t1"]) [c="t1"];
 // DEFAULT-NEXT:                 let %[[VALUE19:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_a]]);
 // DEFAULT-NEXT:                 let %[[VALUE20:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE19]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_a]], read<ptr<i8>>(%[[VALUE20]]));
@@ -169,20 +169,20 @@ f (const char* p1, const char* p2, char p3)
 // DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_e]], read<ptr<i8>>(%[[VALUE28]]));
 // DEFAULT-NEXT:                 if logical_and<bool>(eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_a]]), read<ptr<i8>>(%[[VALUE_v3]])), eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_e]]), read<ptr<i8>>(%[[VALUE_v6]])))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_r]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
-// DEFAULT-NEXT:                             write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:                         if eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_r]]) [c="t1"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
+// DEFAULT-NEXT:                             write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))) [c="t1"]) [c="t1"];
 // DEFAULT-NEXT:                         else
 // DEFAULT-NEXT:                             if ne<i8>(read<i8>(%[[VALUE_p3]]), const<i8>(0))
-// DEFAULT-NEXT:                                 write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(lt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]]))), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])))), const<i32>(1), const<i32>(0)))));
+// DEFAULT-NEXT:                                 write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(lt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]]))), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])))), const<i32>(1), const<i32>(0)))) [c="t1"]) [c="t1"];
 // DEFAULT-NEXT:                             else
-// DEFAULT-NEXT:                                 write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(gt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]]))), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])))), const<i32>(1), const<i32>(0)))));
+// DEFAULT-NEXT:                                 write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(gt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]]))), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])))), const<i32>(1), const<i32>(0)))) [c="t1"]) [c="t1"];
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2))));
+// DEFAULT-NEXT:                     write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2))) [c="t1"]) [c="t1"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_B]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i8>>(%[[VALUE_v1]])));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_B]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i8>>(%[[VALUE_v4]])));
-// DEFAULT-NEXT:         return read<@type[[TYPE0]]>(%[[VALUE_r]]);
+// DEFAULT-NEXT:         return read<@type[[TYPE0]]>(%[[VALUE_r]]) [c="t1"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

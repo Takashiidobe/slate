@@ -42,7 +42,7 @@ INT_64 int_64_com (INT_64 a)
 // DEFAULT-NEXT:         field0 digits: array<u16, 4>;
 // DEFAULT-NEXT:     } [size=8, align=2, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_INT_64:[0-9]+]] INT_64 = @type[[TYPE0]];
-// DEFAULT-NEXT:     fn %[[VALUE_int_64_com:[0-9]+]] @int_64_com(%[[VALUE_a:[0-9]+]] a: @type[[TYPE0]]) -> @type[[TYPE0]] [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_int_64_com:[0-9]+]] @int_64_com(%[[VALUE_a:[0-9]+]] a: @type[[TYPE0]] [c="INT_64"]) -> @type[[TYPE0]] [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] [c="INT_64(INT_64)"] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<u16> [synthetic] = ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<u16>, length=Some(4)>(field0(%[[VALUE_a]])), const<i32>(0));
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u16 [synthetic] = read<u16>(deref(read<ptr<u16>>(%[[VALUE0]])));
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(xor<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE1]]))), const<i32>(65535))));
@@ -59,7 +59,7 @@ INT_64 int_64_com (INT_64 a)
 // DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: u16 [synthetic] = read<u16>(deref(read<ptr<u16>>(%[[VALUE9]])));
 // DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(xor<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE10]]))), const<i32>(65535))));
 // DEFAULT-NEXT:         write<u16>(deref(read<ptr<u16>>(%[[VALUE9]])), read<u16>(%[[VALUE11]]));
-// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_a]]) [c="INT_64"]) [c="INT_64"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

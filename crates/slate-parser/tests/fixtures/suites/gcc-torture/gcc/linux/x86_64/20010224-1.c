@@ -66,28 +66,28 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_int16_t:[0-9]+]] int16_t = i16;
 // DEFAULT-NEXT:     type @type[[TYPE_uint16_t:[0-9]+]] uint16_t = u16;
-// DEFAULT-NEXT:     global %[[VALUE_masktab:[0-9]+]] masktab: array<i16, 6> [storage=static] = aggregate<array<i16, 6>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(1)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(2)), index2 = truncate<i16, reason=assign, fits=always>(const<i32>(3)), index3 = truncate<i16, reason=assign, fits=always>(const<i32>(4)), index4 = truncate<i16, reason=assign, fits=always>(const<i32>(5))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_psd:[0-9]+]] psd: array<i16, 6> [storage=static] = aggregate<array<i16, 6>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(50)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(40)), index2 = truncate<i16, reason=assign, fits=always>(const<i32>(30)), index3 = truncate<i16, reason=assign, fits=always>(const<i32>(20)), index4 = truncate<i16, reason=assign, fits=always>(const<i32>(10))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_bndpsd:[0-9]+]] bndpsd: array<i16, 6> [storage=static] = aggregate<array<i16, 6>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(1)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(2)), index2 = truncate<i16, reason=assign, fits=always>(const<i32>(3)), index3 = truncate<i16, reason=assign, fits=always>(const<i32>(4)), index4 = truncate<i16, reason=assign, fits=always>(const<i32>(5))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_masktab:[0-9]+]] masktab: array<i16, 6> [storage=static] = aggregate<array<i16, 6>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(1)) [c="int16_t"], index1 = truncate<i16, reason=assign, fits=always>(const<i32>(2)) [c="int16_t"], index2 = truncate<i16, reason=assign, fits=always>(const<i32>(3)) [c="int16_t"], index3 = truncate<i16, reason=assign, fits=always>(const<i32>(4)) [c="int16_t"], index4 = truncate<i16, reason=assign, fits=always>(const<i32>(5)) [c="int16_t"]) [linkage=external] [c="int16_t[6]"];
+// DEFAULT-NEXT:     global %[[VALUE_psd:[0-9]+]] psd: array<i16, 6> [storage=static] = aggregate<array<i16, 6>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(50)) [c="int16_t"], index1 = truncate<i16, reason=assign, fits=always>(const<i32>(40)) [c="int16_t"], index2 = truncate<i16, reason=assign, fits=always>(const<i32>(30)) [c="int16_t"], index3 = truncate<i16, reason=assign, fits=always>(const<i32>(20)) [c="int16_t"], index4 = truncate<i16, reason=assign, fits=always>(const<i32>(10)) [c="int16_t"]) [linkage=external] [c="int16_t[6]"];
+// DEFAULT-NEXT:     global %[[VALUE_bndpsd:[0-9]+]] bndpsd: array<i16, 6> [storage=static] = aggregate<array<i16, 6>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(1)) [c="int16_t"], index1 = truncate<i16, reason=assign, fits=always>(const<i32>(2)) [c="int16_t"], index2 = truncate<i16, reason=assign, fits=always>(const<i32>(3)) [c="int16_t"], index3 = truncate<i16, reason=assign, fits=always>(const<i32>(4)) [c="int16_t"], index4 = truncate<i16, reason=assign, fits=always>(const<i32>(5)) [c="int16_t"]) [linkage=external] [c="int16_t[6]"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_logadd:[0-9]+]] @logadd(%[[VALUE_a:[0-9]+]] a: ptr<i16>, %[[VALUE_b:[0-9]+]] b: ptr<i16>) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(deref(read<ptr<i16>>(%[[VALUE_a]])))), widen<i32, reason=promotion>(read<i16>(deref(read<ptr<i16>>(%[[VALUE_b]]))))));
+// DEFAULT-NEXT:     fn %[[VALUE_logadd:[0-9]+]] @logadd(%[[VALUE_a:[0-9]+]] a: ptr<i16> [c="int16_t *"], %[[VALUE_b:[0-9]+]] b: ptr<i16> [c="int16_t *"]) -> i16 [linkage=external] [fallthrough=ub_if_used] [c="int16_t(int16_t *, int16_t *)"] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(deref(read<ptr<i16>>(%[[VALUE_a]]))) [c="int16_t"]), widen<i32, reason=promotion>(read<i16>(deref(read<ptr<i16>>(%[[VALUE_b]]))) [c="int16_t"]))) [c="int16_t"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_ba_compute_psd:[0-9]+]] @ba_compute_psd(%[[VALUE_start:[0-9]+]] start: i16) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_ba_compute_psd:[0-9]+]] @ba_compute_psd(%[[VALUE_start:[0-9]+]] start: i16 [c="int16_t"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(int16_t)"] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_k:[0-9]+]] k: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_lastbin:[0-9]+]] lastbin: i16 [storage=automatic] = truncate<i16, reason=assign, fits=always>(const<i32>(4));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_j]], widen<i32, reason=assign>(read<i16>(%[[VALUE_start]])));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_k]], widen<i32, reason=assign>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_masktab]]), widen<i32, reason=promotion>(read<i16>(%[[VALUE_start]])))))));
-// DEFAULT-NEXT:         write<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_bndpsd]]), read<i32>(%[[VALUE_k]]))), read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_psd]]), read<i32>(%[[VALUE_j]])))));
+// DEFAULT-NEXT:         let %[[VALUE_lastbin:[0-9]+]] lastbin: i16 [storage=automatic] = truncate<i16, reason=assign, fits=always>(const<i32>(4)) [c="int16_t"] [c="int16_t"];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_j]], widen<i32, reason=assign>(read<i16>(%[[VALUE_start]]) [c="int16_t"]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_k]], widen<i32, reason=assign>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_masktab]]), widen<i32, reason=promotion>(read<i16>(%[[VALUE_start]]))))) [c="int16_t"]));
+// DEFAULT-NEXT:         write<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_bndpsd]]), read<i32>(%[[VALUE_k]]))), read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_psd]]), read<i32>(%[[VALUE_j]])))) [c="int16_t"]) [c="int16_t"];
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j]]);
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE1]]));
 // DEFAULT-NEXT:         for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE_j]]));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), widen<i32, reason=promotion>(read<i16>(%[[VALUE_lastbin]])))
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), widen<i32, reason=promotion>(read<i16>(%[[VALUE_lastbin]]) [c="int16_t"]))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), const<i32>(1));
@@ -96,7 +96,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_bndpsd]]), read<i32>(%[[VALUE_k]]))), call<i16, signature=fn(ptr<i16>, ptr<i16>) -> i16>(%[[VALUE_logadd]], addr_of<ptr<i16>>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_bndpsd]]), read<i32>(%[[VALUE_k]])))), addr_of<ptr<i16>>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_psd]]), read<i32>(%[[VALUE_j]]))))));
+// DEFAULT-NEXT:                     write<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_bndpsd]]), read<i32>(%[[VALUE_k]]))), call<i16, signature=fn(ptr<i16>, ptr<i16>) -> i16>(%[[VALUE_logadd]], addr_of<ptr<i16>>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_bndpsd]]), read<i32>(%[[VALUE_k]])))) [c="int16_t *"], addr_of<ptr<i16>>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_psd]]), read<i32>(%[[VALUE_j]])))) [c="int16_t *"]) [c="int16_t"]) [c="int16_t"];
 // DEFAULT-NEXT:                     let %[[VALUE5:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j]]);
 // DEFAULT-NEXT:                     let %[[VALUE6:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE5]]), const<i32>(1));
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE6]]));
@@ -104,8 +104,8 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(i16) -> void>(%[[VALUE_ba_compute_psd]], truncate<i16, reason=arg, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_bndpsd]]), const<i32>(1))))), const<i32>(140))
+// DEFAULT-NEXT:         call<void, signature=fn(i16) -> void>(%[[VALUE_ba_compute_psd]], truncate<i16, reason=arg, fits=always>(const<i32>(0)) [c="int16_t"]);
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_bndpsd]]), const<i32>(1)))) [c="int16_t"]), const<i32>(140))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

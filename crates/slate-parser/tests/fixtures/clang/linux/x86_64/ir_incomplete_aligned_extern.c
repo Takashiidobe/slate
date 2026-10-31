@@ -45,19 +45,19 @@ int *first(void) { return table; }
 // IR-NEXT:     extern %[[VALUE_runqueues:[0-9]+]] runqueues: @type[[TYPE_rq]] [storage=static] [align=64] [linkage=external];
 // IR-NEXT:     extern %[[VALUE_idle:[0-9]+]] idle: @type[[TYPE_rq]] [storage=static] [align=32] [linkage=external];
 // IR-NEXT:     extern %[[VALUE_table:[0-9]+]] table: array<i32, incomplete> [storage=static] [align=16] [linkage=external];
-// IR-NEXT:     extern %[[VALUE_typed:[0-9]+]] typed: @type[[TYPE_rq]] [storage=static] [linkage=external];
-// IR-NEXT:     extern %[[VALUE_lowered:[0-9]+]] lowered: @type[[TYPE_rq]] [storage=static] [align=8] [linkage=external];
+// IR-NEXT:     extern %[[VALUE_typed:[0-9]+]] typed: @type[[TYPE_rq]] [storage=static] [linkage=external] [c="aligned_rq"];
+// IR-NEXT:     extern %[[VALUE_lowered:[0-9]+]] lowered: @type[[TYPE_rq]] [storage=static] [align=8] [linkage=external] [c="aligned_rq"];
 // IR-NEXT:     fn %[[VALUE_current:[0-9]+]] @current() -> ptr<@type[[TYPE_rq]]> [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return addr_of<ptr<@type[[TYPE_rq]]>>(%[[VALUE_runqueues]]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_idle_queue:[0-9]+]] @idle_queue() -> ptr<@type[[TYPE_rq]]> [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return addr_of<ptr<@type[[TYPE_rq]]>>(%[[VALUE_idle]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_typed_queue:[0-9]+]] @typed_queue() -> ptr<@type[[TYPE_rq]]> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return addr_of<ptr<@type[[TYPE_rq]]>>(%[[VALUE_typed]]);
+// IR-NEXT:     fn %[[VALUE_typed_queue:[0-9]+]] @typed_queue() -> ptr<@type[[TYPE_rq]]> [linkage=external] [fallthrough=ub_if_used] [c="aligned_rq *(void)"] {
+// IR-NEXT:         return addr_of<ptr<@type[[TYPE_rq]]>>(%[[VALUE_typed]]) [c="aligned_rq *"];
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_lowered_queue:[0-9]+]] @lowered_queue() -> ptr<@type[[TYPE_rq]]> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return addr_of<ptr<@type[[TYPE_rq]]>>(%[[VALUE_lowered]]);
+// IR-NEXT:     fn %[[VALUE_lowered_queue:[0-9]+]] @lowered_queue() -> ptr<@type[[TYPE_rq]]> [linkage=external] [fallthrough=ub_if_used] [c="aligned_rq *(void)"] {
+// IR-NEXT:         return addr_of<ptr<@type[[TYPE_rq]]>>(%[[VALUE_lowered]]) [c="aligned_rq *"];
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_first:[0-9]+]] @first() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return array_decay<ptr<i32>, length=None>(%[[VALUE_table]]);

@@ -184,7 +184,7 @@ int main (int argc, char *argv[])
 // DEFAULT-NEXT:     fn %[[VALUE_M:[0-9]+]] @M(%[[VALUE_x_7:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return mul<i32, overflow=ub>(read<i32>(%[[VALUE_x_7]]), const<i32>(2));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int, char *[])"] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_q]], const<i32>(2)), const<i32>(42))
 // DEFAULT-NEXT:             do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:                 {

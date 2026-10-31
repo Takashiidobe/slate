@@ -47,17 +47,17 @@ int log_value(FILE *stream, int value) {
 // IR-NEXT:     type @type[[TYPE_FILE:[0-9]+]] FILE = @type[[TYPE__IO_FILE]];
 // IR-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
 // IR-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// IR-NEXT:     fn %[[VALUE_fprintf:[0-9]+]] @fprintf(%[[VALUE_stream:[0-9]+]] stream: ptr<@type[[TYPE__IO_FILE]]> [restrict], %[[VALUE_fmt:[0-9]+]] fmt: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// IR-NEXT:     fn %[[VALUE_fprintf:[0-9]+]] @fprintf(%[[VALUE_stream:[0-9]+]] stream: ptr<@type[[TYPE__IO_FILE]]> [restrict] [c="FILE *restrict"], %[[VALUE_fmt:[0-9]+]] fmt: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(FILE *restrict, const char *restrict, ...)"];
 // IR-NEXT:     fn %[[VALUE___builtin___vfprintf_chk:[0-9]+]] @__builtin___vfprintf_chk(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE__IO_FILE]]>, %[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE3:[0-9]+]] <unnamed>: va_list) -> i32 [linkage=external];
-// IR-NEXT:     fn %[[VALUE_fprintf_2:[0-9]+]] @fprintf(%[[VALUE_stream_2:[0-9]+]] stream: ptr<@type[[TYPE__IO_FILE]]> [restrict] [const], %[[VALUE_fmt_2:[0-9]+]] fmt: ptr<const i8> [restrict], ...) -> i32 [linkage=internal] [overloadable] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// IR-NEXT:     fn %[[VALUE_fprintf_2:[0-9]+]] @fprintf(%[[VALUE_stream_2:[0-9]+]] stream: ptr<@type[[TYPE__IO_FILE]]> [restrict] [const] [c="FILE *const restrict"], %[[VALUE_fmt_2:[0-9]+]] fmt: ptr<const i8> [restrict], ...) -> i32 [linkage=internal] [overloadable] [fallthrough=ub_if_used] [c="int(FILE *const restrict, const char *restrict, ...)"] {
+// IR-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // IR-NEXT:         va_start(%[[VALUE_ap]]);
-// IR-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic] = call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___builtin___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stream_2]]), const<i32>(1), read<ptr<const i8>>(%[[VALUE_fmt_2]]), read<va_list>(%[[VALUE_ap]]));
+// IR-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic] = call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, i32, ptr<const i8>, va_list) -> i32>(%[[VALUE___builtin___vfprintf_chk]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stream_2]]) [c="FILE *"], const<i32>(1), read<ptr<const i8>>(%[[VALUE_fmt_2]]), read<va_list>(%[[VALUE_ap]]));
 // IR-NEXT:         va_end(%[[VALUE_ap]]);
 // IR-NEXT:         return read<i32>(%[[VALUE_r]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_log_value:[0-9]+]] @log_value(%[[VALUE_stream_3:[0-9]+]] stream: ptr<@type[[TYPE__IO_FILE]]>, %[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, ptr<const i8>, ...) -> i32>(%[[VALUE_fprintf_2]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stream_3]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), read<i32>(%[[VALUE_value]]));
+// IR-NEXT:     fn %[[VALUE_log_value:[0-9]+]] @log_value(%[[VALUE_stream_3:[0-9]+]] stream: ptr<@type[[TYPE__IO_FILE]]> [c="FILE *"], %[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(FILE *, int)"] {
+// IR-NEXT:         return call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, ptr<const i8>, ...) -> i32>(%[[VALUE_fprintf_2]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stream_3]]) [c="FILE *"], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), read<i32>(%[[VALUE_value]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

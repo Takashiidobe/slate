@@ -109,8 +109,8 @@ int test12(struct qux *p) {
 // DEFAULT-NEXT:     fn %[[VALUE_test8:[0-9]+]] @test8(%[[VALUE_p_8:[0-9]+]] p: ptr<volatile f64>, %[[VALUE_q_8:[0-9]+]] q: ptr<volatile f64>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<f64, volatile>(deref(read<ptr<volatile f64>>(%[[VALUE_p_8]])), read<f64, volatile>(deref(read<ptr<volatile f64>>(%[[VALUE_q_8]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_test9:[0-9]+]] @test9(%[[VALUE_p_9:[0-9]+]] p: ptr<volatile complex<f32>>, %[[VALUE_q_9:[0-9]+]] q: ptr<complex<f32>>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<complex<f32>, volatile>(deref(read<ptr<volatile complex<f32>>>(%[[VALUE_p_9]])), read<complex<f32>>(deref(read<ptr<complex<f32>>>(%[[VALUE_q_9]]))));
+// DEFAULT-NEXT:     fn %[[VALUE_test9:[0-9]+]] @test9(%[[VALUE_p_9:[0-9]+]] p: ptr<volatile complex<f32>> [c="volatile baz *"], %[[VALUE_q_9:[0-9]+]] q: ptr<complex<f32>> [c="baz *"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(volatile baz *, baz *)"] {
+// DEFAULT-NEXT:         write<complex<f32>, volatile>(deref(read<ptr<volatile complex<f32>>>(%[[VALUE_p_9]])), read<complex<f32>>(deref(read<ptr<complex<f32>>>(%[[VALUE_q_9]]))) [c="baz"]) [c="volatile baz"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test10:[0-9]+]] @test10(%[[VALUE_p_10:[0-9]+]] p: ptr<volatile i64>, %[[VALUE_q_10:[0-9]+]] q: ptr<volatile i64>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i64, volatile>(deref(read<ptr<volatile i64>>(%[[VALUE_p_10]])), read<i64, volatile>(deref(read<ptr<volatile i64>>(%[[VALUE_q_10]]))));

@@ -47,7 +47,7 @@ complex double foo(complex float x, float y)
 // DEFAULT-NEXT:     fn %[[VALUE_cpow:[0-9]+]] @cpow(%[[VALUE___x_4:[0-9]+]] __x: complex<f64>, %[[VALUE___y_4:[0-9]+]] __y: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c, native_c) -> native_c];
 // DEFAULT-NEXT:     fn %[[VALUE_cpowf:[0-9]+]] @cpowf(%[[VALUE___x_5:[0-9]+]] __x: complex<f32>, %[[VALUE___y_5:[0-9]+]] __y: complex<f32>) -> complex<f32> [linkage=external] [abi=sysv64(native_c, native_c) -> native_c];
 // DEFAULT-NEXT:     fn %[[VALUE_cpowl:[0-9]+]] @cpowl(%[[VALUE___x_6:[0-9]+]] __x: complex<f80>, %[[VALUE___y_6:[0-9]+]] __y: complex<f80>) -> complex<f80> [linkage=external] [abi=sysv64(byval<align=16>, byval<align=16>) -> coerce<f80, f80>];
-// DEFAULT-NEXT:     fn %[[VALUE___tg_promote:[0-9]+]] @__tg_promote(...) -> void [linkage=internal] [overloadable];
+// DEFAULT-NEXT:     fn %[[VALUE___tg_promote:[0-9]+]] @__tg_promote(...) -> void [linkage=internal] [overloadable] [c="_Argument_type_is_not_arithmetic(...)"];
 // DEFAULT-NEXT:     fn %[[VALUE___tg_promote_2:[0-9]+]] @__tg_promote(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> f64 [linkage=internal] [overloadable];
 // DEFAULT-NEXT:     fn %[[VALUE___tg_promote_3:[0-9]+]] @__tg_promote(%[[VALUE1:[0-9]+]] <unnamed>: u32) -> f64 [linkage=internal] [overloadable];
 // DEFAULT-NEXT:     fn %[[VALUE___tg_promote_4:[0-9]+]] @__tg_promote(%[[VALUE2:[0-9]+]] <unnamed>: i64) -> f64 [linkage=internal] [overloadable];

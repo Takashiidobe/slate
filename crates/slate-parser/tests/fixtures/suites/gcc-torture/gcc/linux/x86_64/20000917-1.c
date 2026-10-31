@@ -76,24 +76,24 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_int3_2:[0-9]+]] int3 = @type[[TYPE_int3]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_one:[0-9]+]] @one() -> @type[[TYPE_int3]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return copy<@type[[TYPE_int3]], reason=return>(read<@type[[TYPE_int3]]>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_int3]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(1), field2 = const<i32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE_one:[0-9]+]] @one() -> @type[[TYPE_int3]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] [c="int3(void)"] {
+// DEFAULT-NEXT:         return copy<@type[[TYPE_int3]], reason=return>(read<@type[[TYPE_int3]]>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_int3]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(1), field2 = const<i32>(1))) [c="int3"]) [c="int3"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_zero:[0-9]+]] @zero() -> @type[[TYPE_int3]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return copy<@type[[TYPE_int3]], reason=return>(read<@type[[TYPE_int3]]>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_int3]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0), field2 = const<i32>(0))));
+// DEFAULT-NEXT:     fn %[[VALUE_zero:[0-9]+]] @zero() -> @type[[TYPE_int3]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] [c="int3(void)"] {
+// DEFAULT-NEXT:         return copy<@type[[TYPE_int3]], reason=return>(read<@type[[TYPE_int3]]>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_int3]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0), field2 = const<i32>(0))) [c="int3"]) [c="int3"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_int3]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_int3]] [storage=automatic] [c="int3"];
 // DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: ptr<@type[[TYPE_int3]]> [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE4:[0-9]+]]: ptr<@type[[TYPE_int3]]> [synthetic];
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<@type[[TYPE_int3]], signature=fn() -> @type[[TYPE_int3]], abi=sysv64() -> native_c>(%[[VALUE_one]]);
-// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_int3]]>>(%[[VALUE4]], addr_of<ptr<@type[[TYPE_int3]]>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:                 call<@type[[TYPE_int3]], signature=fn() -> @type[[TYPE_int3]], abi=sysv64() -> native_c>(%[[VALUE_one]]) [c="int3"];
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_int3]]>>(%[[VALUE4]], addr_of<ptr<@type[[TYPE_int3]]>>(%[[VALUE_a]]) [c="int3 *"]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<ptr<@type[[TYPE_int3]]>>(%[[VALUE3]], read<ptr<@type[[TYPE_int3]]>>(%[[VALUE4]]));
+// DEFAULT-NEXT:             write<ptr<@type[[TYPE_int3]]>>(%[[VALUE3]], read<ptr<@type[[TYPE_int3]]>>(%[[VALUE4]]) [c="int3 *"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         write<@type[[TYPE_int3]]>(deref(read<ptr<@type[[TYPE_int3]]>>(%[[VALUE3]])), copy<@type[[TYPE_int3]], reason=assign>(call<@type[[TYPE_int3]], signature=fn() -> @type[[TYPE_int3]], abi=sysv64() -> native_c>(%[[VALUE_zero]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_int3]]>(deref(read<ptr<@type[[TYPE_int3]]>>(%[[VALUE3]])), copy<@type[[TYPE_int3]], reason=assign>(call<@type[[TYPE_int3]], signature=fn() -> @type[[TYPE_int3]], abi=sysv64() -> native_c>(%[[VALUE_zero]]) [c="int3"]) [c="int3"]) [c="int3"];
 // DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(ne<i32>(read<i32>(field0(%[[VALUE_a]])), const<i32>(0)), ne<i32>(read<i32>(field1(%[[VALUE_a]])), const<i32>(0))), ne<i32>(read<i32>(field2(%[[VALUE_a]])), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

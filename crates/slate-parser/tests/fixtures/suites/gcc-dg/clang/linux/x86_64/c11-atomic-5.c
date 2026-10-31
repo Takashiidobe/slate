@@ -37,8 +37,8 @@ T t;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = array<i32, 10>;
 // DEFAULT-NEXT:     type @type[[TYPE_I:[0-9]+]] I = i32;
-// DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = array<i32, 10>;
-// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: atomic array<i32, 10> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_t:[0-9]+]] t: atomic array<i32, 10> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = array<i32, 10> [c="I[10]"];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: atomic array<i32, 10> [storage=static] [align=16] [linkage=external] [c="A"];
+// DEFAULT-NEXT:     global %[[VALUE_t:[0-9]+]] t: atomic array<i32, 10> [storage=static] [align=16] [linkage=external] [c="T"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

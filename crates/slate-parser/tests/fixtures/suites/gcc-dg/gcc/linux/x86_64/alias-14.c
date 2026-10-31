@@ -106,7 +106,7 @@ main()
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: ptr<i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: @type[[TYPE_c]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: @type[[TYPE_d]] [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_ip:[0-9]+]] ip: ptr<i32> [storage=static] = int_to_ptr<ptr<i32>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(2)))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ip:[0-9]+]] ip: ptr<i32> [storage=static] = int_to_ptr<ptr<i32>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(2))) [c="size_t"]) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_ipp:[0-9]+]] ipp: ptr<ptr<i32>> [storage=static] = addr_of<ptr<ptr<i32>>>(%[[VALUE_ip]]) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
@@ -117,7 +117,7 @@ main()
 // DEFAULT-NEXT:             inlateout 0 "r" [reg] width 64 place<ptr<ptr<f32>>>(%[[VALUE_ptr]]) from addr_of<ptr<ptr<void>>>(%[[VALUE_a]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_a]], null<ptr<void>>);
-// DEFAULT-NEXT:         write<ptr<f32>>(deref(read<ptr<ptr<f32>>>(%[[VALUE_ptr]])), int_to_ptr<ptr<f32>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1)))));
+// DEFAULT-NEXT:         write<ptr<f32>>(deref(read<ptr<ptr<f32>>>(%[[VALUE_ptr]])), int_to_ptr<ptr<f32>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1))) [c="size_t"]));
 // DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(read<ptr<void>>(%[[VALUE_a]]), null<ptr<void>>))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_a]], null<ptr<void>>);
@@ -127,7 +127,7 @@ main()
 // DEFAULT-NEXT:             inlateout 0 "r" [reg] width 64 place<ptr<ptr<void>>>(%[[VALUE_uptr]]) from addr_of<ptr<ptr<i32>>>(%[[VALUE_b]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_b]], null<ptr<i32>>);
-// DEFAULT-NEXT:         write<ptr<void>>(deref(read<ptr<ptr<void>>>(%[[VALUE_uptr]])), int_to_ptr<ptr<void>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1)))));
+// DEFAULT-NEXT:         write<ptr<void>>(deref(read<ptr<ptr<void>>>(%[[VALUE_uptr]])), int_to_ptr<ptr<void>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1))) [c="size_t"]));
 // DEFAULT-NEXT:         if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_b]]), null<ptr<i32>>))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_b]], null<ptr<i32>>);
@@ -137,14 +137,14 @@ main()
 // DEFAULT-NEXT:             inlateout 0 "r" [reg] width 64 place<ptr<ptr<f32>>>(%[[VALUE_ptr]]) from addr_of<ptr<ptr<i32>>>(%[[VALUE_b]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_b]], null<ptr<i32>>);
-// DEFAULT-NEXT:         write<ptr<f32>>(deref(read<ptr<ptr<f32>>>(%[[VALUE_ptr]])), int_to_ptr<ptr<f32>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1)))));
+// DEFAULT-NEXT:         write<ptr<f32>>(deref(read<ptr<ptr<f32>>>(%[[VALUE_ptr]])), int_to_ptr<ptr<f32>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1))) [c="size_t"]));
 // DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_b]]), null<ptr<i32>>)
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
 // DEFAULT-NEXT:             inlateout 0 "r" [reg] width 64 place<ptr<ptr<f32>>>(%[[VALUE_ptr]]) from addr_of<ptr<@type[[TYPE_c]]>>(%[[VALUE_c]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<ptr<void>>(field0(%[[VALUE_c]]), null<ptr<void>>);
-// DEFAULT-NEXT:         write<ptr<f32>>(deref(read<ptr<ptr<f32>>>(%[[VALUE_ptr]])), int_to_ptr<ptr<f32>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1)))));
+// DEFAULT-NEXT:         write<ptr<f32>>(deref(read<ptr<ptr<f32>>>(%[[VALUE_ptr]])), int_to_ptr<ptr<f32>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1))) [c="size_t"]));
 // DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(read<ptr<void>>(field0(%[[VALUE_c]])), null<ptr<void>>))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         write<ptr<void>>(field0(%[[VALUE_c]]), null<ptr<void>>);
@@ -154,13 +154,13 @@ main()
 // DEFAULT-NEXT:             inlateout 0 "r" [reg] width 64 place<ptr<ptr<void>>>(%[[VALUE_uptr]]) from addr_of<ptr<@type[[TYPE_d]]>>(%[[VALUE_d]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<ptr<i16>>(field0(%[[VALUE_d]]), null<ptr<i16>>);
-// DEFAULT-NEXT:         write<ptr<void>>(deref(read<ptr<ptr<void>>>(%[[VALUE_uptr]])), int_to_ptr<ptr<void>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1)))));
+// DEFAULT-NEXT:         write<ptr<void>>(deref(read<ptr<ptr<void>>>(%[[VALUE_uptr]])), int_to_ptr<ptr<void>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1))) [c="size_t"]));
 // DEFAULT-NEXT:         if not<bool>(ne<ptr<i16>>(read<ptr<i16>>(field0(%[[VALUE_d]])), null<ptr<i16>>))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         write<ptr<i16>>(field0(%[[VALUE_d]]), null<ptr<i16>>);
 // DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>>(deref(read<ptr<ptr<void>>>(%[[VALUE_uptr]]))), null<ptr<void>>)
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
-// DEFAULT-NEXT:         if ne<ptr<void>>(pointer_cast<ptr<void>, reason=explicit>(read<ptr<i32>>(deref(read<ptr<const ptr<i32>>>(%[[VALUE_cipp]])))), int_to_ptr<ptr<void>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(2)))))
+// DEFAULT-NEXT:         if ne<ptr<void>>(pointer_cast<ptr<void>, reason=explicit>(read<ptr<i32>>(deref(read<ptr<const ptr<i32>>>(%[[VALUE_cipp]])))), int_to_ptr<ptr<void>, reason=explicit>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(2))) [c="size_t"]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         write<ptr<i32>>(deref(read<ptr<ptr<i32>>>(%[[VALUE_ipp]])), null<ptr<i32>>);
 // DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(deref(read<ptr<const ptr<i32>>>(%[[VALUE_cipp]]))), null<ptr<i32>>)

@@ -29,6 +29,6 @@ char8_t character = 0;
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     type @type[[TYPE_char8_t:[0-9]+]] char8_t = u8;
-// IR-NEXT:     global %[[VALUE_character:[0-9]+]] character: u8 [storage=static] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_character:[0-9]+]] character: u8 [storage=static] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))) [c="char8_t"] [linkage=external] [c="char8_t"];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

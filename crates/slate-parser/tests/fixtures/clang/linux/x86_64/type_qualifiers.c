@@ -59,15 +59,15 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_add_const_param:[0-9]+]] @add_const_param(%[[VALUE_value:[0-9]+]] value: i32 [const]) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
+// DEFAULT-NEXT:     fn %[[VALUE_add_const_param:[0-9]+]] @add_const_param(%[[VALUE_value:[0-9]+]] value: i32 [const]) -> i32 [linkage=internal] [fallthrough=ub_if_used] [c="int(const int)"] {
 // DEFAULT-NEXT:         let %[[VALUE_local_bias:[0-9]+]] local_bias: i32 [storage=automatic] [const] = const<i32>(5);
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE_value]]), read<i32>(%[[VALUE_local_bias]])), read<i32>(%[[VALUE_global_bias]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_add_restrict_pointers:[0-9]+]] @add_restrict_pointers(%[[VALUE_lhs:[0-9]+]] lhs: ptr<i32> [restrict], %[[VALUE_rhs:[0-9]+]] rhs: ptr<i32> [restrict]) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_add_restrict_pointers:[0-9]+]] @add_restrict_pointers(%[[VALUE_lhs:[0-9]+]] lhs: ptr<i32> [restrict], %[[VALUE_rhs:[0-9]+]] rhs: ptr<i32> [restrict]) -> i32 [linkage=internal] [fallthrough=ub_if_used] [c="int(int *restrict, int *restrict)"] {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_lhs]]))), read<i32>(deref(read<ptr<i32>>(%[[VALUE_rhs]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_add_atomic_value:[0-9]+]] @add_atomic_value(%[[VALUE_value_2:[0-9]+]] value: atomic i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_add_atomic_value:[0-9]+]] @add_atomic_value(%[[VALUE_value_2:[0-9]+]] value: atomic i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] [c="int(_Atomic int)"] {
 // DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: atomic i32 [storage=automatic] = add<i32, overflow=ub>(read<i32, atomic=seq_cst>(%[[VALUE_value_2]]), read<i32, atomic=seq_cst>(%[[VALUE_atomic_counter]]));
 // DEFAULT-NEXT:         return read<i32, atomic=seq_cst>(%[[VALUE_local]]);
 // DEFAULT-NEXT:     }

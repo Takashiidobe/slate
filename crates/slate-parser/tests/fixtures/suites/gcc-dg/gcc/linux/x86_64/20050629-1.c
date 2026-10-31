@@ -360,17 +360,17 @@ const tree __t = __extension__ ({ const tree __t = (expr); char const __c = tree
 // DEFAULT-NEXT:         field0 str: array<i8, 1>;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_tree_list]] tree_list = struct {
-// DEFAULT-NEXT:         field0 purpose: ptr<@type[[TYPE_tree_node]]>;
-// DEFAULT-NEXT:         field1 value: ptr<@type[[TYPE_tree_node]]>;
+// DEFAULT-NEXT:         field0 purpose: ptr<@type[[TYPE_tree_node]]> [c="tree"];
+// DEFAULT-NEXT:         field1 value: ptr<@type[[TYPE_tree_node]]> [c="tree"];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type[[TYPE_tree_exp]] tree_exp = struct {
-// DEFAULT-NEXT:         field0 operands: array<ptr<@type[[TYPE_tree_node]]>, 1>;
+// DEFAULT-NEXT:         field0 operands: array<ptr<@type[[TYPE_tree_node]]>, 1> [c="tree[1]"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_ssa_use_operand_d:[0-9]+]] ssa_use_operand_d = struct {
 // DEFAULT-NEXT:         field0 prev: ptr<@type[[TYPE_ssa_use_operand_d]]>;
 // DEFAULT-NEXT:         field1 next: ptr<@type[[TYPE_ssa_use_operand_d]]>;
-// DEFAULT-NEXT:         field2 stmt: ptr<@type[[TYPE_tree_node]]>;
-// DEFAULT-NEXT:         field3 use: ptr<ptr<@type[[TYPE_tree_node]]>>;
+// DEFAULT-NEXT:         field2 stmt: ptr<@type[[TYPE_tree_node]]> [c="tree"];
+// DEFAULT-NEXT:         field3 use: ptr<ptr<@type[[TYPE_tree_node]]>> [c="tree *"];
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 8, 16, 24]];
 // DEFAULT-NEXT:     type @type[[TYPE_ssa_use_operand_t:[0-9]+]] ssa_use_operand_t = @type[[TYPE_ssa_use_operand_d]];
 // DEFAULT-NEXT:     type @type[[TYPE_tree_ssa_name]] tree_ssa_name = struct {
@@ -381,16 +381,16 @@ const tree __t = __extension__ ({ const tree __t = (expr); char const __c = tree
 // DEFAULT-NEXT:     type @type[[TYPE_varray_data_tag:[0-9]+]] varray_data_tag = union {
 // DEFAULT-NEXT:         field0 c: array<i8, 1>;
 // DEFAULT-NEXT:         field1 i: array<i32, 1>;
-// DEFAULT-NEXT:         field2 tp: array<ptr<ptr<@type[[TYPE_tree_node]]>>, 1>;
+// DEFAULT-NEXT:         field2 tp: array<ptr<ptr<@type[[TYPE_tree_node]]>>, 1> [c="tree *[1]"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE_varray_data:[0-9]+]] varray_data = @type[[TYPE_varray_data_tag]];
 // DEFAULT-NEXT:     type @type[[TYPE_varray_head_tag:[0-9]+]] varray_head_tag = struct {
-// DEFAULT-NEXT:         field0 num_elements: u64;
-// DEFAULT-NEXT:         field1 elements_used: u64;
-// DEFAULT-NEXT:         field2 data: @type[[TYPE_varray_data_tag]];
+// DEFAULT-NEXT:         field0 num_elements: u64 [c="size_t"];
+// DEFAULT-NEXT:         field1 elements_used: u64 [c="size_t"];
+// DEFAULT-NEXT:         field2 data: @type[[TYPE_varray_data_tag]] [c="varray_data"];
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
 // DEFAULT-NEXT:     type @type[[TYPE_varray_type:[0-9]+]] varray_type = ptr<@type[[TYPE_varray_head_tag]]>;
-// DEFAULT-NEXT:     type @type[[TYPE_use_operand_p:[0-9]+]] use_operand_p = ptr<@type[[TYPE_ssa_use_operand_d]]>;
+// DEFAULT-NEXT:     type @type[[TYPE_use_operand_p:[0-9]+]] use_operand_p = ptr<@type[[TYPE_ssa_use_operand_d]]> [c="ssa_use_operand_t *"];
 // DEFAULT-NEXT:     type @type[[TYPE_use_optype_d:[0-9]+]] use_optype_d = struct {
 // DEFAULT-NEXT:         field0 next: ptr<@type[[TYPE_use_optype_d]]>;
 // DEFAULT-NEXT:         field1 use_ptr: @type[[TYPE_ssa_use_operand_d]];
@@ -403,26 +403,26 @@ const tree __t = __extension__ ({ const tree __t = (expr); char const __c = tree
 // DEFAULT-NEXT:         field0 use_ops: ptr<@type[[TYPE_use_optype_d]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_ptr_info_def:[0-9]+]] ptr_info_def = struct {
-// DEFAULT-NEXT:         field0 name_mem_tag: ptr<@type[[TYPE_tree_node]]>;
+// DEFAULT-NEXT:         field0 name_mem_tag: ptr<@type[[TYPE_tree_node]]> [c="tree"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_subvar:[0-9]+]] subvar = struct incomplete;
 // DEFAULT-NEXT:     type @type[[TYPE_subvar_t:[0-9]+]] subvar_t = ptr<@type[[TYPE_subvar]]>;
 // DEFAULT-NEXT:     type @type[[TYPE_var_ann_d:[0-9]+]] var_ann_d = struct {
-// DEFAULT-NEXT:         field0 uid: u64;
+// DEFAULT-NEXT:         field0 uid: u64 [c="size_t"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_stmt_ann_d:[0-9]+]] stmt_ann_d = struct {
 // DEFAULT-NEXT:         field0 modified: u32 : 1;
 // DEFAULT-NEXT:         field1 operands: @type[[TYPE_stmt_operands_d]];
-// DEFAULT-NEXT:         field2 addresses_taken: ptr<@type[[TYPE_bitmap_head_def]]>;
+// DEFAULT-NEXT:         field2 addresses_taken: ptr<@type[[TYPE_bitmap_head_def]]> [c="bitmap"];
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16], bit_offsets=[Some(0), None, None], bit_units=[(0, 1)], field_units=[Some(0), None, None]];
 // DEFAULT-NEXT:     type @type[[TYPE_var_ann_t:[0-9]+]] var_ann_t = ptr<@type[[TYPE_var_ann_d]]>;
 // DEFAULT-NEXT:     type @type[[TYPE_stmt_ann_t:[0-9]+]] stmt_ann_t = ptr<@type[[TYPE_stmt_ann_d]]>;
 // DEFAULT-NEXT:     type @type[[TYPE_ggc_root_tab:[0-9]+]] ggc_root_tab = struct {
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
 // DEFAULT-NEXT:     type @type[[TYPE_opbuild_list_d:[0-9]+]] opbuild_list_d = struct {
-// DEFAULT-NEXT:         field0 vars: ptr<@type[[TYPE_varray_head_tag]]>;
-// DEFAULT-NEXT:         field1 uid: ptr<@type[[TYPE_varray_head_tag]]>;
-// DEFAULT-NEXT:         field2 next: ptr<@type[[TYPE_varray_head_tag]]>;
+// DEFAULT-NEXT:         field0 vars: ptr<@type[[TYPE_varray_head_tag]]> [c="varray_type"];
+// DEFAULT-NEXT:         field1 uid: ptr<@type[[TYPE_varray_head_tag]]> [c="varray_type"];
+// DEFAULT-NEXT:         field2 next: ptr<@type[[TYPE_varray_head_tag]]> [c="varray_type"];
 // DEFAULT-NEXT:         field3 first: i32;
 // DEFAULT-NEXT:         field4 num: u32;
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 8, 16, 24, 28]];
@@ -436,7 +436,7 @@ const tree __t = __extension__ ({ const tree __t = (expr); char const __c = tree
 // DEFAULT-NEXT:     global %[[VALUE_build_v_may_defs:[0-9]+]] build_v_may_defs: @type[[TYPE_opbuild_list_d]] [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_operand_memory:[0-9]+]] operand_memory: ptr<@type[[TYPE_ssa_operand_memory_d]]> [storage=static] = null<ptr<@type[[TYPE_ssa_operand_memory_d]]>> [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_operand_memory_index:[0-9]+]] operand_memory_index: u32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_free_uses:[0-9]+]] free_uses: ptr<@type[[TYPE_use_optype_d]]> [storage=static] = null<ptr<@type[[TYPE_use_optype_d]]>> [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_free_uses:[0-9]+]] free_uses: ptr<@type[[TYPE_use_optype_d]]> [storage=static] = null<ptr<@type[[TYPE_use_optype_d]]>> [c="use_optype_p"] [linkage=internal] [c="use_optype_p"];
 // DEFAULT-NEXT:     global %[[VALUE_str_5:[0-9]+]] .str[[VALUE_str_5]]: array<i8, 60> [storage=static] = code_units<array<i8, 60>>([47, 104, 111, 109, 101, 47, 99, 121, 103, 110, 117, 115, 47, 100, 110, 111, 118, 105, 108, 108, 111, 47, 103, 99, 99, 47, 115, 114, 99, 46, 112, 112, 99, 54, 52, 47, 103, 99, 99, 47, 116, 114, 101, 101, 45, 115, 115, 97, 45, 111, 112, 101, 114, 97, 110, 100, 115, 46, 99, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_6:[0-9]+]] .str[[VALUE_str_6]]: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([111, 112, 98, 117, 105, 108, 100, 95, 110, 101, 120, 116, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_7:[0-9]+]] .str[[VALUE_str_7]]: array<i8, 60> [storage=static] = code_units<array<i8, 60>>([47, 104, 111, 109, 101, 47, 99, 121, 103, 110, 117, 115, 47, 100, 110, 111, 118, 105, 108, 108, 111, 47, 103, 99, 99, 47, 115, 114, 99, 46, 112, 112, 99, 54, 52, 47, 103, 99, 99, 47, 116, 114, 101, 101, 45, 115, 115, 97, 45, 111, 112, 101, 114, 97, 110, 100, 115, 46, 99, 0]) [linkage=internal];
@@ -469,24 +469,24 @@ const tree __t = __extension__ ({ const tree __t = (expr); char const __c = tree
 // DEFAULT-NEXT:     global %[[VALUE_str_34:[0-9]+]] .str[[VALUE_str_34]]: array<i8, 26> [storage=static] = code_units<array<i8, 26>>([103, 101, 116, 95, 105, 110, 100, 105, 114, 101, 99, 116, 95, 114, 101, 102, 95, 111, 112, 101, 114, 97, 110, 100, 115, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_gt_ggc_r_gt_tree_ssa_operands_h:[0-9]+]] gt_ggc_r_gt_tree_ssa_operands_h: array<@type[[TYPE_ggc_root_tab]], 4> [storage=static] [const] = aggregate<array<@type[[TYPE_ggc_root_tab]], 4>, zero_fill=false>(index0 = aggregate<@type[[TYPE_ggc_root_tab]], zero_fill=false>(), index1 = aggregate<@type[[TYPE_ggc_root_tab]], zero_fill=false>(), index2 = aggregate<@type[[TYPE_ggc_root_tab]], zero_fill=false>(), index3 = aggregate<@type[[TYPE_ggc_root_tab]], zero_fill=false>()) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_ARRAY_TYPE]] @fancy_abort(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_varray_check_failed:[0-9]+]] @varray_check_failed(%[[VALUE3:[0-9]+]] <unnamed>: ptr<@type[[TYPE_varray_head_tag]]>, %[[VALUE4:[0-9]+]] <unnamed>: u64, %[[VALUE5:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE6:[0-9]+]] <unnamed>: i32, %[[VALUE7:[0-9]+]] <unnamed>: ptr<const i8>) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_var_ann:[0-9]+]] @var_ann(%[[VALUE_t:[0-9]+]] t: ptr<@type[[TYPE_tree_node]]>) -> ptr<@type[[TYPE_var_ann_d]]> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_varray_check_failed:[0-9]+]] @varray_check_failed(%[[VALUE3:[0-9]+]] <unnamed>: ptr<@type[[TYPE_varray_head_tag]]> [c="varray_type"], %[[VALUE4:[0-9]+]] <unnamed>: u64 [c="size_t"], %[[VALUE5:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE6:[0-9]+]] <unnamed>: i32, %[[VALUE7:[0-9]+]] <unnamed>: ptr<const i8>) -> void [linkage=external] [noreturn] [c="void(varray_type, size_t, const char *, int, const char *)"];
+// DEFAULT-NEXT:     fn %[[VALUE_var_ann:[0-9]+]] @var_ann(%[[VALUE_t:[0-9]+]] t: ptr<@type[[TYPE_tree_node]]> [c="tree"]) -> ptr<@type[[TYPE_var_ann_d]]> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] [c="var_ann_t(tree)"] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_is_gimple_stmt:[0-9]+]] @is_gimple_stmt(unprototyped) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_stmt_ann:[0-9]+]] @stmt_ann(%[[VALUE_t_2:[0-9]+]] t: ptr<@type[[TYPE_tree_node]]>) -> ptr<@type[[TYPE_stmt_ann_d]]> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_stmt_ann:[0-9]+]] @stmt_ann(%[[VALUE_t_2:[0-9]+]] t: ptr<@type[[TYPE_tree_node]]> [c="tree"]) -> ptr<@type[[TYPE_stmt_ann_d]]> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] [c="stmt_ann_t(tree)"] {
 // DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: i32 [synthetic];
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_is_gimple_stmt]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_t_2]])), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_is_gimple_stmt]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_t_2]]) [c="tree"]), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<const i8>, i32, ptr<const i8>) -> void>(%[[VALUE_ARRAY_TYPE]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(59)>(%[[VALUE_str]])), const<i32>(55), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_2]])));
 // DEFAULT-NEXT:             write<i32>(%[[VALUE8]], const<i32>(0));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<i32>(%[[VALUE8]], const<i32>(0));
-// DEFAULT-NEXT:         return pointer_cast<ptr<@type[[TYPE_stmt_ann_d]]>, reason=explicit>(read<ptr<@type[[TYPE_tree_ann_d]]>>(field0(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_t_2]]))))));
+// DEFAULT-NEXT:         return pointer_cast<ptr<@type[[TYPE_stmt_ann_d]]>, reason=explicit>(read<ptr<@type[[TYPE_tree_ann_d]]>>(field0(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_t_2]])))))) [c="stmt_ann_t"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_stmt_modified_p:[0-9]+]] @stmt_modified_p(%[[VALUE_t_3:[0-9]+]] t: ptr<@type[[TYPE_tree_node]]>) -> u8 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_ann:[0-9]+]] ann: ptr<@type[[TYPE_stmt_ann_d]]> [storage=automatic] = call<ptr<@type[[TYPE_stmt_ann_d]]>, signature=fn(ptr<@type[[TYPE_tree_node]]>) -> ptr<@type[[TYPE_stmt_ann_d]]>>(%[[VALUE_stmt_ann]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_t_3]]));
-// DEFAULT-NEXT:         return reinterpret<u8, reason=return, fits=unknown>(truncate<i8, reason=return, fits=unknown>(conditional<i32>(ne<ptr<@type[[TYPE_stmt_ann_d]]>>(read<ptr<@type[[TYPE_stmt_ann_d]]>>(%[[VALUE_ann]]), null<ptr<@type[[TYPE_stmt_ann_d]]>>), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(deref(read<ptr<@type[[TYPE_stmt_ann_d]]>>(%[[VALUE_ann]]))))), const<i32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE_stmt_modified_p:[0-9]+]] @stmt_modified_p(%[[VALUE_t_3:[0-9]+]] t: ptr<@type[[TYPE_tree_node]]> [c="tree"]) -> u8 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] [c="unsigned char(tree)"] {
+// DEFAULT-NEXT:         let %[[VALUE_ann:[0-9]+]] ann: ptr<@type[[TYPE_stmt_ann_d]]> [storage=automatic] = call<ptr<@type[[TYPE_stmt_ann_d]]>, signature=fn(ptr<@type[[TYPE_tree_node]]>) -> ptr<@type[[TYPE_stmt_ann_d]]>>(%[[VALUE_stmt_ann]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_t_3]]) [c="tree"]) [c="stmt_ann_t"] [c="stmt_ann_t"];
+// DEFAULT-NEXT:         return reinterpret<u8, reason=return, fits=unknown>(truncate<i8, reason=return, fits=unknown>(conditional<i32>(ne<ptr<@type[[TYPE_stmt_ann_d]]>>(read<ptr<@type[[TYPE_stmt_ann_d]]>>(%[[VALUE_ann]]) [c="stmt_ann_t"], null<ptr<@type[[TYPE_stmt_ann_d]]>>), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(deref(read<ptr<@type[[TYPE_stmt_ann_d]]>>(%[[VALUE_ann]]))))), const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_delink_imm_use:[0-9]+]] @delink_imm_use(%[[VALUE_linknode:[0-9]+]] linknode: ptr<@type[[TYPE_ssa_use_operand_d]]>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_delink_imm_use:[0-9]+]] @delink_imm_use(%[[VALUE_linknode:[0-9]+]] linknode: ptr<@type[[TYPE_ssa_use_operand_d]]> [c="ssa_use_operand_t *"]) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] [c="void(ssa_use_operand_t *)"] {
 // DEFAULT-NEXT:         if eq<ptr<@type[[TYPE_ssa_use_operand_d]]>>(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field0(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_linknode]])))), null<ptr<@type[[TYPE_ssa_use_operand_d]]>>)
 // DEFAULT-NEXT:             return;
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field1(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field0(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_linknode]])))))), read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field1(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_linknode]])))));
@@ -494,57 +494,57 @@ const tree __t = __extension__ ({ const tree __t = (expr); char const __c = tree
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field0(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_linknode]]))), null<ptr<@type[[TYPE_ssa_use_operand_d]]>>);
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field1(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_linknode]]))), null<ptr<@type[[TYPE_ssa_use_operand_d]]>>);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_link_imm_use_to_list:[0-9]+]] @link_imm_use_to_list(%[[VALUE_linknode_2:[0-9]+]] linknode: ptr<@type[[TYPE_ssa_use_operand_d]]>, %[[VALUE_list:[0-9]+]] list: ptr<@type[[TYPE_ssa_use_operand_d]]>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_link_imm_use_to_list:[0-9]+]] @link_imm_use_to_list(%[[VALUE_linknode_2:[0-9]+]] linknode: ptr<@type[[TYPE_ssa_use_operand_d]]> [c="ssa_use_operand_t *"], %[[VALUE_list:[0-9]+]] list: ptr<@type[[TYPE_ssa_use_operand_d]]> [c="ssa_use_operand_t *"]) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] [c="void(ssa_use_operand_t *, ssa_use_operand_t *)"] {
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field0(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_linknode_2]]))), read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_list]]));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field1(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_linknode_2]]))), read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field1(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_list]])))));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field1(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_list]]))), read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_linknode_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_tree_check_failed:[0-9]+]] @tree_check_failed(unprototyped) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_link_imm_use:[0-9]+]] @link_imm_use(%[[VALUE_linknode_3:[0-9]+]] linknode: ptr<@type[[TYPE_ssa_use_operand_d]]>, %[[VALUE_def:[0-9]+]] def: ptr<@type[[TYPE_tree_node]]>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_root:[0-9]+]] root: ptr<@type[[TYPE_ssa_use_operand_d]]> [storage=automatic];
-// DEFAULT-NEXT:         if logical_or<bool>(not<bool>(ne<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_def]]), null<ptr<@type[[TYPE_tree_node]]>>)), ne<u32>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_def]])))))))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(10))))
+// DEFAULT-NEXT:     fn %[[VALUE_link_imm_use:[0-9]+]] @link_imm_use(%[[VALUE_linknode_3:[0-9]+]] linknode: ptr<@type[[TYPE_ssa_use_operand_d]]> [c="ssa_use_operand_t *"], %[[VALUE_def:[0-9]+]] def: ptr<@type[[TYPE_tree_node]]> [c="tree"]) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] [c="void(ssa_use_operand_t *, tree)"] {
+// DEFAULT-NEXT:         let %[[VALUE_root:[0-9]+]] root: ptr<@type[[TYPE_ssa_use_operand_d]]> [storage=automatic] [c="ssa_use_operand_t *"];
+// DEFAULT-NEXT:         if logical_or<bool>(not<bool>(ne<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_def]]) [c="tree"], null<ptr<@type[[TYPE_tree_node]]>>)), ne<u32>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_def]])))))))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(10))))
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field0(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_linknode_3]]))), null<ptr<@type[[TYPE_ssa_use_operand_d]]>>);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: ptr<@type[[TYPE_tree_node]]> [synthetic];
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %[[VALUE___t:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] = read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_def]]);
+// DEFAULT-NEXT:                     let %[[VALUE___t:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] = read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_def]]) [c="tree"] [c="const tree"];
 // DEFAULT-NEXT:                     if ne<u32>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t]])))))))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(10)))
-// DEFAULT-NEXT:                         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t]]), array_decay<ptr<i8>, length=Some(59)>(%[[VALUE_str_3]]), const<i32>(222), array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_4]]), const<i32>(10), const<i32>(0));
-// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE9]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t]]));
+// DEFAULT-NEXT:                         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t]]) [c="tree"], array_decay<ptr<i8>, length=Some(59)>(%[[VALUE_str_3]]), const<i32>(222), array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_4]]), const<i32>(10), const<i32>(0));
+// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE9]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t]]) [c="tree"]);
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_root]], addr_of<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field0(field4(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE9]]))))));
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>, ptr<@type[[TYPE_ssa_use_operand_d]]>) -> void>(%[[VALUE_link_imm_use_to_list]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_linknode_3]]), read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_root]]));
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_root]], addr_of<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field0(field4(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE9]]))))) [c="ssa_use_operand_t *"]) [c="ssa_use_operand_t *"];
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>, ptr<@type[[TYPE_ssa_use_operand_d]]>) -> void>(%[[VALUE_link_imm_use_to_list]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_linknode_3]]) [c="ssa_use_operand_t *"], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_root]]) [c="ssa_use_operand_t *"]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_link_imm_use_stmt:[0-9]+]] @link_imm_use_stmt(%[[VALUE_linknode_4:[0-9]+]] linknode: ptr<@type[[TYPE_ssa_use_operand_d]]>, %[[VALUE_def_2:[0-9]+]] def: ptr<@type[[TYPE_tree_node]]>, %[[VALUE_stmt:[0-9]+]] stmt: ptr<@type[[TYPE_tree_node]]>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>, ptr<@type[[TYPE_tree_node]]>) -> void>(%[[VALUE_link_imm_use]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_linknode_4]]), read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_def_2]]));
+// DEFAULT-NEXT:     fn %[[VALUE_link_imm_use_stmt:[0-9]+]] @link_imm_use_stmt(%[[VALUE_linknode_4:[0-9]+]] linknode: ptr<@type[[TYPE_ssa_use_operand_d]]> [c="ssa_use_operand_t *"], %[[VALUE_def_2:[0-9]+]] def: ptr<@type[[TYPE_tree_node]]> [c="tree"], %[[VALUE_stmt:[0-9]+]] stmt: ptr<@type[[TYPE_tree_node]]> [c="tree"]) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] [c="void(ssa_use_operand_t *, tree, tree)"] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>, ptr<@type[[TYPE_tree_node]]>) -> void>(%[[VALUE_link_imm_use]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_linknode_4]]) [c="ssa_use_operand_t *"], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_def_2]]) [c="tree"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_opbuild_next:[0-9]+]] @opbuild_next(%[[VALUE_list_2:[0-9]+]] list: ptr<@type[[TYPE_opbuild_list_d]]>, %[[VALUE_prev:[0-9]+]] prev: i32) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: ptr<i32> [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE__va:[0-9]+]] _va: ptr<@type[[TYPE_varray_head_tag]]> [storage=automatic] [const] = read<ptr<@type[[TYPE_varray_head_tag]]>>(field2(deref(read<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_list_2]]))));
-// DEFAULT-NEXT:             let %[[VALUE__n:[0-9]+]] _n: u64 [storage=automatic] [const] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_prev]])));
-// DEFAULT-NEXT:             if ge<u64>(read<u64>(%[[VALUE__n]]), read<u64>(field0(deref(read<ptr<@type[[TYPE_varray_head_tag]]>>(%[[VALUE__va]])))))
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE_varray_head_tag]]>, u64, ptr<const i8>, i32, ptr<const i8>) -> void>(%[[VALUE_varray_check_failed]], read<ptr<@type[[TYPE_varray_head_tag]]>>(%[[VALUE__va]]), read<u64>(%[[VALUE__n]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_5]])), const<i32>(323), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_6]])));
+// DEFAULT-NEXT:             let %[[VALUE__va:[0-9]+]] _va: ptr<@type[[TYPE_varray_head_tag]]> [storage=automatic] [const] = read<ptr<@type[[TYPE_varray_head_tag]]>>(field2(deref(read<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_list_2]])))) [c="varray_type"] [c="const varray_type"];
+// DEFAULT-NEXT:             let %[[VALUE__n:[0-9]+]] _n: u64 [storage=automatic] [const] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_prev]]))) [c="size_t"] [c="const size_t"];
+// DEFAULT-NEXT:             if ge<u64>(read<u64>(%[[VALUE__n]]) [c="size_t"], read<u64>(field0(deref(read<ptr<@type[[TYPE_varray_head_tag]]>>(%[[VALUE__va]])))) [c="size_t"])
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE_varray_head_tag]]>, u64, ptr<const i8>, i32, ptr<const i8>) -> void>(%[[VALUE_varray_check_failed]], read<ptr<@type[[TYPE_varray_head_tag]]>>(%[[VALUE__va]]) [c="varray_type"], read<u64>(%[[VALUE__n]]) [c="size_t"], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_5]])), const<i32>(323), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_6]])));
 // DEFAULT-NEXT:             write<ptr<i32>>(%[[VALUE10]], addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1)>(field1(field2(deref(read<ptr<@type[[TYPE_varray_head_tag]]>>(%[[VALUE__va]]))))), read<u64>(%[[VALUE__n]])))));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i32>(deref(read<ptr<i32>>(%[[VALUE10]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_opbuild_elem_real:[0-9]+]] @opbuild_elem_real(%[[VALUE_list_3:[0-9]+]] list: ptr<@type[[TYPE_opbuild_list_d]]>, %[[VALUE_elem:[0-9]+]] elem: i32) -> ptr<ptr<@type[[TYPE_tree_node]]>> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_opbuild_elem_real:[0-9]+]] @opbuild_elem_real(%[[VALUE_list_3:[0-9]+]] list: ptr<@type[[TYPE_opbuild_list_d]]>, %[[VALUE_elem:[0-9]+]] elem: i32) -> ptr<ptr<@type[[TYPE_tree_node]]>> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] [c="tree *(struct opbuild_list_d *, int)"] {
 // DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: ptr<ptr<ptr<@type[[TYPE_tree_node]]>>> [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE__va_2:[0-9]+]] _va: ptr<@type[[TYPE_varray_head_tag]]> [storage=automatic] [const] = read<ptr<@type[[TYPE_varray_head_tag]]>>(field0(deref(read<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_list_3]]))));
-// DEFAULT-NEXT:             let %[[VALUE__n_2:[0-9]+]] _n: u64 [storage=automatic] [const] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_elem]])));
-// DEFAULT-NEXT:             if ge<u64>(read<u64>(%[[VALUE__n_2]]), read<u64>(field0(deref(read<ptr<@type[[TYPE_varray_head_tag]]>>(%[[VALUE__va_2]])))))
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE_varray_head_tag]]>, u64, ptr<const i8>, i32, ptr<const i8>) -> void>(%[[VALUE_varray_check_failed]], read<ptr<@type[[TYPE_varray_head_tag]]>>(%[[VALUE__va_2]]), read<u64>(%[[VALUE__n_2]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_7]])), const<i32>(332), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_8]])));
-// DEFAULT-NEXT:             write<ptr<ptr<ptr<@type[[TYPE_tree_node]]>>>>(%[[VALUE11]], addr_of<ptr<ptr<ptr<@type[[TYPE_tree_node]]>>>>(deref(ptr_offset<ptr<ptr<ptr<@type[[TYPE_tree_node]]>>>, subtract=false, element=ptr<ptr<@type[[TYPE_tree_node]]>>, overflow=ub>(array_decay<ptr<ptr<ptr<@type[[TYPE_tree_node]]>>>, length=Some(1)>(field2(field2(deref(read<ptr<@type[[TYPE_varray_head_tag]]>>(%[[VALUE__va_2]]))))), read<u64>(%[[VALUE__n_2]])))));
+// DEFAULT-NEXT:             let %[[VALUE__va_2:[0-9]+]] _va: ptr<@type[[TYPE_varray_head_tag]]> [storage=automatic] [const] = read<ptr<@type[[TYPE_varray_head_tag]]>>(field0(deref(read<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_list_3]])))) [c="varray_type"] [c="const varray_type"];
+// DEFAULT-NEXT:             let %[[VALUE__n_2:[0-9]+]] _n: u64 [storage=automatic] [const] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_elem]]))) [c="size_t"] [c="const size_t"];
+// DEFAULT-NEXT:             if ge<u64>(read<u64>(%[[VALUE__n_2]]) [c="size_t"], read<u64>(field0(deref(read<ptr<@type[[TYPE_varray_head_tag]]>>(%[[VALUE__va_2]])))) [c="size_t"])
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE_varray_head_tag]]>, u64, ptr<const i8>, i32, ptr<const i8>) -> void>(%[[VALUE_varray_check_failed]], read<ptr<@type[[TYPE_varray_head_tag]]>>(%[[VALUE__va_2]]) [c="varray_type"], read<u64>(%[[VALUE__n_2]]) [c="size_t"], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_7]])), const<i32>(332), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_8]])));
+// DEFAULT-NEXT:             write<ptr<ptr<ptr<@type[[TYPE_tree_node]]>>>>(%[[VALUE11]], addr_of<ptr<ptr<ptr<@type[[TYPE_tree_node]]>>>>(deref(ptr_offset<ptr<ptr<ptr<@type[[TYPE_tree_node]]>>>, subtract=false, element=ptr<ptr<@type[[TYPE_tree_node]]>>, overflow=ub>(array_decay<ptr<ptr<ptr<@type[[TYPE_tree_node]]>>>, length=Some(1)>(field2(field2(deref(read<ptr<@type[[TYPE_varray_head_tag]]>>(%[[VALUE__va_2]]))))), read<u64>(%[[VALUE__n_2]])))) [c="tree **"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return read<ptr<ptr<@type[[TYPE_tree_node]]>>>(deref(read<ptr<ptr<ptr<@type[[TYPE_tree_node]]>>>>(%[[VALUE11]])));
+// DEFAULT-NEXT:         return read<ptr<ptr<@type[[TYPE_tree_node]]>>>(deref(read<ptr<ptr<ptr<@type[[TYPE_tree_node]]>>>>(%[[VALUE11]]))) [c="tree *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_opbuild_clear:[0-9]+]] @opbuild_clear(%[[VALUE_list_4:[0-9]+]] list: ptr<@type[[TYPE_opbuild_list_d]]>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<u64>(field1(deref(read<ptr<@type[[TYPE_varray_head_tag]]>>(field0(deref(read<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_list_4]])))))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u64>(field1(deref(read<ptr<@type[[TYPE_varray_head_tag]]>>(field2(deref(read<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_list_4]])))))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
+// DEFAULT-NEXT:         write<u64>(field1(deref(read<ptr<@type[[TYPE_varray_head_tag]]>>(field0(deref(read<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_list_4]])))))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"]) [c="size_t"];
+// DEFAULT-NEXT:         write<u64>(field1(deref(read<ptr<@type[[TYPE_varray_head_tag]]>>(field2(deref(read<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_list_4]])))))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"]) [c="size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ggc_alloc_stat:[0-9]+]] @ggc_alloc_stat(unprototyped) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_ssa_operand_alloc:[0-9]+]] @ssa_operand_alloc(%[[VALUE_size:[0-9]+]] size: u32) -> ptr<void> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
@@ -556,81 +556,81 @@ const tree __t = __extension__ ({ const tree __t = (expr); char const __c = tree
 // DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_ptr]], addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(2040)>(field0(deref(read<ptr<@type[[TYPE_ssa_operand_memory_d]]>>(%[[VALUE_operand_memory]])))), read<u32>(%[[VALUE_operand_memory_index]])))));
 // DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(read<ptr<i8>>(%[[VALUE_ptr]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_correct_use_link:[0-9]+]] @correct_use_link(%[[VALUE_ptr_2:[0-9]+]] ptr: ptr<@type[[TYPE_ssa_use_operand_d]]>, %[[VALUE_stmt_2:[0-9]+]] stmt: ptr<@type[[TYPE_tree_node]]>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_prev_2:[0-9]+]] prev: ptr<@type[[TYPE_ssa_use_operand_d]]> [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_root_2:[0-9]+]] root: ptr<@type[[TYPE_tree_node]]> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field0(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_ptr_2]])))));
-// DEFAULT-NEXT:         if ne<ptr<@type[[TYPE_ssa_use_operand_d]]>>(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]]), null<ptr<@type[[TYPE_ssa_use_operand_d]]>>)
+// DEFAULT-NEXT:     fn %[[VALUE_correct_use_link:[0-9]+]] @correct_use_link(%[[VALUE_ptr_2:[0-9]+]] ptr: ptr<@type[[TYPE_ssa_use_operand_d]]> [c="use_operand_p"], %[[VALUE_stmt_2:[0-9]+]] stmt: ptr<@type[[TYPE_tree_node]]> [c="tree"]) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] [c="void(use_operand_p, tree)"] {
+// DEFAULT-NEXT:         let %[[VALUE_prev_2:[0-9]+]] prev: ptr<@type[[TYPE_ssa_use_operand_d]]> [storage=automatic] [c="use_operand_p"];
+// DEFAULT-NEXT:         let %[[VALUE_root_2:[0-9]+]] root: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [c="tree"];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field0(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_ptr_2]])))) [c="use_operand_p"]) [c="use_operand_p"];
+// DEFAULT-NEXT:         if ne<ptr<@type[[TYPE_ssa_use_operand_d]]>>(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]]) [c="use_operand_p"], null<ptr<@type[[TYPE_ssa_use_operand_d]]>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_stmt_mod:[0-9]+]] stmt_mod: u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:                 while %[[VALUE12:[0-9]+]] ne<u8>(read<u8>(%[[VALUE_stmt_mod]]), const<u8>(0))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         while %[[VALUE13:[0-9]+]] logical_or<bool>(eq<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(field2(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))), read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_stmt_2]])), eq<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(field2(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))), null<ptr<@type[[TYPE_tree_node]]>>))
-// DEFAULT-NEXT:                             write<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field0(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))));
-// DEFAULT-NEXT:                         if eq<ptr<ptr<@type[[TYPE_tree_node]]>>>(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))), null<ptr<ptr<@type[[TYPE_tree_node]]>>>)
+// DEFAULT-NEXT:                         while %[[VALUE13:[0-9]+]] logical_or<bool>(eq<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(field2(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))) [c="tree"], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_stmt_2]]) [c="tree"]), eq<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(field2(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))) [c="tree"], null<ptr<@type[[TYPE_tree_node]]>> [c="tree"]))
+// DEFAULT-NEXT:                             write<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field0(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))) [c="use_operand_p"]) [c="use_operand_p"];
+// DEFAULT-NEXT:                         if eq<ptr<ptr<@type[[TYPE_tree_node]]>>>(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))) [c="tree *"], null<ptr<ptr<@type[[TYPE_tree_node]]>>> [c="tree *"])
 // DEFAULT-NEXT:                             write<u8>(%[[VALUE_stmt_mod]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             let %[[VALUE14:[0-9]+]]: u8 [synthetic] = call<u8, signature=fn(ptr<@type[[TYPE_tree_node]]>) -> u8>(%[[VALUE_stmt_modified_p]], read<ptr<@type[[TYPE_tree_node]]>>(field2(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))));
+// DEFAULT-NEXT:                             let %[[VALUE14:[0-9]+]]: u8 [synthetic] = call<u8, signature=fn(ptr<@type[[TYPE_tree_node]]>) -> u8>(%[[VALUE_stmt_modified_p]], read<ptr<@type[[TYPE_tree_node]]>>(field2(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))) [c="tree"]);
 // DEFAULT-NEXT:                             write<u8>(%[[VALUE_stmt_mod]], read<u8>(%[[VALUE14]]));
 // DEFAULT-NEXT:                             if ne<u8>(read<u8>(%[[VALUE14]]), const<u8>(0))
-// DEFAULT-NEXT:                                 write<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field0(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))));
+// DEFAULT-NEXT:                                 write<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field0(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))) [c="use_operand_p"]) [c="use_operand_p"];
 // DEFAULT-NEXT:                     }
-// DEFAULT-NEXT:                 if eq<ptr<ptr<@type[[TYPE_tree_node]]>>>(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))), null<ptr<ptr<@type[[TYPE_tree_node]]>>>)
-// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_root_2]], read<ptr<@type[[TYPE_tree_node]]>>(field2(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))));
+// DEFAULT-NEXT:                 if eq<ptr<ptr<@type[[TYPE_tree_node]]>>>(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))) [c="tree *"], null<ptr<ptr<@type[[TYPE_tree_node]]>>> [c="tree *"])
+// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_root_2]], read<ptr<@type[[TYPE_tree_node]]>>(field2(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))) [c="tree"]) [c="tree"];
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_root_2]], read<ptr<@type[[TYPE_tree_node]]>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))))));
-// DEFAULT-NEXT:                 if eq<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_root_2]]), read<ptr<@type[[TYPE_tree_node]]>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_ptr_2]])))))))
+// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_root_2]], read<ptr<@type[[TYPE_tree_node]]>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_prev_2]])))))) [c="tree"]) [c="tree"];
+// DEFAULT-NEXT:                 if eq<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_root_2]]) [c="tree"], read<ptr<@type[[TYPE_tree_node]]>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_ptr_2]])))))) [c="tree"])
 // DEFAULT-NEXT:                     return;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>) -> void>(%[[VALUE_delink_imm_use]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_ptr_2]]));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>, ptr<@type[[TYPE_tree_node]]>) -> void>(%[[VALUE_link_imm_use]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_ptr_2]]), read<ptr<@type[[TYPE_tree_node]]>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_ptr_2]])))))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>) -> void>(%[[VALUE_delink_imm_use]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_ptr_2]]) [c="ssa_use_operand_t *"]);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>, ptr<@type[[TYPE_tree_node]]>) -> void>(%[[VALUE_link_imm_use]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_ptr_2]]) [c="ssa_use_operand_t *"], read<ptr<@type[[TYPE_tree_node]]>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(deref(read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_ptr_2]])))))) [c="tree"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_alloc_use:[0-9]+]] @alloc_use() -> ptr<@type[[TYPE_use_optype_d]]> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_ret:[0-9]+]] ret: ptr<@type[[TYPE_use_optype_d]]> [storage=automatic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             write<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_free_uses]], read<ptr<@type[[TYPE_use_optype_d]]>>(field0(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_free_uses]])))));
+// DEFAULT-NEXT:             write<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_free_uses]], read<ptr<@type[[TYPE_use_optype_d]]>>(field0(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_free_uses]])))) [c="use_optype_p"]) [c="use_optype_p"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ret]], pointer_cast<ptr<@type[[TYPE_use_optype_d]]>, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE_ssa_operand_alloc]], truncate<u32, reason=arg, fits=always>(const<u64>(40)))));
 // DEFAULT-NEXT:         return read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ret]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_finalize_ssa_use_ops:[0-9]+]] @finalize_ssa_use_ops(%[[VALUE_stmt_3:[0-9]+]] stmt: ptr<@type[[TYPE_tree_node]]>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_finalize_ssa_use_ops:[0-9]+]] @finalize_ssa_use_ops(%[[VALUE_stmt_3:[0-9]+]] stmt: ptr<@type[[TYPE_tree_node]]> [c="tree"]) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] [c="void(tree)"] {
 // DEFAULT-NEXT:         let %[[VALUE_new_i:[0-9]+]] new_i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_old_ops:[0-9]+]] old_ops: ptr<@type[[TYPE_use_optype_d]]> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_ptr_3:[0-9]+]] ptr: ptr<@type[[TYPE_use_optype_d]]> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_last:[0-9]+]] last: ptr<@type[[TYPE_use_optype_d]]> [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_old_base:[0-9]+]] old_base: ptr<ptr<@type[[TYPE_tree_node]]>> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_old_base:[0-9]+]] old_base: ptr<ptr<@type[[TYPE_tree_node]]>> [storage=automatic] [c="tree *"];
 // DEFAULT-NEXT:         let %[[VALUE_new_list:[0-9]+]] new_list: @type[[TYPE_use_optype_d]] [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_last]], addr_of<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_new_list]]));
 // DEFAULT-NEXT:         if ne<ptr<@type[[TYPE_use_optype_d]]>>(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_old_ops]]), null<ptr<@type[[TYPE_use_optype_d]]>>)
-// DEFAULT-NEXT:             write<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_old_base]], read<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_old_ops]]))))));
+// DEFAULT-NEXT:             write<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_old_base]], read<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_old_ops]]))))) [c="tree *"]) [c="tree *"];
 // DEFAULT-NEXT:         while %[[VALUE15:[0-9]+]] logical_and<bool>(ne<ptr<@type[[TYPE_use_optype_d]]>>(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_old_ops]]), null<ptr<@type[[TYPE_use_optype_d]]>>), ne<i32>(read<i32>(%[[VALUE_new_i]]), neg<i32, overflow=ub>(const<i32>(1))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_new_base:[0-9]+]] new_base: ptr<ptr<@type[[TYPE_tree_node]]>> [storage=automatic] = call<ptr<ptr<@type[[TYPE_tree_node]]>>, signature=fn(ptr<@type[[TYPE_opbuild_list_d]]>, i32) -> ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_opbuild_elem_real]], addr_of<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_build_uses]]), read<i32>(%[[VALUE_new_i]]));
-// DEFAULT-NEXT:                 if eq<ptr<ptr<@type[[TYPE_tree_node]]>>>(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_old_base]]), read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_new_base]]))
+// DEFAULT-NEXT:                 let %[[VALUE_new_base:[0-9]+]] new_base: ptr<ptr<@type[[TYPE_tree_node]]>> [storage=automatic] = call<ptr<ptr<@type[[TYPE_tree_node]]>>, signature=fn(ptr<@type[[TYPE_opbuild_list_d]]>, i32) -> ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_opbuild_elem_real]], addr_of<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_build_uses]]), read<i32>(%[[VALUE_new_i]])) [c="tree *"] [c="tree *"];
+// DEFAULT-NEXT:                 if eq<ptr<ptr<@type[[TYPE_tree_node]]>>>(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_old_base]]) [c="tree *"], read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_new_base]]) [c="tree *"])
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         write<ptr<@type[[TYPE_use_optype_d]]>>(field0(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_last]]))), read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_old_ops]]));
 // DEFAULT-NEXT:                         write<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_last]], read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_old_ops]]));
-// DEFAULT-NEXT:                         call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>, ptr<@type[[TYPE_tree_node]]>) -> void>(%[[VALUE_correct_use_link]], addr_of<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_last]])))), read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_stmt_3]]));
+// DEFAULT-NEXT:                         call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>, ptr<@type[[TYPE_tree_node]]>) -> void>(%[[VALUE_correct_use_link]], addr_of<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_last]])))) [c="use_operand_p"], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_stmt_3]]) [c="tree"]);
 // DEFAULT-NEXT:                         write<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_old_ops]], read<ptr<@type[[TYPE_use_optype_d]]>>(field0(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_old_ops]])))));
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_new_i]], call<i32, signature=fn(ptr<@type[[TYPE_opbuild_list_d]]>, i32) -> i32>(%[[VALUE_opbuild_next]], addr_of<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_build_uses]]), read<i32>(%[[VALUE_new_i]])));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     if lt<ptr<ptr<@type[[TYPE_tree_node]]>>>(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_old_base]]), read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_new_base]]))
+// DEFAULT-NEXT:                     if lt<ptr<ptr<@type[[TYPE_tree_node]]>>>(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_old_base]]) [c="tree *"], read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_new_base]]) [c="tree *"])
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             let %[[VALUE_use_p:[0-9]+]] use_p: ptr<@type[[TYPE_ssa_use_operand_d]]> [storage=automatic] = addr_of<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_old_ops]]))));
-// DEFAULT-NEXT:                             call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>) -> void>(%[[VALUE_delink_imm_use]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_use_p]]));
+// DEFAULT-NEXT:                             let %[[VALUE_use_p:[0-9]+]] use_p: ptr<@type[[TYPE_ssa_use_operand_d]]> [storage=automatic] = addr_of<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_old_ops]])))) [c="use_operand_p"] [c="use_operand_p"];
+// DEFAULT-NEXT:                             call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>) -> void>(%[[VALUE_delink_imm_use]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_use_p]]) [c="ssa_use_operand_t *"]);
 // DEFAULT-NEXT:                             write<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_old_ops]], read<ptr<@type[[TYPE_use_optype_d]]>>(field0(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_old_ops]])))));
 // DEFAULT-NEXT:                             write<ptr<@type[[TYPE_use_optype_d]]>>(field0(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ptr_3]]))), read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_free_uses]]));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             write<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ptr_3]], call<ptr<@type[[TYPE_use_optype_d]]>, signature=fn() -> ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_alloc_use]]));
-// DEFAULT-NEXT:                             write<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ptr_3]])))), call<ptr<ptr<@type[[TYPE_tree_node]]>>, signature=fn(ptr<@type[[TYPE_opbuild_list_d]]>, i32) -> ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_opbuild_elem_real]], addr_of<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_build_uses]]), read<i32>(%[[VALUE_new_i]])));
-// DEFAULT-NEXT:                             call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>, ptr<@type[[TYPE_tree_node]]>, ptr<@type[[TYPE_tree_node]]>) -> void>(%[[VALUE_link_imm_use_stmt]], addr_of<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ptr_3]])))), read<ptr<@type[[TYPE_tree_node]]>>(deref(call<ptr<ptr<@type[[TYPE_tree_node]]>>, signature=fn(ptr<@type[[TYPE_opbuild_list_d]]>, i32) -> ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_opbuild_elem_real]], addr_of<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_build_uses]]), read<i32>(%[[VALUE_new_i]])))), read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_stmt_3]]));
+// DEFAULT-NEXT:                             write<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ptr_3]])))), call<ptr<ptr<@type[[TYPE_tree_node]]>>, signature=fn(ptr<@type[[TYPE_opbuild_list_d]]>, i32) -> ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_opbuild_elem_real]], addr_of<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_build_uses]]), read<i32>(%[[VALUE_new_i]])) [c="tree *"]) [c="tree *"];
+// DEFAULT-NEXT:                             call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>, ptr<@type[[TYPE_tree_node]]>, ptr<@type[[TYPE_tree_node]]>) -> void>(%[[VALUE_link_imm_use_stmt]], addr_of<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ptr_3]])))) [c="ssa_use_operand_t *"], read<ptr<@type[[TYPE_tree_node]]>>(deref(call<ptr<ptr<@type[[TYPE_tree_node]]>>, signature=fn(ptr<@type[[TYPE_opbuild_list_d]]>, i32) -> ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_opbuild_elem_real]], addr_of<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_build_uses]]), read<i32>(%[[VALUE_new_i]])))) [c="tree"], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_stmt_3]]) [c="tree"]);
 // DEFAULT-NEXT:                             write<i32>(%[[VALUE_new_i]], call<i32, signature=fn(ptr<@type[[TYPE_opbuild_list_d]]>, i32) -> i32>(%[[VALUE_opbuild_next]], addr_of<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_build_uses]]), read<i32>(%[[VALUE_new_i]])));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                 if ne<ptr<@type[[TYPE_use_optype_d]]>>(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_old_ops]]), null<ptr<@type[[TYPE_use_optype_d]]>>)
-// DEFAULT-NEXT:                     write<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_old_base]], read<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_old_ops]]))))));
+// DEFAULT-NEXT:                     write<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_old_base]], read<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_old_ops]]))))) [c="tree *"]) [c="tree *"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         for %[[VALUE16:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -642,13 +642,13 @@ const tree __t = __extension__ ({ const tree __t = (expr); char const __c = tree
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ptr_3]], call<ptr<@type[[TYPE_use_optype_d]]>, signature=fn() -> ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_alloc_use]]));
-// DEFAULT-NEXT:                     write<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ptr_3]])))), call<ptr<ptr<@type[[TYPE_tree_node]]>>, signature=fn(ptr<@type[[TYPE_opbuild_list_d]]>, i32) -> ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_opbuild_elem_real]], addr_of<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_build_uses]]), read<i32>(%[[VALUE_new_i]])));
-// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>, ptr<@type[[TYPE_tree_node]]>, ptr<@type[[TYPE_tree_node]]>) -> void>(%[[VALUE_link_imm_use_stmt]], addr_of<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ptr_3]])))), read<ptr<@type[[TYPE_tree_node]]>>(deref(call<ptr<ptr<@type[[TYPE_tree_node]]>>, signature=fn(ptr<@type[[TYPE_opbuild_list_d]]>, i32) -> ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_opbuild_elem_real]], addr_of<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_build_uses]]), read<i32>(%[[VALUE_new_i]])))), read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_stmt_3]]));
+// DEFAULT-NEXT:                     write<ptr<ptr<@type[[TYPE_tree_node]]>>>(field3(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ptr_3]])))), call<ptr<ptr<@type[[TYPE_tree_node]]>>, signature=fn(ptr<@type[[TYPE_opbuild_list_d]]>, i32) -> ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_opbuild_elem_real]], addr_of<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_build_uses]]), read<i32>(%[[VALUE_new_i]])) [c="tree *"]) [c="tree *"];
+// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>, ptr<@type[[TYPE_tree_node]]>, ptr<@type[[TYPE_tree_node]]>) -> void>(%[[VALUE_link_imm_use_stmt]], addr_of<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ptr_3]])))) [c="ssa_use_operand_t *"], read<ptr<@type[[TYPE_tree_node]]>>(deref(call<ptr<ptr<@type[[TYPE_tree_node]]>>, signature=fn(ptr<@type[[TYPE_opbuild_list_d]]>, i32) -> ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_opbuild_elem_real]], addr_of<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_build_uses]]), read<i32>(%[[VALUE_new_i]])))) [c="tree"], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_stmt_3]]) [c="tree"]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_use_p_2:[0-9]+]] use_p: ptr<@type[[TYPE_ssa_use_operand_d]]> [storage=automatic] = addr_of<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ptr_3]]))));
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>) -> void>(%[[VALUE_delink_imm_use]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_use_p_2]]));
+// DEFAULT-NEXT:                 let %[[VALUE_use_p_2:[0-9]+]] use_p: ptr<@type[[TYPE_ssa_use_operand_d]]> [storage=automatic] = addr_of<ptr<@type[[TYPE_ssa_use_operand_d]]>>(field1(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ptr_3]])))) [c="use_operand_p"] [c="use_operand_p"];
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE_ssa_use_operand_d]]>) -> void>(%[[VALUE_delink_imm_use]], read<ptr<@type[[TYPE_ssa_use_operand_d]]>>(%[[VALUE_use_p_2]]) [c="ssa_use_operand_t *"]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_use_optype_d]]>>(field0(field1(deref(call<ptr<@type[[TYPE_stmt_ann_d]]>, signature=fn(ptr<@type[[TYPE_tree_node]]>) -> ptr<@type[[TYPE_stmt_ann_d]]>>(%[[VALUE_stmt_ann]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_stmt_3]]))))), read<ptr<@type[[TYPE_use_optype_d]]>>(field0(%[[VALUE_new_list]])));
@@ -668,20 +668,20 @@ const tree __t = __extension__ ({ const tree __t = (expr); char const __c = tree
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE_x]], read<u32>(%[[VALUE19]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_finalize_ssa_uses:[0-9]+]] @finalize_ssa_uses(%[[VALUE_stmt_4:[0-9]+]] stmt: ptr<@type[[TYPE_tree_node]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_finalize_ssa_uses:[0-9]+]] @finalize_ssa_uses(%[[VALUE_stmt_4:[0-9]+]] stmt: ptr<@type[[TYPE_tree_node]]> [c="tree"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(tree)"] {
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_x_2:[0-9]+]] x: u32 [storage=automatic];
 // DEFAULT-NEXT:             let %[[VALUE20:[0-9]+]]: i32 [synthetic];
-// DEFAULT-NEXT:             if not<bool>(ne<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(deref(call<ptr<ptr<@type[[TYPE_tree_node]]>>, signature=fn(ptr<@type[[TYPE_opbuild_list_d]]>, i32) -> ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_opbuild_elem_real]], addr_of<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_build_uses]]), reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%[[VALUE_x_2]]))))), read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_stmt_4]])))
+// DEFAULT-NEXT:             if not<bool>(ne<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(deref(call<ptr<ptr<@type[[TYPE_tree_node]]>>, signature=fn(ptr<@type[[TYPE_opbuild_list_d]]>, i32) -> ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_opbuild_elem_real]], addr_of<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_build_uses]]), reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%[[VALUE_x_2]]))))) [c="tree"], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_stmt_4]]) [c="tree"]))
 // DEFAULT-NEXT:                 call<void, signature=fn(ptr<const i8>, i32, ptr<const i8>) -> void>(%[[VALUE_ARRAY_TYPE]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_9]])), const<i32>(581), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_10]])));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE20]], const<i32>(0));
 // DEFAULT-NEXT:             else
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE20]], const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_tree_node]]>) -> void>(%[[VALUE_finalize_ssa_use_ops]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_stmt_4]]));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_tree_node]]>) -> void>(%[[VALUE_finalize_ssa_use_ops]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_stmt_4]]) [c="tree"]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_opbuild_list_d]]>) -> void>(%[[VALUE_opbuild_clear]], addr_of<ptr<@type[[TYPE_opbuild_list_d]]>>(%[[VALUE_build_uses]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_finalize_ssa_v_may_def_ops:[0-9]+]] @finalize_ssa_v_may_def_ops(%[[VALUE_stmt_5:[0-9]+]] stmt: ptr<@type[[TYPE_tree_node]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_finalize_ssa_v_may_def_ops:[0-9]+]] @finalize_ssa_v_may_def_ops(%[[VALUE_stmt_5:[0-9]+]] stmt: ptr<@type[[TYPE_tree_node]]> [c="tree"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(tree)"] {
 // DEFAULT-NEXT:         let %[[VALUE_new_i_2:[0-9]+]] new_i: i32 [storage=automatic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:         }
@@ -703,17 +703,17 @@ const tree __t = __extension__ ({ const tree __t = (expr); char const __c = tree
 // DEFAULT-NEXT:     fn %[[VALUE_swap_tree_operands:[0-9]+]] @swap_tree_operands(unprototyped) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_tree_class_check_failed:[0-9]+]] @tree_class_check_failed(unprototyped) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_tree_operand_check_failed:[0-9]+]] @tree_operand_check_failed(unprototyped) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_get_expr_operands:[0-9]+]] @get_expr_operands(%[[VALUE_stmt_6:[0-9]+]] stmt: ptr<@type[[TYPE_tree_node]]>, %[[VALUE_expr_p:[0-9]+]] expr_p: ptr<ptr<@type[[TYPE_tree_node]]>>, %[[VALUE_flags:[0-9]+]] flags: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_get_expr_operands:[0-9]+]] @get_expr_operands(%[[VALUE_stmt_6:[0-9]+]] stmt: ptr<@type[[TYPE_tree_node]]> [c="tree"], %[[VALUE_expr_p:[0-9]+]] expr_p: ptr<ptr<@type[[TYPE_tree_node]]>> [c="tree *"], %[[VALUE_flags:[0-9]+]] flags: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(tree, tree *, int)"] {
 // DEFAULT-NEXT:         let %[[VALUE_code:[0-9]+]] code: @type[[TYPE_tree_code]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_expr:[0-9]+]] expr: ptr<@type[[TYPE_tree_node]]> [storage=automatic] = read<ptr<@type[[TYPE_tree_node]]>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_expr_p]])));
+// DEFAULT-NEXT:         let %[[VALUE_expr:[0-9]+]] expr: ptr<@type[[TYPE_tree_node]]> [storage=automatic] = read<ptr<@type[[TYPE_tree_node]]>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_expr_p]]))) [c="tree"] [c="tree"];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_svars:[0-9]+]] svars: ptr<@type[[TYPE_subvar]]> [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_svars:[0-9]+]] svars: ptr<@type[[TYPE_subvar]]> [storage=automatic] [c="subvar_t"];
 // DEFAULT-NEXT:                 let %[[VALUE22:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_var_can_have_subvars]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_expr]])), const<i32>(0))
-// DEFAULT-NEXT:                     let %[[VALUE23:[0-9]+]]: ptr<@type[[TYPE_subvar]]> [synthetic] = int_to_ptr<ptr<@type[[TYPE_subvar]]>, reason=assign>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_get_subvars_for_var]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_expr]])));
-// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_subvar]]>>(%[[VALUE_svars]], read<ptr<@type[[TYPE_subvar]]>>(%[[VALUE23]]));
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE22]], ne<ptr<@type[[TYPE_subvar]]>>(read<ptr<@type[[TYPE_subvar]]>>(%[[VALUE23]]), null<ptr<@type[[TYPE_subvar]]>>));
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_var_can_have_subvars]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_expr]]) [c="tree"]), const<i32>(0))
+// DEFAULT-NEXT:                     let %[[VALUE23:[0-9]+]]: ptr<@type[[TYPE_subvar]]> [synthetic] = int_to_ptr<ptr<@type[[TYPE_subvar]]>, reason=assign>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_get_subvars_for_var]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_expr]]) [c="tree"])) [c="subvar_t"] [c="subvar_t"];
+// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_subvar]]>>(%[[VALUE_svars]], read<ptr<@type[[TYPE_subvar]]>>(%[[VALUE23]]) [c="subvar_t"]) [c="subvar_t"] [c="subvar_t"];
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE22]], ne<ptr<@type[[TYPE_subvar]]>>(read<ptr<@type[[TYPE_subvar]]>>(%[[VALUE23]]) [c="subvar_t"], null<ptr<@type[[TYPE_subvar]]>>));
 // DEFAULT-NEXT:                 else
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE22]], const<bool>(false));
 // DEFAULT-NEXT:                 if read<bool>(%[[VALUE22]])
@@ -728,39 +728,39 @@ const tree __t = __extension__ ({ const tree __t = (expr); char const __c = tree
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             let %[[VALUE24:[0-9]+]]: ptr<ptr<@type[[TYPE_tree_node]]>> [synthetic];
 // DEFAULT-NEXT:                             {
-// DEFAULT-NEXT:                                 let %[[VALUE___t_2:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const];
+// DEFAULT-NEXT:                                 let %[[VALUE___t_2:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] [c="const tree"];
 // DEFAULT-NEXT:                                 let %[[VALUE25:[0-9]+]]: ptr<@type[[TYPE_tree_node]]> [synthetic];
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     let %[[VALUE___t_3:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] = read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_expr]]);
+// DEFAULT-NEXT:                                     let %[[VALUE___t_3:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] = read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_expr]]) [c="tree"] [c="const tree"];
 // DEFAULT-NEXT:                                     let %[[VALUE___c:[0-9]+]] __c: i8 [storage=automatic] [const] = reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code_class]]>(deref(ptr_offset<ptr<const @type[[TYPE_tree_code_class]]>, subtract=false, element=@type[[TYPE_tree_code_class]], overflow=ub>(array_decay<ptr<const @type[[TYPE_tree_code_class]]>, length=None>(%[[VALUE_tree_code_type]]), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_3]])))))))))))))))));
 // DEFAULT-NEXT:                                     if not<bool>(logical_and<bool>(ge<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE___c]])), const<i32>(1)), le<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE___c]])), const<i32>(2))))
-// DEFAULT-NEXT:                                         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_class_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_3]]), const<i32>(2), array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_11]]), const<i32>(1435), array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_12]]));
-// DEFAULT-NEXT:                                     write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE25]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_3]]));
+// DEFAULT-NEXT:                                         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_class_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_3]]) [c="tree"], const<i32>(2), array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_11]]), const<i32>(1435), array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_12]]));
+// DEFAULT-NEXT:                                     write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE25]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_3]]) [c="tree"]);
 // DEFAULT-NEXT:                                 }
-// DEFAULT-NEXT:                                 write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_2]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE25]]));
+// DEFAULT-NEXT:                                 write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_2]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE25]]) [c="tree"]) [c="const tree"];
 // DEFAULT-NEXT:                                 let %[[VALUE___i:[0-9]+]] __i: i32 [storage=automatic] [const] = const<i32>(0);
 // DEFAULT-NEXT:                                 if logical_or<bool>(lt<i32>(read<i32>(%[[VALUE___i]]), const<i32>(0)), ge<i32>(read<i32>(%[[VALUE___i]]), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=None>(%[[VALUE_tree_code_length]]), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_2]]))))))))))))))))))
 // DEFAULT-NEXT:                                     call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_operand_check_failed]], read<i32>(%[[VALUE___i]]), enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_2]])))))))))), array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_13]]), const<i32>(1435), array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_14]]));
-// DEFAULT-NEXT:                                 write<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE24]], addr_of<ptr<ptr<@type[[TYPE_tree_node]]>>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_tree_node]]>>, subtract=false, element=ptr<@type[[TYPE_tree_node]]>, overflow=ub>(array_decay<ptr<ptr<@type[[TYPE_tree_node]]>>, length=Some(1)>(field0(field3(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_2]]))))), read<i32>(%[[VALUE___i]])))));
+// DEFAULT-NEXT:                                 write<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE24]], addr_of<ptr<ptr<@type[[TYPE_tree_node]]>>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_tree_node]]>>, subtract=false, element=ptr<@type[[TYPE_tree_node]]>, overflow=ub>(array_decay<ptr<ptr<@type[[TYPE_tree_node]]>>, length=Some(1)>(field0(field3(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_2]]))))), read<i32>(%[[VALUE___i]])))) [c="tree *"]);
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                             let %[[VALUE26:[0-9]+]]: ptr<ptr<@type[[TYPE_tree_node]]>> [synthetic];
 // DEFAULT-NEXT:                             {
-// DEFAULT-NEXT:                                 let %[[VALUE___t_4:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const];
+// DEFAULT-NEXT:                                 let %[[VALUE___t_4:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] [c="const tree"];
 // DEFAULT-NEXT:                                 let %[[VALUE27:[0-9]+]]: ptr<@type[[TYPE_tree_node]]> [synthetic];
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     let %[[VALUE___t_5:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] = read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_expr]]);
+// DEFAULT-NEXT:                                     let %[[VALUE___t_5:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] = read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_expr]]) [c="tree"] [c="const tree"];
 // DEFAULT-NEXT:                                     let %[[VALUE___c_2:[0-9]+]] __c: i8 [storage=automatic] [const] = reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code_class]]>(deref(ptr_offset<ptr<const @type[[TYPE_tree_code_class]]>, subtract=false, element=@type[[TYPE_tree_code_class]], overflow=ub>(array_decay<ptr<const @type[[TYPE_tree_code_class]]>, length=None>(%[[VALUE_tree_code_type]]), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_5]])))))))))))))))));
 // DEFAULT-NEXT:                                     if not<bool>(logical_and<bool>(ge<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE___c_2]])), const<i32>(1)), le<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE___c_2]])), const<i32>(2))))
-// DEFAULT-NEXT:                                         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_class_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_5]]), const<i32>(2), array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_15]]), const<i32>(1436), array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_16]]));
-// DEFAULT-NEXT:                                     write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE27]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_5]]));
+// DEFAULT-NEXT:                                         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_class_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_5]]) [c="tree"], const<i32>(2), array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_15]]), const<i32>(1436), array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_16]]));
+// DEFAULT-NEXT:                                     write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE27]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_5]]) [c="tree"]);
 // DEFAULT-NEXT:                                 }
-// DEFAULT-NEXT:                                 write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_4]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE27]]));
+// DEFAULT-NEXT:                                 write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_4]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE27]]) [c="tree"]) [c="const tree"];
 // DEFAULT-NEXT:                                 let %[[VALUE___i_2:[0-9]+]] __i: i32 [storage=automatic] [const] = const<i32>(1);
 // DEFAULT-NEXT:                                 if logical_or<bool>(lt<i32>(read<i32>(%[[VALUE___i_2]]), const<i32>(0)), ge<i32>(read<i32>(%[[VALUE___i_2]]), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=None>(%[[VALUE_tree_code_length]]), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_4]]))))))))))))))))))
 // DEFAULT-NEXT:                                     call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_operand_check_failed]], read<i32>(%[[VALUE___i_2]]), enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_4]])))))))))), array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_17]]), const<i32>(1436), array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_18]]));
-// DEFAULT-NEXT:                                 write<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE26]], addr_of<ptr<ptr<@type[[TYPE_tree_node]]>>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_tree_node]]>>, subtract=false, element=ptr<@type[[TYPE_tree_node]]>, overflow=ub>(array_decay<ptr<ptr<@type[[TYPE_tree_node]]>>, length=Some(1)>(field0(field3(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_4]]))))), read<i32>(%[[VALUE___i_2]])))));
+// DEFAULT-NEXT:                                 write<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE26]], addr_of<ptr<ptr<@type[[TYPE_tree_node]]>>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_tree_node]]>>, subtract=false, element=ptr<@type[[TYPE_tree_node]]>, overflow=ub>(array_decay<ptr<ptr<@type[[TYPE_tree_node]]>>, length=Some(1)>(field0(field3(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_4]]))))), read<i32>(%[[VALUE___i_2]])))) [c="tree *"]);
 // DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                             call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_swap_tree_operands]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_stmt_6]]), addr_of<ptr<ptr<@type[[TYPE_tree_node]]>>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE24]]))), addr_of<ptr<ptr<@type[[TYPE_tree_node]]>>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE26]]))));
+// DEFAULT-NEXT:                             call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_swap_tree_operands]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_stmt_6]]) [c="tree"], addr_of<ptr<ptr<@type[[TYPE_tree_node]]>>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE24]]))) [c="tree *"], addr_of<ptr<ptr<@type[[TYPE_tree_node]]>>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE26]]))) [c="tree *"]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                     }
@@ -771,37 +771,37 @@ const tree __t = __extension__ ({ const tree __t = (expr); char const __c = tree
 // DEFAULT-NEXT:     fn %[[VALUE_list_length:[0-9]+]] @list_length(unprototyped) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_parse_output_constraint:[0-9]+]] @parse_output_constraint(unprototyped) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_alloca:[0-9]+]] @__builtin_alloca(%[[VALUE28:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_get_asm_expr_operands:[0-9]+]] @get_asm_expr_operands(%[[VALUE_stmt_7:[0-9]+]] stmt: ptr<@type[[TYPE_tree_node]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_get_asm_expr_operands:[0-9]+]] @get_asm_expr_operands(%[[VALUE_stmt_7:[0-9]+]] stmt: ptr<@type[[TYPE_tree_node]]> [c="tree"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(tree)"] {
 // DEFAULT-NEXT:         let %[[VALUE_noutputs:[0-9]+]] noutputs: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE29:[0-9]+]]: ptr<ptr<@type[[TYPE_tree_node]]>> [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___t_6:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const];
+// DEFAULT-NEXT:             let %[[VALUE___t_6:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] [c="const tree"];
 // DEFAULT-NEXT:             let %[[VALUE30:[0-9]+]]: ptr<@type[[TYPE_tree_node]]> [synthetic];
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE___t_7:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const];
+// DEFAULT-NEXT:                 let %[[VALUE___t_7:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] [c="const tree"];
 // DEFAULT-NEXT:                 let %[[VALUE31:[0-9]+]]: ptr<@type[[TYPE_tree_node]]> [synthetic];
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %[[VALUE___t_8:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] = read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_stmt_7]]);
+// DEFAULT-NEXT:                     let %[[VALUE___t_8:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] = read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_stmt_7]]) [c="tree"] [c="const tree"];
 // DEFAULT-NEXT:                     if ne<u32>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_8]])))))))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(9)))
-// DEFAULT-NEXT:                         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_8]]), array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_19]]), const<i32>(1495), array_decay<ptr<i8>, length=Some(22)>(%[[VALUE_str_20]]), const<i32>(9), const<i32>(0));
-// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE31]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_8]]));
+// DEFAULT-NEXT:                         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_8]]) [c="tree"], array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_19]]), const<i32>(1495), array_decay<ptr<i8>, length=Some(22)>(%[[VALUE_str_20]]), const<i32>(9), const<i32>(0));
+// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE31]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_8]]) [c="tree"]);
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_7]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE31]]));
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_7]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE31]]) [c="tree"]) [c="const tree"];
 // DEFAULT-NEXT:                 let %[[VALUE___c_3:[0-9]+]] __c: i8 [storage=automatic] [const] = reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code_class]]>(deref(ptr_offset<ptr<const @type[[TYPE_tree_code_class]]>, subtract=false, element=@type[[TYPE_tree_code_class]], overflow=ub>(array_decay<ptr<const @type[[TYPE_tree_code_class]]>, length=None>(%[[VALUE_tree_code_type]]), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_7]])))))))))))))))));
 // DEFAULT-NEXT:                 if not<bool>(logical_and<bool>(ge<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE___c_3]])), const<i32>(1)), le<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE___c_3]])), const<i32>(2))))
-// DEFAULT-NEXT:                     call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_class_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_7]]), const<i32>(2), array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_21]]), const<i32>(1495), array_decay<ptr<i8>, length=Some(22)>(%[[VALUE_str_22]]));
-// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE30]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_7]]));
+// DEFAULT-NEXT:                     call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_class_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_7]]) [c="tree"], const<i32>(2), array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_21]]), const<i32>(1495), array_decay<ptr<i8>, length=Some(22)>(%[[VALUE_str_22]]));
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE30]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_7]]) [c="tree"]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_6]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE30]]));
+// DEFAULT-NEXT:             write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_6]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE30]]) [c="tree"]) [c="const tree"];
 // DEFAULT-NEXT:             let %[[VALUE___i_3:[0-9]+]] __i: i32 [storage=automatic] [const] = const<i32>(1);
 // DEFAULT-NEXT:             if logical_or<bool>(lt<i32>(read<i32>(%[[VALUE___i_3]]), const<i32>(0)), ge<i32>(read<i32>(%[[VALUE___i_3]]), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=None>(%[[VALUE_tree_code_length]]), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_6]]))))))))))))))))))
 // DEFAULT-NEXT:                 call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_operand_check_failed]], read<i32>(%[[VALUE___i_3]]), enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_6]])))))))))), array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_23]]), const<i32>(1495), array_decay<ptr<i8>, length=Some(22)>(%[[VALUE_str_24]]));
-// DEFAULT-NEXT:             write<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE29]], addr_of<ptr<ptr<@type[[TYPE_tree_node]]>>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_tree_node]]>>, subtract=false, element=ptr<@type[[TYPE_tree_node]]>, overflow=ub>(array_decay<ptr<ptr<@type[[TYPE_tree_node]]>>, length=Some(1)>(field0(field3(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_6]]))))), read<i32>(%[[VALUE___i_3]])))));
+// DEFAULT-NEXT:             write<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE29]], addr_of<ptr<ptr<@type[[TYPE_tree_node]]>>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_tree_node]]>>, subtract=false, element=ptr<@type[[TYPE_tree_node]]>, overflow=ub>(array_decay<ptr<ptr<@type[[TYPE_tree_node]]>>, length=Some(1)>(field0(field3(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_6]]))))), read<i32>(%[[VALUE___i_3]])))) [c="tree *"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_noutputs]], call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_list_length]], read<ptr<@type[[TYPE_tree_node]]>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE29]])))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_noutputs]], call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_list_length]], read<ptr<@type[[TYPE_tree_node]]>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE29]]))) [c="tree"]));
 // DEFAULT-NEXT:         let %[[VALUE_oconstraints:[0-9]+]] oconstraints: ptr<ptr<const i8>> [storage=automatic] = pointer_cast<ptr<ptr<const i8>>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_noutputs]]))), const<u64>(8))));
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_link:[0-9]+]] link: ptr<@type[[TYPE_tree_node]]> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_link:[0-9]+]] link: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [c="tree"];
 // DEFAULT-NEXT:         let %[[VALUE_constraint:[0-9]+]] constraint: ptr<const i8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_allows_mem:[0-9]+]] allows_mem: u8 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_allows_reg:[0-9]+]] allows_reg: u8 [storage=automatic];
@@ -809,26 +809,26 @@ const tree __t = __extension__ ({ const tree __t = (expr); char const __c = tree
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE32:[0-9]+]]: ptr<@type[[TYPE_tree_node]]> [synthetic];
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE___t_9:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const];
+// DEFAULT-NEXT:                 let %[[VALUE___t_9:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] [c="const tree"];
 // DEFAULT-NEXT:                 let %[[VALUE33:[0-9]+]]: ptr<@type[[TYPE_tree_node]]> [synthetic];
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %[[VALUE___t_10:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const];
+// DEFAULT-NEXT:                     let %[[VALUE___t_10:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] [c="const tree"];
 // DEFAULT-NEXT:                     let %[[VALUE34:[0-9]+]]: ptr<@type[[TYPE_tree_node]]> [synthetic];
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %[[VALUE___t_11:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] = read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_link]]);
+// DEFAULT-NEXT:                         let %[[VALUE___t_11:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] = read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_link]]) [c="tree"] [c="const tree"];
 // DEFAULT-NEXT:                         if ne<u32>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_11]])))))))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
-// DEFAULT-NEXT:                             call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_11]]), array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_25]]), const<i32>(1506), array_decay<ptr<i8>, length=Some(22)>(%[[VALUE_str_26]]), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                         write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE34]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_11]]));
+// DEFAULT-NEXT:                             call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_11]]) [c="tree"], array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_25]]), const<i32>(1506), array_decay<ptr<i8>, length=Some(22)>(%[[VALUE_str_26]]), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:                         write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE34]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_11]]) [c="tree"]);
 // DEFAULT-NEXT:                     }
-// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_10]], read<ptr<@type[[TYPE_tree_node]]>>(field0(field2(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE34]]))))));
+// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_10]], read<ptr<@type[[TYPE_tree_node]]>>(field0(field2(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE34]]))))) [c="tree"]) [c="const tree"];
 // DEFAULT-NEXT:                     if ne<u32>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_10]])))))))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
-// DEFAULT-NEXT:                         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_10]]), array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_27]]), const<i32>(1506), array_decay<ptr<i8>, length=Some(22)>(%[[VALUE_str_28]]), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE33]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_10]]));
+// DEFAULT-NEXT:                         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_10]]) [c="tree"], array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_27]]), const<i32>(1506), array_decay<ptr<i8>, length=Some(22)>(%[[VALUE_str_28]]), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE33]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_10]]) [c="tree"]);
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_9]], read<ptr<@type[[TYPE_tree_node]]>>(field1(field2(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE33]]))))));
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_9]], read<ptr<@type[[TYPE_tree_node]]>>(field1(field2(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE33]]))))) [c="tree"]) [c="const tree"];
 // DEFAULT-NEXT:                 if ne<u32>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_9]])))))))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5)))
-// DEFAULT-NEXT:                     call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_9]]), array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_29]]), const<i32>(1506), array_decay<ptr<i8>, length=Some(22)>(%[[VALUE_str_30]]), const<i32>(5), const<i32>(0));
-// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE32]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_9]]));
+// DEFAULT-NEXT:                     call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_9]]) [c="tree"], array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_29]]), const<i32>(1506), array_decay<ptr<i8>, length=Some(22)>(%[[VALUE_str_30]]), const<i32>(5), const<i32>(0));
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE32]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_9]]) [c="tree"]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             let %[[VALUE35:[0-9]+]]: ptr<const i8> [synthetic] = pointer_cast<ptr<const i8>, reason=explicit>(array_decay<ptr<i8>, length=Some(1)>(field0(field1(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE32]]))))));
 // DEFAULT-NEXT:             write<ptr<const i8>>(%[[VALUE_constraint]], read<ptr<const i8>>(%[[VALUE35]]));
@@ -836,47 +836,47 @@ const tree __t = __extension__ ({ const tree __t = (expr); char const __c = tree
 // DEFAULT-NEXT:             call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_parse_output_constraint]], addr_of<ptr<ptr<const i8>>>(%[[VALUE_constraint]]), read<i32>(%[[VALUE_i]]), const<i32>(0), const<i32>(0), addr_of<ptr<u8>>(%[[VALUE_allows_mem]]), addr_of<ptr<u8>>(%[[VALUE_allows_reg]]), addr_of<ptr<u8>>(%[[VALUE_is_inout]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_get_indirect_ref_operands:[0-9]+]] @get_indirect_ref_operands(%[[VALUE_stmt_8:[0-9]+]] stmt: ptr<@type[[TYPE_tree_node]]>, %[[VALUE_expr_2:[0-9]+]] expr: ptr<@type[[TYPE_tree_node]]>, %[[VALUE_flags_2:[0-9]+]] flags: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_pptr:[0-9]+]] pptr: ptr<ptr<@type[[TYPE_tree_node]]>> [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_get_indirect_ref_operands:[0-9]+]] @get_indirect_ref_operands(%[[VALUE_stmt_8:[0-9]+]] stmt: ptr<@type[[TYPE_tree_node]]> [c="tree"], %[[VALUE_expr_2:[0-9]+]] expr: ptr<@type[[TYPE_tree_node]]> [c="tree"], %[[VALUE_flags_2:[0-9]+]] flags: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(tree, tree, int)"] {
+// DEFAULT-NEXT:         let %[[VALUE_pptr:[0-9]+]] pptr: ptr<ptr<@type[[TYPE_tree_node]]>> [storage=automatic] [c="tree *"];
 // DEFAULT-NEXT:         let %[[VALUE36:[0-9]+]]: ptr<ptr<@type[[TYPE_tree_node]]>> [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE___t_12:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const];
+// DEFAULT-NEXT:             let %[[VALUE___t_12:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] [c="const tree"];
 // DEFAULT-NEXT:             let %[[VALUE37:[0-9]+]]: ptr<@type[[TYPE_tree_node]]> [synthetic];
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE___t_13:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] = read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_expr_2]]);
+// DEFAULT-NEXT:                 let %[[VALUE___t_13:[0-9]+]] __t: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [const] = read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_expr_2]]) [c="tree"] [c="const tree"];
 // DEFAULT-NEXT:                 let %[[VALUE___c_4:[0-9]+]] __c: i8 [storage=automatic] [const] = reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code_class]]>(deref(ptr_offset<ptr<const @type[[TYPE_tree_code_class]]>, subtract=false, element=@type[[TYPE_tree_code_class]], overflow=ub>(array_decay<ptr<const @type[[TYPE_tree_code_class]]>, length=None>(%[[VALUE_tree_code_type]]), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_13]])))))))))))))))));
 // DEFAULT-NEXT:                 if not<bool>(logical_and<bool>(ge<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE___c_4]])), const<i32>(1)), le<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE___c_4]])), const<i32>(2))))
-// DEFAULT-NEXT:                     call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_class_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_13]]), const<i32>(2), array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_31]]), const<i32>(1591), array_decay<ptr<i8>, length=Some(26)>(%[[VALUE_str_32]]));
-// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE37]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_13]]));
+// DEFAULT-NEXT:                     call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_class_check_failed]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_13]]) [c="tree"], const<i32>(2), array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_31]]), const<i32>(1591), array_decay<ptr<i8>, length=Some(26)>(%[[VALUE_str_32]]));
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE37]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_13]]) [c="tree"]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_12]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE37]]));
+// DEFAULT-NEXT:             write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_12]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE37]]) [c="tree"]) [c="const tree"];
 // DEFAULT-NEXT:             let %[[VALUE___i_4:[0-9]+]] __i: i32 [storage=automatic] [const] = const<i32>(0);
 // DEFAULT-NEXT:             if logical_or<bool>(lt<i32>(read<i32>(%[[VALUE___i_4]]), const<i32>(0)), ge<i32>(read<i32>(%[[VALUE___i_4]]), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=None>(%[[VALUE_tree_code_length]]), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_12]]))))))))))))))))))
 // DEFAULT-NEXT:                 call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_tree_operand_check_failed]], read<i32>(%[[VALUE___i_4]]), enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_12]])))))))))), array_decay<ptr<i8>, length=Some(60)>(%[[VALUE_str_33]]), const<i32>(1591), array_decay<ptr<i8>, length=Some(26)>(%[[VALUE_str_34]]));
-// DEFAULT-NEXT:             write<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE36]], addr_of<ptr<ptr<@type[[TYPE_tree_node]]>>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_tree_node]]>>, subtract=false, element=ptr<@type[[TYPE_tree_node]]>, overflow=ub>(array_decay<ptr<ptr<@type[[TYPE_tree_node]]>>, length=Some(1)>(field0(field3(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_12]]))))), read<i32>(%[[VALUE___i_4]])))));
+// DEFAULT-NEXT:             write<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE36]], addr_of<ptr<ptr<@type[[TYPE_tree_node]]>>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_tree_node]]>>, subtract=false, element=ptr<@type[[TYPE_tree_node]]>, overflow=ub>(array_decay<ptr<ptr<@type[[TYPE_tree_node]]>>, length=Some(1)>(field0(field3(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_12]]))))), read<i32>(%[[VALUE___i_4]])))) [c="tree *"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         write<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_pptr]], addr_of<ptr<ptr<@type[[TYPE_tree_node]]>>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE36]]))));
-// DEFAULT-NEXT:         let %[[VALUE_ptr_4:[0-9]+]] ptr: ptr<@type[[TYPE_tree_node]]> [storage=automatic] = read<ptr<@type[[TYPE_tree_node]]>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_pptr]])));
+// DEFAULT-NEXT:         write<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_pptr]], addr_of<ptr<ptr<@type[[TYPE_tree_node]]>>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE36]]))) [c="tree *"]) [c="tree *"];
+// DEFAULT-NEXT:         let %[[VALUE_ptr_4:[0-9]+]] ptr: ptr<@type[[TYPE_tree_node]]> [storage=automatic] = read<ptr<@type[[TYPE_tree_node]]>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE_pptr]]))) [c="tree"] [c="tree"];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_pi:[0-9]+]] pi: ptr<@type[[TYPE_ptr_info_def]]> [storage=automatic] = null<ptr<@type[[TYPE_ptr_info_def]]>>;
-// DEFAULT-NEXT:             if logical_and<bool>(eq<u32>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_ptr_4]])))))))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(10))), ne<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(field0(deref(read<ptr<@type[[TYPE_ptr_info_def]]>>(%[[VALUE_pi]])))), null<ptr<@type[[TYPE_tree_node]]>>))
+// DEFAULT-NEXT:             if logical_and<bool>(eq<u32>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_tree_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_tree_code]]>(bitfield1<unit=0, bytes=8..9, bits=0..8>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_ptr_4]])))))))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(10))), ne<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(field0(deref(read<ptr<@type[[TYPE_ptr_info_def]]>>(%[[VALUE_pi]])))) [c="tree"], null<ptr<@type[[TYPE_tree_node]]>>))
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bitmap_set_bit:[0-9]+]] @bitmap_set_bit(unprototyped) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_note_addressable:[0-9]+]] @note_addressable(%[[VALUE_var:[0-9]+]] var: ptr<@type[[TYPE_tree_node]]>, %[[VALUE_s_ann:[0-9]+]] s_ann: ptr<@type[[TYPE_stmt_ann_d]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_svars_2:[0-9]+]] svars: ptr<@type[[TYPE_subvar]]> [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_note_addressable:[0-9]+]] @note_addressable(%[[VALUE_var:[0-9]+]] var: ptr<@type[[TYPE_tree_node]]> [c="tree"], %[[VALUE_s_ann:[0-9]+]] s_ann: ptr<@type[[TYPE_stmt_ann_d]]> [c="stmt_ann_t"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(tree, stmt_ann_t)"] {
+// DEFAULT-NEXT:         let %[[VALUE_svars_2:[0-9]+]] svars: ptr<@type[[TYPE_subvar]]> [storage=automatic] [c="subvar_t"];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE38:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:             if ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_var_can_have_subvars]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_var]])), const<i32>(0))
-// DEFAULT-NEXT:                 let %[[VALUE39:[0-9]+]]: ptr<@type[[TYPE_subvar]]> [synthetic] = int_to_ptr<ptr<@type[[TYPE_subvar]]>, reason=assign>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_get_subvars_for_var]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_var]])));
-// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_subvar]]>>(%[[VALUE_svars_2]], read<ptr<@type[[TYPE_subvar]]>>(%[[VALUE39]]));
-// DEFAULT-NEXT:                 write<bool>(%[[VALUE38]], ne<ptr<@type[[TYPE_subvar]]>>(read<ptr<@type[[TYPE_subvar]]>>(%[[VALUE39]]), null<ptr<@type[[TYPE_subvar]]>>));
+// DEFAULT-NEXT:             if ne<i32>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_var_can_have_subvars]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_var]]) [c="tree"]), const<i32>(0))
+// DEFAULT-NEXT:                 let %[[VALUE39:[0-9]+]]: ptr<@type[[TYPE_subvar]]> [synthetic] = int_to_ptr<ptr<@type[[TYPE_subvar]]>, reason=assign>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_get_subvars_for_var]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_var]]) [c="tree"])) [c="subvar_t"] [c="subvar_t"];
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_subvar]]>>(%[[VALUE_svars_2]], read<ptr<@type[[TYPE_subvar]]>>(%[[VALUE39]]) [c="subvar_t"]) [c="subvar_t"] [c="subvar_t"];
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE38]], ne<ptr<@type[[TYPE_subvar]]>>(read<ptr<@type[[TYPE_subvar]]>>(%[[VALUE39]]) [c="subvar_t"], null<ptr<@type[[TYPE_subvar]]>>));
 // DEFAULT-NEXT:             else
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE38]], const<bool>(false));
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE38]])
-// DEFAULT-NEXT:                 call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_bitmap_set_bit]], read<ptr<@type[[TYPE_bitmap_head_def]]>>(field2(deref(read<ptr<@type[[TYPE_stmt_ann_d]]>>(%[[VALUE_s_ann]])))), read<u64>(field0(deref(call<ptr<@type[[TYPE_var_ann_d]]>, signature=fn(ptr<@type[[TYPE_tree_node]]>) -> ptr<@type[[TYPE_var_ann_d]]>>(%[[VALUE_var_ann]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_var]]))))));
+// DEFAULT-NEXT:                 call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_bitmap_set_bit]], read<ptr<@type[[TYPE_bitmap_head_def]]>>(field2(deref(read<ptr<@type[[TYPE_stmt_ann_d]]>>(%[[VALUE_s_ann]])))) [c="bitmap"], read<u64>(field0(deref(call<ptr<@type[[TYPE_var_ann_d]]>, signature=fn(ptr<@type[[TYPE_tree_node]]>) -> ptr<@type[[TYPE_var_ann_d]]>>(%[[VALUE_var_ann]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_var]]))))) [c="size_t"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

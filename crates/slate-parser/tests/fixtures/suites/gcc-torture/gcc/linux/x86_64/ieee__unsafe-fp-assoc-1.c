@@ -78,7 +78,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_expect:[0-9]+]] @__builtin_expect(%[[VALUE0:[0-9]+]] <unnamed>: i64, %[[VALUE1:[0-9]+]] <unnamed>: i64) -> i64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_func:[0-9]+]] @func(%[[VALUE_x:[0-9]+]] x: f64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_argument:[0-9]+]] argument: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_argument:[0-9]+]] argument: @type[[TYPE0]] [storage=automatic] [c="hexdouble"];
 // DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: f64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: f64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_xHead:[0-9]+]] xHead: u32 [storage=automatic];

@@ -59,7 +59,7 @@ struct PLAYBOOK playbook  =
 // DEFAULT-NEXT:     type @type[[TYPE_P_DATA:[0-9]+]] P_DATA = @type[[TYPE_PDATA]];
 // DEFAULT-NEXT:     type @type[[TYPE_PLAYBOOK:[0-9]+]] PLAYBOOK = struct {
 // DEFAULT-NEXT:         field0 BookName: ptr<const i8>;
-// DEFAULT-NEXT:         field1 Play: array<@type[[TYPE_PDATA]], 0>;
+// DEFAULT-NEXT:         field1 Play: array<@type[[TYPE_PDATA]], 0> [c="P_DATA[0]"];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([66, 111, 111, 107, 78, 97, 109, 101, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_playbook:[0-9]+]] playbook: @type[[TYPE_PLAYBOOK]] [storage=static] = aggregate<@type[[TYPE_PLAYBOOK]], zero_fill=false>(field0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str]])), field1 = aggregate<array<@type[[TYPE_PDATA]], 0>, zero_fill=false>()) [linkage=external];

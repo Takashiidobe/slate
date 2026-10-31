@@ -119,7 +119,7 @@ int print(struct disassemble_info *info) {
 // DEFAULT-NEXT:     type @type[[TYPE_printf_like:[0-9]+]] printf_like = fn(ptr<const i8>, ...) -> i32;
 // DEFAULT-NEXT:     type @type[[TYPE_allocator_fn:[0-9]+]] allocator_fn = ptr<fn(u64) -> ptr<void>>;
 // DEFAULT-NEXT:     type @type[[TYPE_disassemble_info:[0-9]+]] disassemble_info = struct {
-// DEFAULT-NEXT:         field0 fprintf_func: ptr<fn(ptr<void>, ptr<const i8>, ...) -> i32>;
+// DEFAULT-NEXT:         field0 fprintf_func: ptr<fn(ptr<void>, ptr<const i8>, ...) -> i32> [c="fprintf_ftype"];
 // DEFAULT-NEXT:         field1 fprintf_styled_func: ptr<fn(ptr<void>, i32, ptr<const i8>, ...) -> i32>;
 // DEFAULT-NEXT:         field2 aligned_alloc: ptr<fn(u64, u64) -> ptr<void>>;
 // DEFAULT-NEXT:         field3 not_a_function: i32;
@@ -134,10 +134,10 @@ int print(struct disassemble_info *info) {
 // DEFAULT-NEXT:     global %[[VALUE_table:[0-9]+]] table: array<ptr<fn(ptr<const i8>, ...) -> i32>, 2> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_plain:[0-9]+]] plain: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 100, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_list_sort:[0-9]+]] @list_sort(%[[VALUE_priv:[0-9]+]] priv: ptr<void>, %[[VALUE_head:[0-9]+]] head: ptr<@type[[TYPE_list_head]]>, %[[VALUE_cmp:[0-9]+]] cmp: ptr<fn(ptr<void>, ptr<const @type[[TYPE_list_head]]>, ptr<const @type[[TYPE_list_head]]>) -> i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_list_sort:[0-9]+]] @list_sort(%[[VALUE_priv:[0-9]+]] priv: ptr<void>, %[[VALUE_head:[0-9]+]] head: ptr<@type[[TYPE_list_head]]>, %[[VALUE_cmp:[0-9]+]] cmp: ptr<fn(ptr<void>, ptr<const @type[[TYPE_list_head]]>, ptr<const @type[[TYPE_list_head]]>) -> i32> [c="list_cmp_func_t"]) -> void [linkage=external] [c="void(void *, struct list_head *, list_cmp_func_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_callback:[0-9]+]] @callback(%[[VALUE_visit:[0-9]+]] visit: ptr<fn(ptr<void>) -> i32>, %[[VALUE_pointer:[0-9]+]] pointer: ptr<i32>, %[[VALUE_count:[0-9]+]] count: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_print:[0-9]+]] @print(%[[VALUE_info:[0-9]+]] info: ptr<@type[[TYPE_disassemble_info]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32>(read<ptr<fn(ptr<void>, ptr<const i8>, ...) -> i32>>(field0(deref(read<ptr<@type[[TYPE_disassemble_info]]>>(%[[VALUE_info]])))), null<ptr<void>>, pointer_cast<ptr<const i8>>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])), const<i32>(1));
+// DEFAULT-NEXT:         return call<i32>(read<ptr<fn(ptr<void>, ptr<const i8>, ...) -> i32>>(field0(deref(read<ptr<@type[[TYPE_disassemble_info]]>>(%[[VALUE_info]])))) [c="fprintf_ftype"], null<ptr<void>>, pointer_cast<ptr<const i8>>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
@@ -170,7 +170,7 @@ int print(struct disassemble_info *info) {
 // IR-WARN-NEXT:     type @type[[TYPE_printf_like:[0-9]+]] printf_like = fn(ptr<const i8>, ...) -> i32;
 // IR-WARN-NEXT:     type @type[[TYPE_allocator_fn:[0-9]+]] allocator_fn = ptr<fn(u64) -> ptr<void>>;
 // IR-WARN-NEXT:     type @type[[TYPE_disassemble_info:[0-9]+]] disassemble_info = struct {
-// IR-WARN-NEXT:         field0 fprintf_func: ptr<fn(ptr<void>, ptr<const i8>, ...) -> i32>;
+// IR-WARN-NEXT:         field0 fprintf_func: ptr<fn(ptr<void>, ptr<const i8>, ...) -> i32> [c="fprintf_ftype"];
 // IR-WARN-NEXT:         field1 fprintf_styled_func: ptr<fn(ptr<void>, i32, ptr<const i8>, ...) -> i32>;
 // IR-WARN-NEXT:         field2 aligned_alloc: ptr<fn(u64, u64) -> ptr<void>>;
 // IR-WARN-NEXT:         field3 not_a_function: i32;
@@ -185,10 +185,10 @@ int print(struct disassemble_info *info) {
 // IR-WARN-NEXT:     global %[[VALUE_table:[0-9]+]] table: array<ptr<fn(ptr<const i8>, ...) -> i32>, 2> [storage=static] [align=16] [linkage=external];
 // IR-WARN-NEXT:     global %[[VALUE_plain:[0-9]+]] plain: i32 [storage=static] [linkage=external];
 // IR-WARN-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 100, 0]) [linkage=internal];
-// IR-WARN-NEXT:     fn %[[VALUE_list_sort:[0-9]+]] @list_sort(%[[VALUE_priv:[0-9]+]] priv: ptr<void>, %[[VALUE_head:[0-9]+]] head: ptr<@type[[TYPE_list_head]]>, %[[VALUE_cmp:[0-9]+]] cmp: ptr<fn(ptr<void>, ptr<const @type[[TYPE_list_head]]>, ptr<const @type[[TYPE_list_head]]>) -> i32>) -> void [linkage=external];
+// IR-WARN-NEXT:     fn %[[VALUE_list_sort:[0-9]+]] @list_sort(%[[VALUE_priv:[0-9]+]] priv: ptr<void>, %[[VALUE_head:[0-9]+]] head: ptr<@type[[TYPE_list_head]]>, %[[VALUE_cmp:[0-9]+]] cmp: ptr<fn(ptr<void>, ptr<const @type[[TYPE_list_head]]>, ptr<const @type[[TYPE_list_head]]>) -> i32> [c="list_cmp_func_t"]) -> void [linkage=external] [c="void(void *, struct list_head *, list_cmp_func_t)"];
 // IR-WARN-NEXT:     fn %[[VALUE_callback:[0-9]+]] @callback(%[[VALUE_visit:[0-9]+]] visit: ptr<fn(ptr<void>) -> i32>, %[[VALUE_pointer:[0-9]+]] pointer: ptr<i32>, %[[VALUE_count:[0-9]+]] count: i32) -> void [linkage=external];
 // IR-WARN-NEXT:     fn %[[VALUE_print:[0-9]+]] @print(%[[VALUE_info:[0-9]+]] info: ptr<@type[[TYPE_disassemble_info]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-WARN-NEXT:         return call<i32>(read<ptr<fn(ptr<void>, ptr<const i8>, ...) -> i32>>(field0(deref(read<ptr<@type[[TYPE_disassemble_info]]>>(%[[VALUE_info]])))), null<ptr<void>>, pointer_cast<ptr<const i8>>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])), const<i32>(1));
+// IR-WARN-NEXT:         return call<i32>(read<ptr<fn(ptr<void>, ptr<const i8>, ...) -> i32>>(field0(deref(read<ptr<@type[[TYPE_disassemble_info]]>>(%[[VALUE_info]])))) [c="fprintf_ftype"], null<ptr<void>>, pointer_cast<ptr<const i8>>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])), const<i32>(1));
 // IR-WARN-NEXT:     }
 // IR-WARN-NEXT: }
 // SLATE-FILECHECK-END IR-WARN

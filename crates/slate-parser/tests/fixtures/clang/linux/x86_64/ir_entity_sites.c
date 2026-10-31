@@ -59,7 +59,7 @@ int block(void) {
 // IR-NEXT:     global %[[VALUE_file_restrict:[0-9]+]] file_restrict: ptr<const i32> [storage=static] [restrict] [linkage=external];
 // IR-NEXT:     global %[[VALUE_file_literal:[0-9]+]] file_literal: ptr<const @type[[TYPE_fields]]> [storage=static] = addr_of<ptr<const @type[[TYPE_fields]]>>(compound_literal %[[VALUE0:[0-9]+]] [storage=static] = aggregate<@type[[TYPE_fields]], zero_fill=true>(field0 = const<i32>(0))) [linkage=external];
 // IR-NEXT:     global %[[VALUE_static_local:[0-9]+]] static_local: atomic i32 [storage=static] [align=64] [linkage=internal];
-// IR-NEXT:     fn %[[VALUE_parameters:[0-9]+]] @parameters(%[[VALUE_a:[0-9]+]] a: atomic i32, %[[VALUE_v:[0-9]+]] v: volatile i32, %[[VALUE_c:[0-9]+]] c: i32 [const], %[[VALUE_r:[0-9]+]] r: ptr<i32> [restrict]) -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_parameters:[0-9]+]] @parameters(%[[VALUE_a:[0-9]+]] a: atomic i32, %[[VALUE_v:[0-9]+]] v: volatile i32, %[[VALUE_c:[0-9]+]] c: i32 [const], %[[VALUE_r:[0-9]+]] r: ptr<i32> [restrict]) -> void [linkage=external] [c="void(_Atomic int, volatile int, const int, int *restrict)"];
 // IR-NEXT:     fn %[[VALUE_block:[0-9]+]] @block() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %[[VALUE_block_scope:[0-9]+]] block_scope: volatile i32 [storage=automatic] [align=32];
 // IR-NEXT:         let %[[VALUE_const_literal:[0-9]+]] const_literal: ptr<const i32> [storage=automatic] = addr_of<ptr<const i32>>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = const<i32>(7));

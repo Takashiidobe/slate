@@ -262,8 +262,8 @@ void* malloc (size_t n)             // { dg-warning "-Winfinite-recursion" }
 // DEFAULT-NEXT:     type @type[[TYPE_sigjmp_buf:[0-9]+]] sigjmp_buf = array<@type[[TYPE___sigjmp_buf_tag]], 1>;
 // DEFAULT-NEXT:     extern %[[VALUE_ei:[0-9]+]] ei: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_pfi_v:[0-9]+]] pfi_v: ptr<fn() -> i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %[[VALUE_jmpbuf:[0-9]+]] jmpbuf: array<@type[[TYPE___jmp_buf_tag]], 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %[[VALUE_sigjmpbuf:[0-9]+]] sigjmpbuf: array<@type[[TYPE___sigjmp_buf_tag]], 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_jmpbuf:[0-9]+]] jmpbuf: array<@type[[TYPE___jmp_buf_tag]], 1> [storage=static] [linkage=external] [c="jmp_buf"];
+// DEFAULT-NEXT:     extern %[[VALUE_sigjmpbuf:[0-9]+]] sigjmpbuf: array<@type[[TYPE___sigjmp_buf_tag]], 1> [storage=static] [linkage=external] [c="sigjmp_buf"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_nowarn_pfi_v:[0-9]+]] @nowarn_pfi_v() -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -307,7 +307,7 @@ void* malloc (size_t n)             // { dg-warning "-Winfinite-recursion" }
 // DEFAULT-NEXT:             else
 // DEFAULT-NEXT:                 return neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_nowarn_switch:[0-9]+]] @nowarn_switch(%[[VALUE_i_3:[0-9]+]] i: i32, %[[VALUE_a:[0-9]+]] a: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_nowarn_switch:[0-9]+]] @nowarn_switch(%[[VALUE_i_3:[0-9]+]] i: i32, %[[VALUE_a:[0-9]+]] a: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int, int[])"] {
 // DEFAULT-NEXT:         switch %[[VALUE7:[0-9]+]] read<i32>(%[[VALUE_i_3]])
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %[[VALUE7]] const<i32>(0):
@@ -321,7 +321,7 @@ void* malloc (size_t n)             // { dg-warning "-Winfinite-recursion" }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(77);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_warn_switch:[0-9]+]] @warn_switch(%[[VALUE_i_4:[0-9]+]] i: i32, %[[VALUE_a_2:[0-9]+]] a: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_warn_switch:[0-9]+]] @warn_switch(%[[VALUE_i_4:[0-9]+]] i: i32, %[[VALUE_a_2:[0-9]+]] a: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int, int[])"] {
 // DEFAULT-NEXT:         switch %[[VALUE8:[0-9]+]] read<i32>(%[[VALUE_i_4]])
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %[[VALUE8]] const<i32>(0):
@@ -389,7 +389,7 @@ void* malloc (size_t n)             // { dg-warning "-Winfinite-recursion" }
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>, i32) -> void>(%[[VALUE___builtin_longjmp]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type[[TYPE___jmp_buf_tag]]>, length=Some(1)>(%[[VALUE_jmpbuf]])), const<i32>(1));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_n_6]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_siglongjmp:[0-9]+]] @siglongjmp(%[[VALUE20:[0-9]+]] <unnamed>: ptr<@type[[TYPE___sigjmp_buf_tag]]> [array=1], %[[VALUE21:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_siglongjmp:[0-9]+]] @siglongjmp(%[[VALUE20:[0-9]+]] <unnamed>: ptr<@type[[TYPE___sigjmp_buf_tag]]> [array=1] [c="sigjmp_buf"], %[[VALUE21:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [c="void(sigjmp_buf, int)"];
 // DEFAULT-NEXT:     fn %[[VALUE_nowarn_call_siglongjmp_r:[0-9]+]] @nowarn_call_siglongjmp_r(%[[VALUE_n_7:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%[[VALUE_n_7]]), const<i32>(7))
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE___sigjmp_buf_tag]]>, i32) -> void>(%[[VALUE_siglongjmp]], array_decay<ptr<@type[[TYPE___sigjmp_buf_tag]]>, length=Some(1)>(%[[VALUE_sigjmpbuf]]), const<i32>(1));
@@ -423,10 +423,10 @@ void* malloc (size_t n)             // { dg-warning "-Winfinite-recursion" }
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_z_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE34:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE_n_10:[0-9]+]] n: u64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<u64> [storage=automatic] = pointer_cast<ptr<u64>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], add<u64, overflow=wrap>(read<u64>(%[[VALUE_n_10]]), const<u64>(8))));
-// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE_p]])), read<u64>(%[[VALUE_n_10]]));
-// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%[[VALUE_p]]), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE_n_10:[0-9]+]] n: u64 [c="size_t"]) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] [c="void *(size_t)"] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<u64> [storage=automatic] = pointer_cast<ptr<u64>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], add<u64, overflow=wrap>(read<u64>(%[[VALUE_n_10]]) [c="size_t"], const<u64>(8) [c="size_t"]))) [c="size_t *"] [c="size_t *"];
+// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE_p]])), read<u64>(%[[VALUE_n_10]]) [c="size_t"]) [c="size_t"];
+// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%[[VALUE_p]]) [c="size_t *"], const<i32>(1)) [c="size_t *"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

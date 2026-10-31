@@ -140,35 +140,35 @@ int main()
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type[[TYPE__Unwind_Reason_Code:[0-9]+]] _Unwind_Reason_Code = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE__Unwind_Exception:[0-9]+]] _Unwind_Exception = struct {
-// DEFAULT-NEXT:         field0 exception_class: u64;
-// DEFAULT-NEXT:         field1 exception_cleanup: ptr<fn(@type[[TYPE0]], ptr<@type[[TYPE__Unwind_Exception]]>) -> void>;
-// DEFAULT-NEXT:         field2 private_1: u64;
-// DEFAULT-NEXT:         field3 private_2: u64;
+// DEFAULT-NEXT:         field0 exception_class: u64 [c="_Unwind_Exception_Class"];
+// DEFAULT-NEXT:         field1 exception_cleanup: ptr<fn(@type[[TYPE0]], ptr<@type[[TYPE__Unwind_Exception]]>) -> void> [c="_Unwind_Exception_Cleanup_Fn"];
+// DEFAULT-NEXT:         field2 private_1: u64 [c="_Unwind_Word"];
+// DEFAULT-NEXT:         field3 private_2: u64 [c="_Unwind_Word"];
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 8, 16, 24]];
-// DEFAULT-NEXT:     type @type[[TYPE__Unwind_Exception_Cleanup_Fn:[0-9]+]] _Unwind_Exception_Cleanup_Fn = ptr<fn(@type[[TYPE0]], ptr<@type[[TYPE__Unwind_Exception]]>) -> void>;
+// DEFAULT-NEXT:     type @type[[TYPE__Unwind_Exception_Cleanup_Fn:[0-9]+]] _Unwind_Exception_Cleanup_Fn = ptr<fn(@type[[TYPE0]], ptr<@type[[TYPE__Unwind_Exception]]>) -> void> [c="void (*)(_Unwind_Reason_Code, struct _Unwind_Exception *)"];
 // DEFAULT-NEXT:     type @type[[TYPE__Unwind_Action:[0-9]+]] _Unwind_Action = i32;
 // DEFAULT-NEXT:     type @type[[TYPE__Unwind_Context:[0-9]+]] _Unwind_Context = struct incomplete;
-// DEFAULT-NEXT:     type @type[[TYPE__Unwind_Stop_Fn:[0-9]+]] _Unwind_Stop_Fn = ptr<fn(i32, i32, u64, ptr<@type[[TYPE__Unwind_Exception]]>, ptr<@type[[TYPE__Unwind_Context]]>, ptr<void>) -> @type[[TYPE0]]>;
+// DEFAULT-NEXT:     type @type[[TYPE__Unwind_Stop_Fn:[0-9]+]] _Unwind_Stop_Fn = ptr<fn(i32, i32, u64, ptr<@type[[TYPE__Unwind_Exception]]>, ptr<@type[[TYPE__Unwind_Context]]>, ptr<void>) -> @type[[TYPE0]]> [c="_Unwind_Reason_Code (*)(int, _Unwind_Action, _Unwind_Exception_Class, struct _Unwind_Exception *, struct _Unwind_Context *, void *)"];
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
 // DEFAULT-NEXT:     type @type[[TYPE___sighandler_t:[0-9]+]] __sighandler_t = ptr<fn(i32) -> void>;
 // DEFAULT-NEXT:     global %[[VALUE_count:[0-9]+]] count: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_null:[0-9]+]] null: ptr<i8> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE__Unwind_ForcedUnwind:[0-9]+]] @_Unwind_ForcedUnwind(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE__Unwind_Exception]]>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<fn(i32, i32, u64, ptr<@type[[TYPE__Unwind_Exception]]>, ptr<@type[[TYPE__Unwind_Context]]>, ptr<void>) -> @type[[TYPE0]]>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<void>) -> @type[[TYPE0]] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE__Unwind_ForcedUnwind:[0-9]+]] @_Unwind_ForcedUnwind(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE__Unwind_Exception]]>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<fn(i32, i32, u64, ptr<@type[[TYPE__Unwind_Exception]]>, ptr<@type[[TYPE__Unwind_Context]]>, ptr<void>) -> @type[[TYPE0]]> [c="_Unwind_Stop_Fn"], %[[VALUE2:[0-9]+]] <unnamed>: ptr<void>) -> @type[[TYPE0]] [linkage=external] [c="_Unwind_Reason_Code(struct _Unwind_Exception *, _Unwind_Stop_Fn, void *)"];
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_signal:[0-9]+]] @signal(%[[VALUE___sig:[0-9]+]] __sig: i32, %[[VALUE___handler:[0-9]+]] __handler: ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE___s:[0-9]+]] __s: ptr<void>, %[[VALUE___c:[0-9]+]] __c: i32, %[[VALUE___n:[0-9]+]] __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_force_unwind_stop:[0-9]+]] @force_unwind_stop(%[[VALUE_version:[0-9]+]] version: i32, %[[VALUE_actions:[0-9]+]] actions: i32, %[[VALUE_exc_class:[0-9]+]] exc_class: u64, %[[VALUE_exc_obj:[0-9]+]] exc_obj: ptr<@type[[TYPE__Unwind_Exception]]>, %[[VALUE_context:[0-9]+]] context: ptr<@type[[TYPE__Unwind_Context]]>, %[[VALUE_stop_parameter:[0-9]+]] stop_parameter: ptr<void>) -> @type[[TYPE0]] [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_signal:[0-9]+]] @signal(%[[VALUE___sig:[0-9]+]] __sig: i32, %[[VALUE___handler:[0-9]+]] __handler: ptr<fn(i32) -> void> [c="__sighandler_t"]) -> ptr<fn(i32) -> void> [linkage=external] [c="__sighandler_t(int, __sighandler_t)"];
+// DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE___s:[0-9]+]] __s: ptr<void>, %[[VALUE___c:[0-9]+]] __c: i32, %[[VALUE___n:[0-9]+]] __n: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(void *, int, size_t)"];
+// DEFAULT-NEXT:     fn %[[VALUE_force_unwind_stop:[0-9]+]] @force_unwind_stop(%[[VALUE_version:[0-9]+]] version: i32, %[[VALUE_actions:[0-9]+]] actions: i32 [c="_Unwind_Action"], %[[VALUE_exc_class:[0-9]+]] exc_class: u64 [c="_Unwind_Exception_Class"], %[[VALUE_exc_obj:[0-9]+]] exc_obj: ptr<@type[[TYPE__Unwind_Exception]]>, %[[VALUE_context:[0-9]+]] context: ptr<@type[[TYPE__Unwind_Context]]>, %[[VALUE_stop_parameter:[0-9]+]] stop_parameter: ptr<void>) -> @type[[TYPE0]] [linkage=internal] [fallthrough=ub_if_used] [c="_Unwind_Reason_Code(int, _Unwind_Action, _Unwind_Exception_Class, struct _Unwind_Exception *, struct _Unwind_Context *, void *)"] {
 // DEFAULT-NEXT:         if ne<i32>(and<i32>(read<i32>(%[[VALUE_actions]]), const<i32>(16)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         return int_to_enum<@type[[TYPE0]], reason=return>(reinterpret<u32, reason=return, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         return int_to_enum<@type[[TYPE0]], reason=return>(reinterpret<u32, reason=return, fits=always>(const<i32>(0))) [c="_Unwind_Reason_Code"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_force_unwind:[0-9]+]] @force_unwind() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_exc:[0-9]+]] exc: ptr<@type[[TYPE__Unwind_Exception]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE__Unwind_Exception]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(32)));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u64>>(field0(deref(read<ptr<@type[[TYPE__Unwind_Exception]]>>(%[[VALUE_exc]]))))), const<i32>(0), const<u64>(8));
-// DEFAULT-NEXT:         write<ptr<fn(@type[[TYPE0]], ptr<@type[[TYPE__Unwind_Exception]]>) -> void>>(field1(deref(read<ptr<@type[[TYPE__Unwind_Exception]]>>(%[[VALUE_exc]]))), null<ptr<fn(@type[[TYPE0]], ptr<@type[[TYPE__Unwind_Exception]]>) -> void>>);
-// DEFAULT-NEXT:         call<@type[[TYPE0]], signature=fn(ptr<@type[[TYPE__Unwind_Exception]]>, ptr<fn(i32, i32, u64, ptr<@type[[TYPE__Unwind_Exception]]>, ptr<@type[[TYPE__Unwind_Context]]>, ptr<void>) -> @type[[TYPE0]]>, ptr<void>) -> @type[[TYPE0]]>(%[[VALUE__Unwind_ForcedUnwind]], read<ptr<@type[[TYPE__Unwind_Exception]]>>(%[[VALUE_exc]]), function_decay<ptr<fn(i32, i32, u64, ptr<@type[[TYPE__Unwind_Exception]]>, ptr<@type[[TYPE__Unwind_Context]]>, ptr<void>) -> @type[[TYPE0]]>>(%[[VALUE_force_unwind_stop]]), null<ptr<void>>);
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u64>>(field0(deref(read<ptr<@type[[TYPE__Unwind_Exception]]>>(%[[VALUE_exc]])))) [c="_Unwind_Exception_Class *"]), const<i32>(0), const<u64>(8));
+// DEFAULT-NEXT:         write<ptr<fn(@type[[TYPE0]], ptr<@type[[TYPE__Unwind_Exception]]>) -> void>>(field1(deref(read<ptr<@type[[TYPE__Unwind_Exception]]>>(%[[VALUE_exc]]))), null<ptr<fn(@type[[TYPE0]], ptr<@type[[TYPE__Unwind_Exception]]>) -> void>> [c="_Unwind_Exception_Cleanup_Fn"]) [c="_Unwind_Exception_Cleanup_Fn"];
+// DEFAULT-NEXT:         call<@type[[TYPE0]], signature=fn(ptr<@type[[TYPE__Unwind_Exception]]>, ptr<fn(i32, i32, u64, ptr<@type[[TYPE__Unwind_Exception]]>, ptr<@type[[TYPE__Unwind_Context]]>, ptr<void>) -> @type[[TYPE0]]>, ptr<void>) -> @type[[TYPE0]]>(%[[VALUE__Unwind_ForcedUnwind]], read<ptr<@type[[TYPE__Unwind_Exception]]>>(%[[VALUE_exc]]), function_decay<ptr<fn(i32, i32, u64, ptr<@type[[TYPE__Unwind_Exception]]>, ptr<@type[[TYPE__Unwind_Context]]>, ptr<void>) -> @type[[TYPE0]]>>(%[[VALUE_force_unwind_stop]]) [c="_Unwind_Stop_Fn"], null<ptr<void>>) [c="_Unwind_Reason_Code"];
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_counter:[0-9]+]] @counter(%[[VALUE_p:[0-9]+]] p: ptr<void>) -> void [linkage=internal] [fallthrough=ret_void] {
@@ -200,8 +200,8 @@ int main()
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1() -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<ptr<fn(i32) -> void>, signature=fn(i32, ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void>>(%[[VALUE_signal]], const<i32>(11), function_decay<ptr<fn(i32) -> void>>(%[[VALUE_fn4]]));
-// DEFAULT-NEXT:         call<ptr<fn(i32) -> void>, signature=fn(i32, ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void>>(%[[VALUE_signal]], const<i32>(7), function_decay<ptr<fn(i32) -> void>>(%[[VALUE_fn4]]));
+// DEFAULT-NEXT:         call<ptr<fn(i32) -> void>, signature=fn(i32, ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void>>(%[[VALUE_signal]], const<i32>(11), function_decay<ptr<fn(i32) -> void>>(%[[VALUE_fn4]]) [c="__sighandler_t"]) [c="__sighandler_t"];
+// DEFAULT-NEXT:         call<ptr<fn(i32) -> void>, signature=fn(i32, ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void>>(%[[VALUE_signal]], const<i32>(7), function_decay<ptr<fn(i32) -> void>>(%[[VALUE_fn4]]) [c="__sighandler_t"]) [c="__sighandler_t"];
 // DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_fn2]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -148,7 +148,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_sincosl:[0-9]+]] @sincosl(%[[VALUE___x_19:[0-9]+]] __x: f80, %[[VALUE___sinx_3:[0-9]+]] __sinx: ptr<f80>, %[[VALUE___cosx_3:[0-9]+]] __cosx: ptr<f80>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_exp10l:[0-9]+]] @exp10l(%[[VALUE___x_20:[0-9]+]] __x: f80) -> f80 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_fabsl:[0-9]+]] @fabsl(%[[VALUE___x_21:[0-9]+]] __x: f80) -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_gnu_sincos_extensions:[0-9]+]] @gnu_sincos_extensions() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_sine:[0-9]+]] sine: f64 [storage=automatic] = const<f64>(0.0);
 // DEFAULT-NEXT:         let %[[VALUE_cosine:[0-9]+]] cosine: f64 [storage=automatic] = const<f64>(0.0);

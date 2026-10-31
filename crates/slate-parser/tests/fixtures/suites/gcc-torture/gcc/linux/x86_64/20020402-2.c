@@ -313,13 +313,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:     } [size=568, align=8, offsets=[0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248]];
 // DEFAULT-NEXT:     type @type[[TYPE_ShrPcGemStatSType:[0-9]+]] ShrPcGemStatSType = @type[[TYPE2]];
 // DEFAULT-NEXT:     type @type[[TYPE_ShrPcStatUnion:[0-9]+]] ShrPcStatUnion = union {
-// DEFAULT-NEXT:         field0 monitor: @type[[TYPE1]];
-// DEFAULT-NEXT:         field1 gem: @type[[TYPE2]];
+// DEFAULT-NEXT:         field0 monitor: @type[[TYPE1]] [c="ShrPcMonStatSType"];
+// DEFAULT-NEXT:         field1 gem: @type[[TYPE2]] [c="ShrPcGemStatSType"];
 // DEFAULT-NEXT:     } [size=568, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE3:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 processId: i32;
 // DEFAULT-NEXT:         field1 sessionId: i32;
-// DEFAULT-NEXT:         field2 cmn: @type[[TYPE0]];
+// DEFAULT-NEXT:         field2 cmn: @type[[TYPE0]] [c="ShrPcCommonStatSType"];
 // DEFAULT-NEXT:         field3 u: @type[[TYPE_ShrPcStatUnion]];
 // DEFAULT-NEXT:     } [size=776, align=8, offsets=[0, 4, 8, 208]];
 // DEFAULT-NEXT:     type @type[[TYPE_ShrPcStatsSType:[0-9]+]] ShrPcStatsSType = @type[[TYPE3]];
@@ -338,7 +338,7 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:     } [size=88, align=8, offsets=[0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80]];
 // DEFAULT-NEXT:     type @type[[TYPE_WorkEntrySType:[0-9]+]] WorkEntrySType = @type[[TYPE4]];
 // DEFAULT-NEXT:     type @type[[TYPE5:[0-9]+]] = struct {
-// DEFAULT-NEXT:         field0 stats: @type[[TYPE3]];
+// DEFAULT-NEXT:         field0 stats: @type[[TYPE3]] [c="ShrPcStatsSType"];
 // DEFAULT-NEXT:     } [size=776, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_ShrPcPteSType:[0-9]+]] ShrPcPteSType = @type[[TYPE5]];
 // DEFAULT-NEXT:     global %[[VALUE_Local1:[0-9]+]] Local1: ptr<u64> [storage=static] [linkage=external];
@@ -365,9 +365,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:     global %[[VALUE_Lom10:[0-9]+]] Lom10: ptr<u64> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_RDbf11:[0-9]+]] RDbf11: ptr<u64> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_RDbf12:[0-9]+]] RDbf12: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_Workspace:[0-9]+]] Workspace: @type[[TYPE4]] [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_MyPte:[0-9]+]] MyPte: @type[[TYPE5]] [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_setStatPointers:[0-9]+]] @setStatPointers(%[[VALUE_statsPtr:[0-9]+]] statsPtr: ptr<@type[[TYPE3]]>, %[[VALUE_sessionId:[0-9]+]] sessionId: i64) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_Workspace:[0-9]+]] Workspace: @type[[TYPE4]] [storage=static] [linkage=external] [c="WorkEntrySType"];
+// DEFAULT-NEXT:     global %[[VALUE_MyPte:[0-9]+]] MyPte: @type[[TYPE5]] [storage=static] [linkage=external] [c="ShrPcPteSType"];
+// DEFAULT-NEXT:     fn %[[VALUE_setStatPointers:[0-9]+]] @setStatPointers(%[[VALUE_statsPtr:[0-9]+]] statsPtr: ptr<@type[[TYPE3]]> [c="ShrPcStatsSType *"], %[[VALUE_sessionId:[0-9]+]] sessionId: i64) -> void [linkage=internal] [fallthrough=ret_void] [c="void(ShrPcStatsSType *, long)"] {
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]]))), truncate<i32, reason=assign, fits=unknown>(read<i64>(%[[VALUE_sessionId]])));
 // DEFAULT-NEXT:         write<i64>(field0(field2(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))), widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         write<u64>(field1(field2(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(5))));
@@ -385,8 +385,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_IntCode5]], addr_of<ptr<u64>>(field16(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
 // DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_IntCode6]], addr_of<ptr<u64>>(field17(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE_workSpPtr:[0-9]+]] workSpPtr: ptr<@type[[TYPE4]]> [storage=automatic];
-// DEFAULT-NEXT:             write<ptr<@type[[TYPE4]]>>(%[[VALUE_workSpPtr]], addr_of<ptr<@type[[TYPE4]]>>(%[[VALUE_Workspace]]));
+// DEFAULT-NEXT:             let %[[VALUE_workSpPtr:[0-9]+]] workSpPtr: ptr<@type[[TYPE4]]> [storage=automatic] [c="WorkEntrySType *"];
+// DEFAULT-NEXT:             write<ptr<@type[[TYPE4]]>>(%[[VALUE_workSpPtr]], addr_of<ptr<@type[[TYPE4]]>>(%[[VALUE_Workspace]]) [c="WorkEntrySType *"]) [c="WorkEntrySType *"];
 // DEFAULT-NEXT:             write<ptr<u64>>(field0(deref(read<ptr<@type[[TYPE4]]>>(%[[VALUE_workSpPtr]]))), addr_of<ptr<u64>>(field18(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
 // DEFAULT-NEXT:             write<ptr<u64>>(field1(deref(read<ptr<@type[[TYPE4]]>>(%[[VALUE_workSpPtr]]))), addr_of<ptr<u64>>(field19(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
 // DEFAULT-NEXT:             write<ptr<u64>>(field2(deref(read<ptr<@type[[TYPE4]]>>(%[[VALUE_workSpPtr]]))), addr_of<ptr<u64>>(field20(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
@@ -413,14 +413,14 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_RDbf12]], addr_of<ptr<u64>>(field11(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_initPte:[0-9]+]] @initPte(%[[VALUE_shrpcPtr:[0-9]+]] shrpcPtr: ptr<void>, %[[VALUE_sessionId_2:[0-9]+]] sessionId: i64) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_ptePtr:[0-9]+]] ptePtr: ptr<@type[[TYPE5]]> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE5]]>>(%[[VALUE_ptePtr]], addr_of<ptr<@type[[TYPE5]]>>(%[[VALUE_MyPte]]));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE3]]>, i64) -> void>(%[[VALUE_setStatPointers]], addr_of<ptr<@type[[TYPE3]]>>(field0(deref(read<ptr<@type[[TYPE5]]>>(%[[VALUE_ptePtr]])))), read<i64>(%[[VALUE_sessionId_2]]));
+// DEFAULT-NEXT:         let %[[VALUE_ptePtr:[0-9]+]] ptePtr: ptr<@type[[TYPE5]]> [storage=automatic] [c="ShrPcPteSType *"];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE5]]>>(%[[VALUE_ptePtr]], addr_of<ptr<@type[[TYPE5]]>>(%[[VALUE_MyPte]]) [c="ShrPcPteSType *"]) [c="ShrPcPteSType *"];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE3]]>, i64) -> void>(%[[VALUE_setStatPointers]], addr_of<ptr<@type[[TYPE3]]>>(field0(deref(read<ptr<@type[[TYPE5]]>>(%[[VALUE_ptePtr]])))) [c="ShrPcStatsSType *"], read<i64>(%[[VALUE_sessionId_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_InitCache:[0-9]+]] @InitCache(%[[VALUE_sessionId_3:[0-9]+]] sessionId: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, i64) -> void>(%[[VALUE_initPte]], null<ptr<void>>, widen<i64, reason=arg>(read<i32>(%[[VALUE_sessionId_3]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] [c="int(int, char *[])"] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_InitCache]], const<i32>(5));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

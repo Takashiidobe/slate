@@ -74,7 +74,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_Point:[0-9]+]] Point = @type[[TYPE0]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_basePt:[0-9]+]] basePt: @type[[TYPE0]], %[[VALUE_pt1:[0-9]+]] pt1: @type[[TYPE0]], %[[VALUE_pt2:[0-9]+]] pt2: @type[[TYPE0]]) -> i32 [linkage=external] [abi=sysv64(native_c, native_c, native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_basePt:[0-9]+]] basePt: @type[[TYPE0]] [c="Point"], %[[VALUE_pt1:[0-9]+]] pt1: @type[[TYPE0]] [c="Point"], %[[VALUE_pt2:[0-9]+]] pt2: @type[[TYPE0]] [c="Point"]) -> i32 [linkage=external] [abi=sysv64(native_c, native_c, native_c) -> scalar] [fallthrough=ub_if_used] [c="int(Point, Point, Point)"] {
 // DEFAULT-NEXT:         let %[[VALUE_vector:[0-9]+]] vector: i64 [storage=automatic];
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_vector]], sub<i64, overflow=ub>(mul<i64, overflow=ub>(sub<i64, overflow=ub>(read<i64>(field0(%[[VALUE_pt1]])), read<i64>(field0(%[[VALUE_basePt]]))), sub<i64, overflow=ub>(read<i64>(field1(%[[VALUE_pt2]])), read<i64>(field1(%[[VALUE_basePt]])))), mul<i64, overflow=ub>(sub<i64, overflow=ub>(read<i64>(field1(%[[VALUE_pt1]])), read<i64>(field1(%[[VALUE_basePt]]))), sub<i64, overflow=ub>(read<i64>(field0(%[[VALUE_pt2]])), read<i64>(field0(%[[VALUE_basePt]]))))));
 // DEFAULT-NEXT:         if gt<i64>(read<i64>(%[[VALUE_vector]]), widen<i64, reason=explicit>(const<i32>(0)))
@@ -86,9 +86,9 @@ int main(void) {
 // DEFAULT-NEXT:                 return const<i32>(2);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_p1:[0-9]+]] p1: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_p2:[0-9]+]] p2: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE0]] [storage=automatic] [c="Point"];
+// DEFAULT-NEXT:         let %[[VALUE_p1:[0-9]+]] p1: @type[[TYPE0]] [storage=automatic] [c="Point"];
+// DEFAULT-NEXT:         let %[[VALUE_p2:[0-9]+]] p2: @type[[TYPE0]] [storage=automatic] [c="Point"];
 // DEFAULT-NEXT:         let %[[VALUE_answer:[0-9]+]] answer: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i64>(field0(%[[VALUE_b]]), widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(23250))));
 // DEFAULT-NEXT:         write<i64>(field1(%[[VALUE_b]]), widen<i64, reason=assign>(const<i32>(23250)));
@@ -96,7 +96,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i64>(field1(%[[VALUE_p1]]), widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(23250))));
 // DEFAULT-NEXT:         write<i64>(field0(%[[VALUE_p2]]), widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(23250))));
 // DEFAULT-NEXT:         write<i64>(field1(%[[VALUE_p2]]), widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(23250))));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_answer]], call<i32, signature=fn(@type[[TYPE0]], @type[[TYPE0]], @type[[TYPE0]]) -> i32, abi=sysv64(native_c, native_c, native_c) -> scalar>(%[[VALUE_f]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_b]])), copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_p1]])), copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_p2]]))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_answer]], call<i32, signature=fn(@type[[TYPE0]], @type[[TYPE0]], @type[[TYPE0]]) -> i32, abi=sysv64(native_c, native_c, native_c) -> scalar>(%[[VALUE_f]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_b]]) [c="Point"]) [c="Point"], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_p1]]) [c="Point"]) [c="Point"], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_p2]]) [c="Point"]) [c="Point"]));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_answer]]), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

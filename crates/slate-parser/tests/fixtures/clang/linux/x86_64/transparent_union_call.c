@@ -64,8 +64,8 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE_PointerArgument:[0-9]+]] PointerArgument = @type[[TYPE0]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_read_value:[0-9]+]] @read_value(%[[VALUE_argument:[0-9]+]] argument: @type[[TYPE0]]) -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
+// DEFAULT-NEXT:     fn %[[VALUE_read_value:[0-9]+]] @read_value(%[[VALUE_argument:[0-9]+]] argument: @type[[TYPE0]] [c="PointerArgument"]) -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="int(PointerArgument)"] {
 // DEFAULT-NEXT:         return read<i32>(field0(deref(read<ptr<@type[[TYPE_First]]>>(field0(%[[VALUE_argument]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

@@ -74,7 +74,7 @@ unsigned long evaluated_row(int n, int i) {
 // IR-NEXT:         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE1]]));
 // IR-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_i]])));
 // IR-NEXT:         let %[[VALUE3:[0-9]+]]: ptr<vla<i32, %[[VALUE2]]>> [synthetic] = pointer_cast<ptr<vla<i32, %[[VALUE2]]>>, reason=explicit>(array_decay<ptr<i32>, length=Some(1)>(%[[VALUE_a]]));
-// IR-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<vla<i32, %[[VALUE2]]>> [storage=automatic] = null<ptr<vla<i32, %[[VALUE2]]>>>;
+// IR-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<vla<i32, %[[VALUE2]]>> [storage=automatic] = null<ptr<vla<i32, %[[VALUE2]]>>> [c="typeof(++i, (cast)a)"] [c="typeof(++i, (cast)a)"];
 // IR-NEXT:         return add<u64, overflow=wrap>(mul<u64, overflow=wrap>(read<u64>(%[[VALUE2]]), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i]]))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_typeof_type_name:[0-9]+]] @typeof_type_name(%[[VALUE_n:[0-9]+]] n: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
@@ -82,7 +82,7 @@ unsigned long evaluated_row(int n, int i) {
 // IR-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(1));
 // IR-NEXT:         write<i32>(%[[VALUE_n]], read<i32>(%[[VALUE5]]));
 // IR-NEXT:         let %[[VALUE6:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE4]])));
-// IR-NEXT:         let %[[VALUE_x:[0-9]+]] x: vla<i32, %[[VALUE6]]> [storage=automatic];
+// IR-NEXT:         let %[[VALUE_x:[0-9]+]] x: vla<i32, %[[VALUE6]]> [storage=automatic] [c="typeof(int[*])"];
 // IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%[[VALUE6]]), const<u64>(4));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_typeof_without_effects:[0-9]+]] @typeof_without_effects(%[[VALUE_n_2:[0-9]+]] n: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
@@ -90,7 +90,7 @@ unsigned long evaluated_row(int n, int i) {
 // IR-NEXT:         let %[[VALUE_original:[0-9]+]] original: vla<i32, %[[VALUE7]]> [storage=automatic];
 // IR-NEXT:         let %[[VALUE8:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
 // IR-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<vla<i32, %[[VALUE8]]>> [storage=automatic] = null<ptr<vla<i32, %[[VALUE8]]>>>;
-// IR-NEXT:         let %[[VALUE_copy:[0-9]+]] copy: vla<i32, %[[VALUE7]]> [storage=automatic];
+// IR-NEXT:         let %[[VALUE_copy:[0-9]+]] copy: vla<i32, %[[VALUE7]]> [storage=automatic] [c="typeof(original)"];
 // IR-NEXT:         return add<u64, overflow=wrap>(mul<u64, overflow=wrap>(read<u64>(%[[VALUE7]]), const<u64>(4)), mul<u64, overflow=wrap>(read<u64>(%[[VALUE8]]), const<u64>(4)));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_sizeof_typeof:[0-9]+]] @sizeof_typeof() -> u64 [linkage=external] [fallthrough=ub_if_used] {

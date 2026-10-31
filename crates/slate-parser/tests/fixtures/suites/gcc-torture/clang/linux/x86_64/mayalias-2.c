@@ -47,7 +47,7 @@ int main() {
 // DEFAULT-NEXT:     type @type[[TYPE_test:[0-9]+]] test = @type[[TYPE0]];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = const<i32>(10);
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE0]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE0]]>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE0]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE0]]>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_a]])) [c="test *"] [c="test *"];
 // DEFAULT-NEXT:         write<i16>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_p]]))), truncate<i16, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }

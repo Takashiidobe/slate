@@ -86,17 +86,17 @@ init_device_faces (int *d)
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0, 0], bit_offsets=[Some(0), Some(3), Some(4)], bit_units=[(0, 5)], field_units=[Some(0), Some(0), Some(0)]];
 // DEFAULT-NEXT:     type @type[[TYPE_Lisp_Object_2:[0-9]+]] Lisp_Object = @type[[TYPE_Lisp_Object]];
 // DEFAULT-NEXT:     extern %[[VALUE_initialized:[0-9]+]] initialized: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_call_critical_lisp_code:[0-9]+]] @call_critical_lisp_code(%[[VALUE0:[0-9]+]] <unnamed>: @type[[TYPE_Lisp_Object]]) -> void [linkage=external] [abi=sysv64(native_c) -> void];
+// DEFAULT-NEXT:     fn %[[VALUE_call_critical_lisp_code:[0-9]+]] @call_critical_lisp_code(%[[VALUE0:[0-9]+]] <unnamed>: @type[[TYPE_Lisp_Object]] [c="Lisp_Object"]) -> void [linkage=external] [abi=sysv64(native_c) -> void] [c="void(Lisp_Object)"];
 // DEFAULT-NEXT:     fn %[[VALUE_init_device_faces:[0-9]+]] @init_device_faces(%[[VALUE_d:[0-9]+]] d: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_initialized]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE_tdevice:[0-9]+]] tdevice: @type[[TYPE_Lisp_Object]] [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_tdevice:[0-9]+]] tdevice: @type[[TYPE_Lisp_Object]] [storage=automatic] [c="Lisp_Object"];
 // DEFAULT-NEXT:                 do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         write<@type[[TYPE_Lisp_Object]]>(%[[VALUE_tdevice]], copy<@type[[TYPE_Lisp_Object]], reason=assign>(read<@type[[TYPE_Lisp_Object]]>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_Lisp_Object]], zero_fill=false>(field0 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = int_to_enum<@type[[TYPE_Lisp_Type]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))), field1 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))), field2 = ptr_to_int<u64, reason=explicit>(read<ptr<i32>>(%[[VALUE_d]])))))));
+// DEFAULT-NEXT:                         write<@type[[TYPE_Lisp_Object]]>(%[[VALUE_tdevice]], copy<@type[[TYPE_Lisp_Object]], reason=assign>(read<@type[[TYPE_Lisp_Object]]>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_Lisp_Object]], zero_fill=false>(field0 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = int_to_enum<@type[[TYPE_Lisp_Type]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))), field1 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))), field2 = ptr_to_int<u64, reason=explicit>(read<ptr<i32>>(%[[VALUE_d]])))))) [c="Lisp_Object"]) [c="Lisp_Object"];
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                 call<void, signature=fn(@type[[TYPE_Lisp_Object]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_call_critical_lisp_code]], copy<@type[[TYPE_Lisp_Object]], reason=arg>(read<@type[[TYPE_Lisp_Object]]>(%[[VALUE_tdevice]])));
+// DEFAULT-NEXT:                 call<void, signature=fn(@type[[TYPE_Lisp_Object]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_call_critical_lisp_code]], copy<@type[[TYPE_Lisp_Object]], reason=arg>(read<@type[[TYPE_Lisp_Object]]>(%[[VALUE_tdevice]]) [c="Lisp_Object"]) [c="Lisp_Object"]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

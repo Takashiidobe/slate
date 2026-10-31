@@ -32,14 +32,14 @@ int g(A *a) { return *a; }
 // IR-NEXT:     }
 // IR-NEXT:     type @type[[TYPE_V:[0-9]+]] V = vector<i64, 2>;
 // IR-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
-// IR-NEXT:         field0 b: vector<i64, 2>;
+// IR-NEXT:         field0 b: vector<i64, 2> [c="V"];
 // IR-NEXT:     } [size=16, align=16, offsets=[0]];
 // IR-NEXT:     type @type[[TYPE_P:[0-9]+]] P = @type[[TYPE_S]];
 // IR-NEXT:     type @type[[TYPE_A:[0-9]+]] A = i32;
-// IR-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_S]]>) -> vector<i64, 2> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<vector<i64, 2>, align=1>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]]))));
+// IR-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_S]]> [c="P *"]) -> vector<i64, 2> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] [c="V(P *)"] {
+// IR-NEXT:         return read<vector<i64, 2>, align=1>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]])))) [c="V"];
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_a:[0-9]+]] a: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_a:[0-9]+]] a: ptr<i32> [c="A *"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(A *)"] {
 // IR-NEXT:         return read<i32, align=1>(deref(read<ptr<i32>>(%[[VALUE_a]])));
 // IR-NEXT:     }
 // IR-NEXT: }

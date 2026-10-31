@@ -63,7 +63,7 @@ int read_item(Item *p) {
 // DEFAULT-NEXT:         %[[VALUE_READY:[0-9]+]] READY = const<i32>(0);
 // DEFAULT-NEXT:         %[[VALUE_DONE:[0-9]+]] DONE = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     fn %[[VALUE_read_item:[0-9]+]] @read_item(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_Item]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_read_item:[0-9]+]] @read_item(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_Item]]> [c="Item *"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(Item *)"] {
 // DEFAULT-NEXT:         comment leading "/* function comment */" [spelling=[[#FILE0]]:170+22, expansion=[[#FILE0]]:170+22];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             comment leading "/* empty block comment */" [spelling=[[#FILE0]]:201+25, expansion=[[#FILE0]]:201+25];

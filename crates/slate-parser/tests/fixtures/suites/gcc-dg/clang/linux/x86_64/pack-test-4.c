@@ -63,25 +63,25 @@ int main (void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_uint8_t:[0-9]+]] uint8_t = u8;
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
-// DEFAULT-NEXT:         field0 flag1: u8 : 2;
-// DEFAULT-NEXT:         field1 flag2: u8 : 1;
-// DEFAULT-NEXT:         field2 flag3: u8 : 1;
-// DEFAULT-NEXT:         field3 flag4: u8;
+// DEFAULT-NEXT:         field0 flag1: u8 : 2 [c="uint8_t"];
+// DEFAULT-NEXT:         field1 flag2: u8 : 1 [c="uint8_t"];
+// DEFAULT-NEXT:         field2 flag3: u8 : 1 [c="uint8_t"];
+// DEFAULT-NEXT:         field3 flag4: u8 [c="uint8_t"];
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 0, 0, 1], bit_offsets=[Some(0), Some(2), Some(3), None], bit_units=[(0, 1)], field_units=[Some(0), Some(0), Some(0), None]];
 // DEFAULT-NEXT:     type @type[[TYPE_MyType:[0-9]+]] MyType = @type[[TYPE0]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: ptr<@type[[TYPE0]]> [storage=automatic] = addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_a]]);
-// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..2>(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_b]]))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=2..3>(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_b]]))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=3..4>(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_b]]))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u8>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_b]]))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<@type[[TYPE0]]> [synthetic] = read<ptr<@type[[TYPE0]]>>(%[[VALUE_b]]);
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u8 [synthetic] = read<u8>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE0]]))));
-// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u8 [synthetic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE1]]))), const<i32>(1))));
-// DEFAULT-NEXT:         write<u8>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE0]]))), read<u8>(%[[VALUE2]]));
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(bitfield0<unit=0, bytes=0..1, bits=0..2>(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_b]])))))), const<i32>(0))
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE0]] [storage=automatic] [c="MyType"];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: ptr<@type[[TYPE0]]> [storage=automatic] = addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_a]]) [c="MyType *"] [c="MyType *"];
+// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..2>(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_b]]))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))) [c="uint8_t"]) [c="uint8_t"];
+// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=2..3>(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_b]]))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))) [c="uint8_t"]) [c="uint8_t"];
+// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=3..4>(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_b]]))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))) [c="uint8_t"]) [c="uint8_t"];
+// DEFAULT-NEXT:         write<u8>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_b]]))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))) [c="uint8_t"]) [c="uint8_t"];
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<@type[[TYPE0]]> [synthetic] = read<ptr<@type[[TYPE0]]>>(%[[VALUE_b]]) [c="MyType *"] [c="MyType *"];
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u8 [synthetic] = read<u8>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE0]])))) [c="uint8_t"] [c="uint8_t"];
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u8 [synthetic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE1]]) [c="uint8_t"])), const<i32>(1)))) [c="uint8_t"] [c="uint8_t"];
+// DEFAULT-NEXT:         write<u8>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE0]]))), read<u8>(%[[VALUE2]]) [c="uint8_t"]) [c="uint8_t"] [c="uint8_t"];
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(bitfield0<unit=0, bytes=0..1, bits=0..2>(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_b]])))) [c="uint8_t"])), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

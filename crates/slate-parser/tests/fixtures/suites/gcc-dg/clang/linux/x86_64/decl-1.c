@@ -56,12 +56,12 @@ int main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_x:[0-9]+]] x = i32;
 // DEFAULT-NEXT:     type @type[[TYPE_y:[0-9]+]] y = i32;
-// DEFAULT-NEXT:     fn %[[VALUE_proc:[0-9]+]] @proc(%[[VALUE0:[0-9]+]] <unnamed>: ptr<fn(i32) -> i32>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_proc:[0-9]+]] @proc(%[[VALUE0:[0-9]+]] <unnamed>: ptr<fn(i32) -> i32> [c="int(x)"]) -> i32 [linkage=external] [c="int(int(x))"];
 // DEFAULT-NEXT:     fn %[[VALUE_proc2:[0-9]+]] @proc2(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %[[VALUE_proc3:[0-9]+]] @proc3(%[[VALUE1:[0-9]+]] <unnamed>: ptr<fn(ptr<fn(i32) -> i32>) -> i32>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_proc3:[0-9]+]] @proc3(%[[VALUE1:[0-9]+]] <unnamed>: ptr<fn(ptr<fn(i32) -> i32>) -> i32> [c="int(y(x))"]) -> i32 [linkage=external] [c="int(int(y(x)))"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<fn(i32) -> i32>) -> i32>(%[[VALUE_proc]], function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_proc2]]));
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<fn(ptr<fn(i32) -> i32>) -> i32>) -> i32>(%[[VALUE_proc3]], function_decay<ptr<fn(ptr<fn(i32) -> i32>) -> i32>>(%[[VALUE_proc]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<fn(i32) -> i32>) -> i32>(%[[VALUE_proc]], function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_proc2]]) [c="int (*)(x)"]);
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<fn(ptr<fn(i32) -> i32>) -> i32>) -> i32>(%[[VALUE_proc3]], function_decay<ptr<fn(ptr<fn(i32) -> i32>) -> i32>>(%[[VALUE_proc]]) [c="int (*)(y(x))"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -160,21 +160,21 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:     global %[[VALUE_y00:[0-9]+]] y00: u32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_y01:[0-9]+]] y01: u32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_i386_operand_type]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_i386_operand_type]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: @type[[TYPE_i386_operand_type]] [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: @type[[TYPE_i386_operand_type]] [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] [c="int(int, char *[])"] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_i386_operand_type]] [storage=automatic] [c="i386_operand_type"];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_i386_operand_type]] [storage=automatic] [c="i386_operand_type"];
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: @type[[TYPE_i386_operand_type]] [storage=automatic] [c="i386_operand_type"];
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: @type[[TYPE_i386_operand_type]] [storage=automatic] [c="i386_operand_type"];
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..6, bits=1..2>(field0(%[[VALUE_a]])), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         write<u32>(bitfield16<unit=0, bytes=0..6, bits=16..17>(field0(%[[VALUE_a]])), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(2)>(field1(%[[VALUE_a]])), const<i32>(1))), reinterpret<u32, reason=assign, fits=always>(const<i32>(22)));
-// DEFAULT-NEXT:         write<@type[[TYPE_i386_operand_type]]>(%[[VALUE_b]], copy<@type[[TYPE_i386_operand_type]], reason=assign>(read<@type[[TYPE_i386_operand_type]]>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_i386_operand_type]]>(%[[VALUE_b]], copy<@type[[TYPE_i386_operand_type]], reason=assign>(read<@type[[TYPE_i386_operand_type]]>(%[[VALUE_a]]) [c="i386_operand_type"]) [c="i386_operand_type"]) [c="i386_operand_type"];
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_x00]], read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(2)>(field1(%[[VALUE_b]])), const<i32>(0)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_x01]], read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(2)>(field1(%[[VALUE_b]])), const<i32>(1)))));
-// DEFAULT-NEXT:         write<@type[[TYPE_i386_operand_type]]>(%[[VALUE_c]], copy<@type[[TYPE_i386_operand_type]], reason=assign>(read<@type[[TYPE_i386_operand_type]]>(%[[VALUE_b]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_i386_operand_type]]>(%[[VALUE_c]], copy<@type[[TYPE_i386_operand_type]], reason=assign>(read<@type[[TYPE_i386_operand_type]]>(%[[VALUE_b]]) [c="i386_operand_type"]) [c="i386_operand_type"]) [c="i386_operand_type"];
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_y00]], read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(2)>(field1(%[[VALUE_c]])), const<i32>(0)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_y01]], read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(2)>(field1(%[[VALUE_c]])), const<i32>(1)))));
-// DEFAULT-NEXT:         write<@type[[TYPE_i386_operand_type]]>(%[[VALUE_d]], copy<@type[[TYPE_i386_operand_type]], reason=assign>(read<@type[[TYPE_i386_operand_type]]>(%[[VALUE_c]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_i386_operand_type]]>(%[[VALUE_d]], copy<@type[[TYPE_i386_operand_type]], reason=assign>(read<@type[[TYPE_i386_operand_type]]>(%[[VALUE_c]]) [c="i386_operand_type"]) [c="i386_operand_type"]) [c="i386_operand_type"];
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..6, bits=1..2>(field0(%[[VALUE_d]])))), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield16<unit=0, bytes=0..6, bits=16..17>(field0(%[[VALUE_d]])))), const<i32>(0))

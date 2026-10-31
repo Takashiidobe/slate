@@ -68,7 +68,7 @@ int main()
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     fn %[[VALUE_test_foo:[0-9]+]] @test_foo(%[[VALUE_a:[0-9]+]] a: ptr<@type[[TYPE0]]>, %[[VALUE_b:[0-9]+]] b: ptr<void>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_test_foo:[0-9]+]] @test_foo(%[[VALUE_a:[0-9]+]] a: ptr<@type[[TYPE0]]> [c="foo_t *"], %[[VALUE_b:[0-9]+]] b: ptr<void>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] [c="int(foo_t *, void *)"] {
 // DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_a]]))), const<i32>(1));
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE1]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE1]]>, reason=assign>(read<ptr<void>>(%[[VALUE_b]]));
 // DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE_p]]))), const<i32>(2));
@@ -76,8 +76,8 @@ int main()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(2), call<i32, signature=fn(ptr<@type[[TYPE0]]>, ptr<void>) -> i32>(%[[VALUE_test_foo]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_y]]), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_y]]))))
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: @type[[TYPE0]] [storage=automatic] [c="foo_t"];
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(2), call<i32, signature=fn(ptr<@type[[TYPE0]]>, ptr<void>) -> i32>(%[[VALUE_test_foo]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_y]]) [c="foo_t *"], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_y]]) [c="foo_t *"])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

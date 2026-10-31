@@ -44,25 +44,25 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_uint32_t:[0-9]+]] uint32_t = u32;
-// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: u32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: u32 [storage=static] [linkage=external] [c="uint32_t"];
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: u32 [storage=automatic] [c="uint32_t"];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<u32>(%[[VALUE_a]], reinterpret<u32, reason=assign, fits=always>(const<i32>(7)));
+// DEFAULT-NEXT:                 write<u32>(%[[VALUE_a]], reinterpret<u32, reason=assign, fits=always>(const<i32>(7)) [c="uint32_t"]) [c="uint32_t"];
 // DEFAULT-NEXT:             condition: le<u32>(read<u32>(%[[VALUE_a]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_a]]);
-// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE1]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<u32>(%[[VALUE_a]], read<u32>(%[[VALUE2]]));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_a]]) [c="uint32_t"] [c="uint32_t"];
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE1]]) [c="uint32_t"], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))) [c="uint32_t"] [c="uint32_t"];
+// DEFAULT-NEXT:                 write<u32>(%[[VALUE_a]], read<u32>(%[[VALUE2]]) [c="uint32_t"]) [c="uint32_t"] [c="uint32_t"];
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %[[VALUE_d:[0-9]+]] d: i8 [storage=automatic] = reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(read<u32>(%[[VALUE_a]])));
-// DEFAULT-NEXT:                     write<u32>(%[[VALUE_c]], reinterpret<u32, reason=assign, fits=unknown>(widen<i32, reason=assign>(read<i8>(%[[VALUE_d]]))));
+// DEFAULT-NEXT:                     let %[[VALUE_d:[0-9]+]] d: i8 [storage=automatic] = reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(read<u32>(%[[VALUE_a]]) [c="uint32_t"]));
+// DEFAULT-NEXT:                     write<u32>(%[[VALUE_c]], reinterpret<u32, reason=assign, fits=unknown>(widen<i32, reason=assign>(read<i8>(%[[VALUE_d]]))) [c="uint32_t"]) [c="uint32_t"];
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_b]], from_bool<i32, reason=assign>(eq<u32>(read<u32>(%[[VALUE_a]]), read<u32>(%[[VALUE_c]]))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_a]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(7)))

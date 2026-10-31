@@ -49,7 +49,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_v:[0-9]+]] v: ptr<u64>, %[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_a:[0-9]+]] a: ptr<u32>, %[[VALUE_b:[0-9]+]] b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_v:[0-9]+]] v: ptr<u64>, %[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_a:[0-9]+]] a: ptr<u32>, %[[VALUE_b:[0-9]+]] b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(unsigned long long *, int, unsigned int[], int)"] {
 // DEFAULT-NEXT:         let %[[VALUE_cnt:[0-9]+]] cnt: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE_v]])), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
 // DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]

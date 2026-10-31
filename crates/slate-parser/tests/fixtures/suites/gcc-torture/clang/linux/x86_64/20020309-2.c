@@ -45,14 +45,14 @@ foo (A x, A **y, A z)
 // DEFAULT-NEXT:         field1 ll: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = @type[[TYPE0]];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: @type[[TYPE0]], %[[VALUE_y:[0-9]+]] y: ptr<ptr<@type[[TYPE0]]>>, %[[VALUE_z:[0-9]+]] z: @type[[TYPE0]]) -> void [linkage=external] [abi=sysv64(native_c, scalar, native_c) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: @type[[TYPE0]] [c="A"], %[[VALUE_y:[0-9]+]] y: ptr<ptr<@type[[TYPE0]]>> [c="A **"], %[[VALUE_z:[0-9]+]] z: @type[[TYPE0]] [c="A"]) -> void [linkage=external] [abi=sysv64(native_c, scalar, native_c) -> void] [fallthrough=ret_void] [c="void(A, A **, A)"] {
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:             condition: ne<ptr<@type[[TYPE0]]>>(read<ptr<@type[[TYPE0]]>>(deref(read<ptr<ptr<@type[[TYPE0]]>>>(%[[VALUE_y]]))), null<ptr<@type[[TYPE0]]>>)
+// DEFAULT-NEXT:             condition: ne<ptr<@type[[TYPE0]]>>(read<ptr<@type[[TYPE0]]>>(deref(read<ptr<ptr<@type[[TYPE0]]>>>(%[[VALUE_y]]))) [c="A *"], null<ptr<@type[[TYPE0]]>>)
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: ptr<ptr<@type[[TYPE0]]>> [synthetic] = read<ptr<ptr<@type[[TYPE0]]>>>(%[[VALUE_y]]);
-// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: ptr<ptr<@type[[TYPE0]]>> [synthetic] = ptr_offset<ptr<ptr<@type[[TYPE0]]>>, subtract=false, element=ptr<@type[[TYPE0]]>, overflow=ub>(read<ptr<ptr<@type[[TYPE0]]>>>(%[[VALUE1]]), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE0]]>>>(%[[VALUE_y]], read<ptr<ptr<@type[[TYPE0]]>>>(%[[VALUE2]]));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: ptr<ptr<@type[[TYPE0]]>> [synthetic] = read<ptr<ptr<@type[[TYPE0]]>>>(%[[VALUE_y]]) [c="A **"] [c="A **"];
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: ptr<ptr<@type[[TYPE0]]>> [synthetic] = ptr_offset<ptr<ptr<@type[[TYPE0]]>>, subtract=false, element=ptr<@type[[TYPE0]]>, overflow=ub>(read<ptr<ptr<@type[[TYPE0]]>>>(%[[VALUE1]]) [c="A **"], const<i32>(1)) [c="A **"] [c="A **"];
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE0]]>>>(%[[VALUE_y]], read<ptr<ptr<@type[[TYPE0]]>>>(%[[VALUE2]]) [c="A **"]) [c="A **"] [c="A **"];
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:

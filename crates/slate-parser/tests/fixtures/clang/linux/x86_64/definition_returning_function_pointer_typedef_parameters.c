@@ -39,27 +39,27 @@ int main(void) { gp(1)(2); return gs((S){1})(0, 0) + (arr() != 0) + (nested() !=
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
 // IR-NEXT:     type @type[[TYPE_S_2:[0-9]+]] S = @type[[TYPE_S]];
 // IR-NEXT:     global %[[VALUE_a:[0-9]+]] a: array<i32, 4> [storage=static] [align=16] [linkage=internal];
-// IR-NEXT:     fn %[[VALUE_px:[0-9]+]] @px(%[[VALUE_p:[0-9]+]] p: i32) -> void [linkage=internal] [fallthrough=ret_void] {
+// IR-NEXT:     fn %[[VALUE_px:[0-9]+]] @px(%[[VALUE_p:[0-9]+]] p: i32 [c="T"]) -> void [linkage=internal] [fallthrough=ret_void] [c="void(T)"] {
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_gp:[0-9]+]] @gp(%[[VALUE_T:[0-9]+]] T: i32) -> ptr<fn(i32) -> void> [linkage=internal] [fallthrough=ub_if_used] {
-// IR-NEXT:         return function_decay<ptr<fn(i32) -> void>>(%[[VALUE_px]]);
+// IR-NEXT:     fn %[[VALUE_gp:[0-9]+]] @gp(%[[VALUE_T:[0-9]+]] T: i32) -> ptr<fn(i32) -> void> [linkage=internal] [fallthrough=ub_if_used] [c="void (*(int))(T)"] {
+// IR-NEXT:         return function_decay<ptr<fn(i32) -> void>>(%[[VALUE_px]]) [c="void (*)(T)"];
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_sum:[0-9]+]] @sum(%[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE_S]]>, %[[VALUE_n:[0-9]+]] n: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_sum:[0-9]+]] @sum(%[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE_S]]> [c="S *"], %[[VALUE_n:[0-9]+]] n: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] [c="int(S *, int)"] {
 // IR-NEXT:         return add<i32>(read<i32>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_s]])))), read<i32>(%[[VALUE_n]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_gs:[0-9]+]] @gs(%[[VALUE_s_2:[0-9]+]] s: @type[[TYPE_S]]) -> ptr<fn(ptr<@type[[TYPE_S]]>, i32) -> i32> [linkage=internal] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// IR-NEXT:         read<@type[[TYPE_S]]>(%[[VALUE_s_2]]);
-// IR-NEXT:         return function_decay<ptr<fn(ptr<@type[[TYPE_S]]>, i32) -> i32>>(%[[VALUE_sum]]);
+// IR-NEXT:     fn %[[VALUE_gs:[0-9]+]] @gs(%[[VALUE_s_2:[0-9]+]] s: @type[[TYPE_S]] [c="S"]) -> ptr<fn(ptr<@type[[TYPE_S]]>, i32) -> i32> [linkage=internal] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] [c="int (*(S))(S *, int)"] {
+// IR-NEXT:         read<@type[[TYPE_S]]>(%[[VALUE_s_2]]) [c="S"];
+// IR-NEXT:         return function_decay<ptr<fn(ptr<@type[[TYPE_S]]>, i32) -> i32>>(%[[VALUE_sum]]) [c="int (*)(S *, int)"];
 // IR-NEXT:     }
-// IR-NEXT:     fn %[[VALUE_nested:[0-9]+]] @nested() -> ptr<fn(ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void>> [linkage=internal] [fallthrough=ub_if_used] {
-// IR-NEXT:         return null<ptr<fn(ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void>>>;
+// IR-NEXT:     fn %[[VALUE_nested:[0-9]+]] @nested() -> ptr<fn(ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void>> [linkage=internal] [fallthrough=ub_if_used] [c="void (*(*(void))(void (*)(T)))(T)"] {
+// IR-NEXT:         return null<ptr<fn(ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void>>> [c="void (*(*)(void (*)(T)))(T)"];
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_arr:[0-9]+]] @arr() -> ptr<array<i32, 4>> [linkage=internal] [fallthrough=ub_if_used] {
 // IR-NEXT:         return addr_of<ptr<array<i32, 4>>>(%[[VALUE_a]]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// IR-NEXT:         call<void>(call<ptr<fn(i32) -> void>>(%[[VALUE_gp]], const<i32>(1)), const<i32>(2));
-// IR-NEXT:         return add<i32>(add<i32>(call<i32>(call<ptr<fn(ptr<@type[[TYPE_S]]>, i32) -> i32>, abi=sysv64(native_c) -> scalar>(%[[VALUE_gs]], copy<@type[[TYPE_S]], reason=arg>(read<@type[[TYPE_S]]>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(1))))), null<ptr<@type[[TYPE_S]]>>, const<i32>(0)), from_bool<i32>(ne<ptr<array<i32, 4>>>(call<ptr<array<i32, 4>>>(%[[VALUE_arr]]), null<ptr<array<i32, 4>>>))), from_bool<i32>(ne<ptr<fn(ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void>>>(call<ptr<fn(ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void>>>(%[[VALUE_nested]]), null<ptr<fn(ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void>>>)));
+// IR-NEXT:         call<void>(call<ptr<fn(i32) -> void>>(%[[VALUE_gp]], const<i32>(1)) [c="void (*)(T)"], const<i32>(2) [c="T"]);
+// IR-NEXT:         return add<i32>(add<i32>(call<i32>(call<ptr<fn(ptr<@type[[TYPE_S]]>, i32) -> i32>, abi=sysv64(native_c) -> scalar>(%[[VALUE_gs]], copy<@type[[TYPE_S]], reason=arg>(read<@type[[TYPE_S]]>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(1))) [c="S"]) [c="S"]) [c="int (*)(S *, int)"], null<ptr<@type[[TYPE_S]]>> [c="S *"], const<i32>(0)), from_bool<i32>(ne<ptr<array<i32, 4>>>(call<ptr<array<i32, 4>>>(%[[VALUE_arr]]), null<ptr<array<i32, 4>>>))), from_bool<i32>(ne<ptr<fn(ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void>>>(call<ptr<fn(ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void>>>(%[[VALUE_nested]]) [c="void (*(*)(void (*)(T)))(T)"], null<ptr<fn(ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void>>> [c="void (*(*)(void (*)(T)))(T)"])));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

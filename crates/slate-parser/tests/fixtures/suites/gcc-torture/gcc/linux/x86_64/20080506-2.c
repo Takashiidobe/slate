@@ -44,7 +44,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<ptr<i32>> [restrict], %[[VALUE_q:[0-9]+]] q: ptr<ptr<i32>> [restrict]) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<ptr<i32>> [restrict], %[[VALUE_q:[0-9]+]] q: ptr<ptr<i32>> [restrict]) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] [c="void(int **restrict, int **restrict)"] {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(deref(ptr_offset<ptr<ptr<i32>>, subtract=false, element=ptr<i32>, overflow=ub>(read<ptr<ptr<i32>>>(%[[VALUE_p]]), const<i32>(0))))), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(deref(ptr_offset<ptr<ptr<i32>>, subtract=false, element=ptr<i32>, overflow=ub>(read<ptr<ptr<i32>>>(%[[VALUE_q]]), const<i32>(0))))), const<i32>(2));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(read<ptr<i32>>(deref(ptr_offset<ptr<ptr<i32>>, subtract=false, element=ptr<i32>, overflow=ub>(read<ptr<ptr<i32>>>(%[[VALUE_p]]), const<i32>(0)))))), const<i32>(2))

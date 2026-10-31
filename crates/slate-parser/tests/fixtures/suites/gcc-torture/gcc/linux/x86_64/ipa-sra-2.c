@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_r]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(field0(field1(deref(read<ptr<@type[[TYPE_both]]>>(%[[VALUE_agg]]))))), const<i32>(0)))));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_r]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] [c="int(int, char *[])"] {
 // DEFAULT-NEXT:         let %[[VALUE_agg_2:[0-9]+]] agg: ptr<@type[[TYPE_both]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_both]]>, reason=assign>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_calloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), const<u64>(40)));
 // DEFAULT-NEXT:         let %[[VALUE_r_2:[0-9]+]] r: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_r_2]], call<i32, signature=fn(i32, ptr<@type[[TYPE_both]]>) -> i32>(%[[VALUE_foo]], from_bool<i32, reason=arg>(gt<i32>(read<i32>(%[[VALUE_argc]]), const<i32>(2000))), read<ptr<@type[[TYPE_both]]>>(%[[VALUE_agg_2]])));
