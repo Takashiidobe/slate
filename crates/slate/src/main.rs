@@ -3,7 +3,8 @@ use rayon::prelude::*;
 use slate::backend::{self, codegen, rust_ast};
 use slate::frontend::c_shim;
 use slate::frontend::preprocess;
-use slate::{api, compile_commands, project_matrix, project_plan};
+use slate::project_merge::{Unit as SlateUnit, collect_all_errors, rust_ident};
+use slate::{api, compile_commands, project_matrix, project_merge, project_plan};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
@@ -260,23 +261,6 @@ fn translate_json(path: &Path, compiler_args: &[String]) -> ExitCode {
         }
         Err(_) => ExitCode::FAILURE,
     }
-}
-
-fn rust_ident(name: &str) -> String {
-    let mut out: String = name
-        .chars()
-        .map(|c| {
-            if c.is_ascii_alphanumeric() || c == '_' {
-                c
-            } else {
-                '_'
-            }
-        })
-        .collect();
-    if out.is_empty() || out.starts_with(|c: char| c.is_ascii_digit()) {
-        out.insert(0, '_');
-    }
-    out
 }
 
 fn package_name(crate_dir: &Path) -> String {
@@ -630,6 +614,8 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut matrix_target = None;
     let mut features: Vec<String> = Vec::new();
     let mut plan_mode = None;
+    let mut merge = false;
+    let mut projection = project_merge::Projection::Skip;
     let current_dir = std::env::current_dir().map_err(|e| format!("current directory: {e}"))?;
     let mut index = 0;
     while index < args.len() {
@@ -648,6 +634,19 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
                     .get(index)
                     .ok_or_else(|| "--matrix requires a file".to_string())?;
                 matrix_path = Some(PathBuf::from(path));
+            }
+            "--merge" => merge = true,
+            "--check-projection" => {
+                index += 1;
+                let value = args
+                    .get(index)
+                    .ok_or_else(|| "--check-projection requires all or a count".to_string())?;
+                projection = match value.as_str() {
+                    "all" => project_merge::Projection::All,
+                    count => project_merge::Projection::Sample(count.parse().map_err(|_| {
+                        format!("--check-projection requires all or a count, got {count}")
+                    })?),
+                };
             }
             "--plan" => plan_mode = Some(project_plan::Mode::Plan),
             "--plan-exhaustive" => plan_mode = Some(project_plan::Mode::CheckExhaustive),
@@ -735,6 +734,45 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     if paths.len() != 2 {
         return Err("translate-project requires a project directory and crate directory".into());
     }
+    if merge {
+        let matrix_path = matrix_path.ok_or("--merge requires --matrix")?;
+        if !features.is_empty() {
+            return Err("--merge chooses features itself; remove --features".into());
+        }
+        if !compile_command_paths.is_empty() || flavor.is_some() || !include_args.is_empty() {
+            return Err(
+                "--merge cannot be combined with --compile-commands, --flavor or include options"
+                    .into(),
+            );
+        }
+        let project = compile_commands::absolute_path(&current_dir, Path::new(paths[0]));
+        let matrix = cli_result(project_matrix::Matrix::read(&matrix_path))?;
+        let targets: Vec<String> = matrix_target
+            .iter()
+            .flat_map(|names: &String| names.split(','))
+            .map(str::to_string)
+            .collect();
+        let merged = slate_worker_pool()?
+            .install(|| project_merge::merge(&matrix, &project, &targets, projection))?;
+        print!("{}", merged.render());
+        let mismatches = merged.mismatches;
+        let written = write_project_crate(
+            Path::new(paths[1]),
+            merged.units,
+            None,
+            merged.root,
+            &crate_types,
+            &merged.features,
+        )?;
+        if mismatches > 0 {
+            print!("{written}");
+            return Err(format!("{mismatches} projection mismatches"));
+        }
+        return Ok(written);
+    }
+    if projection != project_merge::Projection::Skip {
+        return Err("--check-projection requires --merge".into());
+    }
     if let Some(matrix_path) = matrix_path {
         if !compile_command_paths.is_empty() {
             return Err("--matrix cannot be combined with --compile-commands".into());
@@ -784,13 +822,6 @@ fn slate_job_count() -> usize {
         .map(std::num::NonZeroUsize::get)
         .unwrap_or(1);
     (cores / 2).max(1)
-}
-
-struct SlateUnit {
-    stem: String,
-    path: PathBuf,
-    module: slate_parser::ir::Module,
-    files: slate_parser::files::Files,
 }
 
 fn parse_slate_units(
@@ -851,61 +882,6 @@ fn slate_worker_pool() -> Result<rayon::ThreadPool, String> {
         .map_err(|error| format!("build worker pool: {error}"))
 }
 
-fn collect_all_errors<T>(results: Vec<Result<T, String>>) -> Result<Vec<T>, String> {
-    let mut values = Vec::new();
-    let mut errors = Vec::new();
-    for result in results {
-        match result {
-            Ok(value) => values.push(value),
-            Err(error) => errors.push(error),
-        }
-    }
-    if errors.is_empty() {
-        Ok(values)
-    } else {
-        Err(errors.join("\n"))
-    }
-}
-
-fn imported_commons(units: &[SlateUnit]) -> BTreeMap<String, BTreeSet<String>> {
-    let mut owners: BTreeMap<&str, (&str, bool)> = BTreeMap::new();
-    for unit in units {
-        for global in &unit.module.globals {
-            if !global.definition || !matches!(global.linkage, slate_parser::ir::Linkage::External)
-            {
-                continue;
-            }
-            let strong = !global.common;
-            owners
-                .entry(&global.variable.name)
-                .and_modify(|owner| {
-                    if strong && !owner.1 {
-                        *owner = (&unit.stem, true);
-                    }
-                })
-                .or_insert((&unit.stem, strong));
-        }
-    }
-    units
-        .iter()
-        .map(|unit| {
-            let imported = unit
-                .module
-                .globals
-                .iter()
-                .filter(|global| {
-                    global.common
-                        && owners
-                            .get(global.variable.name.as_str())
-                            .is_some_and(|(owner, _)| *owner != unit.stem)
-                })
-                .map(|global| global.variable.name.clone())
-                .collect();
-            (unit.stem.clone(), imported)
-        })
-        .collect()
-}
-
 fn unit_file_stem(stem: &str) -> String {
     if stem == "main" {
         "__slate_unit_main".to_string()
@@ -920,7 +896,6 @@ fn translate_slate_project(
     crate_types: &[String],
     explicit_docs_only: bool,
 ) -> Result<String, String> {
-    use slate::frontend::{self, lowerer};
     let units = parse_slate_units(commands)?;
     let roots: Vec<&str> = units
         .iter()
@@ -937,6 +912,33 @@ fn translate_slate_project(
         [] => None,
         _ => return Err(format!("multiple units define main: {}", roots.join(", "))),
     };
+    let translated = slate_worker_pool()?.install(|| {
+        project_merge::translate_units(
+            &units,
+            project_merge::imported_commons(&units),
+            explicit_docs_only,
+            root.as_deref(),
+            project_merge::Sections::ByProject,
+        )
+    })?;
+    write_project_crate(
+        crate_dir,
+        translated.programs,
+        translated.shared_types,
+        root,
+        crate_types,
+        &BTreeSet::new(),
+    )
+}
+
+fn write_project_crate(
+    crate_dir: &Path,
+    programs: Vec<(String, rust_ast::Program)>,
+    shared_types: Option<rust_ast::Program>,
+    root: Option<String>,
+    crate_types: &[String],
+    declared_features: &BTreeSet<String>,
+) -> Result<String, String> {
     let lib_crate_types = match &root {
         Some(root) => {
             if !crate_types.is_empty() {
@@ -949,75 +951,11 @@ fn translate_slate_project(
         None if crate_types.is_empty() => Some(vec!["rlib".to_string()]),
         None => Some(crate_types.to_vec()),
     };
-    let mut imported = imported_commons(&units);
-    let jobs: Vec<_> = units
-        .iter()
-        .map(|unit| {
-            let options = lowerer::LowerOptions {
-                export_symbols: true,
-                explicit_docs_only,
-                imported_commons: imported.remove(&unit.stem).unwrap_or_default(),
-                unit: unit.stem.clone(),
-            };
-            (unit, options)
-        })
-        .collect();
-    let results: Vec<Result<_, String>> = slate_worker_pool()?.install(|| {
-        jobs.into_par_iter()
-            .map(|(unit, options)| {
-                frontend::lower_module(&unit.module, &unit.files, &options)
-                    .map_err(|error| format!("{}: {error}", unit.path.display()))
-            })
-            .collect()
-    });
-    let lowered = collect_all_errors(results)?;
-    let address_taken: Vec<_> = units
-        .iter()
-        .zip(&lowered)
-        .map(|(unit, lowered)| frontend::distinct_functions::Unit {
-            module: &unit.module,
-            address_taken: &lowered.address_taken,
-        })
-        .collect();
-    let protected = frontend::distinct_functions::mergeable_address_taken(&address_taken);
-    let exports = match &root {
-        Some(root) => slate::backend::Exports::Liftable {
-            address_taken: frontend::distinct_functions::address_taken_symbols(&address_taken),
-            modules: units
-                .iter()
-                .map(|unit| {
-                    let module =
-                        (unit.stem != *root).then(|| format!("__slate_unit_{}", unit.stem));
-                    rust_ast::Path::new(
-                        std::iter::once("crate".to_string())
-                            .chain(module)
-                            .map(rust_ast::Ident::new),
-                    )
-                })
-                .collect(),
-        },
-        None => slate::backend::Exports::Fixed,
-    };
-    let mut programs: Vec<_> = lowered.into_iter().map(|lowered| lowered.program).collect();
-    let shared_types = slate::backend::apply_interprocedural(&mut programs, &exports);
-    let programs: Vec<_> = slate_worker_pool()?.install(|| {
-        units
-            .par_iter()
-            .zip(programs)
-            .zip(&protected)
-            .map(|((unit, program), functions)| {
-                let mut program = slate::backend::apply_local(program, &unit.module.target);
-                slate::backend::place_in_distinct_sections(&mut program, &unit.stem, functions);
-                (unit.stem.clone(), program)
-            })
-            .collect()
-    });
-
     init_crate(crate_dir, lib_crate_types.as_deref())?;
     let crate_src = crate_dir.join("src");
     std::fs::create_dir_all(&crate_src)
         .map_err(|e| format!("create {}: {e}", crate_src.display()))?;
-    let mut cargo_features = BTreeSet::new();
+    let mut cargo_features = declared_features.clone();
     let mut shim_names = BTreeSet::new();
     let shared_module = shared_types.as_ref().map(|_| rust_ast::Item::Mod {
         name: rust_ast::Ident::new(slate::backend::SHARED_TYPES_MODULE),

@@ -1,0 +1,20 @@
+{
+  "targets": [
+    {
+      "name": "linux-x86_64",
+      "triple": "x86_64-unknown-linux-gnu",
+      "flavor": "clang"
+    },
+    {
+      "name": "windows-x86_64",
+      "triple": "x86_64-pc-windows-msvc",
+      "flavor": "msvc"
+    }
+  ],
+  "features": [
+    { "name": "alpha", "defines": ["ALPHA"] },
+    { "name": "beta", "defines": ["BETA"] },
+    { "name": "gamma", "defines": ["GAMMA=3"] }
+  ],
+  "invalid_features": [["beta", "gamma"]]
+}

@@ -1,6 +1,6 @@
 use slate_parser::ir::{self, BindingId, FloatType, NumericType, Type, TypeDefinitionKind, TypeId};
 use slate_parser::target_info::TargetOs;
-use std::collections::{BTreeSet, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 
 pub struct Unit<'a> {
     pub module: &'a ir::Module,
@@ -134,6 +134,46 @@ pub fn mergeable_address_taken(units: &[Unit]) -> Vec<BTreeSet<String>> {
         }
     }
     protected
+}
+
+#[derive(Default)]
+pub struct SectionCandidates {
+    pub taken_here: BTreeSet<String>,
+    pub exported: BTreeMap<String, String>,
+    pub taken_symbols: BTreeSet<String>,
+}
+
+pub fn section_candidates(unit: &Unit) -> SectionCandidates {
+    let mut candidates = SectionCandidates::default();
+    if !matches!(
+        unit.module.target.os,
+        TargetOs::Linux | TargetOs::Android | TargetOs::FreeBsd
+    ) {
+        return candidates;
+    }
+    for function in &unit.module.functions {
+        let function = &function.value;
+        let taken = unit.address_taken.contains(&function.id);
+        let external = matches!(function.linkage, ir::Linkage::External);
+        if taken && external {
+            candidates
+                .taken_symbols
+                .insert(symbol(function).to_string());
+        }
+        if function.body.is_none() || function.symbol.section.is_some() {
+            continue;
+        }
+        let name = super::lowerer::function_rust_name(function);
+        if external {
+            candidates
+                .exported
+                .insert(symbol(function).to_string(), name.clone());
+        }
+        if taken {
+            candidates.taken_here.insert(name);
+        }
+    }
+    candidates
 }
 
 pub fn address_taken_symbols(units: &[Unit]) -> BTreeSet<String> {

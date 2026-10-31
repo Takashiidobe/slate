@@ -195,7 +195,7 @@ struct TargetVariant {
     program: Program,
 }
 
-fn target_cfg(target: &TargetInfo) -> Cfg {
+pub(crate) fn target_cfg(target: &TargetInfo) -> Cfg {
     let opt = |key: &str, value: &str| Cfg::Opt {
         key: key.into(),
         value: value.into(),
@@ -214,6 +214,7 @@ fn target_cfg(target: &TargetInfo) -> Cfg {
         TargetOs::FreeBsd => opt("target_os", "freebsd"),
     };
     let env = match target.environment {
+        _ if target.triple.contains("musl") => Some("musl"),
         TargetEnvironment::Gnu | TargetEnvironment::GnuEabi | TargetEnvironment::GnuEabiHf => {
             Some("gnu")
         }
@@ -356,7 +357,7 @@ fn cfg_atoms(cfg: &Cfg) -> Option<Vec<Cfg>> {
     }
 }
 
-fn factor_cfgs(cfgs: Vec<Cfg>) -> Cfg {
+pub(crate) fn factor_cfgs(cfgs: Vec<Cfg>) -> Cfg {
     if cfgs.len() == 1 {
         return cfgs.into_iter().next().unwrap();
     }

@@ -16,7 +16,8 @@ FIXTURES = TESTS / "fixtures"
 RELEASE = TESTS / "fixtures.release"
 PLAN = TESTS / "fixtures.plan"
 LOWERED_NAMES = TESTS / "fixtures.lowered-names"
-PLAN_SUITES = {PLAN: "plan", LOWERED_NAMES: "lowered-names"}
+MERGE = TESTS / "fixtures.merge"
+PLAN_SUITES = {PLAN: "plan", LOWERED_NAMES: "lowered-names", MERGE: "merge"}
 WORK = CRATE / "target" / "difftest-generated"
 
 DEFAULT_TARGET = "x86_64-unknown-linux-gnu"
@@ -31,6 +32,7 @@ TEST_COMMAND = ["--test", "differential", "-E", "test(=generated_differential)"]
 RELEASE_TEST_COMMAND = ["--test", "differential", "-E", "test(=release_build_differential)"]
 PLAN_TEST_COMMAND = ["--test", "project_plan", "-E", "test(=plan_filecheck)"]
 LOWERED_NAMES_TEST_COMMAND = ["--test", "lowered_names", "-E", "test(=lowered_names_filecheck)"]
+MERGE_TEST_COMMAND = ["--test", "project_merge", "-E", "test(=merge_filecheck)"]
 
 BEGIN = "// SLATE-FILECHECK-BEGIN"
 END = "// SLATE-FILECHECK-END"
@@ -375,11 +377,13 @@ def run_harness(targets, fixtures):
     release = [path for path in fixtures if is_release(path)]
     plan = [path for path in fixtures if path.resolve().parent == PLAN]
     lowered_names = [path for path in fixtures if path.resolve().parent == LOWERED_NAMES]
+    merge = [path for path in fixtures if path.resolve().parent == MERGE]
     for names, test_command in (
         ({path.stem for path in generated}, TEST_COMMAND),
         ({release_project(path) for path in release}, RELEASE_TEST_COMMAND),
         ({path.stem for path in plan}, PLAN_TEST_COMMAND),
         ({path.stem for path in lowered_names}, LOWERED_NAMES_TEST_COMMAND),
+        ({path.stem for path in merge}, MERGE_TEST_COMMAND),
     ):
         if not names:
             continue
@@ -403,7 +407,7 @@ def all_fixtures():
         for path in RELEASE.rglob("*.c")
         if BEGIN in path.read_text(errors="surrogateescape")
     )
-    return sorted([*generated, *release, *PLAN.glob("*.c"), *LOWERED_NAMES.glob("*.c")])
+    return sorted([*generated, *release, *PLAN.glob("*.c"), *LOWERED_NAMES.glob("*.c"), *MERGE.glob("*.c")])
 
 
 def expand_glob(argument):
@@ -454,7 +458,7 @@ def fixture_targets(path, requested, extra):
 
 def main(argv):
     parser = argparse.ArgumentParser(
-        description="Regenerate the FileCheck blocks of tests/fixtures, tests/fixtures.release, tests/fixtures.plan and tests/fixtures.lowered-names fixtures: the whole generated output, or only the @check-fn-wrapped functions."
+        description="Regenerate the FileCheck blocks of tests/fixtures, tests/fixtures.release, tests/fixtures.plan, tests/fixtures.lowered-names and tests/fixtures.merge fixtures: the whole generated output, or only the @check-fn-wrapped functions."
     )
     parser.add_argument(
         "fixtures",
