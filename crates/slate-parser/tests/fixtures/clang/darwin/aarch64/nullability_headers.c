@@ -1,6 +1,7 @@
 // SLATE-FILECHECK-DEFINES DEFAULT
 // SLATE-FILECHECK-ARGS --dump-ir --compact-ir
 #include <stdio.h>
+#include <stdlib.h>
 
 int stdio_end_of_file = EOF;
 

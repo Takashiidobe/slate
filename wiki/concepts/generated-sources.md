@@ -42,6 +42,9 @@ instead of editing by hand.
   (ISA, FPU, float ABI, CPU, GNU namespace). Those and the
   standard-dependent macros are computed in `Preprocessor::configure`
   ([preprocessor](preprocessor.md#predefines)).
+- The Darwin clang snapshots are captured as `-fno-blocks`, without
+  `__BLOCKS__` and `__block`. Slate can't lower blocks, and the SDK headers
+  hide their block declarations behind `__BLOCKS__`.
 - `slate_*.h` files (`__SLATE_*` target facts, GNU-namespace macros) are
   hand-written.
 - Check a snapshot with `tools/gcc_macro_diff.py '<cc> <flags>'

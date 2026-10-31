@@ -28,7 +28,6 @@
 #define __ATOMIC_SEQ_CST 5
 #define __BIGGEST_ALIGNMENT__ 16
 #define __BITINT_MAXWIDTH__ 8388608
-#define __BLOCKS__ 1
 #define __BOOL_WIDTH__ 1
 #define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__
 #define __CHAR16_TYPE__ unsigned short
@@ -409,7 +408,6 @@
 #define __WINT_WIDTH__ 32
 #define __amd64 1
 #define __amd64__ 1
-#define __block __attribute__((__blocks__(byref)))
 #define __clang__ 1
 #define __clang_literal_encoding__ "UTF-8"
 #define __clang_major__ 22
