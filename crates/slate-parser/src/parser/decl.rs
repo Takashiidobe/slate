@@ -214,7 +214,7 @@ impl Parser {
                 "expected `;` at end of declaration list",
             ));
         }
-        let asm_label = parser
+        let mut asm_label = parser
             .parse_asm_label(specifiers.storage)
             .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
         let (trailing_attributes, position) = self
@@ -222,6 +222,16 @@ impl Parser {
             .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
         parser.pos = position;
         attributes.extend(trailing_attributes);
+        if !is_field && asm_label.is_none() {
+            asm_label = parser
+                .parse_asm_label(specifiers.storage)
+                .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
+            let (trailing_attributes, position) =
+                self.parse_attribute_groups(tokens, parser.pos)
+                    .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
+            parser.pos = position;
+            attributes.extend(trailing_attributes);
+        }
         let initializer = if parser.matches(Token::Equal) {
             Some(self.parse_declaration_initializer(parser)?)
         } else {
