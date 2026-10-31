@@ -671,46 +671,6 @@ fn is_option_like_type(ty: &Type) -> bool {
     }
 }
 
-fn kind_own_ident_count(kind: &NodeKind, name: Ident) -> usize {
-    match kind {
-        NodeKind::Comment(_) => 0,
-        NodeKind::Let { init, .. } => init.as_ref().map_or(0, |e| e_ident_count(e, name)),
-        NodeKind::LetIf {
-            cond,
-            then_value,
-            else_value,
-            ..
-        } => {
-            e_ident_count(cond, name)
-                + e_ident_count(then_value, name)
-                + e_ident_count(else_value, name)
-        }
-        NodeKind::Assign { target, value } | NodeKind::CompoundAssign { target, value, .. } => {
-            e_ident_count(target, name) + e_ident_count(value, name)
-        }
-        NodeKind::InlineAsm(asm) => {
-            let mut count = 0;
-            for operand in &asm.operands {
-                operand.visit_exprs(&mut |expr| count += e_ident_count(expr, name));
-            }
-            count
-        }
-        NodeKind::Expr(expr) => e_ident_count(expr, name),
-        NodeKind::Return(expr) => expr.as_ref().map_or(0, |e| e_ident_count(e, name)),
-        NodeKind::Unsafe { tail, .. } | NodeKind::Block { tail, .. } => {
-            tail.as_ref().map_or(0, |t| e_ident_count(t, name))
-        }
-        NodeKind::While { cond, tail, .. } => {
-            e_ident_count(cond, name) + tail.as_ref().map_or(0, |t| e_ident_count(t, name))
-        }
-        NodeKind::If { cond, .. } => e_ident_count(cond, name),
-        NodeKind::For { iter, .. } => e_ident_count(iter, name),
-        NodeKind::Loop { .. } | NodeKind::Scope { .. } | NodeKind::LabeledBlock { .. } => 0,
-        NodeKind::Match { expr, .. } => e_ident_count(expr, name),
-        NodeKind::Break(_) | NodeKind::Continue(_) => 0,
-    }
-}
-
 fn e_ident_count(expr: &Expr, name: Ident) -> usize {
     match expr {
         Expr::Var(v) => usize::from(*v == name),
@@ -807,19 +767,6 @@ fn e_ident_count(expr: &Expr, name: Ident) -> usize {
             e_ident_count(dst, name) + e_ident_count(val, name) + e_ident_count(count, name)
         }
     }
-}
-
-fn node_ident_count(arena: &Arena, id: NodeId, name: Ident) -> usize {
-    let Some(kind) = arena.get(id) else {
-        return 0;
-    };
-    kind_own_ident_count(kind, name)
-        + kind
-            .child_lists()
-            .iter()
-            .flat_map(|list| list.iter())
-            .map(|&child| node_ident_count(arena, child, name))
-            .sum::<usize>()
 }
 
 fn kind_own_effects(kind: &NodeKind) -> Effects {
@@ -1090,27 +1037,26 @@ struct Found {
     consumer_id: NodeId,
 }
 
-fn locate_consumer(arena: &Arena, decl_id: NodeId, name: Ident) -> Option<Found> {
+fn locate_sole_consumer(arena: &Arena, decl_id: NodeId, name: Ident) -> Option<Found> {
     let parent = arena.parent(decl_id)?;
-    let lists = arena.get(parent)?.child_lists();
-    for (list_index, list) in lists.iter().enumerate() {
-        let Some(decl_pos) = list.iter().position(|&child| child == decl_id) else {
-            continue;
-        };
-        for (offset, &sibling) in list.iter().enumerate().skip(decl_pos + 1) {
-            if node_ident_count(arena, sibling, name) > 0 {
-                return Some(Found {
-                    parent,
-                    list_index,
-                    decl_pos,
-                    consumer_pos: offset,
-                    consumer_id: sibling,
-                });
-            }
-        }
-        return None;
+    let mut consumer_id = *arena.def_use_neighbors(name).first()?;
+    while arena.parent(consumer_id)? != parent {
+        consumer_id = arena.parent(consumer_id)?;
     }
-    None
+    let lists = arena.get(parent)?.child_lists();
+    let (list_index, list) = lists
+        .iter()
+        .enumerate()
+        .find(|(_, list)| list.contains(&decl_id))?;
+    let decl_pos = list.iter().position(|&child| child == decl_id)?;
+    let consumer_pos = list.iter().position(|&child| child == consumer_id)?;
+    (consumer_pos > decl_pos).then_some(Found {
+        parent,
+        list_index,
+        decl_pos,
+        consumer_pos,
+        consumer_id,
+    })
 }
 
 fn is_movable_pure_temp(arena: &Arena, id: NodeId) -> bool {
@@ -1398,12 +1344,11 @@ impl NodeRule for LateInlineTemps {
         let ty = ty.clone();
         let init = init.clone();
 
-        let root = walk::function_root(arena, id);
-        if node_ident_count(arena, root, name) != 1 {
+        if arena.read_count(name) != 1 {
             return false;
         }
 
-        let Some(found) = locate_consumer(arena, id, name) else {
+        let Some(found) = locate_sole_consumer(arena, id, name) else {
             return false;
         };
 
@@ -1536,12 +1481,11 @@ impl NodeRule for EffectfulTempForward {
         let name = *name;
         let init = init.clone();
 
-        let root = walk::function_root(arena, id);
-        if node_ident_count(arena, root, name) != 1 {
+        if arena.read_count(name) != 1 {
             return false;
         }
 
-        let Some(found) = locate_consumer(arena, id, name) else {
+        let Some(found) = locate_sole_consumer(arena, id, name) else {
             return false;
         };
 
@@ -1675,8 +1619,7 @@ fn locate_asm_output_fold(arena: &Arena, assign_id: NodeId) -> Option<AsmOutputF
     }
     list.contains(&let_id).then_some(())?;
 
-    let root = walk::function_root(arena, assign_id);
-    if node_ident_count(arena, root, tmp) != 2 {
+    if arena.read_count(tmp) != 2 {
         return None;
     }
 
@@ -1974,12 +1917,11 @@ impl NodeRule for InlineConstArgTemps {
         let ty = ty.clone();
         let init = init.clone();
 
-        let root = walk::function_root(arena, id);
-        if node_ident_count(arena, root, name) != 1 {
+        if arena.read_count(name) != 1 {
             return false;
         }
 
-        let Some(found) = locate_consumer(arena, id, name) else {
+        let Some(found) = locate_sole_consumer(arena, id, name) else {
             return false;
         };
 

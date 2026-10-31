@@ -463,6 +463,21 @@ impl Arena {
         self.def_uses.get(&name).map(Vec::as_slice).unwrap_or(&[])
     }
 
+    pub(in crate::backend) fn read_count(&self, name: Ident) -> usize {
+        let readers = self.def_use_neighbors(name);
+        readers
+            .iter()
+            .enumerate()
+            .filter(|&(position, reader)| !readers[..position].contains(reader))
+            .map(|(_, &reader)| {
+                self.reads(reader)
+                    .iter()
+                    .filter(|&&read| read == name)
+                    .count()
+            })
+            .sum()
+    }
+
     pub(in crate::backend) fn get(&self, id: NodeId) -> Option<&NodeKind> {
         self.slots
             .get(id.index as usize)
