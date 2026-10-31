@@ -1,7 +1,7 @@
 // SLATE-FILECHECK-DEFINES DEFAULT
 // SLATE-FILECHECK-ARGS --dump-ir --compact-ir
-#include <sys/cdefs.h>
-#include <bits/get_device_api_level_inlines.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 int bionic_libc_marker = __BIONIC__;
 

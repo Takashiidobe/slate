@@ -57,6 +57,10 @@ pub fn include_paths_at(
             );
             candidates
         }
+        SysrootLayout::AndroidNdk => vec![
+            sysroot.join("usr/include").join(&target.triple),
+            sysroot.join("usr/include"),
+        ],
     };
     candidates
         .into_iter()

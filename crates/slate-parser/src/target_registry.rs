@@ -25,6 +25,7 @@ impl Predefines {
 pub enum SysrootLayout {
     WindowsKits,
     Unix { multiarch: Option<&'static str> },
+    AndroidNdk,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -367,26 +368,32 @@ pub const TARGETS: &[TargetSpec] = &[
     TargetSpec {
         triple: "aarch64-linux-android",
         layout: TargetInfo::aarch64_android,
-        profile: clang_unix(
-            &[clang_only(
-                "<clang-aarch64-linux-android-predefines>",
-                include_str!("predefines/clang-22.1.8_aarch64_linux_android.h"),
-            )],
-            VaListKind::AArch64Aapcs,
-            AbiConvention::Aapcs64,
-        ),
+        profile: TargetProfile {
+            sysroot: SysrootLayout::AndroidNdk,
+            ..clang_unix(
+                &[clang_only(
+                    "<clang-aarch64-linux-android-predefines>",
+                    include_str!("predefines/clang-22.1.8_aarch64_linux_android.h"),
+                )],
+                VaListKind::AArch64Aapcs,
+                AbiConvention::Aapcs64,
+            )
+        },
     },
     TargetSpec {
         triple: "x86_64-linux-android",
         layout: TargetInfo::x86_64_android,
-        profile: clang_unix(
-            &[clang_only(
-                "<clang-x86_64-linux-android-predefines>",
-                include_str!("predefines/clang-22.1.8_x86_64_linux_android.h"),
-            )],
-            VaListKind::X86_64Sysv,
-            AbiConvention::SysV64,
-        ),
+        profile: TargetProfile {
+            sysroot: SysrootLayout::AndroidNdk,
+            ..clang_unix(
+                &[clang_only(
+                    "<clang-x86_64-linux-android-predefines>",
+                    include_str!("predefines/clang-22.1.8_x86_64_linux_android.h"),
+                )],
+                VaListKind::X86_64Sysv,
+                AbiConvention::SysV64,
+            )
+        },
     },
     TargetSpec {
         triple: "aarch64-unknown-freebsd",

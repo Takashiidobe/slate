@@ -188,6 +188,8 @@ def sysroot_include_paths(job: Job) -> list[str]:
             root / "sdk/include/winrt",
             root / "sdk/include/cppwinrt",
         ]
+    elif target.endswith("-linux-android"):
+        candidates = [root / "usr/include" / target, root / "usr/include"]
     else:
         candidates = [root / "SDK/usr/include", root / "usr/include", root / "include"]
         if target.endswith("-unknown-linux-gnu"):
