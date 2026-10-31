@@ -236,11 +236,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let b: big = big { a: 6, b: 7, c: 8 };
 // CHECK-NEXT:     let o: odd = odd { c: [1, 2, 3] };
-// CHECK-NEXT:     let u: number = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: number = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].d = 9.0f64;
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let u: number = number { d: 9.0f64 };
 // CHECK-NEXT:     unsafe { sum(2i32, t, p, m, f, b, o, u, 10i64, t, p, m, f, b, o, u, 11i64) };
 // CHECK-NEXT:     unsafe { copied(1i32, p) };
 // CHECK-NEXT:     0

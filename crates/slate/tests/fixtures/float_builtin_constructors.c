@@ -47,19 +47,11 @@ int main(void) {
 // CHECK-NEXT:     let infinity: f32 = f32::INFINITY;
 // CHECK-NEXT:     let huge: f64 = f64::INFINITY;
 // CHECK-NEXT:     let nan: f32 = f32::from_bits(0x7fc00000);
-// CHECK-NEXT:     let f: __SlateRecord_float_builtin_constructors_c_9 = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: __SlateRecord_float_builtin_constructors_c_9 = unsafe {
-// CHECK-NEXT:             std::mem::zeroed()
-// CHECK-NEXT:         };
-// CHECK-NEXT:         [[T_0]].value = f32::from_bits(0x7fc00123);
-// CHECK-NEXT:         [[T_0]]
+// CHECK-NEXT:     let f: __SlateRecord_float_builtin_constructors_c_9 = __SlateRecord_float_builtin_constructors_c_9 {
+// CHECK-NEXT:         value: f32::from_bits(0x7fc00123),
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let d: __SlateRecord_float_builtin_constructors_c_10 = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: __SlateRecord_float_builtin_constructors_c_10 = unsafe {
-// CHECK-NEXT:             std::mem::zeroed()
-// CHECK-NEXT:         };
-// CHECK-NEXT:         [[T_1]].value = unsafe { __builtin_nan(payload()) };
-// CHECK-NEXT:         [[T_1]]
+// CHECK-NEXT:     let d: __SlateRecord_float_builtin_constructors_c_10 = __SlateRecord_float_builtin_constructors_c_10 {
+// CHECK-NEXT:         value: unsafe { __builtin_nan(payload()) },
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

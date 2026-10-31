@@ -29,11 +29,7 @@ int main(void) {
 // CHECK-NEXT:     f: f32,
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut v: Value = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Value = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].i = 258i32;
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut v: Value = Value { i: 258 };
 // CHECK-NEXT:     println!("{}", unsafe { v.i });
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         v.f = 1.5f32;

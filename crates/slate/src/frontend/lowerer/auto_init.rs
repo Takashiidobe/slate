@@ -625,7 +625,7 @@ impl FunctionLowerer<'_, '_> {
 }
 
 impl Tables<'_> {
-    fn has_padding_bytes(&self, ty: &ir::Type) -> bool {
+    pub(super) fn has_padding_bytes(&self, ty: &ir::Type) -> bool {
         match self.resolve_type(ty) {
             ir::Type::Array { element, .. } => self.has_padding_bytes(element),
             ir::Type::Defined(id) => matches!(

@@ -26,11 +26,7 @@ int main(void) {
 // CHECK-NEXT:     bytes: [u8; 4],
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut word: Word = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Word = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].value = 0i32;
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut word: Word = Word { value: 0 };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         word.bytes[0] = 65;
 // CHECK-NEXT:     }

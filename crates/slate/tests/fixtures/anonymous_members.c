@@ -89,12 +89,8 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", (unsafe { value.[[SLATE_ANON_0]].real }) as i32);
 // CHECK-NEXT:     let positional: container = container {
 // CHECK-NEXT:         prefix: 1,
-// CHECK-NEXT:         [[SLATE_ANON_0]]: {
-// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: __SlateRecord_anonymous_members_c_5 = unsafe {
-// CHECK-NEXT:                 std::mem::zeroed()
-// CHECK-NEXT:             };
-// CHECK-NEXT:             [[T_1]].integer = 2i32;
-// CHECK-NEXT:             [[T_1]]
+// CHECK-NEXT:         [[SLATE_ANON_0]]: __SlateRecord_anonymous_members_c_5 {
+// CHECK-NEXT:             integer: 2,
 // CHECK-NEXT:         },
 // CHECK-NEXT:         [[SLATE_ANON_1]]: __SlateRecord_anonymous_members_c_9 {
 // CHECK-NEXT:             x: 3,
@@ -103,19 +99,15 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let designated: container = container {
 // CHECK-NEXT:         prefix: 5,
-// CHECK-NEXT:         [[SLATE_ANON_0]]: {
-// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: __SlateRecord_anonymous_members_c_5 = unsafe {
-// CHECK-NEXT:                 std::mem::zeroed()
-// CHECK-NEXT:             };
-// CHECK-NEXT:             [[T_2]].integer = 6i32;
-// CHECK-NEXT:             [[T_2]]
+// CHECK-NEXT:         [[SLATE_ANON_0]]: __SlateRecord_anonymous_members_c_5 {
+// CHECK-NEXT:             integer: 6,
 // CHECK-NEXT:         },
 // CHECK-NEXT:         [[SLATE_ANON_1]]: {
-// CHECK-NEXT:             let mut [[T_3:__t[0-9]+]]: __SlateRecord_anonymous_members_c_9 = unsafe {
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: __SlateRecord_anonymous_members_c_9 = unsafe {
 // CHECK-NEXT:                 std::mem::zeroed()
 // CHECK-NEXT:             };
-// CHECK-NEXT:             [[T_3]].y = 7i32;
-// CHECK-NEXT:             [[T_3]]
+// CHECK-NEXT:             [[T_1]].y = 7i32;
+// CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(

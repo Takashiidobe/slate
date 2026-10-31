@@ -108,11 +108,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let p: Point = Point { x: 1, y: 2 };
 // CHECK-NEXT:     let five: i32 = 5;
-// CHECK-NEXT:     let c: Castable = {
-// CHECK-NEXT:         let mut [[T_4:__t[0-9]+]]: Castable = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_4]].i = five;
-// CHECK-NEXT:         [[T_4]]
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let c: Castable = Castable { i: five };
 // CHECK-NEXT:     let f: u32 = 1;
 // CHECK-NEXT:     println!("{} {} {} {}", range_values.0[3], old_index[1], p.x + p.y, unsafe { c.i });
 // CHECK-NEXT:     println!("{}", (f as u32) as i32);

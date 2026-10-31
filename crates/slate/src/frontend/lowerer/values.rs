@@ -1986,6 +1986,17 @@ impl FunctionLowerer<'_, '_> {
                 _ => Expr::ArrayLit(values),
             });
         }
+        if erased.is_empty()
+            && !forced_storage
+            && let (rust::Type::Custom(name), [member]) = (&lowered_ty, members)
+            && let ir::AggregateTarget::Field(index) = member.target
+            && self.tables.union_field_fills_every_byte(ty, index)
+        {
+            return Ok(Expr::StructLit {
+                name: name.clone(),
+                fields: vec![(field_name(index)?, self.lower_value(&member.value)?)],
+            });
+        }
         let target = self.next_temp();
         let mut stmts = vec![Stmt::Let {
             name: target.clone(),

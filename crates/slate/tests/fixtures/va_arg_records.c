@@ -252,11 +252,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let m: Mixed = Mixed { f: 6.5f32, i: 99 };
 // CHECK-NEXT:     let big: Big = Big { v: [10, 20, 30, 40, 50] };
-// CHECK-NEXT:     let ud: UD = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: UD = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]].e = [7.5f64, -8.25f64];
-// CHECK-NEXT:         [[T_1]]
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let ud: UD = UD { e: [7.5f64, -8.25f64] };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         dump(
 // CHECK-NEXT:             3i32,

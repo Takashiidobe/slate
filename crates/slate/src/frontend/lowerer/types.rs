@@ -107,6 +107,18 @@ impl<'m> Tables<'m> {
         covered.is_none_or(|covered| covered != size)
     }
 
+    pub(super) fn union_field_fills_every_byte(&self, ty: &ir::Type, index: usize) -> bool {
+        if !self.is_union(ty) || self.has_bit_fields(ty) {
+            return false;
+        }
+        let Some(field) = self.record_fields(ty).and_then(|fields| fields.get(index)) else {
+            return false;
+        };
+        !self.has_padding_bytes(&field.ty)
+            && self.storage_of(&field.ty).map(|(size, _)| size)
+                == self.storage_of(ty).map(|(size, _)| size)
+    }
+
     pub(super) fn is_union(&self, ty: &ir::Type) -> bool {
         let ir::Type::Defined(id) = self.resolve_type(ty) else {
             return false;
