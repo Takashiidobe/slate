@@ -1,0 +1,22 @@
+[
+  {
+    "directory": ".",
+    "file": "no_outputs.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "no_outputs.c",
+      "-DVARIANT=1"
+    ]
+  },
+  {
+    "directory": ".",
+    "file": "no_outputs.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "no_outputs.c",
+      "-DVARIANT=2"
+    ]
+  }
+]

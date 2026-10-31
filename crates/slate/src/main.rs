@@ -616,6 +616,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut plan_mode = None;
     let mut merge = false;
     let mut projection = project_merge::Projection::Skip;
+    let mut build_target = None;
     let current_dir = std::env::current_dir().map_err(|e| format!("current directory: {e}"))?;
     let mut index = 0;
     while index < args.len() {
@@ -626,6 +627,13 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
                     .get(index)
                     .ok_or_else(|| "--compile-commands requires a file".to_string())?;
                 compile_command_paths.push(PathBuf::from(commands));
+            }
+            "--build-target" => {
+                index += 1;
+                let target = args
+                    .get(index)
+                    .ok_or_else(|| "--build-target requires a name".to_string())?;
+                build_target = Some(target.as_str());
             }
             "--explicit-docs-only" => explicit_docs_only = true,
             "--matrix" => {
@@ -778,6 +786,9 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     if projection != project_merge::Projection::Skip {
         return Err("--check-projection requires --merge".into());
     }
+    if build_target.is_some() && compile_command_paths.is_empty() {
+        return Err("--build-target requires --compile-commands".into());
+    }
     if let Some(matrix_path) = matrix_path {
         if !compile_command_paths.is_empty() {
             return Err("--matrix cannot be combined with --compile-commands".into());
@@ -802,16 +813,25 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     if compile_command_paths.is_empty() {
         return Err("translate-project requires at least one --compile-commands <file>".into());
     }
-    let commands = cli_result(compile_commands::read(
+    let read = cli_result(compile_commands::read(
         &compile_command_paths,
         &compile_commands::ReadOptions {
             extra_args: &include_args,
             flavor,
+            build_target,
         },
     ))?;
+    if let Some(selected) = &read.selected {
+        println!(
+            "build target {}: {} files, other targets: {}",
+            selected.name,
+            read.commands.len(),
+            selected.others.join(", ")
+        );
+    }
     translate_slate_project(
         Path::new(paths[1]),
-        commands,
+        read.commands,
         &crate_types,
         explicit_docs_only,
     )
@@ -841,18 +861,11 @@ fn parse_slate_units(
             .map(rust_ident)
             .ok_or_else(|| format!("bad file stem: {}", command.file.display()))?;
         if let Some(previous) = by_stem.get(&stem) {
-            return Err(if previous.file == command.file {
-                format!(
-                    "slate frontend does not yet support multiple compile commands for {}",
-                    command.file.display()
-                )
-            } else {
-                format!(
-                    "compile commands map both {} and {} to module {stem}",
-                    previous.file.display(),
-                    command.file.display()
-                )
-            });
+            return Err(format!(
+                "compile commands map both {} and {} to module {stem}",
+                previous.file.display(),
+                command.file.display()
+            ));
         }
         by_stem.insert(stem, command);
     }

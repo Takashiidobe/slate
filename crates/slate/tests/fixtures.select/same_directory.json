@@ -1,0 +1,25 @@
+[
+  {
+    "directory": ".",
+    "file": "same_directory.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "same_directory.c",
+      "-DVARIANT=1"
+    ],
+    "output": "objs/same_directory.o"
+  },
+  {
+    "directory": ".",
+    "file": "same_directory.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "same_directory.c",
+      "-DVARIANT=2",
+      "-fPIC"
+    ],
+    "output": "objs/same_directory.lo"
+  }
+]

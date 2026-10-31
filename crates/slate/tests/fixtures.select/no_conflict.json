@@ -1,0 +1,35 @@
+[
+  {
+    "directory": ".",
+    "file": "no_conflict.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "no_conflict.c",
+      "-DVARIANT=6"
+    ],
+    "output": "CMakeFiles/one.dir/no_conflict.c.o"
+  },
+  {
+    "directory": ".",
+    "file": "no_conflict.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "no_conflict.c",
+      "-DVARIANT=6"
+    ],
+    "output": "CMakeFiles/two.dir/no_conflict.c.o"
+  },
+  {
+    "directory": ".",
+    "file": "units/helper.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "units/helper.c",
+      "-DVARIANT=6"
+    ],
+    "output": "CMakeFiles/two.dir/helper.c.o"
+  }
+]

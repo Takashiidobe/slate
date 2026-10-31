@@ -1,0 +1,70 @@
+[
+  {
+    "directory": ".",
+    "file": "requested_small_target.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "requested_small_target.c",
+      "-DVARIANT=1",
+      "-fPIC"
+    ],
+    "output": "CMakeFiles/shared.dir/requested_small_target.c.o"
+  },
+  {
+    "directory": ".",
+    "file": "requested_small_target.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "requested_small_target.c",
+      "-DVARIANT=2"
+    ],
+    "output": "CMakeFiles/static.dir/requested_small_target.c.o"
+  },
+  {
+    "directory": ".",
+    "file": "units/helper.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "units/helper.c",
+      "-DVARIANT=1",
+      "-fPIC"
+    ],
+    "output": "CMakeFiles/shared.dir/helper.c.o"
+  },
+  {
+    "directory": ".",
+    "file": "units/helper.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "units/helper.c",
+      "-DVARIANT=2"
+    ],
+    "output": "CMakeFiles/static.dir/helper.c.o"
+  },
+  {
+    "directory": ".",
+    "file": "requested_small_target.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "requested_small_target.c",
+      "-DVARIANT=3"
+    ],
+    "output": "test/CMakeFiles/example.dir/requested_small_target.c.o"
+  },
+  {
+    "directory": ".",
+    "file": "units/program.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "units/program.c",
+      "-DVARIANT=3"
+    ],
+    "output": "test/CMakeFiles/example.dir/program.c.o"
+  }
+]

@@ -1,0 +1,39 @@
+[
+  {
+    "directory": ".",
+    "file": "largest_target.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "largest_target.c",
+      "-DVARIANT=4",
+      "-o",
+      "libz.so.p/largest_target.c.o"
+    ]
+  },
+  {
+    "directory": ".",
+    "file": "units/helper.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "units/helper.c",
+      "-DVARIANT=4",
+      "-o",
+      "libz.so.p/helper.c.o"
+    ]
+  },
+  {
+    "directory": ".",
+    "file": "largest_target.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "largest_target.c",
+      "-DVARIANT=5",
+      "-DTOOL",
+      "-o",
+      "tool.p/largest_target.c.o"
+    ]
+  }
+]

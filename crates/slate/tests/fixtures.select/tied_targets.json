@@ -1,0 +1,70 @@
+[
+  {
+    "directory": ".",
+    "file": "tied_targets.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "tied_targets.c",
+      "-DVARIANT=1",
+      "-fPIC"
+    ],
+    "output": "CMakeFiles/shared.dir/tied_targets.c.o"
+  },
+  {
+    "directory": ".",
+    "file": "tied_targets.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "tied_targets.c",
+      "-DVARIANT=2"
+    ],
+    "output": "CMakeFiles/static.dir/tied_targets.c.o"
+  },
+  {
+    "directory": ".",
+    "file": "units/helper.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "units/helper.c",
+      "-DVARIANT=1",
+      "-fPIC"
+    ],
+    "output": "CMakeFiles/shared.dir/helper.c.o"
+  },
+  {
+    "directory": ".",
+    "file": "units/helper.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "units/helper.c",
+      "-DVARIANT=2"
+    ],
+    "output": "CMakeFiles/static.dir/helper.c.o"
+  },
+  {
+    "directory": ".",
+    "file": "tied_targets.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "tied_targets.c",
+      "-DVARIANT=3"
+    ],
+    "output": "test/CMakeFiles/example.dir/tied_targets.c.o"
+  },
+  {
+    "directory": ".",
+    "file": "units/program.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "units/program.c",
+      "-DVARIANT=3"
+    ],
+    "output": "test/CMakeFiles/example.dir/program.c.o"
+  }
+]

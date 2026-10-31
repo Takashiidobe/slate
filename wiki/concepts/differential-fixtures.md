@@ -189,6 +189,8 @@ which is how usage errors are pinned. The test also requires the same output at
 
 `tests/fixtures.merge/` fixtures (`project_merge`) check the `--merge` report and every generated file, run `--check-projection all`, then build the crate for each valid feature subset and compare it with clang on the host. `// merge-sources:` adds units and `// merge-linux-args:` sets the first target's arguments. `// merge-expect-exit:` sets the expected exit code; a fixture that fails to merge skips the build and comparison. `zlib_projection_sample` samples configurations of `~/c-corpus/zlib` and skips when that checkout is not configured.
 
+`tests/fixtures.select/` fixtures (`project_select`) translate `<stem>.json` as a compile database and check the chosen build target, errors, exit status and every generated file. `// select-args:` adds arguments. Nothing is compiled.
+
 `tests/fixtures.lowered-names/` fixtures pin which items change when a feature
 is toggled. `lowered_names_filecheck` (`tests/lowered_names.rs`) translates each
 `.c` file with and without each feature and checks the list of added and removed
