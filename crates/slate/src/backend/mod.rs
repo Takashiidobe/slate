@@ -53,11 +53,17 @@ pub fn place_in_distinct_sections(
         if let rust_ast::Item::Fn(function) = item
             && functions.contains(function.name.as_str())
         {
-            function.attrs.push(rust_ast::Attr::LinkSection(format!(
-                ".text.slate_distinct.{unit}.{}",
-                function.name
-            )));
+            place_item_in_distinct_section(item, unit);
         }
+    }
+}
+
+pub fn place_item_in_distinct_section(item: &mut rust_ast::Item, unit: &str) {
+    if let rust_ast::Item::Fn(function) = item {
+        function.attrs.push(rust_ast::Attr::LinkSection(format!(
+            ".text.slate_distinct.{unit}.{}",
+            function.name
+        )));
     }
 }
 

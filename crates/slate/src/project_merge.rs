@@ -14,10 +14,10 @@ use rayon::prelude::*;
 use slate_parser::files::Files;
 use slate_parser::ir::{Linkage, Module};
 use slate_parser::target_info::TargetInfo;
-use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::fmt::Write;
 use std::path::{Path, PathBuf};
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
 const MAX_RELEVANT_FEATURES: usize = 12;
 const MAX_ENUMERATED_FEATURES: usize = 20;
@@ -232,10 +232,22 @@ impl Merged {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq, Hash)]
 struct Entry {
     key: String,
     item: Item,
+}
+
+type Interner = Mutex<HashSet<Arc<Entry>>>;
+
+fn intern(interner: &Interner, entry: Entry) -> Arc<Entry> {
+    let mut known = interner.lock().expect("no compile panics");
+    if let Some(found) = known.get(&entry) {
+        return found.clone();
+    }
+    let entry = Arc::new(entry);
+    known.insert(entry.clone());
+    entry
 }
 
 fn entries(program: &Program) -> Vec<Entry> {
@@ -284,13 +296,13 @@ fn crate_attrs(program: &Program) -> impl Iterator<Item = &CrateAttr> {
 #[derive(Clone)]
 struct Compiled {
     mask: u32,
-    program: Program,
     candidates: SectionCandidates,
-    entries: Vec<Entry>,
+    entries: Vec<Arc<Entry>>,
     attrs: Vec<CrateAttr>,
 }
 
 struct TargetUnit {
+    interner: Interner,
     source: PathBuf,
     relevant: Vec<String>,
     compiled: Vec<Compiled>,
@@ -349,7 +361,7 @@ fn compile_isolated(
     path: PathBuf,
     preprocessed: frontend::PreprocessedUnit,
     owners: &CommonOwners,
-    mask: u32,
+    interner: &Interner,
 ) -> Result<(Compiled, bool), String> {
     let stem = stem_of(&path)?;
     let (module, files) = preprocessed
@@ -386,11 +398,13 @@ fn compile_isolated(
         .expect("one unit has one set of section candidates");
     Ok((
         Compiled {
-            mask,
+            mask: 0,
             attrs: crate_attrs(&program).cloned().collect(),
-            program,
             candidates,
-            entries: Vec::new(),
+            entries: entries(&program)
+                .into_iter()
+                .map(|entry| intern(interner, entry))
+                .collect(),
         },
         has_main,
     ))
@@ -405,20 +419,78 @@ fn matrix_target_info(matrix: &Matrix, target: &str) -> Result<TargetInfo, Strin
     TargetInfo::for_triple(&known.triple).map_err(|error| error.to_string())
 }
 
-fn prepare_target(matrix: &Matrix, project: &Path, target: &str) -> Result<TargetBuild, String> {
-    let plan = project_plan::plan(matrix, project, Some(target), project_plan::Mode::Relevant)
-        .map_err(|error| error.to_string())?;
-    let units = &plan.targets[0].units;
-    if let Some((unit, error)) = units
-        .iter()
-        .find_map(|unit| unit.error.as_ref().map(|error| (unit, error)))
-    {
-        let first = error.lines().next().unwrap_or_default();
-        return Err(format!(
-            "target {target}: {} could not be planned: {first}",
-            unit.source.display()
-        ));
+type ExploredRow = (Vec<String>, u64, Option<Result<(Compiled, bool), String>>);
+
+fn explore_unit(
+    matrix: &Matrix,
+    target: &str,
+    project: &Path,
+    source: &Path,
+    owners: &CommonOwners,
+) -> (project_plan::UnitPlan, Vec<ExploredRow>, Interner) {
+    let interner = Interner::default();
+    let mut seen = BTreeSet::new();
+    let mut rows: Vec<ExploredRow> = Vec::new();
+    let mut on_run = |names: Vec<String>, relevant: usize, unit: frontend::PreprocessedUnit| {
+        if relevant > MAX_RELEVANT_FEATURES {
+            return;
+        }
+        let fingerprint = unit.fingerprint();
+        let result = seen
+            .insert(fingerprint)
+            .then(|| compile_isolated(unit.path().to_path_buf(), unit, owners, &interner));
+        rows.push((names, fingerprint, result));
+    };
+    let plan = project_plan::relevant_features(matrix, project, target, source, &mut on_run);
+    (plan, rows, interner)
+}
+
+fn feature_mask(relevant: &[String], names: &[String]) -> u32 {
+    names.iter().fold(0, |mask, name| {
+        let bit = relevant
+            .iter()
+            .position(|known| known == name)
+            .expect("explored features are relevant");
+        mask | 1 << bit
+    })
+}
+
+fn explored_unit(
+    plan: &project_plan::UnitPlan,
+    rows: Vec<ExploredRow>,
+    interner: Interner,
+) -> TargetUnit {
+    let mut unit = TargetUnit {
+        interner,
+        source: plan.source.clone(),
+        relevant: plan.relevant.clone(),
+        compiled: Vec::new(),
+        infeasible: Vec::new(),
+        tried: BTreeSet::new(),
+        programs: Mutex::new(BTreeMap::new()),
+        reused: BTreeSet::new(),
+        defines_main: false,
+    };
+    let mut programs = BTreeMap::new();
+    let mut repeats = Vec::new();
+    for (names, fingerprint, result) in rows {
+        let mask = feature_mask(&unit.relevant, &names);
+        let first = *programs.entry(fingerprint).or_insert(mask);
+        let outcome = match result {
+            Some(Ok((compiled, has_main))) => RowOutcome::Built(compiled, has_main),
+            Some(Err(error)) => RowOutcome::Failed(error),
+            None => RowOutcome::Repeats(first),
+        };
+        repeats.extend(unit.record(mask, outcome).map(|first| (mask, first)));
     }
+    for (mask, first) in repeats {
+        unit.reuse(mask, first);
+    }
+    unit.programs = Mutex::new(programs);
+    unit
+}
+
+fn prepare_target(matrix: &Matrix, project: &Path, target: &str) -> Result<TargetBuild, String> {
     let defaults = matrix
         .commands(project, target, &[])
         .map_err(|error| error.to_string())?;
@@ -427,9 +499,24 @@ fn prepare_target(matrix: &Matrix, project: &Path, target: &str) -> Result<Targe
         .filter_map(|command| parse(command).ok())
         .collect();
     let owners = common_owners(parsed.iter().map(|unit| (unit.stem.as_str(), &unit.module)));
+    let explored: Vec<_> = matrix
+        .sources
+        .par_iter()
+        .map(|source| explore_unit(matrix, target, project, source, &owners))
+        .collect();
+    if let Some((unit, error)) = explored
+        .iter()
+        .find_map(|(unit, ..)| unit.error.as_ref().map(|error| (unit, error)))
+    {
+        let first = error.lines().next().unwrap_or_default();
+        return Err(format!(
+            "target {target}: {} could not be planned: {first}",
+            unit.source.display()
+        ));
+    }
 
-    let mut built = Vec::with_capacity(units.len());
-    for unit in units {
+    let mut built = Vec::with_capacity(explored.len());
+    for (unit, rows, interner) in explored {
         if unit.relevant.len() > MAX_RELEVANT_FEATURES {
             return Err(format!(
                 "target {target}: {} depends on {} features, the limit is {MAX_RELEVANT_FEATURES}",
@@ -437,16 +524,7 @@ fn prepare_target(matrix: &Matrix, project: &Path, target: &str) -> Result<Targe
                 unit.relevant.len()
             ));
         }
-        built.push(TargetUnit {
-            source: unit.source.clone(),
-            relevant: unit.relevant.clone(),
-            compiled: Vec::new(),
-            infeasible: Vec::new(),
-            tried: BTreeSet::new(),
-            programs: Mutex::new(BTreeMap::new()),
-            reused: BTreeSet::new(),
-            defines_main: false,
-        });
+        built.push(explored_unit(&unit, rows, interner));
     }
     let info = matrix_target_info(matrix, target)?;
     Ok(TargetBuild {
@@ -495,6 +573,23 @@ impl TargetUnit {
         }
     }
 
+    fn record(&mut self, mask: u32, outcome: RowOutcome) -> Option<u32> {
+        self.tried.insert(mask);
+        match outcome {
+            RowOutcome::Built(compiled, has_main) => {
+                self.defines_main |= has_main;
+                self.add_compiled(Compiled { mask, ..compiled });
+                None
+            }
+            RowOutcome::Failed(error) => {
+                let first = error.lines().next().unwrap_or_default().to_string();
+                self.add_infeasible(mask, first);
+                None
+            }
+            RowOutcome::Repeats(first) => Some(first),
+        }
+    }
+
     fn claim(&self, fingerprint: u64, mask: u32) -> Option<u32> {
         let mut programs = self.programs.lock().expect("no compile panics");
         let first = *programs.entry(fingerprint).or_insert(mask);
@@ -529,7 +624,7 @@ fn compile_row(
     if let Some(first) = unit.claim(preprocessed.fingerprint(), mask) {
         return Ok(RowOutcome::Repeats(first));
     }
-    let (compiled, has_main) = compile_isolated(path, preprocessed, &build.owners, mask)?;
+    let (compiled, has_main) = compile_isolated(path, preprocessed, &build.owners, &unit.interner)?;
     Ok(RowOutcome::Built(compiled, has_main))
 }
 
@@ -545,17 +640,8 @@ fn compile_rows(matrix: &Matrix, project: &Path, builds: &mut [TargetBuild], job
     let mut repeats = Vec::new();
     for ((target, index, mask), outcome) in jobs.into_iter().zip(outcomes) {
         let unit = &mut builds[target].units[index];
-        unit.tried.insert(mask);
-        match outcome {
-            RowOutcome::Built(compiled, has_main) => {
-                unit.defines_main |= has_main;
-                unit.add_compiled(compiled);
-            }
-            RowOutcome::Failed(error) => {
-                let first = error.lines().next().unwrap_or_default().to_string();
-                unit.add_infeasible(mask, first);
-            }
-            RowOutcome::Repeats(first) => repeats.push((target, index, mask, first)),
+        if let Some(first) = unit.record(mask, outcome) {
+            repeats.push((target, index, mask, first));
         }
     }
     for (target, index, mask, first) in repeats {
@@ -582,12 +668,17 @@ fn place_sections(build: &mut TargetBuild) -> Result<(), String> {
                     .filter(|(symbol, _)| taken.contains(*symbol))
                     .map(|(_, name)| name.clone()),
             );
-            let mut placed = Program {
-                items: std::mem::take(&mut compiled.program.items),
-            };
-            backend::place_in_distinct_sections(&mut placed, &stem, &protected);
-            compiled.entries = entries(&placed);
+            for entry in &mut compiled.entries {
+                if let Item::Fn(function) = &entry.item
+                    && protected.contains(function.name.as_str())
+                {
+                    let mut placed = Entry::clone(entry);
+                    backend::place_item_in_distinct_section(&mut placed.item, &stem);
+                    *entry = intern(&unit.interner, placed);
+                }
+            }
         }
+        unit.interner = Interner::default();
     }
     Ok(())
 }
@@ -749,7 +840,7 @@ fn combined_cfg(
 }
 
 struct Value {
-    item: Item,
+    entry: Arc<Entry>,
     on: Vec<BTreeSet<u32>>,
 }
 
@@ -776,7 +867,7 @@ fn hoist_values(key: &str, values: &[Value]) -> Option<project_hoist::Hoisted> {
     }
     let variants = values
         .iter()
-        .map(|value| match &value.item {
+        .map(|value| match &value.entry.item {
             Item::Fn(function) => Some(function),
             _ => None,
         })
@@ -792,11 +883,11 @@ fn splice_values(
     if key.contains('#') {
         return None;
     }
-    match &values[0].item {
+    match &values[0].entry.item {
         Item::Fn(_) => {
             let variants = values
                 .iter()
-                .map(|value| match &value.item {
+                .map(|value| match &value.entry.item {
                     Item::Fn(function) => Some(function),
                     _ => None,
                 })
@@ -807,7 +898,7 @@ fn splice_values(
         Item::Record(_) => {
             let variants = values
                 .iter()
-                .map(|value| match &value.item {
+                .map(|value| match &value.entry.item {
                     Item::Record(record) => Some(record),
                     _ => None,
                 })
@@ -856,10 +947,10 @@ fn merge_unit(
                 });
                 let position = values
                     .iter()
-                    .position(|value| value.item == entry.item)
+                    .position(|value| value.entry == *entry)
                     .unwrap_or_else(|| {
                         values.push(Value {
-                            item: entry.item.clone(),
+                            entry: entry.clone(),
                             on: vec![BTreeSet::new(); targets.len()],
                         });
                         values.len() - 1
@@ -980,14 +1071,14 @@ fn merge_unit(
         }
         for value in values {
             let cfg = cfg_of(&value.on);
-            if cfg.is_some() && matches!(value.item, Item::Comment(_)) {
+            if cfg.is_some() && matches!(value.entry.item, Item::Comment(_)) {
                 continue;
             }
             out.gated += usize::from(cfg.is_some());
             out.entries.push(MergedEntry {
                 cfg,
                 key: key.clone(),
-                item: value.item,
+                item: value.entry.item.clone(),
                 binding: false,
             });
         }
@@ -1256,7 +1347,11 @@ pub fn merge(
     let mut jobs: Vec<Job> = Vec::new();
     for (target, build) in builds.iter().enumerate() {
         for (index, unit) in build.units.iter().enumerate() {
-            jobs.extend(valid_rows(matrix, &unit.relevant).map(|mask| (target, index, mask)));
+            jobs.extend(
+                valid_rows(matrix, &unit.relevant)
+                    .filter(|mask| !unit.tried.contains(mask))
+                    .map(|mask| (target, index, mask)),
+            );
         }
     }
     compile_rows(matrix, project, &mut builds, jobs);
@@ -1294,7 +1389,10 @@ pub fn merge(
                 compiled: unit
                     .compiled
                     .iter()
-                    .map(|compiled| (compiled.mask, &compiled.program))
+                    .map(|compiled| {
+                        let items = compiled.entries.iter().map(|entry| &entry.item).collect();
+                        (compiled.mask, items)
+                    })
                     .collect(),
             })
             .collect();

@@ -249,24 +249,26 @@ fn parser_from_args(args: CompilerArgs) -> Result<Parser, Error> {
     Ok(Parser::new(search, dialect).with_preprocessor_inputs(args.preprocessor_inputs))
 }
 
-pub type TracedPreprocess = (
-    Vec<PPNode>,
-    Files,
-    PreprocessTrace,
-    Vec<DirectiveDiagnostic>,
-);
-
-pub fn preprocess_traced(path: &Path, args: CompilerArgs) -> Result<TracedPreprocess, Error> {
+pub fn preprocess_traced(
+    path: &Path,
+    args: CompilerArgs,
+) -> Result<(PreprocessedUnit, PreprocessTrace), Error> {
     let mut parser = parser_from_args(args)?;
-    let (nodes, files, trace) =
+    let (preprocessed, trace) =
         parser
-            .preprocess_file_traced(path)
+            .preprocess_for_parse_traced(path)
             .map_err(|error| Error::Parse {
                 path: path.to_path_buf(),
                 message: error.to_string(),
             })?;
-    let diagnostics = parser.directive_diagnostics().to_vec();
-    Ok((nodes, files, trace, diagnostics))
+    Ok((
+        PreprocessedUnit {
+            parser,
+            preprocessed,
+            path: path.to_path_buf(),
+        },
+        trace,
+    ))
 }
 
 pub struct PreprocessedUnit {
@@ -276,6 +278,26 @@ pub struct PreprocessedUnit {
 }
 
 impl PreprocessedUnit {
+    pub fn path(&self) -> &Path {
+        &self.path
+    }
+
+    pub fn nodes(&self) -> &[PPNode] {
+        self.preprocessed.nodes()
+    }
+
+    pub fn files(&self) -> &Files {
+        self.preprocessed.files()
+    }
+
+    pub fn diagnostics(&self) -> &[DirectiveDiagnostic] {
+        self.parser.directive_diagnostics()
+    }
+
+    pub fn discard_token_traces(&mut self) {
+        self.preprocessed.discard_token_traces();
+    }
+
     pub fn fingerprint(&self) -> u64 {
         self.parser.preprocessed_fingerprint(&self.preprocessed)
     }

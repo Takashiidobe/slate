@@ -17,8 +17,8 @@ use crate::error::{FrontendError, ParseError};
 use crate::files::{Files, SearchPaths, decode_source_bytes, display_path};
 use crate::lexer::Token;
 use crate::pp::{
-    DirectiveDiagnostic, MacroEntry, MacroOption, PPNode, PreprocessTrace, Preprocessor,
-    PreprocessorInputs,
+    DirectiveDiagnostic, MacroEntry, MacroOption, PPNode, PPNodeKind, PreprocessTrace,
+    Preprocessor, PreprocessorInputs,
 };
 use crate::standard_features::StandardFeatures;
 pub(crate) use context::ParseContext;
@@ -274,6 +274,40 @@ pub struct Preprocessed {
     root_file: FileId,
 }
 
+impl Preprocessed {
+    pub fn nodes(&self) -> &[PPNode] {
+        &self.nodes
+    }
+
+    pub fn files(&self) -> &Files {
+        &self.files
+    }
+
+    pub fn discard_token_traces(&mut self) {
+        for node in &mut self.nodes {
+            if let PPNodeKind::Code { trace, .. } | PPNodeKind::Pragma { trace, .. } =
+                &mut node.value
+            {
+                *trace = Vec::new();
+            }
+        }
+    }
+}
+
+fn read_decoded_source(path: &Path) -> Result<String, FrontendError> {
+    std::fs::read(path)
+        .map(|bytes| decode_source_bytes(&bytes))
+        .map_err(|error| {
+            FrontendError::Parse(ParseError::new(
+                display_path(path),
+                "",
+                0,
+                0,
+                format!("failed to read source: {error}"),
+            ))
+        })
+}
+
 impl Parser {
     pub(crate) fn cover_tokens<T>(
         &self,
@@ -427,19 +461,26 @@ impl Parser {
     }
 
     pub fn preprocess_for_parse(&mut self, path: &Path) -> Result<Preprocessed, FrontendError> {
-        let source = std::fs::read(path)
-            .map(|bytes| decode_source_bytes(&bytes))
-            .map_err(|error| {
-                ParseError::new(
-                    display_path(path),
-                    "",
-                    0,
-                    0,
-                    format!("failed to read source: {error}"),
-                )
-            })
-            .map_err(FrontendError::Parse)?;
+        let source = read_decoded_source(path)?;
         self.preprocess_source(path, source)
+    }
+
+    pub fn preprocess_for_parse_traced(
+        &mut self,
+        path: &Path,
+    ) -> Result<(Preprocessed, PreprocessTrace), FrontendError> {
+        let source = read_decoded_source(path)?;
+        let (preprocessed, trace) = self.run_preprocessor(path, source, true)?;
+        let trace = trace.ok_or_else(|| {
+            FrontendError::Parse(ParseError::new(
+                display_path(path),
+                "",
+                0,
+                0,
+                "preprocessor did not produce a trace",
+            ))
+        })?;
+        Ok((preprocessed, trace))
     }
 
     fn preprocess_source(
@@ -447,12 +488,25 @@ impl Parser {
         path: &Path,
         source: String,
     ) -> Result<Preprocessed, FrontendError> {
+        self.run_preprocessor(path, source, false)
+            .map(|(preprocessed, _)| preprocessed)
+    }
+
+    fn run_preprocessor(
+        &mut self,
+        path: &Path,
+        source: String,
+        traced: bool,
+    ) -> Result<(Preprocessed, Option<PreprocessTrace>), FrontendError> {
         self.source_name = display_path(path);
         self.source = source;
         let search = self.search.clone();
         let dialect = self.dialect.clone();
         let mut pp = Preprocessor::new(&search, &dialect).map_err(FrontendError::PP)?;
         let mut nodes = pp.predeclared_typedefs().map_err(FrontendError::PP)?;
+        if traced {
+            pp.enable_trace();
+        }
         nodes.extend(self.prepare_preprocessor(&mut pp)?);
         nodes.extend(
             pp.parse_file_with_source(path, &self.source)
@@ -471,11 +525,15 @@ impl Parser {
                 "preprocessor did not produce a main file",
             ))
         })?;
-        Ok(Preprocessed {
-            nodes,
-            files: pp.files,
-            root_file,
-        })
+        let trace = pp.take_trace();
+        Ok((
+            Preprocessed {
+                nodes,
+                files: pp.files,
+                root_file,
+            },
+            trace,
+        ))
     }
 
     pub fn parse_preprocessed(

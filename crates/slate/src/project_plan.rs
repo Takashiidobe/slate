@@ -1,4 +1,4 @@
-use crate::frontend;
+use crate::frontend::{self, PreprocessedUnit};
 use crate::project_matrix::{Matrix, MatrixError};
 use rayon::prelude::*;
 use slate_parser::ast::{FileId, Span};
@@ -61,7 +61,6 @@ pub struct Exhaustive {
 pub enum Mode {
     Plan,
     CheckExhaustive,
-    Relevant,
 }
 
 pub fn plan(
@@ -107,13 +106,25 @@ pub fn plan(
     })
 }
 
+pub type OnRun<'a> = dyn FnMut(Vec<String>, usize, PreprocessedUnit) + 'a;
+
+pub fn relevant_features<'a>(
+    matrix: &'a Matrix,
+    project: &'a Path,
+    target: &'a str,
+    source: &'a Path,
+    on_run: &'a mut OnRun<'a>,
+) -> UnitPlan {
+    let mut explorer = Explorer::new(matrix, project, target, source);
+    explorer.tracks_elements = false;
+    explorer.on_run = Some(on_run);
+    explorer.explore();
+    explorer.relevant_unit()
+}
+
 fn plan_unit(matrix: &Matrix, project: &Path, target: &str, source: &Path, mode: Mode) -> UnitPlan {
     let mut explorer = Explorer::new(matrix, project, target, source);
-    explorer.tracks_elements = mode != Mode::Relevant;
     explorer.explore();
-    if mode == Mode::Relevant {
-        return explorer.relevant_unit();
-    }
     let mut unit = explorer.finish();
     if mode == Mode::CheckExhaustive {
         let mut exhaustive = Explorer::new(matrix, project, target, source);
@@ -258,6 +269,7 @@ struct Explorer<'a> {
     source: &'a Path,
     feature_of_macro: HashMap<String, Vec<usize>>,
     tracks_elements: bool,
+    on_run: Option<&'a mut OnRun<'a>>,
     interned: HashMap<String, u32>,
     runs: BTreeMap<Config, Run>,
     reached: BTreeSet<BranchKey>,
@@ -290,6 +302,7 @@ impl<'a> Explorer<'a> {
             source,
             feature_of_macro,
             tracks_elements: true,
+            on_run: None,
             interned: HashMap::new(),
             runs: BTreeMap::new(),
             reached: BTreeSet::new(),
@@ -395,8 +408,9 @@ impl<'a> Explorer<'a> {
                     .map_err(|error| error.to_string())
             });
         match result {
-            Ok((nodes, files, trace, diagnostics)) => {
-                let clean = diagnostics
+            Ok((mut unit, trace)) => {
+                let clean = unit
+                    .diagnostics()
                     .iter()
                     .all(|diagnostic| diagnostic.severity == miette::Severity::Warning);
                 let outcome = if clean {
@@ -404,8 +418,14 @@ impl<'a> Explorer<'a> {
                 } else {
                     Outcome::HitError
                 };
-                let elements = self.analyze(config, &nodes, &files, &trace);
+                let elements = self.analyze(config, unit.nodes(), unit.files(), &trace);
                 self.runs.insert(config.clone(), Run { elements, outcome });
+                drop(trace);
+                let names = self.names(config);
+                if let Some(on_run) = &mut self.on_run {
+                    unit.discard_token_traces();
+                    on_run(names, self.relevant.len(), unit);
+                }
             }
             Err(error) => {
                 if config.is_empty() {

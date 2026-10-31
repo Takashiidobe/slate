@@ -3,13 +3,13 @@ use std::collections::{BTreeMap, BTreeSet, HashMap};
 use super::types::{BITS_MODULE, is_anonymous};
 use crate::backend::codegen::type_to_string;
 use crate::backend::rust_ast::{
-    Abi, Attr, ExternDecl, FnParam, Item, Program, Repr, StructDef, StructFields, Type,
+    Abi, Attr, ExternDecl, FnParam, Item, Repr, StructDef, StructFields, Type,
 };
 
 pub struct UnitCompiles<'a> {
     pub stem: &'a str,
     pub relevant: &'a [String],
-    pub compiled: Vec<(u32, &'a Program)>,
+    pub compiled: Vec<(u32, Vec<&'a Item>)>,
 }
 
 pub struct Mismatch {
@@ -104,9 +104,9 @@ struct Scope<'a> {
 }
 
 impl<'a> Scope<'a> {
-    fn of(program: &'a Program) -> Self {
+    fn of(program: &[&'a Item]) -> Self {
         let mut definitions = HashMap::new();
-        for item in &program.items {
+        for &item in program {
             match item {
                 Item::Record(record) => {
                     definitions.insert(record.name.clone(), item);
@@ -392,18 +392,24 @@ type Variants = BTreeMap<Signature, BTreeSet<u32>>;
 pub fn check(units: &[UnitCompiles], invalid: &impl Fn(&[String]) -> bool) -> Outcome {
     let mut symbols: BTreeMap<String, BTreeMap<usize, Variants>> = BTreeMap::new();
     for (index, unit) in units.iter().enumerate() {
-        for &(mask, program) in &unit.compiled {
+        for (mask, program) in &unit.compiled {
             let scope = Scope::of(program);
-            collect(&program.items, &scope, &mut |symbol, signature| {
-                symbols
-                    .entry(symbol.to_string())
-                    .or_default()
-                    .entry(index)
-                    .or_default()
-                    .entry(signature)
-                    .or_default()
-                    .insert(mask);
-            });
+            for item in program {
+                collect(
+                    std::slice::from_ref(*item),
+                    &scope,
+                    &mut |symbol, signature| {
+                        symbols
+                            .entry(symbol.to_string())
+                            .or_default()
+                            .entry(index)
+                            .or_default()
+                            .entry(signature)
+                            .or_default()
+                            .insert(*mask);
+                    },
+                );
+            }
         }
     }
     let mut outcome = Outcome {
