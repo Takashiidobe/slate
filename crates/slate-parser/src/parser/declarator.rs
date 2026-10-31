@@ -820,6 +820,10 @@ impl<'a> DeclaratorParser<'a> {
                 | Keyword::Uptr
                 | Keyword::SegFs
                 | Keyword::SegGs
+                | Keyword::Nonnull
+                | Keyword::Nullable
+                | Keyword::NullUnspecified
+                | Keyword::NullableResult
         ) {
             return None;
         }

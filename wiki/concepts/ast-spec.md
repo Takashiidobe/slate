@@ -249,6 +249,12 @@ Elsewhere these are identifiers.
   alignment to 1; never changes member layout. clang applies it to any
   type, cl.exe only to pointers.
 
+clang flavor only: `_Nonnull`, `_Nullable`, `_Null_unspecified` and
+`_Nullable_result` are accepted wherever a qualifier is and dropped by the
+parser, since they don't change layout or codegen. They stay ordinary
+identifiers under gcc and MSVC. The checks for a non-pointer type or
+conflicting specifiers aren't implemented, so the parser accepts both.
+
 gcc flavor, x86, gnu modes only: `__seg_fs` / `__seg_gs` are qualifiers
 (`Qualifiers::is_seg_fs` / `is_seg_gs`). Under clang they are macros for
 `address_space(257/256)`. Sema ignores both; `_Generic` doesn't distinguish

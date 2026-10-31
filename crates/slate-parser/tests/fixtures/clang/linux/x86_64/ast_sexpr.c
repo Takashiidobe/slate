@@ -73,6 +73,7 @@ int value;
 // DEFAULT-NEXT:           (keyword_float80 false)
 // DEFAULT-NEXT:           (fixed_point_keywords true)
 // DEFAULT-NEXT:           (x86_segment_keywords false)
+// DEFAULT-NEXT:           (nullability_keywords true)
 // DEFAULT-NEXT:           (trigraphs false)
 // DEFAULT-NEXT:           (whitespace_line_splice true)
 // DEFAULT-NEXT:           (digraphs true)

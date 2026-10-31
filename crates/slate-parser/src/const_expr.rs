@@ -2419,6 +2419,10 @@ pub(crate) fn starts_type_name(token: &Token, context: crate::parser::ParseConte
                 | Keyword::Uptr
                 | Keyword::SegFs
                 | Keyword::SegGs
+                | Keyword::Nonnull
+                | Keyword::Nullable
+                | Keyword::NullUnspecified
+                | Keyword::NullableResult
                 | Keyword::Restrict
                 | Keyword::Atomic
                 | Keyword::Int128

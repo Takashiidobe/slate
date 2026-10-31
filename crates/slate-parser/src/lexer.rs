@@ -70,6 +70,10 @@ pub enum Keyword {
     Uptr,
     SegFs,
     SegGs,
+    Nonnull,
+    Nullable,
+    NullUnspecified,
+    NullableResult,
     Int128,
     Int64,
     Noreturn,
@@ -168,6 +172,10 @@ impl From<Keyword> for &'static str {
             Keyword::Uptr => "__uptr",
             Keyword::SegFs => "__seg_fs",
             Keyword::SegGs => "__seg_gs",
+            Keyword::Nonnull => "_Nonnull",
+            Keyword::Nullable => "_Nullable",
+            Keyword::NullUnspecified => "_Null_unspecified",
+            Keyword::NullableResult => "_Nullable_result",
             Keyword::Int128 => "__int128",
             Keyword::Int64 => "__int64",
             Keyword::Noreturn => "_Noreturn",
@@ -1342,6 +1350,14 @@ pub fn keyword_token(word: &str, features: &StandardFeatures) -> Option<Token> {
         "__uptr" if features.microsoft_extensions => Token::Keyword(Keyword::Uptr),
         "__seg_fs" if features.x86_segment_keywords => Token::Keyword(Keyword::SegFs),
         "__seg_gs" if features.x86_segment_keywords => Token::Keyword(Keyword::SegGs),
+        "_Nonnull" if features.nullability_keywords => Token::Keyword(Keyword::Nonnull),
+        "_Nullable" if features.nullability_keywords => Token::Keyword(Keyword::Nullable),
+        "_Null_unspecified" if features.nullability_keywords => {
+            Token::Keyword(Keyword::NullUnspecified)
+        }
+        "_Nullable_result" if features.nullability_keywords => {
+            Token::Keyword(Keyword::NullableResult)
+        }
         "inline" if features.keyword_inline.is_accepted() => Token::Keyword(Keyword::Inline),
         "__int128" => Token::Keyword(Keyword::Int128),
         "__int8" | "_int8" if features.microsoft_extensions => Token::Keyword(Keyword::Char),
