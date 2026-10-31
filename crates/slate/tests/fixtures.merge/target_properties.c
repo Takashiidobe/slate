@@ -1,3 +1,4 @@
+// merge-extra-targets: linux-i686 i686-unknown-linux-gnu clang linux-aarch64 aarch64-unknown-linux-gnu clang windows-i686 i686-pc-windows-msvc msvc linux-musl-x86_64 x86_64-unknown-linux-musl clang
 #include <stdio.h>
 
 #if defined(_WIN32)
@@ -36,7 +37,7 @@ int main(void) {
 // CHECK-NEXT: target linux-musl-x86_64: 1 compiles
 // CHECK-NEXT:   target_properties.c: [] 1 compiled
 // CHECK-NEXT: total: 6 compiles across 6 targets
-// CHECK-NEXT: unit target_properties: 13 items, 7 gated, 0 duplicated functions
+// CHECK-NEXT: unit target_properties: 14 items, 7 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:family: 2 variants
 // CHECK-NEXT:   hoisted fn:model: 2 variants
 // CHECK-NEXT: projection: 36 checked, 0 not translatable, 0 mismatches
@@ -45,6 +46,7 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
+// CHECK-NEXT: //! merge-extra-targets: linux-i686 i686-unknown-linux-gnu clang linux-aarch64 aarch64-unknown-linux-gnu clang windows-i686 i686-pc-windows-msvc msvc linux-musl-x86_64 x86_64-unknown-linux-musl clang
 // CHECK-NEXT: #[cfg(not(any(
 // CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
 // CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc"),

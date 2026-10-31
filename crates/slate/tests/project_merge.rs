@@ -199,13 +199,15 @@ fn merge_fixture(source: &Path) -> Result<(), String> {
         matrix["targets"][1] =
             serde_json::json!({"name": fields[0], "triple": fields[1], "flavor": fields[2]});
     }
-    if let Ok(extra) = std::fs::read(source.with_extension("targets.json")) {
-        let extra: Vec<serde_json::Value> =
-            serde_json::from_slice(&extra).map_err(|e| format!("parse targets: {e}"))?;
-        matrix["targets"]
-            .as_array_mut()
-            .expect("matrix targets")
-            .extend(extra);
+    if let Some(extra) = text
+        .lines()
+        .find_map(|line| line.strip_prefix("// merge-extra-targets:"))
+    {
+        let fields: Vec<&str> = extra.split_whitespace().collect();
+        let targets = matrix["targets"].as_array_mut().expect("matrix targets");
+        targets.extend(fields.chunks(3).map(|target| {
+            serde_json::json!({"name": target[0], "triple": target[1], "flavor": target[2]})
+        }));
     }
     if let Some(names) = text
         .lines()
