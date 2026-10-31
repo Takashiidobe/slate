@@ -615,7 +615,6 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut features: Vec<String> = Vec::new();
     let mut plan_mode = None;
     let mut merge = false;
-    let mut coverage = project_merge::Coverage::Refined;
     let mut projection = project_merge::Projection::Skip;
     let mut build_target = None;
     let current_dir = std::env::current_dir().map_err(|e| format!("current directory: {e}"))?;
@@ -645,7 +644,6 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
                 matrix_path = Some(PathBuf::from(path));
             }
             "--merge" => merge = true,
-            "--merge-full-table" => coverage = project_merge::Coverage::FullTable,
             "--check-projection" => {
                 index += 1;
                 let value = args
@@ -763,7 +761,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             .map(str::to_string)
             .collect();
         let merged = slate_worker_pool()?
-            .install(|| project_merge::merge(&matrix, &project, &targets, projection, coverage))?;
+            .install(|| project_merge::merge(&matrix, &project, &targets, projection))?;
         print!("{}", merged.render());
         let mismatches = merged.mismatches;
         let signature_mismatches = merged.signature_mismatches;
