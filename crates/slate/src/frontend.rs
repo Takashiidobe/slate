@@ -1,8 +1,9 @@
+use slate_parser::ast::TranslationUnit;
 use slate_parser::compiler_args::CompilerArgs;
 use slate_parser::dialect::Dialect;
 use slate_parser::files::Files;
 use slate_parser::ir::{BindingId, Module};
-use slate_parser::parser::Parser;
+use slate_parser::parser::{Parser, Preprocessed};
 use slate_parser::pp::{DirectiveDiagnostic, PPNode, PreprocessTrace};
 use slate_parser::sema::Sema;
 use std::collections::HashSet;
@@ -268,6 +269,50 @@ pub fn preprocess_traced(path: &Path, args: CompilerArgs) -> Result<TracedPrepro
     Ok((nodes, files, trace, diagnostics))
 }
 
+pub struct PreprocessedUnit {
+    parser: Parser,
+    preprocessed: Preprocessed,
+    path: PathBuf,
+}
+
+impl PreprocessedUnit {
+    pub fn fingerprint(&self) -> u64 {
+        self.parser.preprocessed_fingerprint(&self.preprocessed)
+    }
+
+    pub fn parse_module(self) -> Result<(Module, Files), Error> {
+        let Self {
+            mut parser,
+            preprocessed,
+            path,
+        } = self;
+        let parsed = parser
+            .parse_preprocessed(preprocessed)
+            .map_err(|error| Error::Parse {
+                path: path.clone(),
+                message: error.to_string(),
+            })?;
+        let (module, files, diagnostics) = lower_parsed(&path, &parser, parsed, &mut Vec::new())?;
+        reject_directive_errors(&path, &diagnostics)?;
+        Ok((module, files))
+    }
+}
+
+pub fn preprocess_unit(path: &Path, args: CompilerArgs) -> Result<PreprocessedUnit, Error> {
+    let mut parser = parser_from_args(args)?;
+    let preprocessed = parser
+        .preprocess_for_parse(path)
+        .map_err(|error| Error::Parse {
+            path: path.to_path_buf(),
+            message: error.to_string(),
+        })?;
+    Ok(PreprocessedUnit {
+        parser,
+        preprocessed,
+        path: path.to_path_buf(),
+    })
+}
+
 fn parse_module_from_args(
     path: &Path,
     source: Option<String>,
@@ -275,7 +320,7 @@ fn parse_module_from_args(
     diagnostics: &mut Vec<serde_json::Value>,
 ) -> Result<(Module, Files, Vec<DirectiveDiagnostic>), Error> {
     let mut parser = parser_from_args(args)?;
-    let (unit, files) = match source {
+    let parsed = match source {
         Some(source) => parser.parse_file_with_source(path, source),
         None => parser.parse_file(path),
     }
@@ -286,6 +331,15 @@ fn parse_module_from_args(
             message: error.to_string(),
         }
     })?;
+    lower_parsed(path, &parser, parsed, diagnostics)
+}
+
+fn lower_parsed(
+    path: &Path,
+    parser: &Parser,
+    (unit, files): (TranslationUnit, Files),
+    diagnostics: &mut Vec<serde_json::Value>,
+) -> Result<(Module, Files, Vec<DirectiveDiagnostic>), Error> {
     let mut sema = Sema::new(&unit);
     let warnings = sema.analyze(&files).map_err(|error| {
         crate::diagnostics::collect(&error, diagnostics);

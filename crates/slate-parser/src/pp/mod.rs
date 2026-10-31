@@ -60,7 +60,7 @@ pub struct PreprocessorInputs {
 
 pub type PPNode = Span<PPNodeKind>;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Hash)]
 pub enum PPNodeKind {
     Comment {
         text: String,
@@ -80,21 +80,21 @@ pub enum PPNodeKind {
     },
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct CommentLayout {
     pub placement: CommentPlacement,
     pub column: usize,
     pub follower: CommentFollower,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum CommentPlacement {
     OwnLine,
     AfterCode,
     Directive,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum CommentFollower {
     SameLineComment,
     NextLineComment,

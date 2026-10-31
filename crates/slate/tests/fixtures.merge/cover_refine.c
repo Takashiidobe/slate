@@ -58,11 +58,13 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}target linux-x86_64: 27 compiles
+// CHECK: {{^}}target linux-x86_64: 21 compiles
 // CHECK-NEXT:   cover_refine.c: [alpha,beta,gamma,delta,epsilon] 27 compiled
-// CHECK-NEXT: target windows-x86_64: 27 compiles
+// CHECK-NEXT:     6 assignments preprocess like a compiled one
+// CHECK-NEXT: target windows-x86_64: 21 compiles
 // CHECK-NEXT:   cover_refine.c: [alpha,beta,gamma,delta,epsilon] 27 compiled
-// CHECK-NEXT: total: 54 compiles across 2 targets
+// CHECK-NEXT:     6 assignments preprocess like a compiled one
+// CHECK-NEXT: total: 42 compiles across 2 targets
 // CHECK-NEXT: unit cover_refine: 24 items, 17 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:state_size: 5 variants
 // CHECK-NEXT:   spliced fn:nested: 5 variants

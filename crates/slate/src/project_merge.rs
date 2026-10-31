@@ -17,6 +17,7 @@ use std::cell::RefCell;
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::fmt::Write;
 use std::path::{Path, PathBuf};
+use std::sync::Mutex;
 
 const MAX_RELEVANT_FEATURES: usize = 12;
 const MAX_ENUMERATED_FEATURES: usize = 20;
@@ -275,6 +276,7 @@ fn crate_attrs(program: &Program) -> impl Iterator<Item = &CrateAttr> {
     })
 }
 
+#[derive(Clone)]
 struct Compiled {
     mask: u32,
     program: Program,
@@ -289,6 +291,8 @@ struct TargetUnit {
     compiled: Vec<Compiled>,
     infeasible: Vec<(u32, String)>,
     tried: BTreeSet<u32>,
+    programs: Mutex<BTreeMap<u64, u32>>,
+    reused: BTreeSet<u32>,
     defines_main: bool,
 }
 
@@ -343,11 +347,21 @@ fn defines_main(module: &Module) -> bool {
 }
 
 fn compile_isolated(
-    command: CompileCommand,
+    path: PathBuf,
+    preprocessed: frontend::PreprocessedUnit,
     owners: &CommonOwners,
     mask: u32,
 ) -> Result<(Compiled, bool), String> {
-    let unit = parse(command)?;
+    let stem = stem_of(&path)?;
+    let (module, files) = preprocessed
+        .parse_module()
+        .map_err(|error| format!("{}: {error}", path.display()))?;
+    let unit = Unit {
+        stem,
+        path,
+        module,
+        files,
+    };
     let imported = BTreeMap::from([(
         unit.stem.clone(),
         imports_of(&unit.stem, &unit.module, owners),
@@ -430,6 +444,8 @@ fn prepare_target(matrix: &Matrix, project: &Path, target: &str) -> Result<Targe
             compiled: Vec::new(),
             infeasible: Vec::new(),
             tried: BTreeSet::new(),
+            programs: Mutex::new(BTreeMap::new()),
+            reused: BTreeSet::new(),
             defines_main: false,
         });
     }
@@ -467,38 +483,107 @@ fn seed_rows(matrix: &Matrix, relevant: &[String], coverage: Coverage) -> BTreeS
 
 type Job = (usize, usize, u32);
 
-fn compile_rows(matrix: &Matrix, project: &Path, builds: &mut [TargetBuild], jobs: Vec<Job>) {
-    let results: Vec<_> = jobs
+impl TargetUnit {
+    fn add_compiled(&mut self, compiled: Compiled) {
+        let at = self
+            .compiled
+            .partition_point(|known| known.mask < compiled.mask);
+        self.compiled.insert(at, compiled);
+    }
+
+    fn add_infeasible(&mut self, mask: u32, error: String) {
+        let at = self.infeasible.partition_point(|known| known.0 < mask);
+        self.infeasible.insert(at, (mask, error));
+    }
+
+    fn reuse(&mut self, mask: u32, first: u32) {
+        self.reused.insert(mask);
+        if let Some(found) = self.compiled.iter().find(|known| known.mask == first) {
+            let compiled = Compiled {
+                mask,
+                ..found.clone()
+            };
+            self.add_compiled(compiled);
+        } else if let Some((_, error)) = self.infeasible.iter().find(|known| known.0 == first) {
+            let error = error.clone();
+            self.add_infeasible(mask, error);
+        }
+    }
+
+    fn claim(&self, fingerprint: u64, mask: u32) -> Option<u32> {
+        let mut programs = self.programs.lock().expect("no compile panics");
+        let first = *programs.entry(fingerprint).or_insert(mask);
+        (first != mask).then_some(first)
+    }
+}
+
+enum RowOutcome {
+    Built(Compiled, bool),
+    Failed(String),
+    Repeats(u32),
+}
+
+fn compile_row(
+    matrix: &Matrix,
+    project: &Path,
+    build: &TargetBuild,
+    unit: &TargetUnit,
+    mask: u32,
+    coverage: Coverage,
+) -> Result<RowOutcome, String> {
+    let command = matrix
+        .command(
+            project,
+            &build.name,
+            &subset(&unit.relevant, mask),
+            &unit.source,
+        )
+        .map_err(|error| error.to_string())?;
+    let path = command.file;
+    let preprocessed = frontend::preprocess_unit(&path, command.args)
+        .map_err(|error| format!("{}: {error}", path.display()))?;
+    if coverage == Coverage::Refined
+        && let Some(first) = unit.claim(preprocessed.fingerprint(), mask)
+    {
+        return Ok(RowOutcome::Repeats(first));
+    }
+    let (compiled, has_main) = compile_isolated(path, preprocessed, &build.owners, mask)?;
+    Ok(RowOutcome::Built(compiled, has_main))
+}
+
+fn compile_rows(
+    matrix: &Matrix,
+    project: &Path,
+    builds: &mut [TargetBuild],
+    jobs: Vec<Job>,
+    coverage: Coverage,
+) {
+    let outcomes: Vec<RowOutcome> = jobs
         .par_iter()
         .map(|&(target, index, mask)| {
             let build = &builds[target];
-            let unit = &build.units[index];
-            let command = matrix
-                .command(
-                    project,
-                    &build.name,
-                    &subset(&unit.relevant, mask),
-                    &unit.source,
-                )
-                .map_err(|error| error.to_string())?;
-            compile_isolated(command, &build.owners, mask)
+            compile_row(matrix, project, build, &build.units[index], mask, coverage)
+                .unwrap_or_else(RowOutcome::Failed)
         })
         .collect();
-    for ((target, index, mask), result) in jobs.into_iter().zip(results) {
+    let mut repeats = Vec::new();
+    for ((target, index, mask), outcome) in jobs.into_iter().zip(outcomes) {
         let unit = &mut builds[target].units[index];
         unit.tried.insert(mask);
-        match result {
-            Ok((compiled, has_main)) => {
+        match outcome {
+            RowOutcome::Built(compiled, has_main) => {
                 unit.defines_main |= has_main;
-                let at = unit.compiled.partition_point(|known| known.mask < mask);
-                unit.compiled.insert(at, compiled);
+                unit.add_compiled(compiled);
             }
-            Err(error) => {
+            RowOutcome::Failed(error) => {
                 let first = error.lines().next().unwrap_or_default().to_string();
-                let at = unit.infeasible.partition_point(|known| known.0 < mask);
-                unit.infeasible.insert(at, (mask, first));
+                unit.add_infeasible(mask, first);
             }
+            RowOutcome::Repeats(first) => repeats.push((target, index, mask, first)),
         }
+    }
+    for (target, index, mask, first) in repeats {
+        builds[target].units[index].reuse(mask, first);
     }
 }
 
@@ -601,6 +686,7 @@ fn refine(
     project: &Path,
     builds: &mut [TargetBuild],
     stems: &[String],
+    coverage: Coverage,
 ) -> Result<Vec<MergedUnit>, String> {
     let mut merged: Vec<Option<MergedUnit>> = stems.iter().map(|_| None).collect();
     let mut dirty: BTreeSet<usize> = (0..stems.len()).collect();
@@ -644,7 +730,7 @@ fn refine(
                 .collect());
         }
         dirty = jobs.iter().map(|(_, index, _)| *index).collect();
-        compile_rows(matrix, project, builds, jobs);
+        compile_rows(matrix, project, builds, jobs, coverage);
     }
 }
 
@@ -1395,7 +1481,7 @@ pub fn merge(
             );
         }
     }
-    compile_rows(matrix, project, &mut builds, jobs);
+    compile_rows(matrix, project, &mut builds, jobs, coverage);
     let mut cfgs = BTreeMap::new();
     for build in &builds {
         if let Some(other) = cfgs.insert(build.cfg.clone(), build.name.clone()) {
@@ -1411,7 +1497,7 @@ pub fn merge(
         .iter()
         .map(|source| stem_of(source))
         .collect::<Result<_, _>>()?;
-    let merged = refine(matrix, project, &mut builds, &stems)?;
+    let merged = refine(matrix, project, &mut builds, &stems, coverage)?;
     for build in &builds {
         for unit in &build.units {
             if unit.compiled.is_empty() {
@@ -1429,7 +1515,13 @@ pub fn merge(
     }
     let compiles: Vec<usize> = builds
         .iter()
-        .map(|build| build.units.iter().map(|unit| unit.tried.len()).sum())
+        .map(|build| {
+            build
+                .units
+                .iter()
+                .map(|unit| unit.tried.len() - unit.reused.len())
+                .sum()
+        })
         .collect();
     let result = check_projection(matrix, project, &builds, &merged, projection)?;
 
@@ -1490,6 +1582,13 @@ pub fn merge(
                 unit.relevant.join(","),
                 unit.compiled.len()
             );
+            if !unit.reused.is_empty() {
+                let _ = writeln!(
+                    report,
+                    "    {} assignments preprocess like a compiled one",
+                    unit.reused.len()
+                );
+            }
             for (mask, message) in &unit.infeasible {
                 let features = subset(&unit.relevant, *mask);
                 let _ = writeln!(report, "    infeasible [{}]: {message}", features.join(","));

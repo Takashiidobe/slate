@@ -27,6 +27,7 @@ pub(crate) use declarator::{DeclaratorParser, builtin_integer_typedef, is_target
 use input::{Annotation, ParserInput};
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
+use std::hash::{DefaultHasher, Hash, Hasher};
 use std::path::Path;
 use std::rc::Rc;
 
@@ -267,6 +268,12 @@ fn resolve_biggest_alignment(
         .unwrap_or(FALLBACK_BIGGEST_ALIGNMENT)
 }
 
+pub struct Preprocessed {
+    nodes: Vec<PPNode>,
+    files: Files,
+    root_file: FileId,
+}
+
 impl Parser {
     pub(crate) fn cover_tokens<T>(
         &self,
@@ -406,6 +413,20 @@ impl Parser {
     }
 
     pub fn parse_file(&mut self, path: &Path) -> Result<(TranslationUnit, Files), FrontendError> {
+        let preprocessed = self.preprocess_for_parse(path)?;
+        self.parse_preprocessed(preprocessed)
+    }
+
+    pub fn parse_file_with_source(
+        &mut self,
+        path: &Path,
+        source: String,
+    ) -> Result<(TranslationUnit, Files), FrontendError> {
+        let preprocessed = self.preprocess_source(path, source)?;
+        self.parse_preprocessed(preprocessed)
+    }
+
+    pub fn preprocess_for_parse(&mut self, path: &Path) -> Result<Preprocessed, FrontendError> {
         let source = std::fs::read(path)
             .map(|bytes| decode_source_bytes(&bytes))
             .map_err(|error| {
@@ -418,14 +439,14 @@ impl Parser {
                 )
             })
             .map_err(FrontendError::Parse)?;
-        self.parse_file_with_source(path, source)
+        self.preprocess_source(path, source)
     }
 
-    pub fn parse_file_with_source(
+    fn preprocess_source(
         &mut self,
         path: &Path,
         source: String,
-    ) -> Result<(TranslationUnit, Files), FrontendError> {
+    ) -> Result<Preprocessed, FrontendError> {
         self.source_name = display_path(path);
         self.source = source;
         let search = self.search.clone();
@@ -450,8 +471,39 @@ impl Parser {
                 "preprocessor did not produce a main file",
             ))
         })?;
-        let ast = self.parse_input(ParserInput::new(nodes), root_file);
-        ast.map(|ast| (ast, pp.files)).map_err(FrontendError::Parse)
+        Ok(Preprocessed {
+            nodes,
+            files: pp.files,
+            root_file,
+        })
+    }
+
+    pub fn parse_preprocessed(
+        &mut self,
+        preprocessed: Preprocessed,
+    ) -> Result<(TranslationUnit, Files), FrontendError> {
+        let Preprocessed {
+            nodes,
+            files,
+            root_file,
+        } = preprocessed;
+        self.parse_input(ParserInput::new(nodes), root_file)
+            .map(|ast| (ast, files))
+            .map_err(FrontendError::Parse)
+    }
+
+    pub fn preprocessed_fingerprint(&self, preprocessed: &Preprocessed) -> u64 {
+        let mut hasher = DefaultHasher::new();
+        preprocessed.nodes.hash(&mut hasher);
+        preprocessed
+            .files
+            .paths()
+            .for_each(|path| path.hash(&mut hasher));
+        self.biggest_alignment.hash(&mut hasher);
+        for diagnostic in &self.directive_diagnostics {
+            diagnostic.text.hash(&mut hasher);
+        }
+        hasher.finish()
     }
 
     pub fn preprocess_file(&mut self, path: &Path) -> Result<(Vec<PPNode>, Files), FrontendError> {

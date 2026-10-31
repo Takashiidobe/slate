@@ -21,7 +21,7 @@ impl SourceUnit {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Keyword {
     Bool,
     BFloat16,
@@ -279,7 +279,7 @@ impl PartialEq<TokenText> for String {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Token {
     Keyword(Keyword),
     Sizeof,

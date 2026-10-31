@@ -136,7 +136,7 @@ pub fn mergeable_address_taken(units: &[Unit]) -> Vec<BTreeSet<String>> {
     protected
 }
 
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct SectionCandidates {
     pub taken_here: BTreeSet<String>,
     pub exported: BTreeMap<String, String>,

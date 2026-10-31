@@ -566,7 +566,7 @@ pub enum SwitchLabel {
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct FileId(pub u32);
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Loc {
     pub file: FileId,
     pub offset: usize,
@@ -624,6 +624,18 @@ pub struct Span<T> {
     pub macro_origin: Option<Arc<MacroOrigin>>,
     pub leading_space: bool,
     pub digraph: bool,
+}
+
+impl<T: std::hash::Hash> std::hash::Hash for Span<T> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.value.hash(state);
+        self.spelling.hash(state);
+        self.expansion.hash(state);
+        self.provenance.hash(state);
+        self.macro_origin.hash(state);
+        self.leading_space.hash(state);
+        self.digraph.hash(state);
+    }
 }
 
 impl<T: std::fmt::Debug> std::fmt::Debug for Span<T> {
@@ -818,14 +830,14 @@ impl SpanRangeIndex {
     }
 }
 
-#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum HeaderKind {
     #[default]
     System,
     User,
 }
 
-#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Provenance {
     pub file: FileId,
     pub kind: HeaderKind,
@@ -839,14 +851,14 @@ impl Provenance {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct MacroOrigin {
     pub name: Arc<str>,
     pub definition: Provenance,
     pub inner: Option<Arc<MacroOriginLink>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct MacroOriginLink {
     pub name: Arc<str>,
     pub definition: Provenance,
