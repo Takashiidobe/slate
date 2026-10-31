@@ -63,7 +63,8 @@ before its declaration (a function called before its definition, a loop ID in
 ## Module
 
 ```ebnf
-module     = "module" "{" target { asm } { type_def } { global } { function } "}" ;
+module     = "module" "{" target { asm } { type_def } { global } { function }
+             { macro_definition } { macro_invocation } "}" ;
 
 target     = "target" string "{"
                "endian" "=" ( "little" | "big" ) ";"
@@ -700,7 +701,22 @@ absent from default dumps.
 ```ebnf
 metadata = "[" key "=" string "]" ;          (* only with --show-metadata *)
 c_type   = '[c=' string ']' ;                (* always, when spelling differs from canonical *)
+macro_site = "[macro=" c_identifier "#" digits " " ( "body" | "arg" digits ) "]" ;
+
+macro_definition = "macro_definition #" digits " " c_identifier
+                   [ "(" [ c_identifier { ", " c_identifier } ] ")" ] [ " [variadic]" ]
+                   " [defined=" digits ":" digits "] = " string ";" ;
+macro_invocation = "macro_invocation #" digits " " c_identifier
+                   " [definition=#" digits "] [site=" digits ":" digits "+" digits "]"
+                   [ " [arguments=" range { ", " range } "]" ]
+                   [ " [parent=#" digits "]" ] [ " [empty]" ] ";" ;
+range            = digits "+" digits ;
 ```
+
+- `macro_site`, `macro_definition` and `macro_invocation` print only with
+  `--show-macros`. A statement or value prints one `macro_site` for each
+  invocation containing it, outermost first, after its metadata. `defined` is
+  `file:line` with a 0-based line.
 
 - `c_type` follows a value, record field, parameter, declaration, or `write`,
   in the same position as metadata. A `let` can print two: its initializer's

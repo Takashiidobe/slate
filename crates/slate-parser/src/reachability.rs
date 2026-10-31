@@ -29,6 +29,7 @@ pub fn filter_translation_unit(
                 tag
             })
             .collect(),
+        macros: tu.macros.clone(),
     }
 }
 

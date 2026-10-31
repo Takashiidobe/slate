@@ -32,7 +32,7 @@ fn run() -> miette::Result<()> {
     let command = args.next();
     if !matches!(command.as_deref(), Some("parse" | "ir" | "pp")) {
         return Err(miette::miette!(
-            "usage: slate-parser <parse|ir|pp> <source.c> [-DNAME] [-UNAME] [-include <file>] [-imacros <file>] [-target=<triple>|-target <triple>] [--flavor=gcc|clang|msvc] [-std=<C standard>] [-I<dir>] [-iquote <dir>] [-isystem <dir>] [-idirafter <dir>] [-nostdlibinc] [-isysroot <dir>|--sysroot=<dir>] [--trace] [--show-comments] [--show-ids] [--parse-only] [--sexpr] [--dump-ir] [--dump-ir-types] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata] [--compact-ir]"
+            "usage: slate-parser <parse|ir|pp> <source.c> [-DNAME] [-UNAME] [-include <file>] [-imacros <file>] [-target=<triple>|-target <triple>] [--flavor=gcc|clang|msvc] [-std=<C standard>] [-I<dir>] [-iquote <dir>] [-isystem <dir>] [-idirafter <dir>] [-nostdlibinc] [-isysroot <dir>|--sysroot=<dir>] [--trace] [--show-comments] [--show-ids] [--parse-only] [--sexpr] [--dump-ir] [--dump-ir-types] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-macros] [--show-metadata] [--compact-ir]"
         ));
     }
     let path = args
@@ -41,6 +41,7 @@ fn run() -> miette::Result<()> {
     let mut parse_only = false;
     let mut sexpr = false;
     let mut show_comments = false;
+    let mut show_macros = false;
     let mut show_ids = false;
     let mut dump_ir_expressions = false;
     let mut dump_ir_names = false;
@@ -75,6 +76,9 @@ fn run() -> miette::Result<()> {
                 false
             } else if arg == "--show-spans" {
                 show_spans = true;
+                false
+            } else if arg == "--show-macros" {
+                show_macros = true;
                 false
             } else if arg == "--dump-ir-expressions" {
                 dump_ir_expressions = true;
@@ -200,6 +204,7 @@ fn run() -> miette::Result<()> {
         let display = module
             .display(show_metadata)
             .with_spans(show_spans)
+            .with_macros(show_macros)
             .with_comments(show_comments);
         print!(
             "{}",

@@ -201,6 +201,7 @@ fn resolve_module(
     lower.finish_module(unit).map_err(|error| SemaErrors {
         errors: vec![SemaError::resolve_error(&error.checked(), files)],
     })?;
+    lower.module.macros = unit.macros.clone();
     lower.module.c_types.types = lower.types.ctypes;
     lower.module.c_types.definitions = lower.types.definitions;
     lower.module.c_types.record_fields = lower.types.record_fields;

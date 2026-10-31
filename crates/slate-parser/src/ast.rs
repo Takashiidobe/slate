@@ -582,6 +582,14 @@ impl Loc {
         }
     }
 
+    pub fn end(self) -> usize {
+        self.offset.saturating_add(self.length)
+    }
+
+    pub fn contains(self, other: Self) -> bool {
+        self.file == other.file && self.offset <= other.offset && other.end() <= self.end()
+    }
+
     pub fn through(self, end: Self) -> Self {
         if self.file != end.file {
             return self;
@@ -768,26 +776,13 @@ impl<T> Span<T> {
             let loc = Loc::new(FileId(0), 0, 0);
             return Self::new(value, loc, loc);
         };
-        let last = spans.last().unwrap();
-        let macro_origin = spans
+        let same_origin = spans
             .iter()
-            .all(|span| span.macro_origin == first.macro_origin)
-            .then(|| first.macro_origin.clone())
-            .flatten();
-        Self::new(
-            value,
-            first.spelling.through(last.spelling),
-            first.expansion.through(last.expansion),
-        )
-        .with_macro_origin(macro_origin)
-        .with_provenance(first.provenance)
+            .all(|span| span.macro_origin == first.macro_origin);
+        Self::cover_runs(value, spans, same_origin)
     }
 
-    pub(crate) fn cover_with_origin<U>(
-        value: T,
-        spans: &[Span<U>],
-        macro_origin: Option<Arc<MacroOrigin>>,
-    ) -> Self {
+    fn cover_runs<U>(value: T, spans: &[Span<U>], same_origin: bool) -> Self {
         let Some(first) = spans.first() else {
             let loc = Loc::new(FileId(0), 0, 0);
             return Self::new(value, loc, loc);
@@ -796,11 +791,27 @@ impl<T> Span<T> {
         Self::new(
             value,
             first.spelling.through(last.spelling),
-            first.expansion.through(last.expansion),
+            if same_origin {
+                first.expansion.through(last.expansion)
+            } else {
+                mixed_expansion(spans)
+            },
         )
-        .with_macro_origin(macro_origin)
+        .with_macro_origin(same_origin.then(|| first.macro_origin.clone()).flatten())
         .with_provenance(first.provenance)
     }
+}
+
+fn mixed_expansion<U>(spans: &[Span<U>]) -> Loc {
+    let first = spans[0].expansion;
+    let (start, end) = spans
+        .iter()
+        .map(|span| span.expansion)
+        .filter(|expansion| expansion.file == first.file)
+        .fold((first.offset, first.end()), |(start, end), expansion| {
+            (start.min(expansion.offset), end.max(expansion.end()))
+        });
+    Loc::new(first.file, start, end - start)
 }
 
 #[derive(Default)]
@@ -834,10 +845,11 @@ impl SpanRangeIndex {
         if start == end {
             return Span::cover(value, &[] as &[Span<U>]);
         }
-        let macro_origin = (self.origin_runs[start] == self.origin_runs[end - 1])
-            .then(|| spans[start].macro_origin.clone())
-            .flatten();
-        Span::cover_with_origin(value, &spans[start..end], macro_origin)
+        Span::cover_runs(
+            value,
+            &spans[start..end],
+            self.origin_runs[start] == self.origin_runs[end - 1],
+        )
     }
 }
 
@@ -874,6 +886,112 @@ pub struct MacroOriginLink {
     pub name: Arc<str>,
     pub definition: Provenance,
     pub parent: Option<Arc<MacroOriginLink>>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct MacroDefinitionId(pub u32);
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct MacroInvocationId(pub u32);
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct MacroDefinition {
+    pub name: Arc<str>,
+    pub parameters: Option<Vec<String>>,
+    pub variadic: bool,
+    pub replacement: String,
+    pub provenance: Provenance,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct MacroInvocation {
+    pub definition: MacroDefinitionId,
+    pub site: Loc,
+    pub arguments: Vec<Loc>,
+    pub parent: Option<MacroInvocationId>,
+    pub empty: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct MacroSite {
+    pub invocation: MacroInvocationId,
+    pub argument: Option<usize>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
+pub struct MacroInvocations {
+    pub definitions: Vec<MacroDefinition>,
+    pub invocations: Vec<MacroInvocation>,
+}
+
+impl MacroInvocations {
+    pub fn definition(&self, invocation: &MacroInvocation) -> &MacroDefinition {
+        &self.definitions[invocation.definition.0 as usize]
+    }
+
+    pub fn invocation(&self, id: MacroInvocationId) -> &MacroInvocation {
+        &self.invocations[id.0 as usize]
+    }
+
+    pub fn sites(&self, loc: Loc) -> Vec<MacroSite> {
+        let starts_before = self
+            .invocations
+            .partition_point(|invocation| start_key(invocation.site) <= start_key(loc));
+        let mut current = starts_before
+            .checked_sub(1)
+            .map(|index| MacroInvocationId(index as u32));
+        let mut sites = Vec::new();
+        while let Some(id) = current {
+            let invocation = self.invocation(id);
+            if invocation.site.contains(loc) {
+                sites.push(MacroSite {
+                    invocation: id,
+                    argument: invocation
+                        .arguments
+                        .iter()
+                        .position(|argument| argument.contains(loc)),
+                });
+            }
+            current = invocation.parent;
+        }
+        sites.reverse();
+        sites
+    }
+
+    pub(crate) fn nest(&mut self) {
+        self.invocations.sort_by_key(|invocation| {
+            (
+                start_key(invocation.site),
+                usize::MAX - invocation.site.length,
+            )
+        });
+        let mut open: Vec<usize> = Vec::new();
+        let mut kept: Vec<MacroInvocation> = Vec::with_capacity(self.invocations.len());
+        for mut invocation in std::mem::take(&mut self.invocations) {
+            while let Some(&top) = open.last() {
+                if kept[top].site.file == invocation.site.file
+                    && invocation.site.offset < kept[top].site.end()
+                {
+                    break;
+                }
+                open.pop();
+            }
+            if let Some(&top) = open.last() {
+                let same_site = kept[top].site == invocation.site;
+                if same_site || !kept[top].site.contains(invocation.site) {
+                    continue;
+                }
+                invocation.parent = Some(MacroInvocationId(top as u32));
+            }
+            open.push(kept.len());
+            kept.push(invocation);
+        }
+        self.invocations = kept;
+    }
+}
+
+fn start_key(loc: Loc) -> (usize, usize) {
+    (loc.file.0 as usize, loc.offset)
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1982,6 +2100,7 @@ pub struct TranslationUnit {
     pub dialect: crate::dialect::Dialect,
     pub decls: Vec<Decl>,
     pub tags: Vec<Span<TagDefinition>>,
+    pub macros: MacroInvocations,
 }
 
 impl TranslationUnit {

@@ -1,12 +1,12 @@
 use super::{
-    ArrayExtent, AsmConstraintLocation, AsmOperandKind, AutoInit, CTypeTable, Comment, Comments,
-    DllStorage, Evaluation, FloatType, InlineAsm, Inlining, Linkage, MemoryEffects, Metadata,
-    Module, NumericType, Parameters, PatternFill, RecordKind, SehHandler, Statement,
+    Annotations, ArrayExtent, AsmConstraintLocation, AsmOperandKind, AutoInit, CTypeTable, Comment,
+    Comments, DllStorage, Evaluation, FloatType, InlineAsm, Inlining, Linkage, MemoryEffects,
+    Metadata, Module, NumericType, Parameters, PatternFill, RecordKind, SehHandler, Statement,
     StorageDuration, SymbolAttributes, TargetFeature, TlsModel, Type, TypeDefinitionKind, Variable,
     Visibility,
 };
 use crate::{
-    ast::{CommentAttach, Loc, NodeId, Span},
+    ast::{CommentAttach, Loc, MacroInvocations, NodeId, Span},
     ir::Fallthrough,
 };
 use std::fmt;
@@ -16,6 +16,7 @@ pub struct DisplayModule<'a> {
     show_metadata: bool,
     show_comments: bool,
     show_spans: bool,
+    show_macros: bool,
     compact: bool,
 }
 
@@ -26,6 +27,7 @@ impl Module {
             show_metadata,
             show_comments: false,
             show_spans: false,
+            show_macros: false,
             compact: false,
         }
     }
@@ -44,6 +46,11 @@ impl DisplayModule<'_> {
 
     pub fn with_spans(mut self, show_spans: bool) -> Self {
         self.show_spans = show_spans;
+        self
+    }
+
+    pub fn with_macros(mut self, show_macros: bool) -> Self {
+        self.show_macros = show_macros;
         self
     }
 }
@@ -144,13 +151,78 @@ impl fmt::Display for Module {
 
 pub(super) fn metadata(
     f: &mut fmt::Formatter<'_>,
-    table: Option<&Metadata>,
+    table: Annotations<'_>,
     id: NodeId,
 ) -> fmt::Result {
-    if let Some(entries) = table.and_then(|table| table.get(&id)) {
+    if let Some(entries) = table.metadata.and_then(|table| table.get(&id)) {
         for (key, value) in entries {
             write!(f, " [{key}={value:?}]")?;
         }
+    }
+    Ok(())
+}
+
+pub(super) fn macro_sites(
+    f: &mut fmt::Formatter<'_>,
+    table: Annotations<'_>,
+    expansion: Loc,
+) -> fmt::Result {
+    let Some(macros) = table.macros else {
+        return Ok(());
+    };
+    for site in macros.sites(expansion) {
+        let invocation = macros.invocation(site.invocation);
+        let name = &macros.definition(invocation).name;
+        write!(f, " [macro={name}#{}", site.invocation.0)?;
+        match site.argument {
+            Some(argument) => write!(f, " arg{argument}]")?,
+            None => f.write_str(" body]")?,
+        }
+    }
+    Ok(())
+}
+
+fn macro_table(f: &mut fmt::Formatter<'_>, macros: &MacroInvocations) -> fmt::Result {
+    for (index, definition) in macros.definitions.iter().enumerate() {
+        write!(f, "    macro_definition #{index} {}", definition.name)?;
+        if let Some(parameters) = &definition.parameters {
+            write!(f, "({})", parameters.join(", "))?;
+        }
+        if definition.variadic {
+            f.write_str(" [variadic]")?;
+        }
+        writeln!(
+            f,
+            " [defined={}:{}] = {:?};",
+            definition.provenance.file.0, definition.provenance.line, definition.replacement
+        )?;
+    }
+    for (index, invocation) in macros.invocations.iter().enumerate() {
+        let site = invocation.site;
+        write!(
+            f,
+            "    macro_invocation #{index} {} [definition=#{}] [site={}:{}+{}]",
+            macros.definition(invocation).name,
+            invocation.definition.0,
+            site.file.0,
+            site.offset,
+            site.length
+        )?;
+        if !invocation.arguments.is_empty() {
+            let ranges = invocation
+                .arguments
+                .iter()
+                .map(|argument| format!("{}+{}", argument.offset, argument.length))
+                .collect::<Vec<_>>();
+            write!(f, " [arguments={}]", ranges.join(", "))?;
+        }
+        if let Some(parent) = invocation.parent {
+            write!(f, " [parent=#{}]", parent.0)?;
+        }
+        if invocation.empty {
+            f.write_str(" [empty]")?;
+        }
+        writeln!(f, ";")?;
     }
     Ok(())
 }
@@ -178,6 +250,7 @@ fn asm_attributes(f: &mut fmt::Formatter<'_>, asm: &InlineAsm) -> fmt::Result {
 #[derive(Clone, Copy)]
 struct Printer<'a> {
     metadata: Option<&'a Metadata>,
+    macros: Option<&'a MacroInvocations>,
     c_types: Option<&'a CTypeTable>,
     comments: Option<&'a Comments>,
     show_comments: bool,
@@ -206,6 +279,7 @@ impl DisplayModule<'_> {
     fn printer<'a>(&'a self, metadata: &'a Metadata) -> Printer<'a> {
         Printer {
             metadata: Some(metadata),
+            macros: self.show_macros.then_some(&self.module.macros),
             c_types: Some(&self.module.c_types),
             comments: self.show_comments.then_some(&self.module.comments),
             show_comments: self.show_comments,
@@ -230,6 +304,7 @@ impl fmt::Display for StatementLines<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         Printer {
             metadata: None,
+            macros: None,
             c_types: None,
             comments: None,
             show_comments: false,
@@ -246,8 +321,20 @@ impl fmt::Display for DisplayStatement<'_> {
 }
 
 impl Printer<'_> {
-    fn table(&self) -> Option<&Metadata> {
-        self.metadata
+    fn table(&self) -> Annotations<'_> {
+        Annotations {
+            metadata: self.metadata,
+            macros: self.macros,
+        }
+    }
+
+    fn statement_annotations(
+        &self,
+        f: &mut fmt::Formatter<'_>,
+        statement: &Span<Statement>,
+    ) -> fmt::Result {
+        metadata(f, self.table(), statement.id)?;
+        macro_sites(f, self.table(), statement.expansion)
     }
 
     fn owned(
@@ -565,7 +652,7 @@ impl Printer<'_> {
                             .display_metadata(false, self.table())
                             .with_compact(self.compact)
                     )?;
-                    metadata(f, self.table(), statement.id)?;
+                    self.statement_annotations(f, statement)?;
                     writeln!(f)?;
                     self.statements(f, then_body, indent + 4)?;
                     if let Some(body) = else_body {
@@ -581,7 +668,7 @@ impl Printer<'_> {
                 } => {
                     write!(f, "while %{} ", id.0)?;
                     self.evaluation(f, condition, indent)?;
-                    metadata(f, self.table(), statement.id)?;
+                    self.statement_annotations(f, statement)?;
                     writeln!(f)?;
                     self.statements(f, body, indent + 4)?;
                     continue;
@@ -592,7 +679,7 @@ impl Printer<'_> {
                     condition,
                 } => {
                     write!(f, "do %{}", id.0)?;
-                    metadata(f, self.table(), statement.id)?;
+                    self.statement_annotations(f, statement)?;
                     writeln!(f)?;
                     self.statements(f, body, indent + 4)?;
                     write!(f, "{:indent$}while ", "")?;
@@ -609,7 +696,7 @@ impl Printer<'_> {
                     counted,
                 } => {
                     write!(f, "for %{}", id.0)?;
-                    metadata(f, self.table(), statement.id)?;
+                    self.statement_annotations(f, statement)?;
                     writeln!(f)?;
                     writeln!(f, "{:indent$}    init:", "")?;
                     self.statements(f, init, indent + 8)?;
@@ -663,7 +750,7 @@ impl Printer<'_> {
                             .display_metadata(false, self.table())
                             .with_compact(self.compact)
                     )?;
-                    metadata(f, self.table(), statement.id)?;
+                    self.statement_annotations(f, statement)?;
                     writeln!(f)?;
                     self.statements(f, body, indent + 4)?;
                     continue;
@@ -691,14 +778,14 @@ impl Printer<'_> {
                         )?;
                     }
                     f.write_str(":")?;
-                    metadata(f, self.table(), statement.id)?;
+                    self.statement_annotations(f, statement)?;
                     writeln!(f)?;
                     self.statements(f, body, indent + 4)?;
                     continue;
                 }
                 Statement::Default { switch, body } => {
                     write!(f, "default %{}:", switch.0)?;
-                    metadata(f, self.table(), statement.id)?;
+                    self.statement_annotations(f, statement)?;
                     writeln!(f)?;
                     self.statements(f, body, indent + 4)?;
                     continue;
@@ -714,14 +801,14 @@ impl Printer<'_> {
                 )?,
                 Statement::Label { id, name, body } => {
                     write!(f, "label %{} {name}:", id.0)?;
-                    metadata(f, self.table(), statement.id)?;
+                    self.statement_annotations(f, statement)?;
                     writeln!(f)?;
                     self.statements(f, body, indent + 4)?;
                     continue;
                 }
                 Statement::SehTry { id, body, handler } => {
                     write!(f, "seh_try %{}", id.0)?;
-                    metadata(f, self.table(), statement.id)?;
+                    self.statement_annotations(f, statement)?;
                     writeln!(f)?;
                     writeln!(f, "{:indent$}    body:", "")?;
                     self.statements(f, body, indent + 8)?;
@@ -742,7 +829,7 @@ impl Printer<'_> {
                 Statement::SehLeave(id) => write!(f, "seh_leave %{}", id.0)?,
                 Statement::OmpParallel(region) => {
                     f.write_str("omp_parallel")?;
-                    metadata(f, self.table(), statement.id)?;
+                    self.statement_annotations(f, statement)?;
                     writeln!(f)?;
                     for (label, value) in [
                         ("num_threads", &region.num_threads),
@@ -784,7 +871,7 @@ impl Printer<'_> {
                 }
                 Statement::OmpFor(region) => {
                     write!(f, "omp_for %{}", region.id.0)?;
-                    metadata(f, self.table(), statement.id)?;
+                    self.statement_annotations(f, statement)?;
                     writeln!(f)?;
                     let value = |value: &super::Value| {
                         value
@@ -858,12 +945,12 @@ impl Printer<'_> {
                     write!(f, " {:?}", asm.template)?;
                     asm_attributes(f, asm)?;
                     if !asm.has_sections() {
-                        metadata(f, self.table(), statement.id)?;
+                        self.statement_annotations(f, statement)?;
                         writeln!(f, ";")?;
                         continue;
                     }
                     f.write_str(" {")?;
-                    metadata(f, self.table(), statement.id)?;
+                    self.statement_annotations(f, statement)?;
                     writeln!(f)?;
                     self.asm_sections(f, asm, indent + 4)?;
                     writeln!(f, "{:indent$}}}", "")?;
@@ -871,14 +958,14 @@ impl Printer<'_> {
                 }
                 Statement::Block(body) => {
                     f.write_str("{")?;
-                    metadata(f, self.table(), statement.id)?;
+                    self.statement_annotations(f, statement)?;
                     writeln!(f)?;
                     self.statements(f, body, indent + 4)?;
                     writeln!(f, "{:indent$}}}", "")?;
                     continue;
                 }
             }
-            metadata(f, self.table(), statement.id)?;
+            self.statement_annotations(f, statement)?;
             writeln!(f, ";")?;
         }
         Ok(())
@@ -1253,6 +1340,9 @@ impl fmt::Display for DisplayModule<'_> {
             } else {
                 writeln!(f, ";")?;
             }
+        }
+        if self.show_macros {
+            macro_table(f, &self.module.macros)?;
         }
         writeln!(f, "}}")
     }

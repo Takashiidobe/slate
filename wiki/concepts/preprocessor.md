@@ -6,6 +6,7 @@
 - [Includes](#includes)
 - [Provenance](#provenance)
 - [Macro provenance](#macro-provenance)
+- [Macro invocations](#macro-invocations)
 - [Expansion](#expansion)
 - [Conditionals](#conditionals)
 - [Pragmas and line control](#pragmas-and-line-control)
@@ -193,6 +194,47 @@ named Rust constant (`CHAR_MAX`) instead of its value.
   origin.
 - `Span::cover` keeps the origin only when all covered tokens share it, so
   an expression built entirely from one macro carries it.
+
+## Macro invocations
+
+`pp/invocations.rs` builds `MacroInvocations`, a table of each macro call
+written in user code, so Slate can fold an expansion back into a macro call.
+It reaches `ir::Module.macros` through `TranslationUnit.macros` and is always
+on, unlike `PreprocessTrace.expansions`, which only `translate-project`'s
+planner enables and which has no argument ranges.
+
+- `MacroDefinition`: name, parameters, `variadic`, replacement text and
+  provenance, one per `#define` that was invoked.
+- `MacroInvocation`: `definition`, `site` (the name through the closing paren),
+  `arguments` (one range per actual argument, zero-length when empty), `parent`
+  (the invocation whose range contains this one) and `empty` (the replacement
+  list substituted to no tokens).
+- An invocation that expands to nothing leaves no tokens and no IR node, so this
+  table is its only record. `empty` is not set when tokens only vanish on
+  rescan, as for `A` in `#define A B` with an empty `B`.
+
+Not recorded:
+
+- Invocations whose name is spelled in a system header. A libc macro called from
+  user code, such as `stderr`, is recorded.
+- Expansions for directives (`#if`, `#include`, `#embed`, `#line`,
+  `#pragma omp`).
+- Calls not spelled at the site: a name from a macro body (`G` after
+  `#define F G`), or one whose parens or arguments come from a macro
+  (`f(x)` in `#define CALL(f, x) f(x)`).
+- An invocation crossing an earlier one's range (`G(1)` in `ID(G)(1)`) or sharing
+  its exact site, as a header included twice does. The first recorded wins, so a
+  consumer must verify a fold by re-expanding, not trust the table alone.
+
+Nodes join the table by location. Replacement tokens have `expansion` at the
+macro name and argument tokens keep their own, so `MacroInvocations::sites(loc)`
+returns every invocation containing a node's `expansion`, outermost first, each
+marked with the argument holding the node or none for body code. A node mixing
+two sibling invocations (`M(1) + N(2)`) belongs to neither.
+
+`--show-macros` prints these on IR dumps
+([ir-grammar](ir-grammar.md#metadata)). The fixture is
+`clang/linux/x86_64/macro_invocations.c`.
 
 ## Expansion
 

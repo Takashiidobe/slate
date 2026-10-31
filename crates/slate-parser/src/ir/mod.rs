@@ -36,7 +36,7 @@ pub use module::{
 
 pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};
 
-use crate::ast::Span;
+use crate::ast::{MacroInvocations, Span};
 pub use numeric::{
     ArithOp, ArithSema, CompareOp, ComplexRange, Contraction, ConversionKind, ConversionReason,
     ConversionSema, Exceptions, Fits, FixedOverflow, FixedPointType, FixedRounding, FloatClassTest,
@@ -228,14 +228,20 @@ pub enum ShuffleMask {
 
 impl fmt::Display for Value {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.format(f, false, None, false)
+        self.format(f, false, Annotations::default(), false)
     }
+}
+
+#[derive(Clone, Copy, Default)]
+pub struct Annotations<'a> {
+    pub metadata: Option<&'a Metadata>,
+    pub macros: Option<&'a MacroInvocations>,
 }
 
 pub struct DisplayValue<'a> {
     value: &'a Value,
     show_spans: bool,
-    metadata: Option<&'a Metadata>,
+    metadata: Annotations<'a>,
     compact: bool,
 }
 
@@ -258,7 +264,7 @@ impl Value {
         DisplayValue {
             value: self,
             show_spans,
-            metadata: None,
+            metadata: Annotations::default(),
             compact: false,
         }
     }
@@ -266,7 +272,7 @@ impl Value {
     pub fn display_metadata<'a>(
         &'a self,
         show_spans: bool,
-        metadata: Option<&'a Metadata>,
+        metadata: Annotations<'a>,
     ) -> DisplayValue<'a> {
         DisplayValue {
             value: self,
@@ -280,7 +286,7 @@ impl Value {
         &self,
         f: &mut fmt::Formatter<'_>,
         show_spans: bool,
-        metadata: Option<&Metadata>,
+        metadata: Annotations<'_>,
         compact: bool,
     ) -> fmt::Result {
         match &self.node.value {
@@ -800,6 +806,7 @@ impl Value {
             ),
         }?;
         module_print::metadata(f, metadata, self.node.id)?;
+        module_print::macro_sites(f, metadata, self.node.expansion)?;
         if show_spans {
             module_print::locations(f, self.node.spelling, self.node.expansion)?;
         }

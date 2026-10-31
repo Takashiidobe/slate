@@ -5,6 +5,7 @@
 - [Failure kinds](#failure-kinds)
 - [Node identity and metadata](#node-identity-and-metadata)
   - [C type metadata](#c-type-metadata)
+  - [Macro invocations](#macro-invocations)
 - [Dumps and CLI](#dumps-and-cli)
 - [Constant evaluation is required, not an
   optimization](#constant-evaluation-is-required-not-an-optimization)
@@ -119,7 +120,17 @@ reader needs next to `u64`. `unsigned long` is still in the table. A `write`
 prints its place's type after the statement. This needs no flag, and
 `--show-metadata` adds the rest of the metadata above.
 
-Macro expansion chains are not in the IR yet (only atomic builtins record
+### Macro invocations
+
+`Module.macros` (`MacroInvocations`) lists the macro calls written in user code,
+including those that expand to nothing, with their definitions and argument
+ranges. `sites(node.expansion)` says which invocations produced a node and
+whether it is body or argument code; see
+[macro invocations](../preprocessor.md#macro-invocations). Lowering must not
+depend on it for semantics: it is source context for recovering macros in the
+output. `--show-macros` prints it.
+
+Per-value expansion chains are not in the IR yet (only atomic builtins record
 `c_macro`); see [open design](open-design.md#macro-provenance).
 
 ## Dumps and CLI
@@ -128,6 +139,7 @@ Macro expansion chains are not in the IR yet (only atomic builtins record
 | -------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | `slate-parser ir src.c` / `parse src.c --dump-ir`  | the module; lowering must succeed for the whole module first                               |
 | `+ --show-metadata`                                | adds the `NodeId`-keyed metadata, nested values included                                   |
+| `+ --show-macros`                                  | adds `[macro=...]` to statements and values, and the invocation table at the module's end  |
 | `+ --compact-ir`                                   | hides conversion reasons, operation policies, and call signatures (print only)             |
 | `+ --show-spans`                                   | adds `[spelling=file:offset+len, expansion=file:offset+len]` to each global and function   |
 | `parse src.c --dump-ir-types --show-metadata`      | aliases and function signatures, without lowering bodies                                   |

@@ -115,6 +115,12 @@ pp ──▶ parser ──▶ AST ──▶ src/sema/ (validation + resolution +
   `pp/expand.rs::expand_macros`; `Span::cover` keeps it only when all
   covered tokens agree. Not printed by any dump. How both are computed:
   [preprocessor](preprocessor.md#provenance).
+- `Span::cover` over tokens of different origins widens `expansion` to include
+  every covered token, not only the first and last. `x + x` from
+  `#define TWICE(x) x + x` therefore reaches the invocation's name instead of
+  looking like argument code.
+- `Loc::contains` and `Loc::end` compare ranges against
+  `TranslationUnit.macros` ([macro invocations](preprocessor.md#macro-invocations)).
 
 ## Translation unit
 
@@ -123,6 +129,7 @@ TranslationUnit {
     items: Vec<ExternalItem>,
     tags: Vec<TagDefinition>,      // indexed by TagId
     dialect: Dialect,              // flavor, standard, features, effective target, options
+    macros: MacroInvocations,      // not printed by AST dumps
 }
 
 ExternalItem =

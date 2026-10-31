@@ -319,6 +319,7 @@ impl Parser {
                 dialect: self.dialect().clone(),
                 decls,
                 tags: self.tags.take(),
+                macros: MacroInvocations::default(),
             },
             root_file,
             &self.forced_roots,

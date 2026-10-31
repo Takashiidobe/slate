@@ -1,5 +1,6 @@
 use super::error::{PPErrorKind, PPFailure};
 use super::hide_set::HideSet;
+use super::invocations::{Recorded, SpelledCall};
 use super::syntax::{Directive, DirectiveName, Line};
 use super::{FileInput, MacroDef, Preprocessor, TokenTrace, stringized_source};
 use crate::ast::{Loc, MacroOrigin, MacroOriginLink, Span};
@@ -216,6 +217,7 @@ impl Preprocessor<'_> {
             return Ok(Some(token));
         }
         let definition = entry.definition.clone();
+        let provenance = entry.provenance;
         let mut stamp = Stamp {
             expansion: token.token.expansion,
             end: token.end,
@@ -225,6 +227,15 @@ impl Preprocessor<'_> {
         let Some(parameters) = &definition.parameters else {
             let hide = self.hide_sets.with(token.hide, &name);
             let replacement = self.substitute_object_macro(&definition, &stamp)?;
+            self.record_object_invocation(
+                &token,
+                Recorded {
+                    name: &name,
+                    definition: &definition,
+                    provenance,
+                    empty: replacement.is_empty(),
+                },
+            );
             let replacement = self.trace_expansion(&name, &token, None, replacement);
             let replacement = self.hide_all(replacement, hide);
             stream.push_front(inherit_leading_space(replacement, &token.token));
@@ -289,6 +300,23 @@ impl Preprocessor<'_> {
             },
             &stamp,
         )?;
+        if let Some(rparen) = &invocation.rparen {
+            self.record_function_invocation(
+                &token,
+                SpelledCall {
+                    lparen: &invocation.lparen,
+                    arguments,
+                    commas: &invocation.commas,
+                    rparen,
+                },
+                Recorded {
+                    name: &name,
+                    definition: &definition,
+                    provenance,
+                    empty: replacement.is_empty(),
+                },
+            );
+        }
         let hide = self.hide_sets.intersection(token.hide, rparen_hide);
         let hide = self.hide_sets.with(hide, &name);
         let replacement = self.trace_expansion(&name, &token, Some(rparen_trace), replacement);
@@ -410,14 +438,23 @@ impl Preprocessor<'_> {
         tokens: &[Span<Token>],
     ) -> Result<Vec<Span<Token>>, PPFailure> {
         let tokens = tokens.iter().cloned().map(PPToken::from).collect();
-        Ok(self
-            .expand_isolated(tokens)?
-            .into_iter()
-            .map(|token| token.token)
-            .collect())
+        let was_in_directive = std::mem::replace(&mut self.invocations.in_directive, true);
+        let expanded = self.expand_isolated(tokens);
+        self.invocations.in_directive = was_in_directive;
+        Ok(expanded?.into_iter().map(|token| token.token).collect())
     }
 
     pub(super) fn expand_condition(
+        &mut self,
+        tokens: &[Span<Token>],
+    ) -> Result<Vec<Span<Token>>, PPFailure> {
+        let was_in_directive = std::mem::replace(&mut self.invocations.in_directive, true);
+        let expanded = self.expand_condition_tokens(tokens);
+        self.invocations.in_directive = was_in_directive;
+        expanded
+    }
+
+    fn expand_condition_tokens(
         &mut self,
         tokens: &[Span<Token>],
     ) -> Result<Vec<Span<Token>>, PPFailure> {

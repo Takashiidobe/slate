@@ -272,6 +272,7 @@ pub struct Preprocessed {
     nodes: Vec<PPNode>,
     files: Files,
     root_file: FileId,
+    macros: MacroInvocations,
 }
 
 impl Preprocessed {
@@ -442,7 +443,9 @@ impl Parser {
                 "preprocessor did not produce a main file",
             ))
         })?;
+        let macros = pp.take_macro_invocations();
         self.parse_input(ParserInput::new(nodes), root_file)
+            .map(|ast| TranslationUnit { macros, ..ast })
             .map_err(FrontendError::Parse)
     }
 
@@ -526,11 +529,13 @@ impl Parser {
             ))
         })?;
         let trace = pp.take_trace();
+        let macros = pp.take_macro_invocations();
         Ok((
             Preprocessed {
                 nodes,
                 files: pp.files,
                 root_file,
+                macros,
             },
             trace,
         ))
@@ -544,15 +549,17 @@ impl Parser {
             nodes,
             files,
             root_file,
+            macros,
         } = preprocessed;
         self.parse_input(ParserInput::new(nodes), root_file)
-            .map(|ast| (ast, files))
+            .map(|ast| (TranslationUnit { macros, ..ast }, files))
             .map_err(FrontendError::Parse)
     }
 
     pub fn preprocessed_fingerprint(&self, preprocessed: &Preprocessed) -> u64 {
         let mut hasher = DefaultHasher::new();
         preprocessed.nodes.hash(&mut hasher);
+        preprocessed.macros.hash(&mut hasher);
         preprocessed
             .files
             .paths()

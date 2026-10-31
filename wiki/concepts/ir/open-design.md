@@ -38,7 +38,9 @@ to reconstruct arithmetic, storage, or calling semantics.
 
 ## Macro provenance
 
-Planned: every value's origin carries an optional `ExpansionId` chain
+Top-level invocations and their argument ranges are implemented
+([macro invocations](pipeline.md#macro-invocations)). Planned on top of that:
+every value's origin carries an optional `ExpansionId` chain
 (`INT_MAX` → `__INT_MAX__`, object- or function-like, definition site), so
 Rust lowering can emit `c_int::MAX` for `<limits.h>` names or a `const` for
 user macros, and turn a function-like expansion's nodes back into a `fn`.

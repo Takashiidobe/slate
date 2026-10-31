@@ -5,6 +5,7 @@ mod expand;
 mod has_checks;
 mod hide_set;
 mod include;
+mod invocations;
 mod lexed;
 mod math;
 mod print;
@@ -344,6 +345,7 @@ pub struct Preprocessor<'a> {
     build_time: SystemTime,
     dialect: &'a Dialect,
     trace: Option<Box<PreprocessTrace>>,
+    invocations: invocations::InvocationRecorder,
 }
 
 impl<'a> Preprocessor<'a> {
@@ -377,6 +379,7 @@ impl<'a> Preprocessor<'a> {
             source_position: None,
             hide_sets: HideSets::new(),
             trace: None,
+            invocations: invocations::InvocationRecorder::default(),
             build_time: build_time(),
             dialect,
         };

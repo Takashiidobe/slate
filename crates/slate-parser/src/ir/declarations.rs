@@ -327,11 +327,9 @@ impl Place {
     fn format(&self, f: &mut std::fmt::Formatter<'_>, compact: bool) -> std::fmt::Result {
         match &self.kind {
             PlaceKind::Binding(id) => write!(f, "%{}", id.0),
-            PlaceKind::Deref(value) => write!(
-                f,
-                "deref({})",
-                value.display_metadata(false, None).with_compact(compact)
-            ),
+            PlaceKind::Deref(value) => {
+                write!(f, "deref({})", value.display(false).with_compact(compact))
+            }
             PlaceKind::CompoundLiteral {
                 object,
                 storage,
@@ -351,13 +349,7 @@ impl Place {
                 if let Some(alignment) = alignment {
                     write!(f, " [align={alignment}]")?;
                 }
-                write!(
-                    f,
-                    " = {}",
-                    initializer
-                        .display_metadata(false, None)
-                        .with_compact(compact)
-                )
+                write!(f, " = {}", initializer.display(false).with_compact(compact))
             }
             PlaceKind::Temporary {
                 object,
@@ -366,9 +358,7 @@ impl Place {
                 f,
                 "temporary %{} = {}",
                 object.0,
-                initializer
-                    .display_metadata(false, None)
-                    .with_compact(compact)
+                initializer.display(false).with_compact(compact)
             ),
             PlaceKind::ComplexPart { base, imaginary } => {
                 f.write_str(if *imaginary { "imag(" } else { "real(" })?;
@@ -378,17 +368,13 @@ impl Place {
             PlaceKind::Index { base, index } => write!(
                 f,
                 "index({}, {})",
-                base.display_metadata(false, None).with_compact(compact),
-                index.display_metadata(false, None).with_compact(compact)
+                base.display(false).with_compact(compact),
+                index.display(false).with_compact(compact)
             ),
             PlaceKind::Lane { base, index } => {
                 f.write_str("lane(")?;
                 base.format(f, compact)?;
-                write!(
-                    f,
-                    ", {})",
-                    index.display_metadata(false, None).with_compact(compact)
-                )
+                write!(f, ", {})", index.display(false).with_compact(compact))
             }
             PlaceKind::Swizzle { base, lanes } => {
                 let lanes: Vec<String> = lanes.iter().map(u32::to_string).collect();

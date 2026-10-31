@@ -84,11 +84,7 @@ impl MemoryOrder {
                     MemoryOrder::AcqRel => "acq_rel",
                     MemoryOrder::SeqCst => "seq_cst",
                     MemoryOrder::Dynamic(value) => {
-                        return write!(
-                            f,
-                            "dynamic({})",
-                            value.display_metadata(false, None).with_compact(self.1)
-                        );
+                        return write!(f, "dynamic({})", value.display(false).with_compact(self.1));
                     }
                 })
             }
@@ -124,11 +120,7 @@ impl SyncScope {
                     SyncScope::Single => "single",
                     SyncScope::Cluster => "cluster",
                     SyncScope::Dynamic(value) => {
-                        return write!(
-                            f,
-                            "dynamic({})",
-                            value.display_metadata(false, None).with_compact(self.1)
-                        );
+                        return write!(f, "dynamic({})", value.display(false).with_compact(self.1));
                     }
                 })
             }
@@ -174,11 +166,9 @@ impl Weakness {
                 match self.0 {
                     Weakness::Strong => f.write_str("false"),
                     Weakness::Weak => f.write_str("true"),
-                    Weakness::Dynamic(value) => write!(
-                        f,
-                        "dynamic({})",
-                        value.display_metadata(false, None).with_compact(self.1)
-                    ),
+                    Weakness::Dynamic(value) => {
+                        write!(f, "dynamic({})", value.display(false).with_compact(self.1))
+                    }
                 }
             }
         }

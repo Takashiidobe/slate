@@ -2,7 +2,7 @@ use super::{
     AbiSignature, Atomicity, BindingId, CTypeTable, Comments, CompareOp, FenceScope, Global,
     InlineAsm, Parameters, Place, Type, TypeDefinition, Value, Variable,
 };
-use crate::ast::{CommentAttach, CommentGroup, NodeId, Span};
+use crate::ast::{CommentAttach, CommentGroup, MacroInvocations, NodeId, Span};
 pub use crate::ast::{OmpScheduleKind, OmpScheduleModifier};
 use crate::target_info::TargetInfo;
 use std::collections::HashMap;
@@ -19,6 +19,7 @@ pub struct Module {
     pub metadata: Metadata,
     pub comments: Comments,
     pub c_types: CTypeTable,
+    pub macros: MacroInvocations,
 }
 
 #[derive(Debug, Clone)]
@@ -363,6 +364,7 @@ impl Module {
             metadata: Metadata::new(),
             comments: Comments::default(),
             c_types: CTypeTable::default(),
+            macros: MacroInvocations::default(),
         }
     }
 
