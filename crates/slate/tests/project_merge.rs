@@ -189,6 +189,14 @@ fn merge_fixture(source: &Path) -> Result<(), String> {
         matrix["targets"][0]["args"] =
             serde_json::json!(args.split_whitespace().collect::<Vec<_>>());
     }
+    if let Some(other) = text
+        .lines()
+        .find_map(|line| line.strip_prefix("// merge-second-target:"))
+    {
+        let fields: Vec<&str> = other.split_whitespace().collect();
+        matrix["targets"][1] =
+            serde_json::json!({"name": fields[0], "triple": fields[1], "flavor": fields[2]});
+    }
     std::fs::create_dir_all(work()).map_err(|e| format!("create work: {e}"))?;
     let matrix_path = work().join(format!("{stem}.json"));
     std::fs::write(&matrix_path, matrix.to_string()).map_err(|e| format!("write matrix: {e}"))?;

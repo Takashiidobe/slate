@@ -5,6 +5,7 @@ use crate::compile_commands::CompileCommand;
 use crate::frontend::directive_translate::{factor_cfgs, item_key, target_cfg};
 use crate::frontend::distinct_functions::{self, SectionCandidates};
 use crate::frontend::{self, lowerer};
+use crate::project_hoist;
 use crate::project_matrix::Matrix;
 use crate::project_plan;
 use rayon::prelude::*;
@@ -648,6 +649,7 @@ struct MergedEntry {
     cfg: Option<Cfg>,
     key: String,
     item: Item,
+    binding: bool,
 }
 
 struct MergedUnit {
@@ -656,6 +658,21 @@ struct MergedUnit {
     attrs: Vec<CrateAttr>,
     gated: usize,
     duplicated: Vec<(String, usize)>,
+    hoisted: Vec<(String, usize)>,
+}
+
+fn hoist_values(key: &str, values: &[Value]) -> Option<project_hoist::Hoisted> {
+    if key.contains('#') {
+        return None;
+    }
+    let variants = values
+        .iter()
+        .map(|value| match &value.item {
+            Item::Fn(function) => Some(function),
+            _ => None,
+        })
+        .collect::<Option<Vec<_>>>()?;
+    project_hoist::hoist(&variants)
 }
 
 fn merge_unit(stem: &str, index: usize, targets: &[TargetBuild]) -> MergedUnit {
@@ -709,27 +726,57 @@ fn merge_unit(stem: &str, index: usize, targets: &[TargetBuild]) -> MergedUnit {
         attrs,
         gated: 0,
         duplicated: Vec::new(),
+        hoisted: Vec::new(),
+    };
+    let cfg_of = |on: &[BTreeSet<u32>]| -> Option<Cfg> {
+        let mut groups: BTreeMap<Option<Cfg>, Vec<Cfg>> = BTreeMap::new();
+        for (target_index, target) in targets.iter().enumerate() {
+            let on = &on[target_index];
+            if on.is_empty() {
+                continue;
+            }
+            let relevant = &target.units[index].relevant;
+            let implicants = minimize(on, &cares[target_index], relevant.len());
+            groups
+                .entry(condition(&implicants, relevant))
+                .or_default()
+                .push(target.cfg.clone());
+        }
+        combined_cfg(groups, targets.len())
     };
     for key in order {
         let values = table.remove(&key).expect("ordered key is in the table");
         if values.len() > 1 && key.starts_with("fn:") {
+            if let Some(hoisted) = hoist_values(&key, &values) {
+                out.hoisted.push((key.clone(), values.len()));
+                let mut on = vec![BTreeSet::new(); targets.len()];
+                for (value, binding) in values.iter().zip(hoisted.bindings) {
+                    for (all, variant) in on.iter_mut().zip(&value.on) {
+                        all.extend(variant);
+                    }
+                    let cfg = cfg_of(&value.on);
+                    out.gated += usize::from(cfg.is_some());
+                    out.entries.push(MergedEntry {
+                        cfg,
+                        key: item_key(&binding),
+                        item: binding,
+                        binding: true,
+                    });
+                }
+                let cfg = cfg_of(&on);
+                out.gated += usize::from(cfg.is_some());
+                out.entries.push(MergedEntry {
+                    cfg,
+                    key,
+                    item: Item::Fn(hoisted.function),
+                    binding: false,
+                });
+                continue;
+            }
             out.duplicated.push((key.clone(), values.len()));
         }
         for value in values {
-            let mut groups: BTreeMap<Option<Cfg>, Vec<Cfg>> = BTreeMap::new();
-            for (target_index, target) in targets.iter().enumerate() {
-                let on = &value.on[target_index];
-                if on.is_empty() {
-                    continue;
-                }
-                let relevant = &target.units[index].relevant;
-                let implicants = minimize(on, &cares[target_index], relevant.len());
-                groups
-                    .entry(condition(&implicants, relevant))
-                    .or_default()
-                    .push(target.cfg.clone());
-            }
-            let cfg = combined_cfg(groups, targets.len());
+            let cfg = cfg_of(&value.on);
             if matches!(value.item, Item::Comment(_)) && cfg.is_some() {
                 continue;
             }
@@ -738,6 +785,7 @@ fn merge_unit(stem: &str, index: usize, targets: &[TargetBuild]) -> MergedUnit {
                 cfg,
                 key: key.clone(),
                 item: value.item,
+                binding: false,
             });
         }
     }
@@ -879,13 +927,23 @@ fn check_config(
             .find(|unit| unit.stem == *stem)
             .expect("direct translation uses the merged units");
         let mut resolved: BTreeMap<&str, &Item> = BTreeMap::new();
+        let mut bindings: BTreeMap<&str, &Item> = BTreeMap::new();
         for entry in &unit.entries {
             if matches!(entry.item, Item::Comment(_)) {
                 continue;
             }
-            if entry.cfg.as_ref().is_none_or(|cfg| holds(cfg, &atoms))
-                && resolved.insert(entry.key.as_str(), &entry.item).is_some()
-            {
+            if !entry.cfg.as_ref().is_none_or(|cfg| holds(cfg, &atoms)) {
+                continue;
+            }
+            let previous = if entry.binding {
+                let (Item::Const { name, .. } | Item::TypeAlias { name, .. }) = &entry.item else {
+                    unreachable!("hoists bind only consts and type aliases");
+                };
+                bindings.insert(name.as_str(), &entry.item)
+            } else {
+                resolved.insert(entry.key.as_str(), &entry.item)
+            };
+            if previous.is_some() {
                 mismatches.push(format!("{context}: {stem}: {} is ambiguous", entry.key));
             }
         }
@@ -895,7 +953,7 @@ fn check_config(
                 continue;
             }
             match resolved.remove(entry.key.as_str()) {
-                Some(item) if same_except_added_section(item, &entry.item) => {}
+                Some(item) if same_except_added_section(item, &entry.item, &bindings) => {}
                 Some(_) => mismatches.push(format!("{context}: {stem}: {} differs", entry.key)),
                 None => mismatches.push(format!("{context}: {stem}: {} is missing", entry.key)),
             }
@@ -909,7 +967,11 @@ fn check_config(
     Ok(mismatches)
 }
 
-fn same_except_added_section(merged: &Item, direct: &Item) -> bool {
+fn same_except_added_section(
+    merged: &Item,
+    direct: &Item,
+    bindings: &BTreeMap<&str, &Item>,
+) -> bool {
     if merged == direct {
         return true;
     }
@@ -917,6 +979,7 @@ fn same_except_added_section(merged: &Item, direct: &Item) -> bool {
         return false;
     };
     let mut stripped = merged.clone();
+    project_hoist::expand(&mut stripped, bindings);
     stripped
         .attrs
         .retain(|attr| !matches!(attr, Attr::LinkSection(_)) || direct.attrs.contains(attr));
@@ -1087,6 +1150,9 @@ pub fn merge(
         );
         for (key, variants) in &unit.duplicated {
             let _ = writeln!(report, "  duplicated {key}: {variants} variants");
+        }
+        for (key, variants) in &unit.hoisted {
+            let _ = writeln!(report, "  hoisted {key}: {variants} variants");
         }
     }
     if projection != Projection::Skip {

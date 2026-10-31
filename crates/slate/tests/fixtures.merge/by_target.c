@@ -26,10 +26,10 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 2 compiles
 // CHECK-NEXT:   by_target.c: [alpha] 2 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit by_target: 9 items, 6 gated, 3 duplicated functions
-// CHECK-NEXT:   duplicated fn:platform: 2 variants
-// CHECK-NEXT:   duplicated fn:platform_alpha: 2 variants
+// CHECK-NEXT: unit by_target: 11 items, 7 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:__slate_main: 2 variants
+// CHECK-NEXT:   hoisted fn:platform: 2 variants
+// CHECK-NEXT:   hoisted fn:platform_alpha: 2 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
@@ -42,15 +42,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn platform() -> *const i8 {
-// CHECK-NEXT:     c"unix".as_ptr()
-// CHECK-NEXT: }
+// CHECK-NEXT: const __SLATE_HOIST_platform: &core::ffi::CStr = c"unix";
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: const __SLATE_HOIST_platform: &core::ffi::CStr = c"windows";
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn platform() -> *const i8 {
-// CHECK-NEXT:     c"windows".as_ptr()
+// CHECK-NEXT:     __SLATE_HOIST_platform.as_ptr()
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(
@@ -59,10 +58,7 @@ int main(void) {
 // CHECK-NEXT:     target_env = "gnu",
 // CHECK-NEXT:     feature = "alpha"
 // CHECK-NEXT: ))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn platform_alpha() -> *const i8 {
-// CHECK-NEXT:     c"unix-alpha".as_ptr()
-// CHECK-NEXT: }
+// CHECK-NEXT: const __SLATE_HOIST_platform_alpha: &core::ffi::CStr = c"unix-alpha";
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(
 // CHECK-NEXT:     target_arch = "x86_64",
@@ -70,9 +66,12 @@ int main(void) {
 // CHECK-NEXT:     target_env = "msvc",
 // CHECK-NEXT:     feature = "alpha"
 // CHECK-NEXT: ))]
+// CHECK-NEXT: const __SLATE_HOIST_platform_alpha: &core::ffi::CStr = c"windows-alpha";
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(feature = "alpha")]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn platform_alpha() -> *const i8 {
-// CHECK-NEXT:     c"windows-alpha".as_ptr()
+// CHECK-NEXT:     __SLATE_HOIST_platform_alpha.as_ptr()
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(not(feature = "alpha"))]

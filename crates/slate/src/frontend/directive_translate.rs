@@ -1065,6 +1065,7 @@ pub fn item_key(item: &Item) -> String {
         Item::Fn(f) => format!("fn:{}", f.name),
         Item::Static { name, .. } => format!("static:{name}"),
         Item::Const { name, .. } => format!("const:{name}"),
+        Item::TypeAlias { name, .. } => format!("type:{name}"),
         Item::Mod { name, .. } => format!("mod:{name}"),
         Item::InlineMod { name, .. } => format!("inline-mod:{name}"),
         Item::Use { path, .. } => format!(

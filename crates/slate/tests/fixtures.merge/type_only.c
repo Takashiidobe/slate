@@ -22,9 +22,9 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 2 compiles
 // CHECK-NEXT:   type_only.c: [alpha] 2 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit type_only: 19 items, 17 gated, 2 duplicated functions
-// CHECK-NEXT:   duplicated fn:state_size: 3 variants
+// CHECK-NEXT: unit type_only: 20 items, 17 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:__slate_main: 2 variants
+// CHECK-NEXT:   hoisted fn:state_size: 3 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
@@ -122,10 +122,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(not(feature = "alpha"))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn state_size() -> i32 {
-// CHECK-NEXT:     4
-// CHECK-NEXT: }
+// CHECK-NEXT: const __SLATE_HOIST_state_size: i32 = 4;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(
 // CHECK-NEXT:     target_arch = "x86_64",
@@ -133,10 +130,7 @@ int main(void) {
 // CHECK-NEXT:     target_env = "gnu",
 // CHECK-NEXT:     feature = "alpha"
 // CHECK-NEXT: ))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn state_size() -> i32 {
-// CHECK-NEXT:     16
-// CHECK-NEXT: }
+// CHECK-NEXT: const __SLATE_HOIST_state_size: i32 = 16;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(
 // CHECK-NEXT:     target_arch = "x86_64",
@@ -144,9 +138,11 @@ int main(void) {
 // CHECK-NEXT:     target_env = "msvc",
 // CHECK-NEXT:     feature = "alpha"
 // CHECK-NEXT: ))]
+// CHECK-NEXT: const __SLATE_HOIST_state_size: i32 = 8;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn state_size() -> i32 {
-// CHECK-NEXT:     8
+// CHECK-NEXT:     __SLATE_HOIST_state_size
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

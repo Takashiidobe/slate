@@ -78,6 +78,10 @@ pub enum Item {
         abi: String,
         decls: Vec<ExternDecl>,
     },
+    TypeAlias {
+        name: String,
+        ty: Type,
+    },
     Enum(EnumDef),
     Record(RecordDef),
     Struct(StructDef),

@@ -25,9 +25,9 @@ int main(void) {
 // CHECK-NEXT: total: 14 compiles across 2 targets
 // CHECK-NEXT: unit signature_mismatch: 20 items, 14 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:__slate_main: 2 variants
-// CHECK-NEXT: unit signature_mismatch_helper: 10 items, 10 gated, 2 duplicated functions
-// CHECK-NEXT:   duplicated fn:widen: 2 variants
+// CHECK-NEXT: unit signature_mismatch_helper: 11 items, 10 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:make_pair: 2 variants
+// CHECK-NEXT:   hoisted fn:widen: 2 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 6 shared symbols, 4 mismatches
 // CHECK-NEXT:   linux-x86_64 [beta]: make_pair: signature_mismatch `extern "C" fn(i32) -> struct{i32}` vs signature_mismatch_helper `extern "C" fn(i32) -> struct{i32, i64}`
@@ -229,10 +229,7 @@ int main(void) {
 // CHECK-NEXT:         not(feature = "alpha")
 // CHECK-NEXT:     )
 // CHECK-NEXT: ))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn widen(x: i32) -> i32 {
-// CHECK-NEXT:     x + 1
-// CHECK-NEXT: }
+// CHECK-NEXT: type __SlateHoist_widen = i32;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(
 // CHECK-NEXT:     target_arch = "x86_64",
@@ -240,8 +237,10 @@ int main(void) {
 // CHECK-NEXT:     target_env = "gnu",
 // CHECK-NEXT:     feature = "alpha"
 // CHECK-NEXT: ))]
+// CHECK-NEXT: type __SlateHoist_widen = i64;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn widen(x: i64) -> i64 {
+// CHECK-NEXT: extern "C-unwind" fn widen(x: __SlateHoist_widen) -> __SlateHoist_widen {
 // CHECK-NEXT:     x + 1
 // CHECK-NEXT: }
 // CHECK-EMPTY:

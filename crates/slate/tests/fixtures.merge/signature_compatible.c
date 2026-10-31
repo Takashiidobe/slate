@@ -42,9 +42,9 @@ int main(void) {
 // CHECK-NEXT: total: 12 compiles across 2 targets
 // CHECK-NEXT: unit signature_compatible: 33 items, 20 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:__slate_main: 3 variants
-// CHECK-NEXT: unit signature_compatible_helper: 20 items, 8 gated, 2 duplicated functions
-// CHECK-NEXT:   duplicated fn:scale: 2 variants
+// CHECK-NEXT: unit signature_compatible_helper: 21 items, 8 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:native_long: 2 variants
+// CHECK-NEXT:   hoisted fn:scale: 2 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 22 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
@@ -313,10 +313,7 @@ int main(void) {
 // CHECK-NEXT:         not(feature = "alpha")
 // CHECK-NEXT:     )
 // CHECK-NEXT: ))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn scale(x: i32) -> i32 {
-// CHECK-NEXT:     x * 2
-// CHECK-NEXT: }
+// CHECK-NEXT: type __SlateHoist_scale = i32;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(
 // CHECK-NEXT:     target_arch = "x86_64",
@@ -324,8 +321,10 @@ int main(void) {
 // CHECK-NEXT:     target_env = "gnu",
 // CHECK-NEXT:     feature = "alpha"
 // CHECK-NEXT: ))]
+// CHECK-NEXT: type __SlateHoist_scale = i64;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn scale(x: i64) -> i64 {
+// CHECK-NEXT: extern "C-unwind" fn scale(x: __SlateHoist_scale) -> __SlateHoist_scale {
 // CHECK-NEXT:     x * 2
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -241,6 +241,13 @@ impl<W: Write> Codegen<W> {
                 self.expr(init)?;
                 self.out.write_str(";\n")?;
             }
+            Item::TypeAlias { name, ty } => {
+                self.out.write_str("type ")?;
+                self.ident(name)?;
+                self.out.write_str(" = ")?;
+                self.ty(ty)?;
+                self.out.write_str(";\n")?;
+            }
             Item::ExternBlock { abi, decls } => {
                 writeln!(self.out, "unsafe extern \"{abi}\" {{")?;
                 for decl in decls {
