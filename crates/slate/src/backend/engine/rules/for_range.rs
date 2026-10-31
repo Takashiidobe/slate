@@ -96,6 +96,7 @@ fn loop_invariant(arena: &FunctionOptimizer, expr: &Expr, region: &[NodeId]) -> 
         Expr::Value(_) => true,
         Expr::Var(name) => invariant_within(arena, *name, region),
         Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Unary {
             op: UnaryOp::Neg | UnaryOp::Not,
             expr,

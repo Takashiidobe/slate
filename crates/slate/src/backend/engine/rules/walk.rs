@@ -1,10 +1,11 @@
 use crate::backend::engine::arena::{Arena, NodeId, NodeKind};
 use crate::backend::rust_ast::{AsmOperand, Block, Expr, Stmt};
 
-pub(super) fn child_exprs(expr: &Expr) -> Vec<&Expr> {
+pub(in crate::backend::engine) fn child_exprs(expr: &Expr) -> Vec<&Expr> {
     match expr {
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. }
@@ -88,10 +89,11 @@ pub(super) fn child_exprs(expr: &Expr) -> Vec<&Expr> {
     }
 }
 
-pub(super) fn child_exprs_mut(expr: &mut Expr) -> Vec<&mut Expr> {
+pub(in crate::backend::engine) fn child_exprs_mut(expr: &mut Expr) -> Vec<&mut Expr> {
     match expr {
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. }
@@ -186,7 +188,7 @@ pub(super) fn kind_has_stmt_exprs(kind: &NodeKind) -> bool {
     found
 }
 
-pub(super) fn stmt_exprs<'a>(stmt: &'a Stmt, out: &mut Vec<&'a Expr>) {
+pub(in crate::backend::engine) fn stmt_exprs<'a>(stmt: &'a Stmt, out: &mut Vec<&'a Expr>) {
     match stmt {
         Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Let {
@@ -254,7 +256,7 @@ pub(super) fn stmt_exprs<'a>(stmt: &'a Stmt, out: &mut Vec<&'a Expr>) {
                 stmts_exprs(&arm.body, out);
             }
         }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+        Stmt::Loop { body, .. } | Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } => {
             stmts_exprs(body, out)
         }
         Stmt::Let { init: None, .. }
@@ -276,7 +278,10 @@ fn block_exprs<'a>(block: &'a Block, out: &mut Vec<&'a Expr>) {
     out.extend(block.tail.as_deref());
 }
 
-pub(super) fn stmt_exprs_mut<'a>(stmt: &'a mut Stmt, out: &mut Vec<&'a mut Expr>) {
+pub(in crate::backend::engine) fn stmt_exprs_mut<'a>(
+    stmt: &'a mut Stmt,
+    out: &mut Vec<&'a mut Expr>,
+) {
     match stmt {
         Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Let {
@@ -344,7 +349,7 @@ pub(super) fn stmt_exprs_mut<'a>(stmt: &'a mut Stmt, out: &mut Vec<&'a mut Expr>
                 stmts_exprs_mut(&mut arm.body, out);
             }
         }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+        Stmt::Loop { body, .. } | Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } => {
             stmts_exprs_mut(body, out)
         }
         Stmt::Let { init: None, .. }

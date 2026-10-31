@@ -125,6 +125,7 @@ impl NodeRule for NestedUnsafeStmt {
         let kind = match tail {
             None => NodeKind::Scope {
                 body: stmts.clone(),
+                macro_region: None,
             },
             Some(tail) => NodeKind::Block {
                 stmts: stmts.clone(),

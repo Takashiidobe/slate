@@ -338,7 +338,13 @@ impl NodeRule for LabelElide {
             return false;
         };
         let body = body.clone();
-        arena.set_kind(id, NodeKind::Scope { body });
+        arena.set_kind(
+            id,
+            NodeKind::Scope {
+                body,
+                macro_region: None,
+            },
+        );
         true
     }
 }

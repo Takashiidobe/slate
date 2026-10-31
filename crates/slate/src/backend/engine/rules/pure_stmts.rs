@@ -18,6 +18,7 @@ fn is_pure(expr: &Expr) -> bool {
             expr,
         }
         | Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Field { base: expr, .. }
         | Expr::TupleField { base: expr, .. } => is_pure(expr),
         Expr::Binary { op, lhs, rhs } => {
@@ -64,7 +65,7 @@ fn is_inert(arena: &FunctionOptimizer, id: NodeId) -> bool {
     }
     match arena.get(id) {
         Some(NodeKind::Expr(expr)) => is_pure(expr) && !is_function_tail(arena, id),
-        Some(NodeKind::Scope { body }) => only_comments(arena, body),
+        Some(NodeKind::Scope { body, .. }) => only_comments(arena, body),
         Some(NodeKind::Unsafe { stmts, tail } | NodeKind::Block { stmts, tail }) => {
             tail.is_none() && only_comments(arena, stmts)
         }

@@ -797,7 +797,7 @@ fn collect_write_bases_stmt<'a>(stmt: &'a Stmt, out: &mut Vec<&'a str>) {
             collect_write_bases(else_body, out);
         }
         Stmt::Loop { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. }
         | Stmt::For { body, .. } => collect_write_bases(body, out),
         Stmt::Match { arms, .. } => {
@@ -982,7 +982,7 @@ fn collect_local_arrays(body: &[Stmt], out: &mut ArrayCatalog) {
             }
             Stmt::Loop { body, .. }
             | Stmt::For { body, .. }
-            | Stmt::Scope { body }
+            | Stmt::Scope { body, .. }
             | Stmt::LabeledBlock { body, .. } => collect_local_arrays(body, out),
             Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
                 collect_local_arrays(&body.stmts, out)
@@ -1031,7 +1031,7 @@ fn collect_value_defs_into(body: &[Stmt], out: &mut BTreeMap<String, Expr>) {
             }
             Stmt::Loop { body, .. }
             | Stmt::For { body, .. }
-            | Stmt::Scope { body }
+            | Stmt::Scope { body, .. }
             | Stmt::LabeledBlock { body, .. } => collect_value_defs_into(body, out),
             Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
                 collect_value_defs_into(&body.stmts, out)
@@ -1104,7 +1104,7 @@ fn remove_owned_frees_stmt(
         }
         Stmt::Loop { body, .. }
         | Stmt::For { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. } => remove_owned_frees(body, candidate, defs),
         Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
             remove_owned_frees(&mut body.stmts, candidate, defs)
@@ -1262,7 +1262,7 @@ fn rewrite_signature_stmt(
         }
         Stmt::Loop { body, .. }
         | Stmt::For { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. } => {
             for indent in body {
                 rewrite_signature_stmt(indent, caller, ctx, proofs);
@@ -1350,6 +1350,7 @@ fn rewrite_signature_expr(
         }
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => rewrite_signature_expr(expr, caller, ctx, proofs),
@@ -1871,7 +1872,7 @@ fn stmt_writes_temp(stmt: &Stmt, sites: &ViewSites) -> bool {
             ..
         } => is_written_through(then_body, sites) || is_written_through(else_body, sites),
         Stmt::Loop { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. }
         | Stmt::For { body, .. } => is_written_through(body, sites),
         Stmt::Match { arms, .. } => arms.iter().any(|arm| is_written_through(&arm.body, sites)),
@@ -1883,7 +1884,7 @@ fn stmt_writes_temp(stmt: &Stmt, sites: &ViewSites) -> bool {
 
 fn peel_cast(expr: &Expr) -> &Expr {
     match expr {
-        Expr::Cast { expr, .. } => peel_cast(expr),
+        Expr::MacroArg { expr, .. } | Expr::Cast { expr, .. } => peel_cast(expr),
         other => other,
     }
 }
@@ -1995,7 +1996,7 @@ fn rewrite_stmt(stmt: &mut Stmt, sites: &ViewSites, view_name: &str) {
             rewrite_expr(else_value, sites, view_name);
         }
         Stmt::Loop { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. }
         | Stmt::For { body, .. } => {
             for indent in body {
@@ -2052,6 +2053,7 @@ fn rewrite_expr(expr: &mut Expr, sites: &ViewSites, view_name: &str) {
     match expr {
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. } => rewrite_expr(expr, sites, view_name),
         Expr::Block(block) | Expr::Unsafe(block) => {
@@ -2146,7 +2148,7 @@ fn collect_loop_bounds_stmt<'a>(
             out.push((pat.clone(), len, body));
             collect_loop_bounds(body, let_exprs, out);
         }
-        Stmt::For { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+        Stmt::For { body, .. } | Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } => {
             collect_loop_bounds(body, let_exprs, out);
         }
         Stmt::Match { arms, .. } => {
@@ -2215,7 +2217,7 @@ fn lt_pair(expr: &Expr, let_exprs: &BTreeMap<String, Expr>) -> Option<(String, E
 fn peeled_var(expr: &Expr) -> Option<&str> {
     match expr {
         Expr::Var(v) => Some(v.as_str()),
-        Expr::Cast { expr, .. } => peeled_var(expr),
+        Expr::MacroArg { expr, .. } | Expr::Cast { expr, .. } => peeled_var(expr),
         _ => None,
     }
 }
@@ -2269,7 +2271,7 @@ fn stmt_read_count(stmt: &Stmt, name: &str) -> usize {
                 + count_var_reads(else_body, name)
                 + expr_read_count(else_value, name)
         }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+        Stmt::Loop { body, .. } | Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } => {
             count_var_reads(body, name)
         }
         Stmt::For { iter, body, .. } => expr_read_count(iter, name) + count_var_reads(body, name),
@@ -2334,7 +2336,7 @@ fn stmt_assign_count(stmt: &Stmt, name: &str) -> usize {
             ..
         } => count_assigns(then_body, name) + count_assigns(else_body, name),
         Stmt::Loop { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. }
         | Stmt::For { body, .. } => count_assigns(body, name),
         Stmt::Match { arms, .. } => arms.iter().map(|arm| count_assigns(&arm.body, name)).sum(),
@@ -2384,7 +2386,7 @@ fn collect_let_types_stmt(stmt: &Stmt, out: &mut BTreeMap<String, Type>) {
             collect_let_types_stmts(else_body, out);
         }
         Stmt::Loop { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. }
         | Stmt::For { body, .. } => collect_let_types_stmts(body, out),
         Stmt::Match { arms, .. } => {
@@ -2429,7 +2431,7 @@ fn collect_let_exprs_stmt(stmt: &Stmt, out: &mut BTreeMap<String, Expr>) {
             collect_let_exprs_stmts(else_body, out);
         }
         Stmt::Loop { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. }
         | Stmt::For { body, .. } => collect_let_exprs_stmts(body, out),
         Stmt::Match { arms, .. } => {
@@ -2499,7 +2501,7 @@ fn collect_offset_lets_stmt(stmt: &Stmt, out: &mut Vec<(String, String, Expr)>) 
             collect_offset_lets(else_body, out);
         }
         Stmt::Loop { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. }
         | Stmt::For { body, .. } => collect_offset_lets(body, out),
         Stmt::Match { arms, .. } => {
@@ -2529,7 +2531,7 @@ fn peeled_offset_call(expr: &Expr) -> Option<(&str, &Expr)> {
         Expr::Unsafe(block) | Expr::Block(block) => {
             block.tail.as_deref().and_then(peeled_offset_call)
         }
-        Expr::Cast { expr, .. } => peeled_offset_call(expr),
+        Expr::MacroArg { expr, .. } | Expr::Cast { expr, .. } => peeled_offset_call(expr),
         _ => None,
     }
 }
@@ -2910,7 +2912,7 @@ fn rewrite_const_call_stmt(stmt: &mut Stmt, ctx: &ConstCtx) {
         }
         Stmt::Loop { body, .. }
         | Stmt::For { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. } => {
             for indent in body {
                 rewrite_const_call_stmt(indent, ctx);
@@ -2956,6 +2958,7 @@ fn rewrite_const_call_expr(expr: &mut Expr, ctx: &ConstCtx) {
         }
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => rewrite_const_call_expr(expr, ctx),
@@ -3227,7 +3230,7 @@ fn collect_return_retention_body(
             }
             Stmt::Loop { body, .. }
             | Stmt::For { body, .. }
-            | Stmt::Scope { body }
+            | Stmt::Scope { body, .. }
             | Stmt::LabeledBlock { body, .. } => {
                 collect_return_retention_body(body, caller, function_body, elems, plans)
             }
@@ -3363,7 +3366,7 @@ fn collect_retained_aliases(body: &[Stmt], aliases: &mut BTreeMap<String, Retain
             }
             Stmt::Loop { body, .. }
             | Stmt::For { body, .. }
-            | Stmt::Scope { body }
+            | Stmt::Scope { body, .. }
             | Stmt::LabeledBlock { body, .. } => collect_retained_aliases(body, aliases),
             Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
                 collect_retained_aliases(&body.stmts, aliases)
@@ -3534,7 +3537,7 @@ fn retained_stmt_safe(
                     frees,
                 )
         }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+        Stmt::Loop { body, .. } | Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } => {
             retained_stmts_safe(
                 body,
                 binding,
@@ -3745,7 +3748,7 @@ fn collect_returns_stmt<'a>(stmt: &'a Stmt, out: &mut Vec<&'a Expr>) {
         }
         Stmt::Loop { body, .. }
         | Stmt::For { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. } => collect_returns(body, out),
         Stmt::Match { arms, .. } => {
             for arm in arms {
@@ -3901,7 +3904,7 @@ fn remove_unused_retained_aliases_stmt(stmt: &mut Stmt, unused: &BTreeSet<String
         }
         Stmt::Loop { body, .. }
         | Stmt::For { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. } => remove_unused_retained_aliases(body, unused),
         Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
             remove_unused_retained_aliases(&mut body.stmts, unused)
@@ -3945,7 +3948,7 @@ fn remove_retained_frees_stmt(stmt: &mut Stmt, base_aliases: &BTreeSet<String>) 
         }
         Stmt::Loop { body, .. }
         | Stmt::For { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. } => remove_retained_frees(body, base_aliases),
         Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
             remove_retained_frees(&mut body.stmts, base_aliases)
@@ -3997,7 +4000,7 @@ fn retain_call_binding(body: &mut Vec<Stmt>, plan: &ReturnRetentionPlan) -> bool
             } => retain_call_binding(then_body, plan) || retain_call_binding(else_body, plan),
             Stmt::Loop { body, .. }
             | Stmt::For { body, .. }
-            | Stmt::Scope { body }
+            | Stmt::Scope { body, .. }
             | Stmt::LabeledBlock { body, .. } => retain_call_binding(body, plan),
             Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
                 retain_call_binding(&mut body.stmts, plan)
@@ -4057,7 +4060,7 @@ fn wrap_returns_stmt(stmt: &mut Stmt, elem_ty: &Type, count: &Expr) {
         }
         Stmt::Loop { body, .. }
         | Stmt::For { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. } => {
             for indent in body {
                 wrap_returns_stmt(indent, elem_ty, count);
@@ -4168,7 +4171,7 @@ fn rewrite_return_call_stmt(stmt: &mut Stmt, elems: &BTreeMap<String, Type>) {
         }
         Stmt::Loop { body, .. }
         | Stmt::For { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. } => {
             for indent in body {
                 rewrite_return_call_stmt(indent, elems);
@@ -4209,6 +4212,7 @@ fn rewrite_return_call_expr(expr: &mut Expr, elems: &BTreeMap<String, Type>) {
         }
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => rewrite_return_call_expr(expr, elems),

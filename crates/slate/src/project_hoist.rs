@@ -170,7 +170,9 @@ fn walk_stmts(stmts: &mut [Stmt], ret: Option<&Type>, f: &mut impl FnMut(Slot<'_
                 walk_stmts(then_body, ret, f);
                 walk_stmts(else_body, ret, f);
             }
-            Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            Stmt::Loop { body, .. }
+            | Stmt::Scope { body, .. }
+            | Stmt::LabeledBlock { body, .. } => {
                 walk_stmts(body, ret, f);
             }
             Stmt::For { iter, body, .. } => {

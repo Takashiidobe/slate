@@ -111,7 +111,7 @@ fn walk_stmt(stmt: &mut Stmt, names: &mut impl Names) {
             names.label(label, true);
             walk_stmts(body, names)
         }
-        Stmt::Scope { body } => walk_stmts(body, names),
+        Stmt::Scope { body, .. } => walk_stmts(body, names),
         Stmt::For {
             label,
             pat,
@@ -186,6 +186,7 @@ fn walk_expr(expr: &mut Expr, names: &mut impl Names) {
         Expr::ConstBlock(expr)
         | Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. }

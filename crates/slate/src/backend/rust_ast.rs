@@ -870,6 +870,7 @@ pub enum Stmt {
     },
     Scope {
         body: Vec<Stmt>,
+        macro_region: Option<String>,
     },
     LabeledBlock {
         label: Label,
@@ -1176,6 +1177,10 @@ pub enum Expr {
     Block(Box<Block>),
     Unsafe(Box<Block>),
     ConstBlock(Box<Expr>),
+    MacroArg {
+        index: u32,
+        expr: Box<Expr>,
+    },
     Cast {
         expr: Box<Expr>,
         ty: Type,
@@ -1633,7 +1638,7 @@ impl Stmt {
             } => vec![then_body, else_body],
             Stmt::Loop { body, .. }
             | Stmt::For { body, .. }
-            | Stmt::Scope { body }
+            | Stmt::Scope { body, .. }
             | Stmt::LabeledBlock { body, .. } => vec![body],
             Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
                 vec![&mut body.stmts]
@@ -1710,6 +1715,7 @@ impl Expr {
             | Expr::Todo(_) => false,
             Expr::Unary { expr, .. }
             | Expr::Cast { expr, .. }
+            | Expr::MacroArg { expr, .. }
             | Expr::Ref { expr, .. }
             | Expr::AddrOf { expr, .. }
             | Expr::Transmute { expr, .. } => expr.reads_var(name),
@@ -1790,6 +1796,7 @@ impl Expr {
             | Expr::Todo(_) => {}
             Expr::Unary { expr, .. }
             | Expr::Cast { expr, .. }
+            | Expr::MacroArg { expr, .. }
             | Expr::Ref { expr, .. }
             | Expr::AddrOf { expr, .. }
             | Expr::Transmute { expr, .. } => expr.collect_vars(out),
@@ -1938,6 +1945,7 @@ impl Expr {
             | Expr::Todo(_) => {}
             Expr::Unary { expr, .. }
             | Expr::Cast { expr, .. }
+            | Expr::MacroArg { expr, .. }
             | Expr::Ref { expr, .. }
             | Expr::AddrOf { expr, .. }
             | Expr::Transmute { expr, .. } => expr.collect_offset_calls(out),
@@ -2078,6 +2086,7 @@ impl Expr {
             | Expr::Todo(_) => {}
             Expr::Unary { expr, .. }
             | Expr::Cast { expr, .. }
+            | Expr::MacroArg { expr, .. }
             | Expr::Ref { expr, .. }
             | Expr::AddrOf { expr, .. }
             | Expr::Transmute { expr, .. } => expr.collect_calls(out),
@@ -2213,6 +2222,7 @@ impl Expr {
             | Expr::GenericPath { .. } => false,
             Expr::Unary { expr, .. }
             | Expr::Cast { expr, .. }
+            | Expr::MacroArg { expr, .. }
             | Expr::Ref { expr, .. }
             | Expr::AddrOf { expr, .. }
             | Expr::Transmute { expr, .. } => expr.substitute_var(name, replacement),
@@ -2423,7 +2433,7 @@ fn stmt_reads_var(stmt: &Stmt, name: &str) -> bool {
             (pat != name && iter.reads_var(name))
                 || (pat != name && body.iter().any(|stmt| stmt_reads_var(stmt, name)))
         }
-        Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
+        Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
             body.iter().any(|stmt| stmt_reads_var(stmt, name))
         }
         Stmt::Unsafe { body } => {
@@ -2499,7 +2509,7 @@ fn stmt_collect_offset_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a s
                 stmt_collect_offset_calls(stmt, out);
             }
         }
-        Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
+        Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
             for stmt in body {
                 stmt_collect_offset_calls(stmt, out);
             }
@@ -2592,7 +2602,7 @@ fn stmt_collect_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a [Expr])>
                 stmt_collect_calls(stmt, out);
             }
         }
-        Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
+        Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
             for stmt in body {
                 stmt_collect_calls(stmt, out);
             }
@@ -2693,7 +2703,7 @@ fn stmt_collect_vars(stmt: &Stmt, out: &mut Vec<Ident>) {
             }
             out.extend(inner.into_iter().filter(|v| v.as_str() != pat.as_str()));
         }
-        Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
+        Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
             for stmt in body {
                 stmt_collect_vars(stmt, out);
             }
@@ -2802,7 +2812,7 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
             }
             changed
         }
-        Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+        Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } => {
             let mut changed = false;
             for stmt in body {
                 changed |= stmt_substitute_var(stmt, name, replacement);

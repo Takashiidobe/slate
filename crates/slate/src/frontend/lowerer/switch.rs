@@ -358,7 +358,10 @@ impl FunctionLowerer<'_, '_> {
                 arms: match_arms,
             }],
         });
-        Ok(Stmt::Scope { body: body_prefix })
+        Ok(Stmt::Scope {
+            body: body_prefix,
+            macro_region: None,
+        })
     }
 
     pub(super) fn lower_switch_operand(&mut self, value: &ir::Value) -> Result<(Expr, rust::Type)> {

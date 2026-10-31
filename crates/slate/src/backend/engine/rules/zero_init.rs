@@ -35,7 +35,9 @@ pub(super) fn expr_is_pure_and_closed(expr: &Expr) -> bool {
         Expr::Value(_) | Expr::Str(_) | Expr::HexFloat(_) | Expr::ByteStr(_) | Expr::CStr(_) => {
             true
         }
-        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } => expr_is_pure_and_closed(expr),
+        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } | Expr::MacroArg { expr, .. } => {
+            expr_is_pure_and_closed(expr)
+        }
         Expr::Binary { lhs, rhs, .. }
         | Expr::Range {
             start: lhs,

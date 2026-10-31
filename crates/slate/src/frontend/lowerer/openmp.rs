@@ -105,6 +105,9 @@ impl FunctionLowerer<'_, '_> {
             ],
             binding: CallBinding::Generated,
         }));
-        Ok(Stmt::Scope { body: outer })
+        Ok(Stmt::Scope {
+            body: outer,
+            macro_region: None,
+        })
     }
 }

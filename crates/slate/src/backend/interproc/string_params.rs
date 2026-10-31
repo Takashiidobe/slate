@@ -251,7 +251,7 @@ fn find_zero_decl_then_assign_aliases(
             }
             Stmt::Loop { body, .. }
             | Stmt::For { body, .. }
-            | Stmt::Scope { body }
+            | Stmt::Scope { body, .. }
             | Stmt::LabeledBlock { body, .. } => {
                 find_zero_decl_then_assign_aliases(body, tracked, found)
             }
@@ -425,7 +425,7 @@ fn walk_stmts(body: &[Stmt], f: &mut impl FnMut(&Stmt)) {
             }
             Stmt::Loop { body, .. }
             | Stmt::For { body, .. }
-            | Stmt::Scope { body }
+            | Stmt::Scope { body, .. }
             | Stmt::LabeledBlock { body, .. } => walk_stmts(body, f),
             Stmt::Unsafe { body } => walk_stmts(&body.stmts, f),
             Stmt::While { body, .. } => walk_stmts(&body.stmts, f),
@@ -522,6 +522,7 @@ fn visit_expr_deep(expr: &Expr, f: &mut impl FnMut(&Expr)) {
         }
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => visit_expr_deep(expr, f),
@@ -697,7 +698,7 @@ fn stmt_ok(stmt: &Stmt, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
         Stmt::For { iter, body, .. } => {
             expr_ok(iter, tracked, ctx) && body.iter().all(|s| stmt_ok(s, tracked, ctx))
         }
-        Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
+        Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
             body.iter().all(|s| stmt_ok(s, tracked, ctx))
         }
         Stmt::Unsafe { body } => block_ok(body, tracked, ctx),
@@ -749,6 +750,7 @@ fn expr_ok(expr: &Expr, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
         | Expr::Todo(_) => true,
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => expr_ok(expr, tracked, ctx),
@@ -915,6 +917,7 @@ fn arg_is_liftable_source(
 fn peel_pointer_view(expr: &Expr) -> &Expr {
     match expr {
         Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Unary { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
@@ -1025,7 +1028,7 @@ fn promote_nested_bodies(stmt: &mut Stmt, tracked: &BTreeSet<String>) -> bool {
         } => promote_tracked_lets(then_body, tracked) | promote_tracked_lets(else_body, tracked),
         Stmt::Loop { body, .. }
         | Stmt::For { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. } => promote_tracked_lets(body, tracked),
         Stmt::Unsafe { body } | Stmt::While { body, .. } => {
             promote_tracked_lets(&mut body.stmts, tracked)
@@ -1098,7 +1101,7 @@ fn rewrite_calls_in_stmt(stmt: &mut Stmt, ctx: &RewriteCtx) -> bool {
             changed |= rewrite_calls_in_stmts(body, ctx);
             changed
         }
-        Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
+        Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
             rewrite_calls_in_stmts(body, ctx)
         }
         Stmt::Unsafe { body } => rewrite_calls_in_block(body, ctx),
@@ -1190,6 +1193,7 @@ fn rewrite_calls_in_expr(expr: &mut Expr, ctx: &RewriteCtx) -> bool {
         | Expr::Todo(_) => {}
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => changed |= rewrite_calls_in_expr(expr, ctx),
@@ -1308,6 +1312,7 @@ fn rewrite_calls_in_expr(expr: &mut Expr, ctx: &RewriteCtx) -> bool {
 fn lifted_arg(expr: &Expr, literals: &BTreeMap<String, Vec<u8>>) -> Option<Expr> {
     match expr {
         Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Unary { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }

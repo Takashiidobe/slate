@@ -1,4 +1,5 @@
 mod arena;
+pub mod macro_boundaries;
 mod prelude;
 mod printf_format;
 mod rules;
@@ -107,6 +108,7 @@ pub(in crate::backend) fn apply_local(
     let passes = [RuleRegistry::build(rules::unsafe_registry())];
     for item in &mut program.items {
         apply_item(item, &passes);
+        macro_boundaries::strip_item(item);
     }
 }
 

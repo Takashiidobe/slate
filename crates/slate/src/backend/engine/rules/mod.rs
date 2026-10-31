@@ -28,7 +28,7 @@ mod singleton_scopes;
 mod slot_promote;
 mod structure_dispatch;
 mod structure_goto;
-mod walk;
+pub(super) mod walk;
 mod zero_init;
 
 use super::NodeRule;

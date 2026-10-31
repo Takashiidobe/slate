@@ -5,6 +5,7 @@
 - [Scheduling and facts](#scheduling-and-facts)
 - [Control-flow rewrites](#control-flow-rewrites)
   - [Explicit-tail-call candidate](#explicit-tail-call-candidate)
+- [Macro boundaries](#macro-boundaries)
 - [Validation](#validation)
 - [Design history](#design-history)
 <!-- /toc -->
@@ -112,6 +113,32 @@ local;`, so their bodies are unchanged. A liftable export whose every
   Keep dispatch when eligibility or profitability is not established.
 - Work: `slate-cgqg.3.1` coalescing, `slate-cgqg.3.3` retained-pass connection,
   `slate-cgqg.3.4` tail-call evaluation; retained structuring history: `slate-04q.85`.
+
+## Macro boundaries
+
+Under `--merge`, a C macro expansion carries two wrappers through the rules, so
+its arguments stay separate from its body for
+[macro recovery](preprocessor.md#macro-invocations).
+
+- `Stmt::Scope { macro_region: Some(name) }` marks the statements of one
+  invocation. `singleton_scopes` does not flatten it.
+- `Expr::MacroArg { index, expr }` marks an argument. Rules that match a shape
+  stop at it, so `!(a == b)` in `ASSERT(a == b, "m")` does not become `a != b`.
+  Rules still rewrite inside an argument, and analyses (reads, effects, the
+  interprocedural lattices) look through it.
+- `lower_macro_region` only creates a region for a macro's own statements. It
+  skips `let` and hoisted temporaries at the top of the expansion, and any
+  expansion with `return`, a `goto`, a label, asm, a `case`, or a `break` or
+  `continue` that leaves it. An expansion whose body reads a caller local gets
+  no wrappers, so it rewrites as before.
+- A new walker over `Expr` must handle `MacroArg`. A shape-matching rule should
+  not peel it.
+- `macro_boundaries::strip` removes both wrappers after the last rule pass, so
+  codegen and the project merge never see them. Fold verified regions before
+  that pass.
+
+Expression-position macros are not wrapped yet: `PRINT(x);` from
+`#define PRINT(x) printf x` has a statement that ends outside the invocation.
 
 ## Validation
 

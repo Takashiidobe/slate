@@ -176,7 +176,9 @@ fn contains_mut_borrow(expr: &Expr) -> bool {
     match expr {
         Expr::Ref { mutable: true, .. } => true,
         Expr::Ref { .. } | Expr::AddrOf { .. } => false,
-        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } => contains_mut_borrow(expr),
+        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } | Expr::MacroArg { expr, .. } => {
+            contains_mut_borrow(expr)
+        }
         Expr::Field { base, .. } | Expr::TupleField { base, .. } => contains_mut_borrow(base),
         Expr::Index { base, index } => contains_mut_borrow(base) || contains_mut_borrow(index),
         Expr::Binary { lhs, rhs, .. } => contains_mut_borrow(lhs) || contains_mut_borrow(rhs),
@@ -321,7 +323,7 @@ fn rewrite_stmt_nested(
         }
         Stmt::Loop { body, .. }
         | Stmt::For { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. } => {
             rewrite_block_stmts(body, printf_names, needs_fflush_extern, false)
         }
@@ -441,7 +443,7 @@ fn stmt_exposes_writer(stmt: &Stmt, writer_names: &HashSet<String>) -> bool {
                 || body_exposes_writer(then_body, writer_names)
                 || body_exposes_writer(else_body, writer_names)
         }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+        Stmt::Loop { body, .. } | Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } => {
             body_exposes_writer(body, writer_names)
         }
         Stmt::For { iter, body, .. } => {

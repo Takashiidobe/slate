@@ -11,7 +11,7 @@ use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 fn source_var(expr: &Expr) -> Option<Ident> {
     match expr {
         Expr::Var(v) => Some(*v),
-        Expr::Cast { expr, .. } => source_var(expr),
+        Expr::MacroArg { expr, .. } | Expr::Cast { expr, .. } => source_var(expr),
         _ => None,
     }
 }
@@ -29,7 +29,7 @@ fn frame_field_key(expr: &Expr) -> Option<String> {
 fn place_key(expr: &Expr) -> Option<String> {
     match expr {
         Expr::Var(v) => Some(v.to_string()),
-        Expr::Cast { expr, .. } => place_key(expr),
+        Expr::MacroArg { expr, .. } | Expr::Cast { expr, .. } => place_key(expr),
         _ => frame_field_key(expr),
     }
 }
@@ -618,7 +618,7 @@ fn collect_assignments(body: &[Stmt], out: &mut BTreeMap<String, Vec<Expr>>) {
             }
             Stmt::Loop { body, .. }
             | Stmt::For { body, .. }
-            | Stmt::Scope { body }
+            | Stmt::Scope { body, .. }
             | Stmt::LabeledBlock { body, .. } => collect_assignments(body, out),
             Stmt::Match { arms, .. } => {
                 for arm in arms {
@@ -652,7 +652,7 @@ fn collect_return_exprs(body: &[Stmt], out: &mut Vec<Expr>) {
             }
             Stmt::Loop { body, .. }
             | Stmt::For { body, .. }
-            | Stmt::Scope { body }
+            | Stmt::Scope { body, .. }
             | Stmt::LabeledBlock { body, .. } => collect_return_exprs(body, out),
             Stmt::Match { arms, .. } => {
                 for arm in arms {
@@ -967,9 +967,9 @@ impl ClassifyCtx<'_> {
                 self.body(then_body);
                 self.body(else_body);
             }
-            Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-                self.body(body)
-            }
+            Stmt::Loop { body, .. }
+            | Stmt::Scope { body, .. }
+            | Stmt::LabeledBlock { body, .. } => self.body(body),
             Stmt::For { iter, body, .. } => {
                 self.expr(iter);
                 self.body(body);
@@ -1030,7 +1030,7 @@ impl ClassifyCtx<'_> {
                 }
                 self.expr(index);
             }
-            Expr::Cast { expr, .. } => self.place(expr, is_write),
+            Expr::MacroArg { expr, .. } | Expr::Cast { expr, .. } => self.place(expr, is_write),
             Expr::Field { base, .. } | Expr::TupleField { base, .. } => self.place(base, is_write),
             other => self.expr(other),
         }
@@ -1039,7 +1039,7 @@ impl ClassifyCtx<'_> {
     fn expr(&mut self, expr: &Expr) {
         match expr {
             Expr::Var(_) => {}
-            Expr::Unary { expr, .. } => self.expr(expr),
+            Expr::Unary { expr, .. } | Expr::MacroArg { expr, .. } => self.expr(expr),
             Expr::Ref { mutable, expr } | Expr::AddrOf { mutable, expr } => {
                 if let Expr::Var(name) = &**expr
                     && let Some(canonical) = self.canonical_of(name.as_str())
@@ -1269,7 +1269,7 @@ impl ClassifyCtx<'_> {
 
 fn peel_cast(expr: &Expr) -> &Expr {
     match expr {
-        Expr::Cast { expr, .. } => peel_cast(expr),
+        Expr::MacroArg { expr, .. } | Expr::Cast { expr, .. } => peel_cast(expr),
         other => other,
     }
 }
@@ -1555,7 +1555,7 @@ fn collect_heap_locals_stmt(stmt: &Stmt, out: &mut std::collections::BTreeSet<St
             collect_heap_locals(then_body, out);
             collect_heap_locals(else_body, out);
         }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+        Stmt::Loop { body, .. } | Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } => {
             collect_heap_locals(body, out);
         }
         Stmt::For { body, .. } => collect_heap_locals(body, out),
@@ -1963,7 +1963,7 @@ fn collect_owned_aliases_stmt(
             collect_owned_aliases_stmts(then_body, own, aliases);
             collect_owned_aliases_stmts(else_body, own, aliases);
         }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+        Stmt::Loop { body, .. } | Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } => {
             collect_owned_aliases_stmts(body, own, aliases);
         }
         Stmt::For { body, .. } => collect_owned_aliases_stmts(body, own, aliases),
@@ -2038,7 +2038,7 @@ fn collect_declared_ptr_mutability_stmt(stmt: &Stmt, out: &mut BTreeMap<String, 
             collect_declared_ptr_mutability(then_body, out);
             collect_declared_ptr_mutability(else_body, out);
         }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+        Stmt::Loop { body, .. } | Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } => {
             collect_declared_ptr_mutability(body, out);
         }
         Stmt::For { body, .. } => collect_declared_ptr_mutability(body, out),
@@ -2187,7 +2187,7 @@ fn rewrite_stmt(stmt: &mut Stmt, ctx: &LiftCtx) {
             rewrite_expr(iter, ctx);
             rewrite_stmts(body, ctx);
         }
-        Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
+        Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
             rewrite_stmts(body, ctx)
         }
         Stmt::Unsafe { body } => rewrite_block(body, ctx),
@@ -2332,6 +2332,7 @@ fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
         | Expr::Todo(_) => {}
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => rewrite_expr(expr, ctx),

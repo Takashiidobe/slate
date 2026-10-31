@@ -15,6 +15,7 @@ fn expr_prec(expr: &Expr) -> Precedence {
         Expr::Range { .. } => Precedence::Range,
         Expr::Binary { op, .. } => op.precedence(),
         Expr::Cast { .. } => Precedence::Cast,
+        Expr::MacroArg { expr, .. } => expr_prec(expr),
         Expr::Unary { .. } | Expr::Ref { .. } => Precedence::Prefix,
         Expr::Call { .. }
         | Expr::MethodCall { .. }
@@ -50,6 +51,7 @@ fn expr_contains_bare_struct_lit(expr: &Expr) -> bool {
             expr_contains_bare_struct_lit(start) || expr_contains_bare_struct_lit(end)
         }
         Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Unary { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. } => expr_contains_bare_struct_lit(expr),
@@ -1030,7 +1032,7 @@ impl<W: Write> Codegen<W> {
                 self.stmts(body)?;
                 self.out.write_str("}\n")
             }
-            Stmt::Scope { body } => {
+            Stmt::Scope { body, .. } => {
                 self.out.write_str("{\n")?;
                 self.stmts(body)?;
                 self.out.write_str("}\n")
@@ -1379,6 +1381,7 @@ impl<W: Write> Codegen<W> {
                 self.out.write_str("unsafe ")?;
                 self.expr_block(block)
             }
+            Expr::MacroArg { expr, .. } => self.expr(expr),
             Expr::ConstBlock(expr) => {
                 self.out.write_str("const { ")?;
                 self.expr(expr)?;

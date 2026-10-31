@@ -63,6 +63,7 @@ impl FunctionLowerer<'_, '_> {
                             args: vec![Expr::Var(operand.into())],
                         }),
                     ],
+                    macro_region: None,
                 }
             }
             None => Stmt::Assign {
@@ -249,6 +250,7 @@ impl FunctionLowerer<'_, '_> {
             ),
             ir::Statement::Block(body) => Stmt::Scope {
                 body: self.lower_statement_list(body)?,
+                macro_region: None,
             },
             ir::Statement::If {
                 condition,
@@ -326,7 +328,10 @@ impl FunctionLowerer<'_, '_> {
                     label: Some(self.break_label(*id)),
                     body: loop_body,
                 });
-                Stmt::Scope { body: statements }
+                Stmt::Scope {
+                    body: statements,
+                    macro_region: None,
+                }
             }
             ir::Statement::DoWhile {
                 id,
@@ -391,7 +396,19 @@ impl FunctionLowerer<'_, '_> {
         statements: &[slate_parser::ast::Span<ir::Statement>],
     ) -> Result<Vec<Stmt>> {
         let mut lowered = Vec::with_capacity(statements.len());
-        for statement in statements {
+        let mut remaining = statements;
+        while let Some((statement, rest)) = remaining.split_first() {
+            if let Some(invocation) = self.macro_region_of(statement) {
+                let length = 1 + rest
+                    .iter()
+                    .take_while(|next| self.macro_region_of(next) == Some(invocation))
+                    .count();
+                let (region, after) = remaining.split_at(length);
+                lowered.extend(self.lower_macro_region(invocation, region)?);
+                remaining = after;
+                continue;
+            }
+            remaining = rest;
             lowered.extend(self.lower_statement(statement)?);
             if let ir::Statement::Let(variable) = &statement.value
                 && let Some(cleanup) = variable.cleanup
@@ -466,7 +483,10 @@ impl FunctionLowerer<'_, '_> {
             },
             body,
         });
-        Ok(Some(Stmt::Scope { body: statements }))
+        Ok(Some(Stmt::Scope {
+            body: statements,
+            macro_region: None,
+        }))
     }
 
     fn cleanup_guard(&mut self, variable: &ir::Variable, cleanup: BindingId) -> Result<[Stmt; 2]> {
@@ -539,7 +559,7 @@ impl FunctionLowerer<'_, '_> {
     }
 }
 
-fn collect_lets(
+pub(super) fn collect_lets(
     statements: &[slate_parser::ast::Span<ir::Statement>],
     lets: &mut Vec<BindingId>,
     indices: &mut HashSet<BindingId>,

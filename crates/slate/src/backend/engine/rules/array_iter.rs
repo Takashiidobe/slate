@@ -59,7 +59,10 @@ fn direct_index_match(expr: &Expr, ind_var: Ident) -> Option<Ident> {
 fn index_search_children(expr: &Expr) -> Vec<&Expr> {
     match expr {
         Expr::Binary { lhs, rhs, .. } => vec![lhs, rhs],
-        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } | Expr::Transmute { expr, .. } => {
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
+        | Expr::Transmute { expr, .. } => {
             vec![expr]
         }
         Expr::Call { func, args, .. } => {
@@ -81,7 +84,10 @@ fn index_search_children(expr: &Expr) -> Vec<&Expr> {
 fn index_search_children_mut(expr: &mut Expr) -> Vec<&mut Expr> {
     match expr {
         Expr::Binary { lhs, rhs, .. } => vec![lhs, rhs],
-        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } | Expr::Transmute { expr, .. } => {
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
+        | Expr::Transmute { expr, .. } => {
             vec![expr]
         }
         Expr::Call { func, args, .. } => {

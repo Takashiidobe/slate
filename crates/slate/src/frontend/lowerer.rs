@@ -25,6 +25,7 @@ mod functions;
 mod globals;
 mod intrinsics;
 mod intrinsics_table;
+mod macro_regions;
 mod names;
 mod openmp;
 mod padding;
@@ -84,6 +85,7 @@ struct Tables<'m> {
     promote_docs: bool,
     named_c_types: bool,
     c_types: &'m ir::CTypeTable,
+    macros: &'m slate_parser::ast::MacroInvocations,
     unit: &'m str,
     types: HashMap<TypeId, &'m Span<ir::TypeDefinition>>,
     record_names: HashMap<TypeId, String>,
@@ -154,6 +156,9 @@ struct FunctionLowerer<'a, 'm> {
     register_locals: HashSet<BindingId>,
     counted_loops: HashSet<BindingId>,
     non_index_names: HashSet<String>,
+    function_locals: HashSet<String>,
+    macro_region: Option<slate_parser::ast::MacroInvocationId>,
+    in_macro_argument: bool,
     old_value: Option<Expr>,
     declaring: std::cell::Cell<Option<(BindingId, bool)>>,
     after_declaration: Option<Stmt>,
@@ -600,6 +605,7 @@ impl<'m> ModuleLowerer<'m> {
             promote_docs: !options.explicit_docs_only,
             named_c_types: options.named_c_types,
             c_types: &module.c_types,
+            macros: &module.macros,
             unit: &options.unit,
             types: module
                 .types
@@ -654,6 +660,9 @@ impl<'m> ModuleLowerer<'m> {
             register_locals: HashSet::new(),
             counted_loops: HashSet::new(),
             non_index_names: HashSet::new(),
+            function_locals: HashSet::new(),
+            macro_region: None,
+            in_macro_argument: false,
             old_value: None,
             declaring: std::cell::Cell::new(None),
             after_declaration: None,

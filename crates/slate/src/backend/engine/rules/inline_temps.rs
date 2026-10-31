@@ -202,6 +202,7 @@ pub(super) fn expr_effects(expr: &Expr) -> Effects {
         | Expr::Todo(_) => Effects::default(),
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => expr_effects(expr),
@@ -388,6 +389,7 @@ fn expr_any(expr: &Expr, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
         | Expr::AtomicFence { .. } => false,
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => expr_any(expr, pred),
@@ -503,7 +505,7 @@ fn stmt_any_expr(stmt: &Stmt, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
         }
         Stmt::Loop { body, .. }
         | Stmt::For { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. } => body.iter().any(|s| stmt_any_expr(s, pred)),
         Stmt::Match { expr, arms } => {
             expr_any(expr, pred)
@@ -571,7 +573,7 @@ fn stmt_e_ident_count(stmt: &Stmt, name: Ident) -> usize {
         }
         Stmt::Loop { body, .. }
         | Stmt::For { body, .. }
-        | Stmt::Scope { body }
+        | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. } => body.iter().map(|s| stmt_e_ident_count(s, name)).sum(),
         Stmt::Match { expr, arms } => {
             e_ident_count(expr, name)
@@ -686,6 +688,7 @@ fn e_ident_count(expr: &Expr, name: Ident) -> usize {
         | Expr::AtomicFence { .. } => 0,
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => e_ident_count(expr, name),
@@ -982,7 +985,9 @@ fn binary_operand_pinned(expr: &Expr, name: Ident) -> bool {
                     || (expr_ident(rhs) == Some(name) && expr_is_type_anchored(lhs)));
             sibling_pins || binary_operand_pinned(lhs, name) || binary_operand_pinned(rhs, name)
         }
-        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } => binary_operand_pinned(expr, name),
+        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } | Expr::MacroArg { expr, .. } => {
+            binary_operand_pinned(expr, name)
+        }
         _ => false,
     }
 }
@@ -1136,7 +1141,9 @@ fn kind_own_substitute_var(kind: &mut NodeKind, name: &str, replacement: &Expr) 
 fn contains_integer_literal(expr: &Expr) -> bool {
     match expr {
         Expr::Value(RustValue::I64(_) | RustValue::I128(_) | RustValue::Usize(_)) => true,
-        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } => contains_integer_literal(expr),
+        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } | Expr::MacroArg { expr, .. } => {
+            contains_integer_literal(expr)
+        }
         Expr::Binary { lhs, rhs, .. } => {
             contains_integer_literal(lhs) || contains_integer_literal(rhs)
         }
@@ -1691,7 +1698,9 @@ fn is_numeric_const_expr(expr: &Expr) -> bool {
             | RustValue::Usize(_)
             | RustValue::Float(_),
         ) => true,
-        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } => is_numeric_const_expr(expr),
+        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } | Expr::MacroArg { expr, .. } => {
+            is_numeric_const_expr(expr)
+        }
         Expr::Binary { lhs, rhs, .. } => is_numeric_const_expr(lhs) && is_numeric_const_expr(rhs),
         _ => false,
     }
@@ -1781,6 +1790,7 @@ fn expr_arg_pos(expr: &Expr, name: Ident, ty: Option<&Type>) -> Option<ArgPos> {
             other => other,
         }),
         Expr::Unary { expr, .. }
+        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => expr_arg_pos(expr, name, ty),

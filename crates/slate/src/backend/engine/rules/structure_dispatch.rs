@@ -46,7 +46,7 @@ fn named_let(arena: &Arena, id: NodeId, prefix: &str) -> Option<(Ident, Expr)> {
 }
 
 fn parse(arena: &Arena, id: NodeId) -> Option<Switch> {
-    let NodeKind::Scope { body } = arena.get(id)? else {
+    let NodeKind::Scope { body, .. } = arena.get(id)? else {
         return None;
     };
     let (case_name, dispatch, loop_id, value_name) = match body.as_slice() {
@@ -406,16 +406,18 @@ impl NodeRule for StructureDispatch {
         let Some(stmt) = rebuild(switch, &mut next_temp) else {
             return false;
         };
-        let Some(NodeKind::Scope { body }) = arena.get(id) else {
+        let Some(NodeKind::Scope { body, macro_region }) = arena.get(id) else {
             return false;
         };
         let old = body.clone();
+        let macro_region = macro_region.clone();
         let new = arena::insert_stmts(arena, Some(id), vec![stmt]);
         let anchor = new.first().copied();
         arena.set_kind(
             id,
             NodeKind::Scope {
                 body: old.iter().chain(&new).copied().collect(),
+                macro_region,
             },
         );
         for child in old {

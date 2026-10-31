@@ -151,6 +151,7 @@ pub(in crate::backend) enum NodeKind {
     },
     Scope {
         body: Vec<NodeId>,
+        macro_region: Option<String>,
     },
     LabeledBlock {
         label: Label,
@@ -227,7 +228,7 @@ impl NodeKind {
             } => vec![then_body, else_body],
             NodeKind::Loop { body, .. }
             | NodeKind::For { body, .. }
-            | NodeKind::Scope { body }
+            | NodeKind::Scope { body, .. }
             | NodeKind::LabeledBlock { body, .. } => vec![body],
             NodeKind::Match { arms, .. } => arms.iter_mut().map(|arm| &mut arm.body).collect(),
             NodeKind::Let { .. }
@@ -261,7 +262,7 @@ impl NodeKind {
             } => vec![then_body, else_body],
             NodeKind::Loop { body, .. }
             | NodeKind::For { body, .. }
-            | NodeKind::Scope { body }
+            | NodeKind::Scope { body, .. }
             | NodeKind::LabeledBlock { body, .. } => vec![body],
             NodeKind::Match { arms, .. } => arms.iter().map(|arm| &arm.body).collect(),
             NodeKind::Let { .. }
@@ -977,8 +978,9 @@ fn build_stmt(arena: &mut Arena, parent: Option<NodeId>, stmt: Stmt) -> NodeId {
             iter,
             body: build_stmts(arena, Some(id), body),
         },
-        Stmt::Scope { body } => NodeKind::Scope {
+        Stmt::Scope { body, macro_region } => NodeKind::Scope {
             body: build_stmts(arena, Some(id), body),
+            macro_region,
         },
         Stmt::LabeledBlock { label, body } => NodeKind::LabeledBlock {
             label,
@@ -1116,8 +1118,9 @@ fn reify_stmt(arena: &Arena, id: NodeId, out: &mut Vec<Stmt>) {
             iter: iter.clone(),
             body: reify_nested(arena, body),
         },
-        NodeKind::Scope { body } => Stmt::Scope {
+        NodeKind::Scope { body, macro_region } => Stmt::Scope {
             body: reify_nested(arena, body),
+            macro_region: macro_region.clone(),
         },
         NodeKind::LabeledBlock { label, body } => Stmt::LabeledBlock {
             label: label.clone(),

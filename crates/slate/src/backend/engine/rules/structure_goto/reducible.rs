@@ -91,7 +91,7 @@ fn diverges(arena: &Arena, id: NodeId) -> bool {
         } => tail_diverges(arena, then_body) && tail_diverges(arena, else_body),
         NodeKind::Match { arms, .. } => arms.iter().all(|arm| tail_diverges(arena, &arm.body)),
         NodeKind::Unsafe { stmts, tail: None } => tail_diverges(arena, stmts),
-        NodeKind::Block { stmts, tail: None } | NodeKind::Scope { body: stmts } => {
+        NodeKind::Block { stmts, tail: None } | NodeKind::Scope { body: stmts, .. } => {
             tail_diverges(arena, stmts)
         }
         _ => false,
@@ -704,7 +704,7 @@ fn drop_tail_continue(body: &mut Vec<Stmt>) {
                 drop_tail_continue(&mut arm.body);
             }
         }
-        Some(Stmt::LabeledBlock { body, .. }) | Some(Stmt::Scope { body }) => {
+        Some(Stmt::LabeledBlock { body, .. }) | Some(Stmt::Scope { body, .. }) => {
             drop_tail_continue(body)
         }
         _ => {}
