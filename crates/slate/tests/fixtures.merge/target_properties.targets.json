@@ -1,0 +1,6 @@
+[
+  { "name": "linux-i686", "triple": "i686-unknown-linux-gnu", "flavor": "clang" },
+  { "name": "linux-aarch64", "triple": "aarch64-unknown-linux-gnu", "flavor": "clang" },
+  { "name": "windows-i686", "triple": "i686-pc-windows-msvc", "flavor": "msvc" },
+  { "name": "linux-musl-x86_64", "triple": "x86_64-unknown-linux-musl", "flavor": "clang" }
+]

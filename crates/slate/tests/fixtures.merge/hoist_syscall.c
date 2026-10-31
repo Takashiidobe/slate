@@ -33,16 +33,16 @@ int main(void) {
 // CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const c_char, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT: #[cfg(target_arch = "x86_64")]
 // CHECK-NEXT: type c_char = i8;
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "aarch64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT: #[cfg(target_arch = "aarch64")]
 // CHECK-NEXT: type c_char = u8;
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT: #[cfg(target_arch = "x86_64")]
 // CHECK-NEXT: const __SLATE_HOIST___slate_main: i32 = 295i32;
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "aarch64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT: #[cfg(target_arch = "aarch64")]
 // CHECK-NEXT: const __SLATE_HOIST___slate_main: i32 = 69i32;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

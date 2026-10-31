@@ -170,7 +170,7 @@ int main(void) {
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __va_start([[ARG_0:arg[0-9]+]]: *mut *mut c_char, ...);
 // CHECK-NEXT:     fn __acrt_iob_func([[ARG_0]]: u32) -> *mut _iobuf;
@@ -183,14 +183,14 @@ int main(void) {
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf([[ARG_0]]: *const c_char, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: type c_char = i8;
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __crt_locale_pointers {
@@ -198,32 +198,32 @@ int main(void) {
 // CHECK-NEXT:     mbcinfo: *mut __crt_multibyte_data,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __crt_locale_data {}
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __crt_multibyte_data {}
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: fn __local_stdio_printf_options() -> *mut u64 {
 // CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(_OptionsStorage) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: static mut _OptionsStorage: u64 = unsafe { std::mem::zeroed() };
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct _iobuf {
 // CHECK-NEXT:     _Placeholder: *mut (),
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: fn _vfprintf_l(
 // CHECK-NEXT:     _Stream: *mut _iobuf,
 // CHECK-NEXT:     _Format: *const c_char,
@@ -241,7 +241,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn printf(_Format: *const c_char, mut __va_args: ...) -> i32 {
 // CHECK-NEXT:     let mut _Result: i32 = 0;
 // CHECK-NEXT:     let mut _ArgList: *mut c_char = unsafe { std::mem::zeroed() };
@@ -259,7 +259,7 @@ int main(void) {
 // CHECK-NEXT:     _Result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: type c_ulong = u64;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
@@ -311,7 +311,7 @@ int main(void) {
 // CHECK-NEXT:                 total += 100;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT:         #[cfg(windows)]
 // CHECK-NEXT:         {
 // CHECK-NEXT:             total += 1000;
 // CHECK-NEXT:         }
@@ -460,7 +460,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {} {}",
@@ -477,7 +477,7 @@ int main(void) {
 // CHECK-NEXT:         println!("{} {} {}", switched(0i32), switched(1i32), switched(2i32));
 // CHECK-NEXT:         println!("{} {}", gamma_value(), field_use());
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             printf(

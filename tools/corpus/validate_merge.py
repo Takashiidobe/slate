@@ -471,8 +471,8 @@ def layouts_main(args, matrix, targets, sets):
         if entry.get("detail") or entry.get("tail"):
             print("    " + (entry.get("detail") or entry["tail"]).replace("\n", "\n    "))
         failed += entry["status"] != "pass"
-    print(f"{len(results) - failed}/{len(results)} passed")
-    sys.exit(1 if failed else 0)
+    print(f"layouts: {len(results) - failed}/{len(results)} passed")
+    return failed
 
 
 def codegen_target(crate, target, sets, out, tool):
@@ -502,8 +502,8 @@ def codegen_main(args, matrix, targets, sets):
     failed = [entry for entry in results if entry["status"] != "pass"]
     for entry in failed:
         print(entry["target"], entry["features"], *entry["errors"], sep="\n    ")
-    print(f"{len(results) - len(failed)}/{len(results)} passed")
-    sys.exit(1 if failed else 0)
+    print(f"codegen: {len(results) - len(failed)}/{len(results)} passed")
+    return len(failed)
 
 
 def main():
@@ -519,12 +519,12 @@ def main():
     args = parser.parse_args()
     matrix = json.loads(MATRIX.read_text())
     targets = {target["name"]: target for target in matrix["targets"]}
-    if args.codegen:
+    if args.codegen or args.layouts:
         names = [feature["name"] for feature in matrix["features"]]
-        codegen_main(args, matrix, targets, [[]] if args.features == "default" else feature_sets(names))
-    if args.layouts:
-        names = [feature["name"] for feature in matrix["features"]]
-        layouts_main(args, matrix, targets, [[]] if args.features == "default" else feature_sets(names))
+        sets = [[]] if args.features == "default" else feature_sets(names)
+        failed = codegen_main(args, matrix, targets, sets) if args.codegen else 0
+        failed += layouts_main(args, matrix, targets, sets) if args.layouts else 0
+        sys.exit(1 if failed else 0)
     toolchains = {**linux_toolchains(), **windows_toolchains()}
     names = args.targets.split(",") if args.targets else list(toolchains)
     all_features = [feature["name"] for feature in matrix["features"]]

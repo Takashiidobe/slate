@@ -1,6 +1,8 @@
 #[path = "support/filecheck.rs"]
 mod filecheck;
 
+use slate_parser::target_info::TargetInfo;
+use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -197,6 +199,14 @@ fn merge_fixture(source: &Path) -> Result<(), String> {
         matrix["targets"][1] =
             serde_json::json!({"name": fields[0], "triple": fields[1], "flavor": fields[2]});
     }
+    if let Ok(extra) = std::fs::read(source.with_extension("targets.json")) {
+        let extra: Vec<serde_json::Value> =
+            serde_json::from_slice(&extra).map_err(|e| format!("parse targets: {e}"))?;
+        matrix["targets"]
+            .as_array_mut()
+            .expect("matrix targets")
+            .extend(extra);
+    }
     if let Some(names) = text
         .lines()
         .find_map(|line| line.strip_prefix("// merge-features:"))
@@ -317,6 +327,64 @@ fn target_outside_matrix_hits_guard() {
         !outside.status.success()
             && stderr.contains("this crate was not translated for this target"),
         "{stderr}"
+    );
+}
+
+#[test]
+fn target_properties_match_rustc() {
+    let workspace = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let matrix = std::fs::read(workspace.join("tools/corpus/matrices/zlib.json")).expect("matrix");
+    let matrix: serde_json::Value = serde_json::from_slice(&matrix).expect("parse matrix");
+    let targets: Vec<(String, BTreeSet<String>, BTreeSet<String>)> = matrix["targets"]
+        .as_array()
+        .expect("matrix targets")
+        .iter()
+        .map(|target| {
+            let triple = target["triple"].as_str().expect("triple");
+            let info = TargetInfo::for_triple(triple).expect("known triple");
+            let ours = slate::project_cfg::target_properties(&info)
+                .iter()
+                .map(|atom| atom.render().replace(" = ", "="))
+                .collect();
+            let printed = Command::new("rustc")
+                .args(["--print", "cfg", "--target", triple])
+                .output()
+                .expect("run rustc");
+            let theirs = String::from_utf8_lossy(&printed.stdout)
+                .lines()
+                .map(str::to_string)
+                .collect();
+            (triple.to_string(), ours, theirs)
+        })
+        .collect();
+    let atoms: BTreeSet<&String> = targets.iter().flat_map(|(_, ours, _)| ours).collect();
+    for (triple, ours, theirs) in &targets {
+        for atom in &atoms {
+            assert_eq!(
+                ours.contains(*atom),
+                theirs.contains(*atom),
+                "{triple}: {atom}"
+            );
+        }
+    }
+}
+
+#[test]
+fn exhaustive_projection_is_bounded() {
+    let base = std::fs::read(fixtures().join("matrix.json")).expect("read matrix");
+    let mut matrix: serde_json::Value = serde_json::from_slice(&base).expect("parse matrix");
+    matrix["sources"] = serde_json::json!(["by_target.c"]);
+    matrix["invalid_features"] = serde_json::json!([]);
+    matrix["features"] = (0..10)
+        .map(|index| serde_json::json!({"name": format!("f{index}"), "defines": [format!("F{index}")]}))
+        .collect();
+    std::fs::create_dir_all(work()).expect("create work");
+    let matrix_path = work().join("projection_bound.json");
+    std::fs::write(&matrix_path, matrix.to_string()).expect("write matrix");
+    let (_, stderr, code) = merge(&matrix_path, &work().join("crates/projection_bound"), None);
+    assert!(
+        code != 0 && stderr.contains("2048 whole-project translations"),
+        "{code}: {stderr}"
     );
 }
 

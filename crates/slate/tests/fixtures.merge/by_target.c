@@ -49,10 +49,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: type c_char = i8;
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: const __SLATE_HOIST_platform: &core::ffi::CStr = c"unix";
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: const __SLATE_HOIST_platform: &core::ffi::CStr = c"windows";
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -60,20 +60,10 @@ int main(void) {
 // CHECK-NEXT:     __SLATE_HOIST_platform.as_ptr()
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     target_arch = "x86_64",
-// CHECK-NEXT:     target_os = "linux",
-// CHECK-NEXT:     target_env = "gnu",
-// CHECK-NEXT:     feature = "alpha"
-// CHECK-NEXT: ))]
+// CHECK-NEXT: #[cfg(all(unix, feature = "alpha"))]
 // CHECK-NEXT: const __SLATE_HOIST_platform_alpha: &core::ffi::CStr = c"unix-alpha";
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     target_arch = "x86_64",
-// CHECK-NEXT:     windows,
-// CHECK-NEXT:     target_env = "msvc",
-// CHECK-NEXT:     feature = "alpha"
-// CHECK-NEXT: ))]
+// CHECK-NEXT: #[cfg(all(windows, feature = "alpha"))]
 // CHECK-NEXT: const __SLATE_HOIST_platform_alpha: &core::ffi::CStr = c"windows-alpha";
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(feature = "alpha")]

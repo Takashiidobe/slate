@@ -67,16 +67,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: type c_char = i8;
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: type c_long = i64;
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: type c_long = i32;
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: const __SLATE_HOIST_number: i32 = 295;
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: const __SLATE_HOIST_number: i32 = 387;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -84,10 +84,10 @@ int main(void) {
 // CHECK-NEXT:     __SLATE_HOIST_number
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: const __SLATE_HOIST_in_cast: i32 = 295;
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: const __SLATE_HOIST_in_cast: i32 = 387;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -95,22 +95,22 @@ int main(void) {
 // CHECK-NEXT:     __SLATE_HOIST_in_cast
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn repeated(value: i32) -> i32 {
 // CHECK-NEXT:     if value == 295 { 295 } else { 0 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn repeated(value: i32) -> i32 {
 // CHECK-NEXT:     if value == 387 { 387 } else { 0 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: const __SLATE_HOIST_name: &core::ffi::CStr = c"unix";
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: const __SLATE_HOIST_name: &core::ffi::CStr = c"windows";
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -124,20 +124,10 @@ int main(void) {
 // CHECK-NEXT:     doubled
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     target_arch = "x86_64",
-// CHECK-NEXT:     target_os = "linux",
-// CHECK-NEXT:     target_env = "gnu",
-// CHECK-NEXT:     feature = "alpha"
-// CHECK-NEXT: ))]
+// CHECK-NEXT: #[cfg(all(unix, feature = "alpha"))]
 // CHECK-NEXT: const __SLATE_HOIST_gated: i32 = 295;
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     target_arch = "x86_64",
-// CHECK-NEXT:     windows,
-// CHECK-NEXT:     target_env = "msvc",
-// CHECK-NEXT:     feature = "alpha"
-// CHECK-NEXT: ))]
+// CHECK-NEXT: #[cfg(all(windows, feature = "alpha"))]
 // CHECK-NEXT: const __SLATE_HOIST_gated: i32 = 387;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(feature = "alpha")]
@@ -150,35 +140,25 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { puts(name()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     #[cfg(all(
-// CHECK-NEXT:         target_arch = "x86_64",
-// CHECK-NEXT:         target_os = "linux",
-// CHECK-NEXT:         target_env = "gnu",
-// CHECK-NEXT:         feature = "alpha"
-// CHECK-NEXT:     ))]
+// CHECK-NEXT:     #[cfg(all(unix, feature = "alpha"))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         if gated() != 295 + 1 {
 // CHECK-NEXT:             return 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"))]
+// CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         number() + in_cast() + repeated(295i32) - 3 * 295
 // CHECK-NEXT:             + (same_type_everywhere((2 as c_long)) as i32)
 // CHECK-NEXT:             - 4
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(all(
-// CHECK-NEXT:         target_arch = "x86_64",
-// CHECK-NEXT:         windows,
-// CHECK-NEXT:         target_env = "msvc",
-// CHECK-NEXT:         feature = "alpha"
-// CHECK-NEXT:     ))]
+// CHECK-NEXT:     #[cfg(all(windows, feature = "alpha"))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         if gated() != 387 + 1 {
 // CHECK-NEXT:             return 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", windows, target_env = "msvc"))]
+// CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         number() + in_cast() + repeated(387i32) - 3 * 387 + same_type_everywhere((2 as c_long)) - 4
 // CHECK-NEXT:     }

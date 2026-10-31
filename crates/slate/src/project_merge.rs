@@ -5,6 +5,7 @@ use crate::compile_commands::CompileCommand;
 use crate::frontend::directive_translate::{factor_cfgs, item_key, target_cfg};
 use crate::frontend::distinct_functions::{self, SectionCandidates};
 use crate::frontend::{self, lowerer};
+use crate::project_cfg::{self, TargetConditions, holds};
 use crate::project_hoist;
 use crate::project_matrix::Matrix;
 use crate::project_plan;
@@ -22,6 +23,7 @@ use std::sync::Mutex;
 const MAX_RELEVANT_FEATURES: usize = 12;
 const MAX_ENUMERATED_FEATURES: usize = 20;
 const MAX_REPORTED_MISMATCHES: usize = 20;
+const MAX_EXHAUSTIVE_PROJECTIONS: usize = 1024;
 const SAMPLE_SEED: u64 = 0x5eed_0f5a_a7e0_0001;
 const UNTRANSLATED_TARGET: &str = "this crate was not translated for this target";
 
@@ -303,6 +305,7 @@ struct TargetUnit {
 struct TargetBuild {
     name: String,
     cfg: Cfg,
+    properties: BTreeSet<Cfg>,
     owners: CommonOwners,
     taken: BTreeSet<String>,
     units: Vec<TargetUnit>,
@@ -401,14 +404,13 @@ fn compile_isolated(
     ))
 }
 
-fn matrix_cfg(matrix: &Matrix, target: &str) -> Result<Cfg, String> {
+fn matrix_target_info(matrix: &Matrix, target: &str) -> Result<TargetInfo, String> {
     let known = matrix
         .targets
         .iter()
         .find(|known| known.name == target)
         .ok_or_else(|| format!("unknown matrix target {target}"))?;
-    let info = TargetInfo::for_triple(&known.triple).map_err(|error| error.to_string())?;
-    Ok(target_cfg(&info))
+    TargetInfo::for_triple(&known.triple).map_err(|error| error.to_string())
 }
 
 fn prepare_target(matrix: &Matrix, project: &Path, target: &str) -> Result<TargetBuild, String> {
@@ -454,9 +456,11 @@ fn prepare_target(matrix: &Matrix, project: &Path, target: &str) -> Result<Targe
             defines_main: false,
         });
     }
+    let info = matrix_target_info(matrix, target)?;
     Ok(TargetBuild {
         name: target.to_string(),
-        cfg: matrix_cfg(matrix, target)?,
+        cfg: target_cfg(&info),
+        properties: project_cfg::target_properties(&info),
         owners,
         taken: BTreeSet::new(),
         units: built,
@@ -692,6 +696,7 @@ fn refine(
     builds: &mut [TargetBuild],
     stems: &[String],
     coverage: Coverage,
+    conditions: &TargetConditions,
 ) -> Result<Vec<MergedUnit>, String> {
     let mut merged: Vec<Option<MergedUnit>> = stems.iter().map(|_| None).collect();
     let mut dirty: BTreeSet<usize> = (0..stems.len()).collect();
@@ -704,7 +709,7 @@ fn refine(
         let shared: &[TargetBuild] = builds;
         let rebuilt: Vec<(usize, MergedUnit)> = dirty
             .par_iter()
-            .map(|&index| (index, merge_unit(&stems[index], index, shared)))
+            .map(|&index| (index, merge_unit(&stems[index], index, shared, conditions)))
             .collect();
         for (index, unit) in rebuilt {
             merged[index] = Some(unit);
@@ -916,16 +921,20 @@ fn conjoin(left: Cfg, right: Cfg) -> Cfg {
     Cfg::All(atoms)
 }
 
-fn combined_cfg(groups: BTreeMap<Option<Cfg>, Vec<Cfg>>, targets: usize) -> Option<Cfg> {
+fn combined_cfg(
+    groups: BTreeMap<Option<Cfg>, u64>,
+    present: u64,
+    conditions: &TargetConditions,
+) -> Option<Cfg> {
     if let [(condition, members)] = groups.iter().collect::<Vec<_>>().as_slice()
-        && members.len() == targets
+        && **members == present
     {
         return (*condition).clone();
     }
     let mut terms: Vec<Cfg> = groups
         .into_iter()
         .map(|(condition, members)| {
-            let targets = factor_cfgs(members);
+            let targets = conditions.select(members, present);
             match condition {
                 Some(condition) => conjoin(targets, condition),
                 None => targets,
@@ -1025,7 +1034,12 @@ fn union_on(values: &[Value], chosen: &Variants, targets: usize) -> Vec<BTreeSet
     on
 }
 
-fn merge_unit(stem: &str, index: usize, targets: &[TargetBuild]) -> MergedUnit {
+fn merge_unit(
+    stem: &str,
+    index: usize,
+    targets: &[TargetBuild],
+    conditions: &TargetConditions,
+) -> MergedUnit {
     let mut order: Vec<String> = Vec::new();
     let mut table: HashMap<String, Vec<Value>> = HashMap::new();
     let mut attrs = Vec::new();
@@ -1083,25 +1097,22 @@ fn merge_unit(stem: &str, index: usize, targets: &[TargetBuild]) -> MergedUnit {
     };
     let gates: RefCell<BTreeSet<Gate>> = RefCell::new(BTreeSet::new());
     let cfg_within = |on: &[BTreeSet<u32>], within: &[BTreeSet<u32>]| -> Option<Cfg> {
-        let mut groups: BTreeMap<Option<Cfg>, Vec<Cfg>> = BTreeMap::new();
-        let mut present = 0;
+        let mut groups: BTreeMap<Option<Cfg>, u64> = BTreeMap::new();
+        let mut present = 0u64;
         for (target_index, target) in targets.iter().enumerate() {
             if within[target_index].is_empty() {
                 continue;
             }
-            present += 1;
+            present |= 1 << target_index;
             let on = &on[target_index];
             if on.is_empty() {
                 continue;
             }
             let relevant = &target.units[index].relevant;
             let implicants = minimize(on, &within[target_index], relevant.len());
-            groups
-                .entry(condition(&implicants, relevant))
-                .or_default()
-                .push(target.cfg.clone());
+            *groups.entry(condition(&implicants, relevant)).or_default() |= 1 << target_index;
         }
-        combined_cfg(groups, present)
+        combined_cfg(groups, present, conditions)
     };
     let recorded_within = |on: &[BTreeSet<u32>], within: &[BTreeSet<u32>]| -> Option<Cfg> {
         gates.borrow_mut().insert((on.to_vec(), within.to_vec()));
@@ -1254,24 +1265,6 @@ fn gate(cfg: Option<Cfg>, item: Item) -> Item {
     }
 }
 
-fn holds(cfg: &Cfg, atoms: &BTreeSet<Cfg>) -> bool {
-    match cfg {
-        Cfg::Flag(_) | Cfg::Opt { .. } => atoms.contains(cfg),
-        Cfg::Not(inner) => !holds(inner, atoms),
-        Cfg::Any(items) => items.iter().any(|item| holds(item, atoms)),
-        Cfg::All(items) => items.iter().all(|item| holds(item, atoms)),
-    }
-}
-
-fn target_atoms(cfg: &Cfg, out: &mut BTreeSet<Cfg>) {
-    match cfg {
-        Cfg::All(items) => items.iter().for_each(|item| target_atoms(item, out)),
-        atom => {
-            out.insert(atom.clone());
-        }
-    }
-}
-
 fn projection_configs(matrix: &Matrix, projection: Projection) -> Result<Vec<Vec<String>>, String> {
     let names: Vec<String> = matrix
         .features
@@ -1340,8 +1333,7 @@ fn check_config(
     let imported = imported_commons(&units);
     let translated = translate_units(&units, imported, false, None, Sections::ByProject, true)
         .map_err(|_| ())?;
-    let mut atoms = BTreeSet::new();
-    target_atoms(&target.cfg, &mut atoms);
+    let mut atoms = target.properties.clone();
     atoms.extend(features.iter().map(|name| feature_atom(name)));
     let mut mismatches = Vec::new();
     let context = format!("{} [{}]", target.name, features.join(","));
@@ -1465,6 +1457,22 @@ pub fn merge(
     } else {
         targets.to_vec()
     };
+    if names.len() > project_cfg::MAX_TARGETS {
+        return Err(format!(
+            "cannot merge {} targets, the limit is {}",
+            names.len(),
+            project_cfg::MAX_TARGETS
+        ));
+    }
+    if projection == Projection::All {
+        let checks = projection_configs(matrix, projection)?.len() * names.len();
+        if checks > MAX_EXHAUSTIVE_PROJECTIONS {
+            return Err(format!(
+                "--check-projection all needs {checks} whole-project translations, \
+                 the limit is {MAX_EXHAUSTIVE_PROJECTIONS}; pass a count to sample instead"
+            ));
+        }
+    }
     let mut stems = BTreeSet::new();
     for source in &matrix.sources {
         let stem = stem_of(source)?;
@@ -1502,7 +1510,13 @@ pub fn merge(
         .iter()
         .map(|source| stem_of(source))
         .collect::<Result<_, _>>()?;
-    let merged = refine(matrix, project, &mut builds, &stems, coverage)?;
+    let conditions = TargetConditions::new(
+        builds
+            .iter()
+            .map(|build| build.properties.clone())
+            .collect(),
+    );
+    let merged = refine(matrix, project, &mut builds, &stems, coverage, &conditions)?;
     for build in &builds {
         for unit in &build.units {
             if unit.compiled.is_empty() {
