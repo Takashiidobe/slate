@@ -235,7 +235,9 @@ impl Holes<'_> {
         let mut args = Vec::new();
         for ((param, single), list) in self.params.iter().zip(self.single).zip(self.lists) {
             match param.shape {
-                MacroParamShape::Unused => continue,
+                MacroParamShape::Unused | MacroParamShape::Ident | MacroParamShape::Type => {
+                    continue;
+                }
                 MacroParamShape::Expr => {
                     args.push(single.ok_or(MacroInlineReason::ParamWithoutArgument)?)
                 }

@@ -21,11 +21,13 @@ pub(super) struct MacroStructure {
     regions: HashMap<NodeId, Vec<MacroRegion>>,
     holes: HashMap<NodeId, Vec<MacroHole>>,
     values: HashMap<NodeId, Vec<MacroExpansionId>>,
+    type_arguments: HashMap<MacroExpansionId, Vec<(usize, TypeName)>>,
 }
 
 struct BodyScan {
     expression_statements: HashMap<NodeId, NodeId>,
     runtime_expressions: HashSet<NodeId>,
+    call_arguments: HashMap<NodeId, Vec<NodeId>>,
     in_runtime_code: bool,
     unfit: HashSet<MacroExpansionId>,
 }
@@ -84,6 +86,12 @@ impl Visitor for BodyScan {
         if self.in_runtime_code {
             self.runtime_expressions.insert(expr.id);
         }
+        if let ExprKind::Call { arguments, .. } = &expr.value {
+            self.call_arguments.insert(
+                expr.id,
+                arguments.iter().map(|argument| argument.id).collect(),
+            );
+        }
         if matches!(
             expr.value,
             ExprKind::SizeOfExpr(_) | ExprKind::AlignOfExpr(..) | ExprKind::CountOfExpr(_)
@@ -134,6 +142,7 @@ impl MacroStructure {
         let mut scan = BodyScan {
             expression_statements: HashMap::new(),
             runtime_expressions: HashSet::new(),
+            call_arguments: HashMap::new(),
             in_runtime_code: false,
             unfit: HashSet::new(),
         };
@@ -148,13 +157,22 @@ impl MacroStructure {
             .count()
         };
         let mut structure = Self::default();
+        for argument in &unit.macro_type_arguments {
+            structure
+                .type_arguments
+                .entry(argument.expansion)
+                .or_default()
+                .push((argument.argument, argument.ty.clone()));
+        }
         for (index, expansion) in macros.expansions.iter().enumerate() {
             let id = MacroExpansionId(index as u32);
-            let holes_only = expansion
-                .argument_uses
-                .iter()
-                .all(|argument| matches!(argument.cover, MacroCover::Expr(_)));
-            if unfit.contains(&id) || !holes_only {
+            let liftable_arguments = expansion.argument_uses.iter().all(|argument| {
+                !matches!(
+                    argument.cover,
+                    MacroCover::Statements(_) | MacroCover::Decl(_) | MacroCover::Split
+                )
+            });
+            if unfit.contains(&id) || !liftable_arguments {
                 continue;
             }
             let (first, last) = match &expansion.cover {
@@ -175,7 +193,7 @@ impl MacroStructure {
                             continue;
                         }
                         structure.values.entry(*expr).or_default().push(id);
-                        structure.add_holes(id, expansion);
+                        structure.add_holes(id, expansion, &scan.call_arguments);
                         continue;
                     }
                 },
@@ -189,7 +207,7 @@ impl MacroStructure {
                     expansion: id,
                     last,
                 });
-            structure.add_holes(id, expansion);
+            structure.add_holes(id, expansion, &scan.call_arguments);
         }
         for regions in structure.regions.values_mut() {
             regions.sort_by_key(|region| depth(region.expansion));
@@ -203,15 +221,33 @@ impl MacroStructure {
         structure
     }
 
-    fn add_holes(&mut self, id: MacroExpansionId, expansion: &MacroExpansion) {
+    fn add_holes(
+        &mut self,
+        id: MacroExpansionId,
+        expansion: &MacroExpansion,
+        call_arguments: &HashMap<NodeId, Vec<NodeId>>,
+    ) {
         for argument in &expansion.argument_uses {
-            if let MacroCover::Expr(node) = argument.cover {
-                self.holes.entry(node).or_default().push(MacroHole {
+            let nodes = match &argument.cover {
+                MacroCover::Expr(node) | MacroCover::Callee(node) => std::slice::from_ref(node),
+                MacroCover::CallArguments(call) => {
+                    call_arguments.get(call).map_or(&[][..], Vec::as_slice)
+                }
+                _ => &[],
+            };
+            for node in nodes {
+                self.holes.entry(*node).or_default().push(MacroHole {
                     expansion: id,
                     argument: argument.argument,
                 });
             }
         }
+    }
+
+    pub(super) fn type_arguments(&self, expansion: MacroExpansionId) -> &[(usize, TypeName)] {
+        self.type_arguments
+            .get(&expansion)
+            .map_or(&[], Vec::as_slice)
     }
 
     pub(super) fn value_expansions(&self, node: NodeId) -> &[MacroExpansionId] {

@@ -89,9 +89,9 @@ pub(super) fn map_macro_nodes(
     input: &ParserInput,
     unit: &TranslationUnit,
     macros: &mut MacroInvocations,
-) {
+) -> Vec<MacroTypeArgument> {
     if macros.expansions.is_empty() {
-        return;
+        return Vec::new();
     }
     let ranges = input.node_ranges();
     let mut index = NodeIndex {
@@ -111,16 +111,27 @@ pub(super) fn map_macro_nodes(
     };
     let mut runs = token_runs(&input.tokens);
     runs.sort_by_key(|(key, (start, _))| (key.argument, *start));
+    let type_names = input.type_names();
+    let mut type_arguments = Vec::new();
     let mut expansion_runs = vec![Vec::new(); macros.expansions.len()];
     for (key, range) in runs {
         match key.argument {
             None => expansion_runs[key.expansion.0 as usize].push(range),
-            Some(argument) => macros.expansions[key.expansion.0 as usize]
-                .argument_uses
-                .push(MacroArgumentUse {
-                    argument,
-                    cover: classifier.classify(range),
-                }),
+            Some(argument) => {
+                let cover = classifier.classify(range);
+                if cover == MacroCover::Type
+                    && let Some(ty) = type_names.get(&range)
+                {
+                    type_arguments.push(MacroTypeArgument {
+                        expansion: key.expansion,
+                        argument,
+                        ty: ty.clone(),
+                    });
+                }
+                macros.expansions[key.expansion.0 as usize]
+                    .argument_uses
+                    .push(MacroArgumentUse { argument, cover });
+            }
         }
     }
     for (expansion, runs) in macros.expansions.iter_mut().zip(expansion_runs) {
@@ -130,6 +141,7 @@ pub(super) fn map_macro_nodes(
             _ => Some(MacroCover::Split),
         };
     }
+    type_arguments
 }
 
 fn token_runs(tokens: &[Span<Token>]) -> Vec<(RunKey, TokenRange)> {
@@ -215,8 +227,10 @@ impl Classifier<'_> {
         if let Some(statements) = self.statements_tiling(range, closed.is_some()) {
             return MacroCover::Statements(statements);
         }
-        if range.1 == range.0 + 1 && matches!(self.tokens[range.0].value, Token::Ident(_)) {
-            return MacroCover::Name;
+        if range.1 == range.0 + 1
+            && let Token::Ident(name) = &self.tokens[range.0].value
+        {
+            return MacroCover::Name(name.to_string());
         }
         MacroCover::Split
     }

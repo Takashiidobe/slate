@@ -75,6 +75,8 @@ pub(in crate::backend::engine) fn child_exprs(expr: &Expr) -> Vec<&Expr> {
         }
         Expr::Value(_)
         | Expr::Str(_)
+        | Expr::MacroName(_)
+        | Expr::MacroType(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
         | Expr::ConstBlock(_)
@@ -163,6 +165,8 @@ pub(in crate::backend::engine) fn child_exprs_mut(expr: &mut Expr) -> Vec<&mut E
         }
         Expr::Value(_)
         | Expr::Str(_)
+        | Expr::MacroName(_)
+        | Expr::MacroType(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
         | Expr::ConstBlock(_)

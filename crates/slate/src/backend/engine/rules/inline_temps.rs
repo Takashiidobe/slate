@@ -192,6 +192,8 @@ pub(super) fn expr_effects(expr: &Expr) -> Effects {
     match expr {
         Expr::Value(_)
         | Expr::Str(_)
+        | Expr::MacroName(_)
+        | Expr::MacroType(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
         | Expr::ConstBlock(_)
@@ -378,6 +380,8 @@ fn expr_any(expr: &Expr, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
     match expr {
         Expr::Value(_)
         | Expr::Str(_)
+        | Expr::MacroName(_)
+        | Expr::MacroType(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
         | Expr::ConstBlock(_)
@@ -678,6 +682,8 @@ fn e_ident_count(expr: &Expr, name: Ident) -> usize {
         Expr::Var(v) => usize::from(*v == name),
         Expr::Value(_)
         | Expr::Str(_)
+        | Expr::MacroName(_)
+        | Expr::MacroType(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
         | Expr::ConstBlock(_)

@@ -5,6 +5,7 @@
 - [Ownership](#ownership)
 - [Commands](#commands)
 - [Projects and targets](#projects-and-targets)
+- [Macro templates](#macro-templates)
 - [Validation](#validation)
 <!-- /toc -->
 
@@ -90,6 +91,14 @@ old `macro_fold` pass still runs over everything else.
   analysis already understands those forms, so none needs a per-template table.
   `finish_holes` prints the body as `$n`, and `finish_place_arguments` strips the
   address last, after the final `remove_mut` pass.
+- **Type, name and list parameters**: `finish_macro_site` replaces a type argument's
+  Rust type in `let`s and non-literal casts with `$T:ty`, and a name argument's field
+  accesses with `$f:ident`. Filling the parameter gives back that site's own body, so
+  this is sound even when an occurrence did not come from the argument. A parameter
+  with no occurrence is dropped, leaving the concrete spelling in the body:
+  `sizeof(T)`, a struct tag, a bit-field, or a callee naming a function. Each element
+  of a `f args` list is a separate `$args__N`, so a different argument count is a
+  different template. Writes to bit-fields stay inline.
 - **Analyses**: `remove_mut` treats a template's plain arguments as reads.
   `inline_temps` will not inline into a template argument. `string_params` and
   `pointer_lattice` keep any pointer a template argument names raw, so lifting

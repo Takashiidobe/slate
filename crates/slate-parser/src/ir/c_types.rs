@@ -10,6 +10,8 @@ pub struct CTypeTable {
     pub nodes: HashMap<NodeId, QualType>,
     pub bindings: HashMap<BindingId, QualType>,
     pub record_fields: HashMap<TypeId, Vec<QualType>>,
+    pub macro_type_arguments:
+        HashMap<(crate::ast::MacroExpansionId, usize), (crate::ir::Type, QualType)>,
 }
 
 impl CTypeTable {

@@ -745,6 +745,8 @@ fn expr_ok(expr: &Expr, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
         Expr::Var(v) => !tracked.contains(v.as_str()),
         Expr::Value(_)
         | Expr::Str(_)
+        | Expr::MacroName(_)
+        | Expr::MacroType(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
         | Expr::ConstBlock(_)
@@ -1195,6 +1197,8 @@ fn rewrite_calls_in_expr(expr: &mut Expr, ctx: &RewriteCtx) -> bool {
         Expr::Var(_)
         | Expr::Value(_)
         | Expr::Str(_)
+        | Expr::MacroName(_)
+        | Expr::MacroType(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
         | Expr::ConstBlock(_)

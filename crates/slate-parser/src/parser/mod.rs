@@ -325,6 +325,16 @@ impl Parser {
         self.input.note_type_range(tokens, start, end);
     }
 
+    pub(crate) fn note_type_name(
+        &self,
+        tokens: &[Span<Token>],
+        start: usize,
+        end: usize,
+        type_name: impl FnOnce() -> TypeName,
+    ) {
+        self.input.note_type_name(tokens, start, end, type_name);
+    }
+
     pub(crate) fn has_token_slice(&self, tokens: &[Span<Token>]) -> bool {
         self.input.has_token_slice(tokens)
     }

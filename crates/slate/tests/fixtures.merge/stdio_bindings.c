@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT:   stdio_bindings.c: [] 1 compiled
 // CHECK-NEXT:   units/stdio_bindings_layout.c: [] 1 compiled
 // CHECK-NEXT: total: 6 compiles across 3 targets
-// CHECK-NEXT: unit stdio_bindings: 9 items, 1 gated, 0 duplicated functions
+// CHECK-NEXT: unit stdio_bindings: 10 items, 3 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 3 variants
 // CHECK-NEXT: unit stdio_bindings_layout: 16 items, 15 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:stream_layout: 3 variants
@@ -64,10 +64,20 @@ int main(void) {
 // CHECK-NEXT: #[path = "stdio_bindings_layout.rs"]
 // CHECK-NEXT: mod __slate_unit_stdio_bindings_layout;
 // CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! LOG {
-// CHECK-NEXT:     ($($x:expr),*) => {
+// CHECK-NEXT:     ($x__0:expr, $x__1:expr, $x__2:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::fprintf($($x),*) };
+// CHECK-NEXT:         unsafe { slate_support::fprintf($x__0, ($x__1) as *const c_char, $x__2) };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: macro_rules! LOG {
+// CHECK-NEXT:     ($x__0:expr, $x__1:expr, $x__2:expr) => {
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe { slate_support::fprintf($x__0, ($x__1) as *const c_char, $x__2) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -85,7 +95,7 @@ int main(void) {
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn report(stream: *mut slate_support::FILE, value: i32) {
-// CHECK-NEXT:     LOG!(stream, c"value %d\n".as_ptr(), value);
+// CHECK-NEXT:     LOG!(stream, c"value %d\n".as_ptr() as *mut c_char, value);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

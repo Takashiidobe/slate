@@ -57,6 +57,7 @@ impl MacroStructureVisitor for Survey<'_> {
                 }
             }
             Statement::Temporary { id, .. } => self.declare(*id),
+            Statement::Write { place, .. } if writes_bit_field(place) => self.reject_open(),
             Statement::While { id, .. }
             | Statement::DoWhile { id, .. }
             | Statement::For { id, .. }
@@ -156,6 +157,14 @@ impl MacroStructureVisitor for Survey<'_> {
                 self.unfit.insert(*id);
             }
         }
+    }
+}
+
+fn writes_bit_field(place: &Place) -> bool {
+    match &place.kind {
+        PlaceKind::MacroArg { place, .. } => writes_bit_field(place),
+        PlaceKind::Field { bits, .. } => bits.is_some(),
+        _ => false,
     }
 }
 

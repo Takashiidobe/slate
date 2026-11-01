@@ -125,7 +125,15 @@ impl<'a> DeclaratorParser<'a> {
                 None => DeclaratorError::ExpectedDeclarationType,
             });
         }
-        set.finish()
+        let ty = set.finish()?;
+        self.note_type_name(start, end, || TypeName {
+            specifiers: DeclarationSpecifiers {
+                ty: ty.clone(),
+                ..specifiers.clone()
+            },
+            declarator: Declarator::Abstract,
+        });
+        Ok(ty)
     }
 
     fn take_type_specifier(&mut self, set: &mut TypeSpecifierSet) -> Result<bool, DeclaratorError> {
@@ -745,6 +753,12 @@ impl<'a> DeclaratorParser<'a> {
         }
     }
 
+    fn note_type_name(&self, start: usize, end: usize, type_name: impl FnOnce() -> TypeName) {
+        if let Some(parser) = self.context.parser() {
+            parser.note_type_name(self.tokens, start, end, type_name);
+        }
+    }
+
     pub(crate) fn parse_type_name(&mut self) -> Result<TypeName, DeclaratorError> {
         let start = self.pos;
         let mut specifiers = self.parse_specifiers(false)?;
@@ -753,10 +767,12 @@ impl<'a> DeclaratorParser<'a> {
         specifiers.ty = ty.with_type_attributes(&specifiers.attributes);
         let declarator = self.parse_declarator(true)?;
         self.note_type_range(start, self.pos);
-        Ok(TypeName {
+        let type_name = TypeName {
             specifiers,
             declarator,
-        })
+        };
+        self.note_type_name(start, self.pos, || type_name.clone());
+        Ok(type_name)
     }
 
     fn parse_pointer_qualifiers(

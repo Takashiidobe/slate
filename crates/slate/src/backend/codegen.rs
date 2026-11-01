@@ -277,6 +277,8 @@ impl<W: Write> Codegen<W> {
                     .iter()
                     .map(|param| match param.shape {
                         MacroParamShape::List => format!("$(${}:expr),*", param.name),
+                        MacroParamShape::Ident => format!("${}:ident", param.name),
+                        MacroParamShape::Type => format!("${}:ty", param.name),
                         _ => format!("${}:expr", param.name),
                     })
                     .collect::<Vec<_>>()
@@ -1414,6 +1416,8 @@ impl<W: Write> Codegen<W> {
                 self.expr_block(block)
             }
             Expr::MacroArg { expr, .. } => self.expr(expr),
+            Expr::MacroName(name) => self.ident(name),
+            Expr::MacroType(ty) => self.ty(ty),
             Expr::ConstBlock(expr) => {
                 self.out.write_str("const { ")?;
                 self.expr(expr)?;

@@ -948,7 +948,7 @@ pub enum MacroCover {
     Statements(Vec<NodeId>),
     Decl(NodeId),
     Type,
-    Name,
+    Name(String),
     Split,
 }
 
@@ -961,7 +961,7 @@ impl MacroCover {
             Self::Statements(_) => "statements",
             Self::Decl(_) => "decl",
             Self::Type => "type",
-            Self::Name => "name",
+            Self::Name(_) => "name",
             Self::Split => "split",
         }
     }
@@ -2146,6 +2146,14 @@ pub struct TranslationUnit {
     pub decls: Vec<Decl>,
     pub tags: Vec<Span<TagDefinition>>,
     pub macros: MacroInvocations,
+    pub macro_type_arguments: Vec<MacroTypeArgument>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct MacroTypeArgument {
+    pub expansion: MacroExpansionId,
+    pub argument: usize,
+    pub ty: TypeName,
 }
 
 impl TranslationUnit {

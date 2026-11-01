@@ -130,6 +130,7 @@ TranslationUnit {
     tags: Vec<TagDefinition>,      // indexed by TagId
     dialect: Dialect,              // flavor, standard, features, effective target, options
     macros: MacroInvocations,      // not printed by AST dumps
+    macro_type_arguments: Vec<MacroTypeArgument>, // parsed type of each type argument, not printed
 }
 
 ExternalItem =

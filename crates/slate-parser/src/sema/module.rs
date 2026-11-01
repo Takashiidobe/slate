@@ -2220,6 +2220,7 @@ impl Lowerer {
             return Ok(1);
         };
         self.open_macros.push(region.expansion);
+        self.resolve_macro_type_arguments(region.expansion);
         let mut inner = Vec::new();
         let mut position = 0;
         while position < body.len() {

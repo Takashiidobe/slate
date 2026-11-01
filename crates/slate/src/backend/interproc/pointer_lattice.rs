@@ -1051,7 +1051,7 @@ impl ClassifyCtx<'_> {
 
     fn expr(&mut self, expr: &Expr) {
         match expr {
-            Expr::Var(_) => {}
+            Expr::Var(_) | Expr::MacroName(_) | Expr::MacroType(_) => {}
             Expr::Unary { expr, .. } | Expr::MacroArg { expr, .. } => self.expr(expr),
             Expr::Ref { mutable, expr } | Expr::AddrOf { mutable, expr } => {
                 if let Expr::Var(name) = &**expr
@@ -2349,6 +2349,8 @@ fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
         Expr::Var(_)
         | Expr::Value(_)
         | Expr::Str(_)
+        | Expr::MacroName(_)
+        | Expr::MacroType(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
         | Expr::ConstBlock(_)

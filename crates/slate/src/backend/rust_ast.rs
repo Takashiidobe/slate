@@ -179,6 +179,8 @@ pub enum MacroParamShape {
     Unused,
     Expr,
     List,
+    Ident,
+    Type,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -1241,6 +1243,8 @@ pub enum Expr {
         base: Box<Expr>,
         field: String,
     },
+    MacroName(String),
+    MacroType(Type),
     TupleField {
         base: Box<Expr>,
         index: usize,
@@ -1832,6 +1836,8 @@ impl Expr {
             }),
             Expr::Value(_)
             | Expr::Str(_)
+            | Expr::MacroName(_)
+            | Expr::MacroType(_)
             | Expr::HexFloat(_)
             | Expr::ByteStr(_)
             | Expr::ConstBlock(_)
@@ -1912,6 +1918,8 @@ impl Expr {
             Expr::Var(v) => out.push(*v),
             Expr::Value(_)
             | Expr::Str(_)
+            | Expr::MacroName(_)
+            | Expr::MacroType(_)
             | Expr::HexFloat(_)
             | Expr::ByteStr(_)
             | Expr::ConstBlock(_)
@@ -2061,6 +2069,8 @@ impl Expr {
             Expr::Var(_)
             | Expr::Value(_)
             | Expr::Str(_)
+            | Expr::MacroName(_)
+            | Expr::MacroType(_)
             | Expr::HexFloat(_)
             | Expr::ByteStr(_)
             | Expr::ConstBlock(_)
@@ -2202,6 +2212,8 @@ impl Expr {
             Expr::Var(_)
             | Expr::Value(_)
             | Expr::Str(_)
+            | Expr::MacroName(_)
+            | Expr::MacroType(_)
             | Expr::HexFloat(_)
             | Expr::ByteStr(_)
             | Expr::ConstBlock(_)
@@ -2339,6 +2351,8 @@ impl Expr {
             }
             Expr::Value(_)
             | Expr::Str(_)
+            | Expr::MacroName(_)
+            | Expr::MacroType(_)
             | Expr::HexFloat(_)
             | Expr::ByteStr(_)
             | Expr::ConstBlock(_)

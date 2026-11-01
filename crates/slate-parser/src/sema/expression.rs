@@ -1668,6 +1668,21 @@ impl Lowerer {
         place
     }
 
+    pub(super) fn resolve_macro_type_arguments(&mut self, expansion: crate::ast::MacroExpansionId) {
+        for (argument, type_name) in self.macro_structure.type_arguments(expansion).to_vec() {
+            let Ok(c) = self.types.resolve_type_name(&type_name) else {
+                continue;
+            };
+            let Ok(ty) = self.types.object_type(c, "macro type argument") else {
+                continue;
+            };
+            self.module
+                .c_types
+                .macro_type_arguments
+                .insert((expansion, argument), (ty, c));
+        }
+    }
+
     fn macro_value_holes(&mut self, e: &Expr, mut lowered: Operand) -> Operand {
         for hole in self.macro_structure.holes(e.id) {
             if self.open_macros.contains(&hole.expansion) {
@@ -2170,13 +2185,17 @@ impl Lowerer {
         if !self.types.ctypes.is_function(signature) {
             return Err(ResolveError::Internal("non-function callee"));
         }
+        let mut designator = &value.node.value;
+        while let ValueKind::MacroArg { value: inner, .. } = designator {
+            designator = &inner.node.value;
+        }
         if let ValueKind::FunctionDecay {
             place:
                 Place {
                     kind: PlaceKind::Binding(id),
                     ..
                 },
-        } = &value.node.value
+        } = designator
         {
             return Ok((Callee::Direct(*id), signature));
         }
@@ -2532,6 +2551,9 @@ impl Lowerer {
         let open = self.open_macros.len();
         self.open_macros
             .extend_from_slice(self.macro_structure.value_expansions(e.id));
+        for expansion in self.open_macros[open..].to_vec() {
+            self.resolve_macro_type_arguments(expansion);
+        }
         let lowered = self.lower_expr(e);
         let opened = self.open_macros.split_off(open);
         self.macro_value_hole = enclosing_hole;

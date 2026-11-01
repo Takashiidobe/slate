@@ -1,5 +1,5 @@
 use super::undo::UndoLog;
-use crate::ast::{Comment, CommentAttach, CommentGroup, NodeId, Span, SpanRangeIndex};
+use crate::ast::{Comment, CommentAttach, CommentGroup, NodeId, Span, SpanRangeIndex, TypeName};
 use crate::lexer::Token;
 use crate::pp::{CommentFollower, CommentLayout, CommentPlacement, PPNode, PPNodeKind};
 use std::cell::RefCell;
@@ -21,6 +21,7 @@ pub(super) struct ParserInput {
     span_ranges: SpanRangeIndex,
     node_ranges: RefCell<HashMap<NodeId, TokenRange>>,
     type_ranges: RefCell<HashSet<TokenRange>>,
+    type_names: RefCell<HashMap<TokenRange, TypeName>>,
 }
 
 pub(super) type TokenRange = (usize, usize);
@@ -117,6 +118,30 @@ impl ParserInput {
                 .borrow_mut()
                 .insert((base + start, base + end));
         }
+    }
+
+    pub fn note_type_name(
+        &self,
+        tokens: &[Span<Token>],
+        start: usize,
+        end: usize,
+        type_name: impl FnOnce() -> TypeName,
+    ) {
+        let Some(base) = self.position(tokens, 0) else {
+            return;
+        };
+        let defines_or_computes = tokens[start..end]
+            .iter()
+            .any(|token| matches!(token.value, Token::LBrace | Token::LParen));
+        if !defines_or_computes && self.starts_in_macro(base + start, base + end) {
+            self.type_names
+                .borrow_mut()
+                .insert((base + start, base + end), type_name());
+        }
+    }
+
+    pub(super) fn type_names(&self) -> std::cell::Ref<'_, HashMap<TokenRange, TypeName>> {
+        self.type_names.borrow()
     }
 
     pub(super) fn node_ranges(&self) -> std::cell::Ref<'_, HashMap<NodeId, TokenRange>> {

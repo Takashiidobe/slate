@@ -11,6 +11,7 @@ pub fn filter_translation_unit(
     let mut reachability = Reachability::new(tu);
     reachability.mark_roots(root_file, forced_roots);
     TranslationUnit {
+        macro_type_arguments: tu.macro_type_arguments.clone(),
         dialect: tu.dialect.clone(),
         decls: tu
             .decls

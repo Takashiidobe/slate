@@ -176,6 +176,8 @@ fn walk_expr(expr: &mut Expr, names: &mut impl Names) {
         Expr::Var(name) => names.var(name),
         Expr::Value(_)
         | Expr::Str(_)
+        | Expr::MacroName(_)
+        | Expr::MacroType(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
         | Expr::CStr(_)

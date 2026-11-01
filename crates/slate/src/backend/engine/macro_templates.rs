@@ -3,7 +3,7 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 use super::rules::walk::{child_exprs, child_exprs_mut, stmt_exprs_mut};
 use super::shadow::visit_names;
 use crate::backend::rust_ast::{
-    Block, Expr, Ident, ImplItem, Item, Label, MacroParam, Program, Stmt, UnaryOp,
+    Block, Expr, Ident, ImplItem, Item, Label, MacroParam, Program, Stmt, Type, UnaryOp,
     macro_template_base,
 };
 use crate::function_identity::CallBinding;
@@ -28,6 +28,112 @@ pub fn place_hole(parameter: &str) -> Expr {
             args: Vec::new(),
             binding: CallBinding::Generated,
         }),
+    }
+}
+
+pub fn call_argument_parameter(parameter: &str, element: usize) -> String {
+    format!("{parameter}__{element}")
+}
+
+pub fn mentions_hole(template: &mut [Stmt], parameter: &str) -> bool {
+    let mut found = false;
+    visit_exprs_mut(template, &mut |expr| {
+        found |= hole_parameter(expr) == Some(parameter);
+    });
+    found
+}
+
+pub fn make_field_parameter(template: &mut [Stmt], parameter: &str, field_name: &str) -> bool {
+    let mut found = false;
+    let hole = format!("${parameter}");
+    visit_exprs_mut(template, &mut |expr| {
+        if let Expr::Field { field: name, .. } | Expr::MacroName(name) = expr
+            && name == field_name
+        {
+            name.clone_from(&hole);
+            found = true;
+        }
+    });
+    found
+}
+
+pub fn replace_type(ty: &mut Type, concrete: &Type, parameter: &str) -> bool {
+    if ty == concrete {
+        *ty = Type::TyVar(Ident::new(format!("${parameter}")));
+        return true;
+    }
+    match ty {
+        Type::Ptr { inner, .. } | Type::Ref { inner, .. } | Type::Slice(inner) => {
+            replace_type(inner, concrete, parameter)
+        }
+        Type::Array { elem, .. } => replace_type(elem, concrete, parameter),
+        _ => false,
+    }
+}
+
+fn each_template_type(stmts: &mut [Stmt], visit: &mut impl FnMut(&mut Type)) {
+    for stmt in stmts.iter_mut() {
+        if let Stmt::Let { ty: Some(ty), .. } = stmt {
+            visit(ty);
+        }
+        for body in stmt.child_bodies_mut() {
+            each_template_type(body, visit);
+        }
+        let mut exprs = Vec::new();
+        stmt_exprs_mut(stmt, &mut exprs);
+        for expr in exprs {
+            visit_expr_mut(expr, &mut |expr| match expr {
+                Expr::Cast { expr: operand, .. } if matches!(**operand, Expr::Value(_)) => {}
+                Expr::Cast { ty, .. } | Expr::MacroType(ty) => visit(ty),
+                Expr::Block(block) | Expr::Unsafe(block) => {
+                    each_template_type(&mut block.stmts, visit);
+                }
+                _ => {}
+            });
+        }
+    }
+}
+
+pub fn make_type_parameter(template: &mut [Stmt], parameter: &str, concrete: &Type) -> bool {
+    let mut found = false;
+    each_template_type(template, &mut |ty| {
+        found |= replace_type(ty, concrete, parameter);
+    });
+    found
+}
+
+fn fill_type(ty: &mut Type, params: &[MacroParam], args: &[Expr]) {
+    match ty {
+        Type::TyVar(name) => {
+            let Some(parameter) = name.as_str().strip_prefix('$') else {
+                return;
+            };
+            let value = params
+                .iter()
+                .position(|param| param.name == parameter)
+                .and_then(|index| args.get(index));
+            if let Some(Expr::MacroType(concrete)) = value {
+                *ty = concrete.clone();
+            }
+        }
+        Type::Ptr { inner, .. } | Type::Ref { inner, .. } | Type::Slice(inner) => {
+            fill_type(inner, params, args);
+        }
+        Type::Array { elem, .. } => fill_type(elem, params, args),
+        _ => {}
+    }
+}
+
+fn fill_field(field: &mut String, params: &[MacroParam], args: &[Expr]) {
+    let Some(parameter) = field.strip_prefix('$') else {
+        return;
+    };
+    let value = params
+        .iter()
+        .position(|param| param.name == parameter)
+        .and_then(|index| args.get(index));
+    if let Some(Expr::MacroName(name)) = value {
+        field.clone_from(name);
     }
 }
 
@@ -183,7 +289,12 @@ pub fn fill_holes(template: &mut [Stmt], params: &[MacroParam], args: &[Expr]) {
         let index = params.iter().position(|param| param.name == parameter)?;
         args.get(index)
     };
+    each_template_type(template, &mut |ty| fill_type(ty, params, args));
     visit_exprs_mut(template, &mut |expr| {
+        match expr {
+            Expr::Field { field, .. } | Expr::MacroName(field) => fill_field(field, params, args),
+            _ => {}
+        }
         let value = if let Some(parameter) = place_hole_parameter(expr) {
             argument(parameter).map(place_of_argument)
         } else if let Some(parameter) = place_pointer_parameter(expr) {

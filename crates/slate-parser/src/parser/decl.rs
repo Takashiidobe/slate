@@ -321,12 +321,17 @@ impl Parser {
                 decls,
                 tags: self.tags.take(),
                 macros: MacroInvocations::default(),
+                macro_type_arguments: Vec::new(),
             },
             root_file,
             &self.forced_roots,
         );
-        super::macro_nodes::map_macro_nodes(&input, &unit, &mut macros);
-        Ok(TranslationUnit { macros, ..unit })
+        let macro_type_arguments = super::macro_nodes::map_macro_nodes(&input, &unit, &mut macros);
+        Ok(TranslationUnit {
+            macros,
+            macro_type_arguments,
+            ..unit
+        })
     }
 
     fn declaration_annotation(&self, annotation: Span<Annotation>) -> Result<Decl, ParseError> {

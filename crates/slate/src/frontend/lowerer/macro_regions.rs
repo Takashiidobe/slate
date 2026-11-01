@@ -255,6 +255,7 @@ pub(super) struct MacroSite {
     argument_depth: usize,
     arguments: Vec<Option<(Expr, rust::Type)>>,
     place_arguments: Vec<Option<(Expr, rust::Type)>>,
+    call_arguments: Vec<Vec<(Expr, rust::Type)>>,
 }
 
 impl FunctionLowerer<'_, '_> {
@@ -334,6 +335,7 @@ impl FunctionLowerer<'_, '_> {
             argument_depth: std::mem::take(&mut self.macro_argument_depth),
             arguments: vec![None; parameters],
             place_arguments: vec![None; parameters],
+            call_arguments: vec![Vec::new(); parameters],
         });
     }
 
@@ -357,11 +359,67 @@ impl FunctionLowerer<'_, '_> {
         let mut params = Vec::new();
         let mut args = Vec::new();
         let mut hole_types = Vec::new();
-        for ((name, argument), place) in parameters
+        let mut type_parameters = Vec::new();
+        for (index, ((name, argument), place)) in parameters
             .iter()
             .zip(site.arguments)
             .zip(site.place_arguments)
+            .enumerate()
         {
+            for (element, (value, ty)) in site.call_arguments[index].iter().enumerate() {
+                let element = macro_templates::call_argument_parameter(name, element);
+                if macro_templates::mentions_hole(&mut template, &element) {
+                    params.push(rust::MacroParam {
+                        name: element,
+                        shape: rust::MacroParamShape::Expr,
+                    });
+                    args.push(value.clone());
+                    hole_types.push(ty.clone());
+                }
+            }
+            if let Some((ty, c)) = self
+                .tables
+                .c_types
+                .macro_type_arguments
+                .get(&(expansion, index))
+                && let Ok(concrete) = self.lower_c_type(ty, Some(*c))
+                && let Ok(erased) = self.lower_type(ty)
+                && macro_templates::make_type_parameter(&mut template, name, &concrete)
+            {
+                params.push(rust::MacroParam {
+                    name: name.clone(),
+                    shape: rust::MacroParamShape::Type,
+                });
+                args.push(Expr::MacroType(concrete.clone()));
+                hole_types.push(rust::Type::Unit);
+                type_parameters.push((name.clone(), concrete, erased));
+                continue;
+            }
+            let name_argument = self
+                .tables
+                .macros
+                .expansion(expansion)
+                .argument_uses
+                .iter()
+                .find_map(|using| match &using.cover {
+                    MacroCover::Name(spelled) if using.argument == index => Some(spelled),
+                    _ => None,
+                });
+            if let Some(spelled) = name_argument
+                && macro_templates::make_field_parameter(
+                    &mut template,
+                    name,
+                    &path_keyword_free(spelled),
+                )
+            {
+                params.push(rust::MacroParam {
+                    name: name.clone(),
+                    shape: rust::MacroParamShape::Ident,
+                });
+                args.push(Expr::MacroName(path_keyword_free(spelled)));
+                hole_types.push(rust::Type::Unit);
+                continue;
+            }
             let (value, ty) = match (argument, place) {
                 (argument, Some((place, ty))) => {
                     let read_is_unsafe = matches!(&argument, Some((Expr::Unsafe(_), _)));
@@ -384,6 +442,12 @@ impl FunctionLowerer<'_, '_> {
         }
         if std::env::var_os("SLATE_CHECK_MACRO_TEMPLATES").is_some() {
             check(self, &template, &params, &args)?;
+        }
+        for (parameter, concrete, erased) in &type_parameters {
+            for ty in &mut hole_types {
+                macro_templates::replace_type(ty, concrete, parameter);
+                macro_templates::replace_type(ty, erased, parameter);
+            }
         }
         let mut printed = format!("{params:?}");
         printed.extend(hole_types.iter().map(codegen::type_to_string));
@@ -411,13 +475,33 @@ impl FunctionLowerer<'_, '_> {
         argument: usize,
         value: &ir::Value,
     ) -> Result<Expr> {
+        let is_call_argument = self
+            .tables
+            .macros
+            .expansion(expansion)
+            .argument_uses
+            .iter()
+            .any(|using| {
+                using.argument == argument && matches!(using.cover, MacroCover::CallArguments(_))
+            });
+        let mut element = 0;
         let parameter = self.lower_hole_argument(expansion, argument, |this, site| {
             let lowered = this.lower_value(value);
             let ty = this.lower_type(&value.ty);
             let found = lowered.and_then(|lowered| Ok((lowered, ty?)))?;
-            site.arguments[argument].get_or_insert(found);
+            if is_call_argument {
+                element = site.call_arguments[argument].len();
+                site.call_arguments[argument].push(found);
+            } else {
+                site.arguments[argument].get_or_insert(found);
+            }
             Ok(())
         })?;
+        if is_call_argument {
+            return Ok(macro_templates::hole(
+                &macro_templates::call_argument_parameter(&parameter, element),
+            ));
+        }
         Ok(macro_templates::hole(&parameter))
     }
 

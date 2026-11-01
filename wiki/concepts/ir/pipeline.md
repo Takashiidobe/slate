@@ -148,8 +148,15 @@ and the [cover table](../preprocessor.md#macro-invocations) before lowering:
   (`int k = M(i);`). It is not used for an expression the program writes to or
   takes the address of, a constant context (`case`, array size, `sizeof`, `static`
   initializer) or asm operands.
-- An expansion gets none of these when an argument is not one expression
-  (`TIMES2(i + j)`, or a type, name or callee until `slate-f2zu.9.5.12.7`), when
+- A callee argument gets a hole unless it names a function: that call stays
+  `Callee::Direct`, with the name in the body. Each argument of a `f args` list
+  gets its own hole. A type or name argument gets no hole.
+  `CTypeTable.macro_type_arguments` holds a type argument's resolved type, read
+  from the `TranslationUnit.macro_type_arguments` the parser recorded. It skips
+  spellings with `{` or `(`.
+- An expansion gets none of these when an argument is not one expression, type,
+  name, callee or call argument list (`TIMES2(i + j)`, a declaration or
+  statements), when
   an argument reads a binding the body declares (`TEMP(temp + a)`), when the
   statements hold asm, labels, switch labels, or a `static` or `extern`
   declaration, or when a value expansion's only tokens are its own argument
