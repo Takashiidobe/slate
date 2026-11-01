@@ -11,7 +11,7 @@ Macro epic `slate-f2zu.9.5.12`, in order.
 - [x] 7. `.24`: lower `alignof` to `align_of::<T>()` where usable.
 - [x] 8. `.25`: lower `offsetof` to `offset_of!` where usable.
 - [ ] 9. `.11` and `.13`: keep integer casts and conversions in sema.
-- [ ] 10. `.19`: decide whether `goto` out of a macro can lift.
+- [x] 10. `.19`: `goto` out of a macro does not lift; those expansions stay inline.
 - [ ] 11. `.14`: audit zlib, with all-features `validate_merge` and both full profiles.
 - [ ] 12. `.12`: lift variadic and `#`/`##` macros if a project needs them.
 - [ ] 13. `.22`: lift macros that declare locals in functions with dispatch lowering.
