@@ -71,14 +71,6 @@ fn collect_cases(dir: &Path) -> Vec<(String, PathBuf)> {
     cases
 }
 
-fn guality_args(path: &Path) -> Vec<String> {
-    const SKIP_GDB: &str = "--guality-skip";
-    match std::fs::read_to_string(path) {
-        Ok(text) if text.contains(SKIP_GDB) => vec![SKIP_GDB.to_string()],
-        _ => Vec::new(),
-    }
-}
-
 fn run_cases(corpus: &Corpus, group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
     let cases = collect_cases(dir);
     let jobs = jobs();
@@ -100,7 +92,6 @@ fn run_cases(corpus: &Corpus, group: &str, dir: &Path) -> Vec<(String, Result<()
             c_src: path.clone(),
             rs_src: generated,
             config: support::RunConfig {
-                args: guality_args(path),
                 timeout_seconds: Some(15),
                 c_args: options
                     .into_iter()

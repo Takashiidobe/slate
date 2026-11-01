@@ -1,3 +1,4 @@
+/* SLATE: checks debug info by attaching gdb to itself, which Slate does not generate or test; with no gdb attached it spins about 2s and aborts. */
 /* { dg-do run } */
 /* { dg-options "-g" } */
 /* { dg-xfail-run-if "" { aarch64*-*-* } { "-O2" "-O3" "-Os" } { "-fno-fat-lto-objects" } } */

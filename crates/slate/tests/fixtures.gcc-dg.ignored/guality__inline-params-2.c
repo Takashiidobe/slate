@@ -1,3 +1,4 @@
+/* SLATE: checks debug info by attaching gdb to itself, which Slate does not generate or test; with no gdb attached it spins about 2s and aborts. */
 /* { dg-do run } */
 /* tree inline used to split the block for inlining after the call,
    then move the call to the after-the-call block.  This move

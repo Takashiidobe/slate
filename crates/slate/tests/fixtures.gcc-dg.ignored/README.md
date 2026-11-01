@@ -17,3 +17,7 @@ what they test.
   expects zeros. Padding of a by-value Rust aggregate is undef, so LLVM treats
   the read as UB (`ud2` at `-C opt-level=1`) and the result varies by build
   profile.
+- `guality__example`, `guality__guality`, `guality__inline-params-2`,
+  `guality__pr41447-1`, `guality__pr41616-1`: embed `guality.h`, which attaches
+  gdb to check debug info. gdb never attached under the suite, so each binary
+  spun for about 2s and aborted in both C and Rust, comparing only that abort.

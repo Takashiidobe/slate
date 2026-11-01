@@ -1,3 +1,4 @@
+/* SLATE: checks debug info by attaching gdb to itself, which Slate does not generate or test; with no gdb attached it spins about 2s and aborts. */
 /* { dg-skip-if "gdb hang" { hppa*-*-linux* } } */
 /* { dg-options "-g" } */
 /* { dg-do run { xfail { ! aarch64*-*-* } } } */
