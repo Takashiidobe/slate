@@ -62,3 +62,4 @@ syntax-highlight = ["miette/syntect-highlighter"]
 large_enum_variant = "allow"
 allow_attributes = "warn"
 allow_attributes_without_reason = "warn"
+result_large_err = "allow"
