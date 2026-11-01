@@ -58,7 +58,7 @@ int main(void) {
 // CHECK-NEXT: target linux-aarch64: 1 compiles
 // CHECK-NEXT:   large_arrays.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 4 targets
-// CHECK-NEXT: unit large_arrays: 44 items, 32 gated, 1 duplicated functions
+// CHECK-NEXT: unit large_arrays: 42 items, 28 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:read_crossing: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 4 variants
 // CHECK-NEXT: projection: 24 checked, 0 not translatable, 0 mismatches
@@ -98,20 +98,10 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(target_arch = "aarch64"))]
-// CHECK-NEXT: type c_char = i8;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(target_arch = "aarch64")]
-// CHECK-NEXT: type c_char = u8;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(target_pointer_width = "64", unix))]
-// CHECK-NEXT: type c_long = i64;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(any(windows, target_arch = "x86"))]
-// CHECK-NEXT: type c_long = i32;
-// CHECK-EMPTY:
+// CHECK-NEXT: use core::ffi::c_char;
+// CHECK-NEXT: use core::ffi::c_long;
 // CHECK-NEXT: #[cfg(not(target_arch = "x86"))]
-// CHECK-NEXT: type uintptr_t = u64;
+// CHECK-NEXT: use slate_support::uintptr_t;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: #[repr(C)]

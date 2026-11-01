@@ -141,15 +141,12 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: type c_char = i8;
-// CHECK-EMPTY:
+// CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: #[cfg(target_env = "gnu")]
-// CHECK-NEXT: type c_long = i64;
-// CHECK-EMPTY:
+// CHECK-NEXT: use core::ffi::c_long;
 // CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: type c_ulong = u64;
-// CHECK-EMPTY:
-// CHECK-NEXT: type size_t = u64;
+// CHECK-NEXT: use core::ffi::c_ulong;
+// CHECK-NEXT: use slate_support::size_t;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_os = "android")]
 // CHECK-NEXT: #[repr(C, align(8))]

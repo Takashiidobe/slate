@@ -24,7 +24,7 @@ int main(void) {
 // CHECK-NEXT:     6 assignments preprocess like a compiled one
 // CHECK-NEXT:   units/unseen_signature_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 6 compiles across 2 targets
-// CHECK-NEXT: unit unseen_signature: 21 items, 17 gated, 0 duplicated functions
+// CHECK-NEXT: unit unseen_signature: 20 items, 16 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 4 variants
 // CHECK-NEXT: unit unseen_signature_helper: 1 items, 0 gated, 0 duplicated functions
 // CHECK-NEXT: projection: 16 checked, 0 not translatable, 0 mismatches
@@ -78,7 +78,7 @@ int main(void) {
 // CHECK-NEXT:     fn widen([[ARG_0]]: c_long) -> c_long;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: type c_char = i8;
+// CHECK-NEXT: use core::ffi::c_char;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: #[repr(C)]
@@ -149,11 +149,8 @@ int main(void) {
 // CHECK-NEXT:     _Result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(unix, feature = "alpha", feature = "beta", not(feature = "gamma")))]
-// CHECK-NEXT: type c_long = i64;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(windows, feature = "alpha", feature = "beta", not(feature = "gamma")))]
-// CHECK-NEXT: type c_long = i32;
+// CHECK-NEXT: #[cfg(all(feature = "alpha", feature = "beta", not(feature = "gamma")))]
+// CHECK-NEXT: use core::ffi::c_long;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     #[cfg(windows)]

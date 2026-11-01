@@ -25,7 +25,7 @@ int main(void) {
 // CHECK-NEXT: total: 14 compiles across 2 targets
 // CHECK-NEXT: unit signature_mismatch: 21 items, 13 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit signature_mismatch_helper: 9 items, 6 gated, 0 duplicated functions
+// CHECK-NEXT: unit signature_mismatch_helper: 8 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:widen: 2 variants
 // CHECK-NEXT:   spliced record:pair: 2 variants
 // CHECK-NEXT:   spliced fn:make_pair: 2 variants
@@ -77,7 +77,7 @@ int main(void) {
 // CHECK-NEXT:     fn printf([[ARG_0]]: *const c_char, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: type c_char = i8;
+// CHECK-NEXT: use core::ffi::c_char;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: #[repr(C)]
@@ -201,11 +201,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
 // CHECK-NEXT: file signature_mismatch_helper.rs
-// CHECK-NEXT: #[cfg(all(unix, any(feature = "alpha", feature = "beta", feature = "gamma")))]
-// CHECK-NEXT: type c_long = i64;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(windows, any(feature = "alpha", feature = "beta", feature = "gamma")))]
-// CHECK-NEXT: type c_long = i32;
+// CHECK-NEXT: #[cfg(any(feature = "alpha", feature = "beta", feature = "gamma"))]
+// CHECK-NEXT: use core::ffi::c_long;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]

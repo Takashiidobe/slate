@@ -17,6 +17,7 @@ include = [
   "/vendor/bitint",
   "/vendor/num-complex",
   "/vendor/num-traits",
+  "/vendor/slate-support",
 ]
 
 [package.metadata.binstall]

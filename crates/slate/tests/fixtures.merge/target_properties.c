@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT: target linux-musl-x86_64: 1 compiles
 // CHECK-NEXT:   target_properties.c: [] 1 compiled
 // CHECK-NEXT: total: 6 compiles across 6 targets
-// CHECK-NEXT: unit target_properties: 14 items, 7 gated, 0 duplicated functions
+// CHECK-NEXT: unit target_properties: 13 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:family: 2 variants
 // CHECK-NEXT:   hoisted fn:model: 2 variants
 // CHECK-NEXT: projection: 36 checked, 0 not translatable, 0 mismatches
@@ -62,11 +62,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(target_arch = "aarch64"))]
-// CHECK-NEXT: type c_char = i8;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(target_arch = "aarch64")]
-// CHECK-NEXT: type c_char = u8;
+// CHECK-NEXT: use core::ffi::c_char;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: const __SLATE_HOIST_family: &core::ffi::CStr = c"unix";

@@ -103,7 +103,7 @@ int main(void) {
 // CHECK-NEXT:     fn printf([[ARG_0]]: *const c_char, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: type c_char = i8;
+// CHECK-NEXT: use core::ffi::c_char;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: #[repr(C)]
@@ -175,7 +175,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: type c_ulong = u64;
+// CHECK-NEXT: use core::ffi::c_ulong;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(not(feature = "alpha"), not(feature = "beta")))]
 // CHECK-NEXT: const __SLATE_HOIST_state_size: i32 = 4;

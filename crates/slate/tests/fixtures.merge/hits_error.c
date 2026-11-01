@@ -61,7 +61,7 @@ int main(void) {
 // CHECK-NEXT:     fn printf([[ARG_0]]: *const c_char, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: type c_char = i8;
+// CHECK-NEXT: use core::ffi::c_char;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: #[repr(C)]

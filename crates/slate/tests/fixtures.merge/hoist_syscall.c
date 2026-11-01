@@ -14,7 +14,7 @@ int main(void) {
 // CHECK-NEXT: target linux-aarch64: 1 compiles
 // CHECK-NEXT:   hoist_syscall.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit hoist_syscall: 8 items, 4 gated, 0 duplicated functions
+// CHECK-NEXT: unit hoist_syscall: 7 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:__slate_main: 2 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
@@ -33,11 +33,7 @@ int main(void) {
 // CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const c_char, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(target_arch = "x86_64")]
-// CHECK-NEXT: type c_char = i8;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(target_arch = "aarch64")]
-// CHECK-NEXT: type c_char = u8;
+// CHECK-NEXT: use core::ffi::c_char;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_arch = "x86_64")]
 // CHECK-NEXT: const __SLATE_HOIST___slate_main: i32 = 295i32;

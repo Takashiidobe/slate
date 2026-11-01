@@ -41,7 +41,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 2 compiles
 // CHECK-NEXT:   hoist_operands.c: [alpha] 2 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit hoist_operands: 22 items, 13 gated, 1 duplicated functions
+// CHECK-NEXT: unit hoist_operands: 21 items, 11 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:repeated: 2 variants
 // CHECK-NEXT:   hoisted fn:number: 2 variants
 // CHECK-NEXT:   hoisted fn:in_cast: 2 variants
@@ -65,13 +65,8 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: type c_char = i8;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: type c_long = i64;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: type c_long = i32;
+// CHECK-NEXT: use core::ffi::c_char;
+// CHECK-NEXT: use core::ffi::c_long;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: const __SLATE_HOIST_number: i32 = 295;

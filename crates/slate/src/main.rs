@@ -440,6 +440,20 @@ fn write_file(path: &Path, contents: &str) -> Result<(), String> {
     std::fs::write(path, contents).map_err(|e| format!("write {}: {e}", path.display()))
 }
 
+fn write_slate_support(crate_dir: &Path) -> Result<(), String> {
+    let support_dir = crate_dir.join("slate-support");
+    let src_dir = support_dir.join("src");
+    std::fs::create_dir_all(&src_dir).map_err(|e| format!("create {}: {e}", src_dir.display()))?;
+    write_file(
+        &support_dir.join("Cargo.toml"),
+        include_str!("../vendor/slate-support/Cargo.toml.template"),
+    )?;
+    write_file(
+        &src_dir.join("lib.rs"),
+        include_str!("../vendor/slate-support/src/lib.rs"),
+    )
+}
+
 fn write_bitint_support(crate_dir: &Path) -> Result<(), String> {
     let bitint_dir = crate_dir.join("bitint");
     let src_dir = bitint_dir.join("src");
@@ -979,6 +993,10 @@ fn write_project_crate(
         None => Some(crate_types.to_vec()),
     };
     init_crate(crate_dir, lib_crate_types.as_deref())?;
+    let slate_support = target_guard.is_some();
+    if slate_support {
+        write_slate_support(crate_dir)?;
+    }
     let crate_src = crate_dir.join("src");
     std::fs::create_dir_all(&crate_src)
         .map_err(|e| format!("create {}: {e}", crate_src.display()))?;
@@ -1134,7 +1152,7 @@ fn write_project_crate(
         crate_dir,
         &package_name(crate_dir),
         &[],
-        false,
+        slate_support,
         has_shims,
         &cargo_features,
         lib_crate_types.as_deref(),

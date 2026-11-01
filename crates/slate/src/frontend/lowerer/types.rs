@@ -1,6 +1,6 @@
 use super::*;
 use slate_parser::sema::ctype::{CTypeKind, CTypes, IntRank, QualType};
-use slate_parser::target_info::{Endian, TargetEnvironment};
+use slate_parser::target_info::{Endian, TargetEnvironment, TargetFamily, TargetOs};
 
 pub(super) const BIT_UNIT_MODULE: &str = "__slate_bits";
 
@@ -1016,6 +1016,66 @@ fn known_c_name(types: &CTypes, mut c: QualType) -> Option<&'static str> {
             } => return Some("c_ulong"),
             _ => return None,
         };
+    }
+}
+
+fn core_ffi_definition(name: &str, target: &TargetInfo) -> Option<Prim> {
+    let long_is_64 = target.long_width == 64;
+    Some(match name {
+        "c_char" if target.char_signed => Prim::I8,
+        "c_char" => Prim::U8,
+        "c_long" if long_is_64 => Prim::I64,
+        "c_long" => Prim::I32,
+        "c_ulong" if long_is_64 => Prim::U64,
+        "c_ulong" => Prim::U32,
+        _ => return None,
+    })
+}
+
+fn slate_support_definition(name: &str, target: &TargetInfo) -> Option<Prim> {
+    let wide = target.pointer_width == 64;
+    let windows = matches!(target.os, TargetOs::Windows);
+    let musl = target.triple.contains("musl");
+    Some(match name {
+        "size_t" | "uintptr_t" if wide => Prim::U64,
+        "size_t" | "uintptr_t" => Prim::U32,
+        "ssize_t" | "ptrdiff_t" | "intptr_t" if wide => Prim::I64,
+        "ssize_t" | "ptrdiff_t" | "intptr_t" => Prim::I32,
+        "off_t" if windows => Prim::I32,
+        "off_t" if !wide && !musl && matches!(target.os, TargetOs::Linux | TargetOs::Android) => {
+            Prim::I32
+        }
+        "off_t" => Prim::I64,
+        "wchar_t" if windows => Prim::U16,
+        "wchar_t"
+            if matches!(target.family, TargetFamily::X86_64 | TargetFamily::X86)
+                || matches!(target.os, TargetOs::Darwin) =>
+        {
+            Prim::I32
+        }
+        "wchar_t" => Prim::U32,
+        _ => return None,
+    })
+}
+
+fn use_item(segments: &[&str]) -> Item {
+    Item::Use {
+        vis: rust::Visibility::Private,
+        path: rust::Path::new(segments.iter().copied().map(rust::Ident::from)),
+        alias: None,
+    }
+}
+
+pub(super) fn named_prim_item(name: &str, resolved: Prim, target: &TargetInfo) -> Item {
+    if core_ffi_definition(name, target) == Some(resolved) {
+        use_item(&["core", "ffi", name])
+    } else if slate_support_definition(name, target) == Some(resolved) {
+        use_item(&["slate_support", name])
+    } else {
+        Item::TypeAlias {
+            name: name.to_string(),
+            ty: rust::Type::Prim(resolved),
+        }
     }
 }
 

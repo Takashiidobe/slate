@@ -910,13 +910,9 @@ impl<'m> ModuleLowerer<'m> {
         );
         items.splice(
             0..0,
-            dependencies
-                .named_prims
-                .iter()
-                .map(|(name, resolved)| Item::TypeAlias {
-                    name: (*name).to_string(),
-                    ty: rust::Type::Prim(*resolved),
-                }),
+            dependencies.named_prims.iter().map(|(name, resolved)| {
+                types::named_prim_item(name, *resolved, &tables.rust_layout)
+            }),
         );
         items.extend(dependencies.compound_literals);
         items.extend(dependencies.asm_strings.into_values());

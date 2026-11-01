@@ -40,9 +40,9 @@ int main(void) {
 // CHECK-NEXT:   signature_compatible.c: [alpha] 2 compiled
 // CHECK-NEXT:   units/signature_compatible_helper.c: [alpha,beta] 4 compiled
 // CHECK-NEXT: total: 12 compiles across 2 targets
-// CHECK-NEXT: unit signature_compatible: 33 items, 16 gated, 0 duplicated functions
+// CHECK-NEXT: unit signature_compatible: 32 items, 14 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 4 variants
-// CHECK-NEXT: unit signature_compatible_helper: 25 items, 9 gated, 0 duplicated functions
+// CHECK-NEXT: unit signature_compatible_helper: 24 items, 7 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:scale: 2 variants
 // CHECK-NEXT:   hoisted fn:native_long: 2 variants
 // CHECK-NEXT:   spliced record:opaque: 2 variants
@@ -104,13 +104,8 @@ int main(void) {
 // CHECK-NEXT:     fn scale([[ARG_0]]: c_long) -> c_long;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: type c_char = i8;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: type c_long = i64;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: type c_long = i32;
+// CHECK-NEXT: use core::ffi::c_char;
+// CHECK-NEXT: use core::ffi::c_long;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: #[repr(C)]
@@ -279,16 +274,10 @@ int main(void) {
 // CHECK-NEXT:     fn exit([[ARG_0]]: i32);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: type c_char = i8;
-// CHECK-EMPTY:
+// CHECK-NEXT: use core::ffi::c_char;
+// CHECK-NEXT: use core::ffi::c_long;
 // CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: type c_long = i64;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: type c_long = i32;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: type c_ulong = u64;
+// CHECK-NEXT: use core::ffi::c_ulong;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]

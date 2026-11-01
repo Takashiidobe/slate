@@ -78,7 +78,9 @@ pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Bo
         Box::new(bool_simplify::BoolSimplify),
         Box::new(pattern_range::MatchRangeFold),
         Box::new(cstr_literal::CStrLiteral {
-            c_char: if target.char_signed {
+            c_char: if slate_parser::target_info::TargetInfo::for_triple(&target.triple)
+                .map_or(target.char_signed, |rust_abi| rust_abi.char_signed)
+            {
                 Prim::I8
             } else {
                 Prim::U8

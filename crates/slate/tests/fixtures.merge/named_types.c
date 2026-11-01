@@ -76,11 +76,11 @@ int main(void) {
 // CHECK-NEXT:   named_types.c: [] 1 compiled
 // CHECK-NEXT:   units/named_types_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit named_types: 35 items, 18 gated, 0 duplicated functions
+// CHECK-NEXT: unit named_types: 33 items, 14 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:width_of_long: 2 variants
 // CHECK-NEXT:   spliced fn:add_total: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit named_types_helper: 7 items, 4 gated, 1 duplicated functions
+// CHECK-NEXT: unit named_types_helper: 6 items, 2 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:tally_sum: 2 variants
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 2 shared symbols, 0 mismatches
@@ -121,21 +121,10 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: type c_char = i8;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: type c_long = i64;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: type c_long = i32;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: type c_ulong = u64;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: type c_ulong = u32;
-// CHECK-EMPTY:
-// CHECK-NEXT: type size_t = u64;
+// CHECK-NEXT: use core::ffi::c_char;
+// CHECK-NEXT: use core::ffi::c_long;
+// CHECK-NEXT: use core::ffi::c_ulong;
+// CHECK-NEXT: use slate_support::size_t;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: #[repr(C)]
@@ -405,15 +394,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
 // CHECK-NEXT: file named_types_helper.rs
-// CHECK-NEXT: type c_char = i8;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: type c_long = i64;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: type c_long = i32;
-// CHECK-EMPTY:
-// CHECK-NEXT: type size_t = u64;
+// CHECK-NEXT: use core::ffi::c_char;
+// CHECK-NEXT: use core::ffi::c_long;
+// CHECK-NEXT: use slate_support::size_t;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
