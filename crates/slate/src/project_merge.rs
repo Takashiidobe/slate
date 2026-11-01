@@ -1342,16 +1342,26 @@ fn same_except_added_section(
     resolved == project_splice::resolve_function(direct, &holds_here)
 }
 
+fn projects_target(matrix: &Matrix, name: &str, projection_triples: &[String]) -> bool {
+    projection_triples.is_empty()
+        || matrix
+            .targets
+            .iter()
+            .any(|target| target.name == name && projection_triples.contains(&target.triple))
+}
+
 fn check_projection(
     matrix: &Matrix,
     project: &Path,
     targets: &[TargetBuild],
     merged: &[MergedUnit],
     projection: Projection,
+    projection_triples: &[String],
 ) -> Result<ProjectionResult, String> {
     let configs = projection_configs(matrix, projection)?;
     let jobs: Vec<(&TargetBuild, &Vec<String>)> = targets
         .iter()
+        .filter(|target| projects_target(matrix, &target.name, projection_triples))
         .flat_map(|target| configs.iter().map(move |config| (target, config)))
         .collect();
     let results: Vec<_> = jobs
@@ -1380,6 +1390,7 @@ pub fn merge(
     project: &Path,
     targets: &[String],
     projection: Projection,
+    projection_triples: &[String],
 ) -> Result<Merged, String> {
     let names: Vec<String> = if targets.is_empty() {
         matrix
@@ -1398,7 +1409,11 @@ pub fn merge(
         ));
     }
     if projection == Projection::All {
-        let checks = projection_configs(matrix, projection)?.len() * names.len();
+        let projected = names
+            .iter()
+            .filter(|name| projects_target(matrix, name, projection_triples))
+            .count();
+        let checks = projection_configs(matrix, projection)?.len() * projected;
         if checks > MAX_EXHAUSTIVE_PROJECTIONS {
             return Err(format!(
                 "--check-projection all needs {checks} whole-project translations, \
@@ -1520,7 +1535,14 @@ pub fn merge(
                 .sum()
         })
         .collect();
-    let result = check_projection(matrix, project, &builds, &merged, projection)?;
+    let result = check_projection(
+        matrix,
+        project,
+        &builds,
+        &merged,
+        projection,
+        projection_triples,
+    )?;
 
     let roots: Vec<&str> = merged
         .iter()

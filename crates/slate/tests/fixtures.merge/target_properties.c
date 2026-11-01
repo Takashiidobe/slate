@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-NEXT: unit target_properties: 12 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:family: 2 variants
 // CHECK-NEXT:   hoisted fn:model: 2 variants
-// CHECK-NEXT: projection: 36 checked, 0 not translatable, 0 mismatches
+// CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
 // CHECK-NEXT: file main.rs

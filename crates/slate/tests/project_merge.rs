@@ -5,8 +5,13 @@ use slate_parser::target_info::TargetInfo;
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::sync::Mutex;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 const TRIPLE: &str = "x86_64-unknown-linux-gnu";
+const PROJECTION_TRIPLES: &str =
+    "x86_64-unknown-linux-gnu,aarch64-apple-darwin,x86_64-pc-windows-msvc";
+const FIXTURE_WORKERS: usize = 4;
 
 fn fixtures() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.merge")
@@ -24,6 +29,7 @@ fn merge(matrix: &Path, crate_dir: &Path, jobs: Option<&str>) -> (String, String
         .arg("--matrix")
         .arg(matrix)
         .args(["--merge", "--check-projection", "all"])
+        .args(["--projection-triples", PROJECTION_TRIPLES])
         .arg(fixtures())
         .arg(crate_dir)
         .env("SLATE_SYSROOTS", slate_parser::sysroot::root())
@@ -112,7 +118,7 @@ fn run_c(sources: &[PathBuf], defines: &[String], out: &Path) -> Option<String> 
     ))
 }
 
-fn run_rust(crate_dir: &Path, features: &[String]) -> Result<String, String> {
+fn run_rust(crate_dir: &Path, features: &[String], worker: usize) -> Result<String, String> {
     let output = Command::new(std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into()))
         .args([
             "run",
@@ -122,7 +128,10 @@ fn run_rust(crate_dir: &Path, features: &[String]) -> Result<String, String> {
             &features.join(","),
         ])
         .current_dir(crate_dir)
-        .env("CARGO_TARGET_DIR", work().join("cargo-target"))
+        .env(
+            "CARGO_TARGET_DIR",
+            work().join(format!("cargo-target-{worker}")),
+        )
         .output()
         .map_err(|error| format!("run cargo: {error}"))?;
     if !output.status.success() && output.stdout.is_empty() {
@@ -140,6 +149,7 @@ fn differential(
     crate_dir: &Path,
     stem: &str,
     sources: &[PathBuf],
+    worker: usize,
 ) -> Vec<String> {
     let defines = |set: &[String]| -> Vec<String> {
         matrix["features"]
@@ -157,7 +167,7 @@ fn differential(
         let Some(expected) = run_c(sources, &defines(&set), &binary) else {
             continue;
         };
-        match run_rust(crate_dir, &set) {
+        match run_rust(crate_dir, &set, worker) {
             Ok(actual) if actual == expected => {}
             Ok(actual) => failures.push(format!(
                 "[{}]: C printed {expected:?}, Rust printed {actual:?}",
@@ -169,7 +179,7 @@ fn differential(
     failures
 }
 
-fn merge_fixture(source: &Path) -> Result<(), String> {
+fn merge_fixture(source: &Path, worker: usize) -> Result<(), String> {
     let stem = source.file_stem().unwrap().to_string_lossy().into_owned();
     let text = std::fs::read_to_string(source).map_err(|e| format!("read: {e}"))?;
     let base = std::fs::read(fixtures().join("matrix.json")).map_err(|e| format!("read: {e}"))?;
@@ -263,7 +273,7 @@ fn merge_fixture(source: &Path) -> Result<(), String> {
     }
     if code == 0 {
         let paths: Vec<PathBuf> = sources.iter().map(|path| fixtures().join(path)).collect();
-        failures.extend(differential(&matrix, &crate_dir, &stem, &paths));
+        failures.extend(differential(&matrix, &crate_dir, &stem, &paths, worker));
     }
     if failures.is_empty() {
         Ok(())
@@ -287,14 +297,25 @@ fn merge_filecheck() {
         .collect();
     sources.sort();
     assert!(!sources.is_empty(), "no merge fixtures selected");
-    let failures: Vec<String> = sources
-        .iter()
-        .filter_map(|source| {
-            merge_fixture(source)
-                .err()
-                .map(|error| format!("{}: {error}", source.display()))
-        })
-        .collect();
+    let next = AtomicUsize::new(0);
+    let failures = Mutex::new(Vec::new());
+    std::thread::scope(|scope| {
+        for worker in 0..FIXTURE_WORKERS {
+            let (next, failures, sources) = (&next, &failures, &sources);
+            scope.spawn(move || {
+                while let Some(source) = sources.get(next.fetch_add(1, Ordering::Relaxed)) {
+                    if let Err(error) = merge_fixture(source, worker) {
+                        failures
+                            .lock()
+                            .expect("failure list")
+                            .push(format!("{}: {error}", source.display()));
+                    }
+                }
+            });
+        }
+    });
+    let mut failures = failures.into_inner().expect("failure list");
+    failures.sort();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 

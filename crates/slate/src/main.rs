@@ -631,6 +631,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut plan_mode = None;
     let mut merge = false;
     let mut projection = project_merge::Projection::Skip;
+    let mut projection_triples: Vec<String> = Vec::new();
     let mut build_target = None;
     let current_dir = std::env::current_dir().map_err(|e| format!("current directory: {e}"))?;
     let mut index = 0;
@@ -670,6 +671,13 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
                         format!("--check-projection requires all or a count, got {count}")
                     })?),
                 };
+            }
+            "--projection-triples" => {
+                index += 1;
+                let triples = args
+                    .get(index)
+                    .ok_or_else(|| "--projection-triples requires target triples".to_string())?;
+                projection_triples.extend(triples.split(',').map(str::to_string));
             }
             "--plan" => plan_mode = Some(project_plan::Mode::Plan),
             "--plan-exhaustive" => plan_mode = Some(project_plan::Mode::CheckExhaustive),
@@ -775,8 +783,9 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             .flat_map(|names: &String| names.split(','))
             .map(str::to_string)
             .collect();
-        let merged = slate_worker_pool()?
-            .install(|| project_merge::merge(&matrix, &project, &targets, projection))?;
+        let merged = slate_worker_pool()?.install(|| {
+            project_merge::merge(&matrix, &project, &targets, projection, &projection_triples)
+        })?;
         print!("{}", merged.render());
         let mismatches = merged.mismatches;
         let signature_mismatches = merged.signature_mismatches;

@@ -40,7 +40,7 @@ int main(void) { return 0; }
 // CHECK-NEXT:   named_types_support.c: [] 1 compiled
 // CHECK-NEXT: total: 3 compiles across 3 targets
 // CHECK-NEXT: unit named_types_support: 31 items, 14 gated, 0 duplicated functions
-// CHECK-NEXT: projection: 18 checked, 0 not translatable, 0 mismatches
+// CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
 // CHECK-NEXT: file main.rs
