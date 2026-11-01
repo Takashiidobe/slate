@@ -260,6 +260,11 @@ fn merge_fixture(source: &Path, worker: usize) -> Result<(), String> {
     if serial_report != report || crate_sources(&serial_dir) != generated {
         failures.push("output depends on SLATE_JOBS".to_string());
     }
+    match std::fs::read_to_string(crate_dir.join("merge-report.txt")) {
+        Ok(written) if written == report => {}
+        Ok(written) => failures.push(format!("merge-report.txt differs: {written}")),
+        Err(error) => failures.push(format!("read merge-report.txt: {error}")),
+    }
     let expected_code = text
         .lines()
         .find_map(|line| line.strip_prefix("// merge-expect-exit:"))

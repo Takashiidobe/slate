@@ -786,7 +786,8 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
         let merged = slate_worker_pool()?.install(|| {
             project_merge::merge(&matrix, &project, &targets, projection, &projection_triples)
         })?;
-        print!("{}", merged.render());
+        let report = merged.render().to_string();
+        print!("{report}");
         let mismatches = merged.mismatches;
         let signature_mismatches = merged.signature_mismatches;
         let written = write_project_crate(
@@ -799,6 +800,9 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             Some(merged.target_guard),
             merged.shared_macros,
         )?;
+        let report_path = Path::new(paths[1]).join("merge-report.txt");
+        std::fs::write(&report_path, report)
+            .map_err(|error| format!("write {}: {error}", report_path.display()))?;
         if mismatches > 0 {
             print!("{written}");
             return Err(format!("{mismatches} projection mismatches"));
