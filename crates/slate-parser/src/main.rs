@@ -184,7 +184,7 @@ fn run() -> miette::Result<()> {
     let parsed = parser.parse_file(Path::new(&path));
     report_directives(parser.directive_diagnostics())?;
     let (ast, files) = parsed?;
-    let mut sema = slate_parser::sema::Sema::new(&ast);
+    let mut sema = slate_parser::sema::Sema::new(&ast).with_macro_structure(show_macros);
     if !parse_only {
         for warning in sema.analyze(&files)? {
             eprintln!("{:?}", miette::Report::new(warning));

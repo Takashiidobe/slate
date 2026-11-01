@@ -10,7 +10,9 @@ pub(super) fn has_effects(value: &Value) -> bool {
 fn is_constant(value: &Value) -> bool {
     match &value.node.value {
         ValueKind::Constant(_) | ValueKind::Null => true,
-        ValueKind::Convert { operand, .. } => is_constant(operand),
+        ValueKind::Convert { operand, .. } | ValueKind::MacroArg { value: operand, .. } => {
+            is_constant(operand)
+        }
         _ => false,
     }
 }
@@ -32,6 +34,7 @@ fn promoted_store(value: Value) -> Value {
 }
 
 fn assigned_value(place: &Place, value: Value) -> Value {
+    let place = place.without_macro_holes();
     let (
         PlaceKind::Field {
             bits: Some(bits), ..
@@ -185,6 +188,15 @@ impl Hoister {
     ) -> Result<Place, ResolveError> {
         let kind = match place.kind {
             PlaceKind::Binding(id) => PlaceKind::Binding(id),
+            PlaceKind::MacroArg {
+                expansion,
+                argument,
+                place,
+            } => PlaceKind::MacroArg {
+                expansion,
+                argument,
+                place: Box::new(self.place(*place, out)?),
+            },
             PlaceKind::Deref(value) => PlaceKind::Deref(Box::new(self.value(*value, out)?)),
             PlaceKind::CompoundLiteral {
                 object,
@@ -240,6 +252,15 @@ impl Hoister {
     ) -> Result<Place, ResolveError> {
         let kind = match place.kind {
             PlaceKind::Binding(id) => PlaceKind::Binding(id),
+            PlaceKind::MacroArg {
+                expansion,
+                argument,
+                place,
+            } => PlaceKind::MacroArg {
+                expansion,
+                argument,
+                place: Box::new(self.stable_place(*place, out)?),
+            },
             PlaceKind::Deref(value) => {
                 let value = self.value(*value, out)?;
                 PlaceKind::Deref(Box::new(self.temporary(value, out)))
@@ -413,6 +434,15 @@ impl Hoister {
             node: source.derive(ValueKind::Void),
         };
         let kind = match value.node.value {
+            ValueKind::MacroArg {
+                expansion,
+                argument,
+                value,
+            } => ValueKind::MacroArg {
+                expansion,
+                argument,
+                value: Box::new(self.value(*value, out)?),
+            },
             ValueKind::Store {
                 place,
                 value,
@@ -892,6 +922,7 @@ impl Hoister {
     fn place_effects(&self, place: &Place) -> bool {
         match &place.kind {
             PlaceKind::Binding(_) => false,
+            PlaceKind::MacroArg { place, .. } => self.place_effects(place),
             PlaceKind::Deref(value) => self.effects(value),
             PlaceKind::CompoundLiteral { initializer, .. } => self.effects(initializer),
             PlaceKind::Temporary { initializer, .. } => self.effects(initializer),
@@ -910,6 +941,7 @@ impl Hoister {
 
     fn effects(&self, value: &Value) -> bool {
         match &value.node.value {
+            ValueKind::MacroArg { value, .. } => self.effects(value),
             ValueKind::Call {
                 callee: Callee::Direct(id),
                 arguments,

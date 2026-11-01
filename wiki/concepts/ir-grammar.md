@@ -274,6 +274,7 @@ chunk         = "i" digits | float_type | "pair<" float_type ">" | "quad<" float
 
 ```ebnf
 statement  = simple { metadata } ";"
+           | "macro_body #" digits { metadata } body
            | "if" value { metadata } body [ "else" body ]
            | "while" binding evaluation { metadata } body
            | "do" binding { metadata } body "while" evaluation ";"
@@ -448,6 +449,7 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
 
 ```ebnf
 place  = binding
+       | "macro_arg(#" digits ", " digits ", " place ")"
        | "deref(" value ")"
        | "index(" value ", " value ")"
        | "field" digits "(" place ")"
@@ -509,6 +511,7 @@ core       = "const<" type ">(" constant ")"
            | "code_units<" type ">(" int_list ")"
            | "aggregate<" type ", zero_fill=" bool ">(" [ member { ", " member } ] ")"
            | "copy<" type ", reason=" reason ">(" value ")"
+           | "macro_arg<" type ">(#" digits ", " digits ", " value ")"
            | "read<" type access [ ordering ] ">(" place ")"
            | "store<" type access [ ordering ] ">(" place ", " value ")"
            | "update<" type ", result=" ( "old" | "new" ) access [ ordering ]
@@ -717,6 +720,10 @@ macro_cover      = "expr" | "callee" | "call_arguments" | "statements" | "decl"
                  | "type" | "name" | "split" ;
 range            = digits "+" digits ;
 ```
+
+- `macro_body` and `macro_arg` appear only with `--show-macros`; their first
+  number is the `macro_expansion`, a `macro_arg`'s second is the argument index
+  ([macro invocations](ir/pipeline.md#macro-invocations)).
 
 - `macro_site`, `macro_definition` and `macro_expansion` print only with
   `--show-macros`. A statement or value prints one `macro_site` for each expansion

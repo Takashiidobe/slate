@@ -314,7 +314,9 @@ impl PreprocessedUnit {
                 path: path.clone(),
                 message: error.to_string(),
             })?;
-        let (module, files, diagnostics) = lower_parsed(&path, &parser, parsed, &mut Vec::new())?;
+        let (mut module, files, diagnostics) =
+            lower_parsed(&path, &parser, parsed, &mut Vec::new(), true)?;
+        module.strip_macro_structure(|_| false);
         reject_directive_errors(&path, &diagnostics)?;
         Ok((module, files))
     }
@@ -353,7 +355,7 @@ fn parse_module_from_args(
             message: error.to_string(),
         }
     })?;
-    lower_parsed(path, &parser, parsed, diagnostics)
+    lower_parsed(path, &parser, parsed, diagnostics, false)
 }
 
 fn lower_parsed(
@@ -361,8 +363,9 @@ fn lower_parsed(
     parser: &Parser,
     (unit, files): (TranslationUnit, Files),
     diagnostics: &mut Vec<serde_json::Value>,
+    macro_structure: bool,
 ) -> Result<(Module, Files, Vec<DirectiveDiagnostic>), Error> {
-    let mut sema = Sema::new(&unit);
+    let mut sema = Sema::new(&unit).with_macro_structure(macro_structure);
     let warnings = sema.analyze(&files).map_err(|error| {
         crate::diagnostics::collect(&error, diagnostics);
         Error::Analyze {

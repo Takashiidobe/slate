@@ -13,6 +13,7 @@ mod expression;
 mod fold;
 pub(crate) mod function;
 mod initializer;
+mod macro_structure;
 mod module;
 mod ms_asm;
 mod ms_asm_effects;
@@ -50,6 +51,7 @@ pub struct Sema<'u> {
     names: NameResolution,
     items: Vec<names::ItemResolution>,
     types: types::TypeResolver,
+    macro_structure: bool,
 }
 
 impl<'u> Sema<'u> {
@@ -61,7 +63,13 @@ impl<'u> Sema<'u> {
             names,
             items,
             types,
+            macro_structure: false,
         }
+    }
+
+    pub fn with_macro_structure(mut self, enabled: bool) -> Self {
+        self.macro_structure = enabled;
+        self
     }
 
     pub fn names(&self) -> Result<&NameResolution, &names::ResolveError> {

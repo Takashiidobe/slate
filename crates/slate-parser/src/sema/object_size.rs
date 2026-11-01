@@ -45,6 +45,7 @@ impl TypeResolver {
 
     fn pointer_designation(&self, value: &Value) -> Option<Designation> {
         match &value.node.value {
+            ValueKind::MacroArg { value, .. } => self.pointer_designation(value),
             ValueKind::Copy { operand, .. }
             | ValueKind::Convert {
                 kind: ConversionKind::PointerCast,
@@ -93,6 +94,7 @@ impl TypeResolver {
 
     fn place_designation(&self, place: &Place) -> Option<Designation> {
         match &place.kind {
+            PlaceKind::MacroArg { place, .. } => self.place_designation(place),
             PlaceKind::Binding(_)
             | PlaceKind::CompoundLiteral { .. }
             | PlaceKind::Temporary { .. } => {

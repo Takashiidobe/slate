@@ -41,7 +41,9 @@ fn overlaps(left: &Location, right: &Location) -> bool {
 /// lvalue to compare and is never reported.
 fn pointee(value: &Value) -> Option<Root> {
     match &value.node.value {
-        ValueKind::Copy { operand, .. } | ValueKind::Convert { operand, .. } => pointee(operand),
+        ValueKind::Copy { operand, .. }
+        | ValueKind::Convert { operand, .. }
+        | ValueKind::MacroArg { value: operand, .. } => pointee(operand),
 
         ValueKind::ArrayDecay {
             place:
@@ -112,6 +114,7 @@ fn walk(value: &Value, found: &mut Touches) {
 
 fn walk_value(value: &Value, found: &mut Touches) {
     match &value.node.value {
+        ValueKind::MacroArg { value, .. } => walk(value, found),
         ValueKind::Store { place, value, .. } => {
             walk_place(place, true, found);
             walk(value, found);
@@ -245,9 +248,9 @@ fn walk_place(place: &Place, write: bool, found: &mut Touches) {
 /// The constant a subscript adds, if it is one.
 fn constant_index(value: &Value) -> Option<i128> {
     match &value.node.value {
-        ValueKind::Copy { operand, .. } | ValueKind::Convert { operand, .. } => {
-            constant_index(operand)
-        }
+        ValueKind::Copy { operand, .. }
+        | ValueKind::Convert { operand, .. }
+        | ValueKind::MacroArg { value: operand, .. } => constant_index(operand),
         ValueKind::Constant(Number::Integer(value)) => i128::try_from(value.clone()).ok(),
         ValueKind::Constant(Number::SignedInteger(value)) => i128::try_from(value.clone()).ok(),
         _ => None,
@@ -263,9 +266,9 @@ fn offset_root<'a>(
     amounts: &mut Vec<&'a Value>,
 ) -> Option<Root> {
     match &value.node.value {
-        ValueKind::Copy { operand, .. } | ValueKind::Convert { operand, .. } => {
-            offset_root(operand, path, amounts)
-        }
+        ValueKind::Copy { operand, .. }
+        | ValueKind::Convert { operand, .. }
+        | ValueKind::MacroArg { value: operand, .. } => offset_root(operand, path, amounts),
         ValueKind::PointerOffset {
             pointer, amount, ..
         } => {
@@ -279,6 +282,7 @@ fn offset_root<'a>(
 
 fn walk_path(place: &Place, write: bool, path: &mut Vec<Step>, found: &mut Touches) {
     match &place.kind {
+        PlaceKind::MacroArg { place, .. } => walk_path(place, write, path, found),
         PlaceKind::Binding(id) => record(Root::Binding(*id), write, path, found),
         PlaceKind::Deref(value) => {
             walk(value, found);

@@ -130,6 +130,33 @@ is body or argument code; see
 depend on it for semantics: it is source context for recovering macros in the
 output. `--show-macros` prints it.
 
+`Sema::with_macro_structure(true)` also puts expansions in the function bodies,
+which `--show-macros` turns on. `sema/macro_structure.rs` decides from the AST
+and the [cover table](../preprocessor.md#macro-invocations) before lowering:
+
+- `Statement::MacroExpansion { expansion, body }` wraps the statements an
+  expansion covers. Nested expansions nest. It is not a scope: a `let` in `body`
+  stays visible to later statements.
+- `ValueKind::MacroArg` and `PlaceKind::MacroArg { expansion, argument, .. }`
+  mark one argument occurrence inside its open expansion. Lvalue and rvalue
+  occurrences share the mechanism. A conversion the argument needs is applied by
+  the parent after the hole closes, so `ADD_ONE(c)` on a `u8` has its `widen`
+  outside. When an argument is passed down to a nested macro the inner hole wraps
+  the outer one.
+- An expansion gets neither when it has no statement position (`int k = M(i);`,
+  until `slate-f2zu.9.5.12.9`), when an argument is not one expression
+  (`TIMES2(i + j)`, or a type, name or callee until `slate-f2zu.9.5.12.7`), when
+  an argument reads a binding the body declares (`TEMP(temp + a)`), or when the
+  statements hold asm, labels, switch labels, or a `static` or `extern`
+  declaration.
+
+Effects still hoist out of a hole, into the wrapper's `body`. Sema analyses read
+through both forms. Slate's lowerer does not: its matches have wildcards, so
+exhaustiveness does not reach them. `Module::strip_macro_structure(keep)`
+(`ir/macro_strip.rs`) removes the expansions `keep` rejects, leaving the IR
+lowering sees today. `--merge` builds with structure on and strips everything
+until `slate-f2zu.9.5.12.5` keeps some; other modes never build it.
+
 Per-value expansion chains are not in the IR yet (only atomic builtins record
 `c_macro`); see [open design](open-design.md#macro-provenance).
 

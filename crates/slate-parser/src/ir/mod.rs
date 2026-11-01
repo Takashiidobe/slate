@@ -4,6 +4,7 @@ mod atomic;
 mod c_types;
 mod comments;
 mod declarations;
+mod macro_strip;
 mod module;
 mod module_print;
 mod names;
@@ -148,6 +149,11 @@ pub enum ValueKind {
         passing: VaPassing,
     },
     StatementExpression(Box<Evaluation>),
+    MacroArg {
+        expansion: crate::ast::MacroExpansionId,
+        argument: usize,
+        value: Box<Value>,
+    },
     Capture {
         id: BindingId,
         extent: Box<Value>,
@@ -290,6 +296,19 @@ impl Value {
         compact: bool,
     ) -> fmt::Result {
         match &self.node.value {
+            ValueKind::MacroArg {
+                expansion,
+                argument,
+                value,
+            } => write!(
+                f,
+                "macro_arg<{}>(#{}, {argument}, {})",
+                self.ty,
+                expansion.0,
+                value
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact)
+            ),
             ValueKind::Copy { operand, reason } => write!(
                 f,
                 "copy<{}, reason={}>({})",

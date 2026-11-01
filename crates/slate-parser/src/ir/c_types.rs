@@ -47,6 +47,7 @@ impl CTypeTable {
                 _ => None,
             },
             PlaceKind::Swizzle { .. } => None,
+            PlaceKind::MacroArg { place, .. } => self.place(place),
         }
     }
 

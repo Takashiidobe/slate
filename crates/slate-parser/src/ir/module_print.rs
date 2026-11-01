@@ -964,6 +964,14 @@ impl Printer<'_> {
                     writeln!(f, "{:indent$}}}", "")?;
                     continue;
                 }
+                Statement::MacroExpansion { expansion, body } => {
+                    write!(f, "macro_body #{} {{", expansion.0)?;
+                    self.statement_annotations(f, statement)?;
+                    writeln!(f)?;
+                    self.statements(f, body, indent + 4)?;
+                    writeln!(f, "{:indent$}}}", "")?;
+                    continue;
+                }
                 Statement::Block(body) => {
                     f.write_str("{")?;
                     self.statement_annotations(f, statement)?;

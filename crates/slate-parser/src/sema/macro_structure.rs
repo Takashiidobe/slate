@@ -1,0 +1,179 @@
+use crate::ast::*;
+use crate::ir::NameResolution;
+use crate::visit::{self, Visitor};
+use std::collections::{HashMap, HashSet};
+use std::convert::Infallible;
+
+#[derive(Clone, Copy)]
+pub(super) struct MacroRegion {
+    pub expansion: MacroExpansionId,
+    pub last: NodeId,
+}
+
+#[derive(Clone, Copy)]
+pub(super) struct MacroHole {
+    pub expansion: MacroExpansionId,
+    pub argument: usize,
+}
+
+#[derive(Default)]
+pub(super) struct MacroStructure {
+    regions: HashMap<NodeId, Vec<MacroRegion>>,
+    holes: HashMap<NodeId, Vec<MacroHole>>,
+}
+
+struct BodyScan {
+    expression_statements: HashMap<NodeId, NodeId>,
+    unfit: HashSet<MacroExpansionId>,
+}
+
+impl Visitor for BodyScan {
+    type Error = Infallible;
+
+    fn visit_stmt(&mut self, stmt: &Stmt) -> Result<(), Infallible> {
+        match &stmt.value {
+            StmtKind::Expr(expr) => {
+                self.expression_statements.insert(expr.id, stmt.id);
+            }
+            StmtKind::Asm(_)
+            | StmtKind::MsAsm(_)
+            | StmtKind::Labeled { .. }
+            | StmtKind::SwitchLabel { .. }
+            | StmtKind::LocalLabelDecl(_) => self.mark_unfit(stmt),
+            _ => {}
+        }
+        visit::walk_stmt(self, stmt)
+    }
+
+    fn visit_declaration(&mut self, declaration: &Declaration) -> Result<(), Infallible> {
+        if matches!(
+            declaration.specifiers.storage,
+            StorageClass::Static | StorageClass::Extern
+        ) {
+            for declarator in &declaration.declarators {
+                self.mark_unfit(declarator);
+            }
+        }
+        visit::walk_declaration(self, declaration)
+    }
+}
+
+impl BodyScan {
+    fn mark_unfit<T>(&mut self, span: &Span<T>) {
+        for link in span.macro_nesting.iter().flat_map(|nesting| nesting.iter()) {
+            self.unfit.insert(link.expansion);
+        }
+    }
+}
+
+impl MacroStructure {
+    pub(super) fn of(unit: &TranslationUnit, names: &NameResolution) -> Self {
+        let macros = &unit.macros;
+        let mut scan = BodyScan {
+            expression_statements: HashMap::new(),
+            unfit: HashSet::new(),
+        };
+        let Ok(()) = scan.visit_translation_unit(unit);
+        let mut unfit = scan.unfit;
+        unfit.extend(body_bindings_read_by_arguments(names));
+
+        let depth = |id: MacroExpansionId| {
+            std::iter::successors(macros.expansion(id).parent, |parent| {
+                macros.expansion(*parent).parent
+            })
+            .count()
+        };
+        let mut structure = Self::default();
+        for (index, expansion) in macros.expansions.iter().enumerate() {
+            let id = MacroExpansionId(index as u32);
+            let holes_only = expansion
+                .argument_uses
+                .iter()
+                .all(|argument| matches!(argument.cover, MacroCover::Expr(_)));
+            if unfit.contains(&id) || !holes_only {
+                continue;
+            }
+            let (first, last) = match &expansion.cover {
+                Some(MacroCover::Statements(statements)) => {
+                    let (Some(first), Some(last)) = (statements.first(), statements.last()) else {
+                        continue;
+                    };
+                    (*first, *last)
+                }
+                Some(MacroCover::Expr(expr)) => {
+                    let Some(statement) = scan.expression_statements.get(expr) else {
+                        continue;
+                    };
+                    (*statement, *statement)
+                }
+                _ => continue,
+            };
+            structure
+                .regions
+                .entry(first)
+                .or_default()
+                .push(MacroRegion {
+                    expansion: id,
+                    last,
+                });
+            for argument in &expansion.argument_uses {
+                if let MacroCover::Expr(node) = argument.cover {
+                    structure.holes.entry(node).or_default().push(MacroHole {
+                        expansion: id,
+                        argument: argument.argument,
+                    });
+                }
+            }
+        }
+        for regions in structure.regions.values_mut() {
+            regions.sort_by_key(|region| depth(region.expansion));
+        }
+        for holes in structure.holes.values_mut() {
+            holes.sort_by_key(|hole| depth(hole.expansion));
+        }
+        structure
+    }
+
+    pub(super) fn region(&self, first: NodeId, level: usize) -> Option<MacroRegion> {
+        self.regions.get(&first)?.get(level).copied()
+    }
+
+    pub(super) fn holes(&self, node: NodeId) -> &[MacroHole] {
+        self.holes.get(&node).map_or(&[], Vec::as_slice)
+    }
+}
+
+fn body_bindings_read_by_arguments(names: &NameResolution) -> HashSet<MacroExpansionId> {
+    let mut declared: HashMap<MacroExpansionId, HashSet<crate::ir::BindingId>> = HashMap::new();
+    for binding in &names.bindings {
+        for link in binding
+            .macro_nesting
+            .iter()
+            .flat_map(|nesting| nesting.iter())
+        {
+            if link.argument.is_none() {
+                declared
+                    .entry(link.expansion)
+                    .or_default()
+                    .insert(binding.value.id);
+            }
+        }
+    }
+    let mut unfit = HashSet::new();
+    for reference in &names.references {
+        for link in reference
+            .macro_nesting
+            .iter()
+            .flat_map(|nesting| nesting.iter())
+        {
+            if link.argument.is_some()
+                && declared
+                    .get(&link.expansion)
+                    .is_some_and(|bindings| bindings.contains(&reference.value.binding))
+            {
+                unfit.insert(link.expansion);
+            }
+        }
+    }
+    unfit
+}

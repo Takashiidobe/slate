@@ -37,6 +37,7 @@ impl Uses {
 
     fn statement(&mut self, statement: &Statement) {
         match statement {
+            Statement::MacroExpansion { body, .. } => self.statements(body),
             Statement::Comment(_)
             | Statement::Null
             | Statement::Fence { .. }
@@ -205,6 +206,7 @@ impl Uses {
             PlaceKind::Binding(id) => {
                 self.writes.insert(*id);
             }
+            PlaceKind::MacroArg { place, .. } => self.target(place),
             _ => self.place(place),
         }
     }
@@ -215,6 +217,7 @@ impl Uses {
                 self.escapes.insert(*id);
             }
             PlaceKind::Deref(value) => self.value(value),
+            PlaceKind::MacroArg { place, .. } => self.place(place),
             PlaceKind::CompoundLiteral { initializer, .. }
             | PlaceKind::Temporary { initializer, .. } => self.value(initializer),
             PlaceKind::ComplexPart { base, .. }
@@ -348,6 +351,7 @@ impl Uses {
             ValueKind::Copy { operand, .. }
             | ValueKind::Unary { operand, .. }
             | ValueKind::FloatClass { operand, .. }
+            | ValueKind::MacroArg { value: operand, .. }
             | ValueKind::Convert { operand, .. } => self.value(operand),
             ValueKind::StatementExpression(evaluation) => self.evaluation(evaluation),
             ValueKind::Fence { .. }
@@ -404,7 +408,8 @@ fn collect_locals(body: &[Span<Statement>], plain: &mut HashSet<BindingId>) {
                     plain.insert(variable.id);
                 }
             }
-            Statement::Block(body)
+            Statement::MacroExpansion { body, .. }
+            | Statement::Block(body)
             | Statement::While { body, .. }
             | Statement::DoWhile { body, .. }
             | Statement::Switch { body, .. }
@@ -433,7 +438,8 @@ fn collect_locals(body: &[Span<Statement>], plain: &mut HashSet<BindingId>) {
 fn mark(body: &mut [Span<Statement>], scope: &Scope) {
     for statement in body {
         super::deep(|| match &mut statement.value {
-            Statement::Block(body)
+            Statement::MacroExpansion { body, .. }
+            | Statement::Block(body)
             | Statement::While { body, .. }
             | Statement::DoWhile { body, .. }
             | Statement::Switch { body, .. }

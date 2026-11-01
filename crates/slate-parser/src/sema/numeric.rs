@@ -2177,6 +2177,7 @@ pub(super) fn conversion(
 
 pub(super) fn integer_fits(value: &Value, width: u32, signed: bool) -> Fits {
     match &value.node.value {
+        ValueKind::MacroArg { value, .. } => integer_fits(value, width, signed),
         ValueKind::Constant(Number::Integer(value)) if fits_rank(value, width, signed) => {
             Fits::Always
         }

@@ -22,6 +22,9 @@ enum Projection {
 }
 
 pub(super) struct Lowerer {
+    pub macro_structure: super::macro_structure::MacroStructure,
+    pub open_macros: Vec<crate::ast::MacroExpansionId>,
+    pub macro_value_hole: Option<crate::ast::NodeId>,
     pub context: Context,
     pub types: TypeResolver,
     pub module: Module,
@@ -1641,7 +1644,50 @@ impl Lowerer {
         let c = self
             .lvalue_result(e)
             .map_err(|error| error.at(e.expansion))?;
-        Ok(Lvalue { c, ..place })
+        let place = self.macro_place_holes(e, place.place);
+        Ok(Lvalue { c, place })
+    }
+
+    fn macro_place_holes(&self, e: &Expr, mut place: Place) -> Place {
+        if self.macro_value_hole == Some(e.id) {
+            return place;
+        }
+        for hole in self.macro_structure.holes(e.id) {
+            if self.open_macros.contains(&hole.expansion) {
+                place = Place {
+                    ty: place.ty.clone(),
+                    access: place.access,
+                    kind: PlaceKind::MacroArg {
+                        expansion: hole.expansion,
+                        argument: hole.argument,
+                        place: Box::new(place),
+                    },
+                };
+            }
+        }
+        place
+    }
+
+    fn macro_value_holes(&mut self, e: &Expr, mut lowered: Operand) -> Operand {
+        for hole in self.macro_structure.holes(e.id) {
+            if self.open_macros.contains(&hole.expansion) {
+                self.types.record_operand_c_type(&lowered);
+                let ty = lowered.value.ty.clone();
+                let c = lowered.c;
+                lowered = Operand {
+                    c,
+                    value: Value {
+                        ty,
+                        node: e.derive(ValueKind::MacroArg {
+                            expansion: hole.expansion,
+                            argument: hole.argument,
+                            value: Box::new(lowered.value),
+                        }),
+                    },
+                };
+            }
+        }
+        lowered
     }
 
     fn lower_place(&mut self, e: &Expr) -> Result<Lvalue, ResolveError> {
@@ -2479,7 +2525,14 @@ impl Lowerer {
         if self.is_binary_chain(e) {
             return self.binary_chain(e);
         }
-        let lowered = self.lower_expr(e).map_err(|error| error.at(e.expansion))?;
+        let enclosing_hole = self.macro_value_hole;
+        if !self.macro_structure.holes(e.id).is_empty() {
+            self.macro_value_hole = Some(e.id);
+        }
+        let lowered = self.lower_expr(e);
+        self.macro_value_hole = enclosing_hole;
+        let lowered = lowered.map_err(|error| error.at(e.expansion))?;
+        let lowered = self.macro_value_holes(e, lowered);
         self.finish_expr(e, lowered)
     }
 
@@ -2504,6 +2557,7 @@ impl Lowerer {
                 .expr(right)
                 .and_then(|right| self.binary_operands(node, op, accumulated, right))
                 .map_err(|error| error.at(node.expansion))?;
+            let lowered = self.macro_value_holes(node, lowered);
             accumulated = self.finish_expr(node, lowered)?;
         }
         Ok(accumulated)
@@ -3480,7 +3534,8 @@ fn temporary_rooted(place: &Place) -> bool {
         PlaceKind::Field { base, .. }
         | PlaceKind::ComplexPart { base, .. }
         | PlaceKind::Lane { base, .. }
-        | PlaceKind::Swizzle { base, .. } => temporary_rooted(base),
+        | PlaceKind::Swizzle { base, .. }
+        | PlaceKind::MacroArg { place: base, .. } => temporary_rooted(base),
         PlaceKind::Binding(_)
         | PlaceKind::Deref(_)
         | PlaceKind::Index { .. }

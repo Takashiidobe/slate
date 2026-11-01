@@ -294,6 +294,11 @@ pub enum PlaceKind {
         base: Box<Place>,
         lanes: Vec<u32>,
     },
+    MacroArg {
+        expansion: crate::ast::MacroExpansionId,
+        argument: usize,
+        place: Box<Place>,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -324,9 +329,26 @@ impl Place {
         DisplayPlace(self, compact)
     }
 
+    pub fn without_macro_holes(&self) -> &Place {
+        let mut place = self;
+        while let PlaceKind::MacroArg { place: inner, .. } = &place.kind {
+            place = inner;
+        }
+        place
+    }
+
     fn format(&self, f: &mut std::fmt::Formatter<'_>, compact: bool) -> std::fmt::Result {
         match &self.kind {
             PlaceKind::Binding(id) => write!(f, "%{}", id.0),
+            PlaceKind::MacroArg {
+                expansion,
+                argument,
+                place,
+            } => {
+                write!(f, "macro_arg(#{}, {argument}, ", expansion.0)?;
+                place.format(f, compact)?;
+                f.write_str(")")
+            }
             PlaceKind::Deref(value) => {
                 write!(f, "deref({})", value.display(false).with_compact(compact))
             }

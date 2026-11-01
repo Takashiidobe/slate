@@ -2,7 +2,7 @@ use super::{
     AbiSignature, Atomicity, BindingId, CTypeTable, Comments, CompareOp, FenceScope, Global,
     InlineAsm, Parameters, Place, Type, TypeDefinition, Value, Variable,
 };
-use crate::ast::{CommentAttach, CommentGroup, MacroInvocations, NodeId, Span};
+use crate::ast::{CommentAttach, CommentGroup, MacroExpansionId, MacroInvocations, NodeId, Span};
 pub use crate::ast::{OmpScheduleKind, OmpScheduleModifier};
 use crate::target_info::TargetInfo;
 use std::collections::HashMap;
@@ -268,6 +268,10 @@ pub enum Statement {
     SehLeave(BindingId),
     OmpParallel(Box<OmpParallel>),
     OmpFor(Box<OmpFor>),
+    MacroExpansion {
+        expansion: MacroExpansionId,
+        body: Vec<Span<Statement>>,
+    },
 }
 
 #[derive(Debug, Clone)]

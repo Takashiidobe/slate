@@ -2,6 +2,7 @@ use super::attributes::{Subject, Use};
 use super::ctype::QualType;
 use super::expression::Lowerer;
 use super::initializer::InitializerSource;
+use super::macro_structure::MacroStructure;
 use super::numeric::X87Excess;
 use super::numeric::{Context, ResolveError};
 use super::operand::Operand;
@@ -29,7 +30,19 @@ impl super::Sema<'_> {
         self,
         files: &crate::files::Files,
     ) -> Result<(Module, Vec<SemaError>), SemaErrors> {
-        resolve_module(self.unit, self.names, self.items, self.types, files)
+        let macro_structure = if self.macro_structure {
+            MacroStructure::of(self.unit, &self.names)
+        } else {
+            MacroStructure::default()
+        };
+        resolve_module(
+            self.unit,
+            self.names,
+            self.items,
+            self.types,
+            files,
+            macro_structure,
+        )
     }
 }
 
@@ -39,6 +52,7 @@ fn resolve_module(
     items: Vec<super::names::ItemResolution>,
     mut types: TypeResolver,
     files: &crate::files::Files,
+    macro_structure: MacroStructure,
 ) -> Result<(Module, Vec<SemaError>), SemaErrors> {
     let context = Context::for_dialect(&unit.dialect);
     let next_id = names
@@ -70,6 +84,9 @@ fn resolve_module(
         ms_asm_return: Vec::new(),
         floating_pragmas: FloatingPragmas::new(unit.dialect.flavor(), context.region),
         compound_start: false,
+        macro_structure,
+        open_macros: Vec::new(),
+        macro_value_hole: None,
         reserved_extents: HashMap::new(),
         bare_weakrefs: HashSet::new(),
         register_variables: HashMap::new(),
@@ -2144,11 +2161,43 @@ impl Lowerer {
         return_type: Option<QualType>,
     ) -> Result<Vec<Span<Statement>>, ResolveError> {
         let mut result = Vec::new();
-        for statement in body {
-            self.statement(statement, return_type, &mut result)
-                .map_err(|error| error.at(statement.expansion))?;
+        let mut position = 0;
+        while position < body.len() {
+            position += self.macro_region(&body[position..], 0, return_type, &mut result)?;
         }
         Ok(result)
+    }
+
+    fn macro_region(
+        &mut self,
+        body: &[Stmt],
+        level: usize,
+        return_type: Option<QualType>,
+        result: &mut Vec<Span<Statement>>,
+    ) -> Result<usize, ResolveError> {
+        let first = &body[0];
+        let Some(region) = self.macro_structure.region(first.id, level) else {
+            self.statement(first, return_type, result)
+                .map_err(|error| error.at(first.expansion))?;
+            return Ok(1);
+        };
+        self.open_macros.push(region.expansion);
+        let mut inner = Vec::new();
+        let mut position = 0;
+        while position < body.len() {
+            let start = position;
+            let next_level = if start == 0 { level + 1 } else { 0 };
+            position += self.macro_region(&body[start..], next_level, return_type, &mut inner)?;
+            if body[start..position].iter().any(|s| s.id == region.last) {
+                break;
+            }
+        }
+        self.open_macros.pop();
+        result.push(first.derive(Statement::MacroExpansion {
+            expansion: region.expansion,
+            body: inner,
+        }));
+        Ok(position)
     }
 
     fn statement(
