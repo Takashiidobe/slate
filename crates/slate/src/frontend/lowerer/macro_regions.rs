@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use slate_parser::ast::{MacroDefinition, MacroExpansionId, MacroInvocations, Span};
+use slate_parser::ast::{MacroCover, MacroDefinition, MacroExpansionId, MacroInvocations, Span};
 use slate_parser::ir;
 
 use super::control_flow;
@@ -380,10 +380,18 @@ impl FunctionLowerer<'_, '_> {
             .into_iter()
             .flatten()
             .find(|neighbor| touches(macros, region, Some(neighbor)));
+        let argument_split = macros
+            .expansion(region)
+            .argument_uses
+            .iter()
+            .any(|argument| argument.cover == MacroCover::Split);
         let rejection = params.as_ref().err().copied().or_else(|| {
-            split
-                .map(|neighbor| {
-                    unfit_reason(&neighbor.value).unwrap_or(MacroInlineReason::SplitExpansion)
+            argument_split
+                .then_some(MacroInlineReason::SplitArgument)
+                .or_else(|| {
+                    split.map(|neighbor| {
+                        unfit_reason(&neighbor.value).unwrap_or(MacroInlineReason::SplitExpansion)
+                    })
                 })
                 .or_else(|| {
                     (!statements

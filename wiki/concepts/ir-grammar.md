@@ -710,7 +710,11 @@ macro_expansion  = "macro_expansion #" digits " " c_identifier
                    " [definition=#" digits "]"
                    [ " [site=" digits ":" digits "+" digits "]"
                      [ " [arguments=" range { ", " range } "]" ] ]
-                   [ " [parent=#" digits "]" ] [ " [empty]" ] ";" ;
+                   [ " [parent=#" digits "]" ] [ " [empty]" ]
+                   [ " [covers=" macro_cover "]" ]
+                   { " [arg" digits "=" macro_cover "]" } ";" ;
+macro_cover      = "expr" | "callee" | "call_arguments" | "statements" | "decl"
+                 | "type" | "name" | "split" ;
 range            = digits "+" digits ;
 ```
 

@@ -936,6 +936,41 @@ pub struct MacroExpansion {
     pub parent: Option<MacroExpansionId>,
     pub spelled: Option<SpelledCall>,
     pub empty: bool,
+    pub cover: Option<MacroCover>,
+    pub argument_uses: Vec<MacroArgumentUse>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum MacroCover {
+    Expr(NodeId),
+    Callee(NodeId),
+    CallArguments(NodeId),
+    Statements(Vec<NodeId>),
+    Decl(NodeId),
+    Type,
+    Name,
+    Split,
+}
+
+impl MacroCover {
+    pub fn label(&self) -> &'static str {
+        match self {
+            Self::Expr(_) => "expr",
+            Self::Callee(_) => "callee",
+            Self::CallArguments(_) => "call_arguments",
+            Self::Statements(_) => "statements",
+            Self::Decl(_) => "decl",
+            Self::Type => "type",
+            Self::Name => "name",
+            Self::Split => "split",
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct MacroArgumentUse {
+    pub argument: usize,
+    pub cover: MacroCover,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]

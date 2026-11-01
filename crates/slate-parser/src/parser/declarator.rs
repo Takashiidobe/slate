@@ -109,9 +109,13 @@ impl<'a> DeclaratorParser<'a> {
         specifiers: &mut DeclarationSpecifiers,
     ) -> Result<TypeSpecifier, DeclaratorError> {
         let mut set = TypeSpecifierSet::default();
+        let start = self.pos;
+        let mut end = start;
         while self.take_type_specifier(&mut set)? {
+            end = self.pos;
             self.parse_specifier_keywords(specifiers)?;
         }
+        self.note_type_range(start, end);
         if set.shape.is_empty() {
             return Err(match self.peek().cloned() {
                 Some(token) => {
@@ -735,11 +739,20 @@ impl<'a> DeclaratorParser<'a> {
         }
     }
 
+    fn note_type_range(&self, start: usize, end: usize) {
+        if let Some(parser) = self.context.parser() {
+            parser.note_type_range(self.tokens, start, end);
+        }
+    }
+
     pub(crate) fn parse_type_name(&mut self) -> Result<TypeName, DeclaratorError> {
+        let start = self.pos;
         let mut specifiers = self.parse_specifiers(false)?;
+        self.note_type_range(start, self.pos);
         let ty = std::mem::replace(&mut specifiers.ty, TypeSpecifier::Void);
         specifiers.ty = ty.with_type_attributes(&specifiers.attributes);
         let declarator = self.parse_declarator(true)?;
+        self.note_type_range(start, self.pos);
         Ok(TypeName {
             specifiers,
             declarator,

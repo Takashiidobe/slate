@@ -63,13 +63,13 @@ int main(void) {
 // CHECK-NEXT: unit macro_arg_casts: 13 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 5 function-like, 5 lifted at least once (expansions counted per distinct compile)
-// CHECK-NEXT:   inline conflicting_argument: 6
+// CHECK-NEXT:   inline split_argument: 10
 // CHECK-NEXT:   inline another_template_chosen: 4
 // CHECK-NEXT:   macro MIXED: 4 lifted, inline:
-// CHECK-NEXT:   macro PUT: 8 lifted, inline: conflicting_argument 4, another_template_chosen 4
+// CHECK-NEXT:   macro PUT: 4 lifted, inline: split_argument 8, another_template_chosen 4
 // CHECK-NEXT:   macro STORE_BYTE: 8 lifted, inline:
 // CHECK-NEXT:   macro SUM_TWICE: 4 lifted, inline:
-// CHECK-NEXT:   macro UNHYGIENIC: 2 lifted, inline: conflicting_argument 2
+// CHECK-NEXT:   macro UNHYGIENIC: 2 lifted, inline: split_argument 2
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
@@ -170,8 +170,40 @@ int main(void) {
 // CHECK-NEXT:     let small: u16 = 3;
 // CHECK-NEXT:     let code: u8 = 200u8;
 // CHECK-NEXT:     PUT!(wide, (unsafe { flips }) > 0);
-// CHECK-NEXT:     PUT!(wide - 1, (unsafe { flips }) < 0);
-// CHECK-NEXT:     PUT!(wide + 2, (unsafe { flips }) == 0);
+// CHECK-NEXT:     if (unsafe { flips }) < 0 {
+// CHECK-NEXT:         let val: i32 = wide - 1;
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             buffer = ((((buffer as u32) as i32) | ((((val as i16) as u16) as u32) as i32) << 1i32)
+// CHECK-NEXT:                 as i16) as u16;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             flips = flips + val;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
+// CHECK-NEXT:             | (((((wide - 1) as i16) as u16) as u32) as i32) << 1i32)
+// CHECK-NEXT:             as i16) as u16;
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             buffer = [[V_2]];
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if (unsafe { flips }) == 0 {
+// CHECK-NEXT:         let val: i32 = wide + 2;
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             buffer = ((((buffer as u32) as i32) | ((((val as i16) as u16) as u32) as i32) << 1i32)
+// CHECK-NEXT:                 as i16) as u16;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             flips = flips + val;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
+// CHECK-NEXT:             | (((((wide + 2) as i16) as u16) as u32) as i32) << 1i32)
+// CHECK-NEXT:             as i16) as u16;
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             buffer = [[V_3]];
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { flips }) == 0 {
 // CHECK-NEXT:         let val: i32 = (small as u32) as i32;
 // CHECK-NEXT:         unsafe {
@@ -182,10 +214,10 @@ int main(void) {
 // CHECK-NEXT:             flips = flips + val;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32) | ((small as u32) as i32) << 1i32)
+// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32) | ((small as u32) as i32) << 1i32)
 // CHECK-NEXT:             as i16) as u16;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = [[V_2]];
+// CHECK-NEXT:             buffer = [[V_4]];
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { flips }) > 0 {
@@ -198,10 +230,10 @@ int main(void) {
 // CHECK-NEXT:             flips = flips + val;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
+// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
 // CHECK-NEXT:             | (((lc as u16) as u32) as i32) << 1i32) as i16) as u16;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = [[V_3]];
+// CHECK-NEXT:             buffer = [[V_5]];
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if true {
@@ -214,11 +246,11 @@ int main(void) {
 // CHECK-NEXT:             flips = flips + val;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
+// CHECK-NEXT:         let [[V_6:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
 // CHECK-NEXT:             | (((lc.wrapping_sub(1) as u16) as u32) as i32) << 1i32)
 // CHECK-NEXT:             as i16) as u16;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = [[V_4]];
+// CHECK-NEXT:             buffer = [[V_6]];
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { flips }) != 0 {
@@ -231,11 +263,11 @@ int main(void) {
 // CHECK-NEXT:             flips = flips + val;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
+// CHECK-NEXT:         let [[V_7:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
 // CHECK-NEXT:             | (((((((code as u32) as i32) + 1) as i16) as u16) as u32) as i32) << 1i32)
 // CHECK-NEXT:             as i16) as u16;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = [[V_5]];
+// CHECK-NEXT:             buffer = [[V_7]];
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     PUT!(lc as i32, (unsafe { flips }) != 0);
@@ -247,10 +279,10 @@ int main(void) {
 // CHECK-NEXT:     SUM_TWICE!((code as u32) as i32);
 // CHECK-NEXT:     MIXED!(wide);
 // CHECK-NEXT:     MIXED!(((small as u32) as i32) + 1);
-// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 =
+// CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 =
 // CHECK-NEXT:         (unsafe { flips }) + (((small as u32) as i32) + 1i32 * ((small as u32) as i32) + 1i32);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         flips = [[V_6]];
+// CHECK-NEXT:         flips = [[V_8]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     UNHYGIENIC!((code as u32) as i32);
 // CHECK-NEXT:     #[cfg(windows)]

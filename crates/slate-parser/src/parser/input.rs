@@ -1,9 +1,9 @@
 use super::undo::UndoLog;
-use crate::ast::{Comment, CommentAttach, CommentGroup, Span, SpanRangeIndex};
+use crate::ast::{Comment, CommentAttach, CommentGroup, NodeId, Span, SpanRangeIndex};
 use crate::lexer::Token;
 use crate::pp::{CommentFollower, CommentLayout, CommentPlacement, PPNode, PPNodeKind};
 use std::cell::RefCell;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 #[derive(Clone)]
 pub(super) enum Annotation {
@@ -19,7 +19,11 @@ pub(super) struct ParserInput {
     pub(super) annotations: RefCell<Annotations>,
     annotation_undo: RefCell<UndoLog<(usize, Vec<Span<Annotation>>)>>,
     span_ranges: SpanRangeIndex,
+    node_ranges: RefCell<HashMap<NodeId, TokenRange>>,
+    type_ranges: RefCell<HashSet<TokenRange>>,
 }
+
+pub(super) type TokenRange = (usize, usize);
 
 impl ParserInput {
     pub fn new(nodes: Vec<PPNode>) -> Self {
@@ -85,8 +89,42 @@ impl ParserInput {
                 None => Span::cover(value, &[] as &[Span<Token>]),
             };
         };
-        self.span_ranges
-            .cover(value, &self.tokens, base + start, base + end)
+        let span = self
+            .span_ranges
+            .cover(value, &self.tokens, base + start, base + end);
+        if self.starts_in_macro(base + start, base + end) {
+            self.node_ranges
+                .borrow_mut()
+                .insert(span.id, (base + start, base + end));
+        }
+        span
+    }
+
+    fn starts_in_macro(&self, start: usize, end: usize) -> bool {
+        start < end
+            && self
+                .tokens
+                .get(start)
+                .is_some_and(|token| token.macro_nesting.is_some())
+    }
+
+    pub fn note_type_range(&self, tokens: &[Span<Token>], start: usize, end: usize) {
+        let Some(base) = self.position(tokens, 0) else {
+            return;
+        };
+        if self.starts_in_macro(base + start, base + end) {
+            self.type_ranges
+                .borrow_mut()
+                .insert((base + start, base + end));
+        }
+    }
+
+    pub(super) fn node_ranges(&self) -> std::cell::Ref<'_, HashMap<NodeId, TokenRange>> {
+        self.node_ranges.borrow()
+    }
+
+    pub(super) fn type_ranges(&self) -> std::cell::Ref<'_, HashSet<TokenRange>> {
+        self.type_ranges.borrow()
     }
 
     pub fn has_token_slice(&self, tokens: &[Span<Token>]) -> bool {

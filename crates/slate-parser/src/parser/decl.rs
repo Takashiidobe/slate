@@ -304,6 +304,7 @@ impl Parser {
         &mut self,
         mut input: ParserInput,
         root_file: FileId,
+        mut macros: MacroInvocations,
     ) -> Result<TranslationUnit, ParseError> {
         self.mark_ms_asm_lines(&mut input);
         self.tags.borrow_mut().clear();
@@ -314,7 +315,7 @@ impl Parser {
         for annotation in input.take_remaining() {
             decls.push(self.declaration_annotation(annotation)?);
         }
-        Ok(filter_translation_unit(
+        let unit = filter_translation_unit(
             &TranslationUnit {
                 dialect: self.dialect().clone(),
                 decls,
@@ -323,7 +324,9 @@ impl Parser {
             },
             root_file,
             &self.forced_roots,
-        ))
+        );
+        super::macro_nodes::map_macro_nodes(&input, &unit, &mut macros);
+        Ok(TranslationUnit { macros, ..unit })
     }
 
     fn declaration_annotation(&self, annotation: Span<Annotation>) -> Result<Decl, ParseError> {

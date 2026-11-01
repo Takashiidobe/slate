@@ -133,6 +133,8 @@ impl Preprocessor<'_> {
             parent,
             spelled,
             empty: false,
+            cover: None,
+            argument_uses: Vec::new(),
         });
         Arc::new(MacroNesting {
             expansion,

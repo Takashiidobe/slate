@@ -224,6 +224,12 @@ fn macro_table(f: &mut fmt::Formatter<'_>, macros: &MacroInvocations) -> fmt::Re
         if expansion.empty {
             f.write_str(" [empty]")?;
         }
+        if let Some(cover) = &expansion.cover {
+            write!(f, " [covers={}]", cover.label())?;
+        }
+        for argument in &expansion.argument_uses {
+            write!(f, " [arg{}={}]", argument.argument, argument.cover.label())?;
+        }
         writeln!(f, ";")?;
     }
     Ok(())

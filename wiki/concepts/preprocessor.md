@@ -238,9 +238,30 @@ ids, which location could not separate because their tokens share the outer
 site's `expansion`. `MacroInvocations::innermost_spelled` finds the last link
 written in source, which is the call whose region a node belongs to.
 
+After parsing, `parser/macro_nodes.rs` fills `MacroExpansion.cover` and
+`argument_uses` (one entry per occurrence of an argument in the expansion), a side
+table keyed by `NodeId` that leaves the AST shape alone. It compares contiguous
+runs of labeled tokens with the token range of each node in the final tree, so it
+does not depend on source locations:
+
+- `Expr`, `Callee`, `Decl`: one node has exactly those tokens. `Callee` is an
+  expression that is a call's callee, through parens. A `;` written after the call
+  closes a `Decl`.
+- `CallArguments`: the parenthesized list of one call, as for `x` in
+  `#define TRACE(x) printf x` called as `TRACE(("%d", i))`.
+- `Statements`: one statement, or sibling statements of one block that tile the
+  run, again allowing a `;` after the call. `if (c) SETS(i, j);` is `split`
+  because its second statement is not the `if` branch's sibling.
+- `Type`: a type name, a declaration's specifiers, or its type specifiers.
+  `long T` is `split` because `T` is only part of the specifier list.
+- `Name`: one identifier with no node, as for a field or declarator name.
+- `Split`: no such node, so `x` in `TIMES2(i + j)` with `#define TIMES2(x) x * 2`,
+  whose tokens parse as `i + (j * 2)`. Slate keeps an expansion with a split
+  argument inline, with reason `split_argument`.
+
 `--show-macros` prints these on IR dumps
-([ir-grammar](ir-grammar.md#metadata)). The fixture is
-`clang/linux/x86_64/macro_invocations.c`.
+([ir-grammar](ir-grammar.md#metadata)). The fixtures are
+`clang/linux/x86_64/macro_invocations.c` and `macro_nodes.c`.
 
 ## Expansion
 

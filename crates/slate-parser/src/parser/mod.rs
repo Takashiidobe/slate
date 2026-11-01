@@ -4,6 +4,7 @@ mod context;
 mod decl;
 mod declarator;
 mod input;
+mod macro_nodes;
 mod ms_asm;
 mod openmp;
 mod stmt;
@@ -320,6 +321,10 @@ impl Parser {
         self.input.cover_tokens(value, tokens, start, end)
     }
 
+    pub(crate) fn note_type_range(&self, tokens: &[Span<Token>], start: usize, end: usize) {
+        self.input.note_type_range(tokens, start, end);
+    }
+
     pub(crate) fn has_token_slice(&self, tokens: &[Span<Token>]) -> bool {
         self.input.has_token_slice(tokens)
     }
@@ -444,8 +449,7 @@ impl Parser {
             ))
         })?;
         let macros = pp.take_macro_invocations();
-        self.parse_input(ParserInput::new(nodes), root_file)
-            .map(|ast| TranslationUnit { macros, ..ast })
+        self.parse_input(ParserInput::new(nodes), root_file, macros)
             .map_err(FrontendError::Parse)
     }
 
@@ -551,8 +555,8 @@ impl Parser {
             root_file,
             macros,
         } = preprocessed;
-        self.parse_input(ParserInput::new(nodes), root_file)
-            .map(|ast| (TranslationUnit { macros, ..ast }, files))
+        self.parse_input(ParserInput::new(nodes), root_file, macros)
+            .map(|ast| (ast, files))
             .map_err(FrontendError::Parse)
     }
 

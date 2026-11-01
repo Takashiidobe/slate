@@ -106,23 +106,23 @@ int use(int value) {
 // IR-NEXT:     macro_definition #[[#NODE11:]] ID(x) [defined=7:12] = "x";
 // IR-NEXT:     macro_definition #[[#NODE12:]] OPEN [defined=7:16] = "if ( value ) {";
 // IR-NEXT:     macro_definition #[[#NODE13:]] CLOSE [defined=7:17] = "}";
-// IR-NEXT:     macro_expansion #[[#NODE0]] LIMIT [definition=#[[#NODE0]]] [site=7:465+5];
-// IR-NEXT:     macro_expansion #[[#NODE1]] ASSERT [definition=#[[#NODE1]]] [site=7:505+32] [arguments=512+13, 527+9];
-// IR-NEXT:     macro_expansion #[[#NODE2]] LIMIT [definition=#[[#NODE0]]] [site=7:520+5] [parent=#[[#NODE1]]];
+// IR-NEXT:     macro_expansion #[[#NODE0]] LIMIT [definition=#[[#NODE0]]] [site=7:465+5] [covers=expr];
+// IR-NEXT:     macro_expansion #[[#NODE1]] ASSERT [definition=#[[#NODE1]]] [site=7:505+32] [arguments=512+13, 527+9] [covers=statements] [arg0=expr] [arg1=expr];
+// IR-NEXT:     macro_expansion #[[#NODE2]] LIMIT [definition=#[[#NODE0]]] [site=7:520+5] [parent=#[[#NODE1]]] [covers=expr];
 // IR-NEXT:     macro_expansion #[[#NODE3]] TRACE [definition=#[[#NODE2]]] [site=7:543+28] [arguments=549+21] [empty];
 // IR-NEXT:     macro_expansion #[[#NODE4]] NOTHING [definition=#[[#NODE3]]] [site=7:577+7] [empty];
-// IR-NEXT:     macro_expansion #[[#NODE5]] PRINT [definition=#[[#NODE4]]] [site=7:590+22] [arguments=596+15];
-// IR-NEXT:     macro_expansion #[[#NODE6]] TWICE [definition=#[[#NODE5]]] [site=7:626+12] [arguments=632+5];
-// IR-NEXT:     macro_expansion #[[#NODE7]] WRAP [definition=#[[#NODE6]]] [site=7:652+15] [arguments=657+9];
-// IR-NEXT:     macro_expansion #[[#NODE8]] CALL_WITH [definition=#[[#NODE7]]] [site=7:685+20] [arguments=695+2, 699+5];
+// IR-NEXT:     macro_expansion #[[#NODE5]] PRINT [definition=#[[#NODE4]]] [site=7:590+22] [arguments=596+15] [covers=expr] [arg0=call_arguments];
+// IR-NEXT:     macro_expansion #[[#NODE6]] TWICE [definition=#[[#NODE5]]] [site=7:626+12] [arguments=632+5] [covers=expr] [arg0=expr] [arg0=expr];
+// IR-NEXT:     macro_expansion #[[#NODE7]] WRAP [definition=#[[#NODE6]]] [site=7:652+15] [arguments=657+9] [covers=expr] [arg0=expr];
+// IR-NEXT:     macro_expansion #[[#NODE8]] CALL_WITH [definition=#[[#NODE7]]] [site=7:685+20] [arguments=695+2, 699+5] [covers=expr] [arg1=expr];
 // IR-NEXT:     macro_expansion #[[#NODE9]] OBJECT_TO_FUNCTION [definition=#[[#NODE8]]] [site=7:719+18];
-// IR-NEXT:     macro_expansion #[[#NODE10]] LOG [definition=#[[#NODE9]]] [site=7:750+28] [arguments=754+9, 765+5, 772+5];
-// IR-NEXT:     macro_expansion #[[#NODE11]] LIMIT [definition=#[[#NODE0]]] [site=7:772+5] [parent=#[[#NODE10]]];
-// IR-NEXT:     macro_expansion #[[#NODE12]] NO_ARGS [definition=#[[#NODE10]]] [site=7:792+9];
-// IR-NEXT:     macro_expansion #[[#NODE13]] ID [definition=#[[#NODE11]]] [site=7:815+13] [arguments=818+9];
-// IR-NEXT:     macro_expansion #[[#NODE14:]] ID [definition=#[[#NODE11]]] [site=7:818+9] [arguments=821+5] [parent=#[[#NODE13]]];
+// IR-NEXT:     macro_expansion #[[#NODE10]] LOG [definition=#[[#NODE9]]] [site=7:750+28] [arguments=754+9, 765+5, 772+5] [covers=expr] [arg0=expr] [arg1=split];
+// IR-NEXT:     macro_expansion #[[#NODE11]] LIMIT [definition=#[[#NODE0]]] [site=7:772+5] [parent=#[[#NODE10]]] [covers=expr];
+// IR-NEXT:     macro_expansion #[[#NODE12]] NO_ARGS [definition=#[[#NODE10]]] [site=7:792+9] [covers=expr];
+// IR-NEXT:     macro_expansion #[[#NODE13]] ID [definition=#[[#NODE11]]] [site=7:815+13] [arguments=818+9] [covers=expr] [arg0=expr];
+// IR-NEXT:     macro_expansion #[[#NODE14:]] ID [definition=#[[#NODE11]]] [site=7:818+9] [arguments=821+5] [parent=#[[#NODE13]]] [covers=expr] [arg0=expr];
 // IR-NEXT:     macro_expansion #[[#NODE15:]] ID [definition=#[[#NODE11]]] [site=7:842+4] [arguments=845+0] [empty];
-// IR-NEXT:     macro_expansion #[[#NODE16:]] OPEN [definition=#[[#NODE12]]] [site=7:858+4];
-// IR-NEXT:     macro_expansion #[[#NODE17:]] CLOSE [definition=#[[#NODE13]]] [site=7:874+5];
+// IR-NEXT:     macro_expansion #[[#NODE16:]] OPEN [definition=#[[#NODE12]]] [site=7:858+4] [covers=split];
+// IR-NEXT:     macro_expansion #[[#NODE17:]] CLOSE [definition=#[[#NODE13]]] [site=7:874+5] [covers=split];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

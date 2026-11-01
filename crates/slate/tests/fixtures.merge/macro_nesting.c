@@ -86,7 +86,7 @@ int main(void) {
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 15 function-like, 13 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   inline another_template_chosen: 6
-// CHECK-NEXT:   inline conflicting_argument: 4
+// CHECK-NEXT:   inline split_argument: 4
 // CHECK-NEXT:   inline declares_local: 2
 // CHECK-NEXT:   inline reads_caller_local: 2
 // CHECK-NEXT:   inline argument_reads_macro_local: 2
@@ -100,9 +100,9 @@ int main(void) {
 // CHECK-NEXT:   macro PUT_BYTE: 26 lifted, inline:
 // CHECK-NEXT:   macro PUT_SHORT: 10 lifted, inline: another_template_chosen 2
 // CHECK-NEXT:   macro SAME_BODY: 2 lifted, inline:
-// CHECK-NEXT:   macro SEND: 4 lifted, inline: conflicting_argument 2, another_template_chosen 4
+// CHECK-NEXT:   macro SEND: 4 lifted, inline: split_argument 2, another_template_chosen 4
 // CHECK-NEXT:   macro SEND_CODE: 4 lifted, inline:
-// CHECK-NEXT:   macro SEND_TWO: 0 lifted, inline: conflicting_argument 2
+// CHECK-NEXT:   macro SEND_TWO: 0 lifted, inline: split_argument 2
 // CHECK-NEXT:   macro TEMP: 2 lifted, inline: argument_reads_macro_local 2
 // CHECK-NEXT:   macro USES_LEAK: 2 lifted, inline:
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
