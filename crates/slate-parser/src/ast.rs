@@ -630,6 +630,7 @@ pub struct Span<T> {
     pub expansion: Loc,
     pub provenance: Provenance,
     pub macro_origin: Option<Arc<MacroOrigin>>,
+    pub macro_nesting: Option<Arc<MacroNesting>>,
     pub leading_space: bool,
     pub digraph: bool,
 }
@@ -641,6 +642,7 @@ impl<T: std::hash::Hash> std::hash::Hash for Span<T> {
         self.expansion.hash(state);
         self.provenance.hash(state);
         self.macro_origin.hash(state);
+        self.macro_nesting.hash(state);
         self.leading_space.hash(state);
         self.digraph.hash(state);
     }
@@ -672,6 +674,7 @@ impl<T> Span<T> {
             expansion,
             provenance: Provenance::default(),
             macro_origin: None,
+            macro_nesting: None,
             leading_space: false,
             digraph: false,
         }
@@ -695,6 +698,11 @@ impl<T> Span<T> {
 
     pub fn with_macro_origin(mut self, macro_origin: Option<Arc<MacroOrigin>>) -> Self {
         self.macro_origin = macro_origin;
+        self
+    }
+
+    pub fn with_macro_nesting(mut self, macro_nesting: Option<Arc<MacroNesting>>) -> Self {
+        self.macro_nesting = macro_nesting;
         self
     }
 
@@ -727,6 +735,7 @@ impl<T> Span<T> {
             expansion: self.expansion,
             provenance: self.provenance,
             macro_origin: self.macro_origin.clone(),
+            macro_nesting: self.macro_nesting.clone(),
             leading_space: self.leading_space,
             digraph: self.digraph,
         }
@@ -740,6 +749,7 @@ impl<T> Span<T> {
             expansion: self.expansion,
             provenance: self.provenance,
             macro_origin: self.macro_origin,
+            macro_nesting: self.macro_nesting,
             leading_space: self.leading_space,
             digraph: self.digraph,
         }
@@ -753,6 +763,7 @@ impl<T> Span<T> {
             expansion: self.expansion,
             provenance: self.provenance,
             macro_origin: self.macro_origin.clone(),
+            macro_nesting: self.macro_nesting.clone(),
             leading_space: self.leading_space,
             digraph: self.digraph,
         }
@@ -766,6 +777,7 @@ impl<T> Span<T> {
             expansion: self.expansion,
             provenance: self.provenance,
             macro_origin: self.macro_origin,
+            macro_nesting: self.macro_nesting,
             leading_space: self.leading_space,
             digraph: self.digraph,
         }
@@ -798,8 +810,17 @@ impl<T> Span<T> {
             },
         )
         .with_macro_origin(same_origin.then(|| first.macro_origin.clone()).flatten())
+        .with_macro_nesting(shared_nesting(spans))
         .with_provenance(first.provenance)
     }
+}
+
+fn shared_nesting<U>(spans: &[Span<U>]) -> Option<Arc<MacroNesting>> {
+    let (first, rest) = spans.split_first()?;
+    rest.iter()
+        .try_fold(first.macro_nesting.clone()?, |shared, span| {
+            shared.shared_with(span.macro_nesting.as_ref()?)
+        })
 }
 
 fn mixed_expansion<U>(spans: &[Span<U>]) -> Loc {
@@ -918,10 +939,63 @@ pub struct MacroSite {
     pub argument: Option<usize>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct NestedExpansionId(pub u32);
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct NestedExpansion {
+    pub definition: MacroDefinitionId,
+    pub parent: Option<NestedExpansionId>,
+}
+
+#[derive(Debug, PartialEq, Eq, Hash)]
+pub struct MacroNesting {
+    pub expansion: NestedExpansionId,
+    pub argument: Option<usize>,
+    pub enclosing: Option<Arc<MacroNesting>>,
+}
+
+impl MacroNesting {
+    pub fn iter(&self) -> impl Iterator<Item = &MacroNesting> {
+        std::iter::successors(Some(self), |link| link.enclosing.as_deref())
+    }
+
+    pub fn site_of(&self, expansion: NestedExpansionId) -> Option<&MacroNesting> {
+        self.iter().find(|link| link.expansion == expansion)
+    }
+
+    fn shared_with(self: Arc<Self>, other: &Arc<Self>) -> Option<Arc<Self>> {
+        if Arc::ptr_eq(&self, other) {
+            return Some(self);
+        }
+        let mut links: Vec<_> = self
+            .iter()
+            .filter_map(|link| {
+                let theirs = other.site_of(link.expansion)?;
+                Some((
+                    link.expansion,
+                    link.argument.filter(|_| link.argument == theirs.argument),
+                ))
+            })
+            .collect();
+        links.reverse();
+        links
+            .into_iter()
+            .fold(None, |enclosing, (expansion, argument)| {
+                Some(Arc::new(MacroNesting {
+                    expansion,
+                    argument,
+                    enclosing,
+                }))
+            })
+    }
+}
+
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
 pub struct MacroInvocations {
     pub definitions: Vec<MacroDefinition>,
     pub invocations: Vec<MacroInvocation>,
+    pub nested: Vec<NestedExpansion>,
 }
 
 impl MacroInvocations {
@@ -931,6 +1005,10 @@ impl MacroInvocations {
 
     pub fn invocation(&self, id: MacroInvocationId) -> &MacroInvocation {
         &self.invocations[id.0 as usize]
+    }
+
+    pub fn nested_definition(&self, id: NestedExpansionId) -> &MacroDefinition {
+        &self.definitions[self.nested[id.0 as usize].definition.0 as usize]
     }
 
     pub fn sites(&self, loc: Loc) -> Vec<MacroSite> {

@@ -806,7 +806,7 @@ impl Value {
             ),
         }?;
         module_print::metadata(f, metadata, self.node.id)?;
-        module_print::macro_sites(f, metadata, self.node.expansion)?;
+        module_print::macro_sites(f, metadata, &self.node)?;
         if show_spans {
             module_print::locations(f, self.node.spelling, self.node.expansion)?;
         }

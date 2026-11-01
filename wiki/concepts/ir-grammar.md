@@ -701,7 +701,7 @@ absent from default dumps.
 ```ebnf
 metadata = "[" key "=" string "]" ;          (* only with --show-metadata *)
 c_type   = '[c=' string ']' ;                (* always, when spelling differs from canonical *)
-macro_site = "[macro=" c_identifier "#" digits " " ( "body" | "arg" digits ) "]" ;
+macro_site = "[" ( "macro" | "nested" ) "=" c_identifier "#" digits " " ( "body" | "arg" digits ) "]" ;
 
 macro_definition = "macro_definition #" digits " " c_identifier
                    [ "(" [ c_identifier { ", " c_identifier } ] ")" ] [ " [variadic]" ]
@@ -710,13 +710,16 @@ macro_invocation = "macro_invocation #" digits " " c_identifier
                    " [definition=#" digits "] [site=" digits ":" digits "+" digits "]"
                    [ " [arguments=" range { ", " range } "]" ]
                    [ " [parent=#" digits "]" ] [ " [empty]" ] ";" ;
+macro_nested_expansion = "macro_nested_expansion #" digits " " c_identifier
+                   " [definition=#" digits "]" [ " [parent=#" digits "]" ] ";" ;
 range            = digits "+" digits ;
 ```
 
-- `macro_site`, `macro_definition` and `macro_invocation` print only with
-  `--show-macros`. A statement or value prints one `macro_site` for each
-  invocation containing it, outermost first, after its metadata. `defined` is
-  `file:line` with a 0-based line.
+- `macro_site`, `macro_definition`, `macro_invocation` and
+  `macro_nested_expansion` print only with `--show-macros`. A statement or value
+  prints one `macro_site` for each invocation containing it, outermost first,
+  after its metadata, then one `nested` site for each nested expansion, most
+  recently applied first. `defined` is `file:line` with a 0-based line.
 
 - `c_type` follows a value, record field, parameter, declaration, or `write`,
   in the same position as metadata. A `let` can print two: its initializer's

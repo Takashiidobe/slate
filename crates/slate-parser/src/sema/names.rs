@@ -1410,6 +1410,7 @@ fn copy_span<T, U>(span: &Span<T>, value: U) -> Span<U> {
         expansion: span.expansion,
         provenance: span.provenance,
         macro_origin: span.macro_origin.clone(),
+        macro_nesting: span.macro_nesting.clone(),
         leading_space: span.leading_space,
         digraph: span.digraph,
     }

@@ -108,53 +108,6 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! PUT_SHORT {
-// CHECK-NEXT:     ($w:expr) => {
-// CHECK-NEXT:         PUT_BYTE!((($w & 255) as i8) as u8);
-// CHECK-NEXT:         PUT_BYTE!((((((($w as i16) as u16) as u32) as i32) >> 8i32) as i8) as u8);
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SEND {
-// CHECK-NEXT:     ($value:expr, $length:expr) => {
-// CHECK-NEXT:         let width: i32 = $length;
-// CHECK-NEXT:         if width > 8 {
-// CHECK-NEXT:             let val: i32 = $value;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = ((((buffer as u32) as i32) | ((((val as i16) as u16) as u32) as i32))
-// CHECK-NEXT:                     as i16) as u16;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             let [[V_0]]: i32 = unsafe { used };
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 used = [[V_0]] + 1;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 bytes.0[[[V_0]] as usize] = ((((buffer as u32) as i32) & 255) as i8) as u8;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: i32 = unsafe { used };
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 used = [[V_1]] + 1;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 bytes.0[[[V_1]] as usize] = ((((buffer as u32) as i32) >> 8i32) as i8) as u8;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 total = total + width;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             let [[V_2:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
-// CHECK-NEXT:                 | (((($value as i16) as u16) as u32) as i32)) as i16)
-// CHECK-NEXT:                 as u16;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = [[V_2]];
-// CHECK-NEXT:             }
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 total = total + width;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ADD {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let [[V_0]]: i32 = (unsafe { total }) + $a;
@@ -192,53 +145,6 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SEND_CODE {
-// CHECK-NEXT:     ($c:expr, $tree:expr) => {
-// CHECK-NEXT:         let width: i32 = ((unsafe { (*$tree.offset($c)).len }) as u32) as i32;
-// CHECK-NEXT:         if width > 8 {
-// CHECK-NEXT:             let val: i32 = ((unsafe { (*$tree.offset($c)).code }) as u32) as i32;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = ((((buffer as u32) as i32) | ((((val as i16) as u16) as u32) as i32))
-// CHECK-NEXT:                     as i16) as u16;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             let [[V_0]]: i32 = unsafe { used };
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 used = [[V_0]] + 1;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 bytes.0[[[V_0]] as usize] = ((((buffer as u32) as i32) & 255) as i8) as u8;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             let [[V_1]]: i32 = unsafe { used };
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 used = [[V_1]] + 1;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 bytes.0[[[V_1]] as usize] = ((((buffer as u32) as i32) >> 8i32) as i8) as u8;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 total = total + width;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             let [[V_2]]: u16 = (((((unsafe { buffer }) as u32) as i32)
-// CHECK-NEXT:                 | (((unsafe { (*$tree.offset($c)).code }) as u32) as i32))
-// CHECK-NEXT:                 as i16) as u16;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = [[V_2]];
-// CHECK-NEXT:             }
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 total = total + width;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SEND_TWO {
-// CHECK-NEXT:     ($a:expr, $b:expr) => {
-// CHECK-NEXT:         SEND!($a, 9);
-// CHECK-NEXT:         SEND!($b, 3);
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! LOCAL_READS {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let reads__1: i32 = 40;
@@ -249,6 +155,22 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             total = total + reads__1;
 // CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! ONLY_NESTED {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         let [[V_0]]: i32 = (unsafe { total }) + $a * 3;
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             total = [[V_0]];
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! PUT_SHORT {
+// CHECK-NEXT:     ($w:expr) => {
+// CHECK-NEXT:         PUT_BYTE!((($w & 255) as i8) as u8);
+// CHECK-NEXT:         PUT_BYTE!((($w >> 8i32) as i8) as u8);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -276,12 +198,63 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! CALLS_ONLY_NESTED {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let [[V_0]]: i32 = (unsafe { total }) + $a * 3;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = [[V_0]];
-// CHECK-NEXT:         }
+// CHECK-NEXT:         ONLY_NESTED!($a);
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             total = total + 1;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SEND {
+// CHECK-NEXT:     ($value:expr, $length:expr) => {
+// CHECK-NEXT:         let width: i32 = $length;
+// CHECK-NEXT:         if width > 8 {
+// CHECK-NEXT:             let val: i32 = $value;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 buffer = ((((buffer as u32) as i32) | ((((val as i16) as u16) as u32) as i32))
+// CHECK-NEXT:                     as i16) as u16;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             PUT_SHORT!(((unsafe { buffer }) as u32) as i32);
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 total = total + width;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             let [[V_0]]: u16 = (((((unsafe { buffer }) as u32) as i32)
+// CHECK-NEXT:                 | (((($value as i16) as u16) as u32) as i32)) as i16)
+// CHECK-NEXT:                 as u16;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 buffer = [[V_0]];
+// CHECK-NEXT:             }
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 total = total + width;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SEND_CODE {
+// CHECK-NEXT:     ($c:expr, $tree:expr) => {
+// CHECK-NEXT:         let width: i32 = ((unsafe { (*$tree.offset($c)).len }) as u32) as i32;
+// CHECK-NEXT:         if width > 8 {
+// CHECK-NEXT:             let val: i32 = ((unsafe { (*$tree.offset($c)).code }) as u32) as i32;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 buffer = ((((buffer as u32) as i32) | ((((val as i16) as u16) as u32) as i32))
+// CHECK-NEXT:                     as i16) as u16;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             PUT_SHORT!(((unsafe { buffer }) as u32) as i32);
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 total = total + width;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             let [[V_0]]: u16 = (((((unsafe { buffer }) as u32) as i32)
+// CHECK-NEXT:                 | (((unsafe { (*$tree.offset($c)).code }) as u32) as i32))
+// CHECK-NEXT:                 as i16) as u16;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 buffer = [[V_0]];
+// CHECK-NEXT:             }
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 total = total + width;
+// CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -316,7 +289,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn direct(value: i32) {
 // CHECK-NEXT:     PUT_BYTE!((value as i8) as u8);
-// CHECK-NEXT:     PUT_SHORT!(value + 1);
+// CHECK-NEXT:     PUT_BYTE!(((value + 1 & 255) as i8) as u8);
+// CHECK-NEXT:     PUT_BYTE!((((((((value + 1) as i16) as u16) as u32) as i32) >> 8i32) as i8) as u8);
 // CHECK-NEXT:     SEND!(value, value + 5);
 // CHECK-NEXT:     ADD!(value);
 // CHECK-NEXT:     SAME_BODY!(value + 1);
@@ -327,7 +301,29 @@ int main(void) {
 // CHECK-NEXT: fn nested(tree__0: *const code, index: i32) {
 // CHECK-NEXT:     SEND_CODE!(index as isize, tree__0);
 // CHECK-NEXT:     SEND_CODE!((index + 1) as isize, tree__0);
-// CHECK-NEXT:     SEND_TWO!(index, index + 2);
+// CHECK-NEXT:     SEND!(index, 9i32);
+// CHECK-NEXT:     let width: i32 = 3i32;
+// CHECK-NEXT:     if width > 8 {
+// CHECK-NEXT:         let val: i32 = index + 2i32;
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             buffer = ((((buffer as u32) as i32) | ((((val as i16) as u16) as u32) as i32)) as i16)
+// CHECK-NEXT:                 as u16;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         PUT_SHORT!(((unsafe { buffer }) as u32) as i32);
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             total = total + width;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
+// CHECK-NEXT:             | (((((index + 2) as i16) as u16) as u32) as i32)) as i16)
+// CHECK-NEXT:             as u16;
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             buffer = [[V_1]];
+// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             total = total + width;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
 // CHECK-NEXT:     LOCAL_READS!(index);
 // CHECK-NEXT:     USES_LEAK!(index);
 // CHECK-NEXT:     ARG_NAMES_TEMP!(index);

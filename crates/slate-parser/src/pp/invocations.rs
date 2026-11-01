@@ -1,7 +1,8 @@
 use super::expand::PPToken;
 use super::{MacroDef, Preprocessor, tokens_source};
 use crate::ast::{
-    Loc, MacroDefinition, MacroDefinitionId, MacroInvocation, MacroInvocations, Provenance,
+    Loc, MacroDefinition, MacroDefinitionId, MacroInvocation, MacroInvocations, MacroNesting,
+    NestedExpansion, NestedExpansionId, Provenance,
 };
 use crate::lexer::TokenSpanExt;
 use std::collections::HashMap;
@@ -86,6 +87,42 @@ impl Preprocessor<'_> {
         {
             self.record_invocation(recorded, site.through(close), call.argument_ranges());
         }
+    }
+
+    pub(super) fn record_nested_expansion(
+        &mut self,
+        name: &PPToken,
+        lparen: &PPToken,
+        rparen: &PPToken,
+        recorded: &Recorded,
+    ) -> Option<Arc<MacroNesting>> {
+        let origin = name.token.macro_origin.as_ref()?;
+        if self.invocations.in_directive
+            || self.outermost_system_header.is_some()
+            || name.token.provenance.system_header.is_some()
+            || recorded.provenance.system_header.is_some()
+            || lparen.token.macro_origin.as_ref() != Some(origin)
+            || rparen.token.macro_origin.as_ref() != Some(origin)
+        {
+            return None;
+        }
+        let enclosing = name.token.macro_nesting.clone();
+        let parent = enclosing
+            .iter()
+            .flat_map(|nesting| nesting.iter())
+            .find(|link| link.argument.is_none())
+            .map(|link| link.expansion);
+        let definition = self.invocations.definition_id(recorded);
+        let expansion = NestedExpansionId(self.invocations.table.nested.len() as u32);
+        self.invocations
+            .table
+            .nested
+            .push(NestedExpansion { definition, parent });
+        Some(Arc::new(MacroNesting {
+            expansion,
+            argument: None,
+            enclosing,
+        }))
     }
 
     fn record_invocation(&mut self, recorded: Recorded, site: Loc, arguments: Vec<Loc>) {

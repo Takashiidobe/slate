@@ -221,10 +221,25 @@ Not recorded:
   `#pragma omp`).
 - Calls not spelled at the site: a name from a macro body (`G` after
   `#define F G`), or one whose parens or arguments come from a macro
-  (`f(x)` in `#define CALL(f, x) f(x)`).
+  (`f(x)` in `#define CALL(f, x) f(x)`). Calls spelled whole in a user macro's
+  body go in `nested` instead (below).
 - An invocation crossing an earlier one's range (`G(1)` in `ID(G)(1)`) or sharing
   its exact site, as a header included twice does. The first recorded wins, so a
   consumer must verify a fold by re-expanding, not trust the table alone.
+
+`MacroInvocations.nested` holds the calls spelled in a user macro's body, whose
+name and parens all come from that body. Their tokens share the outer site's
+`expansion`, so location cannot separate them; `Span.macro_nesting` labels them
+instead. Each link names a `NestedExpansion` and says whether the token is its
+body or which argument, and `enclosing` holds the labels the token already had.
+Body tokens start from the call name's label, so tokens from an object-like or
+unrecorded macro in a body stay in that body. `Span::cover` keeps an expansion
+only when every covered token is in it, and reports body when they disagree on
+the argument. `NestedExpansion.parent` is the nested expansion whose body holds
+the call, or none for the body of a macro written in source. Two calls in one
+body get separate ids, which is why a name or spelling would not do. A libc
+macro nested in a user macro, or a user macro nested in a libc one, is not
+recorded.
 
 Nodes join the table by location. Replacement tokens have `expansion` at the
 macro name and argument tokens keep their own, so `MacroInvocations::sites(loc)`

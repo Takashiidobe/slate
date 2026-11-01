@@ -3,7 +3,7 @@ use super::hide_set::HideSet;
 use super::invocations::{Recorded, SpelledCall};
 use super::syntax::{Directive, DirectiveName, Line};
 use super::{FileInput, MacroDef, Preprocessor, TokenTrace, stringized_source};
-use crate::ast::{Loc, MacroOrigin, MacroOriginLink, Span};
+use crate::ast::{Loc, MacroNesting, MacroOrigin, MacroOriginLink, NestedExpansionId, Span};
 use crate::compiler_args::CompilerFlavor;
 use crate::lexer::{Token, TokenSpanExt, token_spelling};
 use std::sync::Arc;
@@ -89,6 +89,8 @@ struct Stamp {
     expansion: Loc,
     end: Loc,
     origin: Arc<MacroOrigin>,
+    nesting: Option<Arc<MacroNesting>>,
+    nested: Option<NestedExpansionId>,
 }
 
 impl Stamp {
@@ -96,7 +98,22 @@ impl Stamp {
         let mut token = token.clone();
         token.expansion = self.expansion;
         token.macro_origin = Some(self.origin.clone());
+        token.macro_nesting = self.nesting.clone();
         token
+    }
+
+    fn label_argument(&self, mut tokens: Vec<PPToken>, argument: usize) -> Vec<PPToken> {
+        let Some(expansion) = self.nested else {
+            return tokens;
+        };
+        for token in &mut tokens {
+            token.token.macro_nesting = Some(Arc::new(MacroNesting {
+                expansion,
+                argument: Some(argument),
+                enclosing: token.token.macro_nesting.take(),
+            }));
+        }
+        tokens
     }
 }
 
@@ -222,6 +239,8 @@ impl Preprocessor<'_> {
             expansion: token.token.expansion,
             end: token.end,
             origin: origin_for_expansion(name, entry.provenance, &token.token),
+            nesting: token.token.macro_nesting.clone(),
+            nested: None,
         };
         let name = name.clone();
         let Some(parameters) = &definition.parameters else {
@@ -289,6 +308,22 @@ impl Preprocessor<'_> {
             );
         }
         let elide_comma = self.comma_elision(&definition, parameters, arguments);
+        if let Some(rparen) = &invocation.rparen
+            && let Some(nesting) = self.record_nested_expansion(
+                &token,
+                &invocation.lparen,
+                rparen,
+                &Recorded {
+                    name: &name,
+                    definition: &definition,
+                    provenance,
+                    empty: false,
+                },
+            )
+        {
+            stamp.nested = Some(nesting.expansion);
+            stamp.nesting = Some(nesting);
+        }
         let replacement = self.substitute_function_macro(
             &definition,
             parameters,
@@ -1111,7 +1146,8 @@ impl Preprocessor<'_> {
             left.token.spelling.through(right.token.spelling),
             left.token.expansion.through(right.token.expansion),
         )
-        .with_leading_space(left.token.leading_space);
+        .with_leading_space(left.token.leading_space)
+        .with_macro_nesting(left.token.macro_nesting.clone());
         joined.digraph = pasted.digraph;
         let trace = self.trace_merged([&left, right]);
         Ok(std::iter::once(PPToken::from(joined).with_trace(trace))
@@ -1145,12 +1181,23 @@ fn replacement_tokens(
         return vec![stamp.token(token)];
     };
     if name == "__VA_ARGS__" {
-        return inherit_leading_space(arguments.variadic(parameters.len(), prescan), token);
+        return inherit_leading_space(
+            stamp.label_argument(
+                arguments.variadic(parameters.len(), prescan),
+                parameters.len(),
+            ),
+            token,
+        );
     }
     parameters
         .iter()
         .position(|parameter| parameter == name)
         .filter(|&index| index < arguments.raw.len())
-        .map(|index| inherit_leading_space(arguments.selected(index, prescan).to_vec(), token))
+        .map(|index| {
+            inherit_leading_space(
+                stamp.label_argument(arguments.selected(index, prescan).to_vec(), index),
+                token,
+            )
+        })
         .unwrap_or_else(|| vec![stamp.token(token)])
 }

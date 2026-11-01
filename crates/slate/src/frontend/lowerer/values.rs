@@ -431,11 +431,12 @@ impl FunctionLowerer<'_, '_> {
                 value, lowered,
             ));
         };
-        self.in_macro_argument = true;
-        let lowered = stacker::maybe_grow(512 << 10, 16 << 20, || self.lower_value_node(value))
-            .map_err(|error| error.at(Site::of(&value.node)));
-        self.in_macro_argument = false;
+        self.macro_argument_depth -= 1;
+        let level = self.macro_argument_depth as u32;
+        let lowered = self.lower_value(value);
+        self.macro_argument_depth += 1;
         Ok(Expr::MacroArg {
+            level,
             index,
             expr: Box::new(lowered?),
         })

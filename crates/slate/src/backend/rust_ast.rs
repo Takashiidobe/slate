@@ -124,7 +124,7 @@ pub struct MacroRegion {
     pub name: String,
     pub params: Vec<MacroParam>,
     pub foldable: bool,
-    pub mentions: Vec<String>,
+    pub level: u32,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -1207,6 +1207,7 @@ pub enum Expr {
     Unsafe(Box<Block>),
     ConstBlock(Box<Expr>),
     MacroArg {
+        level: u32,
         index: u32,
         expr: Box<Expr>,
     },

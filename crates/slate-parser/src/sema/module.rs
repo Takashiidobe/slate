@@ -981,6 +981,7 @@ impl Lowerer {
             existing.expansion = global.expansion;
             existing.provenance = global.provenance;
             existing.macro_origin = global.macro_origin;
+            existing.macro_nesting = global.macro_nesting;
             existing.leading_space = global.leading_space;
         }
         let global = global.value;

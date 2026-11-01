@@ -217,7 +217,9 @@ impl Lowerer {
             body: None,
             fallthrough: None,
         };
-        let function = Span::new(function, e.spelling, e.expansion).with_provenance(e.provenance);
+        let function = Span::new(function, e.spelling, e.expansion)
+            .with_provenance(e.provenance)
+            .with_macro_nesting(e.macro_nesting.clone());
         self.module
             .annotate(&function, builtin.declaration_metadata());
         self.module.functions.push(function);
@@ -3462,6 +3464,7 @@ fn locate_conversions_at_cast(value: &mut Value, source: NodeId, cast: &Expr) {
         current.node.expansion = cast.expansion;
         current.node.provenance = cast.provenance;
         current.node.macro_origin = cast.macro_origin.clone();
+        current.node.macro_nesting = cast.macro_nesting.clone();
         match &mut current.node.value {
             ValueKind::Convert { operand, .. } | ValueKind::Copy { operand, .. } => {
                 current = operand;

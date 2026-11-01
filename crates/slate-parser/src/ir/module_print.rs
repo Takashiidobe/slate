@@ -162,24 +162,33 @@ pub(super) fn metadata(
     Ok(())
 }
 
-pub(super) fn macro_sites(
+pub(super) fn macro_sites<T>(
     f: &mut fmt::Formatter<'_>,
     table: Annotations<'_>,
-    expansion: Loc,
+    span: &Span<T>,
 ) -> fmt::Result {
     let Some(macros) = table.macros else {
         return Ok(());
     };
-    for site in macros.sites(expansion) {
+    for site in macros.sites(span.expansion) {
         let invocation = macros.invocation(site.invocation);
         let name = &macros.definition(invocation).name;
         write!(f, " [macro={name}#{}", site.invocation.0)?;
-        match site.argument {
-            Some(argument) => write!(f, " arg{argument}]")?,
-            None => f.write_str(" body]")?,
-        }
+        macro_site_role(f, site.argument)?;
+    }
+    for link in span.macro_nesting.iter().flat_map(|nesting| nesting.iter()) {
+        let name = &macros.nested_definition(link.expansion).name;
+        write!(f, " [nested={name}#{}", link.expansion.0)?;
+        macro_site_role(f, link.argument)?;
     }
     Ok(())
+}
+
+fn macro_site_role(f: &mut fmt::Formatter<'_>, argument: Option<usize>) -> fmt::Result {
+    match argument {
+        Some(argument) => write!(f, " arg{argument}]"),
+        None => f.write_str(" body]"),
+    }
 }
 
 fn macro_table(f: &mut fmt::Formatter<'_>, macros: &MacroInvocations) -> fmt::Result {
@@ -221,6 +230,17 @@ fn macro_table(f: &mut fmt::Formatter<'_>, macros: &MacroInvocations) -> fmt::Re
         }
         if invocation.empty {
             f.write_str(" [empty]")?;
+        }
+        writeln!(f, ";")?;
+    }
+    for (index, nested) in macros.nested.iter().enumerate() {
+        write!(
+            f,
+            "    macro_nested_expansion #{index} {} [definition=#{}]",
+            macros.definitions[nested.definition.0 as usize].name, nested.definition.0
+        )?;
+        if let Some(parent) = nested.parent {
+            write!(f, " [parent=#{}]", parent.0)?;
         }
         writeln!(f, ";")?;
     }
@@ -334,7 +354,7 @@ impl Printer<'_> {
         statement: &Span<Statement>,
     ) -> fmt::Result {
         metadata(f, self.table(), statement.id)?;
-        macro_sites(f, self.table(), statement.expansion)
+        macro_sites(f, self.table(), statement)
     }
 
     fn owned(
