@@ -154,8 +154,10 @@ Effects still hoist out of a hole, into the wrapper's `body`. Sema analyses read
 through both forms. Slate's lowerer does not: its matches have wildcards, so
 exhaustiveness does not reach them. `Module::strip_macro_structure(keep)`
 (`ir/macro_strip.rs`) removes the expansions `keep` rejects, leaving the IR
-lowering sees today. `--merge` builds with structure on and strips everything
-until `slate-f2zu.9.5.12.5` keeps some; other modes never build it.
+lowering sees without structure. `--merge` builds with structure on; other modes
+never build it. `crates/slate/src/frontend/macro_keep.rs` keeps the expansions
+that are safe to lift and strips the rest, which go down the old
+[`macro_fold`](../slate-architecture.md#macro-templates) path.
 
 Per-value expansion chains are not in the IR yet (only atomic builtins record
 `c_macro`); see [open design](open-design.md#macro-provenance).

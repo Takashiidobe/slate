@@ -252,6 +252,9 @@ impl FunctionLowerer<'_, '_> {
                 body: self.lower_statement_list(body)?,
                 macro_region: None,
             },
+            ir::Statement::MacroExpansion { expansion, body } => {
+                self.lower_macro_site(*expansion, body)?
+            }
             ir::Statement::If {
                 condition,
                 then_body,

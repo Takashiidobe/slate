@@ -821,6 +821,13 @@ fn expr_ok(expr: &Expr, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
         Expr::Closure { params, body } => {
             params.iter().any(|p| tracked.contains(p.as_str())) || expr_ok(body, tracked, ctx)
         }
+        Expr::Macro { name, args }
+            if crate::backend::rust_ast::macro_template_base(name).is_some() =>
+        {
+            !args
+                .iter()
+                .any(|arg| tracked.iter().any(|name| arg.reads_var(name)))
+        }
         Expr::Macro { args, .. } => args.iter().all(|a| expr_ok(a, tracked, ctx)),
         Expr::Match { expr, arms } => {
             expr_ok(expr, tracked, ctx) && arms.iter().all(|arm| expr_ok(&arm.value, tracked, ctx))

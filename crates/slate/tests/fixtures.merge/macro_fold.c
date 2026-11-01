@@ -135,16 +135,17 @@ int main(void) {
 // CHECK-NEXT:   macro_fold.c: [] 1 compiled
 // CHECK-NEXT:   units/macro_fold_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit macro_fold: 31 items, 14 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_fold: 32 items, 15 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:report: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: unit macro_fold_helper: 8 items, 4 gated, 0 duplicated functions
-// CHECK-NEXT: macros: 25 function-like, 11 lifted at least once (expansions counted per distinct compile)
+// CHECK-NEXT:   spliced fn:helper: 2 variants
+// CHECK-NEXT: macros: 25 function-like, 12 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   inline reads_caller_local: 8
-// CHECK-NEXT:   inline declares_local: 4
 // CHECK-NEXT:   inline control_transfer: 4
 // CHECK-NEXT:   inline stringify_or_paste: 4
 // CHECK-NEXT:   inline reserved_macro_name: 4
+// CHECK-NEXT:   inline declares_local: 3
 // CHECK-NEXT:   inline no_statement_region: 2
 // CHECK-NEXT:   inline variadic: 2
 // CHECK-NEXT:   inline list_param_not_last: 2
@@ -167,7 +168,7 @@ int main(void) {
 // CHECK-NEXT:   macro READS_LOCAL: 0 lifted, inline: reads_caller_local 2
 // CHECK-NEXT:   macro RETURNS: 0 lifted, inline: control_transfer 2
 // CHECK-NEXT:   macro SHADOWS: 2 lifted, inline: param_without_argument 2
-// CHECK-NEXT:   macro SPLIT: 0 lifted, inline: declares_local 2
+// CHECK-NEXT:   macro SPLIT: 1 lifted, inline: declares_local 1
 // CHECK-NEXT:   macro STORE: 0 lifted, inline: reads_caller_local 4
 // CHECK-NEXT:   macro TWICE: 2 lifted, inline:
 // CHECK-NEXT:   macro VARIADIC: 0 lifted, inline: variadic 2
@@ -186,26 +187,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: file macro_fold_helper.rs
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! ONLY_HERE {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         println!("{}", $a * 3);
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! ONLY_HERE {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), $a * 3) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! DIFFERS {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         println!("helper {}", $a);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -218,6 +205,20 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: macro_rules! DIFFERS__2 {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         println!("helper {}", $a);
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: macro_rules! ONLY_HERE__2 {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         println!("{}", $a * 3);
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
@@ -225,10 +226,18 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn helper(value: i32) -> i32 {
+// CHECK-NEXT: extern "C-unwind" fn helper(mut value: i32) -> i32 {
 // CHECK-NEXT:     LOG!(slate_support::stdout(), c"helper %d\n".as_ptr(), value);
-// CHECK-NEXT:     ONLY_HERE!(value);
-// CHECK-NEXT:     DIFFERS!(value);
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         ONLY_HERE__2!(value);
+// CHECK-NEXT:         DIFFERS__2!(value);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         ONLY_HERE!(value);
+// CHECK-NEXT:         DIFFERS!(value);
+// CHECK-NEXT:     }
 // CHECK-NEXT:     value + 1
 // CHECK-NEXT: }
 // CHECK-NEXT: file main.rs
@@ -265,26 +274,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! DIFFERS {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         println!("main {}", $a);
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! DIFFERS {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"main %d\n".as_ptr(), $a) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! TWICE {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         println!("{} {}", $a, $a);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -297,27 +292,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! DROPS {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         println!("{}", $a);
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! DROPS {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), $a) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! LOCALS {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let t: i32 = $a;
-// CHECK-NEXT:         println!("{}", t + 1);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -331,14 +311,6 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! SHADOWS {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let t: i32 = 5;
-// CHECK-NEXT:         println!("{}", $a + t);
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! SHADOWS {
 // CHECK-NEXT:     ($a:expr) => {
@@ -346,13 +318,6 @@ int main(void) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), $a + t) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! MOVED_CONST {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         println!("{}", $a + 1);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -365,16 +330,6 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! BUMPED {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         println!("{}", $a);
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             bumps = bumps + 1;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! BUMPED {
 // CHECK-NEXT:     ($a:expr) => {
@@ -384,6 +339,70 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             bumps = bumps + 1;
 // CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: macro_rules! BUMPED__2 {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         println!("{}", $a);
+// CHECK-NEXT:         let __v: i32 = unsafe { bumps };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             bumps = __v + 1;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: macro_rules! DIFFERS__3 {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         println!("main {}", $a);
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: macro_rules! DROPS__2 {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         println!("{}", $a);
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: macro_rules! LOCALS__2 {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         let t: i32 = $a;
+// CHECK-NEXT:         println!("{}", t + 1);
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: macro_rules! MOVED_CONST__2 {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         println!("{}", $a + 1);
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: macro_rules! SHADOWS__2 {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         let t: i32 = 5;
+// CHECK-NEXT:         println!("{}", $a + t);
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: macro_rules! SPLIT {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         let split: i32 = $a;
+// CHECK-NEXT:         println!("{}", split);
+// CHECK-NEXT:         println!("{}", $a);
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: macro_rules! TWICE__2 {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         println!("{} {}", $a, $a);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -486,7 +505,14 @@ int main(void) {
 // CHECK-NEXT:     let mut cursor: *mut c_char = buffer.as_mut_ptr() as *mut c_char;
 // CHECK-NEXT:     LOG!(slate_support::stdout(), c"start %d\n".as_ptr(), count);
 // CHECK-NEXT:     LOG!(slate_support::stdout(), c"no args\n".as_ptr());
-// CHECK-NEXT:     DIFFERS!(count);
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         DIFFERS!(count);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         DIFFERS__3!(count);
+// CHECK-NEXT:     }
 // CHECK-NEXT:     ASSERT!(count == 3, c"count is not three".as_ptr());
 // CHECK-NEXT:     ASSERT!(
 // CHECK-NEXT:         next_id(unsafe { &mut (*std::ptr::addr_of_mut!(state)) }) == 1,
@@ -510,8 +536,16 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     TWICE!(count + 1);
-// CHECK-NEXT:     DROPS!(count);
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         TWICE!(count + 1);
+// CHECK-NEXT:         DROPS!(count);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         TWICE__2!(count + 1);
+// CHECK-NEXT:         DROPS__2!(count);
+// CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut c_char = cursor;
 // CHECK-NEXT:     cursor = unsafe { [[V_0]].add(1) };
 // CHECK-NEXT:     unsafe {
@@ -522,8 +556,16 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_1]] = 121;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     LOCALS!(count);
-// CHECK-NEXT:     SHADOWS!(count);
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         LOCALS!(count);
+// CHECK-NEXT:         SHADOWS!(count);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         LOCALS__2!(count);
+// CHECK-NEXT:         SHADOWS__2!(count);
+// CHECK-NEXT:     }
 // CHECK-NEXT:     let t: i32 = 5;
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -601,10 +643,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), declared) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", declared);
-// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let split: i32 = count;
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -633,18 +672,22 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), count) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         MOVED_CONST!(1i32);
+// CHECK-NEXT:         MOVED_CONST!(count);
+// CHECK-NEXT:         BUMPED!(count);
+// CHECK-NEXT:         BUMPED!(count + 1);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", split);
+// CHECK-NEXT:         println!("{}", declared);
+// CHECK-NEXT:         SPLIT!(count);
 // CHECK-NEXT:         println!("{}", count);
 // CHECK-NEXT:         println!("{}", count);
-// CHECK-NEXT:         println!("{}", count);
+// CHECK-NEXT:         MOVED_CONST__2!(1i32);
+// CHECK-NEXT:         MOVED_CONST__2!(count);
+// CHECK-NEXT:         BUMPED__2!(count);
+// CHECK-NEXT:         BUMPED__2!(count + 1);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     MOVED_CONST!(1i32);
-// CHECK-NEXT:     MOVED_CONST!(count);
-// CHECK-NEXT:     BUMPED!(count);
-// CHECK-NEXT:     BUMPED!(count + 1);
 // CHECK-NEXT:     for i in 0i32..2i32 {
 // CHECK-NEXT:         LOG!(slate_support::stdout(), c"loop %d\n".as_ptr(), i);
 // CHECK-NEXT:     }

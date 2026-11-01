@@ -187,6 +187,23 @@ pub struct MacroParam {
     pub shape: MacroParamShape,
 }
 
+const MACRO_TEMPLATE_MARK: &str = "__slate_template_";
+
+pub fn macro_template_name(base: &str, key: &str) -> String {
+    let digest = key.bytes().fold(0xcbf29ce484222325u64, |hash, byte| {
+        (hash ^ u64::from(byte)).wrapping_mul(0x100000001b3)
+    });
+    format!("{base}{MACRO_TEMPLATE_MARK}{digest:016x}")
+}
+
+pub fn macro_template_base(name: &str) -> Option<&str> {
+    name.split_once(MACRO_TEMPLATE_MARK).map(|(base, _)| base)
+}
+
+pub fn is_valid_macro_template_base(name: &str) -> bool {
+    crate::backend::engine::is_valid_macro_name(name)
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct MacroRegion {
     pub name: String,

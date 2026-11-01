@@ -337,7 +337,8 @@ fn subset(relevant: &[String], mask: u32) -> Vec<String> {
 fn parse(command: CompileCommand) -> Result<Unit, String> {
     let stem = stem_of(&command.file)?;
     let path = command.file;
-    frontend::parse_module_with_compiler_args(&path, command.args)
+    frontend::preprocess_unit(&path, command.args)
+        .and_then(frontend::PreprocessedUnit::parse_module)
         .map_err(|error| format!("{}: {error}", path.display()))
         .map(|(module, files)| Unit {
             stem,
@@ -1723,6 +1724,9 @@ pub fn merge(
         .iter()
         .map(|unit| (unit.stem.clone(), program_of(unit)))
         .collect();
+    crate::backend::engine::macro_templates::assign_template_names(
+        units.iter_mut().map(|(_, program)| program),
+    );
     let shared_macros = share_macros(&mut units);
     Ok(Merged {
         units,

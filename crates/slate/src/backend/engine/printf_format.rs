@@ -368,6 +368,9 @@ fn rewrite_stmt_nested(
 
 fn rewrite_item(item: &mut Item, printf_names: &HashSet<String>, needs_fflush_extern: &mut bool) {
     match item {
+        Item::MacroRules { body, .. } => {
+            rewrite_block_stmts(body, printf_names, needs_fflush_extern, false);
+        }
         Item::Fn(func) => {
             let protect_tail = func.ret.as_ref().is_some_and(|ty| !ty.is_unit());
             rewrite_block_stmts(

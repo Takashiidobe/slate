@@ -14,6 +14,7 @@ pub mod c_shim;
 pub mod distinct_functions;
 pub(crate) mod long_double;
 pub mod lowerer;
+mod macro_keep;
 
 pub struct LoweredModule {
     pub program: crate::backend::rust_ast::Program,
@@ -316,7 +317,8 @@ impl PreprocessedUnit {
             })?;
         let (mut module, files, diagnostics) =
             lower_parsed(&path, &parser, parsed, &mut Vec::new(), true)?;
-        module.strip_macro_structure(|_| false);
+        let kept = macro_keep::kept_expansions(&mut module);
+        module.strip_macro_structure(|expansion| kept.contains(&expansion));
         reject_directive_errors(&path, &diagnostics)?;
         Ok((module, files))
     }

@@ -1,22 +1,56 @@
 use super::*;
 use crate::ast::{MacroExpansionId, Span};
 
-struct Stripper<F> {
-    keep: F,
+pub trait MacroStructureVisitor {
+    fn keep(&self, _expansion: MacroExpansionId) -> bool {
+        true
+    }
+    fn statement(&mut self, _statement: &Statement) {}
+    fn value_kind(&mut self, _kind: &ValueKind) {}
+    fn enter_expansion(&mut self, _expansion: MacroExpansionId) {}
+    fn leave_expansion(&mut self, _expansion: MacroExpansionId) {}
+    fn enter_value_hole(&mut self, _expansion: MacroExpansionId) {}
+    fn leave_value_hole(&mut self, _expansion: MacroExpansionId) {}
+    fn place_hole(&mut self, _expansion: MacroExpansionId) {}
+    fn binding(&mut self, _binding: BindingId) {}
+    fn direct_call(&mut self, _callee: BindingId) {}
+}
+
+struct KeepOnly<F>(F);
+
+impl<F: Fn(MacroExpansionId) -> bool> MacroStructureVisitor for KeepOnly<F> {
+    fn keep(&self, expansion: MacroExpansionId) -> bool {
+        (self.0)(expansion)
+    }
+}
+
+struct Walker<'a, V> {
+    visitor: &'a mut V,
 }
 
 impl Module {
     pub fn strip_macro_structure(&mut self, keep: impl Fn(MacroExpansionId) -> bool) {
-        let mut stripper = Stripper { keep };
+        let mut visitor = KeepOnly(keep);
         for function in &mut self.functions {
             if let Some(body) = &mut function.value.body {
-                stripper.statements(body);
+                walk_macro_structure(body, &mut visitor);
             }
         }
     }
 }
 
-impl<F: Fn(MacroExpansionId) -> bool> Stripper<F> {
+pub fn strip_all_macro_structure(body: &mut Vec<Span<Statement>>) {
+    walk_macro_structure(body, &mut KeepOnly(|_| false));
+}
+
+pub fn walk_macro_structure<V: MacroStructureVisitor>(
+    body: &mut Vec<Span<Statement>>,
+    visitor: &mut V,
+) {
+    Walker { visitor }.statements(body);
+}
+
+impl<V: MacroStructureVisitor> Walker<'_, V> {
     fn statements(&mut self, body: &mut Vec<Span<Statement>>) {
         let mut position = 0;
         while position < body.len() {
@@ -25,7 +59,7 @@ impl<F: Fn(MacroExpansionId) -> bool> Stripper<F> {
                 Statement::MacroExpansion {
                     expansion,
                     body: inner,
-                } if !(self.keep)(*expansion) => {
+                } if !self.visitor.keep(*expansion) => {
                     let inner = std::mem::take(inner);
                     let count = inner.len();
                     body.splice(position..=position, inner);
@@ -54,6 +88,7 @@ impl<F: Fn(MacroExpansionId) -> bool> Stripper<F> {
     }
 
     fn statement(&mut self, statement: &mut Statement) {
+        self.visitor.statement(statement);
         match statement {
             Statement::Comment(_)
             | Statement::Null
@@ -63,9 +98,12 @@ impl<F: Fn(MacroExpansionId) -> bool> Stripper<F> {
             | Statement::Goto(_)
             | Statement::SehLeave(_) => {}
             Statement::Fence { ordering, .. } => self.atomicity(ordering),
-            Statement::MacroExpansion { body, .. } | Statement::Block(body) => {
+            Statement::MacroExpansion { expansion, body } => {
+                self.visitor.enter_expansion(*expansion);
                 self.statements(body);
+                self.visitor.leave_expansion(*expansion);
             }
+            Statement::Block(body) => self.statements(body),
             Statement::Temporary { initializer, .. } => {
                 if let Some(value) = initializer {
                     self.value(value);
@@ -231,13 +269,14 @@ impl<F: Fn(MacroExpansionId) -> bool> Stripper<F> {
                 place: inner,
                 ..
             } => {
-                let keep = (self.keep)(*expansion);
+                self.visitor.place_hole(*expansion);
+                let keep = self.visitor.keep(*expansion);
                 self.place(inner);
                 if !keep {
                     *place = inner.as_ref().clone();
                 }
             }
-            PlaceKind::Binding(_) => {}
+            PlaceKind::Binding(binding) => self.visitor.binding(*binding),
             PlaceKind::Deref(value) => self.value(value),
             PlaceKind::CompoundLiteral { initializer, .. }
             | PlaceKind::Temporary { initializer, .. } => self.value(initializer),
@@ -260,12 +299,16 @@ impl<F: Fn(MacroExpansionId) -> bool> Stripper<F> {
     }
 
     fn value_kind(&mut self, whole: &mut Value) {
+        self.visitor.value_kind(&whole.node.value);
         match &mut whole.node.value {
             ValueKind::MacroArg {
                 expansion, value, ..
             } => {
-                let keep = (self.keep)(*expansion);
+                let expansion = *expansion;
+                let keep = self.visitor.keep(expansion);
+                self.visitor.enter_value_hole(expansion);
                 self.value(value);
+                self.visitor.leave_value_hole(expansion);
                 if !keep {
                     *whole = value.as_ref().clone();
                 }
@@ -336,8 +379,9 @@ impl<F: Fn(MacroExpansionId) -> bool> Stripper<F> {
             ValueKind::Call {
                 callee, arguments, ..
             } => {
-                if let Callee::Indirect(value) = callee {
-                    self.value(value);
+                match callee {
+                    Callee::Indirect(value) => self.value(value),
+                    Callee::Direct(binding) => self.visitor.direct_call(*binding),
                 }
                 for argument in arguments {
                     self.value(argument);

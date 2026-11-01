@@ -135,6 +135,7 @@ struct Dependencies {
     emitted_comments: HashSet<slate_parser::ast::NodeId>,
     macro_expansions_seen: HashSet<slate_parser::ast::MacroExpansionId>,
     macro_outcomes: Vec<rust::MacroOutcome>,
+    macro_templates: BTreeMap<String, Item>,
     native_entries: BTreeMap<String, rust::ExternFnDecl>,
     long_double_exports: BTreeMap<String, String>,
     bit_units: Vec<Item>,
@@ -165,6 +166,8 @@ struct FunctionLowerer<'a, 'm> {
     function_locals: HashSet<String>,
     macro_regions: Vec<slate_parser::ast::MacroExpansionId>,
     macro_argument_depth: usize,
+    macro_sites: Vec<macro_regions::MacroSite>,
+    macro_template_check: bool,
     old_value: Option<Expr>,
     declaring: std::cell::Cell<Option<(BindingId, bool)>>,
     after_declaration: Option<Stmt>,
@@ -690,6 +693,8 @@ impl<'m> ModuleLowerer<'m> {
             function_locals: HashSet::new(),
             macro_regions: Vec::new(),
             macro_argument_depth: 0,
+            macro_sites: Vec::new(),
+            macro_template_check: false,
             old_value: None,
             declaring: std::cell::Cell::new(None),
             after_declaration: None,
@@ -1210,6 +1215,7 @@ impl<'m> ModuleLowerer<'m> {
                 items.push(main_wrapper(arity, dependencies.huge_stack));
             }
         }
+        items.splice(0..0, dependencies.macro_templates.into_values());
         items.insert(0, Item::CrateAttrs(features));
         let items =
             comments::module_comments(self.module, &tables, &dependencies.emitted_comments, items);

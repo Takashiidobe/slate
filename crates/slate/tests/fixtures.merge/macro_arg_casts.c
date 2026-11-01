@@ -60,13 +60,12 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_arg_casts.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_arg_casts: 13 items, 1 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_arg_casts: 19 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 5 function-like, 5 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   inline split_argument: 10
-// CHECK-NEXT:   inline another_template_chosen: 4
 // CHECK-NEXT:   macro MIXED: 4 lifted, inline:
-// CHECK-NEXT:   macro PUT: 4 lifted, inline: split_argument 8, another_template_chosen 4
+// CHECK-NEXT:   macro PUT: 8 lifted, inline: split_argument 8
 // CHECK-NEXT:   macro STORE_BYTE: 8 lifted, inline:
 // CHECK-NEXT:   macro SUM_TWICE: 4 lifted, inline:
 // CHECK-NEXT:   macro UNHYGIENIC: 2 lifted, inline: split_argument 2
@@ -82,24 +81,82 @@ int main(void) {
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! PUT {
+// CHECK-NEXT: macro_rules! MIXED {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         let __v: i32 = unsafe { flips };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             flips = __v + $a * 2;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: u16 = unsafe { buffer };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             buffer =
+// CHECK-NEXT:                 (((([[V_0]] as u32) as i32) ^ (((($a as i16) as u16) as u32) as i32)) as i16) as u16;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! PUT__2 {
 // CHECK-NEXT:     ($value:expr, $room:expr) => {
 // CHECK-NEXT:         if $room {
-// CHECK-NEXT:             let val: i32 = $value;
+// CHECK-NEXT:             let val: i32 = ($value as u32) as i32;
+// CHECK-NEXT:             let __v: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = ((((buffer as u32) as i32)
-// CHECK-NEXT:                     | ((((val as i16) as u16) as u32) as i32) << 1i32) as i16)
-// CHECK-NEXT:                     as u16;
+// CHECK-NEXT:                 buffer = ((((__v as u32) as i32) | ((((val as i16) as u16) as u32) as i32) << 1i32)
+// CHECK-NEXT:                     as i16) as u16;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 flips = flips + val;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
-// CHECK-NEXT:                 | (((($value as i16) as u16) as u32) as i32) << 1i32)
-// CHECK-NEXT:                 as i16) as u16;
+// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = [[V_0]];
+// CHECK-NEXT:                 buffer =
+// CHECK-NEXT:                     (((([[V_1]] as u32) as i32) | (($value as u32) as i32) << 1i32) as i16) as u16;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! PUT {
+// CHECK-NEXT:     ($value:expr, $room:expr) => {
+// CHECK-NEXT:         if $room {
+// CHECK-NEXT:             let val: i32 = $value;
+// CHECK-NEXT:             let __v: u16 = unsafe { buffer };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 buffer = ((((__v as u32) as i32) | ((((val as i16) as u16) as u32) as i32) << 1i32)
+// CHECK-NEXT:                     as i16) as u16;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 flips = flips + val;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             let [[V_1]]: u16 = unsafe { buffer };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 buffer = (((([[V_1]] as u32) as i32)
+// CHECK-NEXT:                     | (((($value as i16) as u16) as u32) as i32) << 1i32)
+// CHECK-NEXT:                     as i16) as u16;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! PUT__3 {
+// CHECK-NEXT:     ($value:expr, $room:expr) => {
+// CHECK-NEXT:         if $room {
+// CHECK-NEXT:             let val: i32 = $value as i32;
+// CHECK-NEXT:             let __v: u16 = unsafe { buffer };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 buffer = ((((__v as u32) as i32) | ((((val as i16) as u16) as u32) as i32) << 1i32)
+// CHECK-NEXT:                     as i16) as u16;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 flips = flips + val;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             let [[V_1]]: u16 = unsafe { buffer };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 buffer = (((([[V_1]] as u32) as i32) | ((($value as u16) as u32) as i32) << 1i32)
+// CHECK-NEXT:                     as i16) as u16;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
@@ -107,44 +164,75 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! STORE_BYTE {
 // CHECK-NEXT:     ($c:expr) => {
-// CHECK-NEXT:         let [[V_0]]: i32 = unsafe { used };
+// CHECK-NEXT:         let __v: i32 = unsafe { used };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             used = [[V_0]] + 1;
+// CHECK-NEXT:             used = __v + 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             bytes[[[V_0]] as usize] = $c;
+// CHECK-NEXT:             bytes[__v as usize] = $c as u8;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! STORE_BYTE__2 {
+// CHECK-NEXT:     ($c:expr) => {
+// CHECK-NEXT:         let __v: i32 = unsafe { used };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             used = __v + 1;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             bytes[__v as usize] = ($c as i8) as u8;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! STORE_BYTE__3 {
+// CHECK-NEXT:     ($c:expr) => {
+// CHECK-NEXT:         let __v: i32 = unsafe { used };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             used = __v + 1;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             bytes[__v as usize] = $c;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! STORE_BYTE__4 {
+// CHECK-NEXT:     ($c:expr) => {
+// CHECK-NEXT:         let __v: i32 = unsafe { used };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             used = __v + 1;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             bytes[__v as usize] = $c as u8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SUM_TWICE {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let [[V_0]]: i32 = (unsafe { flips }) + ($a + $a);
+// CHECK-NEXT:         let __v: i32 = unsafe { flips };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             flips = [[V_0]];
+// CHECK-NEXT:             flips = __v + ($a + $a);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! MIXED {
+// CHECK-NEXT: macro_rules! SUM_TWICE__2 {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let [[V_0]]: i32 = (unsafe { flips }) + $a * 2;
+// CHECK-NEXT:         let __v: i32 = unsafe { flips };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             flips = [[V_0]];
-// CHECK-NEXT:         }
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
-// CHECK-NEXT:             ^ (((($a as i16) as u16) as u32) as i32)) as i16) as u16;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = [[V_1]];
+// CHECK-NEXT:             flips = __v + ((($a as u32) as i32) + (($a as u32) as i32));
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! UNHYGIENIC {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let [[V_0]]: i32 = (unsafe { flips }) + $a * $a;
+// CHECK-NEXT:         let __v: i32 = unsafe { flips };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             flips = [[V_0]];
+// CHECK-NEXT:             flips = __v + (($a as u32) as i32) * (($a as u32) as i32);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -165,10 +253,10 @@ int main(void) {
 // CHECK-NEXT: static mut flips: i32 = unsafe { std::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let lc: u32 = 70000;
-// CHECK-NEXT:     let wide: i32 = 70001;
-// CHECK-NEXT:     let small: u16 = 3;
-// CHECK-NEXT:     let code: u8 = 200u8;
+// CHECK-NEXT:     let mut lc: u32 = 70000;
+// CHECK-NEXT:     let mut wide: i32 = 70001;
+// CHECK-NEXT:     let mut small: u16 = 3;
+// CHECK-NEXT:     let mut code: u8 = 200u8;
 // CHECK-NEXT:     PUT!(wide, (unsafe { flips }) > 0);
 // CHECK-NEXT:     if (unsafe { flips }) < 0 {
 // CHECK-NEXT:         let val: i32 = wide - 1;
@@ -204,38 +292,8 @@ int main(void) {
 // CHECK-NEXT:             buffer = [[V_3]];
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (unsafe { flips }) == 0 {
-// CHECK-NEXT:         let val: i32 = (small as u32) as i32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = ((((buffer as u32) as i32) | ((((val as i16) as u16) as u32) as i32) << 1i32)
-// CHECK-NEXT:                 as i16) as u16;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             flips = flips + val;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32) | ((small as u32) as i32) << 1i32)
-// CHECK-NEXT:             as i16) as u16;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = [[V_4]];
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     if (unsafe { flips }) > 0 {
-// CHECK-NEXT:         let val: i32 = lc as i32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = ((((buffer as u32) as i32) | ((((val as i16) as u16) as u32) as i32) << 1i32)
-// CHECK-NEXT:                 as i16) as u16;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             flips = flips + val;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
-// CHECK-NEXT:             | (((lc as u16) as u32) as i32) << 1i32) as i16) as u16;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = [[V_5]];
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
+// CHECK-NEXT:     PUT__2!(small, (unsafe { flips }) == 0);
+// CHECK-NEXT:     PUT__3!(lc, (unsafe { flips }) > 0);
 // CHECK-NEXT:     if true {
 // CHECK-NEXT:         let val: i32 = (lc as i32) - 1i32;
 // CHECK-NEXT:         unsafe {
@@ -246,11 +304,11 @@ int main(void) {
 // CHECK-NEXT:             flips = flips + val;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         let [[V_6:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
+// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
 // CHECK-NEXT:             | (((lc.wrapping_sub(1) as u16) as u32) as i32) << 1i32)
 // CHECK-NEXT:             as i16) as u16;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = [[V_6]];
+// CHECK-NEXT:             buffer = [[V_4]];
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { flips }) != 0 {
@@ -263,28 +321,28 @@ int main(void) {
 // CHECK-NEXT:             flips = flips + val;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         let [[V_7:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
+// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
 // CHECK-NEXT:             | (((((((code as u32) as i32) + 1) as i16) as u16) as u32) as i32) << 1i32)
 // CHECK-NEXT:             as i16) as u16;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = [[V_7]];
+// CHECK-NEXT:             buffer = [[V_5]];
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     PUT!(lc as i32, (unsafe { flips }) != 0);
-// CHECK-NEXT:     STORE_BYTE!((wide as i8) as u8);
-// CHECK-NEXT:     STORE_BYTE!(small as u8);
-// CHECK-NEXT:     STORE_BYTE!(code);
-// CHECK-NEXT:     STORE_BYTE!((lc >> 3i32) as u8);
+// CHECK-NEXT:     STORE_BYTE__2!(wide);
+// CHECK-NEXT:     STORE_BYTE!(small);
+// CHECK-NEXT:     STORE_BYTE__3!(code);
+// CHECK-NEXT:     STORE_BYTE__4!(lc >> 3i32);
 // CHECK-NEXT:     SUM_TWICE!(wide);
-// CHECK-NEXT:     SUM_TWICE!((code as u32) as i32);
+// CHECK-NEXT:     SUM_TWICE__2!(code);
 // CHECK-NEXT:     MIXED!(wide);
 // CHECK-NEXT:     MIXED!(((small as u32) as i32) + 1);
-// CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 =
+// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 =
 // CHECK-NEXT:         (unsafe { flips }) + (((small as u32) as i32) + 1i32 * ((small as u32) as i32) + 1i32);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         flips = [[V_8]];
+// CHECK-NEXT:         flips = [[V_6]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     UNHYGIENIC!((code as u32) as i32);
+// CHECK-NEXT:     UNHYGIENIC!(code);
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]

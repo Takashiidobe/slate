@@ -5,6 +5,7 @@ mod c_types;
 mod comments;
 mod declarations;
 mod macro_strip;
+pub use macro_strip::{MacroStructureVisitor, strip_all_macro_structure, walk_macro_structure};
 mod module;
 mod module_print;
 mod names;

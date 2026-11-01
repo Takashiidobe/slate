@@ -283,7 +283,7 @@ pub(in crate::backend::engine) fn stmt_exprs_mut<'a>(
     out: &mut Vec<&'a mut Expr>,
 ) {
     match stmt {
-        Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
+        Stmt::Cfg { body, .. } => stmts_exprs_mut(body, out),
         Stmt::Let {
             init: Some(expr), ..
         }

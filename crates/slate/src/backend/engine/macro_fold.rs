@@ -352,7 +352,7 @@ fn normalize_generated(body: &mut [Stmt], bound: &HashSet<Ident>) {
     }
 }
 
-fn is_valid_macro_name(name: &str) -> bool {
+pub(crate) fn is_valid_macro_name(name: &str) -> bool {
     !is_rust_keyword(name) && !STD_MACROS.contains(&name)
 }
 

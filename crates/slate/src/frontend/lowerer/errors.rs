@@ -114,6 +114,10 @@ pub enum Invariant {
     UnresolvedType(TypeId),
     #[error("non-constant case value")]
     NonConstantCase,
+    #[error("macro argument hole outside its expansion")]
+    MacroHoleOutsideExpansion,
+    #[error("macro template differs from its site lowered separately in {0}: {1}")]
+    MacroTemplateMismatch(String, String),
     #[error("asm operand index {0} is out of bounds")]
     AsmOperandIndex(usize),
     #[error("asm operand has no width")]

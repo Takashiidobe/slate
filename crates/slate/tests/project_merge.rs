@@ -33,6 +33,7 @@ fn merge(matrix: &Path, crate_dir: &Path, jobs: Option<&str>) -> (String, String
         .arg(fixtures())
         .arg(crate_dir)
         .env("SLATE_SYSROOTS", slate_parser::sysroot::root())
+        .env("SLATE_CHECK_MACRO_TEMPLATES", "1")
         .env_remove("SLATE_TARGET")
         .env_remove("SLATE_CLANG_ARGS");
     if let Some(jobs) = jobs {

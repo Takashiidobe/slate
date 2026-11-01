@@ -443,6 +443,14 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_value_node(&mut self, value: &ir::Value) -> Result<Expr> {
+        if let ValueKind::MacroArg {
+            expansion,
+            argument,
+            value: inner,
+        } = &value.node.value
+        {
+            return self.lower_macro_hole(*expansion, *argument, inner);
+        }
         if let Some(stream) = self.lower_stdio_stream(value) {
             return Ok(stream);
         }

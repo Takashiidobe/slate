@@ -716,6 +716,12 @@ fn e_ident_count(expr: &Expr, name: Ident) -> usize {
             e_ident_count(elem, name)
         }
         Expr::VecRepeat { elem, len } => e_ident_count(elem, name) + e_ident_count(len, name),
+        Expr::Macro {
+            name: macro_name,
+            args,
+        } if crate::backend::rust_ast::macro_template_base(macro_name).is_some() => {
+            args.iter().map(|a| 2 * e_ident_count(a, name)).sum()
+        }
         Expr::Macro { args, .. } => args.iter().map(|a| e_ident_count(a, name)).sum(),
         Expr::Match { expr, arms } => {
             e_ident_count(expr, name)

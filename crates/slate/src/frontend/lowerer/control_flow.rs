@@ -115,6 +115,7 @@ fn collect_labels(statements: &[Statement], labels: &mut Vec<BindingId>) {
 pub(super) fn children(statement: &ir::Statement) -> Vec<&[Statement]> {
     match statement {
         ir::Statement::Block(body)
+        | ir::Statement::MacroExpansion { body, .. }
         | ir::Statement::Switch { body, .. }
         | ir::Statement::Case { body, .. }
         | ir::Statement::Default { body, .. }

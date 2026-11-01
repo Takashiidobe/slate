@@ -56,6 +56,35 @@ with `crates/`.
 - External definitions are exported for linker resolution across modules; tentative common globals have one owner.
 - Project generation runs the backend control-flow registry; `--raw` emits the baseline. Exported C signatures remain intact. Target-conditional single-file translation is separate.
 
+## Macro templates
+
+Under `translate-project --merge`, a kept `Statement::MacroExpansion` lowers to
+one `macro_rules` template per distinct body, and each site becomes a call. The
+old `macro_fold` pass still runs over everything else.
+
+- **Which expansions are kept**: `frontend/macro_keep.rs` decides on the IR,
+  before lowering. It rejects place holes, control flow leaving the body,
+  bodies that call project functions or read caller locals (Rust hygiene hides
+  them), locals in functions whose dispatch lowering hoists them, and variadic
+  or `#` macros. The analyses cannot see into a template yet, so anything they
+  would have to track stays on the old path until `slate-f2zu.9.5.12.6`.
+- **Identity**: two bodies are the same template when their printed Rust and
+  printed hole types match. Spans and local names do not count. Text is the key
+  because `NamedPrim`'s `Debug` includes the target width: a `c_ulong` body merges
+  across targets, and a body that lowers differently on one target gets a variant.
+- **Names**: templates carry a hash, `NAME__slate_template_<fnv16>`, through
+  compilation so function merge compares equal across units and targets.
+  `assign_template_names` renames them at the end of the merge to `NAME`,
+  `NAME__2`, and so on, most used first, skipping names the old fold took.
+- **Holes**: an argument is a `$a()` call while the rules run, so that no rule
+  moves, merges, or drops its evaluation. `finish_holes` turns it into `$a` before
+  printing.
+- **Analyses**: `inline_temps`, `string_params`, and `pointer_lattice` treat a
+  template call's arguments conservatively.
+- **Self-check**: with `SLATE_CHECK_MACRO_TEMPLATES=1` (set by the `project_merge`
+  tests), the lowerer re-lowers each outermost site without structure and compares
+  it to its expanded templates. A difference is `Invariant::MacroTemplateMismatch`.
+
 ## Validation
 
 ```bash

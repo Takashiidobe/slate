@@ -1,12 +1,14 @@
 mod arena;
 pub mod macro_boundaries;
 mod macro_fold;
+pub mod macro_templates;
 mod prelude;
 mod printf_format;
 mod rules;
 pub mod shadow;
 
 use arena::{Arena, FunctionOptimizer, NodeId, NodeKindTag};
+pub(crate) use macro_fold::is_valid_macro_name;
 use std::collections::{BTreeSet, HashMap};
 
 use crate::backend::rust_ast::{FnParam, Ident, Item, Program, Stmt};
@@ -105,6 +107,7 @@ pub(in crate::backend) fn apply_local(
     }
     rules::const_fold::fold_initializers(&mut program.items);
     prelude::inject(program, target);
+    macro_templates::finish_holes(program);
     printf_format::rewrite(program);
     macro_fold::fold(program);
     let passes = [RuleRegistry::build(rules::unsafe_registry())];

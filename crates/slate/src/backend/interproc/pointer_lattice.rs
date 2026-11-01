@@ -1036,6 +1036,17 @@ impl ClassifyCtx<'_> {
         }
     }
 
+    fn escape_all(&mut self, expr: &Expr) {
+        if let Expr::Var(name) = expr
+            && let Some(canonical) = self.canonical_of(name.as_str())
+        {
+            self.observe(&canonical, PointerFact::observe_escape);
+        }
+        for child in crate::backend::engine::macro_templates::child_exprs_of(expr) {
+            self.escape_all(child);
+        }
+    }
+
     fn expr(&mut self, expr: &Expr) {
         match expr {
             Expr::Var(_) => {}
@@ -1116,6 +1127,14 @@ impl ClassifyCtx<'_> {
             Expr::MethodCallGeneric { recv, args, .. } => {
                 self.place(recv, true);
                 for arg in args {
+                    self.expr(arg);
+                }
+            }
+            Expr::Macro { name, args }
+                if crate::backend::rust_ast::macro_template_base(name).is_some() =>
+            {
+                for arg in args {
+                    self.escape_all(arg);
                     self.expr(arg);
                 }
             }

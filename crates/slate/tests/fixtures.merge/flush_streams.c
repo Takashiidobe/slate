@@ -71,7 +71,7 @@ int main(void) {
 // CHECK-NEXT:     ($c:expr, $m:expr) => {
 // CHECK-NEXT:         if !$c {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::fputs($m, slate_support::stderr()) };
+// CHECK-NEXT:             unsafe { slate_support::fputs($m as *const c_char, slate_support::stderr()) };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
@@ -128,7 +128,10 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     TRACE!(slate_support::stderr(), c"traced %d\n".as_ptr(), 2i32);
-// CHECK-NEXT:     CHECK!((unsafe { verbose }) == 0, c"checked\n".as_ptr());
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         (unsafe { verbose }) == 0,
+// CHECK-NEXT:         c"checked\n".as_ptr() as *mut c_char
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::fputs(c"three\n".as_ptr(), slate_support::stdout()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
