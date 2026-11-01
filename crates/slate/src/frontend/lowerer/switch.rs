@@ -358,10 +358,7 @@ impl FunctionLowerer<'_, '_> {
                 arms: match_arms,
             }],
         });
-        Ok(Stmt::Scope {
-            body: body_prefix,
-            macro_region: None,
-        })
+        Ok(Stmt::Scope { body: body_prefix })
     }
 
     pub(super) fn lower_switch_operand(&mut self, value: &ir::Value) -> Result<(Expr, rust::Type)> {
@@ -378,10 +375,8 @@ impl FunctionLowerer<'_, '_> {
 
     fn lower_switch_arm(&mut self, arm: &SwitchArm) -> Result<Vec<Stmt>> {
         let mut lowered = Vec::new();
-        for (index, statement) in arm.body.iter().enumerate() {
-            let before = index.checked_sub(1).map(|at| arm.body[at]);
-            let after = arm.body.get(index + 1).copied();
-            lowered.extend(self.lower_lone_statement(statement, before, after)?);
+        for statement in &arm.body {
+            lowered.extend(self.lower_statement(statement)?);
         }
         Ok(lowered)
     }

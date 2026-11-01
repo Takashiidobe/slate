@@ -26,7 +26,7 @@ mod functions;
 mod globals;
 mod intrinsics;
 mod intrinsics_table;
-mod macro_regions;
+mod macro_sites;
 mod names;
 mod openmp;
 mod padding;
@@ -163,10 +163,7 @@ struct FunctionLowerer<'a, 'm> {
     register_locals: HashSet<BindingId>,
     counted_loops: HashSet<BindingId>,
     non_index_names: HashSet<String>,
-    function_locals: HashSet<String>,
-    macro_regions: Vec<slate_parser::ast::MacroExpansionId>,
-    macro_argument_depth: usize,
-    macro_sites: Vec<macro_regions::MacroSite>,
+    macro_sites: Vec<macro_sites::MacroSite>,
     macro_template_check: bool,
     old_value: Option<Expr>,
     declaring: std::cell::Cell<Option<(BindingId, bool)>>,
@@ -690,9 +687,6 @@ impl<'m> ModuleLowerer<'m> {
             register_locals: HashSet::new(),
             counted_loops: HashSet::new(),
             non_index_names: HashSet::new(),
-            function_locals: HashSet::new(),
-            macro_regions: Vec::new(),
-            macro_argument_depth: 0,
             macro_sites: Vec::new(),
             macro_template_check: false,
             old_value: None,
@@ -1221,8 +1215,9 @@ impl<'m> ModuleLowerer<'m> {
             comments::module_comments(self.module, &tables, &dependencies.emitted_comments, items);
         let mut macro_outcomes = dependencies.macro_outcomes;
         if tables.named_c_types {
-            macro_outcomes.extend(macro_regions::unreached_expansions(
+            macro_outcomes.extend(macro_sites::unreached_expansions(
                 tables.macros,
+                &self.module.macro_rejections,
                 &dependencies.macro_expansions_seen,
             ));
         }

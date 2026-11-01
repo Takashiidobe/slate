@@ -24,7 +24,6 @@ fn expr_only_deref(expr: &Expr, name: Ident) -> bool {
         Expr::Var(v) => *v != name,
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
-        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => expr_only_deref(expr, name),

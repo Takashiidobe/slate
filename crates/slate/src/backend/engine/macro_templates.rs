@@ -2,11 +2,54 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 
 use super::rules::walk::{child_exprs, child_exprs_mut, stmt_exprs_mut};
 use super::shadow::visit_names;
+use crate::backend::codegen::is_rust_keyword;
 use crate::backend::rust_ast::{
     Block, Expr, Ident, ImplItem, Item, Label, MacroParam, Program, Stmt, Type, UnaryOp,
     macro_template_base,
 };
 use crate::function_identity::CallBinding;
+
+const STD_MACROS: &[&str] = &[
+    "assert",
+    "assert_eq",
+    "assert_ne",
+    "cfg",
+    "column",
+    "compile_error",
+    "concat",
+    "dbg",
+    "debug_assert",
+    "debug_assert_eq",
+    "debug_assert_ne",
+    "env",
+    "eprint",
+    "eprintln",
+    "file",
+    "format",
+    "format_args",
+    "include",
+    "include_bytes",
+    "include_str",
+    "line",
+    "macro_rules",
+    "matches",
+    "module_path",
+    "option_env",
+    "panic",
+    "print",
+    "println",
+    "stringify",
+    "todo",
+    "unimplemented",
+    "unreachable",
+    "vec",
+    "write",
+    "writeln",
+];
+
+pub(crate) fn is_valid_macro_name(name: &str) -> bool {
+    !is_rust_keyword(name) && !STD_MACROS.contains(&name)
+}
 
 pub fn child_exprs_of(expr: &Expr) -> Vec<&Expr> {
     child_exprs(expr)
@@ -586,20 +629,11 @@ fn each_call_name(stmts: &mut [Stmt], visit: &mut impl FnMut(&mut String)) {
 
 pub fn assign_template_names<'a>(programs: impl Iterator<Item = &'a mut Program>) {
     let mut programs: Vec<&mut Program> = programs.collect();
-    let mut plain = HashSet::new();
     let mut uses: BTreeMap<String, usize> = BTreeMap::new();
     for program in &mut programs {
-        each_rules_name(
-            &mut program.items,
-            &mut |name| match macro_template_base(name) {
-                Some(_) => {
-                    uses.entry(name.clone()).or_default();
-                }
-                None => {
-                    plain.insert(name.clone());
-                }
-            },
-        );
+        each_rules_name(&mut program.items, &mut |name| {
+            uses.entry(name.clone()).or_default();
+        });
         each_body(&mut program.items, &mut |body| {
             each_call_name(body, &mut |name| {
                 if macro_template_base(name).is_some() {
@@ -616,18 +650,11 @@ pub fn assign_template_names<'a>(programs: impl Iterator<Item = &'a mut Program>
     let mut renamed: HashMap<String, String> = HashMap::new();
     for (base, mut variants) in by_base {
         variants.sort_by(|a, b| b.0.cmp(&a.0).then_with(|| a.1.cmp(&b.1)));
-        let mut suffix = 1;
-        for (_, name) in variants {
-            let mut fresh = if suffix == 1 {
-                base.clone()
-            } else {
-                format!("{base}__{suffix}")
+        for (index, (_, name)) in variants.into_iter().enumerate() {
+            let fresh = match index {
+                0 => base.clone(),
+                _ => format!("{base}__{}", index + 1),
             };
-            while plain.contains(&fresh) {
-                suffix += 1;
-                fresh = format!("{base}__{suffix}");
-            }
-            suffix += 1;
             renamed.insert(name, fresh);
         }
     }

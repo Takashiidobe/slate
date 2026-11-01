@@ -18,7 +18,6 @@ fn is_pure(expr: &Expr) -> bool {
             expr,
         }
         | Expr::Cast { expr, .. }
-        | Expr::MacroArg { expr, .. }
         | Expr::Field { base: expr, .. }
         | Expr::TupleField { base: expr, .. } => is_pure(expr),
         Expr::Binary { op, lhs, rhs } => {

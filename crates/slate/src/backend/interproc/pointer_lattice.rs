@@ -11,7 +11,7 @@ use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 fn source_var(expr: &Expr) -> Option<Ident> {
     match expr {
         Expr::Var(v) => Some(*v),
-        Expr::MacroArg { expr, .. } | Expr::Cast { expr, .. } => source_var(expr),
+        Expr::Cast { expr, .. } => source_var(expr),
         _ => None,
     }
 }
@@ -29,7 +29,7 @@ fn frame_field_key(expr: &Expr) -> Option<String> {
 fn place_key(expr: &Expr) -> Option<String> {
     match expr {
         Expr::Var(v) => Some(v.to_string()),
-        Expr::MacroArg { expr, .. } | Expr::Cast { expr, .. } => place_key(expr),
+        Expr::Cast { expr, .. } => place_key(expr),
         _ => frame_field_key(expr),
     }
 }
@@ -1032,7 +1032,7 @@ impl ClassifyCtx<'_> {
                 }
                 self.expr(index);
             }
-            Expr::MacroArg { expr, .. } | Expr::Cast { expr, .. } => self.place(expr, is_write),
+            Expr::Cast { expr, .. } => self.place(expr, is_write),
             Expr::Field { base, .. } | Expr::TupleField { base, .. } => self.place(base, is_write),
             other => self.expr(other),
         }
@@ -1052,7 +1052,7 @@ impl ClassifyCtx<'_> {
     fn expr(&mut self, expr: &Expr) {
         match expr {
             Expr::Var(_) | Expr::MacroName(_) | Expr::MacroType(_) => {}
-            Expr::Unary { expr, .. } | Expr::MacroArg { expr, .. } => self.expr(expr),
+            Expr::Unary { expr, .. } => self.expr(expr),
             Expr::Ref { mutable, expr } | Expr::AddrOf { mutable, expr } => {
                 if let Expr::Var(name) = &**expr
                     && let Some(canonical) = self.canonical_of(name.as_str())
@@ -1290,7 +1290,7 @@ impl ClassifyCtx<'_> {
 
 fn peel_cast(expr: &Expr) -> &Expr {
     match expr {
-        Expr::MacroArg { expr, .. } | Expr::Cast { expr, .. } => peel_cast(expr),
+        Expr::Cast { expr, .. } => peel_cast(expr),
         other => other,
     }
 }
@@ -2361,7 +2361,6 @@ fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
         | Expr::Todo(_) => {}
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
-        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => rewrite_expr(expr, ctx),

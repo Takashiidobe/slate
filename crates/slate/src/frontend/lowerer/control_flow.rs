@@ -1,4 +1,3 @@
-use super::macro_regions::is_whole_macro_block;
 use super::*;
 
 type Statement = Span<ir::Statement>;
@@ -87,7 +86,6 @@ struct Graph<'a> {
     defaults: HashMap<BindingId, usize>,
     locals: Vec<(BindingId, &'a ir::Type, Option<u64>)>,
     targets: Vec<BindingId>,
-    macros: Option<&'a slate_parser::ast::MacroInvocations>,
 }
 
 fn entry_labels(asm: &ir::InlineAsm) -> impl Iterator<Item = BindingId> + '_ {
@@ -320,13 +318,6 @@ impl<'a> Graph<'a> {
 
     fn statement(&mut self, statement: &'a Statement, next: usize) -> usize {
         match &statement.value {
-            ir::Statement::Block(_)
-                if self
-                    .macros
-                    .is_some_and(|macros| is_whole_macro_block(macros, statement)) =>
-            {
-                self.push(Node::Statement(statement, Some(next)))
-            }
             ir::Statement::Block(body) => self.list(body, next),
             ir::Statement::Label { id, body, .. } => {
                 let entry = self.list(body, next);
@@ -498,10 +489,7 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_dispatch(&mut self, statements: &[Statement]) -> Result<Vec<Stmt>> {
-        let mut graph = Graph {
-            macros: self.tables.named_c_types.then_some(self.tables.macros),
-            ..Graph::default()
-        };
+        let mut graph = Graph::default();
         collect_labels(statements, &mut graph.targets);
         let end = graph.push(Node::End);
         let entry = graph.list(statements, end);
@@ -657,7 +645,7 @@ impl FunctionLowerer<'_, '_> {
                             }
                             Some((_, None)) => Vec::new(),
                             None if diverted => Vec::new(),
-                            None => self.lower_graph_statement(statement)?,
+                            None => self.lower_statement(statement)?,
                         };
                         if let Some(next) = next.filter(|_| terminal) {
                             body.extend(jump(next));

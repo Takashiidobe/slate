@@ -132,16 +132,18 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_places.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_places: 42 items, 15 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_places: 41 items, 15 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced record:state: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 15 function-like, 15 lifted at least once (expansions counted per distinct compile)
-// CHECK-NEXT:   inline reads_caller_local: 6
+// CHECK-NEXT:   inline reads_caller_local: 4
+// CHECK-NEXT:   inline bit_field_write: 2
+// CHECK-NEXT:   inline unplain_place: 2
 // CHECK-NEXT:   macro ADD: 2 lifted, inline:
 // CHECK-NEXT:   macro ADDRESS_ONLY: 2 lifted, inline:
-// CHECK-NEXT:   macro BUMP: 4 lifted, inline:
+// CHECK-NEXT:   macro BUMP: 2 lifted, inline: reads_caller_local 2
 // CHECK-NEXT:   macro DOUBLE_READ: 2 lifted, inline:
-// CHECK-NEXT:   macro INC: 20 lifted, inline: reads_caller_local 4
+// CHECK-NEXT:   macro INC: 20 lifted, inline: bit_field_write 2, unplain_place 2
 // CHECK-NEXT:   macro NESTED_INC: 2 lifted, inline:
 // CHECK-NEXT:   macro PUSH: 4 lifted, inline: reads_caller_local 2
 // CHECK-NEXT:   macro SET: 4 lifted, inline:
@@ -163,16 +165,6 @@ int main(void) {
 // CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! BUMP {
-// CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = $x;
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = unsafe { *[[V_0]] };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *[[V_0]] = [[V_1]] + 1;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! ADDRESS_ONLY {
@@ -198,16 +190,16 @@ int main(void) {
 // CHECK-NEXT: macro_rules! ADD {
 // CHECK-NEXT:     ($x:expr, $n:expr) => {
 // CHECK-NEXT:         let __v: i32 = $x;
-// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: i32 = __v + $n;
-// CHECK-NEXT:         $x = [[V_2]];
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = __v + $n;
+// CHECK-NEXT:         $x = [[V_0]];
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! BUMP__2 {
+// CHECK-NEXT: macro_rules! BUMP {
 // CHECK-NEXT:     ($x:expr) => {
 // CHECK-NEXT:         let __v: i32 = $x;
-// CHECK-NEXT:         let [[V_2]]: i32 = __v + 1;
-// CHECK-NEXT:         $x = [[V_2]];
+// CHECK-NEXT:         let [[V_0]]: i32 = __v + 1;
+// CHECK-NEXT:         $x = [[V_0]];
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -252,8 +244,8 @@ int main(void) {
 // CHECK-NEXT:     ($stack:expr, $top:expr, $v:expr) => {
 // CHECK-NEXT:         $stack[($top) as usize] = $v;
 // CHECK-NEXT:         let __v: i32 = $top;
-// CHECK-NEXT:         let [[V_2]]: i32 = __v + 1;
-// CHECK-NEXT:         $top = [[V_2]];
+// CHECK-NEXT:         let [[V_0]]: i32 = __v + 1;
+// CHECK-NEXT:         $top = [[V_0]];
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -508,7 +500,7 @@ int main(void) {
 // CHECK-NEXT:     SET!(n);
 // CHECK-NEXT:     INC!(n);
 // CHECK-NEXT:     ADD!(n, 2i32);
-// CHECK-NEXT:     BUMP__2!(n);
+// CHECK-NEXT:     BUMP!(n);
 // CHECK-NEXT:     SET!(unused_write);
 // CHECK-NEXT:     let saved: i32 = temp_source;
 // CHECK-NEXT:     INC!(temp_source);
@@ -535,7 +527,10 @@ int main(void) {
 // CHECK-NEXT:     INC__2!((*ps).count);
 // CHECK-NEXT:     INC!(array[index as usize]);
 // CHECK-NEXT:     INC!(s.bits[2]);
-// CHECK-NEXT:     BUMP!(unsafe { (*ps).bits.as_mut_ptr() as *mut i32 });
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = unsafe { (*ps).bits.as_mut_ptr() as *mut i32 };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *[[V_1]] = *[[V_1]] + 1;
+// CHECK-NEXT:     }
 // CHECK-NEXT:     INC__2!(global);
 // CHECK-NEXT:     SET_COUNT!(shared);
 // CHECK-NEXT:     INC__2!(shared.bits[1]);

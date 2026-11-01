@@ -85,13 +85,15 @@ int main(void) {
 // CHECK-NEXT: unit macro_nesting: 30 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 15 function-like, 13 lifted at least once (expansions counted per distinct compile)
-// CHECK-NEXT:   inline no_statement_region: 6
 // CHECK-NEXT:   inline split_argument: 4
+// CHECK-NEXT:   inline local_used_after_macro: 2
+// CHECK-NEXT:   inline no_statement_region: 2
+// CHECK-NEXT:   inline reads_caller_local: 2
 // CHECK-NEXT:   macro ADD: 2 lifted, inline:
-// CHECK-NEXT:   macro ADD_READS: 2 lifted, inline: no_statement_region 2
+// CHECK-NEXT:   macro ADD_READS: 2 lifted, inline: reads_caller_local 2
 // CHECK-NEXT:   macro ARG_NAMES_TEMP: 2 lifted, inline:
 // CHECK-NEXT:   macro CALLS_ONLY_NESTED: 2 lifted, inline:
-// CHECK-NEXT:   macro LEAKS: 0 lifted, inline: no_statement_region 2
+// CHECK-NEXT:   macro LEAKS: 0 lifted, inline: local_used_after_macro 2
 // CHECK-NEXT:   macro LOCAL_READS: 2 lifted, inline:
 // CHECK-NEXT:   macro ONLY_NESTED: 2 lifted, inline:
 // CHECK-NEXT:   macro PUT_BYTE: 26 lifted, inline:
@@ -347,9 +349,9 @@ int main(void) {
 // CHECK-NEXT:     SEND_CODE!(index, tree__0);
 // CHECK-NEXT:     SEND_CODE!(index + 1, tree__0);
 // CHECK-NEXT:     SEND!(index, 9i32);
-// CHECK-NEXT:     let width: i32 = 3i32;
+// CHECK-NEXT:     let width: i32 = 3;
 // CHECK-NEXT:     if width > 8 {
-// CHECK-NEXT:         let val: i32 = index + 2i32;
+// CHECK-NEXT:         let val: i32 = index + 2;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             buffer = ((((buffer as u32) as i32) | ((((val as i16) as u16) as u32) as i32)) as i16)
 // CHECK-NEXT:                 as u16;
@@ -359,11 +361,9 @@ int main(void) {
 // CHECK-NEXT:             total = total + width;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: u16 = (((((unsafe { buffer }) as u32) as i32)
-// CHECK-NEXT:             | (((((index + 2) as i16) as u16) as u32) as i32)) as i16)
-// CHECK-NEXT:             as u16;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = [[V_1]];
+// CHECK-NEXT:             buffer = ((((buffer as u32) as i32) | (((((index + 2) as i16) as u16) as u32) as i32))
+// CHECK-NEXT:                 as i16) as u16;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             total = total + width;

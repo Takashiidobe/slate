@@ -1,6 +1,6 @@
 use crate::backend::link::signatures::{self, UnitCompiles};
 use crate::backend::rust_ast::{
-    Attr, Cfg, CrateAttr, Expr, ExternDecl, Item, MacroInlineReason, MacroOutcome, Program,
+    Attr, Cfg, CrateAttr, Expr, ExternDecl, Item, MacroOutcome, Program,
 };
 use crate::backend::{self, Exports};
 use crate::compile_commands::CompileCommand;
@@ -381,8 +381,8 @@ fn project_macro_outcomes(module: &Module, program: &Program) -> Arc<[MacroOutco
 }
 
 fn macro_report(builds: &[TargetBuild]) -> String {
-    let mut per_macro: BTreeMap<&str, BTreeMap<Option<MacroInlineReason>, usize>> = BTreeMap::new();
-    let mut per_reason: BTreeMap<MacroInlineReason, usize> = BTreeMap::new();
+    let mut per_macro: BTreeMap<&str, BTreeMap<Option<&'static str>, usize>> = BTreeMap::new();
+    let mut per_reason: BTreeMap<&'static str, usize> = BTreeMap::new();
     let distinct = builds
         .iter()
         .flat_map(|build| &build.units)
@@ -414,14 +414,12 @@ fn macro_report(builds: &[TargetBuild]) -> String {
     let mut reasons: Vec<_> = per_reason.into_iter().collect();
     reasons.sort_by_key(|(reason, count)| (std::cmp::Reverse(*count), *reason));
     for (reason, count) in reasons {
-        let _ = writeln!(report, "  inline {}: {count}", reason.label());
+        let _ = writeln!(report, "  inline {reason}: {count}");
     }
     for (name, outcomes) in per_macro {
         let inline = outcomes
             .iter()
-            .filter_map(|(reason, count)| {
-                reason.map(|reason| format!("{} {count}", reason.label()))
-            })
+            .filter_map(|(reason, count)| reason.map(|reason| format!("{reason} {count}")))
             .collect::<Vec<_>>()
             .join(", ");
         let lifted = outcomes.get(&None).copied().unwrap_or(0);

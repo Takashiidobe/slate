@@ -5,7 +5,6 @@ pub(in crate::backend::engine) fn child_exprs(expr: &Expr) -> Vec<&Expr> {
     match expr {
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
-        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. }
@@ -95,7 +94,6 @@ pub(in crate::backend::engine) fn child_exprs_mut(expr: &mut Expr) -> Vec<&mut E
     match expr {
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
-        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. }

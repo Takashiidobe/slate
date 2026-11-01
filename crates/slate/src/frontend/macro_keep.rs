@@ -19,13 +19,19 @@ struct Survey<'a> {
     open: Vec<(MacroExpansionId, OpenExpansion)>,
     declared: HashMap<BindingId, Vec<MacroExpansionId>>,
     seen: Vec<MacroExpansionId>,
-    unfit: HashSet<MacroExpansionId>,
+    unfit: HashMap<MacroExpansionId, &'static str>,
     has_jump: bool,
 }
 
 impl Survey<'_> {
-    fn reject_open(&mut self) {
-        self.unfit.extend(self.open.iter().map(|(id, _)| *id));
+    fn reject(&mut self, expansion: MacroExpansionId, reason: &'static str) {
+        self.unfit.entry(expansion).or_insert(reason);
+    }
+
+    fn reject_open(&mut self, reason: &'static str) {
+        for position in 0..self.open.len() {
+            self.reject(self.open[position].0, reason);
+        }
     }
 
     fn declare(&mut self, binding: BindingId) {
@@ -39,9 +45,10 @@ impl Survey<'_> {
     }
 
     fn jump(&mut self, target: BindingId) {
-        for (id, open) in &self.open {
+        for position in 0..self.open.len() {
+            let (id, open) = &self.open[position];
             if !open.jump_targets.contains(&target) {
-                self.unfit.insert(*id);
+                self.reject(*id, "control_transfer");
             }
         }
     }
@@ -53,11 +60,13 @@ impl MacroStructureVisitor for Survey<'_> {
             Statement::Let(variable) => {
                 self.declare(variable.id);
                 if variable.cleanup.is_some() {
-                    self.reject_open();
+                    self.reject_open("cleanup");
                 }
             }
             Statement::Temporary { id, .. } => self.declare(*id),
-            Statement::Write { place, .. } if writes_bit_field(place) => self.reject_open(),
+            Statement::Write { place, .. } if writes_bit_field(place) => {
+                self.reject_open("bit_field_write")
+            }
             Statement::While { id, .. }
             | Statement::DoWhile { id, .. }
             | Statement::For { id, .. }
@@ -69,7 +78,7 @@ impl MacroStructureVisitor for Survey<'_> {
             Statement::Break(target) | Statement::Continue(target) => self.jump(*target),
             Statement::Goto(_) | Statement::Label { .. } | Statement::ComputedGoto(_) => {
                 self.has_jump = true;
-                self.reject_open();
+                self.reject_open("control_transfer");
             }
             Statement::Return(_)
             | Statement::Asm(_)
@@ -78,14 +87,14 @@ impl MacroStructureVisitor for Survey<'_> {
             | Statement::SehTry { .. }
             | Statement::SehLeave(_)
             | Statement::OmpParallel(_)
-            | Statement::OmpFor(_) => self.reject_open(),
+            | Statement::OmpFor(_) => self.reject_open("control_transfer"),
             _ => {}
         }
     }
 
     fn value_kind(&mut self, kind: &ValueKind) {
         if matches!(kind, ValueKind::LabelAddress(_) | ValueKind::Seh(_)) {
-            self.reject_open();
+            self.reject_open("control_transfer");
         }
         if let ValueKind::MacroExpansion {
             expansion,
@@ -93,7 +102,7 @@ impl MacroStructureVisitor for Survey<'_> {
         } = kind
             && evaluation.value.ty == Type::Void
         {
-            self.unfit.insert(*expansion);
+            self.reject(*expansion, "void_value");
         }
     }
 
@@ -102,7 +111,7 @@ impl MacroStructureVisitor for Survey<'_> {
             kind,
             PlaceKind::CompoundLiteral { .. } | PlaceKind::Temporary { .. }
         ) {
-            self.reject_open();
+            self.reject_open("compound_literal_or_temporary");
         }
     }
 
@@ -133,7 +142,7 @@ impl MacroStructureVisitor for Survey<'_> {
 
     fn enter_place_hole(&mut self, expansion: MacroExpansionId, place: &Place) {
         if !plain_place(place) {
-            self.unfit.insert(expansion);
+            self.reject(expansion, "unplain_place");
         }
         self.enter_value_hole(expansion);
     }
@@ -146,15 +155,16 @@ impl MacroStructureVisitor for Survey<'_> {
         if self.globals.contains(&binding) {
             return;
         }
-        let declared = self.declared.get(&binding).map_or(&[][..], Vec::as_slice);
-        for (id, open) in &self.open {
+        let declared = self.declared.get(&binding).cloned().unwrap_or_default();
+        for position in 0..self.open.len() {
+            let (id, open) = &self.open[position];
             if declared.contains(id) == (open.in_hole > 0) {
-                self.unfit.insert(*id);
+                self.reject(*id, "reads_caller_local");
             }
         }
         for id in declared {
-            if !self.open.iter().any(|(open, _)| open == id) {
-                self.unfit.insert(*id);
+            if !self.open.iter().any(|(open, _)| *open == id) {
+                self.reject(id, "local_used_after_macro");
             }
         }
     }
@@ -191,7 +201,7 @@ pub(super) fn kept_expansions(module: &mut Module) -> HashSet<MacroExpansionId> 
     for function in &module.functions {
         globals.insert(function.value.id);
     }
-    let mut unfit = HashSet::new();
+    let mut rejections = HashMap::new();
     let mut seen = HashSet::new();
     for function in &mut module.functions {
         let Some(body) = &mut function.value.body else {
@@ -202,30 +212,51 @@ pub(super) fn kept_expansions(module: &mut Module) -> HashSet<MacroExpansionId> 
             open: Vec::new(),
             declared: HashMap::new(),
             seen: Vec::new(),
-            unfit: HashSet::new(),
+            unfit: HashMap::new(),
             has_jump: false,
         };
         walk_macro_structure(body, &mut survey);
         if survey.has_jump {
             for expansions in survey.declared.values() {
-                survey.unfit.extend(expansions.iter().copied());
+                for expansion in expansions {
+                    survey
+                        .unfit
+                        .entry(*expansion)
+                        .or_insert("local_in_dispatch_function");
+                }
             }
         }
-        unfit.extend(survey.unfit);
+        rejections.extend(survey.unfit);
         seen.extend(survey.seen);
     }
-    seen.into_iter()
-        .filter(|id| !unfit.contains(id) && definition_fits(module.macros.definition(*id)))
-        .collect()
+    for id in &seen {
+        if let Some(reason) = definition_unfit(module.macros.definition(*id)) {
+            rejections.entry(*id).or_insert(reason);
+        }
+    }
+    let kept = seen
+        .into_iter()
+        .filter(|id| !rejections.contains_key(id))
+        .collect();
+    module.macro_rejections = rejections;
+    kept
 }
 
-fn definition_fits(definition: &MacroDefinition) -> bool {
+pub(super) fn definition_unfit(definition: &MacroDefinition) -> Option<&'static str> {
     let Some(parameters) = &definition.parameters else {
-        return false;
+        return Some("not_function_like");
     };
-    definition.provenance.system_header.is_none()
-        && !definition.variadic
-        && !definition.replacement.contains('#')
-        && is_valid_macro_template_base(&definition.name)
-        && !parameters.iter().any(|name| name == "crate")
+    if definition.provenance.system_header.is_some() {
+        Some("system_header")
+    } else if definition.variadic {
+        Some("variadic")
+    } else if definition.replacement.contains('#') {
+        Some("stringify_or_paste")
+    } else if !is_valid_macro_template_base(&definition.name) {
+        Some("reserved_macro_name")
+    } else if parameters.iter().any(|name| name == "crate") {
+        Some("reserved_param_name")
+    } else {
+        None
+    }
 }

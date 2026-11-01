@@ -60,8 +60,8 @@ with `crates/`.
 ## Macro templates
 
 Under `translate-project --merge`, a kept `Statement::MacroExpansion` lowers to
-one `macro_rules` template per distinct body, and each site becomes a call. The
-old `macro_fold` pass still runs over everything else.
+one `macro_rules` template per distinct body, and each site becomes a call. Any
+other expansion stays inline, and `macro_keep.rs` records why in the merge report.
 
 - **Which expansions are kept**: `frontend/macro_keep.rs` decides on the IR,
   before lowering. It rejects control flow leaving the body, bodies that read
@@ -81,7 +81,7 @@ old `macro_fold` pass still runs over everything else.
 - **Names**: templates carry a hash, `NAME__slate_template_<fnv16>`, through
   compilation so function merge compares equal across units and targets.
   `assign_template_names` renames them at the end of the merge to `NAME`,
-  `NAME__2`, and so on, most used first, skipping names the old fold took.
+  `NAME__2`, and so on, most used first.
 - **Holes**: an argument is a `$a()` call while the rules run, so that no rule
   moves, merges, or drops its evaluation. `finish_holes` turns it into `$a` before
   printing.

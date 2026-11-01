@@ -554,7 +554,6 @@ impl FunctionLowerer<'_, '_> {
                     },
                 },
             ],
-            macro_region: None,
         }))
     }
 

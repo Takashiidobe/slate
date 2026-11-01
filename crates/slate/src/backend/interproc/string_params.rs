@@ -527,7 +527,6 @@ fn visit_expr_deep(expr: &Expr, f: &mut impl FnMut(&Expr)) {
         }
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
-        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => visit_expr_deep(expr, f),
@@ -757,7 +756,6 @@ fn expr_ok(expr: &Expr, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
         | Expr::Todo(_) => true,
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
-        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => expr_ok(expr, tracked, ctx),
@@ -931,7 +929,6 @@ fn arg_is_liftable_source(
 fn peel_pointer_view(expr: &Expr) -> &Expr {
     match expr {
         Expr::Cast { expr, .. }
-        | Expr::MacroArg { expr, .. }
         | Expr::Unary { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
@@ -1209,7 +1206,6 @@ fn rewrite_calls_in_expr(expr: &mut Expr, ctx: &RewriteCtx) -> bool {
         | Expr::Todo(_) => {}
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
-        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => changed |= rewrite_calls_in_expr(expr, ctx),
@@ -1328,7 +1324,6 @@ fn rewrite_calls_in_expr(expr: &mut Expr, ctx: &RewriteCtx) -> bool {
 fn lifted_arg(expr: &Expr, literals: &BTreeMap<String, Vec<u8>>) -> Option<Expr> {
     match expr {
         Expr::Cast { expr, .. }
-        | Expr::MacroArg { expr, .. }
         | Expr::Unary { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }

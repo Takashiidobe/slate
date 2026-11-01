@@ -200,9 +200,7 @@ fn contains_mut_borrow(expr: &Expr) -> bool {
     match expr {
         Expr::Ref { mutable: true, .. } => true,
         Expr::Ref { .. } | Expr::AddrOf { .. } => false,
-        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } | Expr::MacroArg { expr, .. } => {
-            contains_mut_borrow(expr)
-        }
+        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } => contains_mut_borrow(expr),
         Expr::Field { base, .. } | Expr::TupleField { base, .. } => contains_mut_borrow(base),
         Expr::Index { base, index } => contains_mut_borrow(base) || contains_mut_borrow(index),
         Expr::Binary { lhs, rhs, .. } => contains_mut_borrow(lhs) || contains_mut_borrow(rhs),

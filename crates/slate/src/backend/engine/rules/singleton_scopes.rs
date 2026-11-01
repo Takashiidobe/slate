@@ -59,15 +59,7 @@ impl NodeRule for ScopeFlatten {
     }
 
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
-        arena.parent(id).is_some()
-            && !matches!(
-                arena.get(id),
-                Some(NodeKind::Scope {
-                    macro_region: Some(_),
-                    ..
-                })
-            )
-            && !shadow_outlives_scope(arena, id)
+        arena.parent(id).is_some() && !shadow_outlives_scope(arena, id)
     }
 
     fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {

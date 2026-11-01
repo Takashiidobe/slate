@@ -141,17 +141,16 @@ int main(void) {
 // CHECK-NEXT: unit macro_fold_helper: 9 items, 6 gated, 0 duplicated functions
 // CHECK-NEXT: macros: 25 function-like, 14 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   inline control_transfer: 4
+// CHECK-NEXT:   inline no_statement_region: 4
 // CHECK-NEXT:   inline reads_caller_local: 4
-// CHECK-NEXT:   inline stringify_or_paste: 4
 // CHECK-NEXT:   inline reserved_macro_name: 4
-// CHECK-NEXT:   inline no_statement_region: 2
-// CHECK-NEXT:   inline declares_local: 2
+// CHECK-NEXT:   inline stringify_or_paste: 4
+// CHECK-NEXT:   inline local_used_after_macro: 2
 // CHECK-NEXT:   inline variadic: 2
-// CHECK-NEXT:   inline param_without_argument: 2
 // CHECK-NEXT:   macro ASSERT: 8 lifted, inline:
 // CHECK-NEXT:   macro BUMPED: 4 lifted, inline:
 // CHECK-NEXT:   macro COMMA_RETURN: 0 lifted, inline: control_transfer 2
-// CHECK-NEXT:   macro DECLARE: 0 lifted, inline: declares_local 2
+// CHECK-NEXT:   macro DECLARE: 0 lifted, inline: local_used_after_macro 2
 // CHECK-NEXT:   macro DIFFERS: 4 lifted, inline:
 // CHECK-NEXT:   macro DROPS: 2 lifted, inline:
 // CHECK-NEXT:   macro EARLY_LIST: 2 lifted, inline:
@@ -165,7 +164,7 @@ int main(void) {
 // CHECK-NEXT:   macro PASTE: 0 lifted, inline: stringify_or_paste 2
 // CHECK-NEXT:   macro READS_LOCAL: 0 lifted, inline: reads_caller_local 2
 // CHECK-NEXT:   macro RETURNS: 0 lifted, inline: control_transfer 2
-// CHECK-NEXT:   macro SHADOWS: 2 lifted, inline: param_without_argument 2
+// CHECK-NEXT:   macro SHADOWS: 2 lifted, inline: no_statement_region 2
 // CHECK-NEXT:   macro SPLIT: 2 lifted, inline:
 // CHECK-NEXT:   macro STORE: 4 lifted, inline:
 // CHECK-NEXT:   macro TWICE: 2 lifted, inline:
@@ -672,6 +671,13 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), a_value) };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), count) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
@@ -683,17 +689,8 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("{}", a_value);
+// CHECK-NEXT:         println!("{}", count);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), count) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), count) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     if count > 0 {
 // CHECK-NEXT:         #[cfg(windows)]
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());

@@ -1,6 +1,4 @@
 mod arena;
-pub mod macro_boundaries;
-mod macro_fold;
 pub mod macro_templates;
 mod prelude;
 mod printf_format;
@@ -8,7 +6,7 @@ mod rules;
 pub mod shadow;
 
 use arena::{Arena, FunctionOptimizer, NodeId, NodeKindTag};
-pub(crate) use macro_fold::is_valid_macro_name;
+pub(crate) use macro_templates::is_valid_macro_name;
 use std::collections::{BTreeSet, HashMap};
 
 use crate::backend::rust_ast::{FnParam, Ident, Item, Program, Stmt};
@@ -109,13 +107,9 @@ pub(in crate::backend) fn apply_local(
     prelude::inject(program, target);
     let place_parameters = macro_templates::finish_holes(program);
     printf_format::rewrite(program);
-    macro_fold::fold(program);
     let passes = [RuleRegistry::build(rules::unsafe_registry())];
     for item in &mut program.items {
         apply_item(item, &passes);
-    }
-    for item in &mut program.items {
-        macro_boundaries::strip_item(item);
     }
     macro_templates::finish_place_arguments(program, &place_parameters);
 }

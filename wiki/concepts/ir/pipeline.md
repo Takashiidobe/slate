@@ -176,8 +176,8 @@ has already kept value expansions together by then and cannot be undone, so
 `finish_module` puts the unnormalized bodies back, calls
 `Module::strip_macro_structure` (`ir/macro_strip.rs`) to remove the expansions
 `keep` rejected, and normalizes again. A stripped expansion therefore hoists
-exactly as if it had no structure and goes down the old
-[`macro_fold`](../slate-architecture.md#macro-templates) path.
+exactly as if it had no structure and stays inline in the
+[generated Rust](../slate-architecture.md#macro-templates).
 
 Per-value expansion chains are not in the IR yet (only atomic builtins record
 `c_macro`); see [open design](open-design.md#macro-provenance).

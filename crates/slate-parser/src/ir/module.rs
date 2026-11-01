@@ -20,6 +20,7 @@ pub struct Module {
     pub comments: Comments,
     pub c_types: CTypeTable,
     pub macros: MacroInvocations,
+    pub macro_rejections: HashMap<MacroExpansionId, &'static str>,
 }
 
 #[derive(Debug, Clone)]
@@ -369,6 +370,7 @@ impl Module {
             comments: Comments::default(),
             c_types: CTypeTable::default(),
             macros: MacroInvocations::default(),
+            macro_rejections: HashMap::new(),
         }
     }
 

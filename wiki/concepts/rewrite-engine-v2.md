@@ -127,68 +127,18 @@ local;`, so their bodies are unchanged. A liftable export whose every
 
 ## Macro boundaries
 
-Under `--merge`, a C macro expansion carries two wrappers through the rules, so
-its arguments stay separate from its body for
-[macro recovery](preprocessor.md#macro-invocations).
+Under `--merge`, a kept C macro expansion lowers to a template and a call, as
+described in [macro templates](slate-architecture.md#macro-templates). While the
+rules run, an argument is a `$a()` hole, so no rule moves, merges, or drops its
+evaluation, and a shape-matching rule cannot see through it.
 
-- `Stmt::Scope { macro_region: Some(name) }` marks the statements of one
-  invocation. `singleton_scopes` does not flatten it.
-- `Expr::MacroArg { index, expr }` marks an argument. Rules that match a shape
-  stop at it, so `!(a == b)` in `ASSERT(a == b, "m")` does not become `a != b`.
-  Rules still rewrite inside an argument, and analyses (reads, effects, the
-  interprocedural lattices) look through it.
-- `lower_macro_region` only creates a region for a macro's own statements. It
-  skips `let` and hoisted temporaries at the top of the expansion, and any
-  expansion with `return`, a `goto`, a label, asm, a `case`, or a `break` or
-  `continue` that leaves it. An expansion whose body reads a caller local gets
-  no wrappers, so it rewrites as before.
-- A new walker over `Expr` must handle `MacroArg`. A shape-matching rule should
-  not peel it.
-- `macro_boundaries::strip` removes both wrappers after the last rule pass, so
-  codegen and the project merge never see them.
+`finish_holes` turns holes into `$a` after `printf_format` and before the unsafe
+pass, because that pass removes `unsafe` depending on the surrounding block and
+would give one macro different bodies. The unsafe pass then runs over the macro
+bodies too.
 
-Expression-position macros are not wrapped yet: `PRINT(x);` from
-`#define PRINT(x) printf x` has a statement that ends outside the invocation.
-
-`macro_fold::fold` turns regions into `Item::MacroRules` and `Name!(args)` calls.
-It runs after `printf_format` and before the unsafe pass, because that pass
-removes `unsafe` depending on the surrounding block and would give one macro
-different bodies. The unsafe pass then runs over the macro bodies too.
-
-A template is the region's own code with each `MacroArg` replaced by `$param`,
-so it re-expands to what was lowered by construction. Each unit keeps the most
-common template per macro name. Other regions of that macro stay inline, and a
-failed fold costs readability, never correctness.
-
-- A parameter written after a name (`fprintf x`) is a list: `$($x:expr),*`, last
-  in the matcher. `rustfmt` cannot format `$(...)` in a macro body, so a
-  placeholder identifier stands in until `format.rs` restores it after formatting.
-- `foldable` is decided at lowering, where the definition and statement locations
-  exist. A neighbouring statement that overlaps the invocation means the region
-  is partial: `ERR_RETURN`'s `return` ends at the `;` after the invocation, so a
-  containment test misses it and the check has to be overlap.
-- The goto graph keeps a braced macro block with no `let` as one node. Without
-  that, it splits the `if` from its body and the body looks like the whole macro.
-- An explicit cast's conversions take the cast's location in sema, so `(ush)(value)`
-  in a body lands outside `MacroArg`. Implicit conversions keep the operand's
-  location and land inside it. `candidate` then moves the casts around a parameter
-  into its hole when every use has the same ones, because a hole accepts any
-  argument type while `$c as u8` is a different template from `$c`. When the uses
-  differ (`send_bits` uses `value` through `(int)` and `(ush)`), the casts stay in
-  the template, and only arguments that produce the same casts share it, so the
-  `ush` arguments of `send_bits` stay inline.
-- `(int)value` with `count - 3` parses as `(int)count - 3`, so the subtraction
-  starts in the body. `merge_operator_spelled_in_argument` makes it one `MacroArg`
-  when both operands belong to one argument and the left ends before the right
-  starts, which puts the operator in the argument's text. `(a) + (a)` in a body
-  fails that test, so it stays `$a + $a`.
-
-These stay inline: object-like and variadic macros, `#` and `##`, macros reading
-or writing a caller local or label, arguments the IR hoists or writes
-(`STORE(p++, v)`), an argument reading a name the body binds (hygiene would change
-which one it means), writes through an argument (`UPDATE_HASH(s, s->ins_h, c)`,
-whose place has no `MacroArg`), a list parameter that is not last, and names that
-are Rust keywords or would shadow a std macro generated code uses.
+Expansions `macro_keep.rs` rejects carry no structure and stay inline, so a
+rejected lift costs readability, never correctness.
 
 Under `--merge` the largest group of units with identical definitions shares
 `src/__slate_macros.rs` through `#[macro_use]`. Other units keep their own

@@ -410,7 +410,6 @@ impl FunctionLowerer<'_, '_> {
             }));
         }
         self.non_index_names = self.non_index_names(&params, body);
-        self.function_locals = self.function_locals(&params, body);
         let mut statements = if control_flow::needs_dispatch(body) {
             self.lower_dispatch(body)?
         } else {

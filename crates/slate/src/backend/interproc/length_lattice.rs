@@ -1356,7 +1356,6 @@ fn rewrite_signature_expr(
         }
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
-        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => rewrite_signature_expr(expr, caller, ctx, proofs),
@@ -1890,7 +1889,7 @@ fn stmt_writes_temp(stmt: &Stmt, sites: &ViewSites) -> bool {
 
 fn peel_cast(expr: &Expr) -> &Expr {
     match expr {
-        Expr::MacroArg { expr, .. } | Expr::Cast { expr, .. } => peel_cast(expr),
+        Expr::Cast { expr, .. } => peel_cast(expr),
         other => other,
     }
 }
@@ -2064,7 +2063,6 @@ fn rewrite_expr(expr: &mut Expr, sites: &ViewSites, view_name: &str) {
         }
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
-        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. } => rewrite_expr(expr, sites, view_name),
         Expr::Block(block) | Expr::Unsafe(block) => {
@@ -2228,7 +2226,7 @@ fn lt_pair(expr: &Expr, let_exprs: &BTreeMap<String, Expr>) -> Option<(String, E
 fn peeled_var(expr: &Expr) -> Option<&str> {
     match expr {
         Expr::Var(v) => Some(v.as_str()),
-        Expr::MacroArg { expr, .. } | Expr::Cast { expr, .. } => peeled_var(expr),
+        Expr::Cast { expr, .. } => peeled_var(expr),
         _ => None,
     }
 }
@@ -2542,7 +2540,7 @@ fn peeled_offset_call(expr: &Expr) -> Option<(&str, &Expr)> {
         Expr::Unsafe(block) | Expr::Block(block) => {
             block.tail.as_deref().and_then(peeled_offset_call)
         }
-        Expr::MacroArg { expr, .. } | Expr::Cast { expr, .. } => peeled_offset_call(expr),
+        Expr::Cast { expr, .. } => peeled_offset_call(expr),
         _ => None,
     }
 }
@@ -2974,7 +2972,6 @@ fn rewrite_const_call_expr(expr: &mut Expr, ctx: &ConstCtx) {
         }
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
-        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => rewrite_const_call_expr(expr, ctx),
@@ -4242,7 +4239,6 @@ fn rewrite_return_call_expr(expr: &mut Expr, elems: &BTreeMap<String, Type>) {
         }
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
-        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => rewrite_return_call_expr(expr, elems),

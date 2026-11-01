@@ -97,20 +97,20 @@ int main(void) {
 // CHECK-NEXT:   spliced fn:thrice: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 14 function-like, 12 lifted at least once (expansions counted per distinct compile)
+// CHECK-NEXT:   inline bit_field_write: 2
+// CHECK-NEXT:   inline local_used_after_macro: 2
 // CHECK-NEXT:   inline no_statement_region: 2
-// CHECK-NEXT:   inline declares_local: 2
-// CHECK-NEXT:   inline param_without_argument: 2
 // CHECK-NEXT:   macro APPLY: 4 lifted, inline:
 // CHECK-NEXT:   macro ARGS_OF: 2 lifted, inline:
 // CHECK-NEXT:   macro CALL2: 2 lifted, inline:
 // CHECK-NEXT:   macro CAST_TO: 6 lifted, inline:
-// CHECK-NEXT:   macro DECLARE: 0 lifted, inline: declares_local 2
+// CHECK-NEXT:   macro DECLARE: 0 lifted, inline: local_used_after_macro 2
 // CHECK-NEXT:   macro FIELD: 16 lifted, inline:
 // CHECK-NEXT:   macro MEMBER_NAME: 2 lifted, inline:
 // CHECK-NEXT:   macro NESTED_CAST: 2 lifted, inline:
 // CHECK-NEXT:   macro NESTED_FIELD: 2 lifted, inline:
 // CHECK-NEXT:   macro READ_THROUGH: 0 lifted, inline: no_statement_region 2
-// CHECK-NEXT:   macro SET_FIELD: 8 lifted, inline: param_without_argument 2
+// CHECK-NEXT:   macro SET_FIELD: 8 lifted, inline: bit_field_write 2
 // CHECK-NEXT:   macro SIZE_PLUS: 2 lifted, inline:
 // CHECK-NEXT:   macro SWAP: 10 lifted, inline:
 // CHECK-NEXT:   macro TRACE: 4 lifted, inline:
@@ -515,8 +515,7 @@ int main(void) {
 // CHECK-NEXT:     SET_FIELD__2!(op, r#type, 20i32);
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = 1u32;
-// CHECK-NEXT:             (*op).__slate_bits_0.__set_flag([[T_1]]);
+// CHECK-NEXT:             (*op).__slate_bits_0.__set_flag(1u32);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;

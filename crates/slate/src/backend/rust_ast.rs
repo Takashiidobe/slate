@@ -19,68 +19,7 @@ pub struct Program {
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct MacroOutcome {
     pub name: String,
-    pub inline: Option<MacroInlineReason>,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum MacroInlineReason {
-    NoStatementRegion,
-    EmptyExpansion,
-    InsideArgument,
-    DeclaresLocal,
-    HoistedTemporary,
-    ControlTransfer,
-    UnstructuredFunction,
-    ReadsCallerLocal,
-    NotFunctionLike,
-    Variadic,
-    StringifyOrPaste,
-    ReservedParamName,
-    SplitExpansion,
-    SplitArgument,
-    ArgumentStatementInRegion,
-    ReservedMacroName,
-    OnlyComments,
-    ConflictingArgument,
-    ArgumentShape,
-    ListParamNotLast,
-    ParamWithoutArgument,
-    ArgumentOutsideHole,
-    ArgumentReadsMacroLocal,
-    BodyReadsCallerLocal,
-    AnotherTemplateChosen,
-}
-
-impl MacroInlineReason {
-    pub fn label(self) -> &'static str {
-        match self {
-            Self::NoStatementRegion => "no_statement_region",
-            Self::EmptyExpansion => "empty_expansion",
-            Self::InsideArgument => "inside_argument",
-            Self::DeclaresLocal => "declares_local",
-            Self::HoistedTemporary => "hoisted_temporary",
-            Self::ControlTransfer => "control_transfer",
-            Self::UnstructuredFunction => "unstructured_function",
-            Self::ReadsCallerLocal => "reads_caller_local",
-            Self::NotFunctionLike => "not_function_like",
-            Self::Variadic => "variadic",
-            Self::StringifyOrPaste => "stringify_or_paste",
-            Self::ReservedParamName => "reserved_param_name",
-            Self::SplitExpansion => "split_expansion",
-            Self::SplitArgument => "split_argument",
-            Self::ArgumentStatementInRegion => "argument_statement_in_region",
-            Self::ReservedMacroName => "reserved_macro_name",
-            Self::OnlyComments => "only_comments",
-            Self::ConflictingArgument => "conflicting_argument",
-            Self::ArgumentShape => "argument_shape",
-            Self::ListParamNotLast => "list_param_not_last",
-            Self::ParamWithoutArgument => "param_without_argument",
-            Self::ArgumentOutsideHole => "argument_outside_hole",
-            Self::ArgumentReadsMacroLocal => "argument_reads_macro_local",
-            Self::BodyReadsCallerLocal => "body_reads_caller_local",
-            Self::AnotherTemplateChosen => "another_template_chosen",
-        }
-    }
+    pub inline: Option<&'static str>,
 }
 
 impl Program {
@@ -176,9 +115,7 @@ pub enum Item {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum MacroParamShape {
-    Unused,
     Expr,
-    List,
     Ident,
     Type,
 }
@@ -204,14 +141,6 @@ pub fn macro_template_base(name: &str) -> Option<&str> {
 
 pub fn is_valid_macro_template_base(name: &str) -> bool {
     crate::backend::engine::is_valid_macro_name(name)
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct MacroRegion {
-    pub name: String,
-    pub params: Vec<MacroParam>,
-    pub foldable: bool,
-    pub level: u32,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -986,7 +915,6 @@ pub enum Stmt {
     },
     Scope {
         body: Vec<Stmt>,
-        macro_region: Option<Box<MacroRegion>>,
     },
     LabeledBlock {
         label: Label,
@@ -1295,11 +1223,6 @@ pub enum Expr {
     Block(Box<Block>),
     Unsafe(Box<Block>),
     ConstBlock(Box<Expr>),
-    MacroArg {
-        level: u32,
-        index: u32,
-        expr: Box<Expr>,
-    },
     Cast {
         expr: Box<Expr>,
         ty: Type,
@@ -1847,7 +1770,6 @@ impl Expr {
             | Expr::Todo(_) => false,
             Expr::Unary { expr, .. }
             | Expr::Cast { expr, .. }
-            | Expr::MacroArg { expr, .. }
             | Expr::Ref { expr, .. }
             | Expr::AddrOf { expr, .. }
             | Expr::Transmute { expr, .. } => expr.reads_var(name),
@@ -1930,7 +1852,6 @@ impl Expr {
             | Expr::Todo(_) => {}
             Expr::Unary { expr, .. }
             | Expr::Cast { expr, .. }
-            | Expr::MacroArg { expr, .. }
             | Expr::Ref { expr, .. }
             | Expr::AddrOf { expr, .. }
             | Expr::Transmute { expr, .. } => expr.collect_vars(out),
@@ -2081,7 +2002,6 @@ impl Expr {
             | Expr::Todo(_) => {}
             Expr::Unary { expr, .. }
             | Expr::Cast { expr, .. }
-            | Expr::MacroArg { expr, .. }
             | Expr::Ref { expr, .. }
             | Expr::AddrOf { expr, .. }
             | Expr::Transmute { expr, .. } => expr.collect_offset_calls(out),
@@ -2224,7 +2144,6 @@ impl Expr {
             | Expr::Todo(_) => {}
             Expr::Unary { expr, .. }
             | Expr::Cast { expr, .. }
-            | Expr::MacroArg { expr, .. }
             | Expr::Ref { expr, .. }
             | Expr::AddrOf { expr, .. }
             | Expr::Transmute { expr, .. } => expr.collect_calls(out),
@@ -2362,7 +2281,6 @@ impl Expr {
             | Expr::GenericPath { .. } => false,
             Expr::Unary { expr, .. }
             | Expr::Cast { expr, .. }
-            | Expr::MacroArg { expr, .. }
             | Expr::Ref { expr, .. }
             | Expr::AddrOf { expr, .. }
             | Expr::Transmute { expr, .. } => expr.substitute_var(name, replacement),

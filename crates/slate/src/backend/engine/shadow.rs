@@ -188,7 +188,6 @@ fn walk_expr(expr: &mut Expr, names: &mut impl Names) {
         Expr::ConstBlock(expr)
         | Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
-        | Expr::MacroArg { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. }

@@ -243,33 +243,34 @@ int main(void) {
 // CHECK-NEXT:   spliced fn:positions: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 23 function-like, 18 lifted at least once (expansions counted per distinct compile)
-// CHECK-NEXT:   inline no_statement_region: 28
-// CHECK-NEXT:   inline hoisted_temporary: 14
-// CHECK-NEXT:   inline inside_argument: 6
-// CHECK-NEXT:   inline unstructured_function: 6
-// CHECK-NEXT:   inline body_reads_caller_local: 4
-// CHECK-NEXT:   macro ADDRESS_OF_LITERAL: 0 lifted, inline: no_statement_region 2
+// CHECK-NEXT:   inline no_statement_region: 16
+// CHECK-NEXT:   inline reads_caller_local: 16
+// CHECK-NEXT:   inline inside_argument: 8
+// CHECK-NEXT:   inline compound_literal_or_temporary: 4
+// CHECK-NEXT:   inline local_in_dispatch_function: 4
+// CHECK-NEXT:   inline void_value: 4
+// CHECK-NEXT:   macro ADDRESS_OF_LITERAL: 0 lifted, inline: compound_literal_or_temporary 2
 // CHECK-NEXT:   macro ASSIGN_TO: 2 lifted, inline:
-// CHECK-NEXT:   macro AT: 18 lifted, inline: hoisted_temporary 2
-// CHECK-NEXT:   macro BIT: 4 lifted, inline: no_statement_region 8, inside_argument 2
-// CHECK-NEXT:   macro BOTH: 2 lifted, inline: hoisted_temporary 2
+// CHECK-NEXT:   macro AT: 18 lifted, inline: no_statement_region 2
+// CHECK-NEXT:   macro BIT: 4 lifted, inline: inside_argument 2, no_statement_region 8
+// CHECK-NEXT:   macro BOTH: 2 lifted, inline: reads_caller_local 2
 // CHECK-NEXT:   macro BUMP_AND: 2 lifted, inline:
 // CHECK-NEXT:   macro CALL_WITH: 2 lifted, inline:
 // CHECK-NEXT:   macro COUNT_CALL: 4 lifted, inline:
-// CHECK-NEXT:   macro EITHER: 2 lifted, inline: hoisted_temporary 2
+// CHECK-NEXT:   macro EITHER: 2 lifted, inline: reads_caller_local 2
 // CHECK-NEXT:   macro FIELD_OF: 2 lifted, inline: no_statement_region 2
-// CHECK-NEXT:   macro HOLDER: 0 lifted, inline: no_statement_region 2
-// CHECK-NEXT:   macro LOCAL_READ: 0 lifted, inline: no_statement_region 2
-// CHECK-NEXT:   macro MAX: 20 lifted, inline: no_statement_region 2, inside_argument 2, hoisted_temporary 4, unstructured_function 2
-// CHECK-NEXT:   macro MIN: 24 lifted, inline: no_statement_region 2, inside_argument 2, hoisted_temporary 4, unstructured_function 2
+// CHECK-NEXT:   macro HOLDER: 0 lifted, inline: compound_literal_or_temporary 2
+// CHECK-NEXT:   macro LOCAL_READ: 0 lifted, inline: reads_caller_local 2
+// CHECK-NEXT:   macro MAX: 20 lifted, inline: inside_argument 4, no_statement_region 2, reads_caller_local 2
+// CHECK-NEXT:   macro MIN: 24 lifted, inline: inside_argument 2, no_statement_region 2, reads_caller_local 6
 // CHECK-NEXT:   macro NEXT: 2 lifted, inline:
-// CHECK-NEXT:   macro NEXT_FROM: 4 lifted, inline: unstructured_function 2
-// CHECK-NEXT:   macro NOTHING: 0 lifted, inline: no_statement_region 4
-// CHECK-NEXT:   macro PICK: 0 lifted, inline: no_statement_region 4
+// CHECK-NEXT:   macro NEXT_FROM: 4 lifted, inline: local_in_dispatch_function 2
+// CHECK-NEXT:   macro NOTHING: 0 lifted, inline: void_value 4
+// CHECK-NEXT:   macro PICK: 0 lifted, inline: local_in_dispatch_function 2, reads_caller_local 2
 // CHECK-NEXT:   macro SMALLER: 4 lifted, inline:
 // CHECK-NEXT:   macro STMT_EXPR: 2 lifted, inline:
 // CHECK-NEXT:   macro TEXT_LENGTH: 2 lifted, inline:
-// CHECK-NEXT:   macro TWICE: 18 lifted, inline: body_reads_caller_local 4
+// CHECK-NEXT:   macro TWICE: 18 lifted, inline:
 // CHECK-NEXT:   macro WIDE_MIN: 2 lifted, inline:
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
@@ -946,39 +947,28 @@ int main(void) {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), hit) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", [[V_3]] as i32);
-// CHECK-NEXT:         println!("{}", hit);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     let mut [[V_7]]: bool;
-// CHECK-NEXT:     if one != 0 {
-// CHECK-NEXT:         [[V_7]] = true;
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_7]] = TWICE!(note(4i32)) != 0;
-// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), [[V_7]] as i32) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%d\n".as_ptr(),
+// CHECK-NEXT:                 (one != 0 || TWICE!(note(4i32)) != 0) as i32,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", [[V_7]] as i32);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     let mut [[V_14:__v[0-9]+]]: bool;
-// CHECK-NEXT:     if one != 0 {
-// CHECK-NEXT:         [[V_14]] = TWICE!(note(5i32)) != 0;
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         [[V_14]] = false;
-// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), [[V_14]] as i32) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%d\n".as_ptr(),
+// CHECK-NEXT:                 (one != 0 && TWICE!(note(5i32)) != 0) as i32,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
@@ -1002,7 +992,10 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", [[V_14]] as i32);
+// CHECK-NEXT:         println!("{}", [[V_3]] as i32);
+// CHECK-NEXT:         println!("{}", hit);
+// CHECK-NEXT:         println!("{}", (one != 0 || TWICE!(note(4i32)) != 0) as i32);
+// CHECK-NEXT:         println!("{}", (one != 0 && TWICE!(note(5i32)) != 0) as i32);
 // CHECK-NEXT:         println!("{}", hit);
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{}",
@@ -1016,7 +1009,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_0]]: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut [[V_3]]: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut [[V_5]]: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[V_14]]: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[V_14:__v[0-9]+]]: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut hit: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         hit = 0;
