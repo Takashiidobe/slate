@@ -12,5 +12,6 @@ Macro epic `slate-f2zu.9.5.12`, in order.
 - [ ] 8. `.19`: decide whether `goto` out of a macro can lift.
 - [ ] 9. `.14`: audit zlib, with all-features `validate_merge` and both full profiles.
 - [ ] 10. `.12`: lift variadic and `#`/`##` macros if a project needs them.
+- [ ] 11. `.22`: lift macros that declare locals in functions with dispatch lowering.
 
 Deferred: `.17` (remeasure after step 4), `.16`.
