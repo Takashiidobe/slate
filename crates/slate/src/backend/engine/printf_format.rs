@@ -74,7 +74,8 @@ const STDOUT_WRITER_KNOWNS: &[Known] = &[
     Known::FWrite,
 ];
 
-const STDOUT_WRITER_EXTRA_NAMES: &[&str] = &["putchar", "putc", "fputc", "vprintf", "vfprintf"];
+const STDOUT_WRITER_EXTRA_NAMES: &[&str] =
+    &["putchar", "putc", "__sputc", "fputc", "vprintf", "vfprintf"];
 
 fn stdout_writer_shim_names(program: &Program) -> HashSet<String> {
     program
@@ -144,6 +145,73 @@ fn is_printf_stmt(stmt: &Stmt, printf_names: &HashSet<String>) -> bool {
             .tail
             .as_deref()
             .is_some_and(|tail| is_stdout_writer_call(tail, printf_names))
+}
+
+fn is_writer_value(expr: &Expr, writer_names: &HashSet<String>) -> bool {
+    match expr {
+        Expr::Call { args, .. } => {
+            is_stdout_writer_call(expr, writer_names)
+                && !args.iter().any(|arg| reads_writer(arg, writer_names))
+        }
+        Expr::Cast { expr, .. } => is_writer_value(expr, writer_names),
+        Expr::Block(block) | Expr::Unsafe(block) => {
+            !block
+                .stmts
+                .iter()
+                .any(|stmt| writer_names.iter().any(|name| stmt.reads_var(name)))
+                && block
+                    .tail
+                    .as_deref()
+                    .is_some_and(|tail| is_writer_value(tail, writer_names))
+        }
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => is_writer_choice(cond, then_expr, else_expr, writer_names),
+        _ => false,
+    }
+}
+
+fn is_writer_choice(
+    cond: &Expr,
+    then_value: &Expr,
+    else_value: &Expr,
+    writer_names: &HashSet<String>,
+) -> bool {
+    let then_writes = is_writer_value(then_value, writer_names);
+    let else_writes = is_writer_value(else_value, writer_names);
+    !reads_writer(cond, writer_names)
+        && (then_writes || else_writes)
+        && (then_writes || !reads_writer(then_value, writer_names))
+        && (else_writes || !reads_writer(else_value, writer_names))
+}
+
+fn is_writer_value_stmt(stmt: &Stmt, writer_names: &HashSet<String>) -> bool {
+    match stmt {
+        Stmt::Let {
+            init: Some(init), ..
+        } => is_writer_value(init, writer_names),
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            !then_body
+                .iter()
+                .chain(else_body)
+                .any(|stmt| writer_names.iter().any(|name| stmt.reads_var(name)))
+                && is_writer_choice(cond, then_value, else_value, writer_names)
+        }
+        Stmt::Assign { target, value } => {
+            !reads_writer(target, writer_names) && is_writer_value(value, writer_names)
+        }
+        Stmt::Expr(expr) => is_writer_value(expr, writer_names),
+        _ => false,
+    }
 }
 
 fn path_call(segments: &[&str], args: Vec<Expr>) -> Expr {
@@ -260,7 +328,7 @@ const STDOUT_TAIL_TEMP: &str = "__slate_stdout_writer_tail";
 
 fn wrap_stdout_writer_preserving_tail(stmt: Stmt) -> Vec<Stmt> {
     let Stmt::Expr(inner_expr) = stmt else {
-        unreachable!("caller only passes stmts matched by is_printf_stmt");
+        unreachable!("caller only passes expression stmts");
     };
     vec![
         stdout_flush_stmt(),
@@ -289,9 +357,9 @@ fn rewrite_block_stmts(
         let is_tail = protect_tail && Some(index) == last_index;
         if !is_tail && let Some(replacement) = try_convert(&stmt) {
             extend_flushed(&mut result, replacement);
-        } else if is_printf_stmt(&stmt, printf_names) {
+        } else if is_printf_stmt(&stmt, printf_names) || is_writer_value_stmt(&stmt, printf_names) {
             *needs_fflush_extern = true;
-            if is_tail {
+            if is_tail && matches!(stmt, Stmt::Expr(_)) {
                 extend_flushed(&mut result, wrap_stdout_writer_preserving_tail(stmt));
             } else {
                 extend_flushed(
@@ -455,7 +523,7 @@ fn block_exposes_writer(block: &Block, writer_names: &HashSet<String>) -> bool {
 }
 
 fn stmt_exposes_writer(stmt: &Stmt, writer_names: &HashSet<String>) -> bool {
-    if is_printf_stmt(stmt, writer_names) {
+    if is_printf_stmt(stmt, writer_names) || is_writer_value_stmt(stmt, writer_names) {
         return false;
     }
     match stmt {

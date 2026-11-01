@@ -107,6 +107,9 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: core::ffi::VaList<'static>,
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn format_into(
@@ -125,7 +128,9 @@ int main(void) {
 // CHECK-NEXT:             core::ffi::VaList<'static>,
 // CHECK-NEXT:         >(__va_args.clone())
 // CHECK-NEXT:     };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     let written: i32 = unsafe { vprintf(fmt, ap.clone()) };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     written
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn render(
@@ -248,6 +253,7 @@ int main(void) {
 // CHECK-NEXT:             120i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %d %s\n".as_ptr(),
@@ -256,12 +262,16 @@ int main(void) {
 // CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%ld\n".as_ptr(),
 // CHECK-NEXT:             sum_ints(5i32, 1i32, 2i32, 3i32, 4i32, 5i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%.2f\n".as_ptr(),
@@ -278,12 +288,12 @@ int main(void) {
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"%d\n".as_ptr(), sum_twice(3i32, 4i32, 5i32, 6i32))
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     println!("{}", unsafe { sum_twice(3i32, 4i32, 5i32, 6i32) });
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%u\n".as_ptr(), unsigned_pair(0i32, 4000000000u32))
 // CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     ((unsafe { sum_ints(3i32, 10i32, 20i32, 30i32) }) % 13) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

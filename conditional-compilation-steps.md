@@ -72,5 +72,5 @@ Clean up what remains:
 
 Only if a project needs it: `9.5.12.12` (variadic and `#`/`##` macros).
 
-Not on this path: `9.6` is a behavior bug, so fix it on its own schedule.
-`9.5.8.5`, `9.5.8.6` and `9.5.12.26` are minor or do not show up in zlib.
+Not on this path: `9.5.8.5`, `9.5.8.6` and `9.5.12.26` are minor or do not show
+up in zlib.
