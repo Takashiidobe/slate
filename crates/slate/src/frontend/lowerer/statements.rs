@@ -417,6 +417,7 @@ impl FunctionLowerer<'_, '_> {
             }
             previous = Some(statement);
             remaining = rest;
+            self.note_unfit_statement(statement);
             lowered.extend(self.lower_statement(statement)?);
             if let ir::Statement::Let(variable) = &statement.value
                 && let Some(cleanup) = variable.cleanup

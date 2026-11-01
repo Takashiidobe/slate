@@ -133,6 +133,8 @@ struct Dependencies {
     address_taken: BTreeSet<String>,
     taken_functions: HashSet<BindingId>,
     emitted_comments: HashSet<slate_parser::ast::NodeId>,
+    macro_expansions_seen: HashSet<macro_regions::MacroRegionId>,
+    macro_outcomes: Vec<rust::MacroOutcome>,
     native_entries: BTreeMap<String, rust::ExternFnDecl>,
     long_double_exports: BTreeMap<String, String>,
     bit_units: Vec<Item>,
@@ -1211,8 +1213,18 @@ impl<'m> ModuleLowerer<'m> {
         items.insert(0, Item::CrateAttrs(features));
         let items =
             comments::module_comments(self.module, &tables, &dependencies.emitted_comments, items);
+        let mut macro_outcomes = dependencies.macro_outcomes;
+        if tables.named_c_types {
+            macro_outcomes.extend(macro_regions::unreached_expansions(
+                tables.macros,
+                &dependencies.macro_expansions_seen,
+            ));
+        }
         Lowered {
-            program: rust::Program { items },
+            program: rust::Program {
+                items,
+                macro_outcomes,
+            },
             barriers,
             address_taken: dependencies.taken_functions,
         }

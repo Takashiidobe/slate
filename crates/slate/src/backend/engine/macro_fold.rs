@@ -6,8 +6,8 @@ use super::shadow::visit_names;
 use crate::backend::codegen::is_rust_keyword;
 use crate::backend::format::MACRO_LIST_HOLE;
 use crate::backend::rust_ast::{
-    CommentAttach, Expr, Ident, ImplItem, Item, MacroParam, MacroParamShape, MacroRegion, Program,
-    Stmt,
+    CommentAttach, Expr, Ident, ImplItem, Item, MacroInlineReason, MacroOutcome, MacroParam,
+    MacroParamShape, MacroRegion, Program, Stmt,
 };
 use crate::function_identity::CallBinding;
 
@@ -68,7 +68,7 @@ struct Holes<'a> {
     bound: HashSet<Ident>,
     single: Vec<Option<Expr>>,
     lists: Vec<Option<Vec<Expr>>>,
-    failed: bool,
+    failed: Option<MacroInlineReason>,
 }
 
 impl Holes<'_> {
@@ -157,7 +157,8 @@ impl Holes<'_> {
                 .collect();
             let slot = &mut self.lists[index as usize];
             if slot.as_ref().is_some_and(|known| *known != values) {
-                self.failed = true;
+                self.failed
+                    .get_or_insert(MacroInlineReason::ConflictingArgument);
             }
             *slot = Some(values);
             let name = &self.params[index as usize].name;
@@ -195,13 +196,14 @@ impl Holes<'_> {
         {
             let index = *index as usize;
             if self.shape(index as u32) != Some(MacroParamShape::Expr) {
-                self.failed = true;
+                self.failed.get_or_insert(MacroInlineReason::ArgumentShape);
                 return;
             }
             let value = std::mem::replace(&mut **inner, Expr::Str(String::new()));
             let slot = &mut self.single[index];
             if slot.as_ref().is_some_and(|known| *known != value) {
-                self.failed = true;
+                self.failed
+                    .get_or_insert(MacroInlineReason::ConflictingArgument);
             }
             *slot = Some(value);
             *expr = Expr::Var(format!("${}", self.params[index].name).into());
@@ -212,9 +214,9 @@ impl Holes<'_> {
         }
     }
 
-    fn call_args(self) -> Option<(Vec<MacroParam>, Vec<Expr>)> {
-        if self.failed {
-            return None;
+    fn call_args(self) -> Result<(Vec<MacroParam>, Vec<Expr>), MacroInlineReason> {
+        if let Some(reason) = self.failed {
+            return Err(reason);
         }
         let list_position = self
             .params
@@ -227,19 +229,23 @@ impl Holes<'_> {
             .filter(|param| param.shape != MacroParamShape::Unused)
             .count();
         if list_position.is_some_and(|position| position + 1 != used) {
-            return None;
+            return Err(MacroInlineReason::ListParamNotLast);
         }
         let mut params = Vec::with_capacity(used);
         let mut args = Vec::new();
         for ((param, single), list) in self.params.iter().zip(self.single).zip(self.lists) {
             match param.shape {
                 MacroParamShape::Unused => continue,
-                MacroParamShape::Expr => args.push(single?),
-                MacroParamShape::List => args.extend(list?),
+                MacroParamShape::Expr => {
+                    args.push(single.ok_or(MacroInlineReason::ParamWithoutArgument)?)
+                }
+                MacroParamShape::List => {
+                    args.extend(list.ok_or(MacroInlineReason::ParamWithoutArgument)?)
+                }
             }
             params.push(param.clone());
         }
-        Some((params, args))
+        Ok((params, args))
     }
 }
 
@@ -350,9 +356,13 @@ fn is_valid_macro_name(name: &str) -> bool {
     !is_rust_keyword(name) && !STD_MACROS.contains(&name)
 }
 
-fn candidate(region: &MacroRegion, body: &[Stmt], locals: &HashSet<Ident>) -> Option<Candidate> {
-    if !region.foldable || !is_valid_macro_name(&region.name) {
-        return None;
+fn candidate(
+    region: &MacroRegion,
+    body: &[Stmt],
+    locals: &HashSet<Ident>,
+) -> Result<Candidate, MacroInlineReason> {
+    if !is_valid_macro_name(&region.name) {
+        return Err(MacroInlineReason::ReservedMacroName);
     }
     let mut before = Vec::new();
     let mut after = Vec::new();
@@ -369,7 +379,7 @@ fn candidate(region: &MacroRegion, body: &[Stmt], locals: &HashSet<Ident>) -> Op
         }
     }
     if template.is_empty() {
-        return None;
+        return Err(MacroInlineReason::OnlyComments);
     }
     let mut holes = Holes {
         params: &region.params,
@@ -377,7 +387,7 @@ fn candidate(region: &MacroRegion, body: &[Stmt], locals: &HashSet<Ident>) -> Op
         bound: bound_names(&mut template),
         single: vec![None; region.params.len()],
         lists: vec![None; region.params.len()],
-        failed: false,
+        failed: None,
     };
     holes.lift_casts_where_uses_agree(&mut template);
     for stmt in &mut template {
@@ -392,20 +402,20 @@ fn candidate(region: &MacroRegion, body: &[Stmt], locals: &HashSet<Ident>) -> Op
         let mut exprs = Vec::new();
         stmt_exprs_mut(stmt, &mut exprs);
         if exprs.into_iter().any(holds_macro_arg) {
-            return None;
+            return Err(MacroInlineReason::ArgumentOutsideHole);
         }
     }
     let bound = bound_names(&mut template);
     let mut arg_stmts: Vec<Stmt> = args.iter().cloned().map(Stmt::Expr).collect();
     if reads_any(&mut arg_stmts, &bound) {
-        return None;
+        return Err(MacroInlineReason::ArgumentReadsMacroLocal);
     }
     let captured: HashSet<Ident> = locals.difference(&bound).copied().collect();
     if reads_any(&mut template, &captured) {
-        return None;
+        return Err(MacroInlineReason::BodyReadsCallerLocal);
     }
     normalize_generated(&mut template, &bound);
-    Some(Candidate {
+    Ok(Candidate {
         template: Template {
             params,
             body: template,
@@ -509,8 +519,9 @@ fn choose_templates(program: &mut Program, chosen: &mut Vec<(String, Template, u
     let mut seen: Vec<(String, Template, usize)> = Vec::new();
     for_each_body(&mut program.items, &mut |body, locals| {
         visit_innermost_regions(body, &mut |region, stmts| {
-            if !chosen.iter().any(|(name, ..)| *name == region.name)
-                && let Some(found) = candidate(region, stmts, &locals)
+            if region.foldable
+                && !chosen.iter().any(|(name, ..)| *name == region.name)
+                && let Ok(found) = candidate(region, stmts, &locals)
             {
                 match seen
                     .iter_mut()
@@ -536,16 +547,40 @@ fn choose_templates(program: &mut Program, chosen: &mut Vec<(String, Template, u
     }
 }
 
+fn chosen_candidate(
+    region: &MacroRegion,
+    stmts: &[Stmt],
+    locals: &HashSet<Ident>,
+    chosen: &[(String, Template, usize)],
+) -> Result<Candidate, MacroInlineReason> {
+    let found = candidate(region, stmts, locals)?;
+    chosen
+        .iter()
+        .any(|(name, template, _)| *name == region.name && *template == found.template)
+        .then_some(found)
+        .ok_or(MacroInlineReason::AnotherTemplateChosen)
+}
+
 fn fold_innermost_regions(program: &mut Program, chosen: &[(String, Template, usize)]) {
-    for_each_body(&mut program.items, &mut |body, locals| {
+    let Program {
+        items,
+        macro_outcomes,
+    } = program;
+    for_each_body(items, &mut |body, locals| {
         visit_innermost_regions(body, &mut |region, stmts| {
-            let found = candidate(region, stmts, &locals).filter(|found| {
-                chosen
-                    .iter()
-                    .any(|(name, template, _)| *name == region.name && *template == found.template)
-            });
-            match found {
-                Some(found) => {
+            if !region.foldable {
+                return (region.level > 0).then(|| {
+                    let mut inline = stmts.to_vec();
+                    macro_boundaries::strip_level(&mut inline, region.level);
+                    inline
+                });
+            }
+            match chosen_candidate(region, stmts, &locals, chosen) {
+                Ok(found) => {
+                    macro_outcomes.push(MacroOutcome {
+                        name: region.name.clone(),
+                        inline: None,
+                    });
                     let mut out = found.before;
                     out.push(Stmt::Expr(Expr::Macro {
                         name: region.name.clone(),
@@ -554,13 +589,37 @@ fn fold_innermost_regions(program: &mut Program, chosen: &[(String, Template, us
                     out.extend(found.after);
                     Some(out)
                 }
-                None if region.level > 0 => {
+                Err(reason) if region.level > 0 => {
+                    macro_outcomes.push(MacroOutcome {
+                        name: region.name.clone(),
+                        inline: Some(reason),
+                    });
                     let mut inline = stmts.to_vec();
                     macro_boundaries::strip_level(&mut inline, region.level);
                     Some(inline)
                 }
-                None => None,
+                Err(_) => None,
             }
+        });
+    });
+}
+
+fn report_remaining_regions(program: &mut Program, chosen: &[(String, Template, usize)]) {
+    let Program {
+        items,
+        macro_outcomes,
+    } = program;
+    for_each_body(items, &mut |body, locals| {
+        visit_innermost_regions(body, &mut |region, stmts| {
+            if region.foldable
+                && let Err(reason) = chosen_candidate(region, stmts, &locals, chosen)
+            {
+                macro_outcomes.push(MacroOutcome {
+                    name: region.name.clone(),
+                    inline: Some(reason),
+                });
+            }
+            None
         });
     });
 }
@@ -578,6 +637,7 @@ pub(super) fn fold(program: &mut Program) {
             break;
         }
     }
+    report_remaining_regions(program, &chosen);
     if chosen.is_empty() {
         return;
     }

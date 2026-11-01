@@ -1,5 +1,7 @@
 use crate::backend::link::signatures::{self, UnitCompiles};
-use crate::backend::rust_ast::{Attr, Cfg, CrateAttr, Expr, ExternDecl, Item, Program};
+use crate::backend::rust_ast::{
+    Attr, Cfg, CrateAttr, Expr, ExternDecl, Item, MacroInlineReason, MacroOutcome, Program,
+};
 use crate::backend::{self, Exports};
 use crate::compile_commands::CompileCommand;
 use crate::frontend::directive_translate::{factor_cfgs, item_key, target_cfg};
@@ -300,6 +302,7 @@ struct Compiled {
     candidates: SectionCandidates,
     entries: Vec<Arc<Entry>>,
     attrs: Vec<CrateAttr>,
+    macro_outcomes: Arc<[MacroOutcome]>,
 }
 
 struct TargetUnit {
@@ -358,6 +361,74 @@ fn defines_main(module: &Module) -> bool {
         .any(|function| function.name == "main" && function.body.is_some())
 }
 
+fn project_macro_outcomes(module: &Module, program: &Program) -> Arc<[MacroOutcome]> {
+    let project_macros: HashSet<&str> = module
+        .macros
+        .definitions
+        .iter()
+        .filter(|definition| {
+            definition.parameters.is_some() && definition.provenance.system_header.is_none()
+        })
+        .map(|definition| &*definition.name)
+        .collect();
+    program
+        .macro_outcomes
+        .iter()
+        .filter(|outcome| project_macros.contains(outcome.name.as_str()))
+        .cloned()
+        .collect()
+}
+
+fn macro_report(builds: &[TargetBuild]) -> String {
+    let mut per_macro: BTreeMap<&str, BTreeMap<Option<MacroInlineReason>, usize>> = BTreeMap::new();
+    let mut per_reason: BTreeMap<MacroInlineReason, usize> = BTreeMap::new();
+    let distinct = builds
+        .iter()
+        .flat_map(|build| &build.units)
+        .flat_map(|unit| {
+            unit.compiled
+                .iter()
+                .filter(|compiled| !unit.reused.contains(&compiled.mask))
+        });
+    for compiled in distinct {
+        for outcome in compiled.macro_outcomes.iter() {
+            *per_macro
+                .entry(&outcome.name)
+                .or_default()
+                .entry(outcome.inline)
+                .or_default() += 1;
+            if let Some(reason) = outcome.inline {
+                *per_reason.entry(reason).or_default() += 1;
+            }
+        }
+    }
+    let lifted = per_macro
+        .values()
+        .filter(|outcomes| outcomes.contains_key(&None))
+        .count();
+    let mut report = format!(
+        "macros: {} function-like, {lifted} lifted at least once (expansions counted per distinct compile)\n",
+        per_macro.len()
+    );
+    let mut reasons: Vec<_> = per_reason.into_iter().collect();
+    reasons.sort_by_key(|(reason, count)| (std::cmp::Reverse(*count), *reason));
+    for (reason, count) in reasons {
+        let _ = writeln!(report, "  inline {}: {count}", reason.label());
+    }
+    for (name, outcomes) in per_macro {
+        let inline = outcomes
+            .iter()
+            .filter_map(|(reason, count)| {
+                reason.map(|reason| format!("{} {count}", reason.label()))
+            })
+            .collect::<Vec<_>>()
+            .join(", ");
+        let lifted = outcomes.get(&None).copied().unwrap_or(0);
+        let _ = writeln!(report, "  macro {name}: {lifted} lifted, inline: {inline}");
+    }
+    report
+}
+
 fn compile_isolated(
     path: PathBuf,
     preprocessed: frontend::PreprocessedUnit,
@@ -397,10 +468,12 @@ fn compile_isolated(
         .into_iter()
         .next()
         .expect("one unit has one set of section candidates");
+    let macro_outcomes = project_macro_outcomes(&unit.module, &program);
     Ok((
         Compiled {
             mask: 0,
             attrs: crate_attrs(&program).cloned().collect(),
+            macro_outcomes,
             candidates,
             entries: entries(&program)
                 .into_iter()
@@ -1121,7 +1194,10 @@ fn program_of(unit: &MergedUnit) -> Program {
         .position(|item| !matches!(item, Item::CrateAttrs(_) | Item::Comment(_)))
         .unwrap_or(items.len());
     items.splice(at..at, macros);
-    Program { items }
+    Program {
+        items,
+        ..Default::default()
+    }
 }
 
 fn macro_rules_name(item: &Item) -> Option<&str> {
@@ -1186,7 +1262,10 @@ fn share_macros(units: &mut [(String, Program)]) -> Option<Program> {
             .items
             .retain(|item| macro_rules_name(item).is_none_or(|name| !moved.contains(name)));
     }
-    Some(Program { items })
+    Some(Program {
+        items,
+        ..Default::default()
+    })
 }
 
 fn gate(cfg: Option<Cfg>, item: Item) -> Item {
@@ -1605,6 +1684,7 @@ pub fn merge(
             let _ = writeln!(report, "  spliced {key}: {variants} variants");
         }
     }
+    report.push_str(&macro_report(&builds));
     if projection != Projection::Skip {
         let _ = writeln!(
             report,

@@ -313,7 +313,10 @@ impl SharedTypes {
                 items: bits,
             });
         }
-        Some(Program { items })
+        Some(Program {
+            items,
+            ..Default::default()
+        })
     }
 
     fn replace_with_imports(&self, unit: usize, items: &mut Vec<Item>) {

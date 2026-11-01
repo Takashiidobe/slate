@@ -461,7 +461,10 @@ fn merge_target_variants(variants: &[TargetVariant]) -> Program {
             });
         }
     }
-    Program { items }
+    Program {
+        items,
+        ..Default::default()
+    }
 }
 
 pub fn should_auto_expand(source: &str) -> bool {
@@ -1030,7 +1033,10 @@ fn merge_variants(baseline: &Translation, variants: &[Variant], pp: &Preprocessi
             items.push(item.clone());
         }
     }
-    Program { items }
+    Program {
+        items,
+        ..Default::default()
+    }
 }
 
 fn line_in_any_chain(pp: &Preprocessing, line: usize) -> bool {

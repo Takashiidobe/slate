@@ -9,8 +9,9 @@ use super::control_flow;
 use super::statements::collect_lets;
 use super::*;
 use crate::backend::engine::macro_boundaries;
+use crate::backend::rust_ast::{MacroInlineReason, MacroOutcome};
 
-#[derive(Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub(super) enum MacroRegionId {
     Source(MacroInvocationId),
     Nested(NestedExpansionId),
@@ -49,11 +50,55 @@ impl MacroRegionId {
     }
 }
 
+fn unfit_reason(statement: &ir::Statement) -> Option<MacroInlineReason> {
+    match statement {
+        ir::Statement::Let(_) => Some(MacroInlineReason::DeclaresLocal),
+        ir::Statement::Temporary { .. } => Some(MacroInlineReason::HoistedTemporary),
+        _ => {
+            (!transfers_stay_inside(statement, false)).then_some(MacroInlineReason::ControlTransfer)
+        }
+    }
+}
+
 fn fits_region(statement: &ir::Statement) -> bool {
-    !matches!(
-        statement,
-        ir::Statement::Comment(_) | ir::Statement::Temporary { .. } | ir::Statement::Let(_)
-    ) && transfers_stay_inside(statement, false)
+    !matches!(statement, ir::Statement::Comment(_)) && unfit_reason(statement).is_none()
+}
+
+pub(super) fn unreached_expansions(
+    macros: &MacroInvocations,
+    seen: &HashSet<MacroRegionId>,
+) -> Vec<MacroOutcome> {
+    let invocations = macros
+        .invocations
+        .iter()
+        .enumerate()
+        .filter_map(|(id, invocation)| {
+            let region = MacroRegionId::Source(MacroInvocationId(id as u32));
+            let reason = if invocation.empty {
+                MacroInlineReason::EmptyExpansion
+            } else if invocation.parent.is_some() {
+                MacroInlineReason::InsideArgument
+            } else {
+                MacroInlineReason::NoStatementRegion
+            };
+            (!seen.contains(&region)).then(|| (macros.definition(invocation), reason))
+        });
+    let nested = (0..macros.nested.len()).filter_map(|id| {
+        let id = NestedExpansionId(id as u32);
+        (!seen.contains(&MacroRegionId::Nested(id))).then(|| {
+            (
+                macros.nested_definition(id),
+                MacroInlineReason::NoStatementRegion,
+            )
+        })
+    });
+    invocations
+        .chain(nested)
+        .map(|(definition, reason)| MacroOutcome {
+            name: definition.name.to_string(),
+            inline: Some(reason),
+        })
+        .collect()
 }
 
 fn transfers_stay_inside(statement: &ir::Statement, in_loop: bool) -> bool {
@@ -145,11 +190,19 @@ pub(super) fn is_whole_macro_block(
         && !declares_local(&statement.value)
 }
 
-fn macro_params(definition: &MacroDefinition) -> Option<Vec<rust::MacroParam>> {
-    let parameters = definition.parameters.as_ref()?;
+fn macro_params(
+    definition: &MacroDefinition,
+) -> std::result::Result<Vec<rust::MacroParam>, MacroInlineReason> {
+    let parameters = definition
+        .parameters
+        .as_ref()
+        .ok_or(MacroInlineReason::NotFunctionLike)?;
     let replacement = &definition.replacement;
-    if definition.variadic || replacement.contains('#') {
-        return None;
+    if definition.variadic {
+        return Err(MacroInlineReason::Variadic);
+    }
+    if replacement.contains('#') {
+        return Err(MacroInlineReason::StringifyOrPaste);
     }
     let mut shapes = vec![rust::MacroParamShape::Unused; parameters.len()];
     let mut callee_before = false;
@@ -187,18 +240,16 @@ fn macro_params(definition: &MacroDefinition) -> Option<Vec<rust::MacroParam>> {
         }
     }
     if parameters.iter().any(|name| name == "crate") {
-        return None;
+        return Err(MacroInlineReason::ReservedParamName);
     }
-    Some(
-        parameters
-            .iter()
-            .zip(shapes)
-            .map(|(name, shape)| rust::MacroParam {
-                name: name.clone(),
-                shape,
-            })
-            .collect(),
-    )
+    Ok(parameters
+        .iter()
+        .zip(shapes)
+        .map(|(name, shape)| rust::MacroParam {
+            name: name.clone(),
+            shape,
+        })
+        .collect())
 }
 
 pub(super) fn merge_operator_spelled_in_argument(value: &ir::Value, lowered: Expr) -> Expr {
@@ -256,17 +307,39 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn macro_region_of(&self, statement: &Span<ir::Statement>) -> Option<MacroRegionId> {
+        self.enclosing_expansion(statement)
+            .filter(|_| fits_region(&statement.value))
+    }
+
+    fn reject_expansion(&mut self, region: MacroRegionId, reason: MacroInlineReason) {
+        if self.dependencies.macro_expansions_seen.insert(region) {
+            self.dependencies.macro_outcomes.push(MacroOutcome {
+                name: region.definition(self.tables.macros).name.to_string(),
+                inline: Some(reason),
+            });
+        }
+    }
+
+    pub(super) fn note_unfit_statement(&mut self, statement: &Span<ir::Statement>) {
+        if let Some(reason) = unfit_reason(&statement.value)
+            && let Some(region) = self.enclosing_expansion(statement)
+        {
+            self.reject_expansion(region, reason);
+        }
+    }
+
+    fn enclosing_expansion(&self, statement: &Span<ir::Statement>) -> Option<MacroRegionId> {
         let open = self.macro_regions.len();
         if !self.tables.named_c_types || self.macro_argument_depth != open {
             return None;
         }
         let macros = self.tables.macros;
-        let region = match self.macro_regions.last() {
+        match self.macro_regions.last() {
             None => {
                 let site = macros.sites(statement.expansion).pop()?;
                 site.argument
                     .is_none()
-                    .then_some(MacroRegionId::Source(site.invocation))?
+                    .then_some(MacroRegionId::Source(site.invocation))
             }
             Some(enclosing) => {
                 let parent = match enclosing {
@@ -281,10 +354,9 @@ impl FunctionLowerer<'_, '_> {
                 if child.argument.is_some() || children.next().is_some() {
                     return None;
                 }
-                MacroRegionId::Nested(child.expansion)
+                Some(MacroRegionId::Nested(child.expansion))
             }
-        };
-        fits_region(&statement.value).then_some(region)
+        }
     }
 
     pub(super) fn lower_lone_statement(
@@ -297,7 +369,10 @@ impl FunctionLowerer<'_, '_> {
             Some(invocation) => {
                 self.lower_macro_region(invocation, std::slice::from_ref(statement), before, after)
             }
-            None => self.lower_statement(statement),
+            None => {
+                self.note_unfit_statement(statement);
+                self.lower_statement(statement)
+            }
         }
     }
 
@@ -308,6 +383,13 @@ impl FunctionLowerer<'_, '_> {
         if is_whole_macro_block(self.tables.macros, statement) {
             self.lower_lone_statement(statement, None, None)
         } else {
+            if !matches!(statement.value, ir::Statement::Comment(_))
+                && let Some(region) = self.enclosing_expansion(statement)
+            {
+                let reason = unfit_reason(&statement.value)
+                    .unwrap_or(MacroInlineReason::UnstructuredFunction);
+                self.reject_expansion(region, reason);
+            }
             self.lower_statement(statement)
         }
     }
@@ -334,23 +416,40 @@ impl FunctionLowerer<'_, '_> {
         }
         if macro_boundaries::reads_outside_arguments(&body, &caller_locals, level) {
             macro_boundaries::strip_level(&mut body, level);
+            self.reject_expansion(region, MacroInlineReason::ReadsCallerLocal);
             return Ok(body);
         }
         let macros = self.tables.macros;
         let definition = region.definition(macros);
         let params = macro_params(definition);
-        let foldable = params.is_some()
-            && !region.touches(macros, before)
-            && !region.touches(macros, after)
-            && statements
-                .iter()
-                .all(|statement| spelled_in_body(macros, region, statement));
+        let split = [before, after]
+            .into_iter()
+            .flatten()
+            .find(|neighbor| region.touches(macros, Some(neighbor)));
+        let rejection = params.as_ref().err().copied().or_else(|| {
+            split
+                .map(|neighbor| {
+                    unfit_reason(&neighbor.value).unwrap_or(MacroInlineReason::SplitExpansion)
+                })
+                .or_else(|| {
+                    (!statements
+                        .iter()
+                        .all(|statement| spelled_in_body(macros, region, statement)))
+                    .then_some(MacroInlineReason::ArgumentStatementInRegion)
+                })
+        });
+        match rejection {
+            Some(reason) => self.reject_expansion(region, reason),
+            None => {
+                self.dependencies.macro_expansions_seen.insert(region);
+            }
+        }
         Ok(vec![Stmt::Scope {
             body,
             macro_region: Some(Box::new(rust::MacroRegion {
                 name: definition.name.to_string(),
                 params: params.unwrap_or_default(),
-                foldable,
+                foldable: rejection.is_none(),
                 level,
             })),
         }])

@@ -13,6 +13,72 @@ pub fn is_temp_name(name: &str) -> bool {
 #[derive(Debug, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Program {
     pub items: Vec<Item>,
+    pub macro_outcomes: Vec<MacroOutcome>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct MacroOutcome {
+    pub name: String,
+    pub inline: Option<MacroInlineReason>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum MacroInlineReason {
+    NoStatementRegion,
+    EmptyExpansion,
+    InsideArgument,
+    DeclaresLocal,
+    HoistedTemporary,
+    ControlTransfer,
+    UnstructuredFunction,
+    ReadsCallerLocal,
+    NotFunctionLike,
+    Variadic,
+    StringifyOrPaste,
+    ReservedParamName,
+    SplitExpansion,
+    ArgumentStatementInRegion,
+    ReservedMacroName,
+    OnlyComments,
+    ConflictingArgument,
+    ArgumentShape,
+    ListParamNotLast,
+    ParamWithoutArgument,
+    ArgumentOutsideHole,
+    ArgumentReadsMacroLocal,
+    BodyReadsCallerLocal,
+    AnotherTemplateChosen,
+}
+
+impl MacroInlineReason {
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::NoStatementRegion => "no_statement_region",
+            Self::EmptyExpansion => "empty_expansion",
+            Self::InsideArgument => "inside_argument",
+            Self::DeclaresLocal => "declares_local",
+            Self::HoistedTemporary => "hoisted_temporary",
+            Self::ControlTransfer => "control_transfer",
+            Self::UnstructuredFunction => "unstructured_function",
+            Self::ReadsCallerLocal => "reads_caller_local",
+            Self::NotFunctionLike => "not_function_like",
+            Self::Variadic => "variadic",
+            Self::StringifyOrPaste => "stringify_or_paste",
+            Self::ReservedParamName => "reserved_param_name",
+            Self::SplitExpansion => "split_expansion",
+            Self::ArgumentStatementInRegion => "argument_statement_in_region",
+            Self::ReservedMacroName => "reserved_macro_name",
+            Self::OnlyComments => "only_comments",
+            Self::ConflictingArgument => "conflicting_argument",
+            Self::ArgumentShape => "argument_shape",
+            Self::ListParamNotLast => "list_param_not_last",
+            Self::ParamWithoutArgument => "param_without_argument",
+            Self::ArgumentOutsideHole => "argument_outside_hole",
+            Self::ArgumentReadsMacroLocal => "argument_reads_macro_local",
+            Self::BodyReadsCallerLocal => "body_reads_caller_local",
+            Self::AnotherTemplateChosen => "another_template_chosen",
+        }
+    }
 }
 
 impl Program {

@@ -1124,7 +1124,13 @@ fn write_project_crate(
         .collect();
         let mut items = vec![rust_ast::Item::CrateAttrs(crate_attrs)];
         items.extend(children);
-        outputs.push((crate_src.join("lib.rs"), rust_ast::Program { items }));
+        outputs.push((
+            crate_src.join("lib.rs"),
+            rust_ast::Program {
+                items,
+                ..Default::default()
+            },
+        ));
     }
     let results: Vec<Result<PathBuf, String>> = slate_worker_pool()?.install(|| {
         outputs
