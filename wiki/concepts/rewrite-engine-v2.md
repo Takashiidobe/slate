@@ -169,6 +169,19 @@ failed fold costs readability, never correctness.
   containment test misses it and the check has to be overlap.
 - The goto graph keeps a braced macro block with no `let` as one node. Without
   that, it splits the `if` from its body and the body looks like the whole macro.
+- An explicit cast's conversions take the cast's location in sema, so `(ush)(value)`
+  in a body lands outside `MacroArg`. Implicit conversions keep the operand's
+  location and land inside it. `candidate` then moves the casts around a parameter
+  into its hole when every use has the same ones, because a hole accepts any
+  argument type while `$c as u8` is a different template from `$c`. When the uses
+  differ (`send_bits` uses `value` through `(int)` and `(ush)`), the casts stay in
+  the template, and only arguments that produce the same casts share it, so the
+  `ush` arguments of `send_bits` stay inline.
+- `(int)value` with `count - 3` parses as `(int)count - 3`, so the subtraction
+  starts in the body. `merge_operator_spelled_in_argument` makes it one `MacroArg`
+  when both operands belong to one argument and the left ends before the right
+  starts, which puts the operator in the argument's text. `(a) + (a)` in a body
+  fails that test, so it stays `$a + $a`.
 
 These stay inline: object-like and variadic macros, `#` and `##`, macros reading
 or writing a caller local or label, arguments the IR hoists or writes

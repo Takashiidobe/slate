@@ -2672,7 +2672,11 @@ impl Lowerer {
                         },
                     )
                 } else if !is_void {
-                    self.convert_recorded(value_expr, value, to, ConversionReason::Explicit)?
+                    let source = value.value.node.id;
+                    let mut cast =
+                        self.convert_recorded(value_expr, value, to, ConversionReason::Explicit)?;
+                    locate_conversions_at_cast(&mut cast.value, source, e);
+                    cast
                 } else {
                     let end = self.value(e, Type::Void, ValueKind::Void);
                     self.operand(
@@ -3448,6 +3452,22 @@ impl Lowerer {
         };
         let c = self.types.ctypes.qual(CTypeKind::Void);
         Ok(self.operand(e, c, kind))
+    }
+}
+
+fn locate_conversions_at_cast(value: &mut Value, source: NodeId, cast: &Expr) {
+    let mut current = value;
+    while current.node.id != source {
+        current.node.spelling = cast.spelling;
+        current.node.expansion = cast.expansion;
+        current.node.provenance = cast.provenance;
+        current.node.macro_origin = cast.macro_origin.clone();
+        match &mut current.node.value {
+            ValueKind::Convert { operand, .. } | ValueKind::Copy { operand, .. } => {
+                current = operand;
+            }
+            _ => break,
+        }
     }
 }
 

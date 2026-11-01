@@ -78,6 +78,43 @@ impl Holes<'_> {
         self.params.get(index as usize).map(|param| param.shape)
     }
 
+    fn gather_argument_uses(expr: &mut Expr, uses: &mut [Vec<Expr>]) {
+        if let Some((index, value)) = cast_argument(expr) {
+            uses[index as usize].push(value);
+            return;
+        }
+        for child in child_exprs_mut(expr) {
+            Self::gather_argument_uses(child, uses);
+        }
+    }
+
+    fn lift_casts_where_uses_agree(&self, template: &mut [Stmt]) {
+        let mut uses = vec![Vec::new(); self.params.len()];
+        for stmt in template.iter_mut() {
+            let mut exprs = Vec::new();
+            stmt_exprs_mut(stmt, &mut exprs);
+            for expr in exprs {
+                Self::gather_argument_uses(expr, &mut uses);
+            }
+        }
+        let liftable: Vec<bool> = uses
+            .iter()
+            .enumerate()
+            .map(|(index, uses)| {
+                self.shape(index as u32) == Some(MacroParamShape::Expr)
+                    && uses.windows(2).all(|pair| pair[0] == pair[1])
+                    && !uses.iter().any(|value| self.is_macro_local(uncast(value)))
+            })
+            .collect();
+        for stmt in template.iter_mut() {
+            let mut exprs = Vec::new();
+            stmt_exprs_mut(stmt, &mut exprs);
+            for expr in exprs {
+                lift_casts(expr, &liftable);
+            }
+        }
+    }
+
     fn erase_list(&mut self, args: &mut Vec<Expr>) {
         let mut erased = Vec::with_capacity(args.len());
         let mut remaining = std::mem::take(args).into_iter().peekable();
@@ -186,6 +223,53 @@ impl Holes<'_> {
     }
 }
 
+fn cast_argument(expr: &Expr) -> Option<(u32, Expr)> {
+    match expr {
+        Expr::MacroArg { index, expr } => Some((*index, (**expr).clone())),
+        Expr::Cast { expr, ty } => cast_argument(expr).map(|(index, value)| {
+            (
+                index,
+                Expr::Cast {
+                    expr: Box::new(value),
+                    ty: ty.clone(),
+                },
+            )
+        }),
+        _ => None,
+    }
+}
+
+fn uncast(mut expr: &Expr) -> &Expr {
+    while let Expr::Cast { expr: inner, .. } = expr {
+        expr = inner;
+    }
+    expr
+}
+
+fn lift_casts(expr: &mut Expr, liftable: &[bool]) {
+    for child in child_exprs_mut(expr) {
+        lift_casts(child, liftable);
+    }
+    let Expr::Cast { expr: inner, .. } = expr else {
+        return;
+    };
+    let index = match **inner {
+        Expr::MacroArg { index, .. } if liftable[index as usize] => index,
+        _ => return,
+    };
+    let Expr::MacroArg { expr: value, .. } =
+        std::mem::replace(&mut **inner, Expr::Str(String::new()))
+    else {
+        return;
+    };
+    **inner = *value;
+    let cast = std::mem::replace(expr, Expr::Str(String::new()));
+    *expr = Expr::MacroArg {
+        index,
+        expr: Box::new(cast),
+    };
+}
+
 fn is_generated(name: &str) -> Option<&str> {
     let prefix = name.trim_end_matches(|c: char| c.is_ascii_digit());
     (name.starts_with("__") && prefix.len() < name.len()).then_some(prefix)
@@ -261,6 +345,7 @@ fn candidate(region: &MacroRegion, body: &[Stmt], locals: &HashSet<Ident>) -> Op
         lists: vec![None; region.params.len()],
         failed: false,
     };
+    holes.lift_casts_where_uses_agree(&mut template);
     for stmt in &mut template {
         let mut exprs = Vec::new();
         stmt_exprs_mut(stmt, &mut exprs);

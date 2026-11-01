@@ -425,8 +425,11 @@ impl FunctionLowerer<'_, '_> {
 
     pub(super) fn lower_value(&mut self, value: &ir::Value) -> Result<Expr> {
         let Some(index) = self.macro_argument_entered(value) else {
-            return stacker::maybe_grow(512 << 10, 16 << 20, || self.lower_value_node(value))
-                .map_err(|error| error.at(Site::of(&value.node)));
+            let lowered = stacker::maybe_grow(512 << 10, 16 << 20, || self.lower_value_node(value))
+                .map_err(|error| error.at(Site::of(&value.node)))?;
+            return Ok(super::macro_regions::merge_operator_spelled_in_argument(
+                value, lowered,
+            ));
         };
         self.in_macro_argument = true;
         let lowered = stacker::maybe_grow(512 << 10, 16 << 20, || self.lower_value_node(value))

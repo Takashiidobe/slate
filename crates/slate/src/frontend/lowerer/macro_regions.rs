@@ -161,6 +161,43 @@ fn macro_params(definition: &MacroDefinition) -> Option<Vec<rust::MacroParam>> {
     )
 }
 
+pub(super) fn merge_operator_spelled_in_argument(value: &ir::Value, lowered: Expr) -> Expr {
+    let ValueKind::Arith { left, right, .. } = &value.node.value else {
+        return lowered;
+    };
+    let (left, right) = (left.node.expansion, right.node.expansion);
+    if left.file != right.file || left.end() > right.offset {
+        return lowered;
+    }
+    let Expr::Binary { op, lhs, rhs } = lowered else {
+        return lowered;
+    };
+    match (*lhs, *rhs) {
+        (
+            Expr::MacroArg {
+                index,
+                expr: left_value,
+            },
+            Expr::MacroArg {
+                index: right_index,
+                expr: right_value,
+            },
+        ) if index == right_index => Expr::MacroArg {
+            index,
+            expr: Box::new(Expr::Binary {
+                op,
+                lhs: left_value,
+                rhs: right_value,
+            }),
+        },
+        (lhs, rhs) => Expr::Binary {
+            op,
+            lhs: Box::new(lhs),
+            rhs: Box::new(rhs),
+        },
+    }
+}
+
 impl FunctionLowerer<'_, '_> {
     pub(super) fn function_locals(
         &self,
