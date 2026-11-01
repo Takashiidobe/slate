@@ -143,20 +143,33 @@ and the [cover table](../preprocessor.md#macro-invocations) before lowering:
   the parent after the hole closes, so `ADD_ONE(c)` on a `u8` has its `widen`
   outside. When an argument is passed down to a nested macro the inner hole wraps
   the outer one.
-- An expansion gets neither when it has no statement position (`int k = M(i);`,
-  until `slate-f2zu.9.5.12.9`), when an argument is not one expression
+- `ValueKind::MacroExpansion { expansion, evaluation }` wraps an expansion that
+  covers one expression below statement level, read as a value in function code
+  (`int k = M(i);`). It is not used for an expression the program writes to or
+  takes the address of, a constant context (`case`, array size, `sizeof`, `static`
+  initializer) or asm operands.
+- An expansion gets none of these when an argument is not one expression
   (`TIMES2(i + j)`, or a type, name or callee until `slate-f2zu.9.5.12.7`), when
-  an argument reads a binding the body declares (`TEMP(temp + a)`), or when the
+  an argument reads a binding the body declares (`TEMP(temp + a)`), when the
   statements hold asm, labels, switch labels, or a `static` or `extern`
-  declaration.
+  declaration, or when a value expansion's only tokens are its own argument
+  (`#define ID(x) x`).
 
-Effects still hoist out of a hole, into the wrapper's `body`. Sema analyses read
-through both forms. Slate's lowerer does not: its matches have wildcards, so
-exhaustiveness does not reach them. `Module::strip_macro_structure(keep)`
-(`ir/macro_strip.rs`) removes the expansions `keep` rejects, leaving the IR
-lowering sees without structure. `--merge` builds with structure on; other modes
-never build it. `crates/slate/src/frontend/macro_keep.rs` keeps the expansions
-that are safe to lift and strips the rest, which go down the old
+Effects hoist out of a hole, into the enclosing `body` or `evaluation`, and stop at
+a `MacroExpansion` value: `r += NEXT()` keeps `*cursor++`'s temporaries in that
+value's `evaluation.statements`. The enclosing operators still see it as having
+effects, so `a && NEXT()` still branches. Sema analyses read through all these
+forms. Slate's lowerer does not: its matches have wildcards, so exhaustiveness
+does not reach them.
+
+`--merge` builds with structure on; other modes never build it.
+`Sema::with_macro_keep` passes `crates/slate/src/frontend/macro_keep.rs`, which
+picks the expansions that are safe to lift from a normalized module. Hoisting
+has already kept value expansions together by then and cannot be undone, so
+`finish_module` puts the unnormalized bodies back, calls
+`Module::strip_macro_structure` (`ir/macro_strip.rs`) to remove the expansions
+`keep` rejected, and normalizes again. A stripped expansion therefore hoists
+exactly as if it had no structure and goes down the old
 [`macro_fold`](../slate-architecture.md#macro-templates) path.
 
 Per-value expansion chains are not in the IR yet (only atomic builtins record

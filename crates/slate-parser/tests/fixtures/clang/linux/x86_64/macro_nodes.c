@@ -85,7 +85,7 @@ int use(struct pair *pair, int i, int j) {
 // IR-NEXT:     global %[[VALUE_global:[0-9]+]] global: i32 [storage=static] [linkage=external];
 // IR-NEXT:     fn %[[VALUE_callee:[0-9]+]] @callee(%[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=external];
 // IR-NEXT:     fn %[[VALUE_use:[0-9]+]] @use(%[[VALUE_pair:[0-9]+]] pair: ptr<@type[[TYPE_pair]]>, %[[VALUE_i:[0-9]+]] i: i32, %[[VALUE_j:[0-9]+]] j: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_results:[0-9]+]] results: i32 [storage=automatic] = mul<i32>(read<i32>(%[[VALUE_i]]) [macro=TIMES2#1 arg0], const<i32>(2) [macro=TIMES2#1 body]) [macro=TIMES2#1 body];
+// IR-NEXT:         let %[[VALUE_results:[0-9]+]] results: i32 [storage=automatic] = macro_value<i32>(#[[#NODE0:]], statements=0, mul<i32>(macro_arg<i32>(#{{[0-9]+}}, 0, read<i32>(%[[VALUE_i]]) [macro=TIMES2#1 arg0]) [macro=TIMES2#1 arg0], const<i32>(2) [macro=TIMES2#1 body]) [macro=TIMES2#1 body]) [macro=TIMES2#1 body];
 // IR-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_results]]);
 // IR-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE0]]), add<i32>(read<i32>(%[[VALUE_i]]) [macro=TIMES2#2 arg0], mul<i32>(read<i32>(%[[VALUE_j]]) [macro=TIMES2#2 arg0], const<i32>(2) [macro=TIMES2#2 body]) [macro=TIMES2#2 body]) [macro=TIMES2#2 body]);
 // IR-NEXT:         write<i32>(%[[VALUE_results]], read<i32>(%[[VALUE1]]));
@@ -93,27 +93,27 @@ int use(struct pair *pair, int i, int j) {
 // IR-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE2]]), add<i32>(mul<i32>(const<i32>(3), read<i32>(%[[VALUE_i]]) [macro=PLUS#3 arg0]), read<i32>(%[[VALUE_j]]) [macro=PLUS#3 arg1]));
 // IR-NEXT:         write<i32>(%[[VALUE_results]], read<i32>(%[[VALUE3]]));
 // IR-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_results]]);
-// IR-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE4]]), add<i32>(add<i32>(read<i32>(%[[VALUE_i]]) [macro=ADD_ONE#4 arg0], read<i32>(%[[VALUE_j]]) [macro=ADD_ONE#4 arg0]) [macro=ADD_ONE#4 arg0], const<i32>(1) [macro=ADD_ONE#4 body]) [macro=ADD_ONE#4 body]);
+// IR-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE4]]), macro_value<i32>(#[[#NODE1:]], statements=0, add<i32>(macro_arg<i32>(#{{[0-9]+}}, 0, add<i32>(read<i32>(%[[VALUE_i]]) [macro=ADD_ONE#4 arg0], read<i32>(%[[VALUE_j]]) [macro=ADD_ONE#4 arg0]) [macro=ADD_ONE#4 arg0]) [macro=ADD_ONE#4 arg0], const<i32>(1) [macro=ADD_ONE#4 body]) [macro=ADD_ONE#4 body]) [macro=ADD_ONE#4 body]);
 // IR-NEXT:         write<i32>(%[[VALUE_results]], read<i32>(%[[VALUE5]]));
-// IR-NEXT:         macro_body #[[#NODE0:]] {
-// IR-NEXT:             write<i32>(deref(macro_arg<ptr<i32>>(#[[#NODE0]], 0, addr_of<ptr<i32>>(%[[VALUE_results]]))), macro_arg<i32>(#[[#NODE0]], 1, read<i32>(%[[VALUE_i]]) [macro=SET#5 arg1]) [macro=SET#5 arg1]) [macro=SET#5 body];
+// IR-NEXT:         macro_body #[[#NODE2:]] {
+// IR-NEXT:             write<i32>(deref(macro_arg<ptr<i32>>(#[[#NODE2]], 0, addr_of<ptr<i32>>(%[[VALUE_results]]))), macro_arg<i32>(#[[#NODE2]], 1, read<i32>(%[[VALUE_i]]) [macro=SET#5 arg1]) [macro=SET#5 arg1]) [macro=SET#5 body];
 // IR-NEXT:         }
-// IR-NEXT:         macro_body #[[#NODE1:]] { [macro=SETS#6 body]
-// IR-NEXT:             write<i32>(macro_arg(#[[#NODE1]], 0, %[[VALUE_i]]), const<i32>(1) [macro=SETS#6 body]) [macro=SETS#6 body];
-// IR-NEXT:             write<i32>(macro_arg(#[[#NODE1]], 1, %[[VALUE_j]]), const<i32>(2) [macro=SETS#6 body]) [macro=SETS#6 body];
+// IR-NEXT:         macro_body #[[#NODE3:]] { [macro=SETS#6 body]
+// IR-NEXT:             write<i32>(macro_arg(#[[#NODE3]], 0, %[[VALUE_i]]), const<i32>(1) [macro=SETS#6 body]) [macro=SETS#6 body];
+// IR-NEXT:             write<i32>(macro_arg(#[[#NODE3]], 1, %[[VALUE_j]]), const<i32>(2) [macro=SETS#6 body]) [macro=SETS#6 body];
 // IR-NEXT:         }
-// IR-NEXT:         macro_body #[[#NODE2:]] { [macro=BOTH#7 body]
-// IR-NEXT:             write<i32>(macro_arg(#[[#NODE2]], 0, %[[VALUE_i]]), const<i32>(1) [macro=BOTH#7 body]) [macro=BOTH#7 body];
-// IR-NEXT:             write<i32>(macro_arg(#[[#NODE2]], 1, %[[VALUE_j]]), const<i32>(2) [macro=BOTH#7 body]) [macro=BOTH#7 body];
+// IR-NEXT:         macro_body #[[#NODE4:]] { [macro=BOTH#7 body]
+// IR-NEXT:             write<i32>(macro_arg(#[[#NODE4]], 0, %[[VALUE_i]]), const<i32>(1) [macro=BOTH#7 body]) [macro=BOTH#7 body];
+// IR-NEXT:             write<i32>(macro_arg(#[[#NODE4]], 1, %[[VALUE_j]]), const<i32>(2) [macro=BOTH#7 body]) [macro=BOTH#7 body];
 // IR-NEXT:         }
 // IR-NEXT:         ;
 // IR-NEXT:         if ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0))
 // IR-NEXT:             write<i32>(%[[VALUE_i]], const<i32>(1) [macro=SETS#8 body]) [macro=SETS#8 body];
 // IR-NEXT:         write<i32>(%[[VALUE_j]], const<i32>(2) [macro=SETS#8 body]) [macro=SETS#8 body];
-// IR-NEXT:         macro_body #[[#NODE3:]] {
+// IR-NEXT:         macro_body #[[#NODE5:]] {
 // IR-NEXT:             do %[[VALUE6:[0-9]+]]
 // IR-NEXT:                 { [macro=WRAP#9 body]
-// IR-NEXT:                     write<i32>(macro_arg(#[[#NODE3]], 0, %[[VALUE_results]]), const<i32>(1) [macro=WRAP#9 body]) [macro=WRAP#9 body];
+// IR-NEXT:                     write<i32>(macro_arg(#[[#NODE5]], 0, %[[VALUE_results]]), const<i32>(1) [macro=WRAP#9 body]) [macro=WRAP#9 body];
 // IR-NEXT:                 }
 // IR-NEXT:             while ne<i32>(const<i32>(0) [macro=WRAP#9 body], const<i32>(0) [macro=WRAP#9 body]) [macro=WRAP#9 body];
 // IR-NEXT:         }
@@ -153,18 +153,18 @@ int use(struct pair *pair, int i, int j) {
 // IR-NEXT:         write<i32>(%[[VALUE_results]], const<i32>(1) [macro=STATEMENT#17 arg0]) [macro=STATEMENT#17 arg0];
 // IR-NEXT:         ;
 // IR-NEXT:         let %[[VALUE19:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_results]]);
-// IR-NEXT:         let %[[VALUE20:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE19]]), add<i32>(read<i32>(%[[VALUE_i]]) [macro=TWICE#18 arg0], read<i32>(%[[VALUE_i]]) [macro=TWICE#18 arg0]) [macro=TWICE#18 body]);
+// IR-NEXT:         let %[[VALUE20:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE19]]), macro_value<i32>(#[[#NODE6:]], statements=0, add<i32>(macro_arg<i32>(#{{[0-9]+}}, 0, read<i32>(%[[VALUE_i]]) [macro=TWICE#18 arg0]) [macro=TWICE#18 arg0], macro_arg<i32>(#{{[0-9]+}}, 0, read<i32>(%[[VALUE_i]]) [macro=TWICE#18 arg0]) [macro=TWICE#18 arg0]) [macro=TWICE#18 body]) [macro=TWICE#18 body]);
 // IR-NEXT:         write<i32>(%[[VALUE_results]], read<i32>(%[[VALUE20]]));
 // IR-NEXT:         let %[[VALUE21:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_results]]);
-// IR-NEXT:         let %[[VALUE22:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE21]]), add<i32>(add<i32>(read<i32>(%[[VALUE_i]]) [macro=ADD_ONE#20 arg0] [macro=OUTER#19 arg0], read<i32>(%[[VALUE_j]]) [macro=ADD_ONE#20 arg0] [macro=OUTER#19 arg0]) [macro=ADD_ONE#20 arg0] [macro=OUTER#19 arg0], const<i32>(1) [macro=ADD_ONE#20 body] [macro=OUTER#19 body]) [macro=ADD_ONE#20 body] [macro=OUTER#19 body]);
+// IR-NEXT:         let %[[VALUE22:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE21]]), macro_value<i32>(#[[#NODE7:]], statements=0, macro_value<i32>(#[[#NODE8:]], statements=0, add<i32>(macro_arg<i32>(#{{[0-9]+}}, 0, macro_arg<i32>(#{{[0-9]+}}, 0, add<i32>(read<i32>(%[[VALUE_i]]) [macro=ADD_ONE#20 arg0] [macro=OUTER#19 arg0], read<i32>(%[[VALUE_j]]) [macro=ADD_ONE#20 arg0] [macro=OUTER#19 arg0]) [macro=ADD_ONE#20 arg0] [macro=OUTER#19 arg0]) [macro=ADD_ONE#20 arg0] [macro=OUTER#19 arg0]) [macro=ADD_ONE#20 arg0] [macro=OUTER#19 arg0], const<i32>(1) [macro=ADD_ONE#20 body] [macro=OUTER#19 body]) [macro=ADD_ONE#20 body] [macro=OUTER#19 body]) [macro=ADD_ONE#20 body] [macro=OUTER#19 body]) [macro=ADD_ONE#20 body] [macro=OUTER#19 body]);
 // IR-NEXT:         write<i32>(%[[VALUE_results]], read<i32>(%[[VALUE22]]));
 // IR-NEXT:         let %[[VALUE23:[0-9]+]]: i32 [synthetic] = call<i32>(%[[VALUE_callee]], read<i32>(%[[VALUE_i]]) [macro=TRACE#21 arg0]) [macro=TRACE#21 body];
 // IR-NEXT:         let %[[VALUE24:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_results]]);
 // IR-NEXT:         let %[[VALUE25:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE24]]), read<i32>(%[[VALUE23]]));
 // IR-NEXT:         write<i32>(%[[VALUE_results]], read<i32>(%[[VALUE25]]));
-// IR-NEXT:         macro_body #[[#NODE4:]] { [macro=SET_DOUBLE#22 body]
+// IR-NEXT:         macro_body #[[#NODE9:]] { [macro=SET_DOUBLE#22 body]
 // IR-NEXT:             { [macro=SET_DOUBLE#22 body]
-// IR-NEXT:                 write<i32>(deref(macro_arg<ptr<i32>>(#[[#NODE4]], 0, addr_of<ptr<i32>>(%[[VALUE_results]]))), mul<i32>(macro_arg<i32>(#[[#NODE4]], 1, read<i32>(%[[VALUE_i]]) [macro=SET_DOUBLE#22 arg1]) [macro=SET_DOUBLE#22 arg1], const<i32>(2) [macro=SET_DOUBLE#22 body]) [macro=SET_DOUBLE#22 body]) [macro=SET_DOUBLE#22 body];
+// IR-NEXT:                 write<i32>(deref(macro_arg<ptr<i32>>(#[[#NODE9]], 0, addr_of<ptr<i32>>(%[[VALUE_results]]))), mul<i32>(macro_arg<i32>(#[[#NODE9]], 1, read<i32>(%[[VALUE_i]]) [macro=SET_DOUBLE#22 arg1]) [macro=SET_DOUBLE#22 arg1], const<i32>(2) [macro=SET_DOUBLE#22 body]) [macro=SET_DOUBLE#22 body]) [macro=SET_DOUBLE#22 body];
 // IR-NEXT:             }
 // IR-NEXT:         }
 // IR-NEXT:         ;
@@ -172,51 +172,51 @@ int use(struct pair *pair, int i, int j) {
 // IR-NEXT:             write<i32>(deref(addr_of<ptr<i32>>(%[[VALUE_results]])), add<i32>(read<i32>(%[[VALUE_i]]) [macro=SET_DOUBLE#23 arg1], mul<i32>(read<i32>(%[[VALUE_j]]) [macro=SET_DOUBLE#23 arg1], const<i32>(2) [macro=SET_DOUBLE#23 body]) [macro=SET_DOUBLE#23 body]) [macro=SET_DOUBLE#23 body]) [macro=SET_DOUBLE#23 body];
 // IR-NEXT:         }
 // IR-NEXT:         ;
-// IR-NEXT:         return add<i32>(read<i32>(%[[VALUE_results]]), const<i32>(3) [macro=COUNT#24 body]);
+// IR-NEXT:         return add<i32>(read<i32>(%[[VALUE_results]]), macro_value<i32>(#[[#NODE10:]], statements=0, const<i32>(3) [macro=COUNT#24 body]) [macro=COUNT#24 body]);
 // IR-NEXT:     }
-// IR-NEXT:     macro_definition #[[#NODE5:]] DECLARE(name) [defined=7:19] = "int name";
-// IR-NEXT:     macro_definition #[[#NODE6:]] TIMES2(x) [defined=7:1] = "x * 2";
-// IR-NEXT:     macro_definition #[[#NODE7:]] PLUS(a, b) [defined=7:3] = "a + b";
-// IR-NEXT:     macro_definition #[[#NODE8:]] ADD_ONE(x) [defined=7:2] = "( ( x ) + 1 )";
-// IR-NEXT:     macro_definition #[[#NODE9:]] SET(p, v) [defined=7:4] = "* ( p ) = ( v )";
-// IR-NEXT:     macro_definition #[[#NODE0]] SETS(a, b) [defined=7:5] = "a = 1 ; b = 2";
-// IR-NEXT:     macro_definition #[[#NODE1]] BOTH(a, b) [defined=7:6] = "a = 1 ; b = 2 ;";
-// IR-NEXT:     macro_definition #[[#NODE2]] WRAP(x) [defined=7:7] = "do { x = 1 ; } while ( 0 )";
-// IR-NEXT:     macro_definition #[[#NODE10:]] CAST(T, x) [defined=7:8] = "( ( T ) ( x ) )";
-// IR-NEXT:     macro_definition #[[#NODE3]] LOCAL(T, a, b) [defined=7:9] = "do { T t = a ; a = b ; b = t ; } while ( 0 )";
-// IR-NEXT:     macro_definition #[[#NODE11:]] CONST_LOCAL(T, a) [defined=7:10] = "do { const T t = a ; ( void ) t ; } while ( 0 )";
-// IR-NEXT:     macro_definition #[[#NODE12:]] FIELD(p, name) [defined=7:11] = "( ( p ) -> name )";
-// IR-NEXT:     macro_definition #[[#NODE13:]] CALL(f, x) [defined=7:12] = "f ( x )";
-// IR-NEXT:     macro_definition #[[#NODE14:]] STATEMENT(s) [defined=7:13] = "s";
-// IR-NEXT:     macro_definition #[[#NODE15:]] TWICE(x) [defined=7:14] = "( ( x ) + ( x ) )";
-// IR-NEXT:     macro_definition #[[#NODE16:]] OUTER(x) [defined=7:15] = "ADD_ONE ( x )";
-// IR-NEXT:     macro_definition #[[#NODE17:]] TRACE(x) [defined=7:17] = "callee x";
-// IR-NEXT:     macro_definition #[[#NODE18:]] SET_DOUBLE(p, x) [defined=7:18] = "{ * ( p ) = x * 2 ; }";
-// IR-NEXT:     macro_definition #[[#NODE19:]] COUNT [defined=7:16] = "3";
-// IR-NEXT:     macro_expansion #[[#NODE5]] DECLARE [definition=#[[#NODE5]]] [site=7:658+15] [arguments=666+6] [covers=decl] [arg0=name];
-// IR-NEXT:     macro_expansion #[[#NODE6]] TIMES2 [definition=#[[#NODE6]]] [site=7:759+9] [arguments=766+1] [covers=expr] [arg0=expr];
-// IR-NEXT:     macro_expansion #[[#NODE7]] TIMES2 [definition=#[[#NODE6]]] [site=7:783+13] [arguments=790+5] [covers=expr] [arg0=split];
-// IR-NEXT:     macro_expansion #[[#NODE8]] PLUS [definition=#[[#NODE7]]] [site=7:815+10] [arguments=820+1, 823+1] [covers=split] [arg0=expr] [arg1=expr];
-// IR-NEXT:     macro_expansion #[[#NODE9]] ADD_ONE [definition=#[[#NODE8]]] [site=7:840+14] [arguments=848+5] [covers=expr] [arg0=expr];
-// IR-NEXT:     macro_expansion #[[#NODE0]] SET [definition=#[[#NODE9]]] [site=7:858+16] [arguments=862+8, 872+1] [covers=expr] [arg0=expr] [arg1=expr];
-// IR-NEXT:     macro_expansion #[[#NODE1]] SETS [definition=#[[#NODE0]]] [site=7:878+10] [arguments=883+1, 886+1] [covers=statements] [arg0=expr] [arg1=expr];
-// IR-NEXT:     macro_expansion #[[#NODE2]] BOTH [definition=#[[#NODE1]]] [site=7:892+10] [arguments=897+1, 900+1] [covers=statements] [arg0=expr] [arg1=expr];
-// IR-NEXT:     macro_expansion #[[#NODE10]] SETS [definition=#[[#NODE0]]] [site=7:917+10] [arguments=922+1, 925+1] [covers=split] [arg0=expr] [arg1=expr];
-// IR-NEXT:     macro_expansion #[[#NODE3]] WRAP [definition=#[[#NODE2]]] [site=7:931+13] [arguments=936+7] [covers=statements] [arg0=expr];
-// IR-NEXT:     macro_expansion #[[#NODE11]] CAST [definition=#[[#NODE10]]] [site=7:959+13] [arguments=964+4, 970+1] [covers=expr] [arg0=type] [arg1=expr];
-// IR-NEXT:     macro_expansion #[[#NODE12]] CAST [definition=#[[#NODE10]]] [site=7:987+15] [arguments=992+6, 1000+1] [covers=expr] [arg0=type] [arg1=expr];
-// IR-NEXT:     macro_expansion #[[#NODE13]] LOCAL [definition=#[[#NODE3]]] [site=7:1011+16] [arguments=1017+3, 1022+1, 1025+1] [covers=statements] [arg0=type] [arg1=expr] [arg1=expr] [arg2=expr] [arg2=expr];
-// IR-NEXT:     macro_expansion #[[#NODE14]] LOCAL [definition=#[[#NODE3]]] [site=7:1031+26] [arguments=1037+13, 1052+1, 1055+1] [covers=statements] [arg0=type] [arg1=expr] [arg1=expr] [arg2=expr] [arg2=expr];
-// IR-NEXT:     macro_expansion #[[#NODE15]] CONST_LOCAL [definition=#[[#NODE11]]] [site=7:1061+19] [arguments=1073+3, 1078+1] [covers=statements] [arg0=type] [arg1=expr];
-// IR-NEXT:     macro_expansion #[[#NODE16]] FIELD [definition=#[[#NODE12]]] [site=7:1095+18] [arguments=1101+4, 1107+5] [covers=expr] [arg0=expr] [arg1=name];
-// IR-NEXT:     macro_expansion #[[#NODE17]] CALL [definition=#[[#NODE13]]] [site=7:1128+15] [arguments=1133+6, 1141+1] [covers=expr] [arg0=callee] [arg1=expr];
-// IR-NEXT:     macro_expansion #[[#NODE18]] STATEMENT [definition=#[[#NODE14]]] [site=7:1147+23] [arguments=1157+12] [covers=statements] [arg0=statements];
-// IR-NEXT:     macro_expansion #[[#NODE19]] TWICE [definition=#[[#NODE15]]] [site=7:1185+8] [arguments=1191+1] [covers=expr] [arg0=expr] [arg0=expr];
-// IR-NEXT:     macro_expansion #[[#NODE20:]] OUTER [definition=#[[#NODE16]]] [site=7:1208+12] [arguments=1214+5] [covers=expr] [arg0=expr];
-// IR-NEXT:     macro_expansion #[[#NODE21:]] ADD_ONE [definition=#[[#NODE8]]] [parent=#[[#NODE20]]] [covers=expr] [arg0=expr];
-// IR-NEXT:     macro_expansion #[[#NODE22:]] TRACE [definition=#[[#NODE17]]] [site=7:1235+10] [arguments=1241+3] [covers=expr] [arg0=call_arguments];
-// IR-NEXT:     macro_expansion #[[#NODE4]] SET_DOUBLE [definition=#[[#NODE18]]] [site=7:1249+23] [arguments=1260+8, 1270+1] [covers=statements] [arg0=expr] [arg1=expr];
-// IR-NEXT:     macro_expansion #[[#NODE23:]] SET_DOUBLE [definition=#[[#NODE18]]] [site=7:1276+27] [arguments=1287+8, 1297+5] [covers=statements] [arg0=expr] [arg1=split];
-// IR-NEXT:     macro_expansion #[[#NODE24:]] COUNT [definition=#[[#NODE19]]] [site=7:1324+5] [covers=expr];
+// IR-NEXT:     macro_definition #[[#NODE11:]] DECLARE(name) [defined=7:19] = "int name";
+// IR-NEXT:     macro_definition #[[#NODE0]] TIMES2(x) [defined=7:1] = "x * 2";
+// IR-NEXT:     macro_definition #[[#NODE12:]] PLUS(a, b) [defined=7:3] = "a + b";
+// IR-NEXT:     macro_definition #[[#NODE13:]] ADD_ONE(x) [defined=7:2] = "( ( x ) + 1 )";
+// IR-NEXT:     macro_definition #[[#NODE1]] SET(p, v) [defined=7:4] = "* ( p ) = ( v )";
+// IR-NEXT:     macro_definition #[[#NODE2]] SETS(a, b) [defined=7:5] = "a = 1 ; b = 2";
+// IR-NEXT:     macro_definition #[[#NODE3]] BOTH(a, b) [defined=7:6] = "a = 1 ; b = 2 ;";
+// IR-NEXT:     macro_definition #[[#NODE4]] WRAP(x) [defined=7:7] = "do { x = 1 ; } while ( 0 )";
+// IR-NEXT:     macro_definition #[[#NODE14:]] CAST(T, x) [defined=7:8] = "( ( T ) ( x ) )";
+// IR-NEXT:     macro_definition #[[#NODE5]] LOCAL(T, a, b) [defined=7:9] = "do { T t = a ; a = b ; b = t ; } while ( 0 )";
+// IR-NEXT:     macro_definition #[[#NODE15:]] CONST_LOCAL(T, a) [defined=7:10] = "do { const T t = a ; ( void ) t ; } while ( 0 )";
+// IR-NEXT:     macro_definition #[[#NODE16:]] FIELD(p, name) [defined=7:11] = "( ( p ) -> name )";
+// IR-NEXT:     macro_definition #[[#NODE17:]] CALL(f, x) [defined=7:12] = "f ( x )";
+// IR-NEXT:     macro_definition #[[#NODE18:]] STATEMENT(s) [defined=7:13] = "s";
+// IR-NEXT:     macro_definition #[[#NODE19:]] TWICE(x) [defined=7:14] = "( ( x ) + ( x ) )";
+// IR-NEXT:     macro_definition #[[#NODE20:]] OUTER(x) [defined=7:15] = "ADD_ONE ( x )";
+// IR-NEXT:     macro_definition #[[#NODE21:]] TRACE(x) [defined=7:17] = "callee x";
+// IR-NEXT:     macro_definition #[[#NODE22:]] SET_DOUBLE(p, x) [defined=7:18] = "{ * ( p ) = x * 2 ; }";
+// IR-NEXT:     macro_definition #[[#NODE6]] COUNT [defined=7:16] = "3";
+// IR-NEXT:     macro_expansion #[[#NODE11]] DECLARE [definition=#[[#NODE11]]] [site=7:658+15] [arguments=666+6] [covers=decl] [arg0=name];
+// IR-NEXT:     macro_expansion #[[#NODE0]] TIMES2 [definition=#[[#NODE0]]] [site=7:759+9] [arguments=766+1] [covers=expr] [arg0=expr];
+// IR-NEXT:     macro_expansion #[[#NODE12]] TIMES2 [definition=#[[#NODE0]]] [site=7:783+13] [arguments=790+5] [covers=expr] [arg0=split];
+// IR-NEXT:     macro_expansion #[[#NODE13]] PLUS [definition=#[[#NODE12]]] [site=7:815+10] [arguments=820+1, 823+1] [covers=split] [arg0=expr] [arg1=expr];
+// IR-NEXT:     macro_expansion #[[#NODE1]] ADD_ONE [definition=#[[#NODE13]]] [site=7:840+14] [arguments=848+5] [covers=expr] [arg0=expr];
+// IR-NEXT:     macro_expansion #[[#NODE2]] SET [definition=#[[#NODE1]]] [site=7:858+16] [arguments=862+8, 872+1] [covers=expr] [arg0=expr] [arg1=expr];
+// IR-NEXT:     macro_expansion #[[#NODE3]] SETS [definition=#[[#NODE2]]] [site=7:878+10] [arguments=883+1, 886+1] [covers=statements] [arg0=expr] [arg1=expr];
+// IR-NEXT:     macro_expansion #[[#NODE4]] BOTH [definition=#[[#NODE3]]] [site=7:892+10] [arguments=897+1, 900+1] [covers=statements] [arg0=expr] [arg1=expr];
+// IR-NEXT:     macro_expansion #[[#NODE14]] SETS [definition=#[[#NODE2]]] [site=7:917+10] [arguments=922+1, 925+1] [covers=split] [arg0=expr] [arg1=expr];
+// IR-NEXT:     macro_expansion #[[#NODE5]] WRAP [definition=#[[#NODE4]]] [site=7:931+13] [arguments=936+7] [covers=statements] [arg0=expr];
+// IR-NEXT:     macro_expansion #[[#NODE15]] CAST [definition=#[[#NODE14]]] [site=7:959+13] [arguments=964+4, 970+1] [covers=expr] [arg0=type] [arg1=expr];
+// IR-NEXT:     macro_expansion #[[#NODE16]] CAST [definition=#[[#NODE14]]] [site=7:987+15] [arguments=992+6, 1000+1] [covers=expr] [arg0=type] [arg1=expr];
+// IR-NEXT:     macro_expansion #[[#NODE17]] LOCAL [definition=#[[#NODE5]]] [site=7:1011+16] [arguments=1017+3, 1022+1, 1025+1] [covers=statements] [arg0=type] [arg1=expr] [arg1=expr] [arg2=expr] [arg2=expr];
+// IR-NEXT:     macro_expansion #[[#NODE18]] LOCAL [definition=#[[#NODE5]]] [site=7:1031+26] [arguments=1037+13, 1052+1, 1055+1] [covers=statements] [arg0=type] [arg1=expr] [arg1=expr] [arg2=expr] [arg2=expr];
+// IR-NEXT:     macro_expansion #[[#NODE19]] CONST_LOCAL [definition=#[[#NODE15]]] [site=7:1061+19] [arguments=1073+3, 1078+1] [covers=statements] [arg0=type] [arg1=expr];
+// IR-NEXT:     macro_expansion #[[#NODE20]] FIELD [definition=#[[#NODE16]]] [site=7:1095+18] [arguments=1101+4, 1107+5] [covers=expr] [arg0=expr] [arg1=name];
+// IR-NEXT:     macro_expansion #[[#NODE21]] CALL [definition=#[[#NODE17]]] [site=7:1128+15] [arguments=1133+6, 1141+1] [covers=expr] [arg0=callee] [arg1=expr];
+// IR-NEXT:     macro_expansion #[[#NODE22]] STATEMENT [definition=#[[#NODE18]]] [site=7:1147+23] [arguments=1157+12] [covers=statements] [arg0=statements];
+// IR-NEXT:     macro_expansion #[[#NODE6]] TWICE [definition=#[[#NODE19]]] [site=7:1185+8] [arguments=1191+1] [covers=expr] [arg0=expr] [arg0=expr];
+// IR-NEXT:     macro_expansion #[[#NODE7]] OUTER [definition=#[[#NODE20]]] [site=7:1208+12] [arguments=1214+5] [covers=expr] [arg0=expr];
+// IR-NEXT:     macro_expansion #[[#NODE8]] ADD_ONE [definition=#[[#NODE13]]] [parent=#[[#NODE7]]] [covers=expr] [arg0=expr];
+// IR-NEXT:     macro_expansion #[[#NODE23:]] TRACE [definition=#[[#NODE21]]] [site=7:1235+10] [arguments=1241+3] [covers=expr] [arg0=call_arguments];
+// IR-NEXT:     macro_expansion #[[#NODE9]] SET_DOUBLE [definition=#[[#NODE22]]] [site=7:1249+23] [arguments=1260+8, 1270+1] [covers=statements] [arg0=expr] [arg1=expr];
+// IR-NEXT:     macro_expansion #[[#NODE24:]] SET_DOUBLE [definition=#[[#NODE22]]] [site=7:1276+27] [arguments=1287+8, 1297+5] [covers=statements] [arg0=expr] [arg1=split];
+// IR-NEXT:     macro_expansion #[[#NODE10]] COUNT [definition=#[[#NODE6]]] [site=7:1324+5] [covers=expr];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

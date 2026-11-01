@@ -7,6 +7,7 @@ pub trait MacroStructureVisitor {
     }
     fn statement(&mut self, _statement: &Statement) {}
     fn value_kind(&mut self, _kind: &ValueKind) {}
+    fn place_kind(&mut self, _kind: &PlaceKind) {}
     fn enter_expansion(&mut self, _expansion: MacroExpansionId) {}
     fn leave_expansion(&mut self, _expansion: MacroExpansionId) {}
     fn enter_value_hole(&mut self, _expansion: MacroExpansionId) {}
@@ -41,6 +42,13 @@ impl Module {
 
 pub fn strip_all_macro_structure(body: &mut Vec<Span<Statement>>) {
     walk_macro_structure(body, &mut KeepOnly(|_| false));
+}
+
+pub fn strip_all_macro_structure_in_value(value: &mut Value) {
+    Walker {
+        visitor: &mut KeepOnly(|_| false),
+    }
+    .value(value);
 }
 
 pub fn walk_macro_structure<V: MacroStructureVisitor>(
@@ -263,6 +271,7 @@ impl<V: MacroStructureVisitor> Walker<'_, V> {
     }
 
     fn place_kind(&mut self, place: &mut Place) {
+        self.visitor.place_kind(&place.kind);
         match &mut place.kind {
             PlaceKind::MacroArg {
                 expansion,
@@ -313,6 +322,18 @@ impl<V: MacroStructureVisitor> Walker<'_, V> {
                 self.visitor.leave_value_hole(expansion);
                 if !keep {
                     *whole = value.as_ref().clone();
+                }
+            }
+            ValueKind::MacroExpansion {
+                expansion,
+                evaluation,
+            } => {
+                let expansion = *expansion;
+                self.visitor.enter_expansion(expansion);
+                self.evaluation(evaluation);
+                self.visitor.leave_expansion(expansion);
+                if !self.visitor.keep(expansion) && evaluation.statements.is_empty() {
+                    *whole = evaluation.value.clone();
                 }
             }
             ValueKind::Read { place, ordering } => {

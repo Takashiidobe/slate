@@ -197,7 +197,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! CALL_BUFFER {
 // CHECK-NEXT:     ($n:expr) => {
 // CHECK-NEXT:         let made: *mut i32 = make_buffer($n);
-// CHECK-NEXT:         println!("{}", unsafe { *made.offset(($n - 1) as isize) });
+// CHECK-NEXT:         println!("{}", unsafe { *made.offset((($n) - 1) as isize) });
 // CHECK-NEXT:         unsafe { free(made as *mut ()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -207,7 +207,7 @@ int main(void) {
 // CHECK-NEXT:     ($n:expr) => {
 // CHECK-NEXT:         let made: *mut i32 = make_buffer($n);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), *made.offset(($n - 1) as isize)) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), *made.offset((($n) - 1) as isize)) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         unsafe { free(made as *mut ()) };
 // CHECK-NEXT:     };
@@ -222,7 +222,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! CALL_EXPORTED_LENGTH {
 // CHECK-NEXT:     ($s:expr) => {
-// CHECK-NEXT:         println!("{}", unsafe { exported_length($s as *const c_char) });
+// CHECK-NEXT:         println!("{}", unsafe { exported_length(($s) as *const c_char) });
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -230,7 +230,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! CALL_EXPORTED_LENGTH {
 // CHECK-NEXT:     ($s:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), exported_length($s as *const c_char)) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), exported_length(($s) as *const c_char)) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -251,7 +251,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! CALL_LENGTH {
 // CHECK-NEXT:     ($s:expr) => {
-// CHECK-NEXT:         println!("{}", length_of($s as *const c_char));
+// CHECK-NEXT:         println!("{}", length_of(($s) as *const c_char));
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -259,7 +259,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! CALL_LENGTH {
 // CHECK-NEXT:     ($s:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), length_of($s as *const c_char)) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), length_of(($s) as *const c_char)) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -283,7 +283,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! CALL_SUM {
 // CHECK-NEXT:     ($v:expr, $n:expr) => {
-// CHECK-NEXT:         println!("{}", sum($v as *const i32, $n));
+// CHECK-NEXT:         println!("{}", sum(($v) as *const i32, $n));
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -291,7 +291,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! CALL_SUM {
 // CHECK-NEXT:     ($v:expr, $n:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), sum($v as *const i32, $n)) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), sum(($v) as *const i32, $n)) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

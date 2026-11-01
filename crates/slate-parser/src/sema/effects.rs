@@ -443,6 +443,17 @@ impl Hoister {
                 argument,
                 value: Box::new(self.value(*value, out)?),
             },
+            ValueKind::MacroExpansion {
+                expansion,
+                evaluation,
+            } => {
+                let mut statements = self.statements(evaluation.statements)?;
+                let value = self.value(evaluation.value, &mut statements)?;
+                ValueKind::MacroExpansion {
+                    expansion,
+                    evaluation: Box::new(Evaluation { statements, value }),
+                }
+            }
             ValueKind::Store {
                 place,
                 value,
@@ -942,6 +953,9 @@ impl Hoister {
     fn effects(&self, value: &Value) -> bool {
         match &value.node.value {
             ValueKind::MacroArg { value, .. } => self.effects(value),
+            ValueKind::MacroExpansion { evaluation, .. } => {
+                !evaluation.statements.is_empty() || self.effects(&evaluation.value)
+            }
             ValueKind::Call {
                 callee: Callee::Direct(id),
                 arguments,

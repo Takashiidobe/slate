@@ -132,6 +132,7 @@ fn referenced_names(item: &Item) -> BTreeSet<String> {
     };
     match item {
         Item::Fn(definition) => definition.body.iter().for_each(&mut collect),
+        Item::MacroRules { body, .. } => body.iter().for_each(&mut collect),
         Item::Static { init, .. } | Item::Const { init, .. } => collect(&Stmt::Expr(init.clone())),
         _ => {}
     }
@@ -187,6 +188,7 @@ impl ModuleLowerer<'_> {
             .items
             .iter()
             .chain(&self.dependencies.compound_literals)
+            .chain(self.dependencies.macro_templates.values())
         {
             let references = referenced_names(item);
             let name = match item {

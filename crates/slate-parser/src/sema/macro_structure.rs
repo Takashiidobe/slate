@@ -20,26 +20,48 @@ pub(super) struct MacroHole {
 pub(super) struct MacroStructure {
     regions: HashMap<NodeId, Vec<MacroRegion>>,
     holes: HashMap<NodeId, Vec<MacroHole>>,
+    values: HashMap<NodeId, Vec<MacroExpansionId>>,
 }
 
 struct BodyScan {
     expression_statements: HashMap<NodeId, NodeId>,
+    runtime_expressions: HashSet<NodeId>,
+    in_runtime_code: bool,
     unfit: HashSet<MacroExpansionId>,
 }
 
 impl Visitor for BodyScan {
     type Error = Infallible;
 
+    fn visit_function(&mut self, function: &FunctionDefinition) -> Result<(), Infallible> {
+        self.in_runtime_code = true;
+        let walked = visit::walk_function(self, function);
+        self.in_runtime_code = false;
+        walked
+    }
+
     fn visit_stmt(&mut self, stmt: &Stmt) -> Result<(), Infallible> {
         match &stmt.value {
             StmtKind::Expr(expr) => {
                 self.expression_statements.insert(expr.id, stmt.id);
             }
-            StmtKind::Asm(_)
-            | StmtKind::MsAsm(_)
-            | StmtKind::Labeled { .. }
-            | StmtKind::SwitchLabel { .. }
-            | StmtKind::LocalLabelDecl(_) => self.mark_unfit(stmt),
+            StmtKind::Asm(_) | StmtKind::MsAsm(_) => {
+                self.mark_unfit(stmt);
+                return self.outside_runtime_code(|this| visit::walk_stmt(this, stmt));
+            }
+            StmtKind::SwitchLabel { label, body } => {
+                self.mark_unfit(stmt);
+                self.outside_runtime_code(|this| match label {
+                    SwitchLabel::Case(value) => this.visit_expr(value),
+                    SwitchLabel::CaseRange { start, end } => {
+                        this.visit_expr(start)?;
+                        this.visit_expr(end)
+                    }
+                    SwitchLabel::Default => Ok(()),
+                })?;
+                return self.visit_stmt(body);
+            }
+            StmtKind::Labeled { .. } | StmtKind::LocalLabelDecl(_) => self.mark_unfit(stmt),
             _ => {}
         }
         visit::walk_stmt(self, stmt)
@@ -53,12 +75,52 @@ impl Visitor for BodyScan {
             for declarator in &declaration.declarators {
                 self.mark_unfit(declarator);
             }
+            return self.outside_runtime_code(|this| visit::walk_declaration(this, declaration));
         }
         visit::walk_declaration(self, declaration)
+    }
+
+    fn visit_expr(&mut self, expr: &Expr) -> Result<(), Infallible> {
+        if self.in_runtime_code {
+            self.runtime_expressions.insert(expr.id);
+        }
+        if matches!(
+            expr.value,
+            ExprKind::SizeOfExpr(_) | ExprKind::AlignOfExpr(..) | ExprKind::CountOfExpr(_)
+        ) {
+            return self.outside_runtime_code(|this| visit::walk_expr(this, expr));
+        }
+        visit::walk_expr(self, expr)
+    }
+
+    fn visit_type_name(&mut self, ty: &TypeName) -> Result<(), Infallible> {
+        self.outside_runtime_code(|this| visit::walk_type_name(this, ty))
+    }
+
+    fn visit_declarator(&mut self, declarator: &Declarator) -> Result<(), Infallible> {
+        self.outside_runtime_code(|this| visit::walk_declarator(this, declarator))
+    }
+
+    fn visit_type_specifier(&mut self, ty: &TypeSpecifier) -> Result<(), Infallible> {
+        self.outside_runtime_code(|this| visit::walk_type_specifier(this, ty))
+    }
+
+    fn visit_attribute(&mut self, attribute: &Attribute) -> Result<(), Infallible> {
+        self.outside_runtime_code(|this| visit::walk_attribute(this, attribute))
     }
 }
 
 impl BodyScan {
+    fn outside_runtime_code(
+        &mut self,
+        visit: impl FnOnce(&mut Self) -> Result<(), Infallible>,
+    ) -> Result<(), Infallible> {
+        let outer = std::mem::replace(&mut self.in_runtime_code, false);
+        let walked = visit(self);
+        self.in_runtime_code = outer;
+        walked
+    }
+
     fn mark_unfit<T>(&mut self, span: &Span<T>) {
         for link in span.macro_nesting.iter().flat_map(|nesting| nesting.iter()) {
             self.unfit.insert(link.expansion);
@@ -71,6 +133,8 @@ impl MacroStructure {
         let macros = &unit.macros;
         let mut scan = BodyScan {
             expression_statements: HashMap::new(),
+            runtime_expressions: HashSet::new(),
+            in_runtime_code: false,
             unfit: HashSet::new(),
         };
         let Ok(()) = scan.visit_translation_unit(unit);
@@ -100,12 +164,21 @@ impl MacroStructure {
                     };
                     (*first, *last)
                 }
-                Some(MacroCover::Expr(expr)) => {
-                    let Some(statement) = scan.expression_statements.get(expr) else {
+                Some(MacroCover::Expr(expr)) => match scan.expression_statements.get(expr) {
+                    Some(statement) => (*statement, *statement),
+                    None => {
+                        let is_its_own_argument = expansion
+                            .argument_uses
+                            .iter()
+                            .any(|argument| argument.cover == MacroCover::Expr(*expr));
+                        if is_its_own_argument || !scan.runtime_expressions.contains(expr) {
+                            continue;
+                        }
+                        structure.values.entry(*expr).or_default().push(id);
+                        structure.add_holes(id, expansion);
                         continue;
-                    };
-                    (*statement, *statement)
-                }
+                    }
+                },
                 _ => continue,
             };
             structure
@@ -116,14 +189,7 @@ impl MacroStructure {
                     expansion: id,
                     last,
                 });
-            for argument in &expansion.argument_uses {
-                if let MacroCover::Expr(node) = argument.cover {
-                    structure.holes.entry(node).or_default().push(MacroHole {
-                        expansion: id,
-                        argument: argument.argument,
-                    });
-                }
-            }
+            structure.add_holes(id, expansion);
         }
         for regions in structure.regions.values_mut() {
             regions.sort_by_key(|region| depth(region.expansion));
@@ -131,7 +197,25 @@ impl MacroStructure {
         for holes in structure.holes.values_mut() {
             holes.sort_by_key(|hole| depth(hole.expansion));
         }
+        for values in structure.values.values_mut() {
+            values.sort_by_key(|expansion| depth(*expansion));
+        }
         structure
+    }
+
+    fn add_holes(&mut self, id: MacroExpansionId, expansion: &MacroExpansion) {
+        for argument in &expansion.argument_uses {
+            if let MacroCover::Expr(node) = argument.cover {
+                self.holes.entry(node).or_default().push(MacroHole {
+                    expansion: id,
+                    argument: argument.argument,
+                });
+            }
+        }
+    }
+
+    pub(super) fn value_expansions(&self, node: NodeId) -> &[MacroExpansionId] {
+        self.values.get(&node).map_or(&[], Vec::as_slice)
     }
 
     pub(super) fn region(&self, first: NodeId, level: usize) -> Option<MacroRegion> {

@@ -25,6 +25,8 @@ use crate::target_info::TargetEnvironment;
 use num_bigint::Sign;
 use std::collections::{HashMap, HashSet};
 
+pub type MacroKeep = fn(&mut Module) -> HashSet<ast::MacroExpansionId>;
+
 impl super::Sema<'_> {
     pub fn lower(
         self,
@@ -42,6 +44,7 @@ impl super::Sema<'_> {
             self.types,
             files,
             macro_structure,
+            self.macro_keep,
         )
     }
 }
@@ -53,6 +56,7 @@ fn resolve_module(
     mut types: TypeResolver,
     files: &crate::files::Files,
     macro_structure: MacroStructure,
+    macro_keep: Option<MacroKeep>,
 ) -> Result<(Module, Vec<SemaError>), SemaErrors> {
     let context = Context::for_dialect(&unit.dialect);
     let next_id = names
@@ -215,10 +219,12 @@ fn resolve_module(
             *length = Some(1);
         }
     }
-    lower.finish_module(unit).map_err(|error| SemaErrors {
-        errors: vec![SemaError::resolve_error(&error.checked(), files)],
-    })?;
     lower.module.macros = unit.macros.clone();
+    lower
+        .finish_module(unit, macro_keep)
+        .map_err(|error| SemaErrors {
+            errors: vec![SemaError::resolve_error(&error.checked(), files)],
+        })?;
     lower.module.c_types.types = lower.types.ctypes;
     lower.module.c_types.definitions = lower.types.definitions;
     lower.module.c_types.record_fields = lower.types.record_fields;
@@ -393,7 +399,11 @@ fn item_error(error: &ResolveError, item: &ast::Decl) -> SemaError {
 }
 
 impl Lowerer {
-    fn finish_module(&mut self, unit: &TranslationUnit) -> Result<(), ResolveError> {
+    fn finish_module(
+        &mut self,
+        unit: &TranslationUnit,
+        macro_keep: Option<MacroKeep>,
+    ) -> Result<(), ResolveError> {
         self.resolve_object_requests(unit)?;
         self.finish_functions(unit.dialect.inline_semantics())?;
         self.complete_declaration_abis()?;
@@ -407,9 +417,37 @@ impl Lowerer {
             .into_iter()
             .chain(self.types.locals.iter().map(|(id, c)| (*id, *c)))
             .collect();
-        super::effects_statements::normalize(&mut self.module, self.next_id, access)?;
+        match macro_keep {
+            None => super::effects_statements::normalize(&mut self.module, self.next_id, access)?,
+            Some(keep) => self.normalize_kept_expansions(keep, access)?,
+        }
         super::counted_loops::annotate(&mut self.module);
         Ok(())
+    }
+
+    fn normalize_kept_expansions(
+        &mut self,
+        keep: MacroKeep,
+        access: HashMap<BindingId, Access>,
+    ) -> Result<(), ResolveError> {
+        let bodies: Vec<_> = self
+            .module
+            .functions
+            .iter()
+            .map(|function| function.value.body.clone())
+            .collect();
+        let nodes = self.module.c_types.nodes.clone();
+        let bindings = self.module.c_types.bindings.clone();
+        super::effects_statements::normalize(&mut self.module, self.next_id, access.clone())?;
+        let kept = keep(&mut self.module);
+        for (function, body) in self.module.functions.iter_mut().zip(bodies) {
+            function.value.body = body;
+        }
+        self.module.c_types.nodes = nodes;
+        self.module.c_types.bindings = bindings;
+        self.module
+            .strip_macro_structure(|expansion| kept.contains(&expansion));
+        super::effects_statements::normalize(&mut self.module, self.next_id, access)
     }
 
     fn complete_declaration_abis(&mut self) -> Result<(), ResolveError> {

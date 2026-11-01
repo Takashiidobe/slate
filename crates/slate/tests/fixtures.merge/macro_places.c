@@ -229,14 +229,14 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! INC {
 // CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         $x = $x + 1;
+// CHECK-NEXT:         $x = ($x) + 1;
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! INC__2 {
 // CHECK-NEXT:     ($x:expr) => {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             $x = $x + 1;
+// CHECK-NEXT:             $x = ($x) + 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -250,7 +250,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! PUSH {
 // CHECK-NEXT:     ($stack:expr, $top:expr, $v:expr) => {
-// CHECK-NEXT:         $stack[$top as usize] = $v;
+// CHECK-NEXT:         $stack[($top) as usize] = $v;
 // CHECK-NEXT:         let __v: i32 = $top;
 // CHECK-NEXT:         let [[V_2]]: i32 = __v + 1;
 // CHECK-NEXT:         $top = [[V_2]];
@@ -291,7 +291,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SET_TWICE {
 // CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         $x = $x * 2;
+// CHECK-NEXT:         $x = ($x) * 2;
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

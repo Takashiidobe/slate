@@ -215,6 +215,7 @@ pub fn expand_template_calls(stmts: &mut Vec<Stmt>, templates: &BTreeMap<String,
     for mut stmt in std::mem::take(stmts) {
         if let Stmt::Expr(Expr::Macro { name, args }) = &stmt
             && let Some(Item::MacroRules { params, body, .. }) = templates.get(name)
+            && !matches!(body.last(), Some(Stmt::Return(Some(_))))
         {
             let mut body = body.clone();
             fill_holes(&mut body, params, args);
@@ -225,9 +226,37 @@ pub fn expand_template_calls(stmts: &mut Vec<Stmt>, templates: &BTreeMap<String,
         for body in stmt.child_bodies_mut() {
             expand_template_calls(body, templates);
         }
+        let mut exprs = Vec::new();
+        stmt_exprs_mut(&mut stmt, &mut exprs);
+        for expr in exprs {
+            visit_expr_mut(expr, &mut |expr| expand_value_call(expr, templates));
+        }
         out.push(stmt);
     }
     *stmts = out;
+}
+
+fn expand_value_call(expr: &mut Expr, templates: &BTreeMap<String, Item>) {
+    let Expr::Macro { name, args } = expr else {
+        return;
+    };
+    let Some(Item::MacroRules { params, body, .. }) = templates.get(name) else {
+        return;
+    };
+    let mut body = body.clone();
+    fill_holes(&mut body, params, args);
+    expand_template_calls(&mut body, templates);
+    let Some(Stmt::Return(Some(value))) = body.pop() else {
+        return;
+    };
+    *expr = if body.is_empty() {
+        value
+    } else {
+        Expr::Block(Box::new(Block {
+            stmts: body,
+            tail: Some(Box::new(value)),
+        }))
+    };
 }
 
 fn template_local_base(name: &str) -> (String, bool) {

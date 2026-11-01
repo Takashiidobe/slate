@@ -5,7 +5,10 @@ mod c_types;
 mod comments;
 mod declarations;
 mod macro_strip;
-pub use macro_strip::{MacroStructureVisitor, strip_all_macro_structure, walk_macro_structure};
+pub use macro_strip::{
+    MacroStructureVisitor, strip_all_macro_structure, strip_all_macro_structure_in_value,
+    walk_macro_structure,
+};
 mod module;
 mod module_print;
 mod names;
@@ -150,6 +153,10 @@ pub enum ValueKind {
         passing: VaPassing,
     },
     StatementExpression(Box<Evaluation>),
+    MacroExpansion {
+        expansion: crate::ast::MacroExpansionId,
+        evaluation: Box<Evaluation>,
+    },
     MacroArg {
         expansion: crate::ast::MacroExpansionId,
         argument: usize,
@@ -297,6 +304,20 @@ impl Value {
         compact: bool,
     ) -> fmt::Result {
         match &self.node.value {
+            ValueKind::MacroExpansion {
+                expansion,
+                evaluation,
+            } => write!(
+                f,
+                "macro_value<{}>(#{}, statements={}, {})",
+                self.ty,
+                expansion.0,
+                evaluation.statements.len(),
+                evaluation
+                    .value
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact)
+            ),
             ValueKind::MacroArg {
                 expansion,
                 argument,

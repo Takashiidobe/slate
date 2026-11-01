@@ -205,7 +205,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! ONLY_HERE {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         println!("{}", $a * 3);
+// CHECK-NEXT:         println!("{}", ($a) * 3);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -213,7 +213,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! ONLY_HERE {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), $a * 3) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), ($a) * 3) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -260,7 +260,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! ASSERT {
 // CHECK-NEXT:     ($cond:expr, $msg:expr) => {
 // CHECK-NEXT:         if !$cond {
-// CHECK-NEXT:             report($msg as *const c_char);
+// CHECK-NEXT:             report(($msg) as *const c_char);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -342,7 +342,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! MOVED_CONST {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         println!("{}", $a + 1);
+// CHECK-NEXT:         println!("{}", ($a) + 1);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -350,7 +350,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! MOVED_CONST {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), $a + 1) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), ($a) + 1) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -359,7 +359,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! SHADOWS {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let t: i32 = 5;
-// CHECK-NEXT:         println!("{}", $a + t);
+// CHECK-NEXT:         println!("{}", ($a) + t);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -368,7 +368,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let t: i32 = 5;
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), $a + t) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), ($a) + t) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -401,7 +401,7 @@ int main(void) {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut c_char = unsafe { __v.add(1) };
 // CHECK-NEXT:         $p = [[V_0]];
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *__v = $v as c_char;
+// CHECK-NEXT:             *__v = ($v) as c_char;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

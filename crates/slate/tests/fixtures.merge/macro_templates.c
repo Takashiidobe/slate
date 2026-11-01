@@ -150,7 +150,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! WIDEN__3 {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%ld\n".as_ptr(), $a as c_long) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%ld\n".as_ptr(), ($a) as c_long) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -273,7 +273,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! ONCE {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         while $a <= 2 {
+// CHECK-NEXT:         while ($a) <= 2 {
 // CHECK-NEXT:             println!("small {}", $a);
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
@@ -285,7 +285,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! ONCE {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         while $a <= 2 {
+// CHECK-NEXT:         while ($a) <= 2 {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe { slate_support::printf(c"small %d\n".as_ptr(), $a) };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
@@ -300,7 +300,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! OUTER {
 // CHECK-NEXT:     ($a:expr, $b:expr) => {
 // CHECK-NEXT:         INNER!($a);
-// CHECK-NEXT:         println!("outer {}", $b as i32);
+// CHECK-NEXT:         println!("outer {}", ($b) as i32);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -309,7 +309,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr, $b:expr) => {
 // CHECK-NEXT:         INNER!($a);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"outer %d\n".as_ptr(), $b as i32) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"outer %d\n".as_ptr(), ($b) as i32) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -335,7 +335,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! SHOW__2 {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         println!("{}", ($a as u32) as i32);
+// CHECK-NEXT:         println!("{}", (($a) as u32) as i32);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -343,7 +343,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! SHOW__2 {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), ($a as u32) as i32) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), (($a) as u32) as i32) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -351,7 +351,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! SHOW__3 {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         println!("{}", $a as i32);
+// CHECK-NEXT:         println!("{}", ($a) as i32);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -376,7 +376,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! TEMP__2 {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let temp: i32 = ($a as u32) as i32;
+// CHECK-NEXT:         let temp: i32 = (($a) as u32) as i32;
 // CHECK-NEXT:         println!("{}", temp + 1);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -384,7 +384,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! TEMP__2 {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let temp: i32 = ($a as u32) as i32;
+// CHECK-NEXT:         let temp: i32 = (($a) as u32) as i32;
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), temp + 1) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -438,7 +438,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let __v: c_long = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + ($a as c_long);
+// CHECK-NEXT:             total = __v + (($a) as c_long);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -448,7 +448,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let __v: c_long = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + ($a as c_long);
+// CHECK-NEXT:             total = __v + (($a) as c_long);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -458,7 +458,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let __v: c_long = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + ((($a as u32) as i32) as c_long);
+// CHECK-NEXT:             total = __v + (((($a) as u32) as i32) as c_long);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

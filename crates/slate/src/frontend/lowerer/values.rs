@@ -451,6 +451,13 @@ impl FunctionLowerer<'_, '_> {
         {
             return self.lower_macro_hole(*expansion, *argument, inner);
         }
+        if let ValueKind::MacroExpansion {
+            expansion,
+            evaluation,
+        } = &value.node.value
+        {
+            return self.lower_macro_value_site(*expansion, evaluation);
+        }
         if let Some(stream) = self.lower_stdio_stream(value) {
             return Ok(stream);
         }

@@ -46,6 +46,9 @@ impl TypeResolver {
     fn pointer_designation(&self, value: &Value) -> Option<Designation> {
         match &value.node.value {
             ValueKind::MacroArg { value, .. } => self.pointer_designation(value),
+            ValueKind::MacroExpansion { evaluation, .. } => {
+                self.pointer_designation(&evaluation.value)
+            }
             ValueKind::Copy { operand, .. }
             | ValueKind::Convert {
                 kind: ConversionKind::PointerCast,

@@ -105,7 +105,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! ASSERT {
 // CHECK-NEXT:     ($cond:expr, $msg:expr) => {
 // CHECK-NEXT:         if !$cond {
-// CHECK-NEXT:             report($msg as *const c_char);
+// CHECK-NEXT:             report(($msg) as *const c_char);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

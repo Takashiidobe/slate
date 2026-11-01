@@ -353,7 +353,8 @@ impl Uses {
             | ValueKind::FloatClass { operand, .. }
             | ValueKind::MacroArg { value: operand, .. }
             | ValueKind::Convert { operand, .. } => self.value(operand),
-            ValueKind::StatementExpression(evaluation) => self.evaluation(evaluation),
+            ValueKind::StatementExpression(evaluation)
+            | ValueKind::MacroExpansion { evaluation, .. } => self.evaluation(evaluation),
             ValueKind::Fence { .. }
             | ValueKind::OldValue
             | ValueKind::Constant(_)

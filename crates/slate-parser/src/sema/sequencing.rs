@@ -44,6 +44,7 @@ fn pointee(value: &Value) -> Option<Root> {
         ValueKind::Copy { operand, .. }
         | ValueKind::Convert { operand, .. }
         | ValueKind::MacroArg { value: operand, .. } => pointee(operand),
+        ValueKind::MacroExpansion { evaluation, .. } => pointee(&evaluation.value),
 
         ValueKind::ArrayDecay {
             place:
@@ -115,6 +116,7 @@ fn walk(value: &Value, found: &mut Touches) {
 fn walk_value(value: &Value, found: &mut Touches) {
     match &value.node.value {
         ValueKind::MacroArg { value, .. } => walk(value, found),
+        ValueKind::MacroExpansion { evaluation, .. } => walk(&evaluation.value, found),
         ValueKind::Store { place, value, .. } => {
             walk_place(place, true, found);
             walk(value, found);
@@ -251,6 +253,7 @@ fn constant_index(value: &Value) -> Option<i128> {
         ValueKind::Copy { operand, .. }
         | ValueKind::Convert { operand, .. }
         | ValueKind::MacroArg { value: operand, .. } => constant_index(operand),
+        ValueKind::MacroExpansion { evaluation, .. } => constant_index(&evaluation.value),
         ValueKind::Constant(Number::Integer(value)) => i128::try_from(value.clone()).ok(),
         ValueKind::Constant(Number::SignedInteger(value)) => i128::try_from(value.clone()).ok(),
         _ => None,
@@ -269,6 +272,9 @@ fn offset_root<'a>(
         ValueKind::Copy { operand, .. }
         | ValueKind::Convert { operand, .. }
         | ValueKind::MacroArg { value: operand, .. } => offset_root(operand, path, amounts),
+        ValueKind::MacroExpansion { evaluation, .. } => {
+            offset_root(&evaluation.value, path, amounts)
+        }
         ValueKind::PointerOffset {
             pointer, amount, ..
         } => {

@@ -166,7 +166,7 @@ void value_position_has_no_region_yet(int i) {
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_value_position_has_no_region_yet:[0-9]+]] @value_position_has_no_region_yet(%[[VALUE_i_6:[0-9]+]] i: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %[[VALUE_k:[0-9]+]] k: i32 [storage=automatic] = add<i32>(read<i32>(%[[VALUE_i_6]]) [macro=ADD_ONE#15 arg0], const<i32>(1) [macro=ADD_ONE#15 body]) [macro=ADD_ONE#15 body];
+// IR-NEXT:         let %[[VALUE_k:[0-9]+]] k: i32 [storage=automatic] = macro_value<i32>(#[[#NODE12:]], statements=0, add<i32>(macro_arg<i32>(#{{[0-9]+}}, 0, read<i32>(%[[VALUE_i_6]]) [macro=ADD_ONE#15 arg0]) [macro=ADD_ONE#15 arg0], const<i32>(1) [macro=ADD_ONE#15 body]) [macro=ADD_ONE#15 body]) [macro=ADD_ONE#15 body];
 // IR-NEXT:         call<void>(%[[VALUE_sink]], widen<i64>(read<i32>(%[[VALUE_k]])));
 // IR-NEXT:     }
 // IR-NEXT:     macro_definition #[[#NODE0]] ADD_ONE(x) [defined=7:1] = "( ( x ) + 1 )";
@@ -175,7 +175,7 @@ void value_position_has_no_region_yet(int i) {
 // IR-NEXT:     macro_definition #[[#NODE3]] TEMP(x) [defined=7:4] = "do { int temp = 10 ; sink ( x ) ; } while ( 0 )";
 // IR-NEXT:     macro_definition #[[#NODE4]] OUTER(x) [defined=7:6] = "do { INNER ( x ) ; INNER ( ( x ) + 1 ) ; } while ( 0 )";
 // IR-NEXT:     macro_definition #[[#NODE5]] INNER(x) [defined=7:5] = "sink ( x )";
-// IR-NEXT:     macro_definition #[[#NODE12:]] TWO(a, b) [defined=7:8] = "sink ( a ) ; sink ( b )";
+// IR-NEXT:     macro_definition #[[#NODE13:]] TWO(a, b) [defined=7:8] = "sink ( a ) ; sink ( b )";
 // IR-NEXT:     macro_definition #[[#NODE6]] TIMES2(x) [defined=7:7] = "x * 2";
 // IR-NEXT:     macro_definition #[[#NODE7]] FIELD(s, f) [defined=7:9] = "sink ( ( s ) . f )";
 // IR-NEXT:     macro_definition #[[#NODE8]] BITS(s, v) [defined=7:10] = "( ( s ) . bits = ( v ) )";
@@ -185,15 +185,15 @@ void value_position_has_no_region_yet(int i) {
 // IR-NEXT:     macro_expansion #[[#NODE3]] SET [definition=#[[#NODE1]]] [site=7:606+10] [arguments=610+2, 614+1] [covers=statements] [arg0=expr] [arg1=expr];
 // IR-NEXT:     macro_expansion #[[#NODE4]] ASSIGN [definition=#[[#NODE2]]] [site=7:622+12] [arguments=629+1, 632+1] [covers=expr] [arg0=expr] [arg1=expr];
 // IR-NEXT:     macro_expansion #[[#NODE5]] ASSIGN [definition=#[[#NODE2]]] [site=7:647+14] [arguments=654+1, 657+3] [covers=expr] [arg0=expr] [arg1=expr];
-// IR-NEXT:     macro_expansion #[[#NODE12]] TEMP [definition=#[[#NODE3]]] [site=7:730+14] [arguments=735+8] [covers=statements] [arg0=expr];
+// IR-NEXT:     macro_expansion #[[#NODE13]] TEMP [definition=#[[#NODE3]]] [site=7:730+14] [arguments=735+8] [covers=statements] [arg0=expr];
 // IR-NEXT:     macro_expansion #[[#NODE6]] TEMP [definition=#[[#NODE3]]] [site=7:750+7] [arguments=755+1] [covers=statements] [arg0=expr];
 // IR-NEXT:     macro_expansion #[[#NODE7]] OUTER [definition=#[[#NODE4]]] [site=7:787+8] [arguments=793+1] [covers=statements] [arg0=expr] [arg0=expr];
 // IR-NEXT:     macro_expansion #[[#NODE8]] INNER [definition=#[[#NODE5]]] [parent=#[[#NODE7]]] [covers=expr] [arg0=expr];
 // IR-NEXT:     macro_expansion #[[#NODE9]] INNER [definition=#[[#NODE5]]] [parent=#[[#NODE7]]] [covers=expr] [arg0=expr];
-// IR-NEXT:     macro_expansion #[[#NODE10]] TWO [definition=#[[#NODE12]]] [site=7:844+9] [arguments=848+1, 851+1] [covers=statements] [arg0=expr] [arg1=expr];
-// IR-NEXT:     macro_expansion #[[#NODE13:]] TIMES2 [definition=#[[#NODE6]]] [site=7:899+13] [arguments=906+5] [covers=expr] [arg0=split];
-// IR-NEXT:     macro_expansion #[[#NODE14:]] FIELD [definition=#[[#NODE7]]] [site=7:967+14] [arguments=973+1, 976+4] [covers=expr] [arg0=expr] [arg1=name];
+// IR-NEXT:     macro_expansion #[[#NODE10]] TWO [definition=#[[#NODE13]]] [site=7:844+9] [arguments=848+1, 851+1] [covers=statements] [arg0=expr] [arg1=expr];
+// IR-NEXT:     macro_expansion #[[#NODE14:]] TIMES2 [definition=#[[#NODE6]]] [site=7:899+13] [arguments=906+5] [covers=expr] [arg0=split];
+// IR-NEXT:     macro_expansion #[[#NODE15:]] FIELD [definition=#[[#NODE7]]] [site=7:967+14] [arguments=973+1, 976+4] [covers=expr] [arg0=expr] [arg1=name];
 // IR-NEXT:     macro_expansion #[[#NODE11]] BITS [definition=#[[#NODE8]]] [site=7:1047+10] [arguments=1052+1, 1055+1] [covers=expr] [arg0=expr] [arg1=expr];
-// IR-NEXT:     macro_expansion #[[#NODE15:]] ADD_ONE [definition=#[[#NODE0]]] [site=7:1121+10] [arguments=1129+1] [covers=expr] [arg0=expr];
+// IR-NEXT:     macro_expansion #[[#NODE12]] ADD_ONE [definition=#[[#NODE0]]] [site=7:1121+10] [arguments=1129+1] [covers=expr] [arg0=expr];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

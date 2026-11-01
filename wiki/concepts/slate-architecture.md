@@ -65,9 +65,14 @@ old `macro_fold` pass still runs over everything else.
 - **Which expansions are kept**: `frontend/macro_keep.rs` decides on the IR,
   before lowering. It rejects control flow leaving the body, bodies that read
   caller locals (Rust hygiene hides them), locals in functions whose dispatch
-  lowering hoists them, variadic or `#` macros, and
-  place holes that are not plain (bit-fields, volatile, atomic, reduced
-  alignment).
+  lowering hoists them, variadic or `#` macros, compound literals and temporary
+  objects (a template's block would end their C lifetime early), value expansions
+  of type `void`, and place holes that are not plain (bit-fields, volatile, atomic,
+  reduced alignment).
+- **Value templates**: a `ValueKind::MacroExpansion` lowers to an `Expr::Macro` in
+  value position. While the rules run its body ends in `Stmt::Return(value)`, which
+  no other template has because `macro_keep.rs` rejects `return`; codegen prints it
+  as the expression, or a block ending in it.
 - **Identity**: two bodies are the same template when their printed Rust and
   printed hole types match. Spans and local names do not count. Text is the key
   because `NamedPrim`'s `Debug` includes the target width: a `c_ulong` body merges

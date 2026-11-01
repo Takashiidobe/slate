@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use slate_parser::ast::{MacroDefinition, MacroExpansionId};
 use slate_parser::ir::{
-    BindingId, MacroStructureVisitor, Module, Place, PlaceKind, Statement, ValueKind,
+    BindingId, MacroStructureVisitor, Module, Place, PlaceKind, Statement, Type, ValueKind,
     walk_macro_structure,
 };
 
@@ -29,7 +29,12 @@ impl Survey<'_> {
     }
 
     fn declare(&mut self, binding: BindingId) {
-        let open: Vec<_> = self.open.iter().map(|(id, _)| *id).collect();
+        let open: Vec<_> = self
+            .open
+            .iter()
+            .filter(|(_, open)| open.in_hole == 0)
+            .map(|(id, _)| *id)
+            .collect();
         self.declared.entry(binding).or_default().extend(open);
     }
 
@@ -79,6 +84,23 @@ impl MacroStructureVisitor for Survey<'_> {
 
     fn value_kind(&mut self, kind: &ValueKind) {
         if matches!(kind, ValueKind::LabelAddress(_) | ValueKind::Seh(_)) {
+            self.reject_open();
+        }
+        if let ValueKind::MacroExpansion {
+            expansion,
+            evaluation,
+        } = kind
+            && evaluation.value.ty == Type::Void
+        {
+            self.unfit.insert(*expansion);
+        }
+    }
+
+    fn place_kind(&mut self, kind: &PlaceKind) {
+        if matches!(
+            kind,
+            PlaceKind::CompoundLiteral { .. } | PlaceKind::Temporary { .. }
+        ) {
             self.reject_open();
         }
     }

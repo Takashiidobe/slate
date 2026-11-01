@@ -263,22 +263,96 @@ impl FunctionLowerer<'_, '_> {
         expansion: MacroExpansionId,
         body: &[Span<ir::Statement>],
     ) -> Result<Stmt> {
-        let definition = self.tables.macros.definition(expansion);
-        let parameters = definition.parameters.as_deref().unwrap_or_default();
+        self.open_macro_site(expansion);
+        let lowered = self.lower_statement_list(body);
+        let site = self.close_macro_site();
+        let (comments, template): (Vec<Stmt>, Vec<Stmt>) = lowered?
+            .into_iter()
+            .partition(|stmt| matches!(stmt, Stmt::Comment(_)));
+        let call =
+            self.finish_macro_site(expansion, site, template, |this, template, params, args| {
+                this.check_macro_template(body, None, template, params, args)
+            })?;
+        let call = Stmt::Expr(call);
+        if comments.is_empty() {
+            return Ok(call);
+        }
+        let mut body = comments;
+        body.push(call);
+        Ok(Stmt::Scope {
+            body,
+            macro_region: None,
+        })
+    }
+
+    pub(super) fn lower_macro_value_site(
+        &mut self,
+        expansion: MacroExpansionId,
+        evaluation: &ir::Evaluation,
+    ) -> Result<Expr> {
+        if self.macro_template_check {
+            let stmts = self.lower_statement_list(&evaluation.statements)?;
+            let value = self.lower_value(&evaluation.value)?;
+            if stmts.is_empty() {
+                return Ok(value);
+            }
+            return Ok(Expr::Block(Box::new(rust::Block {
+                stmts,
+                tail: Some(Box::new(value)),
+            })));
+        }
+        self.open_macro_site(expansion);
+        let lowered = self
+            .lower_statement_list(&evaluation.statements)
+            .and_then(|stmts| Ok((stmts, self.lower_value(&evaluation.value)?)));
+        let site = self.close_macro_site();
+        let (mut template, value) = lowered?;
+        template.retain(|stmt| !matches!(stmt, Stmt::Comment(_)));
+        template.push(Stmt::Return(Some(value)));
+        self.finish_macro_site(expansion, site, template, |this, template, params, args| {
+            this.check_macro_template(
+                &evaluation.statements,
+                Some(&evaluation.value),
+                template,
+                params,
+                args,
+            )
+        })
+    }
+
+    fn open_macro_site(&mut self, expansion: MacroExpansionId) {
+        let parameters = self
+            .tables
+            .macros
+            .definition(expansion)
+            .parameters
+            .as_ref()
+            .map_or(0, Vec::len);
         self.macro_sites.push(MacroSite {
             expansion,
             regions: std::mem::take(&mut self.macro_regions),
             argument_depth: std::mem::take(&mut self.macro_argument_depth),
-            arguments: vec![None; parameters.len()],
-            place_arguments: vec![None; parameters.len()],
+            arguments: vec![None; parameters],
+            place_arguments: vec![None; parameters],
         });
-        let lowered = self.lower_statement_list(body);
-        let site = self.macro_sites.pop().expect("pushed above");
-        self.macro_regions = site.regions;
+    }
+
+    fn close_macro_site(&mut self) -> MacroSite {
+        let mut site = self.macro_sites.pop().expect("opened by the caller");
+        self.macro_regions = std::mem::take(&mut site.regions);
         self.macro_argument_depth = site.argument_depth;
-        let (comments, mut template): (Vec<Stmt>, Vec<Stmt>) = lowered?
-            .into_iter()
-            .partition(|stmt| matches!(stmt, Stmt::Comment(_)));
+        site
+    }
+
+    fn finish_macro_site(
+        &mut self,
+        expansion: MacroExpansionId,
+        site: MacroSite,
+        mut template: Vec<Stmt>,
+        check: impl FnOnce(&mut Self, &[Stmt], &[rust::MacroParam], &[Expr]) -> Result<()>,
+    ) -> Result<Expr> {
+        let definition = self.tables.macros.definition(expansion);
+        let parameters = definition.parameters.as_deref().unwrap_or_default();
         macro_templates::normalize_locals(&mut template);
         let mut params = Vec::new();
         let mut args = Vec::new();
@@ -309,7 +383,7 @@ impl FunctionLowerer<'_, '_> {
             hole_types.push(ty);
         }
         if std::env::var_os("SLATE_CHECK_MACRO_TEMPLATES").is_some() {
-            self.check_macro_template(body, &template, &params, &args)?;
+            check(self, &template, &params, &args)?;
         }
         let mut printed = format!("{params:?}");
         printed.extend(hole_types.iter().map(codegen::type_to_string));
@@ -328,16 +402,7 @@ impl FunctionLowerer<'_, '_> {
             name: definition.name.to_string(),
             inline: None,
         });
-        let call = Stmt::Expr(Expr::Macro { name, args });
-        if comments.is_empty() {
-            return Ok(call);
-        }
-        let mut body = comments;
-        body.push(call);
-        Ok(Stmt::Scope {
-            body,
-            macro_region: None,
-        })
+        Ok(Expr::Macro { name, args })
     }
 
     pub(super) fn lower_macro_hole(
@@ -408,11 +473,12 @@ impl FunctionLowerer<'_, '_> {
     fn check_macro_template(
         &mut self,
         body: &[Span<ir::Statement>],
+        result: Option<&ir::Value>,
         template: &[Stmt],
         params: &[rust::MacroParam],
         args: &[Expr],
     ) -> Result<()> {
-        if !self.macro_sites.is_empty() {
+        if !self.macro_sites.is_empty() || self.macro_template_check {
             return Ok(());
         }
         let mut inline_body = body.to_vec();
@@ -420,7 +486,16 @@ impl FunctionLowerer<'_, '_> {
         let regions = std::mem::take(&mut self.macro_regions);
         let depth = std::mem::take(&mut self.macro_argument_depth);
         let outer = std::mem::replace(&mut self.macro_template_check, true);
-        let lowered = self.lower_statement_list(&inline_body);
+        let lowered = self
+            .lower_statement_list(&inline_body)
+            .and_then(|mut stmts| {
+                if let Some(result) = result {
+                    let mut result = result.clone();
+                    ir::strip_all_macro_structure_in_value(&mut result);
+                    stmts.push(Stmt::Return(Some(self.lower_value(&result)?)));
+                }
+                Ok(stmts)
+            });
         self.macro_template_check = outer;
         self.macro_regions = regions;
         self.macro_argument_depth = depth;

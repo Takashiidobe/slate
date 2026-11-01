@@ -2529,23 +2529,58 @@ impl Lowerer {
         if !self.macro_structure.holes(e.id).is_empty() {
             self.macro_value_hole = Some(e.id);
         }
+        let open = self.open_macros.len();
+        self.open_macros
+            .extend_from_slice(self.macro_structure.value_expansions(e.id));
         let lowered = self.lower_expr(e);
+        let opened = self.open_macros.split_off(open);
         self.macro_value_hole = enclosing_hole;
-        let lowered = lowered.map_err(|error| error.at(e.expansion))?;
+        let mut lowered = lowered.map_err(|error| error.at(e.expansion))?;
+        for expansion in opened.into_iter().rev() {
+            lowered = self.macro_value_expansion(e, expansion, lowered);
+        }
         let lowered = self.macro_value_holes(e, lowered);
         self.finish_expr(e, lowered)
+    }
+
+    fn macro_value_expansion(
+        &mut self,
+        e: &Expr,
+        expansion: crate::ast::MacroExpansionId,
+        lowered: Operand,
+    ) -> Operand {
+        self.types.record_operand_c_type(&lowered);
+        let ty = lowered.value.ty.clone();
+        let c = lowered.c;
+        Operand {
+            c,
+            value: Value {
+                ty,
+                node: e.derive(ValueKind::MacroExpansion {
+                    expansion,
+                    evaluation: Box::new(Evaluation {
+                        statements: Vec::new(),
+                        value: lowered.value,
+                    }),
+                }),
+            },
+        }
     }
 
     fn is_binary_chain(&self, e: &Expr) -> bool {
         matches!(&e.value, ExprKind::Binary { left, .. } if matches!(left.value, ExprKind::Binary { .. }))
             && !self.types.constexpr_values.contains_key(&e.id)
+            && self.macro_structure.value_expansions(e.id).is_empty()
     }
 
     fn binary_chain(&mut self, e: &Expr) -> Result<Operand, ResolveError> {
         let mut spine = Vec::new();
         let mut node = e;
         while let ExprKind::Binary { op, left, right } = &node.value {
-            if !spine.is_empty() && self.types.constexpr_values.contains_key(&node.id) {
+            if !spine.is_empty()
+                && (self.types.constexpr_values.contains_key(&node.id)
+                    || !self.macro_structure.value_expansions(node.id).is_empty())
+            {
                 break;
             }
             spine.push((node, *op, right));

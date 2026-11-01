@@ -72,7 +72,7 @@ int use(int value) {
 // IR-NEXT:     fn %[[VALUE_use:[0-9]+]] @use(%[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         macro_body #[[#NODE0:]] { [macro=ASSERT#1 body]
 // IR-NEXT:             { [macro=ASSERT#1 body]
-// IR-NEXT:                 if not<bool>(macro_arg<bool>(#[[#NODE0]], 0, lt<i32>(read<i32>(%[[VALUE_value]]) [macro=ASSERT#1 arg0], const<i32>(10) [macro=ASSERT#1 arg0] [macro=LIMIT#2 body]) [macro=ASSERT#1 arg0]) [macro=ASSERT#1 arg0]) [macro=ASSERT#1 body] [macro=ASSERT#1 body]
+// IR-NEXT:                 if not<bool>(macro_arg<bool>(#[[#NODE0]], 0, lt<i32>(read<i32>(%[[VALUE_value]]) [macro=ASSERT#1 arg0], macro_value<i32>(#[[#NODE1:]], statements=0, const<i32>(10) [macro=ASSERT#1 arg0] [macro=LIMIT#2 body]) [macro=ASSERT#1 arg0] [macro=LIMIT#2 body]) [macro=ASSERT#1 arg0]) [macro=ASSERT#1 arg0]) [macro=ASSERT#1 body] [macro=ASSERT#1 body]
 // IR-NEXT:                     call<void>(%[[VALUE_report]], pointer_cast<ptr<const i8>>(macro_arg<ptr<i8>>(#[[#NODE0]], 1, array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_str]]) [macro=ASSERT#1 arg1]) [macro=ASSERT#1 arg1]) [macro=ASSERT#1 arg1]) [macro=ASSERT#1 body] [macro=ASSERT#1 body];
 // IR-NEXT:             }
 // IR-NEXT:         }
@@ -80,12 +80,12 @@ int use(int value) {
 // IR-NEXT:         ;
 // IR-NEXT:         ;
 // IR-NEXT:         call<i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]]) [macro=PRINT#5 arg0]) [macro=PRINT#5 arg0], read<i32>(%[[VALUE_value]]) [macro=PRINT#5 arg0]) [macro=PRINT#5 body];
-// IR-NEXT:         write<i32>(%[[VALUE_value]], add<i32>(read<i32>(%[[VALUE_value]]) [macro=TWICE#6 arg0], read<i32>(%[[VALUE_value]]) [macro=TWICE#6 arg0]) [macro=TWICE#6 body]);
-// IR-NEXT:         write<i32>(%[[VALUE_value]], add<i32>(add<i32>(read<i32>(%[[VALUE_value]]) [macro=WRAP#7 arg0], const<i32>(1) [macro=WRAP#7 arg0]) [macro=WRAP#7 arg0], const<i32>(2)));
+// IR-NEXT:         write<i32>(%[[VALUE_value]], macro_value<i32>(#[[#NODE2:]], statements=0, add<i32>(macro_arg<i32>(#{{[0-9]+}}, 0, read<i32>(%[[VALUE_value]]) [macro=TWICE#6 arg0]) [macro=TWICE#6 arg0], macro_arg<i32>(#{{[0-9]+}}, 0, read<i32>(%[[VALUE_value]]) [macro=TWICE#6 arg0]) [macro=TWICE#6 arg0]) [macro=TWICE#6 body]) [macro=TWICE#6 body]);
+// IR-NEXT:         write<i32>(%[[VALUE_value]], add<i32>(macro_value<i32>(#[[#NODE3:]], statements=0, macro_arg<i32>(#{{[0-9]+}}, 0, add<i32>(read<i32>(%[[VALUE_value]]) [macro=WRAP#7 arg0], const<i32>(1) [macro=WRAP#7 arg0]) [macro=WRAP#7 arg0]) [macro=WRAP#7 arg0]) [macro=WRAP#7 body], const<i32>(2)));
 // IR-NEXT:         write<i32>(%[[VALUE_value]], read<i32>(%[[VALUE_value]]) [macro=CALL_WITH#8 arg1]);
 // IR-NEXT:         write<i32>(%[[VALUE_value]], read<i32>(%[[VALUE_value]]));
-// IR-NEXT:         call<i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_3]]) [macro=LOG#10 arg0]) [macro=LOG#10 arg0], read<i32>(%[[VALUE_value]]) [macro=LOG#10 arg1], const<i32>(10) [macro=LOG#10 arg1] [macro=LIMIT#11 body]) [macro=LOG#10 body];
-// IR-NEXT:         write<i32>(%[[VALUE_value]], const<i32>(1) [macro=NO_ARGS#12 body]);
+// IR-NEXT:         call<i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_3]]) [macro=LOG#10 arg0]) [macro=LOG#10 arg0], read<i32>(%[[VALUE_value]]) [macro=LOG#10 arg1], macro_value<i32>(#[[#NODE4:]], statements=0, const<i32>(10) [macro=LOG#10 arg1] [macro=LIMIT#11 body]) [macro=LOG#10 arg1] [macro=LIMIT#11 body]) [macro=LOG#10 body];
+// IR-NEXT:         write<i32>(%[[VALUE_value]], macro_value<i32>(#[[#NODE5:]], statements=0, const<i32>(1) [macro=NO_ARGS#12 body]) [macro=NO_ARGS#12 body]);
 // IR-NEXT:         write<i32>(%[[VALUE_value]], read<i32>(%[[VALUE_value]]) [macro=ID#13 arg0] [macro=ID#14 arg0]);
 // IR-NEXT:         write<i32>(%[[VALUE_value]], read<i32>(%[[VALUE_value]]));
 // IR-NEXT:         if ne<i32>(read<i32>(%[[VALUE_value]]) [macro=OPEN#16 body], const<i32>(0) [macro=OPEN#16 body]) [macro=OPEN#16 body]
@@ -94,37 +94,37 @@ int use(int value) {
 // IR-NEXT:             }
 // IR-NEXT:         return read<i32>(%[[VALUE_value]]);
 // IR-NEXT:     }
-// IR-NEXT:     macro_definition #[[#NODE1:]] LIMIT [defined=7:4] = "10";
+// IR-NEXT:     macro_definition #[[#NODE6:]] LIMIT [defined=7:4] = "10";
 // IR-NEXT:     macro_definition #[[#NODE0]] ASSERT(cond, msg) [defined=7:6] = "{ if ( ! ( cond ) ) report ( msg ) ; }";
-// IR-NEXT:     macro_definition #[[#NODE2:]] TRACE(x) [defined=7:7] = "";
-// IR-NEXT:     macro_definition #[[#NODE3:]] NOTHING [defined=7:5] = "";
-// IR-NEXT:     macro_definition #[[#NODE4:]] PRINT(x) [defined=7:8] = "printf x";
-// IR-NEXT:     macro_definition #[[#NODE5:]] TWICE(x) [defined=7:9] = "x + x";
-// IR-NEXT:     macro_definition #[[#NODE6:]] WRAP(x) [defined=7:10] = "( x )";
-// IR-NEXT:     macro_definition #[[#NODE7:]] CALL_WITH(f, x) [defined=7:11] = "f ( x )";
-// IR-NEXT:     macro_definition #[[#NODE8:]] OBJECT_TO_FUNCTION [defined=7:13] = "ID";
-// IR-NEXT:     macro_definition #[[#NODE9:]] LOG(format) [variadic] [defined=7:14] = "printf ( format , __VA_ARGS__ )";
-// IR-NEXT:     macro_definition #[[#NODE10:]] NO_ARGS() [defined=7:15] = "1";
-// IR-NEXT:     macro_definition #[[#NODE11:]] ID(x) [defined=7:12] = "x";
-// IR-NEXT:     macro_definition #[[#NODE12:]] OPEN [defined=7:16] = "if ( value ) {";
+// IR-NEXT:     macro_definition #[[#NODE1]] TRACE(x) [defined=7:7] = "";
+// IR-NEXT:     macro_definition #[[#NODE7:]] NOTHING [defined=7:5] = "";
+// IR-NEXT:     macro_definition #[[#NODE8:]] PRINT(x) [defined=7:8] = "printf x";
+// IR-NEXT:     macro_definition #[[#NODE9:]] TWICE(x) [defined=7:9] = "x + x";
+// IR-NEXT:     macro_definition #[[#NODE2]] WRAP(x) [defined=7:10] = "( x )";
+// IR-NEXT:     macro_definition #[[#NODE3]] CALL_WITH(f, x) [defined=7:11] = "f ( x )";
+// IR-NEXT:     macro_definition #[[#NODE10:]] OBJECT_TO_FUNCTION [defined=7:13] = "ID";
+// IR-NEXT:     macro_definition #[[#NODE11:]] LOG(format) [variadic] [defined=7:14] = "printf ( format , __VA_ARGS__ )";
+// IR-NEXT:     macro_definition #[[#NODE12:]] NO_ARGS() [defined=7:15] = "1";
+// IR-NEXT:     macro_definition #[[#NODE4]] ID(x) [defined=7:12] = "x";
+// IR-NEXT:     macro_definition #[[#NODE5]] OPEN [defined=7:16] = "if ( value ) {";
 // IR-NEXT:     macro_definition #[[#NODE13:]] CLOSE [defined=7:17] = "}";
-// IR-NEXT:     macro_expansion #[[#NODE1]] LIMIT [definition=#[[#NODE1]]] [site=7:465+5] [covers=expr];
+// IR-NEXT:     macro_expansion #[[#NODE6]] LIMIT [definition=#[[#NODE6]]] [site=7:465+5] [covers=expr];
 // IR-NEXT:     macro_expansion #[[#NODE0]] ASSERT [definition=#[[#NODE0]]] [site=7:505+32] [arguments=512+13, 527+9] [covers=statements] [arg0=expr] [arg1=expr];
-// IR-NEXT:     macro_expansion #[[#NODE2]] LIMIT [definition=#[[#NODE1]]] [site=7:520+5] [parent=#[[#NODE0]]] [covers=expr];
-// IR-NEXT:     macro_expansion #[[#NODE3]] TRACE [definition=#[[#NODE2]]] [site=7:543+28] [arguments=549+21] [empty];
-// IR-NEXT:     macro_expansion #[[#NODE4]] NOTHING [definition=#[[#NODE3]]] [site=7:577+7] [empty];
-// IR-NEXT:     macro_expansion #[[#NODE5]] PRINT [definition=#[[#NODE4]]] [site=7:590+22] [arguments=596+15] [covers=expr] [arg0=call_arguments];
-// IR-NEXT:     macro_expansion #[[#NODE6]] TWICE [definition=#[[#NODE5]]] [site=7:626+12] [arguments=632+5] [covers=expr] [arg0=expr] [arg0=expr];
-// IR-NEXT:     macro_expansion #[[#NODE7]] WRAP [definition=#[[#NODE6]]] [site=7:652+15] [arguments=657+9] [covers=expr] [arg0=expr];
-// IR-NEXT:     macro_expansion #[[#NODE8]] CALL_WITH [definition=#[[#NODE7]]] [site=7:685+20] [arguments=695+2, 699+5] [covers=expr] [arg1=expr];
-// IR-NEXT:     macro_expansion #[[#NODE9]] OBJECT_TO_FUNCTION [definition=#[[#NODE8]]] [site=7:719+18];
-// IR-NEXT:     macro_expansion #[[#NODE10]] LOG [definition=#[[#NODE9]]] [site=7:750+28] [arguments=754+9, 765+5, 772+5] [covers=expr] [arg0=expr] [arg1=split];
-// IR-NEXT:     macro_expansion #[[#NODE11]] LIMIT [definition=#[[#NODE1]]] [site=7:772+5] [parent=#[[#NODE10]]] [covers=expr];
-// IR-NEXT:     macro_expansion #[[#NODE12]] NO_ARGS [definition=#[[#NODE10]]] [site=7:792+9] [covers=expr];
-// IR-NEXT:     macro_expansion #[[#NODE13]] ID [definition=#[[#NODE11]]] [site=7:815+13] [arguments=818+9] [covers=expr] [arg0=expr];
-// IR-NEXT:     macro_expansion #[[#NODE14:]] ID [definition=#[[#NODE11]]] [site=7:818+9] [arguments=821+5] [parent=#[[#NODE13]]] [covers=expr] [arg0=expr];
-// IR-NEXT:     macro_expansion #[[#NODE15:]] ID [definition=#[[#NODE11]]] [site=7:842+4] [arguments=845+0] [empty];
-// IR-NEXT:     macro_expansion #[[#NODE16:]] OPEN [definition=#[[#NODE12]]] [site=7:858+4] [covers=split];
+// IR-NEXT:     macro_expansion #[[#NODE1]] LIMIT [definition=#[[#NODE6]]] [site=7:520+5] [parent=#[[#NODE0]]] [covers=expr];
+// IR-NEXT:     macro_expansion #[[#NODE7]] TRACE [definition=#[[#NODE1]]] [site=7:543+28] [arguments=549+21] [empty];
+// IR-NEXT:     macro_expansion #[[#NODE8]] NOTHING [definition=#[[#NODE7]]] [site=7:577+7] [empty];
+// IR-NEXT:     macro_expansion #[[#NODE9]] PRINT [definition=#[[#NODE8]]] [site=7:590+22] [arguments=596+15] [covers=expr] [arg0=call_arguments];
+// IR-NEXT:     macro_expansion #[[#NODE2]] TWICE [definition=#[[#NODE9]]] [site=7:626+12] [arguments=632+5] [covers=expr] [arg0=expr] [arg0=expr];
+// IR-NEXT:     macro_expansion #[[#NODE3]] WRAP [definition=#[[#NODE2]]] [site=7:652+15] [arguments=657+9] [covers=expr] [arg0=expr];
+// IR-NEXT:     macro_expansion #[[#NODE10]] CALL_WITH [definition=#[[#NODE3]]] [site=7:685+20] [arguments=695+2, 699+5] [covers=expr] [arg1=expr];
+// IR-NEXT:     macro_expansion #[[#NODE11]] OBJECT_TO_FUNCTION [definition=#[[#NODE10]]] [site=7:719+18];
+// IR-NEXT:     macro_expansion #[[#NODE12]] LOG [definition=#[[#NODE11]]] [site=7:750+28] [arguments=754+9, 765+5, 772+5] [covers=expr] [arg0=expr] [arg1=split];
+// IR-NEXT:     macro_expansion #[[#NODE4]] LIMIT [definition=#[[#NODE6]]] [site=7:772+5] [parent=#[[#NODE12]]] [covers=expr];
+// IR-NEXT:     macro_expansion #[[#NODE5]] NO_ARGS [definition=#[[#NODE12]]] [site=7:792+9] [covers=expr];
+// IR-NEXT:     macro_expansion #[[#NODE13]] ID [definition=#[[#NODE4]]] [site=7:815+13] [arguments=818+9] [covers=expr] [arg0=expr];
+// IR-NEXT:     macro_expansion #[[#NODE14:]] ID [definition=#[[#NODE4]]] [site=7:818+9] [arguments=821+5] [parent=#[[#NODE13]]] [covers=expr] [arg0=expr];
+// IR-NEXT:     macro_expansion #[[#NODE15:]] ID [definition=#[[#NODE4]]] [site=7:842+4] [arguments=845+0] [empty];
+// IR-NEXT:     macro_expansion #[[#NODE16:]] OPEN [definition=#[[#NODE5]]] [site=7:858+4] [covers=split];
 // IR-NEXT:     macro_expansion #[[#NODE17:]] CLOSE [definition=#[[#NODE13]]] [site=7:874+5] [covers=split];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

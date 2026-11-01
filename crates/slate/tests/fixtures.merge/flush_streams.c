@@ -71,7 +71,7 @@ int main(void) {
 // CHECK-NEXT:     ($c:expr, $m:expr) => {
 // CHECK-NEXT:         if !$c {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::fputs($m as *const c_char, slate_support::stderr()) };
+// CHECK-NEXT:             unsafe { slate_support::fputs(($m) as *const c_char, slate_support::stderr()) };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };

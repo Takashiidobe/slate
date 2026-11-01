@@ -248,6 +248,9 @@ fn element<'a>(pointer: &Value, index: BigInt, depth: usize, env: Env<'a>) -> Op
     let depth = depth.checked_sub(1)?;
     match &pointer.node.value {
         ValueKind::MacroArg { value, .. } => element(value, index, depth, env),
+        ValueKind::MacroExpansion { evaluation, .. } => {
+            element(&evaluation.value, index, depth, env)
+        }
         ValueKind::ArrayDecay { place, .. } => {
             let index = u64::try_from(index).ok()?;
             member(stored(place, depth, env)?, AggregateTarget::Index(index))
@@ -369,6 +372,9 @@ fn evaluate(value: &Value, depth: usize, env: Env) -> Option<BigInt> {
     let depth = depth.checked_sub(1)?;
     if let ValueKind::MacroArg { value, .. } = &value.node.value {
         return evaluate(value, depth, env);
+    }
+    if let ValueKind::MacroExpansion { evaluation, .. } = &value.node.value {
+        return evaluate(&evaluation.value, depth, env);
     }
     if matches!(value.ty, Type::Defined(_)) {
         return enumerated(value, depth, env);
@@ -517,6 +523,7 @@ fn address(value: &Value, depth: usize, env: Env) -> Option<BigInt> {
     let width = env.pointer_width?;
     match &value.node.value {
         ValueKind::MacroArg { value, .. } => address(value, depth, env),
+        ValueKind::MacroExpansion { evaluation, .. } => address(&evaluation.value, depth, env),
         ValueKind::Null => Some(BigInt::from(0u8)),
         ValueKind::Convert {
             kind: ConversionKind::IntToPtr,
@@ -568,6 +575,9 @@ fn floating(value: &Value, depth: usize, env: Env) -> Option<Quad> {
     let depth = depth.checked_sub(1)?;
     if let ValueKind::MacroArg { value, .. } = &value.node.value {
         return floating(value, depth, env);
+    }
+    if let ValueKind::MacroExpansion { evaluation, .. } = &value.node.value {
+        return floating(&evaluation.value, depth, env);
     }
     let Type::Numeric(NumericType::Float(format)) = value.ty else {
         return None;
@@ -702,6 +712,7 @@ fn truncated(value: Quad, bits: usize) -> Option<BigInt> {
 fn enumerated(value: &Value, depth: usize, env: Env) -> Option<BigInt> {
     match &value.node.value {
         ValueKind::MacroArg { value, .. } => enumerated(value, depth, env),
+        ValueKind::MacroExpansion { evaluation, .. } => enumerated(&evaluation.value, depth, env),
         ValueKind::Constant(Number::Integer(value)) => Some(BigInt::from(value.clone())),
         ValueKind::Constant(Number::SignedInteger(value)) => Some(value.clone()),
         ValueKind::Constant(Number::Bool(value)) => Some(BigInt::from(u8::from(*value))),

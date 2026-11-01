@@ -29,16 +29,19 @@ fn expr_prec(expr: &Expr) -> Precedence {
 }
 
 fn starts_with_brace_expr(expr: &Expr) -> bool {
-    matches!(
-        expr,
-        Expr::Block(_)
-            | Expr::Unsafe(_)
-            | Expr::ConstBlock(_)
-            | Expr::Transmute { .. }
-            | Expr::CopyNonoverlapping { .. }
-            | Expr::If { .. }
-            | Expr::Match { .. }
-    )
+    match expr {
+        Expr::Var(name) => name.as_str().starts_with('$'),
+        _ => matches!(
+            expr,
+            Expr::Block(_)
+                | Expr::Unsafe(_)
+                | Expr::ConstBlock(_)
+                | Expr::Transmute { .. }
+                | Expr::CopyNonoverlapping { .. }
+                | Expr::If { .. }
+                | Expr::Match { .. }
+        ),
+    }
 }
 
 fn expr_contains_bare_struct_lit(expr: &Expr) -> bool {
@@ -279,7 +282,19 @@ impl<W: Write> Codegen<W> {
                     .collect::<Vec<_>>()
                     .join(", ");
                 writeln!(self.out, "({matcher}) => {{")?;
-                self.stmts(body)?;
+                match body.split_last() {
+                    Some((Stmt::Return(Some(value)), [])) => {
+                        self.expr(value)?;
+                        self.out.write_str("\n")?;
+                    }
+                    Some((Stmt::Return(Some(value)), statements)) => {
+                        self.out.write_str("{\n")?;
+                        self.stmts(statements)?;
+                        self.expr(value)?;
+                        self.out.write_str("\n}\n")?;
+                    }
+                    _ => self.stmts(body)?,
+                }
                 self.out.write_str("};\n}\n")?;
             }
             Item::MacroUseMod { name } => {
