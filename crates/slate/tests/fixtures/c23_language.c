@@ -313,7 +313,7 @@ int main(void) {
 // CHECK-NEXT:         + inferred_value + same_type_value + unqualified_value + (signed_precise as i32)
 // CHECK-NEXT:         + ((unsigned_precise as u32) as i32) + binary_value + aligned_value.0) as i64)
 // CHECK-NEXT:         as u64)
-// CHECK-NEXT:         .wrapping_add(4)
+// CHECK-NEXT:         .wrapping_add(std::mem::align_of::<i32>() as u64)
 // CHECK-NEXT:         .wrapping_add((α as i64) as u64)
 // CHECK-NEXT:         .wrapping_add((((utf8_character as u32) as i32) as i64) as u64)
 // CHECK-NEXT:         .wrapping_add(((((unsafe { utf8_text[0] }) as u32) as i32) as i64) as u64)

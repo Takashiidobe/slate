@@ -8,8 +8,8 @@ Macro epic `slate-f2zu.9.5.12`, in order.
 - [x] 4. `9.5.6`: pass caller locals as hidden arguments, then regenerate zlib.
 - [x] 5. `.10`: allow `return`, `break` and `continue` in templates.
 - [x] 6. `.20`: keep `sizeof` unfolded in templates.
-- [ ] 7. `.24`: lower `alignof` to `align_of::<T>()` where usable.
-- [ ] 8. `.25`: lower `offsetof` to `offset_of!` where usable.
+- [x] 7. `.24`: lower `alignof` to `align_of::<T>()` where usable.
+- [x] 8. `.25`: lower `offsetof` to `offset_of!` where usable.
 - [ ] 9. `.11` and `.13`: keep integer casts and conversions in sema.
 - [ ] 10. `.19`: decide whether `goto` out of a macro can lift.
 - [ ] 11. `.14`: audit zlib, with all-features `validate_merge` and both full profiles.

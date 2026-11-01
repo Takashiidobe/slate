@@ -215,8 +215,7 @@ Per-value expansion chains are not in the IR yet (only atomic builtins record
 
 - Keep source expressions for Rust: `1 + 2` stays an `add`. Never fold
   ordinary arithmetic, casts, comparisons, or conditionals.
-- Fold only where a concrete constant is required: `_Alignof`/`offsetof`
-  leaves (with `align_of`/`offset_of` metadata), array bounds, `_BitInt`
+- Fold only where a concrete constant is required: array bounds, `_BitInt`
   widths, case labels, bit-field widths, alignment requests, atomic orderings.
 - `sizeof` keeps its operand type as a `size_of<size_t, T>(N)` leaf
   (`ValueKind::LayoutQuery`), which every constant evaluator reads as `N`, so
@@ -226,6 +225,16 @@ Per-value expansion chains are not in the IR yet (only atomic builtins record
   flexible arrays, and any record holding one of these, an `_Atomic` field, or
   a bit-field unit that Rust aligns below its size). An `_Atomic` operand, a declared alignment, and a function operand have no
   usable `T` and stay a `const` with `size_of` metadata.
+- `_Alignof` and `__alignof__` keep the same shape, `align_of<size_t, T>(N)`,
+  and lower to `align_of::<T>()` under the same layout gate. They stay a `const`
+  with `align_of` metadata for an `_Atomic` operand, a declared alignment on
+  the type, object or member, a function operand, and a GNU preferred alignment
+  above the ABI alignment.
+- `offsetof` keeps its member path as `offset_of<size_t, T, a.b>(N)` and lowers
+  to `offset_of!(T, a.b)` under the same gate, through unions too. Rust lowering
+  prints `N` for a member reached through an anonymous record or an erased
+  field. An `_Atomic` type or an array index in the path has no usable form and
+  stays a `const` with `offset_of` metadata.
 - An `offsetof` member name resolves through anonymous struct and union
   members at any depth, as member access does, and adds each level's offset
   (`clang/linux/x86_64/offsetof_anonymous_members.c`). A bit-field found that

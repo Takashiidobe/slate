@@ -65,11 +65,11 @@ int bits_align = _Alignof(struct bits);
 // DEFAULT-NEXT:         field2 y: i32 : 20;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 1, 1], bit_offsets=[None, Some(8), Some(12)], bit_units=[(1, 3)], field_units=[None, Some(0), Some(0)]];
 // DEFAULT-NEXT:     global %[[VALUE_user_aligned_size:[0-9]+]] user_aligned_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_user_aligned]]>(16))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_user_aligned_align:[0-9]+]] user_aligned_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(8))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_user_aligned_align:[0-9]+]] user_aligned_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(align_of<u64, @type[[TYPE_user_aligned]]>(8))) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_pragma_four_size:[0-9]+]] pragma_four_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_pragma_four]]>(12))) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_reset_size:[0-9]+]] reset_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_reset]]>(16))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_reset_align:[0-9]+]] reset_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(8))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_bits_align:[0-9]+]] bits_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(4))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_reset_align:[0-9]+]] reset_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(align_of<u64, @type[[TYPE_reset]]>(8))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bits_align:[0-9]+]] bits_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(align_of<u64, @type[[TYPE_bits]]>(4))) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN BARE
@@ -113,11 +113,11 @@ int bits_align = _Alignof(struct bits);
 // BARE-NEXT:         field2 y: i32 : 20;
 // BARE-NEXT:     } [size=4, align=1, offsets=[0, 1, 1], bit_offsets=[None, Some(8), Some(12)], bit_units=[(1, 3)], field_units=[None, Some(0), Some(0)]];
 // BARE-NEXT:     global %[[VALUE_user_aligned_size:[0-9]+]] user_aligned_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_user_aligned]]>(16))) [linkage=external];
-// BARE-NEXT:     global %[[VALUE_user_aligned_align:[0-9]+]] user_aligned_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(8))) [linkage=external];
+// BARE-NEXT:     global %[[VALUE_user_aligned_align:[0-9]+]] user_aligned_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(align_of<u64, @type[[TYPE_user_aligned]]>(8))) [linkage=external];
 // BARE-NEXT:     global %[[VALUE_pragma_four_size:[0-9]+]] pragma_four_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_pragma_four]]>(9))) [linkage=external];
 // BARE-NEXT:     global %[[VALUE_reset_size:[0-9]+]] reset_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_reset]]>(9))) [linkage=external];
-// BARE-NEXT:     global %[[VALUE_reset_align:[0-9]+]] reset_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(1))) [linkage=external];
-// BARE-NEXT:     global %[[VALUE_bits_align:[0-9]+]] bits_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(1))) [linkage=external];
+// BARE-NEXT:     global %[[VALUE_reset_align:[0-9]+]] reset_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(align_of<u64, @type[[TYPE_reset]]>(1))) [linkage=external];
+// BARE-NEXT:     global %[[VALUE_bits_align:[0-9]+]] bits_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(align_of<u64, @type[[TYPE_bits]]>(1))) [linkage=external];
 // BARE-NEXT: }
 // SLATE-FILECHECK-END BARE
 // SLATE-FILECHECK-BEGIN TWO
@@ -161,11 +161,11 @@ int bits_align = _Alignof(struct bits);
 // TWO-NEXT:         field2 y: i32 : 20;
 // TWO-NEXT:     } [size=4, align=2, offsets=[0, 1, 1], bit_offsets=[None, Some(8), Some(12)], bit_units=[(1, 3)], field_units=[None, Some(0), Some(0)]];
 // TWO-NEXT:     global %[[VALUE_user_aligned_size:[0-9]+]] user_aligned_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_user_aligned]]>(6))) [linkage=external];
-// TWO-NEXT:     global %[[VALUE_user_aligned_align:[0-9]+]] user_aligned_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(2))) [linkage=external];
+// TWO-NEXT:     global %[[VALUE_user_aligned_align:[0-9]+]] user_aligned_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(align_of<u64, @type[[TYPE_user_aligned]]>(2))) [linkage=external];
 // TWO-NEXT:     global %[[VALUE_pragma_four_size:[0-9]+]] pragma_four_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_pragma_four]]>(12))) [linkage=external];
 // TWO-NEXT:     global %[[VALUE_reset_size:[0-9]+]] reset_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_reset]]>(10))) [linkage=external];
-// TWO-NEXT:     global %[[VALUE_reset_align:[0-9]+]] reset_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(2))) [linkage=external];
-// TWO-NEXT:     global %[[VALUE_bits_align:[0-9]+]] bits_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(2))) [linkage=external];
+// TWO-NEXT:     global %[[VALUE_reset_align:[0-9]+]] reset_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(align_of<u64, @type[[TYPE_reset]]>(2))) [linkage=external];
+// TWO-NEXT:     global %[[VALUE_bits_align:[0-9]+]] bits_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(align_of<u64, @type[[TYPE_bits]]>(2))) [linkage=external];
 // TWO-NEXT: }
 // SLATE-FILECHECK-END TWO
 // SLATE-FILECHECK-BEGIN BOTH
@@ -209,11 +209,11 @@ int bits_align = _Alignof(struct bits);
 // BOTH-NEXT:         field2 y: i32 : 20;
 // BOTH-NEXT:     } [size=4, align=2, offsets=[0, 1, 1], bit_offsets=[None, Some(8), Some(12)], bit_units=[(1, 3)], field_units=[None, Some(0), Some(0)]];
 // BOTH-NEXT:     global %[[VALUE_user_aligned_size:[0-9]+]] user_aligned_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_user_aligned]]>(6))) [linkage=external];
-// BOTH-NEXT:     global %[[VALUE_user_aligned_align:[0-9]+]] user_aligned_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(2))) [linkage=external];
+// BOTH-NEXT:     global %[[VALUE_user_aligned_align:[0-9]+]] user_aligned_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(align_of<u64, @type[[TYPE_user_aligned]]>(2))) [linkage=external];
 // BOTH-NEXT:     global %[[VALUE_pragma_four_size:[0-9]+]] pragma_four_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_pragma_four]]>(9))) [linkage=external];
 // BOTH-NEXT:     global %[[VALUE_reset_size:[0-9]+]] reset_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_reset]]>(9))) [linkage=external];
-// BOTH-NEXT:     global %[[VALUE_reset_align:[0-9]+]] reset_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(1))) [linkage=external];
-// BOTH-NEXT:     global %[[VALUE_bits_align:[0-9]+]] bits_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(2))) [linkage=external];
+// BOTH-NEXT:     global %[[VALUE_reset_align:[0-9]+]] reset_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(align_of<u64, @type[[TYPE_reset]]>(1))) [linkage=external];
+// BOTH-NEXT:     global %[[VALUE_bits_align:[0-9]+]] bits_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(align_of<u64, @type[[TYPE_bits]]>(2))) [linkage=external];
 // BOTH-NEXT: }
 // SLATE-FILECHECK-END BOTH
 // SLATE-FILECHECK-BEGIN NEGATED
@@ -257,10 +257,10 @@ int bits_align = _Alignof(struct bits);
 // NEGATED-NEXT:         field2 y: i32 : 20;
 // NEGATED-NEXT:     } [size=4, align=4, offsets=[0, 1, 1], bit_offsets=[None, Some(8), Some(12)], bit_units=[(1, 3)], field_units=[None, Some(0), Some(0)]];
 // NEGATED-NEXT:     global %[[VALUE_user_aligned_size:[0-9]+]] user_aligned_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_user_aligned]]>(16))) [linkage=external];
-// NEGATED-NEXT:     global %[[VALUE_user_aligned_align:[0-9]+]] user_aligned_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(8))) [linkage=external];
+// NEGATED-NEXT:     global %[[VALUE_user_aligned_align:[0-9]+]] user_aligned_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(align_of<u64, @type[[TYPE_user_aligned]]>(8))) [linkage=external];
 // NEGATED-NEXT:     global %[[VALUE_pragma_four_size:[0-9]+]] pragma_four_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_pragma_four]]>(12))) [linkage=external];
 // NEGATED-NEXT:     global %[[VALUE_reset_size:[0-9]+]] reset_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_reset]]>(16))) [linkage=external];
-// NEGATED-NEXT:     global %[[VALUE_reset_align:[0-9]+]] reset_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(8))) [linkage=external];
-// NEGATED-NEXT:     global %[[VALUE_bits_align:[0-9]+]] bits_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(4))) [linkage=external];
+// NEGATED-NEXT:     global %[[VALUE_reset_align:[0-9]+]] reset_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(align_of<u64, @type[[TYPE_reset]]>(8))) [linkage=external];
+// NEGATED-NEXT:     global %[[VALUE_bits_align:[0-9]+]] bits_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(align_of<u64, @type[[TYPE_bits]]>(4))) [linkage=external];
 // NEGATED-NEXT: }
 // SLATE-FILECHECK-END NEGATED

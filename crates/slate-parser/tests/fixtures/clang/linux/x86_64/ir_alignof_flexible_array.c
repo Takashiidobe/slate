@@ -83,13 +83,13 @@ _Static_assert(__alignof__(((struct samples *)0)->values) == 2, "flexible array 
 // IR-NEXT:         return truncate<u32, reason=return, fits=always>(const<u64>(16));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_member_alignments:[0-9]+]] @member_alignments(%[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE_samples]]>, %[[VALUE_w:[0-9]+]] w: ptr<@type[[TYPE_wide]]>) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(2), const<u64>(2)), const<u64>(8)), const<u64>(8)));
+// IR-NEXT:         return truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(align_of<u64, array<i16, incomplete>>(2), align_of<u64, array<i16, incomplete>>(2)), align_of<u64, array<i64, incomplete>>(8)), align_of<u64, array<i64, incomplete>>(8)));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_object_alignment:[0-9]+]] @object_alignment() -> u32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return truncate<u32, reason=return, fits=always>(const<u64>(16));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_type_alignment:[0-9]+]] @type_alignment() -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(const<u64>(2), const<u64>(1)));
+// IR-NEXT:         return truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(align_of<u64, array<i16, incomplete>>(2), align_of<u64, array<i8, incomplete>>(1)));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

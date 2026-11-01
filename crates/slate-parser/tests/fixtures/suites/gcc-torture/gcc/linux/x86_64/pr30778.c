@@ -71,7 +71,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_init_reg_last:[0-9]+]] @init_reg_last() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_reg_stat]]>>(%[[VALUE_reg_stat]])), const<i32>(0), const<u64>(31));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_reg_stat]]>>(%[[VALUE_reg_stat]])), const<i32>(0), offset_of<u64, @type[[TYPE_reg_stat]], sign_bit_copies>(31));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: @type[[TYPE_reg_stat]] [storage=automatic];

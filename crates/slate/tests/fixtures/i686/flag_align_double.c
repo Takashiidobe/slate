@@ -241,9 +241,9 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             std::mem::size_of::<wide>() as u32,
-// CHECK-NEXT:             8u32,
-// CHECK-NEXT:             24u32,
-// CHECK-NEXT:             8u32,
+// CHECK-NEXT:             std::mem::offset_of!(wide, d) as u32,
+// CHECK-NEXT:             std::mem::offset_of!(wide, l) as u32,
+// CHECK-NEXT:             std::mem::align_of::<wide>() as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { printf(c"%d %g %d %lld\n".as_ptr(), w.c as i32, w.d, w.i, w.l) };
@@ -300,7 +300,7 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"nested %zu %zu %u %u %u\n".as_ptr(),
 // CHECK-NEXT:             std::mem::size_of::<nested>() as u32,
-// CHECK-NEXT:             8u32,
+// CHECK-NEXT:             std::mem::align_of::<nested>() as u32,
 // CHECK-NEXT:             offset(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(n) as *const (),
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(n.inner) as *const (),
@@ -363,7 +363,7 @@ int main(void) {
 // CHECK-NEXT:             c"union %zu %zu %zu %u %g\n".as_ptr(),
 // CHECK-NEXT:             std::mem::size_of::<either>() as u32,
 // CHECK-NEXT:             std::mem::size_of::<holds_union>() as u32,
-// CHECK-NEXT:             8u32,
+// CHECK-NEXT:             std::mem::align_of::<holds_union>() as u32,
 // CHECK-NEXT:             offset(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(h) as *const (),
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(h.u) as *const (),
@@ -386,7 +386,7 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"bits %zu %zu %d %lld\n".as_ptr(),
 // CHECK-NEXT:             std::mem::size_of::<bits>() as u32,
-// CHECK-NEXT:             8u32,
+// CHECK-NEXT:             std::mem::align_of::<bits>() as u32,
 // CHECK-NEXT:             b.__slate_bits_0.__get_b() as i32,
 // CHECK-NEXT:             b.__slate_bits_0.__get_rest(),
 // CHECK-NEXT:         )

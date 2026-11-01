@@ -34,7 +34,7 @@ unsigned long below_natural(_Alignas(1) int p) { return _Alignof(p); }
 // IR-NEXT:         return const<u64>(32);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_below_natural:[0-9]+]] @below_natural(%[[VALUE_p_2:[0-9]+]] p: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(4);
+// IR-NEXT:         return align_of<u64, i32>(4);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

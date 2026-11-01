@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %d %d\n".as_ptr(),
-// CHECK-NEXT:             32u64,
+// CHECK-NEXT:             std::mem::align_of::<OverAligned>() as u64,
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(object) as u64) % 32,
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(local.0) as u64) % 64,
 // CHECK-NEXT:             object.value,

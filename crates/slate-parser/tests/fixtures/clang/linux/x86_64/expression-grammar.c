@@ -123,7 +123,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE_a]]))));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], read<i32>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], read<i32>(%[[VALUE_b]]));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(4))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(align_of<u64, i32>(4))));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]])), read<i32>(field0(deref(read<ptr<@type[[TYPE_Point]]>>(%[[VALUE_point_ptr]]))))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_global_array]]), const<i32>(0)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

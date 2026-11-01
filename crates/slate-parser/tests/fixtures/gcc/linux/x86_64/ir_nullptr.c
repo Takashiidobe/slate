@@ -64,7 +64,7 @@ int f(nullptr_t n, int *p, char *q) {
 // DEFAULT-NEXT:     global %[[VALUE_gp:[0-9]+]] gp: ptr<i32> [storage=static] = null<ptr<i32>> [linkage=external] [c="int *"];
 // DEFAULT-NEXT:     global %[[VALUE_distinct_from_void_pointer:[0-9]+]] distinct_from_void_pointer: i32 [storage=static] = const<i32>(2) [linkage=external] [c="int"];
 // DEFAULT-NEXT:     global %[[VALUE_object_type:[0-9]+]] object_type: i32 [storage=static] = const<i32>(2) [linkage=external] [c="int"];
-// DEFAULT-NEXT:     global %[[VALUE_same_layout:[0-9]+]] same_layout: i32 [storage=static] = from_bool<i32>(logical_and<bool>(eq<u64>(size_of<u64, ptr<void>>(8), size_of<u64, ptr<void>>(8)), eq<u64>(const<u64>(8) [align_of="ptr<void>"], const<u64>(8) [align_of="ptr<void>"]))) [linkage=external] [c="int"];
+// DEFAULT-NEXT:     global %[[VALUE_same_layout:[0-9]+]] same_layout: i32 [storage=static] = from_bool<i32>(logical_and<bool>(eq<u64>(size_of<u64, ptr<void>>(8), size_of<u64, ptr<void>>(8)), eq<u64>(align_of<u64, ptr<void>>(8), align_of<u64, ptr<void>>(8)))) [linkage=external] [c="int"];
 // DEFAULT-NEXT:     global %[[VALUE_conditional_with_pointer:[0-9]+]] conditional_with_pointer: i32 [storage=static] = const<i32>(1) [linkage=external] [c="int"];
 // DEFAULT-NEXT:     global %[[VALUE_conditional_with_nullptr:[0-9]+]] conditional_with_nullptr: i32 [storage=static] = const<i32>(1) [linkage=external] [c="int"];
 // DEFAULT-NEXT:     global %[[VALUE_classify:[0-9]+]] classify: i32 [storage=static] = const<i32>(-1) [c_builtin="__builtin_classify_type"] [linkage=external] [c="int"];

@@ -186,43 +186,43 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<int_bits>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             2u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<int_bits>() as u64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<plain>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             1u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<plain>() as u64,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<int_bits>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             2u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<int_bits>() as u32,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<plain>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             1u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<plain>() as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu %zu %zu\n".as_ptr(),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<char_bits>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             1u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<char_bits>() as u64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<wide_bits>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             4u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<wide_bits>() as u64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<field_packed>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             1u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<field_packed>() as u64,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<char_bits>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             1u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<char_bits>() as u32,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<wide_bits>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             4u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<wide_bits>() as u32,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<field_packed>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             1u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<field_packed>() as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<unnamed>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             1u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<unnamed>() as u64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<eight>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             4u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<eight>() as u64,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<unnamed>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             1u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<unnamed>() as u32,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<eight>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             4u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<eight>() as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {

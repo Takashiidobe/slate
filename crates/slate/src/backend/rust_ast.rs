@@ -1316,6 +1316,8 @@ pub enum Expr {
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum LayoutQuery {
     SizeOf(Type),
+    AlignOf(Type),
+    OffsetOf { ty: Type, fields: Vec<String> },
 }
 
 #[derive(Debug, Clone, Copy)]

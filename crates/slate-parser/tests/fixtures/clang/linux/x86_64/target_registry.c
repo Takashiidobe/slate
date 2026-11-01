@@ -46,7 +46,7 @@ struct pair record(struct pair value) { return value; }
 // X86-64-LINUX-GNU-CLANG-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u64 [storage=static] = size_of<u64, i64>(8) [linkage=external];
 // X86-64-LINUX-GNU-CLANG-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u64 [storage=static] = size_of<u64, f80>(16) [linkage=external];
 // X86-64-LINUX-GNU-CLANG-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u64 [storage=static] = size_of<u64, va_list>(24) [linkage=external];
-// X86-64-LINUX-GNU-CLANG-NEXT:     global %[[VALUE_alignof_long_long:[0-9]+]] alignof_long_long: u64 [storage=static] = const<u64>(8) [linkage=external];
+// X86-64-LINUX-GNU-CLANG-NEXT:     global %[[VALUE_alignof_long_long:[0-9]+]] alignof_long_long: u64 [storage=static] = align_of<u64, i64>(8) [linkage=external];
 // X86-64-LINUX-GNU-CLANG-NEXT:     fn %[[VALUE_record:[0-9]+]] @record(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_pair]]) -> @type[[TYPE_pair]] [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // X86-64-LINUX-GNU-CLANG-NEXT:         return copy<@type[[TYPE_pair]], reason=return>(read<@type[[TYPE_pair]]>(%[[VALUE_value]]));
 // X86-64-LINUX-GNU-CLANG-NEXT:     }

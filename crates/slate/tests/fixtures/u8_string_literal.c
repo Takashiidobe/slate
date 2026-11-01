@@ -16,7 +16,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let alignment: i32 = 4;
+// CHECK-NEXT:     let alignment: i32 = std::mem::align_of::<i32>() as i32;
 // CHECK-NEXT:     let repeated: i32 = ((((unsafe { text[1] }) as u8) as u32) as i32)
 // CHECK-NEXT:         + ((((unsafe { text[1] }) as u8) as u32) as i32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

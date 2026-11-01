@@ -55,10 +55,10 @@ unsigned long ignored(int r __attribute__((unused))) { return _Alignof(r); }
 // IR-NEXT:         return const<u64>(16);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_plain:[0-9]+]] @plain(%[[VALUE_r:[0-9]+]] r: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(4);
+// IR-NEXT:         return align_of<u64, i32>(4);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_ignored:[0-9]+]] @ignored(%[[VALUE_r_2:[0-9]+]] r: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(4);
+// IR-NEXT:         return align_of<u64, i32>(4);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

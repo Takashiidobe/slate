@@ -111,12 +111,18 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu\n".as_ptr(),
 // CHECK-NEXT:             std::mem::size_of::<Aligned>() as u64,
-// CHECK-NEXT:             16u64,
+// CHECK-NEXT:             std::mem::align_of::<Aligned>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu\n".as_ptr(), 0u64, 4u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%zu %zu\n".as_ptr(),
+// CHECK-NEXT:             std::mem::offset_of!(Aligned, a) as u64,
+// CHECK-NEXT:             std::mem::offset_of!(Aligned, b) as u64,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%d %x\n".as_ptr(), s.a as i32, s.b) };

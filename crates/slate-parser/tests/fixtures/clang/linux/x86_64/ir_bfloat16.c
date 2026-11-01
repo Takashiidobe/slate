@@ -67,7 +67,7 @@ int sizes = sizeof(__bf16) + _Alignof(__bf16);
 // IR-NEXT:     global %[[VALUE_literal_generic:[0-9]+]] literal_generic: i32 [storage=static] = const<i32>(1) [linkage=external];
 // IR-NEXT:     global %[[VALUE_literal_folded:[0-9]+]] literal_folded: array<i32, 3> [storage=static] [linkage=external];
 // IR-NEXT:     global %[[VALUE_classify:[0-9]+]] classify: i32 [storage=static] = const<i32>(8) [linkage=external];
-// IR-NEXT:     global %[[VALUE_sizes:[0-9]+]] sizes: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(size_of<u64, bf16>(2), const<u64>(2)))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_sizes:[0-9]+]] sizes: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(size_of<u64, bf16>(2), align_of<u64, bf16>(2)))) [linkage=external];
 // IR-NEXT:     fn %[[VALUE_same:[0-9]+]] @same(%[[VALUE_x:[0-9]+]] x: bf16, %[[VALUE_y:[0-9]+]] y: bf16) -> bf16 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return add<bf16, rounding=nearest_even, exceptions=ignore, contract=on>(read<bf16>(%[[VALUE_x]]), read<bf16>(%[[VALUE_y]]));
 // IR-NEXT:     }

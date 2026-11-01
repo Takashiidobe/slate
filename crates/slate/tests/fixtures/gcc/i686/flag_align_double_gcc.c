@@ -298,7 +298,7 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %u %u\n".as_ptr(),
 // CHECK-NEXT:             std::mem::size_of::<wide>() as u32,
-// CHECK-NEXT:             8u32,
+// CHECK-NEXT:             std::mem::align_of::<wide>() as u32,
 // CHECK-NEXT:             offset(
 // CHECK-NEXT:                 &(*(std::ptr::addr_of_mut!(w) as *const ())),
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(w.d) as *const (),

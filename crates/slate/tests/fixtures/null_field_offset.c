@@ -13,6 +13,20 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct Inner {
+// CHECK-NEXT:     first: i32,
+// CHECK-NEXT:     second: i16,
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct Record {
+// CHECK-NEXT:     prefix: i8,
+// CHECK-NEXT:     value: f64,
+// CHECK-NEXT:     nested: Inner,
+// CHECK-NEXT:     count: u8,
+// CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
@@ -29,7 +43,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     false as i32
+// CHECK-NEXT:     (20 != (std::mem::offset_of!(Record, nested.second) as u64)) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(

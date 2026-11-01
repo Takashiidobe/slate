@@ -48,12 +48,12 @@ unsigned long layout(int x) {
 // IR-NEXT:     } [size=24, align=4, offsets=[0, 4, 12]];
 // IR-NEXT:     fn %[[VALUE_layout:[0-9]+]] @layout(%[[VALUE_x:[0-9]+]] x: i32 [c="int"]) -> u64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(int)"] {
 // IR-NEXT:         size_of<u64, i32>(4);
-// IR-NEXT:         const<u64>(8) [align_of="f64"];
+// IR-NEXT:         align_of<u64, f64>(8);
 // IR-NEXT:         size_of<u64, @type[[TYPE_Outer]]>(24);
 // IR-NEXT:         size_of<u64, i32>(4);
 // IR-NEXT:         size_of<u64, array<i8, 4>>(4);
 // IR-NEXT:         size_of<u64, array<i32, 3>>(12);
-// IR-NEXT:         const<u64>(8) [offset_of="@type1.inner.value"];
+// IR-NEXT:         offset_of<u64, @type[[TYPE_Outer]], inner.value>(8);
 // IR-NEXT:         return const<u64>(20) [offset_of="@type1.items[2]"];
 // IR-NEXT:     }
 // IR-NEXT: }

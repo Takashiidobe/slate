@@ -107,25 +107,25 @@ main ()
 // DEFAULT-NEXT:     global %[[VALUE_z128:[0-9]+]] z128: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
+// DEFAULT-NEXT:         if lt<u64>(align_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
+// DEFAULT-NEXT:         if lt<u64>(align_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
+// DEFAULT-NEXT:         if lt<u64>(align_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
+// DEFAULT-NEXT:         if lt<u64>(align_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))))
+// DEFAULT-NEXT:         if lt<u64>(align_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32))))
+// DEFAULT-NEXT:         if lt<u64>(align_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(64))))
+// DEFAULT-NEXT:         if lt<u64>(align_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(64))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(128))))
+// DEFAULT-NEXT:         if lt<u64>(align_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(128))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(128))))
+// DEFAULT-NEXT:         if lt<u64>(align_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(128))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(128))))
+// DEFAULT-NEXT:         if lt<u64>(align_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(128))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

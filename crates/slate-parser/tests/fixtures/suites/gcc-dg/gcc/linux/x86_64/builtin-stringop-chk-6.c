@@ -180,7 +180,7 @@ void test_stringop_warn_subobject (const char *src)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_memop_nowarn_subobject:[0-9]+]] @test_memop_nowarn_subobject() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: array<@type[[TYPE_B]], 2> [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i8>>(field1(deref(ptr_offset<ptr<@type[[TYPE_B]]>, subtract=false, element=@type[[TYPE_B]], overflow=ub>(array_decay<ptr<@type[[TYPE_B]]>, length=Some(2)>(%[[VALUE_b_2]]), const<i32>(0)))))), const<i32>(0), sub<u64, overflow=wrap>(size_of<u64, @type[[TYPE_B]]>(4), const<u64>(2)));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i8>>(field1(deref(ptr_offset<ptr<@type[[TYPE_B]]>, subtract=false, element=@type[[TYPE_B]], overflow=ub>(array_decay<ptr<@type[[TYPE_B]]>, length=Some(2)>(%[[VALUE_b_2]]), const<i32>(0)))))), const<i32>(0), sub<u64, overflow=wrap>(size_of<u64, @type[[TYPE_B]]>(4), offset_of<u64, @type[[TYPE_B]], c>(2)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ...) -> void>(%[[VALUE_escape]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type[[TYPE_B]]>, length=Some(2)>(%[[VALUE_b_2]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_strncpy:[0-9]+]] @strncpy(%[[VALUE7:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE8:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE9:[0-9]+]] <unnamed>: u64) -> ptr<i8> [linkage=external];

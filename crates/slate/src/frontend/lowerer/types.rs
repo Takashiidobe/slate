@@ -239,17 +239,23 @@ impl FunctionLowerer<'_, '_> {
         query: &ir::LayoutQuery,
         amount: u64,
     ) -> Result<Expr> {
-        let ir::LayoutQuery::SizeOf { ty: queried, c } = query;
-        if self.tables.rust_layout_matches_c(queried)
-            && self
-                .tables
-                .storage_of(queried)
-                .is_some_and(|(size, _)| size == amount)
+        let (ir::LayoutQuery::SizeOf { ty: queried, c }
+        | ir::LayoutQuery::AlignOf { ty: queried, c }
+        | ir::LayoutQuery::OffsetOf { ty: queried, c, .. }) = query;
+        let storage = self.tables.storage_of(queried);
+        let amount_matches = match query {
+            ir::LayoutQuery::SizeOf { .. } => storage.is_some_and(|(size, _)| size == amount),
+            ir::LayoutQuery::AlignOf { .. } => storage.is_some_and(|(_, align)| align == amount),
+            ir::LayoutQuery::OffsetOf { .. } => true,
+        };
+        if amount_matches
+            && self.tables.rust_layout_matches_c(queried)
             && let Ok(ty) = self.lower_c_type(queried, Some(*c))
+            && let Some(query) = self.rust_layout_query(query, ty, amount)
         {
             return Ok(Expr::Cast {
                 expr: Box::new(Expr::LayoutQuery {
-                    query: rust::LayoutQuery::SizeOf(ty),
+                    query,
                     amount: rust::TargetAmount(amount),
                 }),
                 ty: self.lower_value_type(value)?,
@@ -260,6 +266,61 @@ impl FunctionLowerer<'_, '_> {
             *ty = self.lower_value_type(value)?;
         }
         Ok(literal)
+    }
+
+    fn rust_layout_query(
+        &self,
+        query: &ir::LayoutQuery,
+        ty: rust::Type,
+        amount: u64,
+    ) -> Option<rust::LayoutQuery> {
+        match query {
+            ir::LayoutQuery::SizeOf { .. } => Some(rust::LayoutQuery::SizeOf(ty)),
+            ir::LayoutQuery::AlignOf { .. } => Some(rust::LayoutQuery::AlignOf(ty)),
+            ir::LayoutQuery::OffsetOf {
+                ty: root, members, ..
+            } => {
+                let fields = self.offset_of_fields(root, members, amount)?;
+                Some(rust::LayoutQuery::OffsetOf { ty, fields })
+            }
+        }
+    }
+
+    fn offset_of_fields(
+        &self,
+        root: &ir::Type,
+        members: &[String],
+        amount: u64,
+    ) -> Option<Vec<String>> {
+        let tables = self.tables;
+        let mut current = root;
+        let mut offset = 0;
+        let mut names = Vec::with_capacity(members.len());
+        for member in members {
+            let ir::Type::Defined(id) = tables.resolve_type(current) else {
+                return None;
+            };
+            let ir::TypeDefinitionKind::Record {
+                fields: Some(fields),
+                layout: Some(layout),
+                ..
+            } = &tables.types.get(id)?.kind
+            else {
+                return None;
+            };
+            let (index, field) = fields
+                .iter()
+                .enumerate()
+                .find(|(_, field)| field.name.as_ref() == Some(member))?;
+            if field.bit_width.is_some() || self.dependencies.erased_fields.contains(&(id.0, index))
+            {
+                return None;
+            }
+            offset += layout.offsets.get(index)?;
+            names.push(field_name(field, index));
+            current = &field.ty;
+        }
+        (offset == amount).then_some(names)
     }
 
     pub(super) fn lower_record(&mut self, id: TypeId) -> Result<String> {

@@ -148,7 +148,10 @@ fn each_template_type(stmts: &mut [Stmt], visit: &mut impl FnMut(&mut Type)) {
                 Expr::Cast { ty, .. }
                 | Expr::MacroType(ty)
                 | Expr::LayoutQuery {
-                    query: LayoutQuery::SizeOf(ty),
+                    query:
+                        LayoutQuery::SizeOf(ty)
+                        | LayoutQuery::AlignOf(ty)
+                        | LayoutQuery::OffsetOf { ty, .. },
                     ..
                 } => visit(ty),
                 Expr::Block(block) | Expr::Unsafe(block) => {

@@ -129,8 +129,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_Aligned]] [storage=automatic];
 // DEFAULT-NEXT:         write<i8>(field0(%[[VALUE_s]]), truncate<i8, reason=assign, fits=always>(const<i32>(5)));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_s]]), const<i32>(4660));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str]])), size_of<u64, @type[[TYPE_Aligned]]>(16), const<u64>(16));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_2]])), const<u64>(0), const<u64>(4));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str]])), size_of<u64, @type[[TYPE_Aligned]]>(16), align_of<u64, @type[[TYPE_Aligned]]>(16));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_2]])), offset_of<u64, @type[[TYPE_Aligned]], a>(0), offset_of<u64, @type[[TYPE_Aligned]], b>(4));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_3]])), widen<i32, reason=vararg>(read<i8>(field0(%[[VALUE_s]]))), read<i32>(field1(%[[VALUE_s]])));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_4]])), call<i32, signature=fn() -> i32>(%[[VALUE_effectful_case]]), call<i32, signature=fn() -> i32>(%[[VALUE_repeated_case]]), call<i32, signature=fn() -> i32>(%[[VALUE_dependent_case]]), call<i32, signature=fn() -> i32>(%[[VALUE_interrupted_case]]));
 // DEFAULT-NEXT:         return const<i32>(0);

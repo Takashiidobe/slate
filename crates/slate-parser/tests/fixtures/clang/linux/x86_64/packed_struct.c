@@ -62,8 +62,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<i8>(field0(%[[VALUE_p]]), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_p]]), const<i32>(287454020));
 // DEFAULT-NEXT:         write<i8>(field2(%[[VALUE_p]]), truncate<i8, reason=assign, fits=always>(const<i32>(2)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str]])), size_of<u64, @type[[TYPE_Packed]]>(6), const<u64>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_2]])), const<u64>(0), const<u64>(1), const<u64>(5));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str]])), size_of<u64, @type[[TYPE_Packed]]>(6), align_of<u64, @type[[TYPE_Packed]]>(1));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_2]])), offset_of<u64, @type[[TYPE_Packed]], a>(0), offset_of<u64, @type[[TYPE_Packed]], b>(1), offset_of<u64, @type[[TYPE_Packed]], c>(5));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str_3]])), widen<i32, reason=vararg>(read<i8>(field0(%[[VALUE_p]]))), read<i32>(field1(%[[VALUE_p]])), widen<i32, reason=vararg>(read<i8>(field2(%[[VALUE_p]]))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

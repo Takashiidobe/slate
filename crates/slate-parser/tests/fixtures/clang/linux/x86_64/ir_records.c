@@ -141,7 +141,7 @@ void update_bits(struct Flags *f, unsigned v) {
 // IR-NEXT:         return read<u64>(bitfield4<unit=1, bytes=8..14, bits=0..40>(deref(read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE_f_2]]))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_bit_types:[0-9]+]] @bit_types(%[[VALUE_f_3:[0-9]+]] f: ptr<@type[[TYPE_Flags]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(1), const<i32>(4)), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(size_of<u64, i32>(4)))), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(4))));
+// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(1), const<i32>(4)), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(size_of<u64, i32>(4)))), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(align_of<u64, i32>(4))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_update_bits:[0-9]+]] @update_bits(%[[VALUE_f_4:[0-9]+]] f: ptr<@type[[TYPE_Flags]]>, %[[VALUE_v_2:[0-9]+]] v: u32) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..2, bits=0..3>(deref(read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE_f_4]]))), read<u32>(%[[VALUE_v_2]]));

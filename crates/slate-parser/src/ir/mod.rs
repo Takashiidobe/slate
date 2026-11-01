@@ -244,6 +244,15 @@ pub enum LayoutQuery {
         ty: Type,
         c: crate::sema::ctype::QualType,
     },
+    AlignOf {
+        ty: Type,
+        c: crate::sema::ctype::QualType,
+    },
+    OffsetOf {
+        ty: Type,
+        c: crate::sema::ctype::QualType,
+        members: Vec<String>,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -635,6 +644,19 @@ impl Value {
                 query: LayoutQuery::SizeOf { ty, .. },
                 amount,
             } => write!(f, "size_of<{}, {ty}>({amount})", self.ty),
+            ValueKind::LayoutQuery {
+                query: LayoutQuery::AlignOf { ty, .. },
+                amount,
+            } => write!(f, "align_of<{}, {ty}>({amount})", self.ty),
+            ValueKind::LayoutQuery {
+                query: LayoutQuery::OffsetOf { ty, members, .. },
+                amount,
+            } => write!(
+                f,
+                "offset_of<{}, {ty}, {}>({amount})",
+                self.ty,
+                members.join(".")
+            ),
             ValueKind::Constant(Number::Bool(value)) => write!(f, "const<{}>({value})", self.ty),
             ValueKind::Constant(Number::Integer(value)) => write!(f, "const<{}>({value})", self.ty),
             ValueKind::Constant(Number::SignedInteger(value)) => {

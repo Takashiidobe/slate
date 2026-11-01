@@ -158,13 +158,13 @@ int main(int argc, char *argv[])
 // DEFAULT-NEXT:         return;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_a:[0-9]+]] a: i8, %[[VALUE_b:[0-9]+]] b: i8) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(8), const<u64>(8))
+// DEFAULT-NEXT:         if ne<u64>(offset_of<u64, @type[[TYPE_annotated]], c>(8), offset_of<u64, @type[[TYPE_flex]], c>(8))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(8), const<u64>(8))
+// DEFAULT-NEXT:         if ne<u64>(offset_of<u64, @type[[TYPE_nested_annotated]], c>(8), offset_of<u64, @type[[TYPE_nested_flex]], c>(8))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(1), const<u64>(1))
+// DEFAULT-NEXT:         if ne<u64>(align_of<u64, i8>(1), align_of<u64, i8>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(1), const<u64>(1))
+// DEFAULT-NEXT:         if ne<u64>(align_of<u64, i8>(1), align_of<u64, i8>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field1(deref(read<ptr<@type[[TYPE_annotated]]>>(%[[VALUE_p_annotated]])))), const<i32>(2))), read<i8>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field1(deref(read<ptr<@type[[TYPE_nested_annotated]]>>(%[[VALUE_p_nested_annotated]])))), const<i32>(3))), read<i8>(%[[VALUE_b]]));

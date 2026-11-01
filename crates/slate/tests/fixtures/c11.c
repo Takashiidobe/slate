@@ -697,7 +697,8 @@ int main(void) {
 // CHECK-NEXT:     let mut thread_result: i32 = 0;
 // CHECK-NEXT:     let mut thread_created: i32 = 0;
 // CHECK-NEXT:     let mut thread_joined: i32 = 0;
-// CHECK-NEXT:     let mut alignment_total: i32 = 4 + 32
+// CHECK-NEXT:     let mut alignment_total: i32 = (std::mem::align_of::<i32>() as i32)
+// CHECK-NEXT:         + (std::mem::align_of::<C11OverAligned>() as i32)
 // CHECK-NEXT:         + ((((unsafe { std::ptr::addr_of_mut!(c11_aligned_buffer.0) as *mut u8 }) as u64)
 // CHECK-NEXT:             % 64 == 0) as i32)
 // CHECK-NEXT:         + (((std::ptr::addr_of_mut!(aligned_object) as u64) % 32 == 0) as i32);

@@ -89,9 +89,9 @@ void f()
 // DEFAULT-NEXT:     global %[[VALUE_ssize:[0-9]+]] ssize: array<i32, 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_dsize:[0-9]+]] dsize: array<i32, 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_tsize:[0-9]+]] tsize: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_salign:[0-9]+]] salign: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(4))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_dalign:[0-9]+]] dalign: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(8))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_talign:[0-9]+]] talign: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(16))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_salign:[0-9]+]] salign: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(align_of<u64, d32>(4))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_dalign:[0-9]+]] dalign: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(align_of<u64, d64>(8))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_talign:[0-9]+]] talign: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(align_of<u64, d128>(16))) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_d32_array_size:[0-9]+]] d32_array_size: array<i32, 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_d64_array_size:[0-9]+]] d64_array_size: array<i32, 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_d128_array_size:[0-9]+]] d128_array_size: array<i32, 1> [storage=static] [linkage=external];

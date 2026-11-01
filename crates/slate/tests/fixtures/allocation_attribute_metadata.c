@@ -50,7 +50,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let values: *mut i32 = allocate(
 // CHECK-NEXT:         3u64.wrapping_mul(std::mem::size_of::<i32>() as u64),
-// CHECK-NEXT:         4u64,
+// CHECK-NEXT:         std::mem::align_of::<i32>() as u64,
 // CHECK-NEXT:     ) as *mut i32;
 // CHECK-NEXT:     let zeroed: *mut i32 = allocate_array(2u64, std::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:         as *mut i32;

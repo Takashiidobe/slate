@@ -74,22 +74,22 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<mixed>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             2u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             8u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             2u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::offset_of!(mixed, i) as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::offset_of!(mixed, d) as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<mixed>() as u64,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<mixed>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             2u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             8u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             2u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::offset_of!(mixed, i) as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::offset_of!(mixed, d) as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<mixed>() as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu\n".as_ptr(),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<nested>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             2u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::offset_of!(nested, inner) as u64,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<nested>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             2u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::offset_of!(nested, inner) as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {

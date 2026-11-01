@@ -62,7 +62,7 @@ unsigned long alignment(int n, int *p) { return _Alignof(*(int (*)[n])p); }
 // IR-NEXT:         return size_of<u64, ptr<vla<i32, *>>>(8);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_alignment:[0-9]+]] @alignment(%[[VALUE_n_4:[0-9]+]] n: i32, %[[VALUE_p_5:[0-9]+]] p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(4);
+// IR-NEXT:         return align_of<u64, vla<i32, %[[VALUE5:[0-9]+]]>>(4);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

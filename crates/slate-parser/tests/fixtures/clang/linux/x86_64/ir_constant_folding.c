@@ -57,7 +57,7 @@ unsigned long constants(void) {
 // IR-NEXT:         mul<u64, overflow=wrap>(size_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))));
 // IR-NEXT:         shl<i256b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i256b, reason=explicit>(const<i32>(1)), const<i32>(200));
 // IR-NEXT:         truncate<u32b, reason=explicit, fits=unknown>(const<u64>(4294967297));
-// IR-NEXT:         return add<u64, overflow=wrap>(size_of<u64, i32>(4), const<u64>(8) [align_of="f64"]);
+// IR-NEXT:         return add<u64, overflow=wrap>(size_of<u64, i32>(4), align_of<u64, f64>(8));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

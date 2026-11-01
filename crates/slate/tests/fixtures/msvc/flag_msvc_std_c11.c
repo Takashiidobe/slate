@@ -34,9 +34,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, align(16))]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct aligned {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     check(201112i32, 201112i32);
-// CHECK-NEXT:     check(16i32, 16i32);
+// CHECK-NEXT:     check(std::mem::align_of::<aligned>() as i32, 16i32);
 // CHECK-NEXT:     check(1i32, 1i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -41,6 +41,6 @@ int sizes[] = {sizeof(v8u8), _Alignof(v8u8), sizeof(v32u8), _Alignof(v32u8),
 // IR-NEXT:         field0 tag: u8;
 // IR-NEXT:         field1 lanes: vector<u8, 32> [c="v32u8"];
 // IR-NEXT:     } [size=40, align=8, offsets=[0, 8]];
-// IR-NEXT:     global %[[VALUE_sizes:[0-9]+]] sizes: array<i32, 8> [storage=static] = aggregate<array<i32, 8>, zero_fill=false>(index0 = reinterpret<i32>(size_of<u32, vector<u8, 8>>(8)), index1 = reinterpret<i32>(const<u32>(8)), index2 = reinterpret<i32>(size_of<u32, vector<u8, 32>>(32)), index3 = reinterpret<i32>(const<u32>(8)), index4 = reinterpret<i32>(size_of<u32, vector<f32, 64>>(256)), index5 = reinterpret<i32>(const<u32>(8)), index6 = reinterpret<i32>(size_of<u32, @type[[TYPE_holder]]>(40)), index7 = reinterpret<i32>(const<u32>(8))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_sizes:[0-9]+]] sizes: array<i32, 8> [storage=static] = aggregate<array<i32, 8>, zero_fill=false>(index0 = reinterpret<i32>(size_of<u32, vector<u8, 8>>(8)), index1 = reinterpret<i32>(align_of<u32, vector<u8, 8>>(8)), index2 = reinterpret<i32>(size_of<u32, vector<u8, 32>>(32)), index3 = reinterpret<i32>(align_of<u32, vector<u8, 32>>(8)), index4 = reinterpret<i32>(size_of<u32, vector<f32, 64>>(256)), index5 = reinterpret<i32>(align_of<u32, vector<f32, 64>>(8)), index6 = reinterpret<i32>(size_of<u32, @type[[TYPE_holder]]>(40)), index7 = reinterpret<i32>(align_of<u32, @type[[TYPE_holder]]>(8))) [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

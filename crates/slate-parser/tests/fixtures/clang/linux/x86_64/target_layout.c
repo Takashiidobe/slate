@@ -44,7 +44,7 @@ long double one(void) {
 // CHECK-NEXT:         return size_of<u64, f80>(16);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     fn %[[VALUE_object_alignment:[0-9]+]] @object_alignment() -> u64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(void)"] {
-// CHECK-NEXT:         return const<u64>(16) [align_of="f80"];
+// CHECK-NEXT:         return align_of<u64, f80>(16);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     fn %[[VALUE_integer_size:[0-9]+]] @integer_size() -> u64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(void)"] {
 // CHECK-NEXT:         return size_of<u64, u64>(8);

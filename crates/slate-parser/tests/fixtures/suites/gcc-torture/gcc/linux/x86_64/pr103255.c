@@ -94,7 +94,7 @@ int main() {
 // DEFAULT-NEXT:         if eq<ptr<@type[[TYPE_H]]>>(read<ptr<@type[[TYPE_H]]>>(%[[VALUE_h]]), null<ptr<@type[[TYPE_H]]>>)
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_tt:[0-9]+]] tt: ptr<u32> [storage=automatic] = addr_of<ptr<u32>>(field1(deref(read<ptr<@type[[TYPE_H]]>>(%[[VALUE_h]]))));
-// DEFAULT-NEXT:         if ne<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<u32>>(%[[VALUE_tt]])), add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(4194304), const<i32>(32)))), const<u64>(4)))
+// DEFAULT-NEXT:         if ne<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<u32>>(%[[VALUE_tt]])), add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(4194304), const<i32>(32)))), offset_of<u64, @type[[TYPE_H]], b>(4)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -507,6 +507,8 @@ scope    = "device" | "workgroup" | "wavefront" | "single" | "cluster"
 value      = core { metadata } ;
 core       = "const<" type ">(" constant ")"
            | "size_of<" type "," type ">(" int ")"
+           | "align_of<" type "," type ">(" int ")"
+           | "offset_of<" type "," type "," c_identifier { "." c_identifier } ">(" int ")"
            | "null<" type ">"
            | "void"
            | "code_units<" type ">(" int_list ")"

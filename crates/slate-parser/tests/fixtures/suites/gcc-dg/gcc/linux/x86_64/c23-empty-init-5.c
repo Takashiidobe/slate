@@ -261,9 +261,9 @@ main ()
 // DEFAULT-NEXT:         for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE_q]]);
-// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE4]]), add<u64, overflow=wrap>(const<u64>(0), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE4]]), add<u64, overflow=wrap>(offset_of<u64, @type[[TYPE_A]], a>(0), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:                 write<ptr<u8>>(%[[VALUE_q]], read<ptr<u8>>(%[[VALUE5]]));
-// DEFAULT-NEXT:             condition: ne<ptr<u8>>(read<ptr<u8>>(%[[VALUE_q]]), ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_r]]), const<u64>(8)))
+// DEFAULT-NEXT:             condition: ne<ptr<u8>>(read<ptr<u8>>(%[[VALUE_q]]), ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_r]]), offset_of<u64, @type[[TYPE_A]], b>(8)))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE_q]]);
 // DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE6]]), const<i32>(1));
@@ -280,9 +280,9 @@ main ()
 // DEFAULT-NEXT:         for %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE_q_2]]);
-// DEFAULT-NEXT:                 let %[[VALUE10:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE9]]), add<u64, overflow=wrap>(const<u64>(0), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:                 let %[[VALUE10:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE9]]), add<u64, overflow=wrap>(offset_of<u64, @type[[TYPE_B]], a>(0), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:                 write<ptr<u8>>(%[[VALUE_q_2]], read<ptr<u8>>(%[[VALUE10]]));
-// DEFAULT-NEXT:             condition: ne<ptr<u8>>(read<ptr<u8>>(%[[VALUE_q_2]]), ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_r_2]]), const<u64>(8)))
+// DEFAULT-NEXT:             condition: ne<ptr<u8>>(read<ptr<u8>>(%[[VALUE_q_2]]), ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_r_2]]), offset_of<u64, @type[[TYPE_B]], b>(8)))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE11:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE_q_2]]);
 // DEFAULT-NEXT:                 let %[[VALUE12:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE11]]), const<i32>(1));
@@ -312,9 +312,9 @@ main ()
 // DEFAULT-NEXT:         for %[[VALUE16:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE17:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE_q_3]]);
-// DEFAULT-NEXT:                 let %[[VALUE18:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE17]]), add<u64, overflow=wrap>(const<u64>(0), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:                 let %[[VALUE18:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE17]]), add<u64, overflow=wrap>(offset_of<u64, @type[[TYPE_D]], a>(0), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:                 write<ptr<u8>>(%[[VALUE_q_3]], read<ptr<u8>>(%[[VALUE18]]));
-// DEFAULT-NEXT:             condition: ne<ptr<u8>>(read<ptr<u8>>(%[[VALUE_q_3]]), ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_r_3]]), const<u64>(8)))
+// DEFAULT-NEXT:             condition: ne<ptr<u8>>(read<ptr<u8>>(%[[VALUE_q_3]]), ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_r_3]]), offset_of<u64, @type[[TYPE_D]], b>(8)))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE19:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE_q_3]]);
 // DEFAULT-NEXT:                 let %[[VALUE20:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE19]]), const<i32>(1));

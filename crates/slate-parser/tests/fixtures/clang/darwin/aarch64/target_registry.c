@@ -45,7 +45,7 @@ struct pair record(struct pair value) { return value; }
 // AARCH64-DARWIN-CLANG-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u64 [storage=static] = size_of<u64, i64>(8) [linkage=external];
 // AARCH64-DARWIN-CLANG-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u64 [storage=static] = size_of<u64, f64>(8) [linkage=external];
 // AARCH64-DARWIN-CLANG-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u64 [storage=static] = size_of<u64, ptr<i8>>(8) [linkage=external];
-// AARCH64-DARWIN-CLANG-NEXT:     global %[[VALUE_alignof_long_long:[0-9]+]] alignof_long_long: u64 [storage=static] = const<u64>(8) [linkage=external];
+// AARCH64-DARWIN-CLANG-NEXT:     global %[[VALUE_alignof_long_long:[0-9]+]] alignof_long_long: u64 [storage=static] = align_of<u64, i64>(8) [linkage=external];
 // AARCH64-DARWIN-CLANG-NEXT:     fn %[[VALUE_record:[0-9]+]] @record(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_pair]]) -> @type[[TYPE_pair]] [linkage=external] [abi=aapcs64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // AARCH64-DARWIN-CLANG-NEXT:         return copy<@type[[TYPE_pair]], reason=return>(read<@type[[TYPE_pair]]>(%[[VALUE_value]]));
 // AARCH64-DARWIN-CLANG-NEXT:     }

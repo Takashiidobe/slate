@@ -108,7 +108,7 @@ int         main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<u64>(size_of<u64, f32>(4), size_of<u64, i32>(4)), ne<u64>(const<u64>(4), size_of<u64, i32>(4))), ne<u64>(const<u64>(4), size_of<u64, i32>(4)))
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<u64>(size_of<u64, f32>(4), size_of<u64, i32>(4)), ne<u64>(offset_of<u64, @type[[TYPE_R]], a>(4), size_of<u64, i32>(4))), ne<u64>(offset_of<u64, @type[[TYPE_Q]], a>(4), size_of<u64, i32>(4)))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         write<i32>(field0(field1(%[[VALUE_s]])), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(field1(field1(%[[VALUE_s]])), const<i32>(2));

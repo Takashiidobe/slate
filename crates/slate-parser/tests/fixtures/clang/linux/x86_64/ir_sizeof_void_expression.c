@@ -58,7 +58,7 @@ int chosen_by_void_size(void *p) {
 // IR-NEXT:         return size_of<u64, void>(1);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_dereferenced_alignment:[0-9]+]] @dereferenced_alignment(%[[VALUE_p_2:[0-9]+]] p: ptr<void>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<u64, overflow=wrap>(const<u64>(1), const<u64>(1));
+// IR-NEXT:         return add<u64, overflow=wrap>(align_of<u64, void>(1), align_of<u64, void>(1));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_void_call_size:[0-9]+]] @void_call_size() -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return size_of<u64, void>(1);

@@ -46,7 +46,7 @@ struct pair record(struct pair value) { return value; }
 // CHECK-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u32 [storage=static] = size_of<u32, i32>(4) [linkage=external];
 // CHECK-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u32 [storage=static] = size_of<u32, f64>(8) [linkage=external];
 // CHECK-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u32 [storage=static] = size_of<u32, ptr<i8>>(4) [linkage=external];
-// CHECK-NEXT:     global %[[VALUE_alignof_long_long:[0-9]+]] alignof_long_long: u32 [storage=static] = const<u32>(8) [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_alignof_long_long:[0-9]+]] alignof_long_long: u32 [storage=static] = align_of<u32, i64>(8) [linkage=external];
 // CHECK-NEXT:     fn %[[VALUE_record:[0-9]+]] @record(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_pair]]) -> @type[[TYPE_pair]] [linkage=external] [abi=aapcs32_hard_float(native_c) -> native_c] [fallthrough=ub_if_used] {
 // CHECK-NEXT:         return copy<@type[[TYPE_pair]], reason=return>(read<@type[[TYPE_pair]]>(%[[VALUE_value]]));
 // CHECK-NEXT:     }

@@ -398,9 +398,9 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             std::mem::size_of::<payloadHeader>() as u64,
-// CHECK-NEXT:             1u64,
+// CHECK-NEXT:             std::mem::align_of::<payloadHeader>() as u64,
 // CHECK-NEXT:             std::mem::size_of::<event>() as u64,
-// CHECK-NEXT:             1u64,
+// CHECK-NEXT:             std::mem::align_of::<event>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -409,9 +409,9 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             std::mem::size_of::<holder>() as u64,
-// CHECK-NEXT:             2u64,
-// CHECK-NEXT:             10u64,
-// CHECK-NEXT:             46u64,
+// CHECK-NEXT:             std::mem::align_of::<holder>() as u64,
+// CHECK-NEXT:             std::mem::offset_of!(holder, events) as u64,
+// CHECK-NEXT:             std::mem::offset_of!(holder, tail) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -420,9 +420,9 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             std::mem::size_of::<pack_two>() as u64,
-// CHECK-NEXT:             2u64,
-// CHECK-NEXT:             2u64,
-// CHECK-NEXT:             6u64,
+// CHECK-NEXT:             std::mem::align_of::<pack_two>() as u64,
+// CHECK-NEXT:             std::mem::offset_of!(pack_two, value) as u64,
+// CHECK-NEXT:             std::mem::offset_of!(pack_two, wide) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

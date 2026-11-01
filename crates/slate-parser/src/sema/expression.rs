@@ -2540,16 +2540,9 @@ impl Lowerer {
         value
     }
 
-    fn size_query(&mut self, e: &Expr, ty: Type, c: QualType, amount: u64) -> Operand {
+    fn layout_query(&mut self, e: &Expr, query: LayoutQuery, amount: u64) -> Operand {
         let size_type = self.types.ctypes.size_type(&self.context.target);
-        self.operand(
-            e,
-            size_type,
-            ValueKind::LayoutQuery {
-                query: LayoutQuery::SizeOf { ty, c },
-                amount,
-            },
-        )
+        self.operand(e, size_type, ValueKind::LayoutQuery { query, amount })
     }
 
     pub fn expr(&mut self, e: &Expr) -> Result<Operand, ResolveError> {
@@ -3157,15 +3150,22 @@ impl Lowerer {
                     .measured_storage(&ty, atomic, matches!(e.value, ExprKind::SizeOfType { .. }))
                     .map_err(ResolveError::checked)?;
                 let layout = self.types.declared_storage(resolved, measured)?;
-                if matches!(e.value, ExprKind::SizeOfType { .. }) && !atomic && layout == measured {
-                    return Ok(self.size_query(e, ty, resolved, layout.size_bytes));
-                }
                 let value = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     layout.size_bytes
                 } else {
                     self.types
                         .preferred_alignment(e, &ty, u64::from(layout.alignment_bytes))
                 };
+                if !atomic && layout == measured {
+                    if matches!(e.value, ExprKind::SizeOfType { .. }) {
+                        let query = LayoutQuery::SizeOf { ty, c: resolved };
+                        return Ok(self.layout_query(e, query, value));
+                    }
+                    if value == u64::from(layout.alignment_bytes) {
+                        let query = LayoutQuery::AlignOf { ty, c: resolved };
+                        return Ok(self.layout_query(e, query, value));
+                    }
+                }
                 let key = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     "size_of"
                 } else {
@@ -3199,12 +3199,6 @@ impl Lowerer {
                     )
                     .map_err(ResolveError::checked)?;
                 let layout = self.types.declared_storage(c, measured)?;
-                if matches!(e.value, ExprKind::SizeOfExpr(_))
-                    && !access.atomic
-                    && layout == measured
-                {
-                    return Ok(self.size_query(e, ty, c, layout.size_bytes));
-                }
                 let amount = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
                 } else {
@@ -3213,6 +3207,16 @@ impl Lowerer {
                             .preferred_alignment(e, &ty, u64::from(layout.alignment_bytes));
                     self.types.object_alignment(operand, natural)
                 };
+                if !access.atomic && layout == measured {
+                    if matches!(e.value, ExprKind::SizeOfExpr(_)) {
+                        let query = LayoutQuery::SizeOf { ty, c };
+                        return Ok(self.layout_query(e, query, amount));
+                    }
+                    if amount == u64::from(layout.alignment_bytes) {
+                        let query = LayoutQuery::AlignOf { ty, c };
+                        return Ok(self.layout_query(e, query, amount));
+                    }
+                }
                 let key = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     "size_of"
                 } else {
@@ -3262,6 +3266,16 @@ impl Lowerer {
                 let resolved = self.resolve_type_name(ty)?;
                 let ty = self.types.object_type(resolved, "void offsetof")?;
                 let path = self.types.offsetof_member(ty.clone(), member)?;
+                if !self.types.ctypes.quals(resolved).is_atomic
+                    && let Some(members) = offsetof_member_names(member)
+                {
+                    let query = LayoutQuery::OffsetOf {
+                        ty,
+                        c: resolved,
+                        members,
+                    };
+                    return Ok(self.layout_query(e, query, path.offset));
+                }
                 let offset =
                     self.layout_constant(e, path.offset, "offset_of", format!("{ty}.{member}"));
                 path.runtime_indices
@@ -3417,6 +3431,22 @@ impl Lowerer {
                 Ok(self.with_extents(e, extents, value))
             }
         }
+    }
+}
+
+fn offsetof_member_names(member: &Expr) -> Option<Vec<String>> {
+    match &member.value {
+        ExprKind::Identifier(name) => Some(vec![name.to_string()]),
+        ExprKind::Member {
+            base,
+            field,
+            arrow: false,
+        } => {
+            let mut names = offsetof_member_names(base)?;
+            names.push(field.value.clone());
+            Some(names)
+        }
+        _ => None,
     }
 }
 

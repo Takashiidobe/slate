@@ -1259,6 +1259,29 @@ impl<W: Write> Codegen<W> {
                 self.ty(ty)?;
                 self.out.write_str(">()")
             }
+            Expr::LayoutQuery {
+                query: LayoutQuery::AlignOf(ty),
+                ..
+            } => {
+                self.out.write_str("std::mem::align_of::<")?;
+                self.ty(ty)?;
+                self.out.write_str(">()")
+            }
+            Expr::LayoutQuery {
+                query: LayoutQuery::OffsetOf { ty, fields },
+                ..
+            } => {
+                self.out.write_str("std::mem::offset_of!(")?;
+                self.ty(ty)?;
+                self.out.write_str(", ")?;
+                for (index, field) in fields.iter().enumerate() {
+                    if index > 0 {
+                        self.out.write_char('.')?;
+                    }
+                    self.ident(field)?;
+                }
+                self.out.write_char(')')
+            }
             Expr::Var(s) => self.ident(s.as_str()),
             Expr::Unary { op, expr } => {
                 self.out.write_str(op.spelling())?;

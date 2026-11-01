@@ -52,7 +52,7 @@ here:
 // IR-NEXT:         return size_of<u64, void>(1);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_void_align:[0-9]+]] @void_align() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(1);
+// IR-NEXT:         return align_of<u64, void>(1);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_advance:[0-9]+]] @advance(%[[VALUE_p:[0-9]+]] p: ptr<void>, %[[VALUE_n:[0-9]+]] n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(read<ptr<void>>(%[[VALUE_p]]), read<i32>(%[[VALUE_n]]));
