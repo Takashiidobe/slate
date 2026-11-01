@@ -62,6 +62,14 @@ int main(void) {
 // CHECK-NEXT: total: 2 compiles across 2 targets
 // CHECK-NEXT: unit macro_arg_casts: 13 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
+// CHECK-NEXT: macros: 5 function-like, 5 lifted at least once (expansions counted per distinct compile)
+// CHECK-NEXT:   inline conflicting_argument: 6
+// CHECK-NEXT:   inline another_template_chosen: 4
+// CHECK-NEXT:   macro MIXED: 4 lifted, inline:
+// CHECK-NEXT:   macro PUT: 8 lifted, inline: conflicting_argument 4, another_template_chosen 4
+// CHECK-NEXT:   macro STORE_BYTE: 8 lifted, inline:
+// CHECK-NEXT:   macro SUM_TWICE: 4 lifted, inline:
+// CHECK-NEXT:   macro UNHYGIENIC: 2 lifted, inline: conflicting_argument 2
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0

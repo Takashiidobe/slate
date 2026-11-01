@@ -1,8 +1,6 @@
 use std::collections::HashSet;
 
-use slate_parser::ast::{
-    MacroDefinition, MacroInvocationId, MacroInvocations, NestedExpansionId, Span,
-};
+use slate_parser::ast::{MacroDefinition, MacroExpansionId, MacroInvocations, Span};
 use slate_parser::ir;
 
 use super::control_flow;
@@ -11,43 +9,11 @@ use super::*;
 use crate::backend::engine::macro_boundaries;
 use crate::backend::rust_ast::{MacroInlineReason, MacroOutcome};
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash)]
-pub(super) enum MacroRegionId {
-    Source(MacroInvocationId),
-    Nested(NestedExpansionId),
-}
-
-impl MacroRegionId {
-    fn definition(self, macros: &MacroInvocations) -> &MacroDefinition {
-        match self {
-            Self::Source(id) => macros.definition(macros.invocation(id)),
-            Self::Nested(id) => macros.nested_definition(id),
-        }
-    }
-
-    fn site_of<T>(self, macros: &MacroInvocations, span: &Span<T>) -> Option<Option<usize>> {
-        match self {
-            Self::Source(id) => macros
-                .sites(span.expansion)
-                .into_iter()
-                .find(|site| site.invocation == id)
-                .map(|site| site.argument),
-            Self::Nested(id) => span
-                .macro_nesting
-                .as_ref()?
-                .site_of(id)
-                .map(|link| link.argument),
-        }
-    }
-
-    fn touches(self, macros: &MacroInvocations, statement: Option<&Span<ir::Statement>>) -> bool {
-        match self {
-            Self::Source(id) => touches(macros, id, statement),
-            Self::Nested(_) => {
-                statement.is_some_and(|statement| self.site_of(macros, statement).is_some())
-            }
-        }
-    }
+fn site_of<T>(region: MacroExpansionId, span: &Span<T>) -> Option<Option<usize>> {
+    span.macro_nesting
+        .as_ref()?
+        .site_of(region)
+        .map(|link| link.argument)
 }
 
 fn unfit_reason(statement: &ir::Statement) -> Option<MacroInlineReason> {
@@ -66,37 +32,23 @@ fn fits_region(statement: &ir::Statement) -> bool {
 
 pub(super) fn unreached_expansions(
     macros: &MacroInvocations,
-    seen: &HashSet<MacroRegionId>,
+    seen: &HashSet<MacroExpansionId>,
 ) -> Vec<MacroOutcome> {
-    let invocations = macros
-        .invocations
+    macros
+        .expansions
         .iter()
         .enumerate()
-        .filter_map(|(id, invocation)| {
-            let region = MacroRegionId::Source(MacroInvocationId(id as u32));
-            let reason = if invocation.empty {
+        .map(|(id, expansion)| (MacroExpansionId(id as u32), expansion))
+        .filter(|(id, _)| !seen.contains(id))
+        .map(|(id, expansion)| MacroOutcome {
+            name: macros.definition(id).name.to_string(),
+            inline: Some(if expansion.empty {
                 MacroInlineReason::EmptyExpansion
-            } else if invocation.parent.is_some() {
+            } else if expansion.spelled.is_some() && expansion.parent.is_some() {
                 MacroInlineReason::InsideArgument
             } else {
                 MacroInlineReason::NoStatementRegion
-            };
-            (!seen.contains(&region)).then(|| (macros.definition(invocation), reason))
-        });
-    let nested = (0..macros.nested.len()).filter_map(|id| {
-        let id = NestedExpansionId(id as u32);
-        (!seen.contains(&MacroRegionId::Nested(id))).then(|| {
-            (
-                macros.nested_definition(id),
-                MacroInlineReason::NoStatementRegion,
-            )
-        })
-    });
-    invocations
-        .chain(nested)
-        .map(|(definition, reason)| MacroOutcome {
-            name: definition.name.to_string(),
-            inline: Some(reason),
+            }),
         })
         .collect()
 }
@@ -128,27 +80,30 @@ fn transfers_stay_inside(statement: &ir::Statement, in_loop: bool) -> bool {
 
 fn touches(
     macros: &MacroInvocations,
-    invocation: MacroInvocationId,
+    region: MacroExpansionId,
     statement: Option<&Span<ir::Statement>>,
 ) -> bool {
-    let site = macros.invocation(invocation).site;
     statement.is_some_and(|statement| {
         let loc = statement.expansion;
-        loc.file == site.file
-            && loc.offset < site.offset + site.length
-            && site.offset < loc.offset + loc.length
+        site_of(region, statement).is_some()
+            || macros
+                .expansion(region)
+                .spelled
+                .as_ref()
+                .is_some_and(|call| {
+                    let site = call.site;
+                    loc.file == site.file
+                        && loc.offset < site.offset + site.length
+                        && site.offset < loc.offset + loc.length
+                })
     })
 }
 
-fn spelled_in_body(
-    macros: &MacroInvocations,
-    region: MacroRegionId,
-    statement: &Span<ir::Statement>,
-) -> bool {
+fn spelled_in_body(region: MacroExpansionId, statement: &Span<ir::Statement>) -> bool {
     if matches!(statement.value, ir::Statement::Comment(_)) {
         return true;
     }
-    let Some(argument) = region.site_of(macros, statement) else {
+    let Some(argument) = site_of(region, statement) else {
         return false;
     };
     if argument.is_some() {
@@ -160,7 +115,7 @@ fn spelled_in_body(
     control_flow::children(&statement.value)
         .into_iter()
         .flatten()
-        .all(|child| spelled_in_body(macros, region, child))
+        .all(|child| spelled_in_body(region, child))
 }
 
 fn declares_local(statement: &ir::Statement) -> bool {
@@ -175,13 +130,14 @@ pub(super) fn is_whole_macro_block(
     macros: &MacroInvocations,
     statement: &Span<ir::Statement>,
 ) -> bool {
-    let Some(site) = macros.sites(statement.expansion).pop() else {
+    let Some(site) = statement
+        .macro_nesting
+        .as_deref()
+        .and_then(|nesting| macros.innermost_spelled(nesting))
+    else {
         return false;
     };
-    let replacement = macros
-        .definition(macros.invocation(site.invocation))
-        .replacement
-        .trim();
+    let replacement = macros.definition(site.expansion).replacement.trim();
     site.argument.is_none()
         && matches!(statement.value, ir::Statement::Block(_))
         && replacement.starts_with('{')
@@ -306,15 +262,18 @@ impl FunctionLowerer<'_, '_> {
             .collect()
     }
 
-    pub(super) fn macro_region_of(&self, statement: &Span<ir::Statement>) -> Option<MacroRegionId> {
+    pub(super) fn macro_region_of(
+        &self,
+        statement: &Span<ir::Statement>,
+    ) -> Option<MacroExpansionId> {
         self.enclosing_expansion(statement)
             .filter(|_| fits_region(&statement.value))
     }
 
-    fn reject_expansion(&mut self, region: MacroRegionId, reason: MacroInlineReason) {
+    fn reject_expansion(&mut self, region: MacroExpansionId, reason: MacroInlineReason) {
         if self.dependencies.macro_expansions_seen.insert(region) {
             self.dependencies.macro_outcomes.push(MacroOutcome {
-                name: region.definition(self.tables.macros).name.to_string(),
+                name: self.tables.macros.definition(region).name.to_string(),
                 inline: Some(reason),
             });
         }
@@ -328,33 +287,28 @@ impl FunctionLowerer<'_, '_> {
         }
     }
 
-    fn enclosing_expansion(&self, statement: &Span<ir::Statement>) -> Option<MacroRegionId> {
+    fn enclosing_expansion(&self, statement: &Span<ir::Statement>) -> Option<MacroExpansionId> {
         let open = self.macro_regions.len();
         if !self.tables.named_c_types || self.macro_argument_depth != open {
             return None;
         }
         let macros = self.tables.macros;
+        let nesting = statement.macro_nesting.as_deref()?;
         match self.macro_regions.last() {
             None => {
-                let site = macros.sites(statement.expansion).pop()?;
-                site.argument
-                    .is_none()
-                    .then_some(MacroRegionId::Source(site.invocation))
+                let site = macros.innermost_spelled(nesting)?;
+                site.argument.is_none().then_some(site.expansion)
             }
             Some(enclosing) => {
-                let parent = match enclosing {
-                    MacroRegionId::Source(_) => None,
-                    MacroRegionId::Nested(id) => Some(*id),
-                };
-                let nesting = statement.macro_nesting.as_ref()?;
-                let mut children = nesting
-                    .iter()
-                    .filter(|link| macros.nested[link.expansion.0 as usize].parent == parent);
+                let mut children = nesting.iter().filter(|link| {
+                    let expansion = macros.expansion(link.expansion);
+                    expansion.spelled.is_none() && expansion.parent == Some(*enclosing)
+                });
                 let child = children.next()?;
                 if child.argument.is_some() || children.next().is_some() {
                     return None;
                 }
-                Some(MacroRegionId::Nested(child.expansion))
+                Some(child.expansion)
             }
         }
     }
@@ -396,7 +350,7 @@ impl FunctionLowerer<'_, '_> {
 
     pub(super) fn lower_macro_region(
         &mut self,
-        region: MacroRegionId,
+        region: MacroExpansionId,
         statements: &[Span<ir::Statement>],
         before: Option<&Span<ir::Statement>>,
         after: Option<&Span<ir::Statement>>,
@@ -420,12 +374,12 @@ impl FunctionLowerer<'_, '_> {
             return Ok(body);
         }
         let macros = self.tables.macros;
-        let definition = region.definition(macros);
+        let definition = macros.definition(region);
         let params = macro_params(definition);
         let split = [before, after]
             .into_iter()
             .flatten()
-            .find(|neighbor| region.touches(macros, Some(neighbor)));
+            .find(|neighbor| touches(macros, region, Some(neighbor)));
         let rejection = params.as_ref().err().copied().or_else(|| {
             split
                 .map(|neighbor| {
@@ -434,7 +388,7 @@ impl FunctionLowerer<'_, '_> {
                 .or_else(|| {
                     (!statements
                         .iter()
-                        .all(|statement| spelled_in_body(macros, region, statement)))
+                        .all(|statement| spelled_in_body(region, statement)))
                     .then_some(MacroInlineReason::ArgumentStatementInRegion)
                 })
         });
@@ -459,9 +413,6 @@ impl FunctionLowerer<'_, '_> {
         let region = self
             .macro_regions
             .get(self.macro_argument_depth.checked_sub(1)?)?;
-        region
-            .site_of(self.tables.macros, &value.node)??
-            .try_into()
-            .ok()
+        site_of(*region, &value.node)??.try_into().ok()
     }
 }

@@ -170,15 +170,9 @@ pub(super) fn macro_sites<T>(
     let Some(macros) = table.macros else {
         return Ok(());
     };
-    for site in macros.sites(span.expansion) {
-        let invocation = macros.invocation(site.invocation);
-        let name = &macros.definition(invocation).name;
-        write!(f, " [macro={name}#{}", site.invocation.0)?;
-        macro_site_role(f, site.argument)?;
-    }
     for link in span.macro_nesting.iter().flat_map(|nesting| nesting.iter()) {
-        let name = &macros.nested_definition(link.expansion).name;
-        write!(f, " [nested={name}#{}", link.expansion.0)?;
+        let name = &macros.definition(link.expansion).name;
+        write!(f, " [macro={name}#{}", link.expansion.0)?;
         macro_site_role(f, link.argument)?;
     }
     Ok(())
@@ -206,41 +200,29 @@ fn macro_table(f: &mut fmt::Formatter<'_>, macros: &MacroInvocations) -> fmt::Re
             definition.provenance.file.0, definition.provenance.line, definition.replacement
         )?;
     }
-    for (index, invocation) in macros.invocations.iter().enumerate() {
-        let site = invocation.site;
+    for (index, expansion) in macros.expansions.iter().enumerate() {
         write!(
             f,
-            "    macro_invocation #{index} {} [definition=#{}] [site={}:{}+{}]",
-            macros.definition(invocation).name,
-            invocation.definition.0,
-            site.file.0,
-            site.offset,
-            site.length
+            "    macro_expansion #{index} {} [definition=#{}]",
+            macros.definitions[expansion.definition.0 as usize].name, expansion.definition.0
         )?;
-        if !invocation.arguments.is_empty() {
-            let ranges = invocation
-                .arguments
-                .iter()
-                .map(|argument| format!("{}+{}", argument.offset, argument.length))
-                .collect::<Vec<_>>();
-            write!(f, " [arguments={}]", ranges.join(", "))?;
+        if let Some(spelled) = &expansion.spelled {
+            let site = spelled.site;
+            write!(f, " [site={}:{}+{}]", site.file.0, site.offset, site.length)?;
+            if !spelled.arguments.is_empty() {
+                let ranges = spelled
+                    .arguments
+                    .iter()
+                    .map(|argument| format!("{}+{}", argument.offset, argument.length))
+                    .collect::<Vec<_>>();
+                write!(f, " [arguments={}]", ranges.join(", "))?;
+            }
         }
-        if let Some(parent) = invocation.parent {
+        if let Some(parent) = expansion.parent {
             write!(f, " [parent=#{}]", parent.0)?;
         }
-        if invocation.empty {
+        if expansion.empty {
             f.write_str(" [empty]")?;
-        }
-        writeln!(f, ";")?;
-    }
-    for (index, nested) in macros.nested.iter().enumerate() {
-        write!(
-            f,
-            "    macro_nested_expansion #{index} {} [definition=#{}]",
-            macros.definitions[nested.definition.0 as usize].name, nested.definition.0
-        )?;
-        if let Some(parent) = nested.parent {
-            write!(f, " [parent=#{}]", parent.0)?;
         }
         writeln!(f, ";")?;
     }

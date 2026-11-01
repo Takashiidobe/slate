@@ -35,6 +35,7 @@ int main(void) {
 // CHECK-NEXT:   duplicated fn:two_values: 2 variants
 // CHECK-NEXT:   duplicated fn:mixed_types: 2 variants
 // CHECK-NEXT:   spliced fn:two_statements: 2 variants
+// CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0

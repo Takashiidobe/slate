@@ -27,6 +27,7 @@ int main(void) {
 // CHECK-NEXT: unit unseen_signature: 8 items, 4 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 4 variants
 // CHECK-NEXT: unit unseen_signature_helper: 1 items, 0 gated, 0 duplicated functions
+// CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 16 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 2 shared symbols, 1 mismatches
 // CHECK-NEXT:   linux-x86_64 [alpha,beta]: widen: unseen_signature `extern "C" fn(i64) -> i64` vs unseen_signature_helper `extern "C" fn(i32) -> i32`

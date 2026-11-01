@@ -122,10 +122,10 @@ prints its place's type after the statement. This needs no flag, and
 
 ### Macro invocations
 
-`Module.macros` (`MacroInvocations`) lists the macro calls written in user code,
+`Module.macros` (`MacroInvocations`) lists the macro expansions in user code,
 including those that expand to nothing, with their definitions and argument
-ranges. `sites(node.expansion)` says which invocations produced a node and
-whether it is body or argument code; see
+ranges. `node.macro_nesting` says which expansions produced a node and whether it
+is body or argument code; see
 [macro invocations](../preprocessor.md#macro-invocations). Lowering must not
 depend on it for semantics: it is source context for recovering macros in the
 output. `--show-macros` prints it.

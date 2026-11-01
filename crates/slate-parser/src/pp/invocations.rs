@@ -1,8 +1,8 @@
 use super::expand::PPToken;
 use super::{MacroDef, Preprocessor, tokens_source};
 use crate::ast::{
-    Loc, MacroDefinition, MacroDefinitionId, MacroInvocation, MacroInvocations, MacroNesting,
-    NestedExpansion, NestedExpansionId, Provenance,
+    self, Loc, MacroDefinition, MacroDefinitionId, MacroExpansion, MacroExpansionId,
+    MacroInvocations, MacroNesting, Provenance,
 };
 use crate::lexer::TokenSpanExt;
 use std::collections::HashMap;
@@ -14,13 +14,13 @@ pub(super) struct InvocationRecorder {
     table: MacroInvocations,
     definitions: HashMap<*const MacroDef, (MacroDefinitionId, Rc<MacroDef>)>,
     pub(super) in_directive: bool,
+    open_arguments: Vec<MacroExpansionId>,
 }
 
 pub(super) struct Recorded<'r> {
     pub(super) name: &'r str,
     pub(super) definition: &'r Rc<MacroDef>,
     pub(super) provenance: Provenance,
-    pub(super) empty: bool,
 }
 
 pub(super) struct SpelledCall<'c> {
@@ -56,9 +56,7 @@ impl SpelledCall<'_> {
 
 impl Preprocessor<'_> {
     pub(crate) fn take_macro_invocations(&mut self) -> MacroInvocations {
-        let mut table = std::mem::take(&mut self.invocations.table);
-        table.nest();
-        table
+        std::mem::take(&mut self.invocations.table)
     }
 
     fn records_invocation_of(&self, name: &PPToken) -> bool {
@@ -67,73 +65,96 @@ impl Preprocessor<'_> {
             && name.token.macro_origin.is_none()
     }
 
-    pub(super) fn record_object_invocation(&mut self, name: &PPToken, recorded: Recorded) {
-        if self.records_invocation_of(name) {
-            self.record_invocation(recorded, name.token.expansion, Vec::new());
-        }
+    pub(super) fn record_object_expansion(
+        &mut self,
+        name: &PPToken,
+        recorded: &Recorded,
+    ) -> Option<Arc<MacroNesting>> {
+        self.records_invocation_of(name).then(|| {
+            self.record_expansion(
+                name,
+                recorded,
+                Some(ast::SpelledCall {
+                    site: name.token.expansion,
+                    arguments: Vec::new(),
+                }),
+            )
+        })
     }
 
-    pub(super) fn record_function_invocation(
+    pub(super) fn record_function_expansion(
         &mut self,
         name: &PPToken,
         call: SpelledCall,
-        recorded: Recorded,
-    ) {
+        recorded: &Recorded,
+    ) -> Option<Arc<MacroNesting>> {
         let site = name.token.expansion;
         let close = call.rparen.token.expansion;
         if self.records_invocation_of(name)
             && call.is_spelled_in_source()
             && site.file == close.file
         {
-            self.record_invocation(recorded, site.through(close), call.argument_ranges());
+            let spelled = ast::SpelledCall {
+                site: site.through(close),
+                arguments: call.argument_ranges(),
+            };
+            return Some(self.record_expansion(name, recorded, Some(spelled)));
         }
-    }
-
-    pub(super) fn record_nested_expansion(
-        &mut self,
-        name: &PPToken,
-        lparen: &PPToken,
-        rparen: &PPToken,
-        recorded: &Recorded,
-    ) -> Option<Arc<MacroNesting>> {
         let origin = name.token.macro_origin.as_ref()?;
         if self.invocations.in_directive
             || self.outermost_system_header.is_some()
             || name.token.provenance.system_header.is_some()
             || recorded.provenance.system_header.is_some()
-            || lparen.token.macro_origin.as_ref() != Some(origin)
-            || rparen.token.macro_origin.as_ref() != Some(origin)
+            || call.lparen.token.macro_origin.as_ref() != Some(origin)
+            || call.rparen.token.macro_origin.as_ref() != Some(origin)
         {
             return None;
         }
+        Some(self.record_expansion(name, recorded, None))
+    }
+
+    fn record_expansion(
+        &mut self,
+        name: &PPToken,
+        recorded: &Recorded,
+        spelled: Option<ast::SpelledCall>,
+    ) -> Arc<MacroNesting> {
         let enclosing = name.token.macro_nesting.clone();
         let parent = enclosing
             .iter()
             .flat_map(|nesting| nesting.iter())
             .find(|link| link.argument.is_none())
-            .map(|link| link.expansion);
+            .map(|link| link.expansion)
+            .or_else(|| self.invocations.open_arguments.last().copied());
         let definition = self.invocations.definition_id(recorded);
-        let expansion = NestedExpansionId(self.invocations.table.nested.len() as u32);
-        self.invocations
-            .table
-            .nested
-            .push(NestedExpansion { definition, parent });
-        Some(Arc::new(MacroNesting {
+        let expansion = MacroExpansionId(self.invocations.table.expansions.len() as u32);
+        self.invocations.table.expansions.push(MacroExpansion {
+            definition,
+            parent,
+            spelled,
+            empty: false,
+        });
+        Arc::new(MacroNesting {
             expansion,
             argument: None,
             enclosing,
-        }))
+        })
     }
 
-    fn record_invocation(&mut self, recorded: Recorded, site: Loc, arguments: Vec<Loc>) {
-        let definition = self.invocations.definition_id(&recorded);
-        self.invocations.table.invocations.push(MacroInvocation {
-            definition,
-            site,
-            arguments,
-            parent: None,
-            empty: recorded.empty,
-        });
+    pub(super) fn mark_expansion_empty(&mut self, id: MacroExpansionId) {
+        self.invocations.table.expansions[id.0 as usize].empty = true;
+    }
+
+    pub(super) fn enter_argument_of(&mut self, id: Option<MacroExpansionId>) {
+        if let Some(id) = id {
+            self.invocations.open_arguments.push(id);
+        }
+    }
+
+    pub(super) fn leave_argument_of(&mut self, id: Option<MacroExpansionId>) {
+        if id.is_some() {
+            self.invocations.open_arguments.pop();
+        }
     }
 }
 

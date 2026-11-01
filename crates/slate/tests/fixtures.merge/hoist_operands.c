@@ -48,6 +48,7 @@ int main(void) {
 // CHECK-NEXT:   hoisted fn:name: 2 variants
 // CHECK-NEXT:   hoisted fn:gated: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 4 variants
+// CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0

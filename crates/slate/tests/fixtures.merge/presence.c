@@ -26,6 +26,7 @@ int main(void) {
 // CHECK-NEXT: total: 8 compiles across 2 targets
 // CHECK-NEXT: unit presence: 8 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 8 variants
+// CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0

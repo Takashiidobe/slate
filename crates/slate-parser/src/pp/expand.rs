@@ -3,7 +3,7 @@ use super::hide_set::HideSet;
 use super::invocations::{Recorded, SpelledCall};
 use super::syntax::{Directive, DirectiveName, Line};
 use super::{FileInput, MacroDef, Preprocessor, TokenTrace, stringized_source};
-use crate::ast::{Loc, MacroNesting, MacroOrigin, MacroOriginLink, NestedExpansionId, Span};
+use crate::ast::{Loc, MacroExpansionId, MacroNesting, MacroOrigin, MacroOriginLink, Span};
 use crate::compiler_args::CompilerFlavor;
 use crate::lexer::{Token, TokenSpanExt, token_spelling};
 use std::sync::Arc;
@@ -90,7 +90,7 @@ struct Stamp {
     end: Loc,
     origin: Arc<MacroOrigin>,
     nesting: Option<Arc<MacroNesting>>,
-    nested: Option<NestedExpansionId>,
+    recorded: Option<MacroExpansionId>,
 }
 
 impl Stamp {
@@ -103,17 +103,35 @@ impl Stamp {
     }
 
     fn label_argument(&self, mut tokens: Vec<PPToken>, argument: usize) -> Vec<PPToken> {
-        let Some(expansion) = self.nested else {
+        let Some(expansion) = self.recorded else {
             return tokens;
         };
+        let mut previous: Option<(Option<Arc<MacroNesting>>, Arc<MacroNesting>)> = None;
         for token in &mut tokens {
-            token.token.macro_nesting = Some(Arc::new(MacroNesting {
-                expansion,
-                argument: Some(argument),
-                enclosing: token.token.macro_nesting.take(),
-            }));
+            let enclosing = token.token.macro_nesting.take();
+            let label = match &previous {
+                Some((known, label)) if same_nesting(known, &enclosing) => label.clone(),
+                _ => {
+                    let label = Arc::new(MacroNesting {
+                        expansion,
+                        argument: Some(argument),
+                        enclosing: enclosing.clone(),
+                    });
+                    previous = Some((enclosing, label.clone()));
+                    label
+                }
+            };
+            token.token.macro_nesting = Some(label);
         }
         tokens
+    }
+}
+
+fn same_nesting(left: &Option<Arc<MacroNesting>>, right: &Option<Arc<MacroNesting>>) -> bool {
+    match (left, right) {
+        (None, None) => true,
+        (Some(left), Some(right)) => Arc::ptr_eq(left, right),
+        _ => false,
     }
 }
 
@@ -240,21 +258,26 @@ impl Preprocessor<'_> {
             end: token.end,
             origin: origin_for_expansion(name, entry.provenance, &token.token),
             nesting: token.token.macro_nesting.clone(),
-            nested: None,
+            recorded: None,
         };
         let name = name.clone();
         let Some(parameters) = &definition.parameters else {
             let hide = self.hide_sets.with(token.hide, &name);
-            let replacement = self.substitute_object_macro(&definition, &stamp)?;
-            self.record_object_invocation(
+            if let Some(nesting) = self.record_object_expansion(
                 &token,
-                Recorded {
+                &Recorded {
                     name: &name,
                     definition: &definition,
                     provenance,
-                    empty: replacement.is_empty(),
                 },
-            );
+            ) {
+                stamp.recorded = Some(nesting.expansion);
+                stamp.nesting = Some(nesting);
+            }
+            let replacement = self.substitute_object_macro(&definition, &stamp)?;
+            if let Some(id) = stamp.recorded.filter(|_| replacement.is_empty()) {
+                self.mark_expansion_empty(id);
+            }
             let replacement = self.trace_expansion(&name, &token, None, replacement);
             let replacement = self.hide_all(replacement, hide);
             stream.push_front(inherit_leading_space(replacement, &token.token));
@@ -292,8 +315,28 @@ impl Preprocessor<'_> {
             stream.push_front(invocation.into_tokens());
             return Ok(Some(token));
         }
+        if let Some(rparen) = &invocation.rparen
+            && let Some(nesting) = self.record_function_expansion(
+                &token,
+                SpelledCall {
+                    lparen: &invocation.lparen,
+                    arguments,
+                    commas: &invocation.commas,
+                    rparen,
+                },
+                &Recorded {
+                    name: &name,
+                    definition: &definition,
+                    provenance,
+                },
+            )
+        {
+            stamp.recorded = Some(nesting.expansion);
+            stamp.nesting = Some(nesting);
+        }
         let prescanned = prescanned_parameters(&definition, parameters);
         let mut expanded_arguments = Vec::with_capacity(arguments.len());
+        self.enter_argument_of(stamp.recorded);
         for (index, argument) in arguments.iter().enumerate() {
             let prescan = prescanned
                 .get(index)
@@ -307,23 +350,8 @@ impl Preprocessor<'_> {
                 },
             );
         }
+        self.leave_argument_of(stamp.recorded);
         let elide_comma = self.comma_elision(&definition, parameters, arguments);
-        if let Some(rparen) = &invocation.rparen
-            && let Some(nesting) = self.record_nested_expansion(
-                &token,
-                &invocation.lparen,
-                rparen,
-                &Recorded {
-                    name: &name,
-                    definition: &definition,
-                    provenance,
-                    empty: false,
-                },
-            )
-        {
-            stamp.nested = Some(nesting.expansion);
-            stamp.nesting = Some(nesting);
-        }
         let replacement = self.substitute_function_macro(
             &definition,
             parameters,
@@ -335,22 +363,8 @@ impl Preprocessor<'_> {
             },
             &stamp,
         )?;
-        if let Some(rparen) = &invocation.rparen {
-            self.record_function_invocation(
-                &token,
-                SpelledCall {
-                    lparen: &invocation.lparen,
-                    arguments,
-                    commas: &invocation.commas,
-                    rparen,
-                },
-                Recorded {
-                    name: &name,
-                    definition: &definition,
-                    provenance,
-                    empty: replacement.is_empty(),
-                },
-            );
+        if let Some(id) = stamp.recorded.filter(|_| replacement.is_empty()) {
+            self.mark_expansion_empty(id);
         }
         let hide = self.hide_sets.intersection(token.hide, rparen_hide);
         let hide = self.hide_sets.with(hide, &name);

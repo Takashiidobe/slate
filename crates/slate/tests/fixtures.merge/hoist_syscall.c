@@ -16,6 +16,7 @@ int main(void) {
 // CHECK-NEXT: total: 2 compiles across 2 targets
 // CHECK-NEXT: unit hoist_syscall: 6 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:__slate_main: 2 variants
+// CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 6 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0

@@ -84,6 +84,27 @@ int main(void) {
 // CHECK-NEXT: total: 2 compiles across 2 targets
 // CHECK-NEXT: unit macro_nesting: 27 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
+// CHECK-NEXT: macros: 15 function-like, 13 lifted at least once (expansions counted per distinct compile)
+// CHECK-NEXT:   inline another_template_chosen: 6
+// CHECK-NEXT:   inline conflicting_argument: 4
+// CHECK-NEXT:   inline declares_local: 2
+// CHECK-NEXT:   inline reads_caller_local: 2
+// CHECK-NEXT:   inline argument_reads_macro_local: 2
+// CHECK-NEXT:   macro ADD: 2 lifted, inline:
+// CHECK-NEXT:   macro ADD_READS: 2 lifted, inline: reads_caller_local 2
+// CHECK-NEXT:   macro ARG_NAMES_TEMP: 2 lifted, inline:
+// CHECK-NEXT:   macro CALLS_ONLY_NESTED: 2 lifted, inline:
+// CHECK-NEXT:   macro LEAKS: 0 lifted, inline: declares_local 2
+// CHECK-NEXT:   macro LOCAL_READS: 2 lifted, inline:
+// CHECK-NEXT:   macro ONLY_NESTED: 2 lifted, inline:
+// CHECK-NEXT:   macro PUT_BYTE: 26 lifted, inline:
+// CHECK-NEXT:   macro PUT_SHORT: 10 lifted, inline: another_template_chosen 2
+// CHECK-NEXT:   macro SAME_BODY: 2 lifted, inline:
+// CHECK-NEXT:   macro SEND: 4 lifted, inline: conflicting_argument 2, another_template_chosen 4
+// CHECK-NEXT:   macro SEND_CODE: 4 lifted, inline:
+// CHECK-NEXT:   macro SEND_TWO: 0 lifted, inline: conflicting_argument 2
+// CHECK-NEXT:   macro TEMP: 2 lifted, inline: argument_reads_macro_local 2
+// CHECK-NEXT:   macro USES_LEAK: 2 lifted, inline:
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0

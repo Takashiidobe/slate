@@ -58,6 +58,16 @@ int main(void) {
 // CHECK-NEXT:   spliced fn:report: 2 variants
 // CHECK-NEXT:   spliced fn:checked: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
+// CHECK-NEXT: macros: 6 function-like, 3 lifted at least once (expansions counted per distinct compile)
+// CHECK-NEXT:   inline empty_expansion: 3
+// CHECK-NEXT:   inline control_transfer: 3
+// CHECK-NEXT:   inline reads_caller_local: 3
+// CHECK-NEXT:   macro ASSERT: 15 lifted, inline:
+// CHECK-NEXT:   macro BUMP: 0 lifted, inline: reads_caller_local 3
+// CHECK-NEXT:   macro GUARD: 0 lifted, inline: control_transfer 3
+// CHECK-NEXT:   macro NOTE: 3 lifted, inline:
+// CHECK-NEXT:   macro QUIET: 0 lifted, inline: empty_expansion 3
+// CHECK-NEXT:   macro TRACE: 6 lifted, inline:
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0

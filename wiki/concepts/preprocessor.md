@@ -197,55 +197,46 @@ named Rust constant (`CHAR_MAX`) instead of its value.
 
 ## Macro invocations
 
-`pp/invocations.rs` builds `MacroInvocations`, a table of each macro call
-written in user code, so Slate can fold an expansion back into a macro call.
-It reaches `ir::Module.macros` through `TranslationUnit.macros` and is always
-on, unlike `PreprocessTrace.expansions`, which only `translate-project`'s
-planner enables and which has no argument ranges.
+`pp/invocations.rs` builds `MacroInvocations`, a table of each macro expansion
+in user code, so Slate can fold an expansion back into a macro call. It reaches
+`ir::Module.macros` through `TranslationUnit.macros` and is always on, unlike
+`PreprocessTrace.expansions`, which only `translate-project`'s planner enables
+and which has no argument ranges.
 
 - `MacroDefinition`: name, parameters, `variadic`, replacement text and
   provenance, one per `#define` that was invoked.
-- `MacroInvocation`: `definition`, `site` (the name through the closing paren),
-  `arguments` (one range per actual argument, zero-length when empty), `parent`
-  (the invocation whose range contains this one) and `empty` (the replacement
-  list substituted to no tokens).
-- An invocation that expands to nothing leaves no tokens and no IR node, so this
-  table is its only record. `empty` is not set when tokens only vanish on
-  rescan, as for `A` in `#define A B` with an empty `B`.
+- `MacroExpansion`: `definition`, `parent`, `empty` (the replacement list
+  substituted to no tokens) and `spelled`. `parent` is the expansion whose body
+  holds the call, or failing that the one whose argument is being prescanned.
+- `SpelledCall`: `site` (the name through the closing paren) and `arguments` (one
+  range per actual argument, zero-length when empty). It is set for a call written
+  in source and none for a call spelled in a macro body.
+- An expansion to nothing leaves no tokens and no IR node, so this table is its
+  only record. `empty` is not set when tokens only vanish on rescan, as for `A` in
+  `#define A B` with an empty `B`.
 
 Not recorded:
 
-- Invocations whose name is spelled in a system header. A libc macro called from
+- Expansions whose name is spelled in a system header. A libc macro called from
   user code, such as `stderr`, is recorded.
 - Expansions for directives (`#if`, `#include`, `#embed`, `#line`,
   `#pragma omp`).
-- Calls not spelled at the site: a name from a macro body (`G` after
-  `#define F G`), or one whose parens or arguments come from a macro
-  (`f(x)` in `#define CALL(f, x) f(x)`). Calls spelled whole in a user macro's
-  body go in `nested` instead (below).
-- An invocation crossing an earlier one's range (`G(1)` in `ID(G)(1)`) or sharing
-  its exact site, as a header included twice does. The first recorded wins, so a
-  consumer must verify a fold by re-expanding, not trust the table alone.
+- Calls whose name and parens do not all come from one place: a name from a macro
+  body (`G` after `#define F G`), or a call whose parens come from a macro
+  (`f(x)` in `#define CALL(f, x) f(x)`, `G(1)` in `ID(G)(1)`).
+- A libc macro nested in a user macro, or a user macro nested in a libc one.
 
-`MacroInvocations.nested` holds the calls spelled in a user macro's body, whose
-name and parens all come from that body. Their tokens share the outer site's
-`expansion`, so location cannot separate them; `Span.macro_nesting` labels them
-instead. Each link names a `NestedExpansion` and says whether the token is its
-body or which argument, and `enclosing` holds the labels the token already had.
-Body tokens start from the call name's label, so tokens from an object-like or
-unrecorded macro in a body stay in that body. `Span::cover` keeps an expansion
-only when every covered token is in it, and reports body when they disagree on
-the argument. `NestedExpansion.parent` is the nested expansion whose body holds
-the call, or none for the body of a macro written in source. Two calls in one
-body get separate ids, which is why a name or spelling would not do. A libc
-macro nested in a user macro, or a user macro nested in a libc one, is not
-recorded.
-
-Nodes join the table by location. Replacement tokens have `expansion` at the
-macro name and argument tokens keep their own, so `MacroInvocations::sites(loc)`
-returns every invocation containing a node's `expansion`, outermost first, each
-marked with the argument holding the node or none for body code. A node mixing
-two sibling invocations (`M(1) + N(2)`) belongs to neither.
+Nodes join the table by label. `Span.macro_nesting` holds one link per expansion
+containing the token: the `MacroExpansionId` and whether the token is its body or
+which argument, with `enclosing` holding the labels the token already had. Body
+tokens start from the call name's label, so tokens from an unrecorded macro stay
+in the enclosing body. `Span::cover` keeps an expansion only when every covered
+token is in it, and reports body when they disagree on the argument, so a node
+mixing two sibling calls (`M(1) + N(2)`) belongs to neither, and neither does
+`M(1);` when `;` is written after the call. Two calls in one body get separate
+ids, which location could not separate because their tokens share the outer
+site's `expansion`. `MacroInvocations::innermost_spelled` finds the last link
+written in source, which is the call whose region a node belongs to.
 
 `--show-macros` prints these on IR dumps
 ([ir-grammar](ir-grammar.md#metadata)). The fixture is

@@ -913,7 +913,7 @@ pub struct MacroOriginLink {
 pub struct MacroDefinitionId(pub u32);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct MacroInvocationId(pub u32);
+pub struct MacroExpansionId(pub u32);
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct MacroDefinition {
@@ -925,32 +925,22 @@ pub struct MacroDefinition {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct MacroInvocation {
-    pub definition: MacroDefinitionId,
+pub struct SpelledCall {
     pub site: Loc,
     pub arguments: Vec<Loc>,
-    pub parent: Option<MacroInvocationId>,
-    pub empty: bool,
 }
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct MacroSite {
-    pub invocation: MacroInvocationId,
-    pub argument: Option<usize>,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct NestedExpansionId(pub u32);
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct NestedExpansion {
+pub struct MacroExpansion {
     pub definition: MacroDefinitionId,
-    pub parent: Option<NestedExpansionId>,
+    pub parent: Option<MacroExpansionId>,
+    pub spelled: Option<SpelledCall>,
+    pub empty: bool,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct MacroNesting {
-    pub expansion: NestedExpansionId,
+    pub expansion: MacroExpansionId,
     pub argument: Option<usize>,
     pub enclosing: Option<Arc<MacroNesting>>,
 }
@@ -960,7 +950,7 @@ impl MacroNesting {
         std::iter::successors(Some(self), |link| link.enclosing.as_deref())
     }
 
-    pub fn site_of(&self, expansion: NestedExpansionId) -> Option<&MacroNesting> {
+    pub fn site_of(&self, expansion: MacroExpansionId) -> Option<&MacroNesting> {
         self.iter().find(|link| link.expansion == expansion)
     }
 
@@ -994,82 +984,24 @@ impl MacroNesting {
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
 pub struct MacroInvocations {
     pub definitions: Vec<MacroDefinition>,
-    pub invocations: Vec<MacroInvocation>,
-    pub nested: Vec<NestedExpansion>,
+    pub expansions: Vec<MacroExpansion>,
 }
 
 impl MacroInvocations {
-    pub fn definition(&self, invocation: &MacroInvocation) -> &MacroDefinition {
-        &self.definitions[invocation.definition.0 as usize]
+    pub fn expansion(&self, id: MacroExpansionId) -> &MacroExpansion {
+        &self.expansions[id.0 as usize]
     }
 
-    pub fn invocation(&self, id: MacroInvocationId) -> &MacroInvocation {
-        &self.invocations[id.0 as usize]
+    pub fn definition(&self, id: MacroExpansionId) -> &MacroDefinition {
+        &self.definitions[self.expansion(id).definition.0 as usize]
     }
 
-    pub fn nested_definition(&self, id: NestedExpansionId) -> &MacroDefinition {
-        &self.definitions[self.nested[id.0 as usize].definition.0 as usize]
+    pub fn innermost_spelled<'n>(&self, nesting: &'n MacroNesting) -> Option<&'n MacroNesting> {
+        nesting
+            .iter()
+            .filter(|link| self.expansion(link.expansion).spelled.is_some())
+            .last()
     }
-
-    pub fn sites(&self, loc: Loc) -> Vec<MacroSite> {
-        let starts_before = self
-            .invocations
-            .partition_point(|invocation| start_key(invocation.site) <= start_key(loc));
-        let mut current = starts_before
-            .checked_sub(1)
-            .map(|index| MacroInvocationId(index as u32));
-        let mut sites = Vec::new();
-        while let Some(id) = current {
-            let invocation = self.invocation(id);
-            if invocation.site.contains(loc) {
-                sites.push(MacroSite {
-                    invocation: id,
-                    argument: invocation
-                        .arguments
-                        .iter()
-                        .position(|argument| argument.contains(loc)),
-                });
-            }
-            current = invocation.parent;
-        }
-        sites.reverse();
-        sites
-    }
-
-    pub(crate) fn nest(&mut self) {
-        self.invocations.sort_by_key(|invocation| {
-            (
-                start_key(invocation.site),
-                usize::MAX - invocation.site.length,
-            )
-        });
-        let mut open: Vec<usize> = Vec::new();
-        let mut kept: Vec<MacroInvocation> = Vec::with_capacity(self.invocations.len());
-        for mut invocation in std::mem::take(&mut self.invocations) {
-            while let Some(&top) = open.last() {
-                if kept[top].site.file == invocation.site.file
-                    && invocation.site.offset < kept[top].site.end()
-                {
-                    break;
-                }
-                open.pop();
-            }
-            if let Some(&top) = open.last() {
-                let same_site = kept[top].site == invocation.site;
-                if same_site || !kept[top].site.contains(invocation.site) {
-                    continue;
-                }
-                invocation.parent = Some(MacroInvocationId(top as u32));
-            }
-            open.push(kept.len());
-            kept.push(invocation);
-        }
-        self.invocations = kept;
-    }
-}
-
-fn start_key(loc: Loc) -> (usize, usize) {
-    (loc.file.0 as usize, loc.offset)
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -46,6 +46,7 @@ int main(void) {
 // CHECK-NEXT:   hoisted fn:scale: 2 variants
 // CHECK-NEXT:   hoisted fn:native_long: 2 variants
 // CHECK-NEXT:   spliced record:opaque: 2 variants
+// CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 22 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0

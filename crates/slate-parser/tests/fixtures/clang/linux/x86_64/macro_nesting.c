@@ -46,24 +46,24 @@ int use(int value) {
 // IR-NEXT:             call<void>(%[[VALUE_sink]], read<i32>(%[[VALUE_value_2]]) [macro=LEAF#0 arg0]) [macro=LEAF#0 body] [macro=LEAF#0 body];
 // IR-NEXT:         }
 // IR-NEXT:         ;
-// IR-NEXT:         { [macro=OUTER#1 body] [nested=MIDDLE#0 body]
-// IR-NEXT:             { [macro=OUTER#1 body] [nested=LEAF#1 body] [nested=MIDDLE#0 body]
-// IR-NEXT:                 call<void>(%[[VALUE_sink]], add<i32>(add<i32>(read<i32>(%[[VALUE_value_2]]) [macro=OUTER#1 arg0] [nested=LEAF#1 arg0] [nested=MIDDLE#0 arg0], const<i32>(4) [macro=OUTER#1 arg1] [nested=LEAF#1 arg0] [nested=MIDDLE#0 arg0]) [macro=OUTER#1 body] [nested=LEAF#1 arg0] [nested=MIDDLE#0 arg0], const<i32>(1) [macro=OUTER#1 body] [nested=LEAF#1 arg0] [nested=MIDDLE#0 body]) [macro=OUTER#1 body] [nested=LEAF#1 arg0] [nested=MIDDLE#0 body]) [macro=OUTER#1 body] [nested=LEAF#1 body] [nested=MIDDLE#0 body] [macro=OUTER#1 body] [nested=LEAF#1 body] [nested=MIDDLE#0 body];
+// IR-NEXT:         { [macro=MIDDLE#2 body] [macro=OUTER#1 body]
+// IR-NEXT:             { [macro=LEAF#3 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body]
+// IR-NEXT:                 call<void>(%[[VALUE_sink]], add<i32>(add<i32>(read<i32>(%[[VALUE_value_2]]) [macro=LEAF#3 arg0] [macro=MIDDLE#2 arg0] [macro=OUTER#1 arg0], const<i32>(4) [macro=LEAF#3 arg0] [macro=MIDDLE#2 arg0] [macro=OUTER#1 arg1]) [macro=LEAF#3 arg0] [macro=MIDDLE#2 arg0] [macro=OUTER#1 body], const<i32>(1) [macro=LEAF#3 arg0] [macro=MIDDLE#2 body] [macro=OUTER#1 body]) [macro=LEAF#3 arg0] [macro=MIDDLE#2 body] [macro=OUTER#1 body]) [macro=LEAF#3 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body] [macro=LEAF#3 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body];
 // IR-NEXT:             }
-// IR-NEXT:              [macro=OUTER#1 body] [nested=MIDDLE#0 body];
-// IR-NEXT:             { [macro=OUTER#1 body] [nested=LEAF#2 body] [nested=MIDDLE#0 body]
-// IR-NEXT:                 call<void>(%[[VALUE_sink]], const<i32>(2) [macro=OUTER#1 body] [nested=LEAF#2 arg0] [nested=MIDDLE#0 body]) [macro=OUTER#1 body] [nested=LEAF#2 body] [nested=MIDDLE#0 body] [macro=OUTER#1 body] [nested=LEAF#2 body] [nested=MIDDLE#0 body];
+// IR-NEXT:              [macro=MIDDLE#2 body] [macro=OUTER#1 body];
+// IR-NEXT:             { [macro=LEAF#4 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body]
+// IR-NEXT:                 call<void>(%[[VALUE_sink]], const<i32>(2) [macro=LEAF#4 arg0] [macro=MIDDLE#2 body] [macro=OUTER#1 body]) [macro=LEAF#4 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body] [macro=LEAF#4 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body];
 // IR-NEXT:             }
-// IR-NEXT:              [macro=OUTER#1 body] [nested=MIDDLE#0 body];
-// IR-NEXT:             call<void>(%[[VALUE_sink]], add<i32>(read<i32>(%[[VALUE_value_2]]) [macro=OUTER#1 arg0] [nested=MIDDLE#0 arg0], const<i32>(4) [macro=OUTER#1 arg1] [nested=MIDDLE#0 arg0]) [macro=OUTER#1 body] [nested=MIDDLE#0 arg0]) [macro=OUTER#1 body] [nested=MIDDLE#0 body] [macro=OUTER#1 body] [nested=MIDDLE#0 body];
+// IR-NEXT:              [macro=MIDDLE#2 body] [macro=OUTER#1 body];
+// IR-NEXT:             call<void>(%[[VALUE_sink]], add<i32>(read<i32>(%[[VALUE_value_2]]) [macro=MIDDLE#2 arg0] [macro=OUTER#1 arg0], const<i32>(4) [macro=MIDDLE#2 arg0] [macro=OUTER#1 arg1]) [macro=MIDDLE#2 arg0] [macro=OUTER#1 body]) [macro=MIDDLE#2 body] [macro=OUTER#1 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body];
 // IR-NEXT:         }
 // IR-NEXT:         ;
-// IR-NEXT:         { [macro=NAME_FROM_ARGUMENT#2 body]
-// IR-NEXT:             call<void>(%[[VALUE_sink]], read<i32>(%[[VALUE_value_2]]) [macro=NAME_FROM_ARGUMENT#2 arg1]) [macro=NAME_FROM_ARGUMENT#2 body] [macro=NAME_FROM_ARGUMENT#2 body];
+// IR-NEXT:         { [macro=NAME_FROM_ARGUMENT#5 body]
+// IR-NEXT:             call<void>(%[[VALUE_sink]], read<i32>(%[[VALUE_value_2]]) [macro=NAME_FROM_ARGUMENT#5 arg1]) [macro=NAME_FROM_ARGUMENT#5 body] [macro=NAME_FROM_ARGUMENT#5 body];
 // IR-NEXT:         }
 // IR-NEXT:         ;
-// IR-NEXT:         { [macro=OBJECT#3 body] [nested=LEAF#3 body]
-// IR-NEXT:             call<void>(%[[VALUE_sink]], const<i32>(3) [macro=OBJECT#3 body] [nested=LEAF#3 arg0]) [macro=OBJECT#3 body] [nested=LEAF#3 body] [macro=OBJECT#3 body] [nested=LEAF#3 body];
+// IR-NEXT:         { [macro=LEAF#7 body] [macro=OBJECT#6 body]
+// IR-NEXT:             call<void>(%[[VALUE_sink]], const<i32>(3) [macro=LEAF#7 arg0] [macro=OBJECT#6 body]) [macro=LEAF#7 body] [macro=OBJECT#6 body] [macro=LEAF#7 body] [macro=OBJECT#6 body];
 // IR-NEXT:         }
 // IR-NEXT:         ;
 // IR-NEXT:         return read<i32>(%[[VALUE_value_2]]);
@@ -73,13 +73,13 @@ int use(int value) {
 // IR-NEXT:     macro_definition #[[#NODE2:]] MIDDLE(a) [defined=7:4] = "{ LEAF ( ( a ) + 1 ) ; LEAF ( 2 ) ; sink ( a ) ; }";
 // IR-NEXT:     macro_definition #[[#NODE3:]] NAME_FROM_ARGUMENT(f, x) [defined=7:6] = "f ( x )";
 // IR-NEXT:     macro_definition #[[#NODE4:]] OBJECT [defined=7:7] = "LEAF ( 3 )";
-// IR-NEXT:     macro_invocation #[[#NODE0]] LEAF [definition=#[[#NODE0]]] [site=7:233+11] [arguments=238+5];
-// IR-NEXT:     macro_invocation #[[#NODE1]] OUTER [definition=#[[#NODE1]]] [site=7:250+15] [arguments=256+5, 263+1];
-// IR-NEXT:     macro_invocation #[[#NODE2]] NAME_FROM_ARGUMENT [definition=#[[#NODE3]]] [site=7:271+31] [arguments=290+4, 296+5];
-// IR-NEXT:     macro_invocation #[[#NODE3]] OBJECT [definition=#[[#NODE4]]] [site=7:308+6];
-// IR-NEXT:     macro_nested_expansion #[[#NODE0]] MIDDLE [definition=#[[#NODE2]]];
-// IR-NEXT:     macro_nested_expansion #[[#NODE1]] LEAF [definition=#[[#NODE0]]] [parent=#[[#NODE0]]];
-// IR-NEXT:     macro_nested_expansion #[[#NODE2]] LEAF [definition=#[[#NODE0]]] [parent=#[[#NODE0]]];
-// IR-NEXT:     macro_nested_expansion #[[#NODE3]] LEAF [definition=#[[#NODE0]]];
+// IR-NEXT:     macro_expansion #[[#NODE0]] LEAF [definition=#[[#NODE0]]] [site=7:233+11] [arguments=238+5];
+// IR-NEXT:     macro_expansion #[[#NODE1]] OUTER [definition=#[[#NODE1]]] [site=7:250+15] [arguments=256+5, 263+1];
+// IR-NEXT:     macro_expansion #[[#NODE2]] MIDDLE [definition=#[[#NODE2]]] [parent=#[[#NODE1]]];
+// IR-NEXT:     macro_expansion #[[#NODE3]] LEAF [definition=#[[#NODE0]]] [parent=#[[#NODE2]]];
+// IR-NEXT:     macro_expansion #[[#NODE4]] LEAF [definition=#[[#NODE0]]] [parent=#[[#NODE2]]];
+// IR-NEXT:     macro_expansion #[[#NODE5:]] NAME_FROM_ARGUMENT [definition=#[[#NODE3]]] [site=7:271+31] [arguments=290+4, 296+5];
+// IR-NEXT:     macro_expansion #[[#NODE6:]] OBJECT [definition=#[[#NODE4]]] [site=7:308+6];
+// IR-NEXT:     macro_expansion #[[#NODE7:]] LEAF [definition=#[[#NODE0]]] [parent=#[[#NODE6]]];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR
