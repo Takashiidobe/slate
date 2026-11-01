@@ -5,6 +5,7 @@ pub(in crate::backend) mod string_params;
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::fmt;
 
+use crate::backend::engine::macro_templates;
 use crate::backend::link;
 use crate::backend::rust_ast::{
     Abi, Attr, ExternDecl, ExternFnDecl, FnDef, Item, Path, Program, Type,
@@ -41,7 +42,7 @@ pub enum Exports {
 }
 
 pub(in crate::backend) fn run(programs: &mut [Program], exports: &Exports) -> Option<Program> {
-    let named_in_templates = functions_named_in_templates(programs);
+    let named_in_templates = functions_pinned_by_templates(programs);
     let Exports::Liftable {
         address_taken,
         modules,
@@ -66,14 +67,24 @@ pub(in crate::backend) fn run(programs: &mut [Program], exports: &Exports) -> Op
     types.hoist(programs)
 }
 
-fn functions_named_in_templates(programs: &[Program]) -> BTreeSet<FnKey> {
+fn functions_pinned_by_templates(programs: &[Program]) -> BTreeSet<FnKey> {
     let symbols = Symbols::new(programs);
     let mut named = BTreeSet::new();
+    let mut returning = BTreeSet::new();
     for (unit, program) in programs.iter().enumerate() {
         for item in &program.items {
-            let Item::MacroRules { body, .. } = item else {
+            let Item::MacroRules {
+                name,
+                body,
+                returns,
+                ..
+            } = item
+            else {
                 continue;
             };
+            if *returns {
+                returning.insert(name.clone());
+            }
             let mut vars = Vec::new();
             for stmt in body {
                 stmt.collect_vars(&mut vars);
@@ -84,6 +95,12 @@ fn functions_named_in_templates(programs: &[Program]) -> BTreeSet<FnKey> {
             );
         }
     }
+    named.extend(
+        fn_defs(programs)
+            .into_iter()
+            .filter(|(_, def)| macro_templates::calls_template(&def.body, &returning))
+            .map(|(key, _)| key),
+    );
     named
 }
 

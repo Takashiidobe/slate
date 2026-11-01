@@ -455,36 +455,24 @@ impl FunctionLowerer<'_, '_> {
                 },
             );
         }
-        if matches!(function.fallthrough, Some(ir::Fallthrough::ReturnZero))
-            && !matches!(
-                statements
-                    .iter()
-                    .rev()
-                    .find(|statement| !matches!(statement, Stmt::Comment(_))),
-                Some(Stmt::Return(_))
-            )
-        {
+        let ends_in_return = matches!(
+            statements
+                .iter()
+                .rev()
+                .find(|statement| !matches!(statement, Stmt::Comment(_))),
+            Some(Stmt::Return(_))
+        ) || body.last().is_some_and(|last| {
+            matches!(last.value, ir::Statement::MacroExpansion { .. }) && switch::ends_in_jump(last)
+        });
+        if matches!(function.fallthrough, Some(ir::Fallthrough::ReturnZero)) && !ends_in_return {
             statements.push(Stmt::Return(Some(Expr::Value(rust::RustValue::I64(0)))));
         }
-        if matches!(function.fallthrough, Some(ir::Fallthrough::UndefinedIfUsed))
-            && !matches!(
-                statements
-                    .iter()
-                    .rev()
-                    .find(|statement| !matches!(statement, Stmt::Comment(_))),
-                Some(Stmt::Return(_))
-            )
+        if matches!(function.fallthrough, Some(ir::Fallthrough::UndefinedIfUsed)) && !ends_in_return
         {
             statements.push(Stmt::Return(Some(zeroed())));
         }
         if let Some(ir::Fallthrough::Return(value)) = &function.fallthrough
-            && !matches!(
-                statements
-                    .iter()
-                    .rev()
-                    .find(|statement| !matches!(statement, Stmt::Comment(_))),
-                Some(Stmt::Return(_))
-            )
+            && !ends_in_return
         {
             let returned = Stmt::Return(Some(self.lower_value(value)?));
             statements.push(if control_flow::needs_dispatch(body) {

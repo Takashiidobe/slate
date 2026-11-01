@@ -113,7 +113,7 @@ pub(super) fn contains_switch_label(statements: &[&ir::Statement], switch: Bindi
 pub(super) fn ends_in_jump(statement: &ir::Statement) -> bool {
     match statement {
         ir::Statement::Break(_) | ir::Statement::Continue(_) | ir::Statement::Return(_) => true,
-        ir::Statement::Block(body) => body
+        ir::Statement::Block(body) | ir::Statement::MacroExpansion { body, .. } => body
             .iter()
             .rev()
             .find(|statement| !matches!(statement.value, ir::Statement::Comment(_)))

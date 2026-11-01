@@ -135,12 +135,11 @@ int main(void) {
 // CHECK-NEXT:   macro_fold.c: [] 1 compiled
 // CHECK-NEXT:   units/macro_fold_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit macro_fold: 43 items, 26 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_fold: 45 items, 26 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:report: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: unit macro_fold_helper: 9 items, 6 gated, 0 duplicated functions
-// CHECK-NEXT: macros: 25 function-like, 16 lifted at least once (expansions counted per distinct compile)
-// CHECK-NEXT:   inline control_transfer: 4
+// CHECK-NEXT: macros: 25 function-like, 18 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   inline no_statement_region: 4
 // CHECK-NEXT:   inline reserved_macro_name: 4
 // CHECK-NEXT:   inline stringify_or_paste: 4
@@ -148,7 +147,7 @@ int main(void) {
 // CHECK-NEXT:   inline variadic: 2
 // CHECK-NEXT:   macro ASSERT: 8 lifted, inline:
 // CHECK-NEXT:   macro BUMPED: 4 lifted, inline:
-// CHECK-NEXT:   macro COMMA_RETURN: 0 lifted, inline: control_transfer 2
+// CHECK-NEXT:   macro COMMA_RETURN: 2 lifted, inline:
 // CHECK-NEXT:   macro DECLARE: 0 lifted, inline: local_used_after_macro 2
 // CHECK-NEXT:   macro DIFFERS: 4 lifted, inline:
 // CHECK-NEXT:   macro DROPS: 2 lifted, inline:
@@ -162,7 +161,7 @@ int main(void) {
 // CHECK-NEXT:   macro OPEN: 0 lifted, inline: no_statement_region 2
 // CHECK-NEXT:   macro PASTE: 0 lifted, inline: stringify_or_paste 2
 // CHECK-NEXT:   macro READS_LOCAL: 2 lifted, inline:
-// CHECK-NEXT:   macro RETURNS: 0 lifted, inline: control_transfer 2
+// CHECK-NEXT:   macro RETURNS: 2 lifted, inline:
 // CHECK-NEXT:   macro SHADOWS: 2 lifted, inline: no_statement_region 2
 // CHECK-NEXT:   macro SPLIT: 2 lifted, inline:
 // CHECK-NEXT:   macro STORE: 4 lifted, inline:
@@ -288,6 +287,15 @@ int main(void) {
 // CHECK-NEXT:             bumps = __v + 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! COMMA_RETURN {
+// CHECK-NEXT:     ($a:expr) => {{[{][{]}}
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             bumps = $a;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         return $a;
+// CHECK-NEXT:     }};
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
@@ -434,6 +442,14 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! RETURNS {
+// CHECK-NEXT:     ($a:expr) => {{[{][{]}}
+// CHECK-NEXT:         if ($a) < 0 {
+// CHECK-NEXT:             return -1;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }};
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! SHADOWS {
 // CHECK-NEXT:     ($a:expr) => {
@@ -541,16 +557,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn comma_return(a: i32) -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         bumps = a;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     a
+// CHECK-NEXT:     COMMA_RETURN!(a)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn early(a: i32) -> i32 {
-// CHECK-NEXT:     if a < 0 {
-// CHECK-NEXT:         return -1;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     RETURNS!(a);
 // CHECK-NEXT:     a * 2
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -64,8 +64,10 @@ one `macro_rules` template per distinct body, and each site becomes a call. Any
 other expansion stays inline, and `macro_keep.rs` records why in the merge report.
 
 - **Which expansions are kept**: `frontend/macro_keep.rs` decides on the IR,
-  before lowering. It rejects control flow leaving the body, an argument that reads
-  a local the body declares, locals in functions whose dispatch lowering hoists
+  before lowering. It rejects `goto` and `case`, a `break` or `continue` leaving the
+  body (lowered labels are hygienic, so the template could not name the caller's
+  loop), an argument that reads a local the body declares, locals in functions
+  whose dispatch lowering hoists
   them, variadic or `#` macros, compound literals and temporary objects (a template's
   block would end their C lifetime early), value expansions of type `void`, and place
   holes that are not plain (bit-fields, volatile, atomic, reduced alignment).
@@ -78,9 +80,13 @@ other expansion stays inline, and `macro_keep.rs` records why in the merge repor
   parameter. Defining the macro inside each function was rejected because it gives
   up sharing across functions, units and targets.
 - **Value templates**: a `ValueKind::MacroExpansion` lowers to an `Expr::Macro` in
-  value position. While the rules run its body ends in `Stmt::Return(value)`, which
-  no other template has because `macro_keep.rs` rejects `return`; codegen prints it
-  as the expression, or a block ending in it.
+  value position. While the rules run its body ends in `Stmt::Return(value)`, and
+  `Item::MacroRules::value` tells that marker from a real `return` ending a statement
+  template; codegen prints the marker as the expression, or a block ending in it.
+- **`return`**: Rust's `return` crosses `macro_rules`, so a body containing one lifts.
+  A function calling such a template (`Item::MacroRules::returns`, which includes
+  templates nesting one) keeps its C signature in every lift, because the return
+  analyses cannot see that return.
 - **Identity**: two bodies are the same template when their parameters and printed
   Rust match. Spans, local names and argument types do not count: a hole is an
   opaque `$a()` to every rule, and filling it gives back that site's own body. Text

@@ -6,7 +6,7 @@ Macro epic `slate-f2zu.9.5.12`, in order.
 - [x] 2. `.21`: write `merge-report.txt` on every `--merge` run.
 - [x] 3. `.18`: drop hole types from the template key.
 - [x] 4. `9.5.6`: pass caller locals as hidden arguments, then regenerate zlib.
-- [ ] 5. `.10`: allow `return`, `break` and `continue` in templates.
+- [x] 5. `.10`: allow `return`, `break` and `continue` in templates.
 - [ ] 6. `.20`: keep `sizeof` unfolded in templates.
 - [ ] 7. `.11` and `.13`: keep integer casts and conversions in sema.
 - [ ] 8. `.19`: decide whether `goto` out of a macro can lift.

@@ -104,6 +104,8 @@ pub enum Item {
         name: String,
         params: Vec<MacroParam>,
         body: Vec<Stmt>,
+        value: bool,
+        returns: bool,
     },
     Cfg {
         cfg: Cfg,

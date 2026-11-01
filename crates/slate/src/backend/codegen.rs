@@ -269,7 +269,13 @@ impl<W: Write> Codegen<W> {
                 self.args(args)?;
                 self.out.write_str(");\n")?;
             }
-            Item::MacroRules { name, params, body } => {
+            Item::MacroRules {
+                name,
+                params,
+                body,
+                value: is_value,
+                returns,
+            } => {
                 writeln!(self.out, "macro_rules! {name} {{")?;
                 let matcher = params
                     .iter()
@@ -282,15 +288,20 @@ impl<W: Write> Codegen<W> {
                     .join(", ");
                 writeln!(self.out, "({matcher}) => {{")?;
                 match body.split_last() {
-                    Some((Stmt::Return(Some(value)), [])) => {
+                    Some((Stmt::Return(Some(value)), [])) if *is_value => {
                         self.expr(value)?;
                         self.out.write_str("\n")?;
                     }
-                    Some((Stmt::Return(Some(value)), statements)) => {
+                    Some((Stmt::Return(Some(value)), statements)) if *is_value => {
                         self.out.write_str("{\n")?;
                         self.stmts(statements)?;
                         self.expr(value)?;
                         self.out.write_str("\n}\n")?;
+                    }
+                    _ if *returns => {
+                        self.out.write_str("{\n")?;
+                        self.stmts(body)?;
+                        self.out.write_str("}\n")?;
                     }
                     _ => self.stmts(body)?,
                 }

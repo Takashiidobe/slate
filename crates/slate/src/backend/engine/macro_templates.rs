@@ -1,6 +1,6 @@
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 
-use super::rules::walk::{child_exprs, child_exprs_mut, stmt_exprs_mut};
+use super::rules::walk::{child_exprs, child_exprs_mut, stmt_exprs, stmt_exprs_mut};
 use super::shadow::visit_names;
 use crate::backend::codegen::is_rust_keyword;
 use crate::backend::rust_ast::{
@@ -53,6 +53,23 @@ pub(crate) fn is_valid_macro_name(name: &str) -> bool {
 
 pub fn child_exprs_of(expr: &Expr) -> Vec<&Expr> {
     child_exprs(expr)
+}
+
+fn expr_calls_template(expr: &Expr, names: &BTreeSet<String>) -> bool {
+    matches!(expr, Expr::Macro { name, .. } if names.contains(name))
+        || child_exprs(expr)
+            .into_iter()
+            .any(|child| expr_calls_template(child, names))
+}
+
+pub fn calls_template(stmts: &[Stmt], names: &BTreeSet<String>) -> bool {
+    stmts.iter().any(|stmt| {
+        let mut exprs = Vec::new();
+        stmt_exprs(stmt, &mut exprs);
+        exprs
+            .into_iter()
+            .any(|expr| expr_calls_template(expr, names))
+    })
 }
 
 pub fn hole(parameter: &str) -> Expr {
@@ -368,8 +385,12 @@ pub fn expand_template_calls(stmts: &mut Vec<Stmt>, templates: &BTreeMap<String,
     let mut out = Vec::with_capacity(stmts.len());
     for mut stmt in std::mem::take(stmts) {
         if let Stmt::Expr(Expr::Macro { name, args }) = &stmt
-            && let Some(Item::MacroRules { params, body, .. }) = templates.get(name)
-            && !matches!(body.last(), Some(Stmt::Return(Some(_))))
+            && let Some(Item::MacroRules {
+                params,
+                body,
+                value: false,
+                ..
+            }) = templates.get(name)
         {
             let mut body = body.clone();
             fill_holes(&mut body, params, args);
@@ -394,7 +415,13 @@ fn expand_value_call(expr: &mut Expr, templates: &BTreeMap<String, Item>) {
     let Expr::Macro { name, args } = expr else {
         return;
     };
-    let Some(Item::MacroRules { params, body, .. }) = templates.get(name) else {
+    let Some(Item::MacroRules {
+        params,
+        body,
+        value: true,
+        ..
+    }) = templates.get(name)
+    else {
         return;
     };
     let mut body = body.clone();
@@ -563,7 +590,10 @@ pub(super) type PlaceParameters = HashMap<String, Vec<usize>>;
 pub(super) fn finish_holes(program: &mut Program) -> PlaceParameters {
     let mut places = HashMap::new();
     for item in &mut program.items {
-        if let Item::MacroRules { name, params, body } = item {
+        if let Item::MacroRules {
+            name, params, body, ..
+        } = item
+        {
             places.insert(name.clone(), place_parameter_indices(params, body));
             visit_exprs_mut(body, &mut finish_expr);
         }

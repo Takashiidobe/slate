@@ -56,9 +56,16 @@ pub(super) struct MacroSite {
     arguments: Vec<Option<Expr>>,
     place_arguments: Vec<Option<Expr>>,
     call_arguments: Vec<Vec<Expr>>,
+    returns: bool,
 }
 
 impl FunctionLowerer<'_, '_> {
+    pub(super) fn mark_macro_sites_returning(&mut self) {
+        for site in &mut self.macro_sites {
+            site.returns = true;
+        }
+    }
+
     pub(super) fn lower_macro_site(
         &mut self,
         expansion: MacroExpansionId,
@@ -70,10 +77,15 @@ impl FunctionLowerer<'_, '_> {
         let (comments, template): (Vec<Stmt>, Vec<Stmt>) = lowered?
             .into_iter()
             .partition(|stmt| matches!(stmt, Stmt::Comment(_)));
-        let call =
-            self.finish_macro_site(expansion, site, template, |this, template, params, args| {
+        let call = self.finish_macro_site(
+            expansion,
+            site,
+            template,
+            false,
+            |this, template, params, args| {
                 this.check_macro_template(body, None, template, params, args)
-            })?;
+            },
+        )?;
         let call = Stmt::Expr(call);
         if comments.is_empty() {
             return Ok(call);
@@ -107,15 +119,21 @@ impl FunctionLowerer<'_, '_> {
         let (mut template, value) = lowered?;
         template.retain(|stmt| !matches!(stmt, Stmt::Comment(_)));
         template.push(Stmt::Return(Some(value)));
-        self.finish_macro_site(expansion, site, template, |this, template, params, args| {
-            this.check_macro_template(
-                &evaluation.statements,
-                Some(&evaluation.value),
-                template,
-                params,
-                args,
-            )
-        })
+        self.finish_macro_site(
+            expansion,
+            site,
+            template,
+            true,
+            |this, template, params, args| {
+                this.check_macro_template(
+                    &evaluation.statements,
+                    Some(&evaluation.value),
+                    template,
+                    params,
+                    args,
+                )
+            },
+        )
     }
 
     fn open_macro_site(&mut self, expansion: MacroExpansionId) {
@@ -127,6 +145,7 @@ impl FunctionLowerer<'_, '_> {
             arguments: vec![None; count],
             place_arguments: vec![None; count],
             call_arguments: vec![Vec::new(); count],
+            returns: false,
         });
     }
 
@@ -171,9 +190,11 @@ impl FunctionLowerer<'_, '_> {
         expansion: MacroExpansionId,
         site: MacroSite,
         mut template: Vec<Stmt>,
+        value: bool,
         check: impl FnOnce(&mut Self, &[Stmt], &[rust::MacroParam], &[Expr]) -> Result<()>,
     ) -> Result<Expr> {
         let definition = self.tables.macros.definition(expansion);
+        let returns = site.returns;
         macro_templates::normalize_locals(&mut template);
         let mut params = Vec::new();
         let mut args = Vec::new();
@@ -254,7 +275,8 @@ impl FunctionLowerer<'_, '_> {
         if std::env::var_os("SLATE_CHECK_MACRO_TEMPLATES").is_some() {
             check(self, &template, &params, &args)?;
         }
-        let mut printed = format!("{params:?}");
+        let ends_in_return = !value && matches!(template.last(), Some(Stmt::Return(Some(_))));
+        let mut printed = format!("{params:?}{}", if ends_in_return { "return" } else { "" });
         printed.extend(template.iter().map(codegen::stmt_to_string));
         let name = rust::macro_template_name(&definition.name, &printed);
         self.dependencies
@@ -264,6 +286,8 @@ impl FunctionLowerer<'_, '_> {
                 name: name.clone(),
                 params,
                 body: template,
+                value,
+                returns,
             });
         self.dependencies.macro_expansions_seen.insert(expansion);
         self.dependencies.macro_outcomes.push(MacroOutcome {

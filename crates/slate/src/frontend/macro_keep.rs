@@ -49,7 +49,7 @@ impl Survey<'_> {
         for position in 0..self.open.len() {
             let (id, open) = &self.open[position];
             if !open.jump_targets.contains(&target) {
-                self.reject(*id, "control_transfer");
+                self.reject(*id, "break_out_of_macro");
             }
         }
     }
@@ -81,8 +81,7 @@ impl MacroStructureVisitor for Survey<'_> {
                 self.has_jump = true;
                 self.reject_open("control_transfer");
             }
-            Statement::Return(_)
-            | Statement::Asm(_)
+            Statement::Asm(_)
             | Statement::Case { .. }
             | Statement::Default { .. }
             | Statement::SehTry { .. }

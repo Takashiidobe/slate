@@ -241,12 +241,15 @@ impl FunctionLowerer<'_, '_> {
                     None => self.lower_assignment(place, value)?,
                 }
             }
-            ir::Statement::Return(value) => Stmt::Return(
-                value
-                    .as_ref()
-                    .map(|value| self.lower_value(value))
-                    .transpose()?,
-            ),
+            ir::Statement::Return(value) => {
+                self.mark_macro_sites_returning();
+                Stmt::Return(
+                    value
+                        .as_ref()
+                        .map(|value| self.lower_value(value))
+                        .transpose()?,
+                )
+            }
             ir::Statement::Block(body) => Stmt::Scope {
                 body: self.lower_statement_list(body)?,
             },
