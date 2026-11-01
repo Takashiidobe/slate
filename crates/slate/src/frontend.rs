@@ -382,7 +382,7 @@ fn lower_parsed(
     for diagnostic in parser.directive_diagnostics() {
         crate::diagnostics::collect(diagnostic, diagnostics);
     }
-    let (module, warnings) = sema.lower(&files).map_err(|error| {
+    let (mut module, warnings) = sema.lower(&files).map_err(|error| {
         crate::diagnostics::collect(&error, diagnostics);
         Error::Lower {
             path: path.to_path_buf(),
@@ -391,6 +391,9 @@ fn lower_parsed(
     })?;
     for warning in warnings {
         crate::diagnostics::collect(&warning, diagnostics);
+    }
+    if macro_structure {
+        macro_keep::pass_caller_locals(&mut module);
     }
     Ok((module, files, parser.directive_diagnostics().to_vec()))
 }

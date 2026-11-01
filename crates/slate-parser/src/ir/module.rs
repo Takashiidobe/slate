@@ -21,6 +21,7 @@ pub struct Module {
     pub c_types: CTypeTable,
     pub macros: MacroInvocations,
     pub macro_rejections: HashMap<MacroExpansionId, &'static str>,
+    pub macro_hidden_arguments: HashMap<MacroExpansionId, Vec<BindingId>>,
 }
 
 #[derive(Debug, Clone)]
@@ -371,6 +372,7 @@ impl Module {
             c_types: CTypeTable::default(),
             macros: MacroInvocations::default(),
             macro_rejections: HashMap::new(),
+            macro_hidden_arguments: HashMap::new(),
         }
     }
 

@@ -82,15 +82,14 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_nesting.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_nesting: 30 items, 1 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_nesting: 31 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 15 function-like, 13 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   inline split_argument: 4
 // CHECK-NEXT:   inline local_used_after_macro: 2
 // CHECK-NEXT:   inline no_statement_region: 2
-// CHECK-NEXT:   inline reads_caller_local: 2
 // CHECK-NEXT:   macro ADD: 2 lifted, inline:
-// CHECK-NEXT:   macro ADD_READS: 2 lifted, inline: reads_caller_local 2
+// CHECK-NEXT:   macro ADD_READS: 4 lifted, inline:
 // CHECK-NEXT:   macro ARG_NAMES_TEMP: 2 lifted, inline:
 // CHECK-NEXT:   macro CALLS_ONLY_NESTED: 2 lifted, inline:
 // CHECK-NEXT:   macro LEAKS: 0 lifted, inline: local_used_after_macro 2
@@ -117,6 +116,15 @@ int main(void) {
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ADD_READS {
+// CHECK-NEXT:     ($a:expr, $reads__1:expr) => {
+// CHECK-NEXT:         let __v: i32 = unsafe { total };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             total = __v + (($a) + $reads__1);
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! ADD_READS__2 {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let __v: i32 = unsafe { total };
 // CHECK-NEXT:         unsafe {
@@ -157,12 +165,10 @@ int main(void) {
 // CHECK-NEXT: macro_rules! LOCAL_READS {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let reads__1: i32 = 40;
+// CHECK-NEXT:         ADD_READS!($a, reads__1);
 // CHECK-NEXT:         let __v: i32 = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + (($a) + reads__1);
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = total + reads__1;
+// CHECK-NEXT:             total = __v + reads__1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -341,7 +347,7 @@ int main(void) {
 // CHECK-NEXT:     SEND!(value, value + 5);
 // CHECK-NEXT:     ADD!(value);
 // CHECK-NEXT:     SAME_BODY!(value + 1);
-// CHECK-NEXT:     ADD_READS!(value);
+// CHECK-NEXT:     ADD_READS__2!(value);
 // CHECK-NEXT:     TEMP!(value);
 // CHECK-NEXT: }
 // CHECK-EMPTY:

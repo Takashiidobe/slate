@@ -231,7 +231,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_values.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_values: 50 items, 0 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_values: 51 items, 0 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:double_it: 2 variants
 // CHECK-NEXT:   spliced fn:show_trace: 2 variants
 // CHECK-NEXT:   spliced fn:plain_values: 2 variants
@@ -242,9 +242,9 @@ int main(void) {
 // CHECK-NEXT:   spliced fn:structures: 2 variants
 // CHECK-NEXT:   spliced fn:positions: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: macros: 23 function-like, 18 lifted at least once (expansions counted per distinct compile)
+// CHECK-NEXT: macros: 23 function-like, 19 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   inline no_statement_region: 16
-// CHECK-NEXT:   inline reads_caller_local: 16
+// CHECK-NEXT:   inline argument_reads_macro_local: 14
 // CHECK-NEXT:   inline inside_argument: 8
 // CHECK-NEXT:   inline compound_literal_or_temporary: 4
 // CHECK-NEXT:   inline local_in_dispatch_function: 4
@@ -253,20 +253,20 @@ int main(void) {
 // CHECK-NEXT:   macro ASSIGN_TO: 2 lifted, inline:
 // CHECK-NEXT:   macro AT: 18 lifted, inline: no_statement_region 2
 // CHECK-NEXT:   macro BIT: 4 lifted, inline: inside_argument 2, no_statement_region 8
-// CHECK-NEXT:   macro BOTH: 2 lifted, inline: reads_caller_local 2
+// CHECK-NEXT:   macro BOTH: 2 lifted, inline: argument_reads_macro_local 2
 // CHECK-NEXT:   macro BUMP_AND: 2 lifted, inline:
 // CHECK-NEXT:   macro CALL_WITH: 2 lifted, inline:
 // CHECK-NEXT:   macro COUNT_CALL: 4 lifted, inline:
-// CHECK-NEXT:   macro EITHER: 2 lifted, inline: reads_caller_local 2
+// CHECK-NEXT:   macro EITHER: 2 lifted, inline: argument_reads_macro_local 2
 // CHECK-NEXT:   macro FIELD_OF: 2 lifted, inline: no_statement_region 2
 // CHECK-NEXT:   macro HOLDER: 0 lifted, inline: compound_literal_or_temporary 2
-// CHECK-NEXT:   macro LOCAL_READ: 0 lifted, inline: reads_caller_local 2
-// CHECK-NEXT:   macro MAX: 20 lifted, inline: inside_argument 4, no_statement_region 2, reads_caller_local 2
-// CHECK-NEXT:   macro MIN: 24 lifted, inline: inside_argument 2, no_statement_region 2, reads_caller_local 6
+// CHECK-NEXT:   macro LOCAL_READ: 2 lifted, inline:
+// CHECK-NEXT:   macro MAX: 20 lifted, inline: argument_reads_macro_local 2, inside_argument 4, no_statement_region 2
+// CHECK-NEXT:   macro MIN: 24 lifted, inline: argument_reads_macro_local 6, inside_argument 2, no_statement_region 2
 // CHECK-NEXT:   macro NEXT: 2 lifted, inline:
 // CHECK-NEXT:   macro NEXT_FROM: 4 lifted, inline: local_in_dispatch_function 2
 // CHECK-NEXT:   macro NOTHING: 0 lifted, inline: void_value 4
-// CHECK-NEXT:   macro PICK: 0 lifted, inline: local_in_dispatch_function 2, reads_caller_local 2
+// CHECK-NEXT:   macro PICK: 0 lifted, inline: argument_reads_macro_local 2, local_in_dispatch_function 2
 // CHECK-NEXT:   macro SMALLER: 4 lifted, inline:
 // CHECK-NEXT:   macro STMT_EXPR: 2 lifted, inline:
 // CHECK-NEXT:   macro TEXT_LENGTH: 2 lifted, inline:
@@ -343,6 +343,12 @@ int main(void) {
 // CHECK-NEXT: macro_rules! FIELD_OF {
 // CHECK-NEXT:     ($s:expr) => {
 // CHECK-NEXT:         unsafe { (*$s).count }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! LOCAL_READ {
+// CHECK-NEXT:     ($x:expr, $hidden:expr) => {
+// CHECK-NEXT:         ($x) + $hidden
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -1232,7 +1238,7 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), 1 + hidden) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), LOCAL_READ!(1i32, hidden)) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
@@ -1244,7 +1250,7 @@ int main(void) {
 // CHECK-NEXT:             sized.0[3],
 // CHECK-NEXT:             8i32
 // CHECK-NEXT:         );
-// CHECK-NEXT:         println!("{}", 1 + hidden);
+// CHECK-NEXT:         println!("{}", LOCAL_READ!(1i32, hidden));
 // CHECK-NEXT:     }
 // CHECK-NEXT:     match selector {
 // CHECK-NEXT:         2 => {

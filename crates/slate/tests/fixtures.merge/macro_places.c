@@ -136,16 +136,16 @@ int main(void) {
 // CHECK-NEXT:   spliced record:state: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 15 function-like, 15 lifted at least once (expansions counted per distinct compile)
-// CHECK-NEXT:   inline reads_caller_local: 4
+// CHECK-NEXT:   inline argument_reads_macro_local: 4
 // CHECK-NEXT:   inline bit_field_write: 2
 // CHECK-NEXT:   inline unplain_place: 2
 // CHECK-NEXT:   macro ADD: 2 lifted, inline:
 // CHECK-NEXT:   macro ADDRESS_ONLY: 2 lifted, inline:
-// CHECK-NEXT:   macro BUMP: 2 lifted, inline: reads_caller_local 2
+// CHECK-NEXT:   macro BUMP: 2 lifted, inline: argument_reads_macro_local 2
 // CHECK-NEXT:   macro DOUBLE_READ: 2 lifted, inline:
 // CHECK-NEXT:   macro INC: 20 lifted, inline: bit_field_write 2, unplain_place 2
 // CHECK-NEXT:   macro NESTED_INC: 2 lifted, inline:
-// CHECK-NEXT:   macro PUSH: 4 lifted, inline: reads_caller_local 2
+// CHECK-NEXT:   macro PUSH: 4 lifted, inline: argument_reads_macro_local 2
 // CHECK-NEXT:   macro SET: 4 lifted, inline:
 // CHECK-NEXT:   macro SET_COUNT: 6 lifted, inline:
 // CHECK-NEXT:   macro SET_LOCAL_THEN: 2 lifted, inline:

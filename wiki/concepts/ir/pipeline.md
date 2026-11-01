@@ -142,7 +142,9 @@ and the [cover table](../preprocessor.md#macro-invocations) before lowering:
   occurrences share the mechanism. A conversion the argument needs is applied by
   the parent after the hole closes, so `ADD_ONE(c)` on a `u8` has its `widen`
   outside. When an argument is passed down to a nested macro the inner hole wraps
-  the outer one.
+  the outer one. Slate's `--merge` also wraps caller locals a kept body uses:
+  an `argument` past the definition's parameters indexes
+  `Module::macro_hidden_arguments[expansion]`.
 - `ValueKind::MacroExpansion { expansion, evaluation }` wraps an expansion that
   covers one expression below statement level, read as a value in function code
   (`int k = M(i);`). It is not used for an expression the program writes to or

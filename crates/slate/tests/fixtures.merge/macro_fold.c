@@ -135,14 +135,13 @@ int main(void) {
 // CHECK-NEXT:   macro_fold.c: [] 1 compiled
 // CHECK-NEXT:   units/macro_fold_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit macro_fold: 40 items, 24 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_fold: 43 items, 26 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:report: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: unit macro_fold_helper: 9 items, 6 gated, 0 duplicated functions
-// CHECK-NEXT: macros: 25 function-like, 14 lifted at least once (expansions counted per distinct compile)
+// CHECK-NEXT: macros: 25 function-like, 16 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   inline control_transfer: 4
 // CHECK-NEXT:   inline no_statement_region: 4
-// CHECK-NEXT:   inline reads_caller_local: 4
 // CHECK-NEXT:   inline reserved_macro_name: 4
 // CHECK-NEXT:   inline stringify_or_paste: 4
 // CHECK-NEXT:   inline local_used_after_macro: 2
@@ -162,14 +161,14 @@ int main(void) {
 // CHECK-NEXT:   macro ONLY_HERE: 2 lifted, inline:
 // CHECK-NEXT:   macro OPEN: 0 lifted, inline: no_statement_region 2
 // CHECK-NEXT:   macro PASTE: 0 lifted, inline: stringify_or_paste 2
-// CHECK-NEXT:   macro READS_LOCAL: 0 lifted, inline: reads_caller_local 2
+// CHECK-NEXT:   macro READS_LOCAL: 2 lifted, inline:
 // CHECK-NEXT:   macro RETURNS: 0 lifted, inline: control_transfer 2
 // CHECK-NEXT:   macro SHADOWS: 2 lifted, inline: no_statement_region 2
 // CHECK-NEXT:   macro SPLIT: 2 lifted, inline:
 // CHECK-NEXT:   macro STORE: 4 lifted, inline:
 // CHECK-NEXT:   macro TWICE: 2 lifted, inline:
 // CHECK-NEXT:   macro VARIADIC: 0 lifted, inline: variadic 2
-// CHECK-NEXT:   macro WRITES_LOCAL: 0 lifted, inline: reads_caller_local 2
+// CHECK-NEXT:   macro WRITES_LOCAL: 2 lifted, inline:
 // CHECK-NEXT:   macro print: 0 lifted, inline: reserved_macro_name 2
 // CHECK-NEXT:   macro type: 0 lifted, inline: reserved_macro_name 2
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
@@ -420,6 +419,22 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: macro_rules! READS_LOCAL {
+// CHECK-NEXT:     ($a:expr, $count:expr) => {
+// CHECK-NEXT:         println!("{}", ($a) + $count);
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: macro_rules! READS_LOCAL {
+// CHECK-NEXT:     ($a:expr, $count:expr) => {
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), ($a) + $count) };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! SHADOWS {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let t: i32 = 5;
@@ -483,6 +498,14 @@ int main(void) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d\n".as_ptr(), $a, $a) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! WRITES_LOCAL {
+// CHECK-NEXT:     ($a:expr, $count:expr) => {
+// CHECK-NEXT:         let __v: i32 = $count;
+// CHECK-NEXT:         let [[V_0]]: i32 = __v + $a;
+// CHECK-NEXT:         $count = [[V_0]];
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -645,19 +668,12 @@ int main(void) {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), t + t) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), 1 + count) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("{}", t + t);
-// CHECK-NEXT:         println!("{}", 1 + count);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     count += 1;
+// CHECK-NEXT:     READS_LOCAL!(1i32, count);
+// CHECK-NEXT:     WRITES_LOCAL!(1i32, count);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {

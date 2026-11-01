@@ -64,12 +64,19 @@ one `macro_rules` template per distinct body, and each site becomes a call. Any
 other expansion stays inline, and `macro_keep.rs` records why in the merge report.
 
 - **Which expansions are kept**: `frontend/macro_keep.rs` decides on the IR,
-  before lowering. It rejects control flow leaving the body, bodies that read
-  caller locals (Rust hygiene hides them), locals in functions whose dispatch
-  lowering hoists them, variadic or `#` macros, compound literals and temporary
-  objects (a template's block would end their C lifetime early), value expansions
-  of type `void`, and place holes that are not plain (bit-fields, volatile, atomic,
-  reduced alignment).
+  before lowering. It rejects control flow leaving the body, an argument that reads
+  a local the body declares, locals in functions whose dispatch lowering hoists
+  them, variadic or `#` macros, compound literals and temporary objects (a template's
+  block would end their C lifetime early), value expansions of type `void`, and place
+  holes that are not plain (bit-fields, volatile, atomic, reduced alignment).
+- **Caller locals**: Rust hygiene hides a caller's locals from a `macro_rules` body,
+  so `pass_caller_locals` turns each one a kept body reads or writes into a hidden
+  place parameter after the definition's own, named after the local: `BITS(n)`
+  becomes `BITS!(n, hold)`. It runs on the final IR, wrapping the binding in
+  `PlaceKind::MacroArg` and recording the list in `Module::macro_hidden_arguments`.
+  A nested macro's hidden argument is the enclosing template's own local or
+  parameter. Defining the macro inside each function was rejected because it gives
+  up sharing across functions, units and targets.
 - **Value templates**: a `ValueKind::MacroExpansion` lowers to an `Expr::Macro` in
   value position. While the rules run its body ends in `Stmt::Return(value)`, which
   no other template has because `macro_keep.rs` rejects `return`; codegen prints it

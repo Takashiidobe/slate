@@ -80,12 +80,11 @@ int main(void) {
 // CHECK-NEXT:   macro_templates.c: [] 1 compiled
 // CHECK-NEXT:   units/macro_templates_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit macro_templates: 43 items, 26 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_templates: 45 items, 28 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: unit macro_templates_helper: 10 items, 7 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:helper: 2 variants
-// CHECK-NEXT: macros: 15 function-like, 14 lifted at least once (expansions counted per distinct compile)
-// CHECK-NEXT:   inline reads_caller_local: 2
+// CHECK-NEXT: macros: 15 function-like, 15 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   macro AFTER: 4 lifted, inline:
 // CHECK-NEXT:   macro BUMP: 4 lifted, inline:
 // CHECK-NEXT:   macro CALLS: 2 lifted, inline:
@@ -94,7 +93,7 @@ int main(void) {
 // CHECK-NEXT:   macro ONCE: 4 lifted, inline:
 // CHECK-NEXT:   macro ONLY_HERE: 4 lifted, inline:
 // CHECK-NEXT:   macro OUTER: 4 lifted, inline:
-// CHECK-NEXT:   macro READS_LOCAL: 0 lifted, inline: reads_caller_local 2
+// CHECK-NEXT:   macro READS_LOCAL: 2 lifted, inline:
 // CHECK-NEXT:   macro SHOW: 10 lifted, inline:
 // CHECK-NEXT:   macro TEMP: 4 lifted, inline:
 // CHECK-NEXT:   macro TWICE: 2 lifted, inline:
@@ -333,6 +332,22 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: macro_rules! READS_LOCAL {
+// CHECK-NEXT:     ($a:expr, $local:expr) => {
+// CHECK-NEXT:         println!("{}", ($a) + $local);
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: macro_rules! READS_LOCAL {
+// CHECK-NEXT:     ($a:expr, $local:expr) => {
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), ($a) + $local) };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! SHOW__2 {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         println!("{}", (($a) as u32) as i32);
@@ -490,10 +505,10 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let local: i32 = 1;
 // CHECK-NEXT:     let byte: u8 = 200u8;
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let wide: c_long = (1 as c_long) << 33i32;
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     let wide: c_long = (8589934592 as c_long);
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let wide: c_long = (1 as c_long) << 33i32;
 // CHECK-NEXT:     let value: i32 = next();
 // CHECK-NEXT:     let mut s: state = state {
 // CHECK-NEXT:         count: 0,
@@ -503,24 +518,24 @@ int main(void) {
 // CHECK-NEXT:     SHOW!(local);
 // CHECK-NEXT:     SHOW!(local + 1);
 // CHECK-NEXT:     SHOW__2!(byte);
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         SHOW!(wide >> 30i32);
-// CHECK-NEXT:         WIDEN!(local);
-// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         SHOW__3!(wide >> 30i32);
 // CHECK-NEXT:         WIDEN__2!(local);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     WIDEN!(wide);
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         WIDEN__2!(byte);
+// CHECK-NEXT:         SHOW!(wide >> 30i32);
+// CHECK-NEXT:         WIDEN!(local);
 // CHECK-NEXT:     }
+// CHECK-NEXT:     WIDEN!(wide);
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         WIDEN__5!(byte);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         WIDEN__2!(byte);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     TWICE!(next());
 // CHECK-NEXT:     AFTER!(unsafe { calls });
@@ -538,16 +553,9 @@ int main(void) {
 // CHECK-NEXT:     ONCE!(local + 5);
 // CHECK-NEXT:     CALLS!(local);
 // CHECK-NEXT:     WRITES!(out);
-// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     READS_LOCAL!(value, local);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), value + local) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
@@ -562,9 +570,8 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", value + local);
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d %d %d %d %ld %d %d\n".as_ptr(),

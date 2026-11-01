@@ -88,6 +88,7 @@ struct Tables<'m> {
     named_c_types: bool,
     c_types: &'m ir::CTypeTable,
     macros: &'m slate_parser::ast::MacroInvocations,
+    macro_hidden_arguments: &'m HashMap<slate_parser::ast::MacroExpansionId, Vec<BindingId>>,
     unit: &'m str,
     types: HashMap<TypeId, &'m Span<ir::TypeDefinition>>,
     record_names: HashMap<TypeId, String>,
@@ -629,6 +630,7 @@ impl<'m> ModuleLowerer<'m> {
             named_c_types: options.named_c_types,
             c_types: &module.c_types,
             macros: &module.macros,
+            macro_hidden_arguments: &module.macro_hidden_arguments,
             unit: &options.unit,
             types: module
                 .types

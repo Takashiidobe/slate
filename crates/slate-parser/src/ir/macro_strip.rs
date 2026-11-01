@@ -15,6 +15,7 @@ pub trait MacroStructureVisitor {
     fn enter_place_hole(&mut self, _expansion: MacroExpansionId, _place: &Place) {}
     fn leave_place_hole(&mut self, _expansion: MacroExpansionId) {}
     fn binding(&mut self, _binding: BindingId) {}
+    fn rewrite_place(&mut self, _place: &mut Place) {}
 }
 
 struct KeepOnly<F>(F);
@@ -303,6 +304,7 @@ impl<V: MacroStructureVisitor> Walker<'_, V> {
                 self.value(index);
             }
         }
+        self.visitor.rewrite_place(place);
     }
 
     fn value(&mut self, value: &mut Value) {

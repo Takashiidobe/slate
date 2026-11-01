@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-use slate_parser::ast::{MacroDefinition, MacroExpansionId};
+use slate_parser::ast::{MacroDefinition, MacroExpansionId, MacroInvocations};
 use slate_parser::ir::{
     BindingId, MacroStructureVisitor, Module, Place, PlaceKind, Statement, Type, ValueKind,
     walk_macro_structure,
@@ -12,6 +12,7 @@ use crate::backend::rust_ast::is_valid_macro_template_base;
 struct OpenExpansion {
     jump_targets: HashSet<BindingId>,
     in_hole: usize,
+    inside_outer_hole: usize,
 }
 
 struct Survey<'a> {
@@ -125,17 +126,25 @@ impl MacroStructureVisitor for Survey<'_> {
     }
 
     fn enter_value_hole(&mut self, expansion: MacroExpansionId) {
+        let mut seen = false;
         for (id, open) in &mut self.open {
             if *id == expansion {
                 open.in_hole += 1;
+                seen = true;
+            } else if seen {
+                open.inside_outer_hole += 1;
             }
         }
     }
 
     fn leave_value_hole(&mut self, expansion: MacroExpansionId) {
+        let mut seen = false;
         for (id, open) in &mut self.open {
             if *id == expansion {
                 open.in_hole -= 1;
+                seen = true;
+            } else if seen {
+                open.inside_outer_hole -= 1;
             }
         }
     }
@@ -158,14 +167,128 @@ impl MacroStructureVisitor for Survey<'_> {
         let declared = self.declared.get(&binding).cloned().unwrap_or_default();
         for position in 0..self.open.len() {
             let (id, open) = &self.open[position];
-            if declared.contains(id) == (open.in_hole > 0) {
-                self.reject(*id, "reads_caller_local");
+            if declared.contains(id) && open.in_hole > 0 {
+                self.reject(*id, "argument_reads_macro_local");
+            } else if !declared.contains(id) && open.in_hole == 0 && open.inside_outer_hole > 0 {
+                self.reject(*id, "reads_outer_argument");
             }
         }
         for id in declared {
             if !self.open.iter().any(|(open, _)| *open == id) {
                 self.reject(id, "local_used_after_macro");
             }
+        }
+    }
+}
+
+struct CallerLocals<'a> {
+    globals: &'a HashSet<BindingId>,
+    macros: &'a MacroInvocations,
+    open: Vec<(MacroExpansionId, usize)>,
+    declared: HashMap<BindingId, Vec<MacroExpansionId>>,
+    hidden: HashMap<MacroExpansionId, Vec<BindingId>>,
+}
+
+impl CallerLocals<'_> {
+    fn declare(&mut self, binding: BindingId) {
+        let open = self
+            .open
+            .iter()
+            .filter(|(_, in_hole)| *in_hole == 0)
+            .map(|(id, _)| *id);
+        self.declared.entry(binding).or_default().extend(open);
+    }
+
+    fn hole(&mut self, expansion: MacroExpansionId, change: impl Fn(&mut usize)) {
+        for (id, in_hole) in &mut self.open {
+            if *id == expansion {
+                change(in_hole);
+            }
+        }
+    }
+
+    fn hidden_argument(&mut self, expansion: MacroExpansionId, binding: BindingId) -> usize {
+        let parameters = self
+            .macros
+            .definition(expansion)
+            .parameters
+            .as_ref()
+            .map_or(0, Vec::len);
+        let hidden = self.hidden.entry(expansion).or_default();
+        let position = hidden
+            .iter()
+            .position(|candidate| *candidate == binding)
+            .unwrap_or_else(|| {
+                hidden.push(binding);
+                hidden.len() - 1
+            });
+        parameters + position
+    }
+}
+
+impl MacroStructureVisitor for CallerLocals<'_> {
+    fn statement(&mut self, statement: &Statement) {
+        match statement {
+            Statement::Let(variable) => self.declare(variable.id),
+            Statement::Temporary { id, .. } => self.declare(*id),
+            _ => {}
+        }
+    }
+
+    fn enter_expansion(&mut self, expansion: MacroExpansionId) {
+        self.open.push((expansion, 0));
+    }
+
+    fn leave_expansion(&mut self, _expansion: MacroExpansionId) {
+        self.open.pop();
+    }
+
+    fn enter_value_hole(&mut self, expansion: MacroExpansionId) {
+        self.hole(expansion, |in_hole| *in_hole += 1);
+    }
+
+    fn leave_value_hole(&mut self, expansion: MacroExpansionId) {
+        self.hole(expansion, |in_hole| *in_hole -= 1);
+    }
+
+    fn enter_place_hole(&mut self, expansion: MacroExpansionId, _place: &Place) {
+        self.enter_value_hole(expansion);
+    }
+
+    fn leave_place_hole(&mut self, expansion: MacroExpansionId) {
+        self.leave_value_hole(expansion);
+    }
+
+    fn rewrite_place(&mut self, place: &mut Place) {
+        let PlaceKind::Binding(binding) = place.kind else {
+            return;
+        };
+        if self.globals.contains(&binding) {
+            return;
+        }
+        let free: Vec<_> = self
+            .open
+            .iter()
+            .filter(|(id, in_hole)| {
+                *in_hole == 0
+                    && !self
+                        .declared
+                        .get(&binding)
+                        .is_some_and(|declared| declared.contains(id))
+            })
+            .map(|(id, _)| *id)
+            .collect();
+        for expansion in free {
+            let argument = self.hidden_argument(expansion, binding);
+            *place = Place {
+                ty: place.ty.clone(),
+                access: place.access,
+                kind: PlaceKind::MacroArg {
+                    expansion,
+                    argument,
+                    place: Box::new(place.clone()),
+                },
+            };
         }
     }
 }
@@ -192,7 +315,7 @@ fn plain_place(place: &Place) -> bool {
     }
 }
 
-pub(super) fn kept_expansions(module: &mut Module) -> HashSet<MacroExpansionId> {
+fn global_bindings(module: &Module) -> HashSet<BindingId> {
     let mut globals: HashSet<BindingId> = module
         .globals
         .iter()
@@ -201,6 +324,31 @@ pub(super) fn kept_expansions(module: &mut Module) -> HashSet<MacroExpansionId> 
     for function in &module.functions {
         globals.insert(function.value.id);
     }
+    globals
+}
+
+pub(super) fn pass_caller_locals(module: &mut Module) {
+    let globals = global_bindings(module);
+    let mut hidden = HashMap::new();
+    for function in &mut module.functions {
+        let Some(body) = &mut function.value.body else {
+            continue;
+        };
+        let mut locals = CallerLocals {
+            globals: &globals,
+            macros: &module.macros,
+            open: Vec::new(),
+            declared: HashMap::new(),
+            hidden: std::mem::take(&mut hidden),
+        };
+        walk_macro_structure(body, &mut locals);
+        hidden = locals.hidden;
+    }
+    module.macro_hidden_arguments = hidden;
+}
+
+pub(super) fn kept_expansions(module: &mut Module) -> HashSet<MacroExpansionId> {
+    let globals = global_bindings(module);
     let mut rejections = HashMap::new();
     let mut seen = HashSet::new();
     for function in &mut module.functions {

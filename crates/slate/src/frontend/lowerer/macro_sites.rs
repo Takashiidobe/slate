@@ -52,6 +52,7 @@ pub(super) fn unreached_expansions(
 
 pub(super) struct MacroSite {
     expansion: MacroExpansionId,
+    parameters: Vec<String>,
     arguments: Vec<Option<Expr>>,
     place_arguments: Vec<Option<Expr>>,
     call_arguments: Vec<Vec<Expr>>,
@@ -118,19 +119,47 @@ impl FunctionLowerer<'_, '_> {
     }
 
     fn open_macro_site(&mut self, expansion: MacroExpansionId) {
-        let parameters = self
+        let parameters = self.macro_site_parameters(expansion);
+        let count = parameters.len();
+        self.macro_sites.push(MacroSite {
+            expansion,
+            parameters,
+            arguments: vec![None; count],
+            place_arguments: vec![None; count],
+            call_arguments: vec![Vec::new(); count],
+        });
+    }
+
+    fn macro_site_parameters(&self, expansion: MacroExpansionId) -> Vec<String> {
+        let mut parameters = self
             .tables
             .macros
             .definition(expansion)
             .parameters
-            .as_ref()
-            .map_or(0, Vec::len);
-        self.macro_sites.push(MacroSite {
-            expansion,
-            arguments: vec![None; parameters],
-            place_arguments: vec![None; parameters],
-            call_arguments: vec![Vec::new(); parameters],
-        });
+            .clone()
+            .unwrap_or_default();
+        for binding in self
+            .tables
+            .macro_hidden_arguments
+            .get(&expansion)
+            .into_iter()
+            .flatten()
+        {
+            let spelled = self.binding_name(*binding);
+            let base = match spelled.strip_prefix("r#") {
+                Some(raw) => raw,
+                None if spelled.starts_with("__v") => "__v",
+                None => &spelled,
+            };
+            let mut name = path_keyword_free(base);
+            let mut suffix = 1;
+            while parameters.contains(&name) {
+                suffix += 1;
+                name = format!("{base}__{suffix}");
+            }
+            parameters.push(name);
+        }
+        parameters
     }
 
     fn close_macro_site(&mut self) -> MacroSite {
@@ -145,11 +174,11 @@ impl FunctionLowerer<'_, '_> {
         check: impl FnOnce(&mut Self, &[Stmt], &[rust::MacroParam], &[Expr]) -> Result<()>,
     ) -> Result<Expr> {
         let definition = self.tables.macros.definition(expansion);
-        let parameters = definition.parameters.as_deref().unwrap_or_default();
         macro_templates::normalize_locals(&mut template);
         let mut params = Vec::new();
         let mut args = Vec::new();
-        for (index, ((name, argument), place)) in parameters
+        for (index, ((name, argument), place)) in site
+            .parameters
             .iter()
             .zip(site.arguments)
             .zip(site.place_arguments)
@@ -303,13 +332,9 @@ impl FunctionLowerer<'_, '_> {
             .iter()
             .rposition(|site| site.expansion == expansion)
             .ok_or(Invariant::MacroHoleOutsideExpansion)?;
-        let parameter = self
-            .tables
-            .macros
-            .definition(expansion)
+        let parameter = self.macro_sites[position]
             .parameters
-            .as_ref()
-            .and_then(|parameters| parameters.get(argument))
+            .get(argument)
             .ok_or(Invariant::MacroHoleOutsideExpansion)?
             .clone();
         let inner_sites = self.macro_sites.split_off(position + 1);

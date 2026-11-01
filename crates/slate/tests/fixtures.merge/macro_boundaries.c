@@ -54,16 +54,15 @@ int main(void) {
 // CHECK-NEXT: target linux-i686: 1 compiles
 // CHECK-NEXT:   macro_boundaries.c: [] 1 compiled
 // CHECK-NEXT: total: 3 compiles across 3 targets
-// CHECK-NEXT: unit macro_boundaries: 16 items, 6 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_boundaries: 17 items, 6 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:report: 2 variants
 // CHECK-NEXT:   spliced fn:checked: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: macros: 6 function-like, 3 lifted at least once (expansions counted per distinct compile)
+// CHECK-NEXT: macros: 6 function-like, 4 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   inline control_transfer: 3
 // CHECK-NEXT:   inline empty_expansion: 3
-// CHECK-NEXT:   inline reads_caller_local: 3
 // CHECK-NEXT:   macro ASSERT: 15 lifted, inline:
-// CHECK-NEXT:   macro BUMP: 0 lifted, inline: reads_caller_local 3
+// CHECK-NEXT:   macro BUMP: 3 lifted, inline:
 // CHECK-NEXT:   macro GUARD: 0 lifted, inline: control_transfer 3
 // CHECK-NEXT:   macro NOTE: 3 lifted, inline:
 // CHECK-NEXT:   macro QUIET: 0 lifted, inline: empty_expansion 3
@@ -87,6 +86,14 @@ int main(void) {
 // CHECK-NEXT:         if !$cond {
 // CHECK-NEXT:             report(($msg) as *const c_char);
 // CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! BUMP {
+// CHECK-NEXT:     ($x:expr, $count:expr) => {
+// CHECK-NEXT:         let __v: i32 = $count;
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = __v + $x;
+// CHECK-NEXT:         $count = [[V_0]];
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -196,7 +203,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     TRACE!(c"a %d b %d\n".as_ptr() as *mut c_char, a, b);
 // CHECK-NEXT:     NOTE!(a != 0, c"nonzero %d\n".as_ptr() as *mut c_char, a);
-// CHECK-NEXT:     count += a;
+// CHECK-NEXT:     BUMP!(a, count);
 // CHECK-NEXT:     if b < 0 {
 // CHECK-NEXT:         return -1;
 // CHECK-NEXT:     }
