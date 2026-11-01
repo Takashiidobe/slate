@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT: target android-x86_64: 1 compiles
 // CHECK-NEXT:   flush_streams.c: [] 1 compiled
 // CHECK-NEXT: total: 3 compiles across 3 targets
-// CHECK-NEXT: unit flush_streams: 43 items, 35 gated, 0 duplicated functions
+// CHECK-NEXT: unit flush_streams: 47 items, 38 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:report: 3 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 3 variants
 // CHECK-NEXT: projection: 18 checked, 0 not translatable, 0 mismatches
@@ -53,6 +53,49 @@ int main(void) {
 // CHECK-NEXT:     all(target_arch = "x86_64", target_os = "android")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! TRACE {
+// CHECK-NEXT:     ($($x:expr),*) => {
+// CHECK-NEXT:         if (unsafe { verbose }) > 0 {
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe { fprintf($($x),*) };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(target_env = "gnu")]
+// CHECK-NEXT: macro_rules! CHECK {
+// CHECK-NEXT:     ($c:expr, $m:expr) => {
+// CHECK-NEXT:         if !$c {
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe { fputs($m, stderr) };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: macro_rules! CHECK {
+// CHECK-NEXT:     ($c:expr, $m:expr) => {
+// CHECK-NEXT:         if !$c {
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe { fputs($m, __acrt_iob_func(2u32)) };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(target_os = "android")]
+// CHECK-NEXT: macro_rules! CHECK {
+// CHECK-NEXT:     ($c:expr, $m:expr) => {
+// CHECK-NEXT:         if !$c {
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe { fputs($m, (std::ptr::addr_of_mut!(__sF) as *mut __sFILE).add(2)) };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_os = "android")]
 // CHECK-NEXT: unsafe extern "C" {
@@ -313,49 +356,27 @@ int main(void) {
 // CHECK-NEXT:         unsafe { printf(c"two %s\n".as_ptr(), c"x".as_ptr() as *mut c_char) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     if (unsafe { verbose }) > 0 {
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         #[cfg(windows)]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             unsafe { fprintf(__acrt_iob_func(2u32), c"traced %d\n".as_ptr(), 2i32) };
-// CHECK-NEXT:         }
-// CHECK-NEXT:         #[cfg(target_env = "gnu")]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             unsafe { fprintf(stderr, c"traced %d\n".as_ptr(), 2i32) };
-// CHECK-NEXT:         }
-// CHECK-NEXT:         #[cfg(target_os = "android")]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 fprintf(
-// CHECK-NEXT:                     (std::ptr::addr_of_mut!(__sF) as *mut __sFILE).add(2),
-// CHECK-NEXT:                     c"traced %d\n".as_ptr(),
-// CHECK-NEXT:                     2i32,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         TRACE!(
+// CHECK-NEXT:             unsafe { __acrt_iob_func(2u32) },
+// CHECK-NEXT:             c"traced %d\n".as_ptr(),
+// CHECK-NEXT:             2i32
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if !((unsafe { verbose }) == 0) {
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         #[cfg(windows)]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             unsafe { fputs(c"checked\n".as_ptr(), __acrt_iob_func(2u32)) };
-// CHECK-NEXT:         }
-// CHECK-NEXT:         #[cfg(target_env = "gnu")]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             unsafe { fputs(c"checked\n".as_ptr(), stderr) };
-// CHECK-NEXT:         }
-// CHECK-NEXT:         #[cfg(target_os = "android")]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 fputs(
-// CHECK-NEXT:                     c"checked\n".as_ptr(),
-// CHECK-NEXT:                     (std::ptr::addr_of_mut!(__sF) as *mut __sFILE).add(2),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     #[cfg(target_env = "gnu")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         TRACE!(unsafe { stderr }, c"traced %d\n".as_ptr(), 2i32);
 // CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(target_os = "android")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         TRACE!(
+// CHECK-NEXT:             unsafe { (std::ptr::addr_of_mut!(__sF) as *mut __sFILE).add(2) },
+// CHECK-NEXT:             c"traced %d\n".as_ptr(),
+// CHECK-NEXT:             2i32
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
+// CHECK-NEXT:     CHECK!((unsafe { verbose }) == 0, c"checked\n".as_ptr());
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {

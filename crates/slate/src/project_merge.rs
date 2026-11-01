@@ -218,6 +218,7 @@ pub enum Projection {
 
 pub struct Merged {
     pub units: Vec<(String, Program)>,
+    pub shared_macros: Option<Program>,
     pub root: Option<String>,
     pub features: BTreeSet<String>,
     pub target_guard: Item,
@@ -1109,9 +1110,83 @@ fn program_of(unit: &MergedUnit) -> Program {
     for ((cfg, abi), (position, decls)) in blocks {
         items[position] = Some(gate(cfg, Item::ExternBlock { abi, decls }));
     }
-    Program {
-        items: items.into_iter().flatten().collect(),
+    let (macros, mut items): (Vec<Item>, Vec<Item>) =
+        items.into_iter().flatten().partition(|item| match item {
+            Item::MacroRules { .. } => true,
+            Item::Cfg { item, .. } => matches!(**item, Item::MacroRules { .. }),
+            _ => false,
+        });
+    let at = items
+        .iter()
+        .position(|item| !matches!(item, Item::CrateAttrs(_) | Item::Comment(_)))
+        .unwrap_or(items.len());
+    items.splice(at..at, macros);
+    Program { items }
+}
+
+fn macro_rules_name(item: &Item) -> Option<&str> {
+    match item {
+        Item::MacroRules { name, .. } => Some(name),
+        Item::Cfg { item, .. } => macro_rules_name(item),
+        _ => None,
     }
+}
+
+fn share_macros(units: &mut [(String, Program)]) -> Option<Program> {
+    let mut definitions: BTreeMap<String, Vec<Vec<Item>>> = BTreeMap::new();
+    for (_, program) in units.iter() {
+        let mut in_unit: BTreeMap<String, Vec<Item>> = BTreeMap::new();
+        for item in &program.items {
+            if let Some(name) = macro_rules_name(item) {
+                in_unit
+                    .entry(name.to_string())
+                    .or_default()
+                    .push(item.clone());
+            }
+        }
+        for (name, variants) in in_unit {
+            definitions.entry(name).or_default().push(variants);
+        }
+    }
+    let mut items = Vec::new();
+    let mut shared: BTreeMap<String, Vec<Item>> = BTreeMap::new();
+    for (name, in_units) in definitions {
+        let mut best: Option<(&Vec<Item>, usize)> = None;
+        for variants in &in_units {
+            let count = in_units.iter().filter(|other| *other == variants).count();
+            if count > 1 && best.is_none_or(|(_, known)| count > known) {
+                best = Some((variants, count));
+            }
+        }
+        if let Some((variants, _)) = best {
+            items.extend(variants.iter().cloned());
+            shared.insert(name, variants.clone());
+        }
+    }
+    if items.is_empty() {
+        return None;
+    }
+    for (_, program) in units {
+        let defined = |name: &str| {
+            let variants: Vec<&Item> = program
+                .items
+                .iter()
+                .filter(|item| macro_rules_name(item) == Some(name))
+                .collect();
+            shared.get(name).is_some_and(|known| {
+                known.len() == variants.len() && known.iter().zip(&variants).all(|(a, b)| a == *b)
+            })
+        };
+        let moved: BTreeSet<String> = shared
+            .keys()
+            .filter(|name| defined(name))
+            .cloned()
+            .collect();
+        program
+            .items
+            .retain(|item| macro_rules_name(item).is_none_or(|name| !moved.contains(name)));
+    }
+    Some(Program { items })
 }
 
 fn gate(cfg: Option<Cfg>, item: Item) -> Item {
@@ -1542,11 +1617,14 @@ pub fn merge(
             args: vec![Expr::Str(UNTRANSLATED_TARGET.into())],
         },
     );
+    let mut units: Vec<(String, Program)> = merged
+        .iter()
+        .map(|unit| (unit.stem.clone(), program_of(unit)))
+        .collect();
+    let shared_macros = share_macros(&mut units);
     Ok(Merged {
-        units: merged
-            .iter()
-            .map(|unit| (unit.stem.clone(), program_of(unit)))
-            .collect(),
+        units,
+        shared_macros,
         root,
         features,
         target_guard,

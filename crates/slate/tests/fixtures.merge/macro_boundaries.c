@@ -54,7 +54,7 @@ int main(void) {
 // CHECK-NEXT: target linux-i686: 1 compiles
 // CHECK-NEXT:   macro_boundaries.c: [] 1 compiled
 // CHECK-NEXT: total: 3 compiles across 3 targets
-// CHECK-NEXT: unit macro_boundaries: 21 items, 12 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_boundaries: 24 items, 12 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:report: 2 variants
 // CHECK-NEXT:   spliced fn:checked: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
@@ -71,6 +71,34 @@ int main(void) {
 // CHECK-NEXT:     all(target_arch = "x86", target_os = "linux", target_env = "gnu")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! ASSERT {
+// CHECK-NEXT:     ($cond:expr, $msg:expr) => {
+// CHECK-NEXT:         if !$cond {
+// CHECK-NEXT:             report($msg);
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! TRACE {
+// CHECK-NEXT:     ($($x:expr),*) => {
+// CHECK-NEXT:         if (unsafe { verbose }) > 0 {
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe { printf($($x),*) };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! NOTE {
+// CHECK-NEXT:     ($c:expr, $($x:expr),*) => {
+// CHECK-NEXT:         if (unsafe { verbose }) > 0 && $c {
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe { printf($($x),*) };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {
@@ -190,64 +218,24 @@ int main(void) {
 // CHECK-NEXT: fn checked(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     let mut count: i32 = 0;
 // CHECK-NEXT:     let mut state: i32 = 0;
-// CHECK-NEXT:     if !(a == b) {
-// CHECK-NEXT:         report(c"a and b differ".as_ptr());
-// CHECK-NEXT:     }
-// CHECK-NEXT:     if !(a + 1 == b + 1) {
-// CHECK-NEXT:         report(c"still differ".as_ptr());
-// CHECK-NEXT:     }
-// CHECK-NEXT:     if !(7i32 == 7) {
-// CHECK-NEXT:         report(c"folded".as_ptr());
-// CHECK-NEXT:     }
-// CHECK-NEXT:     if !(next_id(unsafe { &mut (*std::ptr::addr_of_mut!(state)) }) == 1) {
-// CHECK-NEXT:         report(c"side effect".as_ptr());
-// CHECK-NEXT:     }
-// CHECK-NEXT:     if (unsafe { verbose }) > 0 {
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         #[cfg(windows)]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             unsafe { printf(c"a %d b %d\n".as_ptr(), a, b) };
-// CHECK-NEXT:         }
-// CHECK-NEXT:         #[cfg(unix)]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             unsafe { printf(c"a %d b %d\n".as_ptr(), a, b) };
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     if (unsafe { verbose }) > 0 && a != 0 {
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         #[cfg(windows)]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             unsafe { printf(c"nonzero %d\n".as_ptr(), a) };
-// CHECK-NEXT:         }
-// CHECK-NEXT:         #[cfg(unix)]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             unsafe { printf(c"nonzero %d\n".as_ptr(), a) };
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     ASSERT!(a == b, c"a and b differ".as_ptr());
+// CHECK-NEXT:     ASSERT!(a + 1 == b + 1, c"still differ".as_ptr());
+// CHECK-NEXT:     ASSERT!(7i32 == 7, c"folded".as_ptr());
+// CHECK-NEXT:     ASSERT!(
+// CHECK-NEXT:         next_id(unsafe { &mut (*std::ptr::addr_of_mut!(state)) }) == 1,
+// CHECK-NEXT:         c"side effect".as_ptr()
+// CHECK-NEXT:     );
+// CHECK-NEXT:     TRACE!(c"a %d b %d\n".as_ptr(), a, b);
+// CHECK-NEXT:     NOTE!(a != 0, c"nonzero %d\n".as_ptr(), a);
 // CHECK-NEXT:     count += a;
 // CHECK-NEXT:     if b < 0 {
 // CHECK-NEXT:         return -1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if a > 100 {
-// CHECK-NEXT:         if !(b > 100) {
-// CHECK-NEXT:             report(c"nested".as_ptr());
-// CHECK-NEXT:         }
+// CHECK-NEXT:         ASSERT!(b > 100, c"nested".as_ptr());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..2i32 {
-// CHECK-NEXT:         if (unsafe { verbose }) > 0 {
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             #[cfg(windows)]
-// CHECK-NEXT:             {
-// CHECK-NEXT:                 unsafe { printf(c"loop %d\n".as_ptr(), i) };
-// CHECK-NEXT:             }
-// CHECK-NEXT:             #[cfg(unix)]
-// CHECK-NEXT:             {
-// CHECK-NEXT:                 unsafe { printf(c"loop %d\n".as_ptr(), i) };
-// CHECK-NEXT:             }
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         }
+// CHECK-NEXT:         TRACE!(c"loop %d\n".as_ptr(), i);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

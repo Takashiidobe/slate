@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use slate_parser::ast::{MacroInvocationId, Span};
+use slate_parser::ast::{MacroDefinition, MacroInvocationId, MacroInvocations, Span};
 use slate_parser::ir;
 
 use super::control_flow;
@@ -40,6 +40,127 @@ fn transfers_stay_inside(statement: &ir::Statement, in_loop: bool) -> bool {
     }
 }
 
+fn touches(
+    macros: &MacroInvocations,
+    invocation: MacroInvocationId,
+    statement: Option<&Span<ir::Statement>>,
+) -> bool {
+    let site = macros.invocation(invocation).site;
+    statement.is_some_and(|statement| {
+        let loc = statement.expansion;
+        loc.file == site.file
+            && loc.offset < site.offset + site.length
+            && site.offset < loc.offset + loc.length
+    })
+}
+
+fn spelled_in_body(
+    macros: &MacroInvocations,
+    invocation: MacroInvocationId,
+    statement: &Span<ir::Statement>,
+) -> bool {
+    if matches!(statement.value, ir::Statement::Comment(_)) {
+        return true;
+    }
+    let sites = macros.sites(statement.expansion);
+    let Some(site) = sites.iter().find(|site| site.invocation == invocation) else {
+        return false;
+    };
+    if site.argument.is_some() {
+        return matches!(
+            statement.value,
+            ir::Statement::Let(_) | ir::Statement::Temporary { .. }
+        );
+    }
+    control_flow::children(&statement.value)
+        .into_iter()
+        .flatten()
+        .all(|child| spelled_in_body(macros, invocation, child))
+}
+
+fn declares_local(statement: &ir::Statement) -> bool {
+    matches!(statement, ir::Statement::Let(_))
+        || control_flow::children(statement)
+            .into_iter()
+            .flatten()
+            .any(|child| declares_local(&child.value))
+}
+
+pub(super) fn is_whole_macro_block(
+    macros: &MacroInvocations,
+    statement: &Span<ir::Statement>,
+) -> bool {
+    let Some(site) = macros.sites(statement.expansion).pop() else {
+        return false;
+    };
+    let replacement = macros
+        .definition(macros.invocation(site.invocation))
+        .replacement
+        .trim();
+    site.argument.is_none()
+        && matches!(statement.value, ir::Statement::Block(_))
+        && replacement.starts_with('{')
+        && replacement.ends_with('}')
+        && fits_region(&statement.value)
+        && !declares_local(&statement.value)
+}
+
+fn macro_params(definition: &MacroDefinition) -> Option<Vec<rust::MacroParam>> {
+    let parameters = definition.parameters.as_ref()?;
+    let replacement = &definition.replacement;
+    if definition.variadic || replacement.contains('#') {
+        return None;
+    }
+    let mut shapes = vec![rust::MacroParamShape::Unused; parameters.len()];
+    let mut callee_before = false;
+    let mut chars = replacement.char_indices().peekable();
+    while let Some((start, c)) = chars.next() {
+        if c == '"' || c == '\'' {
+            let mut escaped = false;
+            for (_, next) in chars.by_ref() {
+                if !escaped && next == c {
+                    break;
+                }
+                escaped = !escaped && next == '\\';
+            }
+            callee_before = false;
+        } else if c.is_alphanumeric() || c == '_' {
+            let mut end = start + c.len_utf8();
+            while let Some(&(at, next)) = chars.peek() {
+                if !next.is_alphanumeric() && next != '_' {
+                    break;
+                }
+                end = at + next.len_utf8();
+                chars.next();
+            }
+            let word = &replacement[start..end];
+            if let Some(index) = parameters.iter().position(|name| name == word) {
+                shapes[index] = if callee_before || shapes[index] == rust::MacroParamShape::List {
+                    rust::MacroParamShape::List
+                } else {
+                    rust::MacroParamShape::Expr
+                };
+            }
+            callee_before = !matches!(word, "return" | "else" | "do" | "case" | "sizeof" | "goto");
+        } else if !c.is_whitespace() {
+            callee_before = false;
+        }
+    }
+    if parameters.iter().any(|name| name == "crate") {
+        return None;
+    }
+    Some(
+        parameters
+            .iter()
+            .zip(shapes)
+            .map(|(name, shape)| rust::MacroParam {
+                name: name.clone(),
+                shape,
+            })
+            .collect(),
+    )
+}
+
 impl FunctionLowerer<'_, '_> {
     pub(super) fn function_locals(
         &self,
@@ -65,10 +186,37 @@ impl FunctionLowerer<'_, '_> {
         (site.argument.is_none() && fits_region(&statement.value)).then_some(site.invocation)
     }
 
+    pub(super) fn lower_lone_statement(
+        &mut self,
+        statement: &Span<ir::Statement>,
+        before: Option<&Span<ir::Statement>>,
+        after: Option<&Span<ir::Statement>>,
+    ) -> Result<Vec<Stmt>> {
+        match self.macro_region_of(statement) {
+            Some(invocation) => {
+                self.lower_macro_region(invocation, std::slice::from_ref(statement), before, after)
+            }
+            None => self.lower_statement(statement),
+        }
+    }
+
+    pub(super) fn lower_graph_statement(
+        &mut self,
+        statement: &Span<ir::Statement>,
+    ) -> Result<Vec<Stmt>> {
+        if is_whole_macro_block(self.tables.macros, statement) {
+            self.lower_lone_statement(statement, None, None)
+        } else {
+            self.lower_statement(statement)
+        }
+    }
+
     pub(super) fn lower_macro_region(
         &mut self,
         invocation: MacroInvocationId,
         statements: &[Span<ir::Statement>],
+        before: Option<&Span<ir::Statement>>,
+        after: Option<&Span<ir::Statement>>,
     ) -> Result<Vec<Stmt>> {
         self.macro_region = Some(invocation);
         let lowered = self.lower_statement_list(statements);
@@ -85,13 +233,21 @@ impl FunctionLowerer<'_, '_> {
             return Ok(body);
         }
         let macros = self.tables.macros;
-        let name = macros
-            .definition(macros.invocation(invocation))
-            .name
-            .to_string();
+        let definition = macros.definition(macros.invocation(invocation));
+        let params = macro_params(definition);
+        let foldable = params.is_some()
+            && !touches(self.tables.macros, invocation, before)
+            && !touches(self.tables.macros, invocation, after)
+            && statements
+                .iter()
+                .all(|statement| spelled_in_body(self.tables.macros, invocation, statement));
         Ok(vec![Stmt::Scope {
             body,
-            macro_region: Some(name),
+            macro_region: Some(Box::new(rust::MacroRegion {
+                name: definition.name.to_string(),
+                params: params.unwrap_or_default(),
+                foldable,
+            })),
         }])
     }
 

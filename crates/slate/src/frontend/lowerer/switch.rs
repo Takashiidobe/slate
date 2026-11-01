@@ -378,8 +378,10 @@ impl FunctionLowerer<'_, '_> {
 
     fn lower_switch_arm(&mut self, arm: &SwitchArm) -> Result<Vec<Stmt>> {
         let mut lowered = Vec::new();
-        for statement in &arm.body {
-            lowered.extend(self.lower_statement(statement)?);
+        for (index, statement) in arm.body.iter().enumerate() {
+            let before = index.checked_sub(1).map(|at| arm.body[at]);
+            let after = arm.body.get(index + 1).copied();
+            lowered.extend(self.lower_lone_statement(statement, before, after)?);
         }
         Ok(lowered)
     }

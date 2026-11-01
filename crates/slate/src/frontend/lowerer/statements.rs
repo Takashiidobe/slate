@@ -397,6 +397,7 @@ impl FunctionLowerer<'_, '_> {
     ) -> Result<Vec<Stmt>> {
         let mut lowered = Vec::with_capacity(statements.len());
         let mut remaining = statements;
+        let mut previous = None;
         while let Some((statement, rest)) = remaining.split_first() {
             if let Some(invocation) = self.macro_region_of(statement) {
                 let length = 1 + rest
@@ -404,10 +405,17 @@ impl FunctionLowerer<'_, '_> {
                     .take_while(|next| self.macro_region_of(next) == Some(invocation))
                     .count();
                 let (region, after) = remaining.split_at(length);
-                lowered.extend(self.lower_macro_region(invocation, region)?);
+                lowered.extend(self.lower_macro_region(
+                    invocation,
+                    region,
+                    previous,
+                    after.first(),
+                )?);
+                previous = region.last();
                 remaining = after;
                 continue;
             }
+            previous = Some(statement);
             remaining = rest;
             lowered.extend(self.lower_statement(statement)?);
             if let ir::Statement::Let(variable) = &statement.value

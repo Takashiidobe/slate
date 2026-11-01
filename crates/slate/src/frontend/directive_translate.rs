@@ -1092,6 +1092,8 @@ pub fn item_key(item: &Item) -> String {
             "macro:{name}:{}",
             args.iter().map(Expr::render).collect::<Vec<_>>().join(",")
         ),
+        Item::MacroUseMod { name } => format!("mod:{name}"),
+        Item::MacroRules { name, .. } => format!("macro-rules:{name}"),
         Item::Cfg { item, .. } => item_key(item),
         Item::SupportModule(module) => format!("support-module:{}", module.name),
         Item::GlobalAsm(asm) => format!("global-asm:{}", asm.template),

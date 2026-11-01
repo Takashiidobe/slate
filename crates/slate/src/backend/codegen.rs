@@ -3,9 +3,9 @@ use std::fmt::{self, Write};
 use crate::backend::rust_ast::{
     Abi, AsmKind, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr,
     Block, Cfg, Comment, CommentAttach, CrateAttr, Derive, Expr, ExternDecl, FnDef, GenericParam,
-    ImplBlock, ImplItem, InlineAsm, InlineHint, Item, Method, Path, Pattern, Precedence, Prim,
-    Program, RecordDef, RecordField, Repr, RustValue, SelfKind, Stmt, StructDef, StructFields,
-    TraitBound, TraitRef, Type,
+    ImplBlock, ImplItem, InlineAsm, InlineHint, Item, MacroParamShape, Method, Path, Pattern,
+    Precedence, Prim, Program, RecordDef, RecordField, Repr, RustValue, SelfKind, Stmt, StructDef,
+    StructFields, TraitBound, TraitRef, Type,
 };
 
 const INDENT: &str = "    ";
@@ -267,6 +267,23 @@ impl<W: Write> Codegen<W> {
                 self.out.write_str("!(")?;
                 self.args(args)?;
                 self.out.write_str(");\n")?;
+            }
+            Item::MacroRules { name, params, body } => {
+                writeln!(self.out, "macro_rules! {name} {{")?;
+                let matcher = params
+                    .iter()
+                    .map(|param| match param.shape {
+                        MacroParamShape::List => format!("$(${}:expr),*", param.name),
+                        _ => format!("${}:expr", param.name),
+                    })
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                writeln!(self.out, "({matcher}) => {{")?;
+                self.stmts(body)?;
+                self.out.write_str("};\n}\n")?;
+            }
+            Item::MacroUseMod { name } => {
+                writeln!(self.out, "#[macro_use]\nmod {};", name.as_str())?;
             }
             Item::Cfg { cfg, item } => {
                 self.out.write_str("#[cfg(")?;

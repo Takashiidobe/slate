@@ -145,11 +145,42 @@ its arguments stay separate from its body for
 - A new walker over `Expr` must handle `MacroArg`. A shape-matching rule should
   not peel it.
 - `macro_boundaries::strip` removes both wrappers after the last rule pass, so
-  codegen and the project merge never see them. Fold verified regions before
-  that pass.
+  codegen and the project merge never see them.
 
 Expression-position macros are not wrapped yet: `PRINT(x);` from
 `#define PRINT(x) printf x` has a statement that ends outside the invocation.
+
+`macro_fold::fold` turns regions into `Item::MacroRules` and `Name!(args)` calls.
+It runs after `printf_format` and before the unsafe pass, because that pass
+removes `unsafe` depending on the surrounding block and would give one macro
+different bodies. The unsafe pass then runs over the macro bodies too.
+
+A template is the region's own code with each `MacroArg` replaced by `$param`,
+so it re-expands to what was lowered by construction. Each unit keeps the most
+common template per macro name. Other regions of that macro stay inline, and a
+failed fold costs readability, never correctness.
+
+- A parameter written after a name (`fprintf x`) is a list: `$($x:expr),*`, last
+  in the matcher. `rustfmt` cannot format `$(...)` in a macro body, so a
+  placeholder identifier stands in until `format.rs` restores it after formatting.
+- `foldable` is decided at lowering, where the definition and statement locations
+  exist. A neighbouring statement that overlaps the invocation means the region
+  is partial: `ERR_RETURN`'s `return` ends at the `;` after the invocation, so a
+  containment test misses it and the check has to be overlap.
+- The goto graph keeps a braced macro block with no `let` as one node. Without
+  that, it splits the `if` from its body and the body looks like the whole macro.
+
+These stay inline: object-like and variadic macros, `#` and `##`, macros reading
+or writing a caller local or label, arguments the IR hoists or writes
+(`STORE(p++, v)`), an argument reading a name the body binds (hygiene would change
+which one it means), writes through an argument (`UPDATE_HASH(s, s->ins_h, c)`,
+whose place has no `MacroArg`), a list parameter that is not last, and names that
+are Rust keywords or would shadow a std macro generated code uses.
+
+Under `--merge` the largest group of units with identical definitions shares
+`src/__slate_macros.rs` through `#[macro_use]`. Other units keep their own
+definition, which shadows it. A macro body resolves items at the call site, so
+each unit's own declarations apply.
 
 ## Validation
 

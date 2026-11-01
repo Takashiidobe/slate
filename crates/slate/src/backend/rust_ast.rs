@@ -90,12 +90,40 @@ pub enum Item {
         name: String,
         args: Vec<Expr>,
     },
+    MacroUseMod {
+        name: Ident,
+    },
+    MacroRules {
+        name: String,
+        params: Vec<MacroParam>,
+        body: Vec<Stmt>,
+    },
     Cfg {
         cfg: Cfg,
         item: Box<Item>,
     },
     SupportModule(SupportModule),
     GlobalAsm(InlineAsm),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum MacroParamShape {
+    Unused,
+    Expr,
+    List,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct MacroParam {
+    pub name: String,
+    pub shape: MacroParamShape,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct MacroRegion {
+    pub name: String,
+    pub params: Vec<MacroParam>,
+    pub foldable: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -870,7 +898,7 @@ pub enum Stmt {
     },
     Scope {
         body: Vec<Stmt>,
-        macro_region: Option<String>,
+        macro_region: Option<Box<MacroRegion>>,
     },
     LabeledBlock {
         label: Label,

@@ -151,7 +151,7 @@ pub(in crate::backend) enum NodeKind {
     },
     Scope {
         body: Vec<NodeId>,
-        macro_region: Option<String>,
+        macro_region: Option<Box<crate::backend::rust_ast::MacroRegion>>,
     },
     LabeledBlock {
         label: Label,

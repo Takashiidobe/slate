@@ -773,6 +773,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             &crate_types,
             &merged.features,
             Some(merged.target_guard),
+            merged.shared_macros,
         )?;
         if mismatches > 0 {
             print!("{written}");
@@ -949,8 +950,11 @@ fn translate_slate_project(
         crate_types,
         &BTreeSet::new(),
         None,
+        None,
     )
 }
+
+const SHARED_MACROS_MODULE: &str = "__slate_macros";
 
 fn write_project_crate(
     crate_dir: &Path,
@@ -960,6 +964,7 @@ fn write_project_crate(
     crate_types: &[String],
     declared_features: &BTreeSet<String>,
     target_guard: Option<rust_ast::Item>,
+    shared_macros: Option<rust_ast::Program>,
 ) -> Result<String, String> {
     let lib_crate_types = match &root {
         Some(root) => {
@@ -983,8 +988,12 @@ fn write_project_crate(
         name: rust_ast::Ident::new(slate::backend::SHARED_TYPES_MODULE),
         path: None,
     });
+    let macro_module = shared_macros.as_ref().map(|_| rust_ast::Item::MacroUseMod {
+        name: rust_ast::Ident::new(SHARED_MACROS_MODULE),
+    });
     let children: Vec<rust_ast::Item> = target_guard
         .into_iter()
+        .chain(macro_module)
         .chain(shared_module)
         .chain(
             programs
@@ -997,6 +1006,12 @@ fn write_project_crate(
         )
         .collect();
     let mut outputs = Vec::new();
+    if let Some(program) = shared_macros {
+        outputs.push((
+            crate_src.join(SHARED_MACROS_MODULE).with_extension("rs"),
+            program,
+        ));
+    }
     if let Some(program) = shared_types {
         outputs.push((
             crate_src

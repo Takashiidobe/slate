@@ -1,5 +1,6 @@
 mod arena;
 pub mod macro_boundaries;
+mod macro_fold;
 mod prelude;
 mod printf_format;
 mod rules;
@@ -105,9 +106,12 @@ pub(in crate::backend) fn apply_local(
     rules::const_fold::fold_initializers(&mut program.items);
     prelude::inject(program, target);
     printf_format::rewrite(program);
+    macro_fold::fold(program);
     let passes = [RuleRegistry::build(rules::unsafe_registry())];
     for item in &mut program.items {
         apply_item(item, &passes);
+    }
+    for item in &mut program.items {
         macro_boundaries::strip_item(item);
     }
 }
@@ -115,6 +119,7 @@ pub(in crate::backend) fn apply_local(
 fn apply_item(item: &mut Item, passes: &[RuleRegistry]) {
     match item {
         Item::Fn(func) => run_function(&mut func.body, &mut func.params, func.ret.as_ref(), passes),
+        Item::MacroRules { body, .. } => run_function(body, &mut Vec::new(), None, passes),
         Item::InlineMod { items, .. } => {
             for item in items {
                 apply_item(item, passes);
