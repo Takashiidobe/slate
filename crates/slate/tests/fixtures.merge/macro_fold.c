@@ -135,14 +135,14 @@ int main(void) {
 // CHECK-NEXT:   macro_fold.c: [] 1 compiled
 // CHECK-NEXT:   units/macro_fold_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit macro_fold: 32 items, 15 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_fold: 33 items, 15 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:report: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: unit macro_fold_helper: 8 items, 4 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:helper: 2 variants
-// CHECK-NEXT: macros: 25 function-like, 12 lifted at least once (expansions counted per distinct compile)
-// CHECK-NEXT:   inline reads_caller_local: 8
+// CHECK-NEXT: macros: 25 function-like, 13 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   inline control_transfer: 4
+// CHECK-NEXT:   inline reads_caller_local: 4
 // CHECK-NEXT:   inline stringify_or_paste: 4
 // CHECK-NEXT:   inline reserved_macro_name: 4
 // CHECK-NEXT:   inline declares_local: 3
@@ -169,7 +169,7 @@ int main(void) {
 // CHECK-NEXT:   macro RETURNS: 0 lifted, inline: control_transfer 2
 // CHECK-NEXT:   macro SHADOWS: 2 lifted, inline: param_without_argument 2
 // CHECK-NEXT:   macro SPLIT: 1 lifted, inline: declares_local 1
-// CHECK-NEXT:   macro STORE: 0 lifted, inline: reads_caller_local 4
+// CHECK-NEXT:   macro STORE: 4 lifted, inline:
 // CHECK-NEXT:   macro TWICE: 2 lifted, inline:
 // CHECK-NEXT:   macro VARIADIC: 0 lifted, inline: variadic 2
 // CHECK-NEXT:   macro WRITES_LOCAL: 0 lifted, inline: reads_caller_local 2
@@ -226,7 +226,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn helper(mut value: i32) -> i32 {
+// CHECK-NEXT: extern "C-unwind" fn helper(value: i32) -> i32 {
 // CHECK-NEXT:     LOG!(slate_support::stdout(), c"helper %d\n".as_ptr(), value);
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
@@ -399,6 +399,17 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! STORE {
+// CHECK-NEXT:     ($p:expr, $v:expr) => {
+// CHECK-NEXT:         let __v: *mut c_char = $p;
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut c_char = unsafe { __v.add(1) };
+// CHECK-NEXT:         $p = [[V_0]];
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             *__v = $v as c_char;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! TWICE__2 {
 // CHECK-NEXT:     ($a:expr) => {
@@ -546,16 +557,8 @@ int main(void) {
 // CHECK-NEXT:         TWICE__2!(count + 1);
 // CHECK-NEXT:         DROPS__2!(count);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut c_char = cursor;
-// CHECK-NEXT:     cursor = unsafe { [[V_0]].add(1) };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = 120;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut c_char = cursor;
-// CHECK-NEXT:     cursor = unsafe { [[V_1]].add(1) };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_1]] = 121;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     STORE!(cursor, 120i32);
+// CHECK-NEXT:     STORE!(cursor, 121i32);
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         LOCALS!(count);

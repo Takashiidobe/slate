@@ -2,7 +2,8 @@ use std::collections::{HashMap, HashSet};
 
 use slate_parser::ast::{MacroDefinition, MacroExpansionId};
 use slate_parser::ir::{
-    BindingId, MacroStructureVisitor, Module, Statement, ValueKind, walk_macro_structure,
+    BindingId, MacroStructureVisitor, Module, Place, PlaceKind, Statement, ValueKind,
+    walk_macro_structure,
 };
 
 use crate::backend::rust_ast::is_valid_macro_template_base;
@@ -118,8 +119,15 @@ impl MacroStructureVisitor for Survey<'_> {
         }
     }
 
-    fn place_hole(&mut self, expansion: MacroExpansionId) {
-        self.unfit.insert(expansion);
+    fn enter_place_hole(&mut self, expansion: MacroExpansionId, place: &Place) {
+        if !plain_place(place) {
+            self.unfit.insert(expansion);
+        }
+        self.enter_value_hole(expansion);
+    }
+
+    fn leave_place_hole(&mut self, expansion: MacroExpansionId) {
+        self.leave_value_hole(expansion);
     }
 
     fn binding(&mut self, binding: BindingId) {
@@ -142,6 +150,20 @@ impl MacroStructureVisitor for Survey<'_> {
 
     fn direct_call(&mut self, callee: BindingId) {
         self.reads_function(callee);
+    }
+}
+
+fn plain_place(place: &Place) -> bool {
+    if place.access.volatile || place.access.atomic || place.access.align.is_some() {
+        return false;
+    }
+    match &place.kind {
+        PlaceKind::MacroArg { place, .. } => plain_place(place),
+        PlaceKind::Binding(_) | PlaceKind::Deref(_) | PlaceKind::Index { .. } => true,
+        PlaceKind::Field {
+            base, bits: None, ..
+        } => plain_place(base),
+        _ => false,
     }
 }
 

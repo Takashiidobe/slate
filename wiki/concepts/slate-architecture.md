@@ -63,11 +63,11 @@ one `macro_rules` template per distinct body, and each site becomes a call. The
 old `macro_fold` pass still runs over everything else.
 
 - **Which expansions are kept**: `frontend/macro_keep.rs` decides on the IR,
-  before lowering. It rejects place holes, control flow leaving the body,
-  bodies that call project functions or read caller locals (Rust hygiene hides
-  them), locals in functions whose dispatch lowering hoists them, and variadic
-  or `#` macros. The analyses cannot see into a template yet, so anything they
-  would have to track stays on the old path until `slate-f2zu.9.5.12.6`.
+  before lowering. It rejects control flow leaving the body, bodies that call
+  project functions or read caller locals (Rust hygiene hides them), locals in
+  functions whose dispatch lowering hoists them, variadic or `#` macros, and
+  place holes that are not plain (bit-fields, volatile, atomic, reduced
+  alignment).
 - **Identity**: two bodies are the same template when their printed Rust and
   printed hole types match. Spans and local names do not count. Text is the key
   because `NamedPrim`'s `Debug` includes the target width: a `c_ulong` body merges
@@ -79,8 +79,17 @@ old `macro_fold` pass still runs over everything else.
 - **Holes**: an argument is a `$a()` call while the rules run, so that no rule
   moves, merges, or drops its evaluation. `finish_holes` turns it into `$a` before
   printing.
-- **Analyses**: `inline_temps`, `string_params`, and `pointer_lattice` treat a
-  template call's arguments conservatively.
+- **Place parameters**: while the rules run, a parameter used as a place is passed
+  by address. The call is `M!(&raw mut n)` when the template writes it or takes its
+  mutable address, otherwise `M!(&raw const n)`, and the body uses `*$*n()`. Every
+  analysis already understands those forms, so none needs a per-template table.
+  `finish_holes` prints the body as `$n`, and `finish_place_arguments` strips the
+  address last, after the final `remove_mut` pass.
+- **Analyses**: `remove_mut` treats a template's plain arguments as reads.
+  `inline_temps` will not inline into a template argument. `string_params` and
+  `pointer_lattice` keep any pointer a template argument names raw, so lifting
+  never changes a type a template relies on. `length_lattice` rewrites calls inside
+  template arguments.
 - **Self-check**: with `SLATE_CHECK_MACRO_TEMPLATES=1` (set by the `project_merge`
   tests), the lowerer re-lowers each outermost site without structure and compares
   it to its expanded templates. A difference is `Invariant::MacroTemplateMismatch`.

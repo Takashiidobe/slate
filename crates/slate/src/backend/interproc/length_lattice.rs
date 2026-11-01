@@ -1348,6 +1348,11 @@ fn rewrite_signature_expr(
                 args.remove(len_index);
             }
         }
+        Expr::Macro { args, .. } => {
+            for arg in args {
+                rewrite_signature_expr(arg, caller, ctx, proofs);
+            }
+        }
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
         | Expr::MacroArg { expr, .. }
@@ -2051,6 +2056,11 @@ fn rewrite_expr(expr: &mut Expr, sites: &ViewSites, view_name: &str) {
         return;
     }
     match expr {
+        Expr::Macro { args, .. } => {
+            for arg in args {
+                rewrite_expr(arg, sites, view_name);
+            }
+        }
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
         | Expr::MacroArg { expr, .. }
@@ -2954,6 +2964,11 @@ fn rewrite_const_call_expr(expr: &mut Expr, ctx: &ConstCtx) {
                 if let Some(arg) = args.get_mut(candidate.ptr_index) {
                     *arg = const_bridge(arg.clone(), candidate);
                 }
+            }
+        }
+        Expr::Macro { args, .. } => {
+            for arg in args {
+                rewrite_const_call_expr(arg, ctx);
             }
         }
         Expr::Unary { expr, .. }
@@ -4208,6 +4223,11 @@ fn rewrite_return_call_expr(expr: &mut Expr, elems: &BTreeMap<String, Type>) {
             {
                 let call = std::mem::replace(expr, Expr::Var(Ident::new("__slate_placeholder")));
                 *expr = box_into_raw(call, elem_ty);
+            }
+        }
+        Expr::Macro { args, .. } => {
+            for arg in args {
+                rewrite_return_call_expr(arg, elems);
             }
         }
         Expr::Unary { expr, .. }

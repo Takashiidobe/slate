@@ -80,17 +80,17 @@ int main(void) {
 // CHECK-NEXT:   macro_templates.c: [] 1 compiled
 // CHECK-NEXT:   units/macro_templates_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit macro_templates: 39 items, 26 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_templates: 41 items, 26 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: unit macro_templates_helper: 10 items, 7 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:helper: 2 variants
-// CHECK-NEXT: macros: 15 function-like, 12 lifted at least once (expansions counted per distinct compile)
-// CHECK-NEXT:   inline reads_caller_local: 6
+// CHECK-NEXT: macros: 15 function-like, 14 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   inline control_transfer: 2
+// CHECK-NEXT:   inline reads_caller_local: 2
 // CHECK-NEXT:   macro AFTER: 4 lifted, inline:
 // CHECK-NEXT:   macro BUMP: 4 lifted, inline:
 // CHECK-NEXT:   macro CALLS: 2 lifted, inline:
-// CHECK-NEXT:   macro FILL: 0 lifted, inline: reads_caller_local 2
+// CHECK-NEXT:   macro FILL: 2 lifted, inline:
 // CHECK-NEXT:   macro INNER: 4 lifted, inline:
 // CHECK-NEXT:   macro ONCE: 2 lifted, inline: control_transfer 2
 // CHECK-NEXT:   macro ONLY_HERE: 4 lifted, inline:
@@ -101,7 +101,7 @@ int main(void) {
 // CHECK-NEXT:   macro TWICE: 2 lifted, inline:
 // CHECK-NEXT:   macro UNUSED: 2 lifted, inline:
 // CHECK-NEXT:   macro WIDEN: 8 lifted, inline:
-// CHECK-NEXT:   macro WRITES: 0 lifted, inline: reads_caller_local 2
+// CHECK-NEXT:   macro WRITES: 2 lifted, inline:
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 4 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
@@ -165,7 +165,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn helper(mut a: i32) -> i32 {
+// CHECK-NEXT: extern "C-unwind" fn helper(a: i32) -> i32 {
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         SHOW__2!(a);
@@ -289,6 +289,17 @@ int main(void) {
 // CHECK-NEXT:         let __v: *mut state = $s;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             (*__v).count = (*__v).count + 1;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! FILL {
+// CHECK-NEXT:     ($p:expr, $n:expr) => {
+// CHECK-NEXT:         let mut i: i32 = 0;
+// CHECK-NEXT:         while i < $n {
+// CHECK-NEXT:             $p[i as usize] = i;
+// CHECK-NEXT:             let __v: i32 = i;
+// CHECK-NEXT:             i = __v + 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -422,6 +433,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! WRITES {
+// CHECK-NEXT:     ($p:expr) => {
+// CHECK-NEXT:         $p = 7;
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn helper([[ARG_0:arg[0-9]+]]: i32) -> i32;
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
@@ -453,18 +470,18 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut local: i32 = 1;
-// CHECK-NEXT:     let mut byte: u8 = 200u8;
+// CHECK-NEXT:     let local: i32 = 1;
+// CHECK-NEXT:     let byte: u8 = 200u8;
 // CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let mut wide: c_long = (1 as c_long) << 33i32;
+// CHECK-NEXT:     let wide: c_long = (1 as c_long) << 33i32;
 // CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     let mut wide: c_long = (8589934592 as c_long);
+// CHECK-NEXT:     let wide: c_long = (8589934592 as c_long);
 // CHECK-NEXT:     let value: i32 = next();
 // CHECK-NEXT:     let mut s: state = state {
 // CHECK-NEXT:         count: 0,
 // CHECK-NEXT:         bits: [0, 0, 0, 0],
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let out: i32 = 7;
+// CHECK-NEXT:     let mut out: i32 = 0;
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         SHOW!(local);
@@ -476,17 +493,6 @@ int main(void) {
 // CHECK-NEXT:         WIDEN__3!(byte);
 // CHECK-NEXT:         TWICE!(next());
 // CHECK-NEXT:         AFTER!(unsafe { calls });
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let moved: i32 = unsafe { calls };
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         AFTER!(moved);
-// CHECK-NEXT:         UNUSED!(local);
-// CHECK-NEXT:         TEMP!(local);
-// CHECK-NEXT:         TEMP!((byte as u32) as i32);
-// CHECK-NEXT:         OUTER!(local, (wide > 0) as i32);
-// CHECK-NEXT:         OUTER!(local + 2, 3i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
@@ -500,8 +506,16 @@ int main(void) {
 // CHECK-NEXT:         TWICE__2!(next());
 // CHECK-NEXT:         AFTER__2!(unsafe { calls });
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     let mut moved: i32 = unsafe { calls };
+// CHECK-NEXT:     let moved: i32 = unsafe { calls };
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         AFTER!(moved);
+// CHECK-NEXT:         UNUSED!(local);
+// CHECK-NEXT:         TEMP!(local);
+// CHECK-NEXT:         TEMP!((byte as u32) as i32);
+// CHECK-NEXT:         OUTER!(local, (wide > 0) as i32);
+// CHECK-NEXT:         OUTER!(local + 2, 3i32);
+// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         AFTER__2!(moved);
@@ -513,9 +527,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     BUMP!(std::ptr::addr_of_mut!(s));
 // CHECK-NEXT:     BUMP!(std::ptr::addr_of_mut!(s));
-// CHECK-NEXT:     for i in 0i32..4i32 {
-// CHECK-NEXT:         s.bits[i as usize] = i;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     FILL!(s.bits, 4i32);
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         while local <= 2 {
@@ -541,6 +553,7 @@ int main(void) {
 // CHECK-NEXT:         ONCE!(local + 5);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     CALLS!(local);
+// CHECK-NEXT:     WRITES!(out);
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]

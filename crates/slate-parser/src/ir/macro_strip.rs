@@ -11,7 +11,8 @@ pub trait MacroStructureVisitor {
     fn leave_expansion(&mut self, _expansion: MacroExpansionId) {}
     fn enter_value_hole(&mut self, _expansion: MacroExpansionId) {}
     fn leave_value_hole(&mut self, _expansion: MacroExpansionId) {}
-    fn place_hole(&mut self, _expansion: MacroExpansionId) {}
+    fn enter_place_hole(&mut self, _expansion: MacroExpansionId, _place: &Place) {}
+    fn leave_place_hole(&mut self, _expansion: MacroExpansionId) {}
     fn binding(&mut self, _binding: BindingId) {}
     fn direct_call(&mut self, _callee: BindingId) {}
 }
@@ -269,9 +270,11 @@ impl<V: MacroStructureVisitor> Walker<'_, V> {
                 place: inner,
                 ..
             } => {
-                self.visitor.place_hole(*expansion);
-                let keep = self.visitor.keep(*expansion);
+                let expansion = *expansion;
+                let keep = self.visitor.keep(expansion);
+                self.visitor.enter_place_hole(expansion, inner);
                 self.place(inner);
+                self.visitor.leave_place_hole(expansion);
                 if !keep {
                     *place = inner.as_ref().clone();
                 }

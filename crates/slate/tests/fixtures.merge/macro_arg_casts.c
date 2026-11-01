@@ -253,10 +253,10 @@ int main(void) {
 // CHECK-NEXT: static mut flips: i32 = unsafe { std::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut lc: u32 = 70000;
-// CHECK-NEXT:     let mut wide: i32 = 70001;
-// CHECK-NEXT:     let mut small: u16 = 3;
-// CHECK-NEXT:     let mut code: u8 = 200u8;
+// CHECK-NEXT:     let lc: u32 = 70000;
+// CHECK-NEXT:     let wide: i32 = 70001;
+// CHECK-NEXT:     let small: u16 = 3;
+// CHECK-NEXT:     let code: u8 = 200u8;
 // CHECK-NEXT:     PUT!(wide, (unsafe { flips }) > 0);
 // CHECK-NEXT:     if (unsafe { flips }) < 0 {
 // CHECK-NEXT:         let val: i32 = wide - 1;

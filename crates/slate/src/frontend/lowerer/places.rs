@@ -1,5 +1,12 @@
 use super::*;
 
+pub(super) fn without_macro_holes(mut place: &ir::Place) -> &ir::Place {
+    while let PlaceKind::MacroArg { place: inner, .. } = &place.kind {
+        place = inner;
+    }
+    place
+}
+
 pub(super) fn volatile_read(address: Expr) -> Expr {
     Expr::Call {
         func: Box::new(Expr::Var("std::ptr::read_volatile".into())),
@@ -13,7 +20,7 @@ impl Tables<'_> {
         &self,
         place: &'p ir::Place,
     ) -> Option<(&'p ir::Place, &'p ir::Value)> {
-        let PlaceKind::Deref(pointer) = &place.kind else {
+        let PlaceKind::Deref(pointer) = &without_macro_holes(place).kind else {
             return None;
         };
         let ValueKind::PointerOffset {
@@ -47,6 +54,7 @@ impl Tables<'_> {
         if self.variably_modified(&place.ty) {
             return false;
         }
+        let place = without_macro_holes(place);
         match &place.kind {
             PlaceKind::Binding(id) => {
                 !self.strings.contains_key(id) && !self.register_globals.contains_key(id)
@@ -65,6 +73,7 @@ impl Tables<'_> {
         if let Some((array, _)) = self.array_subscript(place) {
             return self.place_is_unsafe(array);
         }
+        let place = without_macro_holes(place);
         match &place.kind {
             PlaceKind::Deref(_)
             | PlaceKind::CompoundLiteral { .. }
@@ -82,6 +91,7 @@ impl Tables<'_> {
         if let Some((array, _)) = self.array_subscript(place) {
             return self.place_is_static(array);
         }
+        let place = without_macro_holes(place);
         match &place.kind {
             PlaceKind::Binding(id) => self.statics.contains(id),
             PlaceKind::CompoundLiteral { storage, .. } => {
@@ -97,7 +107,7 @@ impl Tables<'_> {
 
 impl FunctionLowerer<'_, '_> {
     pub(super) fn place_in_packed(&mut self, place: &ir::Place) -> bool {
-        let PlaceKind::Field { base, .. } = &place.kind else {
+        let PlaceKind::Field { base, .. } = &without_macro_holes(place).kind else {
             return false;
         };
         if self.lower_type(&base.ty).is_err() {
@@ -122,7 +132,7 @@ impl FunctionLowerer<'_, '_> {
 
     fn reduced_place(&mut self, place: &ir::Place) -> bool {
         place.access.align.is_some()
-            || match &place.kind {
+            || match &without_macro_holes(place).kind {
                 PlaceKind::Deref(pointer) => self.reduced_pointer(pointer),
                 PlaceKind::Field { base, .. }
                 | PlaceKind::Lane { base, .. }
@@ -142,7 +152,7 @@ impl FunctionLowerer<'_, '_> {
     }
 
     fn rooted_in_deref(place: &ir::Place) -> bool {
-        match &place.kind {
+        match &without_macro_holes(place).kind {
             PlaceKind::Deref(_) | PlaceKind::Index { .. } => true,
             PlaceKind::Field {
                 base, bits: None, ..
@@ -194,8 +204,9 @@ impl FunctionLowerer<'_, '_> {
         let PlaceKind::Lane { base, index } = &place.kind else {
             return None;
         };
-        (matches!(base.kind, PlaceKind::Deref(_) | PlaceKind::Index { .. })
-            || matches!(base.kind, PlaceKind::Binding(id) if self.dispatch_bindings.contains(&id))
+        let bare = without_macro_holes(base);
+        (matches!(bare.kind, PlaceKind::Deref(_) | PlaceKind::Index { .. })
+            || matches!(bare.kind, PlaceKind::Binding(id) if self.dispatch_bindings.contains(&id))
             || self.reduced_alignment_access(base)
             || self.tables.array_subscript(base).is_some()
             || self.place_in_packed(base))
@@ -345,6 +356,14 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_place(&mut self, place: &ir::Place) -> Result<Expr> {
+        if let PlaceKind::MacroArg {
+            expansion,
+            argument,
+            place: inner,
+        } = &place.kind
+        {
+            return self.lower_macro_place_hole(*expansion, *argument, inner);
+        }
         let tables = self.tables;
         if let PlaceKind::Binding(id) = place.kind
             && (tables.stdio.functions.contains_key(&id)

@@ -3,7 +3,8 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 use super::rules::walk::{child_exprs, child_exprs_mut, stmt_exprs_mut};
 use super::shadow::visit_names;
 use crate::backend::rust_ast::{
-    Expr, Ident, ImplItem, Item, Label, MacroParam, Program, Stmt, macro_template_base,
+    Block, Expr, Ident, ImplItem, Item, Label, MacroParam, Program, Stmt, UnaryOp,
+    macro_template_base,
 };
 use crate::function_identity::CallBinding;
 
@@ -19,7 +20,18 @@ pub fn hole(parameter: &str) -> Expr {
     }
 }
 
-fn hole_parameter(expr: &Expr) -> Option<&str> {
+pub fn place_hole(parameter: &str) -> Expr {
+    Expr::Unary {
+        op: UnaryOp::Deref,
+        expr: Box::new(Expr::Call {
+            func: Box::new(Expr::Var(format!("$*{parameter}").into())),
+            args: Vec::new(),
+            binding: CallBinding::Generated,
+        }),
+    }
+}
+
+fn any_hole_name(expr: &Expr) -> Option<&str> {
     let Expr::Call { func, args, .. } = expr else {
         return None;
     };
@@ -31,6 +43,122 @@ fn hole_parameter(expr: &Expr) -> Option<&str> {
     } else {
         None
     }
+}
+
+fn hole_parameter(expr: &Expr) -> Option<&str> {
+    any_hole_name(expr).filter(|name| !name.starts_with('*'))
+}
+
+fn place_pointer_parameter(expr: &Expr) -> Option<&str> {
+    any_hole_name(expr)?.strip_prefix('*')
+}
+
+fn place_hole_parameter(expr: &Expr) -> Option<&str> {
+    let Expr::Unary {
+        op: UnaryOp::Deref,
+        expr,
+    } = expr
+    else {
+        return None;
+    };
+    place_pointer_parameter(expr)
+}
+
+fn place_of_argument(argument: &Expr) -> Expr {
+    match argument {
+        Expr::AddrOf { expr, .. } | Expr::Ref { expr, .. } => (**expr).clone(),
+        other => Expr::Unary {
+            op: UnaryOp::Deref,
+            expr: Box::new(other.clone()),
+        },
+    }
+}
+
+pub fn make_place_parameter(template: &mut [Stmt], parameter: &str, read_is_unsafe: bool) {
+    let read = if read_is_unsafe {
+        Expr::Unsafe(Box::new(Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(place_hole(parameter))),
+        }))
+    } else {
+        place_hole(parameter)
+    };
+    visit_exprs_mut(template, &mut |expr| {
+        if hole_parameter(expr) == Some(parameter) {
+            *expr = read.clone();
+        }
+    });
+}
+
+fn mutated_parameter(place: &Expr) -> Option<&str> {
+    match place {
+        Expr::Field { base, .. } | Expr::TupleField { base, .. } | Expr::Index { base, .. } => {
+            mutated_parameter(base)
+        }
+        other => place_hole_parameter(other),
+    }
+}
+
+fn reads_place_parameter(expr: &Expr, parameter: &str) -> bool {
+    place_pointer_parameter(expr) == Some(parameter)
+        || child_exprs(expr)
+            .into_iter()
+            .any(|child| reads_place_parameter(child, parameter))
+}
+
+fn expr_mutates_parameter(expr: &Expr, parameter: &str) -> bool {
+    let here = match expr {
+        Expr::AddrOf {
+            mutable: true,
+            expr,
+        }
+        | Expr::Ref {
+            mutable: true,
+            expr,
+        }
+        | Expr::ArrayPtr {
+            mutable: true,
+            array: expr,
+        } => mutated_parameter(expr) == Some(parameter),
+        Expr::MethodCall { recv, .. } | Expr::MethodCallGeneric { recv, .. } => {
+            mutated_parameter(recv) == Some(parameter)
+        }
+        Expr::AtomicRef { .. }
+        | Expr::AtomicLoad { .. }
+        | Expr::AtomicStore { .. }
+        | Expr::AtomicFetch { .. }
+        | Expr::AtomicSwap { .. }
+        | Expr::AtomicCompareExchange { .. } => reads_place_parameter(expr, parameter),
+        Expr::Block(block) | Expr::Unsafe(block) => stmts_mutate_parameter(&block.stmts, parameter),
+        _ => false,
+    };
+    here || child_exprs(expr)
+        .into_iter()
+        .any(|child| expr_mutates_parameter(child, parameter))
+}
+
+fn stmts_mutate_parameter(stmts: &[Stmt], parameter: &str) -> bool {
+    stmts.iter().any(|stmt| {
+        if let Stmt::Assign { target, .. } | Stmt::CompoundAssign { target, .. } = stmt
+            && mutated_parameter(target) == Some(parameter)
+        {
+            return true;
+        }
+        let mut stmt = stmt.clone();
+        let mut exprs = Vec::new();
+        stmt_exprs_mut(&mut stmt, &mut exprs);
+        exprs
+            .into_iter()
+            .any(|expr| expr_mutates_parameter(expr, parameter))
+            || stmt
+                .child_bodies_mut()
+                .into_iter()
+                .any(|body| stmts_mutate_parameter(body, parameter))
+    })
+}
+
+pub fn parameter_is_written(template: &[Stmt], parameter: &str) -> bool {
+    stmts_mutate_parameter(template, parameter)
 }
 
 fn visit_exprs_mut(stmts: &mut [Stmt], visit: &mut impl FnMut(&mut Expr)) {
@@ -51,13 +179,33 @@ fn visit_expr_mut(expr: &mut Expr, visit: &mut impl FnMut(&mut Expr)) {
 }
 
 pub fn fill_holes(template: &mut [Stmt], params: &[MacroParam], args: &[Expr]) {
+    let argument = |parameter: &str| {
+        let index = params.iter().position(|param| param.name == parameter)?;
+        args.get(index)
+    };
     visit_exprs_mut(template, &mut |expr| {
-        let value = hole_parameter(expr).and_then(|parameter| {
-            let index = params.iter().position(|param| param.name == parameter)?;
-            args.get(index).cloned()
-        });
+        let value = if let Some(parameter) = place_hole_parameter(expr) {
+            argument(parameter).map(place_of_argument)
+        } else if let Some(parameter) = place_pointer_parameter(expr) {
+            argument(parameter).cloned()
+        } else {
+            hole_parameter(expr).and_then(argument).cloned()
+        };
         if let Some(value) = value {
             *expr = value;
+        }
+    });
+}
+
+pub fn collapse_address_of_deref(stmts: &mut [Stmt]) {
+    visit_exprs_mut(stmts, &mut |expr| {
+        if let Expr::AddrOf { expr: inner, .. } = expr
+            && let Expr::Unary {
+                op: UnaryOp::Deref,
+                expr: pointer,
+            } = &**inner
+        {
+            *expr = (**pointer).clone();
         }
     });
 }
@@ -196,16 +344,64 @@ pub fn normalize_locals(template: &mut [Stmt]) {
     });
 }
 
-pub(super) fn finish_holes(program: &mut Program) {
+fn place_parameter_indices(params: &[MacroParam], body: &mut [Stmt]) -> Vec<usize> {
+    let mut names = HashSet::new();
+    visit_exprs_mut(body, &mut |expr| {
+        if let Some(parameter) = place_pointer_parameter(expr) {
+            names.insert(parameter.to_string());
+        }
+    });
+    params
+        .iter()
+        .enumerate()
+        .filter(|(_, param)| names.contains(&param.name))
+        .map(|(index, _)| index)
+        .collect()
+}
+
+fn finish_expr(expr: &mut Expr) {
+    let finished = if let Some(parameter) = place_hole_parameter(expr) {
+        Some(Expr::Var(format!("${parameter}").into()))
+    } else if let Some(parameter) = place_pointer_parameter(expr) {
+        Some(Expr::AddrOf {
+            mutable: true,
+            expr: Box::new(Expr::Var(format!("${parameter}").into())),
+        })
+    } else {
+        hole_parameter(expr).map(|parameter| Expr::Var(format!("${parameter}").into()))
+    };
+    if let Some(finished) = finished {
+        *expr = finished;
+    }
+}
+
+pub(super) type PlaceParameters = HashMap<String, Vec<usize>>;
+
+pub(super) fn finish_holes(program: &mut Program) -> PlaceParameters {
+    let mut places = HashMap::new();
     for item in &mut program.items {
-        if let Item::MacroRules { body, .. } = item {
-            visit_exprs_mut(body, &mut |expr| {
-                if let Some(parameter) = hole_parameter(expr) {
-                    *expr = Expr::Var(format!("${parameter}").into());
-                }
-            });
+        if let Item::MacroRules { name, params, body } = item {
+            places.insert(name.clone(), place_parameter_indices(params, body));
+            visit_exprs_mut(body, &mut finish_expr);
         }
     }
+    places
+}
+
+pub(super) fn finish_place_arguments(program: &mut Program, places: &PlaceParameters) {
+    each_body(&mut program.items, &mut |body| {
+        visit_exprs_mut(body, &mut |expr| {
+            if let Expr::Macro { name, args } = expr
+                && let Some(indices) = places.get(name)
+            {
+                for &index in indices {
+                    if let Some(argument) = args.get_mut(index) {
+                        *argument = place_of_argument(argument);
+                    }
+                }
+            }
+        });
+    });
 }
 
 fn each_body(items: &mut [Item], visit: &mut impl FnMut(&mut [Stmt])) {

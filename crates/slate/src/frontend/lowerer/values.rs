@@ -109,7 +109,7 @@ fn effect_free_value(value: &ir::Value) -> bool {
 }
 
 fn effect_free_place(place: &ir::Place) -> bool {
-    match &place.kind {
+    match &super::places::without_macro_holes(place).kind {
         PlaceKind::Binding(_) => true,
         PlaceKind::Deref(pointer) => effect_free_value(pointer),
         PlaceKind::Field { base, .. } => effect_free_place(base),
@@ -1071,7 +1071,7 @@ impl FunctionLowerer<'_, '_> {
                 self.narrow_integer(expr, &value.ty)?
             }
             ValueKind::ArrayDecay { place, .. } => {
-                let bytes = match place.kind {
+                let bytes = match super::places::without_macro_holes(place).kind {
                     PlaceKind::Binding(id) => self.tables.strings.get(&id),
                     _ => None,
                 };

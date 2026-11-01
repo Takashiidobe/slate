@@ -1,7 +1,7 @@
 use super::walk::child_exprs;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{Expr, Ident, Stmt, Type};
+use crate::backend::rust_ast::{Expr, Ident, Stmt, Type, macro_template_base};
 
 fn place_root(expr: &Expr) -> Option<Ident> {
     match expr {
@@ -47,7 +47,9 @@ impl Binding<'_> {
             Expr::MethodCall { recv, .. } | Expr::MethodCallGeneric { recv, .. } => {
                 self.roots(recv) && !(matches!(**recv, Expr::Var(_)) && by_value_receiver(self.ty))
             }
-            Expr::Macro { args, .. } => args.iter().any(|arg| self.roots(arg)),
+            Expr::Macro { name, args } => {
+                macro_template_base(name).is_none() && args.iter().any(|arg| self.roots(arg))
+            }
             Expr::AtomicRef { .. }
             | Expr::AtomicLoad { .. }
             | Expr::AtomicStore { .. }

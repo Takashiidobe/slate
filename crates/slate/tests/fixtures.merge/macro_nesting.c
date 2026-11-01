@@ -82,10 +82,10 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_nesting.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_nesting: 29 items, 1 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_nesting: 30 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: macros: 15 function-like, 12 lifted at least once (expansions counted per distinct compile)
-// CHECK-NEXT:   inline no_statement_region: 10
+// CHECK-NEXT: macros: 15 function-like, 13 lifted at least once (expansions counted per distinct compile)
+// CHECK-NEXT:   inline no_statement_region: 6
 // CHECK-NEXT:   inline split_argument: 4
 // CHECK-NEXT:   macro ADD: 2 lifted, inline:
 // CHECK-NEXT:   macro ADD_READS: 2 lifted, inline: no_statement_region 2
@@ -98,7 +98,7 @@ int main(void) {
 // CHECK-NEXT:   macro PUT_SHORT: 12 lifted, inline:
 // CHECK-NEXT:   macro SAME_BODY: 2 lifted, inline:
 // CHECK-NEXT:   macro SEND: 8 lifted, inline: split_argument 2
-// CHECK-NEXT:   macro SEND_CODE: 0 lifted, inline: no_statement_region 4
+// CHECK-NEXT:   macro SEND_CODE: 4 lifted, inline:
 // CHECK-NEXT:   macro SEND_TWO: 0 lifted, inline: split_argument 2
 // CHECK-NEXT:   macro TEMP: 2 lifted, inline: no_statement_region 2
 // CHECK-NEXT:   macro USES_LEAK: 2 lifted, inline:
@@ -221,7 +221,15 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SEND {
+// CHECK-NEXT: macro_rules! SEND_CODE {
+// CHECK-NEXT:     ($c:expr, $tree:expr) => {
+// CHECK-NEXT:         SEND__2!(unsafe { (*$tree.offset($c as isize)).code }, unsafe {
+// CHECK-NEXT:             (*$tree.offset($c as isize)).len
+// CHECK-NEXT:         });
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SEND__2 {
 // CHECK-NEXT:     ($value:expr, $length:expr) => {
 // CHECK-NEXT:         let width: i32 = ($length as u32) as i32;
 // CHECK-NEXT:         if width > 8 {
@@ -247,7 +255,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SEND__2 {
+// CHECK-NEXT: macro_rules! SEND {
 // CHECK-NEXT:     ($value:expr, $length:expr) => {
 // CHECK-NEXT:         let width: i32 = $length;
 // CHECK-NEXT:         if width > 8 {
@@ -325,25 +333,20 @@ int main(void) {
 // CHECK-NEXT:     len: u16,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn direct(mut value: i32) {
+// CHECK-NEXT: fn direct(value: i32) {
 // CHECK-NEXT:     PUT_BYTE__2!(value);
 // CHECK-NEXT:     PUT_SHORT__2!(value + 1);
-// CHECK-NEXT:     SEND__2!(value, value + 5);
+// CHECK-NEXT:     SEND!(value, value + 5);
 // CHECK-NEXT:     ADD!(value);
 // CHECK-NEXT:     SAME_BODY!(value + 1);
 // CHECK-NEXT:     ADD_READS!(value);
 // CHECK-NEXT:     TEMP!(value);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn nested(tree__0: *const code, mut index: i32) {
-// CHECK-NEXT:     SEND!(unsafe { (*tree__0.offset(index as isize)).code }, unsafe {
-// CHECK-NEXT:         (*tree__0.offset(index as isize)).len
-// CHECK-NEXT:     });
-// CHECK-NEXT:     SEND!(
-// CHECK-NEXT:         unsafe { (*tree__0.offset((index + 1) as isize)).code },
-// CHECK-NEXT:         unsafe { (*tree__0.offset((index + 1) as isize)).len }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SEND__2!(index, 9i32);
+// CHECK-NEXT: fn nested(mut tree__0: *const code, index: i32) {
+// CHECK-NEXT:     SEND_CODE!(index, tree__0);
+// CHECK-NEXT:     SEND_CODE!(index + 1, tree__0);
+// CHECK-NEXT:     SEND!(index, 9i32);
 // CHECK-NEXT:     let width: i32 = 3i32;
 // CHECK-NEXT:     if width > 8 {
 // CHECK-NEXT:         let val: i32 = index + 2i32;
