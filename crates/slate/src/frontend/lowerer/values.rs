@@ -179,6 +179,9 @@ pub(super) fn zeroed() -> Expr {
 
 impl FunctionLowerer<'_, '_> {
     fn lower_function_address(&mut self, value: &ir::Value, id: BindingId) -> Result<Expr> {
+        if self.tables.stdio.functions.contains(&id) {
+            self.dependencies.stdio_layout_used = true;
+        }
         if self.tables.intrinsics.contains_key(&id) {
             return Err(unsupported_value(value));
         }
@@ -436,6 +439,9 @@ impl FunctionLowerer<'_, '_> {
     }
 
     fn lower_value_node(&mut self, value: &ir::Value) -> Result<Expr> {
+        if let Some(stream) = self.lower_stdio_stream(value) {
+            return Ok(stream);
+        }
         if let Some(lowered) = self.lower_complex_value(value)? {
             return Ok(lowered);
         }

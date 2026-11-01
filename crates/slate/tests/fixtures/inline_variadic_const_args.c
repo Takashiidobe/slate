@@ -11,7 +11,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{} {}", 7i32, 8i32);
-// CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), 42i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), 42i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

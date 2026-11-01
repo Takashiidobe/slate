@@ -31,14 +31,13 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn strncmp([[ARG_0]]: *const i8, [[ARG_1:arg[0-9]+]]: *const i8, [[ARG_2:arg[0-9]+]]: u64) -> i32;
+// CHECK-NEXT:     fn strncmp([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: *const i8, [[ARG_2:arg[0-9]+]]: u64) -> i32;
 // CHECK-NEXT:     fn strcspn([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> u64;
 // CHECK-NEXT:     fn strspn([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> u64;
 // CHECK-NEXT:     fn strnlen([[ARG_0]]: *const i8, [[ARG_1]]: u64) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn bounded_cmp(a: *const i8, b: *const i8, n: u64) -> i32 {
 // CHECK-NEXT:     unsafe { strncmp(a, b, n) }
@@ -59,7 +58,7 @@ int main(void) {
 // CHECK-NEXT:     let mut reject: [i8; 3] = [99, 100, 0];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %d %d %zu %zu %zu %zu %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             (bounded_cmp(abc.as_ptr() as *const i8, abd.as_ptr() as *const i8, 2u64)
 // CHECK-NEXT:                 == 0) as i32,

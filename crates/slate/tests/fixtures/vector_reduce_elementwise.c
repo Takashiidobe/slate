@@ -44,12 +44,9 @@ int main(void) {
 // CHECK-NEXT: #![feature(portable_simd)]
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.vector.reduce.add.v4i32"]
-// CHECK-NEXT:     fn __slate_intrinsic_1d26b5d36a7eb498([[ARG_0]]: std::simd::Simd<i32, 4>) -> i32;
+// CHECK-NEXT:     fn __slate_intrinsic_1d26b5d36a7eb498([[ARG_0:arg[0-9]+]]: std::simd::Simd<i32, 4>) -> i32;
 // CHECK-NEXT:     #[link_name = "llvm.vector.reduce.fmax.v4f32"]
 // CHECK-NEXT:     fn __slate_intrinsic_26093aef5960597([[ARG_0]]: std::simd::Simd<f32, 4>) -> f32;
 // CHECK-NEXT:     #[link_name = "llvm.vector.reduce.xor.v4i32"]
@@ -97,7 +94,7 @@ int main(void) {
 // CHECK-NEXT:     fn __slate_intrinsic_f05269fefaa055b0([[ARG_0]]: std::simd::Simd<u8, 16>) -> u8;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: std::simd::Simd<f64, 2> = unsafe { std::mem::zeroed() };
@@ -128,7 +125,7 @@ int main(void) {
 // CHECK-NEXT:         __slate_intrinsic_4e03cac4e2787ee5(i) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %u %u\n".as_ptr(),
 // CHECK-NEXT:             __slate_intrinsic_e38776902fc0d037(i),
 // CHECK-NEXT:             __slate_intrinsic_5726e58fbf88b603(u),
@@ -138,7 +135,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u\n".as_ptr(),
 // CHECK-NEXT:             __slate_intrinsic_2784696dc045b6b0(u),
 // CHECK-NEXT:             (__slate_intrinsic_f05269fefaa055b0(b) as u32) as i32,
@@ -147,7 +144,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld %lld\n".as_ptr(),
 // CHECK-NEXT:             __slate_intrinsic_b914587e1d9172a0(l),
 // CHECK-NEXT:             __slate_intrinsic_8b4a63d8549d5fe9(l),
@@ -156,7 +153,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%.2f %.2f\n".as_ptr(),
 // CHECK-NEXT:             __slate_intrinsic_26093aef5960597(f) as f64,
 // CHECK-NEXT:             __slate_intrinsic_eb3fade2525a27fc(d),
@@ -165,7 +162,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%.2f %.2f\n".as_ptr(),
 // CHECK-NEXT:             __slate_intrinsic_c218738e4a75ae17(f) as f64,
 // CHECK-NEXT:             __slate_intrinsic_bd507a298a8afc73(d),
@@ -197,7 +194,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {} {} {}", imax[0], imax[1], imax[2], imax[3]);
 // CHECK-NEXT:     println!("{} {} {} {}", imin[0], imin[1], imin[2], imin[3]);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%.2f %.2f %.2f %.2f\n".as_ptr(),
 // CHECK-NEXT:             fa[0] as f64,
 // CHECK-NEXT:             fa[1] as f64,
@@ -207,11 +204,11 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%.2f %.2f\n".as_ptr(), dmax[0], dmax[1]) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%.2f %.2f\n".as_ptr(), dmax[0], dmax[1]) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %d %.2f\n".as_ptr(),
 // CHECK-NEXT:             (-5i32).wrapping_abs(),
 // CHECK-NEXT:             __slate_intrinsic_ebb2f05c022cc220(3i32, 9i32),

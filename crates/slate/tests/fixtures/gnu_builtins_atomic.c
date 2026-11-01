@@ -66,9 +66,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_builtin_atomic() -> i32 {
 // CHECK-NEXT:     let mut value: i32 = 0;
 // CHECK-NEXT:     let mut expected: i32 = 20;

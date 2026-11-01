@@ -153,7 +153,6 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn omp_get_thread_num() -> i32;
 // CHECK-NEXT:     fn omp_get_num_threads() -> i32;
 // CHECK-NEXT:     fn omp_get_level() -> i32;

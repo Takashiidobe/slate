@@ -40,7 +40,6 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn _setjmp([[ARG_0:arg[0-9]+]]: *mut __jmp_buf_tag) -> i32;
 // CHECK-NEXT:     fn longjmp([[ARG_0]]: *mut __jmp_buf_tag, [[ARG_1:arg[0-9]+]]: i32);
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn malloc([[ARG_0]]: u64) -> *mut ();
 // CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT: }

@@ -252,7 +252,6 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn exp([[ARG_0:arg[0-9]+]]: f64) -> f64;
 // CHECK-NEXT:     fn canonicalizel([[ARG_0]]: *mut LongDouble, [[ARG_1:arg[0-9]+]]: *const LongDouble) -> i32;
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn abort();
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -393,7 +392,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
@@ -541,7 +540,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"i8=%d u8=%u i16=%d u16=%u i32=%d u32=%u i64=%lld u64=%llu\n".as_ptr(),
 // CHECK-NEXT:             i8 as i32,
 // CHECK-NEXT:             (u8 as u32) as i32,
@@ -571,7 +570,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"i128=%lld u128_hi=%llu u128_lo=%llu\n".as_ptr(),
 // CHECK-NEXT:             i128 as i64,
 // CHECK-NEXT:             (u128 >> 64i32) as u64,
@@ -664,7 +663,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"bitint_b101=%lld bitint_ub150=%llu bitint_b256_lo=%lld bitint_ub300_lo=%llu\n"
 // CHECK-NEXT:                 .as_ptr(),
 // CHECK-NEXT:             b101.to_i128() as i64,
@@ -899,7 +898,7 @@ int main(void) {
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"lrint=%ld llrint=%lld lround=%ld llround=%lld\n".as_ptr(),
 // CHECK-NEXT:             __slate_lrintl__ri64_f80(
 // CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(ten))

@@ -118,12 +118,12 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn print_indices() {
 // CHECK-NEXT:     for k in 0..4u64 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"%lu ".as_ptr(), k) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%lu ".as_ptr(), k) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for j in 2u32..5u32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"%u ".as_ptr(), j) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%u ".as_ptr(), j) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");

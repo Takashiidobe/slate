@@ -21,10 +21,6 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-std=gnu23" }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let qualified: i32 = 9;
 // CHECK-NEXT:     let copy: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(qualified)) };

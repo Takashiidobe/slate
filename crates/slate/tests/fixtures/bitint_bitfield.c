@@ -83,12 +83,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(8))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct S156 {
@@ -146,6 +140,9 @@ int main(void) {
 // CHECK-NEXT:     pub struct __SlateBits3U0 {
 // CHECK-NEXT:         pub bytes: [u8; 9],
 // CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: impl __slate_bits::__SlateBits0U0 {
 // CHECK-NEXT:     const fn __get_a(&self) -> bitint::BUint<156, 3, 24, bitint::A8> {
@@ -286,7 +283,7 @@ int main(void) {
 // CHECK-NEXT: fn dump(m: &mut Mixed) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %lld %d %llu %d\n".as_ptr(),
 // CHECK-NEXT:             (*(m as *mut Mixed)).__slate_bits_0.__get_tag(),
 // CHECK-NEXT:             (*(m as *mut Mixed)).__slate_bits_0.__get_mid().to_i128() as i64,
@@ -298,7 +295,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%llu\n".as_ptr(),
 // CHECK-NEXT:             (*(m as *mut Mixed))
 // CHECK-NEXT:                 .__slate_bits_0
@@ -390,7 +387,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..5i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d %d %d %llu\n".as_ptr(),
 // CHECK-NEXT:                 r.0[i as usize].__slate_bits_0.__get_a().to_i128() as i32,
 // CHECK-NEXT:                 r.0[i as usize].__slate_bits_0.__get_c().to_i128() as i32,
@@ -482,7 +479,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %llx\n".as_ptr(),
 // CHECK-NEXT:             n.__slate_bits_0.__get_x().to_i128() as i32,
 // CHECK-NEXT:             n.__slate_bits_0.__get_y().to_u128() as u64,
@@ -504,7 +501,7 @@ int main(void) {
 // CHECK-NEXT:     n.__slate_bits_0.__set_y([[V_9]]);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %llx %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             n.__slate_bits_0.__get_x().to_i128() as i32,
 // CHECK-NEXT:             n.__slate_bits_0.__get_y().to_u128() as u64,

@@ -118,7 +118,6 @@ int main(void) {
 // CHECK-NEXT:     fn j0f([[ARG_0]]: f32) -> f32;
 // CHECK-NEXT:     fn y0f([[ARG_0]]: f32) -> f32;
 // CHECK-NEXT:     fn scalbf([[ARG_0]]: f32, [[ARG_1]]: f32) -> f32;
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;

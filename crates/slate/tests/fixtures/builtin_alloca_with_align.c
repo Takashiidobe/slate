@@ -151,15 +151,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: i32, [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn memset([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: i32, [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     #[link_name = "alloca"]
 // CHECK-NEXT:     fn __builtin_alloca([[ARG_0]]: u64) -> *mut ();
 // CHECK-NEXT:     fn __builtin_alloca_with_align([[ARG_0]]: u64, [[ARG_1]]: u64) -> *mut ();
 // CHECK-NEXT:     fn __builtin_alloca_with_align_uninitialized([[ARG_0]]: u64, [[ARG_1]]: u64) -> *mut ();
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn aligned_to(p: *mut (), bytes: u64) -> i32 {
 // CHECK-NEXT:     ((p as u64) & bytes.wrapping_sub(1) == 0) as i32
@@ -231,7 +230,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{} {}", with_align(5i32), with_align(33i32));
 // CHECK-NEXT:     println!("{}", with_align_uninitialized(10i32));
-// CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), large_with_align()) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), large_with_align()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

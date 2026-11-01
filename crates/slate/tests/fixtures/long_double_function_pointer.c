@@ -28,7 +28,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     #[link_name = "cbrtl"]
 // CHECK-NEXT:     fn __slate_ldfp__cbrtl();
 // CHECK-NEXT:     #[link_name = "fabsl"]
@@ -127,7 +126,7 @@ int main(void) {
 // CHECK-NEXT:     fn __slate_printf__ri32_pi8_i32_f80(_0: *const i8, _1: i32, _2: LongDouble) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]

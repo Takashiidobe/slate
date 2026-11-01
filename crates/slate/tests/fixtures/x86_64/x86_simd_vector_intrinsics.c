@@ -46,13 +46,10 @@ int main(void) {
 // CHECK-NEXT: #![feature(portable_simd)]
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.x86.ssse3.pshuf.b.128"]
 // CHECK-NEXT:     fn __slate_intrinsic_2d3482082e0b2cf1(
-// CHECK-NEXT:         [[ARG_0]]: std::simd::Simd<u8, 16>,
+// CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: std::simd::Simd<u8, 16>,
 // CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: std::simd::Simd<u8, 16>,
 // CHECK-NEXT:     ) -> std::simd::Simd<u8, 16>;
 // CHECK-NEXT: }

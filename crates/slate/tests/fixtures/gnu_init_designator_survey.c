@@ -52,12 +52,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union Castable {
@@ -84,6 +78,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: static mut sized: __SlateStorage_sized = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: __SlateStorage_sized = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].n = 3i32;
@@ -112,7 +109,7 @@ int main(void) {
 // CHECK-NEXT:     let f: u32 = 1;
 // CHECK-NEXT:     println!("{} {} {} {}", range_values.0[3], old_index[1], p.x + p.y, unsafe { c.i });
 // CHECK-NEXT:     println!("{}", (f as u32) as i32);
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 4u64, 0u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu\n".as_ptr(), 4u64, 0u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}", unsafe { * (std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(sized)
@@ -121,7 +118,7 @@ int main(void) {
 // CHECK-NEXT:         as * mut i32).add(1) }, unsafe { * (std::ptr::addr_of_mut!((*
 // CHECK-NEXT:         (std::ptr::addr_of_mut!(sized) as * mut Sized)).data) as * mut i32).add(2) }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), 4u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), 4u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

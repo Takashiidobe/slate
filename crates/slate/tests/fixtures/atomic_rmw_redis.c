@@ -148,10 +148,9 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut (),
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT:     fn pthread_join([[ARG_0]]: u64, [[ARG_1]]: *mut *mut ()) -> i32;
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -319,7 +318,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %zu %llu %d\n".as_ptr(),
 // CHECK-NEXT:             std::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                     std::ptr::addr_of!(set.in_use) as *mut i32,
@@ -340,7 +339,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%lld ".as_ptr(),
 // CHECK-NEXT:                 std::sync::atomic::AtomicI64::from_ptr(
 // CHECK-NEXT:                         std::ptr::addr_of!(entries.0[i as usize].used_memory) as *mut i64,
@@ -375,7 +374,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu\n".as_ptr(),
 // CHECK-NEXT:             old,
 // CHECK-NEXT:             std::sync::atomic::AtomicU64::from_ptr(
@@ -404,7 +403,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_14]].wrapping_sub([[T_13]])
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld %lld\n".as_ptr(), added, subbed) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld %lld\n".as_ptr(), added, subbed) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut previous: u32 = 0;
 // CHECK-NEXT:     previous = unsafe {
@@ -462,7 +461,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u %u %u %u %u %u %u\n".as_ptr(),
 // CHECK-NEXT:             previous,
 // CHECK-NEXT:             orred,
@@ -579,7 +578,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%.3f %.3f %.3f\n".as_ptr(),
 // CHECK-NEXT:             f64::from_bits(
 // CHECK-NEXT:                 std::sync::atomic::AtomicU64::from_ptr(
@@ -682,7 +681,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %d %d %llu %llu\n".as_ptr(),
 // CHECK-NEXT:             first,
 // CHECK-NEXT:             second,

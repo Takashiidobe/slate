@@ -7,12 +7,10 @@ int main(void) {
 }
 // @check-fn-end
 
-// X86_64-UNKNOWN-LINUX-GNU: {{^}}struct _IO_FILE {
-
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { fputs(c"bye\n".as_ptr(), stderr) };
+// CHECK-NEXT:     unsafe { slate_support::fputs(c"bye\n".as_ptr(), slate_support::stderr()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

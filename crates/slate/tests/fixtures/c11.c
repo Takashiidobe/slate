@@ -303,12 +303,8 @@ int main(void) {
 // CHECK-NEXT:     fn creal([[ARG_0]]: num_complex::Complex<f64>) -> f64;
 // CHECK-NEXT:     fn __errno_location() -> *mut i32;
 // CHECK-NEXT:     fn remove([[ARG_0]]: *const i8) -> i32;
-// CHECK-NEXT:     fn fclose([[ARG_0]]: *mut _IO_FILE) -> i32;
-// CHECK-NEXT:     fn fopen([[ARG_0]]: *const i8, [[ARG_1:arg[0-9]+]]: *const i8) -> *mut _IO_FILE;
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn putchar([[ARG_0]]: i32) -> i32;
 // CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT:     fn aligned_alloc([[ARG_0]]: u64, [[ARG_1]]: u64) -> *mut ();
+// CHECK-NEXT:     fn aligned_alloc([[ARG_0]]: u64, [[ARG_1:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     fn at_quick_exit([[ARG_0]]: Option<unsafe extern "C-unwind" fn()>) -> i32;
 // CHECK-NEXT:     fn quick_exit([[ARG_0]]: i32);
 // CHECK-NEXT:     fn call_once(
@@ -442,7 +438,7 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -541,51 +537,6 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_FILE {
-// CHECK-NEXT:     _flags: i32,
-// CHECK-NEXT:     _IO_read_ptr: *mut i8,
-// CHECK-NEXT:     _IO_read_end: *mut i8,
-// CHECK-NEXT:     _IO_read_base: *mut i8,
-// CHECK-NEXT:     _IO_write_base: *mut i8,
-// CHECK-NEXT:     _IO_write_ptr: *mut i8,
-// CHECK-NEXT:     _IO_write_end: *mut i8,
-// CHECK-NEXT:     _IO_buf_base: *mut i8,
-// CHECK-NEXT:     _IO_buf_end: *mut i8,
-// CHECK-NEXT:     _IO_save_base: *mut i8,
-// CHECK-NEXT:     _IO_backup_base: *mut i8,
-// CHECK-NEXT:     _IO_save_end: *mut i8,
-// CHECK-NEXT:     _markers: *mut _IO_marker,
-// CHECK-NEXT:     _chain: *mut _IO_FILE,
-// CHECK-NEXT:     _fileno: i32,
-// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits16U0,
-// CHECK-NEXT:     _short_backupbuf: [i8; 1],
-// CHECK-NEXT:     _old_offset: i64,
-// CHECK-NEXT:     _cur_column: u16,
-// CHECK-NEXT:     _vtable_offset: i8,
-// CHECK-NEXT:     _shortbuf: [i8; 1],
-// CHECK-NEXT:     _lock: *mut (),
-// CHECK-NEXT:     _offset: i64,
-// CHECK-NEXT:     _codecvt: *mut _IO_codecvt,
-// CHECK-NEXT:     _wide_data: *mut _IO_wide_data,
-// CHECK-NEXT:     _freeres_list: *mut _IO_FILE,
-// CHECK-NEXT:     _freeres_buf: *mut (),
-// CHECK-NEXT:     _prevchain: *mut *mut _IO_FILE,
-// CHECK-NEXT:     _mode: i32,
-// CHECK-NEXT:     _unused3: i32,
-// CHECK-NEXT:     _total_written: u64,
-// CHECK-NEXT:     _unused2: [i8; 8],
-// CHECK-NEXT: }
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_marker {}
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_codecvt {}
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_wide_data {}
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_thread_shared_types_h_112 {
 // CHECK-NEXT:     __data: i32,
 // CHECK-NEXT: }
@@ -639,23 +590,6 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: #[repr(C, align(64))]
 // CHECK-NEXT: struct __SlateAlign64<T>(T);
-// CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         [u8;3],
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
-// CHECK-NEXT:     pub struct __SlateBits16U0 {
-// CHECK-NEXT:         #[bits(24)]
-// CHECK-NEXT:         pub _flags2: i32,
-// CHECK-NEXT:     }
-// CHECK-NEXT: }
 // CHECK-NEXT: static mut c11_aligned_buffer: __SlateAlign64<[u8; 64]> = __SlateAlign64(unsafe {
 // CHECK-NEXT:     std::mem::zeroed()
 // CHECK-NEXT: });
@@ -717,8 +651,8 @@ int main(void) {
 // CHECK-NEXT: fn c11_never_return(status: i32) {
 // CHECK-NEXT:     unsafe { quick_exit(status) };
 // CHECK-NEXT: }
-// CHECK-NEXT: fn c11_open_exclusive(path: *const i8) -> *mut _IO_FILE {
-// CHECK-NEXT:     unsafe { fopen(path, c"wx".as_ptr()) }
+// CHECK-NEXT: fn c11_open_exclusive(path: *const i8) -> *mut slate_support::FILE {
+// CHECK-NEXT:     unsafe { slate_support::fopen(path, c"wx".as_ptr()) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: C11Temporary = unsafe { std::mem::zeroed() };
@@ -910,18 +844,18 @@ int main(void) {
 // CHECK-NEXT:     unsafe { free(aligned_memory) };
 // CHECK-NEXT:     quick_total = ((unsafe { at_quick_exit(Some(c11_quick_handler)) }) == 0) as i32;
 // CHECK-NEXT:     unsafe { remove(c"slate-c11-exclusive.tmp".as_ptr()) };
-// CHECK-NEXT:     let exclusive_first: *mut _IO_FILE = c11_open_exclusive(
+// CHECK-NEXT:     let exclusive_first: *mut slate_support::FILE = c11_open_exclusive(
 // CHECK-NEXT:         c"slate-c11-exclusive.tmp".as_ptr(),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let exclusive_second: *mut _IO_FILE = c11_open_exclusive(
+// CHECK-NEXT:     let exclusive_second: *mut slate_support::FILE = c11_open_exclusive(
 // CHECK-NEXT:         c"slate-c11-exclusive.tmp".as_ptr(),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     exclusive_total = (!exclusive_first.is_null() && exclusive_second.is_null()) as i32;
 // CHECK-NEXT:     if !exclusive_first.is_null() {
-// CHECK-NEXT:         unsafe { fclose(exclusive_first) };
+// CHECK-NEXT:         unsafe { slate_support::fclose(exclusive_first) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if !exclusive_second.is_null() {
-// CHECK-NEXT:         unsafe { fclose(exclusive_second) };
+// CHECK-NEXT:         unsafe { slate_support::fclose(exclusive_second) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { remove(c"slate-c11-exclusive.tmp".as_ptr()) };
 // CHECK-NEXT:     timespec_total = ((unsafe {
@@ -950,7 +884,7 @@ int main(void) {
 // CHECK-NEXT:         timespec_total, complex_total, limits_total, 0i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { putchar(10i32) };
+// CHECK-NEXT:     unsafe { slate_support::putchar(10i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

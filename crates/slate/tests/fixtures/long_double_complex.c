@@ -148,15 +148,16 @@ int main(void) {
 // CHECK-NEXT:     fn cprojl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
 // CHECK-NEXT:     fn cimagl([[ARG_0]]: num_complex::Complex<f128>) -> f128;
 // CHECK-NEXT:     fn creall([[ARG_0]]: num_complex::Complex<f128>) -> f128;
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const u8, ...) -> i32;
 // CHECK-NEXT:     fn abort();
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn print_lc(name: *const u8, z: num_complex::Complex<f128>) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%s=%Lax%Lai\n".as_ptr(), name, creall(z), cimagl(z)) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%s=%Lax%Lai\n".as_ptr(), name, creall(z), cimagl(z))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn mix_complex(
@@ -205,7 +206,9 @@ int main(void) {
 // CHECK-NEXT:     a.im = 8f128;
 // CHECK-NEXT:     print_lc(c"real_imag_assign".as_ptr(), a);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"real_field=%La imag_field=%La\n".as_ptr(), a.re, a.im) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"real_field=%La imag_field=%La\n".as_ptr(), a.re, a.im)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn check_casts() {
@@ -287,10 +290,10 @@ int main(void) {
 // CHECK-NEXT:         im: 4f128,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"cabs=%La\n".as_ptr(), cabsl(z)) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"cabs=%La\n".as_ptr(), cabsl(z)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"carg=%La\n".as_ptr(), cargl(z)) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"carg=%La\n".as_ptr(), cargl(z)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     print_lc(c"conj".as_ptr(), unsafe { conjl(z) });
 // CHECK-NEXT:     print_lc(c"cproj".as_ptr(), unsafe { cprojl(z) });
@@ -437,7 +440,9 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"creal=%La cimag=%La\n".as_ptr(), creall(z), cimagl(z)) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"creal=%La cimag=%La\n".as_ptr(), creall(z), cimagl(z))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

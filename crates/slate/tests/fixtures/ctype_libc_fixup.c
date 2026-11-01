@@ -27,7 +27,6 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn tolower([[ARG_0:arg[0-9]+]]: i32) -> i32;
 // CHECK-NEXT:     fn toupper([[ARG_0]]: i32) -> i32;
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn next_lower() -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe { c };

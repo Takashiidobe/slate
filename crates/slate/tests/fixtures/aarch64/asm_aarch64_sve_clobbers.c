@@ -52,10 +52,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const u8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sve")]
 // CHECK-NEXT: unsafe fn add_arrays(
@@ -116,11 +113,11 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for index in 0i64..11i64 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"%ld ".as_ptr(), out[index as usize]) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%ld ".as_ptr(), out[index as usize]) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("\n{}", unsafe { lanes_positive() });
-// CHECK-NEXT:     unsafe { printf(c"%g\n".as_ptr(), keep_live(1.5f64)) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%g\n".as_ptr(), keep_live(1.5f64)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

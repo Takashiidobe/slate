@@ -115,8 +115,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: i32, [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn memset([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: i32, [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     fn __builtin_cpu_supports([[ARG_0]]: *const i8) -> bool;
 // CHECK-NEXT:     fn __builtin_cpu_init();
 // CHECK-NEXT: }
@@ -128,7 +127,7 @@ int main(void) {
 // CHECK-NEXT:     ) -> std::simd::Simd<u8, 32>;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -610,7 +609,13 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     bits = [[V_0]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"bits %lld %lld\n".as_ptr(), bits, popcount_scalar(&words.0)) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"bits %lld %lld\n".as_ptr(),
+// CHECK-NEXT:             bits,
+// CHECK-NEXT:             popcount_scalar(&words.0),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut a: __SlateAlign16<[i32; 45]> = __SlateAlign16([0i32; 45]);
 // CHECK-NEXT:     let mut b: __SlateAlign16<[i32; 45]> = __SlateAlign16([0i32; 45]);
@@ -637,7 +642,9 @@ int main(void) {
 // CHECK-NEXT:         sum = sum * 31 + (out.0[i as usize] as i64);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"add %lld %d %d\n".as_ptr(), sum, out.0[0], out.0[44]) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"add %lld %d %d\n".as_ptr(), sum, out.0[0], out.0[44])
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut bytes: __SlateAlign16<[u8; 32]> = __SlateAlign16([0u8; 32]);
 // CHECK-NEXT:     for i in 0i32..32i32 {
@@ -651,7 +658,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..32i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d%c".as_ptr(),
 // CHECK-NEXT:                 (bytes.0[i as usize] as u32) as i32,
 // CHECK-NEXT:                 if i == 31 { 10i32 } else { 32i32 },

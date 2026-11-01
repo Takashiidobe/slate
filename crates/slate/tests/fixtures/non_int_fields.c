@@ -49,12 +49,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Mixed {
@@ -71,6 +65,9 @@ int main(void) {
 // CHECK-NEXT:     ratio: f32,
 // CHECK-NEXT:     total: f64,
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: fn struct_values() -> i32 {
 // CHECK-NEXT:     let mut m: Mixed = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     m.tag = 65;
@@ -78,16 +75,16 @@ int main(void) {
 // CHECK-NEXT:     m.ratio = 1.5f32;
 // CHECK-NEXT:     m.total = 2.25f64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%c\n".as_ptr(), m.tag as i32) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%c\n".as_ptr(), m.tag as i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), (m.code as u32) as i32) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), (m.code as u32) as i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%f\n".as_ptr(), m.ratio as f64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%f\n".as_ptr(), m.ratio as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%f\n".as_ptr(), m.total) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%f\n".as_ptr(), m.total) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     (m.code as u32) as i32
 // CHECK-NEXT: }
@@ -107,7 +104,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", struct_values());
-// CHECK-NEXT:     unsafe { printf(c"%f\n".as_ptr(), union_double(4.5f64)) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%f\n".as_ptr(), union_double(4.5f64)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", union_char(90i8));
 // CHECK-NEXT:     0

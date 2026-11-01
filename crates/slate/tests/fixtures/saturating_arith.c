@@ -45,10 +45,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let add_i: i32 = 2147483642i32.saturating_add(10i32);
@@ -59,7 +56,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", sub_s as i32);
 // CHECK-NEXT:     let sub_u: u32 = 5u32.saturating_sub(10u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), sub_u) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), sub_u) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let u128a: u128 = (0 as u128).wrapping_sub(1 as u128);
 // CHECK-NEXT:     let add_u128: u128 = u128a.saturating_add(5 as u128);

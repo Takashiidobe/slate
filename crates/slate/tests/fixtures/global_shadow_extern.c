@@ -43,10 +43,7 @@ int late = 99;
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut total: i32 = 10;
 // CHECK-NEXT: static mut scale: i64 = unsafe { std::mem::zeroed() };
@@ -89,7 +86,7 @@ int late = 99;
 // CHECK-NEXT:     record(unsafe { std::ptr::addr_of_mut!(tally) }, unsafe { scale });
 // CHECK-NEXT:     record(unsafe { std::ptr::addr_of_mut!(tally) }, (unsafe { scale }) * 2);
 // CHECK-NEXT:     println!("{} {} {}", before, unsafe { total }, shadow_param(unsafe { total }));
-// CHECK-NEXT:     unsafe { printf(c"%d %ld\n".as_ptr(), tally.hits, tally.weight) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%d %ld\n".as_ptr(), tally.hits, tally.weight) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!("late {}", unsafe { late });
 // CHECK-NEXT:     0

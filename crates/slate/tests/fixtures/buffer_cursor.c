@@ -31,7 +31,7 @@ int main(void) {
 // CHECK-NEXT:     d.ptr = unsafe { (values.0.as_mut_ptr() as *mut i32).add(3) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %ld\n".as_ptr(),
 // CHECK-NEXT:             *c.ptr + *d.ptr,
 // CHECK-NEXT:             d.ptr.offset_from(c.ptr as *mut i32) as i64,

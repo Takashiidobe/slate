@@ -40,10 +40,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(f16)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn chain(a: f16, b: f16, c: f16) -> f16 {
 // CHECK-NEXT:     ((a as f32) * (b as f32) + (c as f32)) as f16
@@ -134,7 +131,7 @@ int main(void) {
 // CHECK-NEXT:     let c: f16 = (((-1i32 as f16) as f32) - (0.0019531f16 as f32)) as f16;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%a %a %a %a %d %a\n".as_ptr(),
 // CHECK-NEXT:             chain(a, a, c) as f64,
 // CHECK-NEXT:             stored(a, a, c) as f64,
@@ -203,7 +200,7 @@ int main(void) {
 // CHECK-NEXT:     let q: num_complex::Complex<f16> = cfma(x, x, z);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%a %a %a %a\n".as_ptr(),
 // CHECK-NEXT:             p.re as f64,
 // CHECK-NEXT:             p.im as f64,

@@ -42,8 +42,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(link_llvm_intrinsics)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn __builtin_expect([[ARG_0]]: i64, [[ARG_1:arg[0-9]+]]: i64) -> i64;
+// CHECK-NEXT:     fn __builtin_expect([[ARG_0:arg[0-9]+]]: i64, [[ARG_1:arg[0-9]+]]: i64) -> i64;
 // CHECK-NEXT:     fn __builtin_assume([[ARG_0]]: bool);
 // CHECK-NEXT:     fn __builtin_unreachable();
 // CHECK-NEXT: }

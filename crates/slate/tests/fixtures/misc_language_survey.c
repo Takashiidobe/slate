@@ -31,10 +31,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn scale(n: i32, arr: *mut i32) {
 // CHECK-NEXT:     for i in 0..n {
@@ -54,10 +51,10 @@ int main(void) {
 // CHECK-NEXT:     let escape_e: i8 = 27;
 // CHECK-NEXT:     let escape_unknown: i8 = 37;
 // CHECK-NEXT:     println!("{} {} {}", values[0], values[1], values[2]);
-// CHECK-NEXT:     unsafe { printf(c"%f\n".as_ptr(), separated) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%f\n".as_ptr(), separated) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{} {}", escape_e as i32, escape_unknown as i32);
-// CHECK-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), 1u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), 1u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", add(3i32, 4i32));
 // CHECK-NEXT:     0

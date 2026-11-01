@@ -32,12 +32,11 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn calloc([[ARG_0]]: u64, [[ARG_1:arg[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn calloc([[ARG_0:arg[0-9]+]]: u64, [[ARG_1:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -81,7 +80,7 @@ int main(void) {
 // CHECK-NEXT:     let tail: *mut i32 = unsafe { std::ptr::addr_of_mut!((* t).words) as *mut i32 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld %lld %d %d %d\n".as_ptr(),
 // CHECK-NEXT:             std::ptr::addr_of!((* t).v).read_unaligned()[0],
 // CHECK-NEXT:             std::ptr::addr_of!((* t).v).read_unaligned()[1],

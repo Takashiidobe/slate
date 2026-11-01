@@ -16,10 +16,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let a: i32 = 5;
@@ -27,16 +24,18 @@ int main(void) {
 // CHECK-NEXT:     let u: u32 = 5;
 // CHECK-NEXT:     let hex: u32 = 255;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%.3d %.3d\n".as_ptr(), a, neg) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%.3d %.3d\n".as_ptr(), a, neg) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%8.3d|%-8.3d|%+.3d\n".as_ptr(), a, neg, a) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%8.3d|%-8.3d|%+.3d\n".as_ptr(), a, neg, a) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%08.3d\n".as_ptr(), neg) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%08.3d\n".as_ptr(), neg) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%.3u %.4x %.4X %.4o\n".as_ptr(), u, hex, hex, hex) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%.3u %.4x %.4X %.4o\n".as_ptr(), u, hex, hex, hex)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

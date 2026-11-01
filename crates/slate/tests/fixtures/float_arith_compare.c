@@ -49,14 +49,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: fn zero() -> f64 {
 // CHECK-NEXT:     0.0f64
 // CHECK-NEXT: }
@@ -78,14 +75,19 @@ int main(void) {
 // CHECK-NEXT:         0.0f64 != 0.0f64 { 1i32 } else { 0i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%g %g %d\n".as_ptr(), inf, -inf, (inf - inf == inf - inf) as i32)
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%g %g %d\n".as_ptr(),
+// CHECK-NEXT:             inf,
+// CHECK-NEXT:             -inf,
+// CHECK-NEXT:             (inf - inf == inf - inf) as i32,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let third: f32 = 1.0f32 / 3.0f32;
 // CHECK-NEXT:     let sum: f32 = 0.1f32 + 0.2f32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%.10f %.10f %d\n".as_ptr(),
 // CHECK-NEXT:             third as f64,
 // CHECK-NEXT:             sum as f64,
@@ -95,13 +97,15 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let dsum: f64 = 0.1f64 + 0.2f64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%.17g %d\n".as_ptr(), dsum, (dsum == 0.3f64) as i32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%.17g %d\n".as_ptr(), dsum, (dsum == 0.3f64) as i32)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut f: f32 = 16777216.0f32;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: f32 = f + 1.0f32;
 // CHECK-NEXT:     f = [[V_0]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%.1f\n".as_ptr(), f as f64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%.1f\n".as_ptr(), f as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut d: f64 = 2.5f64;
 // CHECK-NEXT:     d *= 3i32 as f64;
@@ -109,20 +113,30 @@ int main(void) {
 // CHECK-NEXT:     d = [[V_1]];
 // CHECK-NEXT:     d /= 4i32 as f64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%g\n".as_ptr(), d) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%g\n".as_ptr(), d) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let i: i32 = 7;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%g %g\n".as_ptr(), (i as f64) / 2.0f64, ((i / 2) as f64) * 1.0f64)
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%g %g\n".as_ptr(),
+// CHECK-NEXT:             (i as f64) / 2.0f64,
+// CHECK-NEXT:             ((i / 2) as f64) * 1.0f64,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%g %g\n".as_ptr(), -d, -0.0f64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%g %g\n".as_ptr(), -d, -0.0f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let neg: f32 = -1.5f32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%g %g\n".as_ptr(), (neg * neg) as f64, (neg / 0.5f32) as f64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%g %g\n".as_ptr(),
+// CHECK-NEXT:             (neg * neg) as f64,
+// CHECK-NEXT:             (neg / 0.5f32) as f64,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let values: __SlateAlign16<[f64; 4]> = __SlateAlign16([
 // CHECK-NEXT:         3.5f64,
@@ -135,7 +149,9 @@ int main(void) {
 // CHECK-NEXT:         max = if values.0[k as usize] > max { values.0[k as usize] } else { max };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%g %g\n".as_ptr(), max, values.0[3] * (10i32 as f64)) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%g %g\n".as_ptr(), max, values.0[3] * (10i32 as f64))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}", ((1.0f32 as f64) < 1.0f64) as i32, (((0.1f64 as f32) as f64) == 0.1f64)

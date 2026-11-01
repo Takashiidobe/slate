@@ -49,18 +49,15 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Lamp {
 // CHECK-NEXT:     state: u32,
 // CHECK-NEXT:     color: u32,
 // CHECK-NEXT:     size: u8,
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut favorite: u32 = 5;
 // CHECK-NEXT: static mut levels: [i32; 3] = [-3, -2, 7];
@@ -105,7 +102,7 @@ int main(void) {
 // CHECK-NEXT:         "{} {} {} {}", (unsafe { favorite }) as u32, (unsafe { levels[0] }) as i32,
 // CHECK-NEXT:         (unsafe { levels[1] }) as i32, (unsafe { levels[2] }) as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 4u64, 1u64, 12u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu %zu\n".as_ptr(), 4u64, 1u64, 12u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     (((unsafe { levels[0] }) as i32) as u32).wrapping_add((unsafe { favorite }) as u32)
 // CHECK-NEXT:         as i32

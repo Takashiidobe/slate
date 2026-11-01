@@ -99,8 +99,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn vprintf([[ARG_0]]: *const i8, [[ARG_1:arg[0-9]+]]: core::ffi::VaList<'static>) -> i32;
+// CHECK-NEXT:     fn vprintf([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: core::ffi::VaList<'static>) -> i32;
 // CHECK-NEXT:     fn vsnprintf(
 // CHECK-NEXT:         [[ARG_0]]: *mut i8,
 // CHECK-NEXT:         [[ARG_1]]: u64,
@@ -250,16 +249,21 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %d %s\n".as_ptr(),
 // CHECK-NEXT:             written,
 // CHECK-NEXT:             rendered,
 // CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), sum_ints(5i32, 1i32, 2i32, 3i32, 4i32, 5i32)) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%ld\n".as_ptr(),
+// CHECK-NEXT:             sum_ints(5i32, 1i32, 2i32, 3i32, 4i32, 5i32),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%.2f\n".as_ptr(),
 // CHECK-NEXT:             mixed(
 // CHECK-NEXT:                 4i32,
@@ -274,8 +278,12 @@ int main(void) {
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum_twice(3i32, 4i32, 5i32, 6i32)) };
-// CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), unsigned_pair(0i32, 4000000000u32)) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%d\n".as_ptr(), sum_twice(3i32, 4i32, 5i32, 6i32))
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%u\n".as_ptr(), unsigned_pair(0i32, 4000000000u32))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     ((unsafe { sum_ints(3i32, 10i32, 20i32, 30i32) }) % 13) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

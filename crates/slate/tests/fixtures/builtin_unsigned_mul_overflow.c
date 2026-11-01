@@ -27,14 +27,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut r: u32 = 0;
@@ -55,7 +52,7 @@ int main(void) {
 // CHECK-NEXT:                 [[T_0]].checked_mul([[T_1]]).is_none() || (([[T_2]] as u32) as i128) != [[T_2]]
 // CHECK-NEXT:             }) as i32;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { printf(c"%d %llu\n".as_ptr(), overflow, r as u64) };
+// CHECK-NEXT:             unsafe { slate_support::printf(c"%d %llu\n".as_ptr(), overflow, r as u64) };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if true {
@@ -81,7 +78,7 @@ int main(void) {
 // CHECK-NEXT:                 [[T_3]].checked_mul([[T_4]]).is_none() || (([[T_5]] as u64) as i128) != [[T_5]]
 // CHECK-NEXT:             }) as i32;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { printf(c"%d %llu\n".as_ptr(), overflow, r) };
+// CHECK-NEXT:             unsafe { slate_support::printf(c"%d %llu\n".as_ptr(), overflow, r) };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if true {
@@ -107,7 +104,7 @@ int main(void) {
 // CHECK-NEXT:                 [[T_6]].checked_mul([[T_7]]).is_none() || (([[T_8]] as u64) as i128) != [[T_8]]
 // CHECK-NEXT:             }) as i32;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { printf(c"%d %llu\n".as_ptr(), overflow, r) };
+// CHECK-NEXT:             unsafe { slate_support::printf(c"%d %llu\n".as_ptr(), overflow, r) };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if true {
@@ -125,7 +122,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_9]].checked_mul([[T_10]]).is_none() || (([[T_11]] as u32) as i128) != [[T_11]]
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%d %u\n".as_ptr(), overflow, r) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%d %u\n".as_ptr(), overflow, r) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut a: u32 = 3;
 // CHECK-NEXT:     let mut b: u32 = 4;
@@ -148,7 +145,7 @@ int main(void) {
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %u %u %u %ld\n".as_ptr(),
 // CHECK-NEXT:             overflow,
 // CHECK-NEXT:             results[0],

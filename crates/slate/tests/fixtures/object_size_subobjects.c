@@ -75,12 +75,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Record {
@@ -102,6 +96,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: static mut global_record: Record = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn member_sizes(record: &Record, trailing: &Trailing) -> u64 {
 // CHECK-NEXT:     10608u64
@@ -113,7 +110,7 @@ int main(void) {
 // CHECK-NEXT:     let index: i32 = 2;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"&record".as_ptr() as *mut i8,
 // CHECK-NEXT:             20u64,
@@ -125,7 +122,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"&record.name".as_ptr() as *mut i8,
 // CHECK-NEXT:             16u64,
@@ -137,7 +134,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"&record.name[3]".as_ptr() as *mut i8,
 // CHECK-NEXT:             13u64,
@@ -149,7 +146,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"record.name + 12".as_ptr() as *mut i8,
 // CHECK-NEXT:             4u64,
@@ -161,7 +158,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"&record.tail".as_ptr() as *mut i8,
 // CHECK-NEXT:             4u64,
@@ -173,7 +170,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"(char *)&record.head".as_ptr() as *mut i8,
 // CHECK-NEXT:             20u64,
@@ -185,7 +182,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"(char *)&record.head + 1".as_ptr() as *mut i8,
 // CHECK-NEXT:             19u64,
@@ -197,7 +194,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"(char *)&record.head + 2".as_ptr() as *mut i8,
 // CHECK-NEXT:             18u64,
@@ -209,7 +206,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"(void *)&record.head".as_ptr() as *mut i8,
 // CHECK-NEXT:             20u64,
@@ -221,7 +218,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"trailing.items".as_ptr() as *mut i8,
 // CHECK-NEXT:             8u64,
@@ -233,7 +230,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"&trailing.items[1]".as_ptr() as *mut i8,
 // CHECK-NEXT:             4u64,
@@ -245,7 +242,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"&nested.record.name[1]".as_ptr() as *mut i8,
 // CHECK-NEXT:             27u64,
@@ -257,7 +254,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"nested.extra + 1".as_ptr() as *mut i8,
 // CHECK-NEXT:             8u64,
@@ -269,7 +266,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"&nested.record".as_ptr() as *mut i8,
 // CHECK-NEXT:             32u64,
@@ -281,7 +278,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"numbers".as_ptr() as *mut i8,
 // CHECK-NEXT:             20u64,
@@ -293,7 +290,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"&numbers[5]".as_ptr() as *mut i8,
 // CHECK-NEXT:             0u64,
@@ -305,7 +302,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"&numbers[7]".as_ptr() as *mut i8,
 // CHECK-NEXT:             0u64,
@@ -317,7 +314,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"numbers - 1".as_ptr() as *mut i8,
 // CHECK-NEXT:             0u64,
@@ -329,7 +326,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"&numbers".as_ptr() as *mut i8,
 // CHECK-NEXT:             20u64,
@@ -341,7 +338,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"&numbers + 1".as_ptr() as *mut i8,
 // CHECK-NEXT:             0u64,
@@ -353,7 +350,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"\"hello\"".as_ptr() as *mut i8,
 // CHECK-NEXT:             6u64,
@@ -365,7 +362,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"&\"hello\"[2]".as_ptr() as *mut i8,
 // CHECK-NEXT:             4u64,
@@ -377,7 +374,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"((int[]){1, 2, 3})".as_ptr() as *mut i8,
 // CHECK-NEXT:             12u64,
@@ -389,7 +386,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%-22s %lu %lu %lu %lu\n".as_ptr(),
 // CHECK-NEXT:             c"&global_record.name[2]".as_ptr() as *mut i8,
 // CHECK-NEXT:             14u64,
@@ -401,7 +398,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"members %lu\n".as_ptr(),
 // CHECK-NEXT:             member_sizes(
 // CHECK-NEXT:                 &(*std::ptr::addr_of_mut!(record)),
@@ -412,7 +409,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"effects %lu %lu %lu %d\n".as_ptr(),
 // CHECK-NEXT:             18446744073709551615u64,
 // CHECK-NEXT:             0u64,

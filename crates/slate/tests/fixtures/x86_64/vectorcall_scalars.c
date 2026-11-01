@@ -36,10 +36,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(abi_vectorcall)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: extern "vectorcall-unwind" fn add_ints(a: i32, b: i64, c: u8, d: i16, e: i32) -> i32 {
 // CHECK-NEXT:     a + (b as i32) + ((c as u32) as i32) + (d as i32) + e
@@ -83,7 +80,7 @@ int main(void) {
 // CHECK-NEXT:     > = Some(mix);
 // CHECK-NEXT:     println!("{}", add_ints(1i32, 2i64, 3u8, 4i16, 5i32));
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%.2f\n".as_ptr(),
 // CHECK-NEXT:             mix(1i32, 2.5f64, 3.25f32, 4i64, 5.5f64, 6.75f32, 7.0f64, 8i32, 9.125f64),
 // CHECK-NEXT:         )
@@ -91,7 +88,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%.2f\n".as_ptr(),
 // CHECK-NEXT:             fp
 // CHECK-NEXT:                 .unwrap()(
@@ -110,7 +107,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%.2f\n".as_ptr(),
 // CHECK-NEXT:             scale(std::ptr::addr_of_mut!(x) as *const f32, 4.0f32) as f64,
 // CHECK-NEXT:         )

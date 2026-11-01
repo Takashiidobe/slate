@@ -59,10 +59,8 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT: }
 // AARCH64-UNKNOWN-LINUX-GNU-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// I686-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
-// I686-UNKNOWN-LINUX-GNU-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u32) -> *mut ();
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn memcpy([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
+// I686-UNKNOWN-LINUX-GNU-NEXT:     fn memcpy([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u32) -> *mut ();
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -285,12 +283,11 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn __slate_printf__ri32_pi8_f80_f80(_0: *const i8, _1: LongDouble, _2: LongDouble) -> i32;
 // I686-UNKNOWN-LINUX-GNU-NEXT:     fn __slate_printf__ri32_pi8_f80_f80(_0: *const i8, _1: LongDouble, _2: LongDouble) -> i32;
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const u8, ...) -> i32;
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     fn memcpy([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: #[repr(C, align(16))]
@@ -490,7 +487,7 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT: fn show(name: *const i8, z: num_complex::Complex<f64>) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT: fn show(name: *const u8, z: num_complex::Complex<f64>) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%s %a %a\n".as_ptr(), name, z.re, z.im) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%s %a %a\n".as_ptr(), name, z.re, z.im) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -498,7 +495,7 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT: fn showf(name: *const i8, z: num_complex::Complex<f32>) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT: fn showf(name: *const u8, z: num_complex::Complex<f32>) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%s %a %a\n".as_ptr(), name, z.re as f64, z.im as f64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%s %a %a\n".as_ptr(), name, z.re as f64, z.im as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -585,7 +582,7 @@ int main(void) {
 // CHECK-NEXT:             .wrapping_add((bitsf[0] ^ bitsf[1].wrapping_mul(7)) as u64);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"hash %llx %llx\n".as_ptr(), hash, hashf) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"hash %llx %llx\n".as_ptr(), hash, hashf) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let big: f64 = 1e300f64;
 // CHECK-NEXT:     let one: f64 = 1.0f64;
@@ -801,7 +798,7 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     unsafe { __slate_printf__ri32_pi8_f80_f80(c"long %.6Lf %.6Lf\n".as_ptr(), l.re, l.im) };
 // I686-UNKNOWN-LINUX-GNU-NEXT:     unsafe { __slate_printf__ri32_pi8_f80_f80(c"long %.6Lf %.6Lf\n".as_ptr(), l.re, l.im) };
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     unsafe { printf(c"long %.6Lf %.6Lf\n".as_ptr(), l.re, l.im) };
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     unsafe { slate_support::printf(c"long %.6Lf %.6Lf\n".as_ptr(), l.re, l.im) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

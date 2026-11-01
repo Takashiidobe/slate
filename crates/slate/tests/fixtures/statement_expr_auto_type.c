@@ -36,7 +36,7 @@ int main(void) {
 // CHECK-NEXT:     [[V_0]] = exchange_value;
 // CHECK-NEXT:     old = [[V_0]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%ld %ld %d\n".as_ptr(), old, values.0[0], index) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%ld %ld %d\n".as_ptr(), old, values.0[0], index) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

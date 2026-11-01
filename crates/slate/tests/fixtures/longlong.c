@@ -17,10 +17,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn lladd(a: i64, b: i64) -> i64 {
 // CHECK-NEXT:     let c: i64 = a + b;
@@ -30,10 +27,10 @@ int main(void) {
 // CHECK-NEXT:     let a: i64 = 9000000000000;
 // CHECK-NEXT:     let ua: u64 = 18000000000000;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), lladd(a, 1i64)) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), lladd(a, 1i64)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu\n".as_ptr(), ua) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu\n".as_ptr(), ua) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

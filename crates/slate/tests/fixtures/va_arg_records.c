@@ -107,12 +107,6 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Tiny {
@@ -162,6 +156,9 @@ int main(void) {
 // CHECK-NEXT:     d: f64,
 // CHECK-NEXT:     e: [f64; 2],
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn dump(count: i32, mut __va_args: ...) {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
@@ -199,7 +196,7 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d: %c%c%c %lld %d %d %g %g %g %g %g %g %g %g %g %g %g %d".as_ptr(),
 // CHECK-NEXT:                 round,
 // CHECK-NEXT:                 t.c[0] as i32,
@@ -225,7 +222,13 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(c" %lld %lld %g %g\n".as_ptr(), big.v[0], big.v[4], ud.e[0], ud.e[1])
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c" %lld %lld %g %g\n".as_ptr(),
+// CHECK-NEXT:                 big.v[0],
+// CHECK-NEXT:                 big.v[4],
+// CHECK-NEXT:                 ud.e[0],
+// CHECK-NEXT:                 ud.e[1],
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }

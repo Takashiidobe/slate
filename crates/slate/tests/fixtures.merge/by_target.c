@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 2 compiles
 // CHECK-NEXT:   by_target.c: [alpha] 2 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit by_target: 11 items, 5 gated, 0 duplicated functions
+// CHECK-NEXT: unit by_target: 10 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:platform: 2 variants
 // CHECK-NEXT:   hoisted fn:platform_alpha: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
@@ -42,12 +42,11 @@ int main(void) {
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn puts([[ARG_0:arg[0-9]+]]: *const c_char) -> i32;
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: const __SLATE_HOIST_platform: &core::ffi::CStr = c"unix";
@@ -74,13 +73,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { puts(platform()) };
+// CHECK-NEXT:     unsafe { slate_support::puts(platform()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     #[cfg(feature = "alpha")]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(feature = "alpha")]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { puts(platform_alpha()) };
+// CHECK-NEXT:         unsafe { slate_support::puts(platform_alpha()) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

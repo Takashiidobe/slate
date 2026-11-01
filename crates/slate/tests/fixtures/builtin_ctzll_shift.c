@@ -16,10 +16,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn lowest_bit(x: u64) -> u64 {
 // CHECK-NEXT:     1u64 << (((x.trailing_zeros() as i32) as i64) as u64)
@@ -28,7 +25,7 @@ int main(void) {
 // CHECK-NEXT:     let x: u64 = 19070976;
 // CHECK-NEXT:     let n: u64 = lowest_bit(x);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), n) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), n) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

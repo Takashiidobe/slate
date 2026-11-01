@@ -19,16 +19,13 @@ int main(void) {
 // CHECK-NEXT: //! { dg-options "-ffp-model=strict" }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fesetround([[ARG_0:arg[0-9]+]]: i32) -> i32;
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
-// I686-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0]]: *const u8, ...) -> i32;
 // CHECK-NEXT:     fn __slate_fenv_add_f64(_0: f64, _1: f64) -> f64;
 // CHECK-NEXT:     fn __slate_fenv_div_f64(_0: f64, _1: f64) -> f64;
 // CHECK-NEXT:     fn __slate_fenv_mul_f64(_0: f64, _1: f64) -> f64;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -50,7 +47,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%a %a\n".as_ptr(), third, fused) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%a %a\n".as_ptr(), third, fused) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

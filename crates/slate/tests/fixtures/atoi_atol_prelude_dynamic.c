@@ -19,14 +19,13 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn atoi([[ARG_0]]: *const i8) -> i32;
+// CHECK-NEXT:     fn atoi([[ARG_0:arg[0-9]+]]: *const i8) -> i32;
 // CHECK-NEXT:     fn atol([[ARG_0]]: *const i8) -> i64;
 // CHECK-NEXT:     fn atoll([[ARG_0]]: *const i8) -> i64;
 // CHECK-NEXT:     fn strcpy([[ARG_0]]: *mut i8, [[ARG_1:arg[0-9]+]]: *const i8) -> *mut i8;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
@@ -39,10 +38,14 @@ int main(void) {
 // CHECK-NEXT:     unsafe { strcpy(c.0.as_mut_ptr() as *mut i8, c"9000000000000".as_ptr()) };
 // CHECK-NEXT:     let __slate_printf_arg0 = unsafe { atoi(a.0.as_mut_ptr() as *const i8) };
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0);
-// CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), atol(b.0.as_mut_ptr() as *const i8)) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%ld\n".as_ptr(), atol(b.0.as_mut_ptr() as *const i8))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), atoll(c.0.as_mut_ptr() as *const i8)) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%lld\n".as_ptr(), atoll(c.0.as_mut_ptr() as *const i8))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

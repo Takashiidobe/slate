@@ -677,6 +677,12 @@ impl FunctionLowerer<'_, '_> {
                     pointee, is_const, ..
                 },
                 CTypeKind::Pointer(c_pointee, _),
+            ) if tables.is_file(pointee) => self.lower_type(ty),
+            (
+                ir::Type::Pointer {
+                    pointee, is_const, ..
+                },
+                CTypeKind::Pointer(c_pointee, _),
             ) if !matches!(**pointee, ir::Type::Function { .. }) => Ok(rust::Type::Ptr {
                 mutable: !is_const,
                 inner: Box::new(self.lower_c_type(pointee, Some(*c_pointee))?),
@@ -774,6 +780,12 @@ impl FunctionLowerer<'_, '_> {
                             ..
                         },
                     ) => self.lower_type(inner),
+                    Some(ir::TypeDefinitionKind::Record { .. })
+                        if self.tables.stdio.file_records.contains(id) =>
+                    {
+                        self.dependencies.stdio_layout_used = true;
+                        Ok(stdio::file_type())
+                    }
                     Some(ir::TypeDefinitionKind::Record { .. }) => {
                         Ok(rust::Type::Custom(self.lower_record(*id)?))
                     }
@@ -878,6 +890,14 @@ impl FunctionLowerer<'_, '_> {
                         Some(ret) => self.lower_type(ret)?,
                         None => rust::Type::Unit,
                     }),
+                });
+            }
+            ir::Type::Pointer {
+                pointee, is_const, ..
+            } if self.tables.is_file(pointee) => {
+                return Ok(rust::Type::Ptr {
+                    mutable: !is_const,
+                    inner: Box::new(stdio::file_type()),
                 });
             }
             ir::Type::Pointer {

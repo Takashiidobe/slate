@@ -91,10 +91,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn ignore_rest(first: i32, __va_args: ...) -> i32 {
 // CHECK-NEXT:     first * 3
@@ -210,12 +207,15 @@ int main(void) {
 // CHECK-NEXT:     let mut value: i32 = 9;
 // CHECK-NEXT:     println!("{}", unsafe { ignore_rest(14i32) });
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%.3f\n".as_ptr(), promoted(2i32, f as f64, 2.5f64, c as i32, s as i32))
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%.3f\n".as_ptr(),
+// CHECK-NEXT:             promoted(2i32, f as f64, 2.5f64, c as i32, s as i32),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%s %s\n".as_ptr(),
 // CHECK-NEXT:             pick(
 // CHECK-NEXT:                 0i32,
@@ -233,7 +233,9 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", unsafe { dot(3i32, 1i32, 2i32, 3i32, 4i32, 5i32, 6i32) });
-// CHECK-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), chain(5i32, 1000000000000i64, 4660u64)) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%ld\n".as_ptr(), chain(5i32, 1000000000000i64, 4660u64))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", unsafe { * (same_pointer(std::ptr::addr_of_mut!(value) as * mut (),

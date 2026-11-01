@@ -1382,16 +1382,21 @@ impl CLibType {
 }
 
 pub const CLIB_RECORD_TYPES: &[CLibType] = &[
-    CLibType::new("FILE", "libc::FILE", 1, CLibInitializer::ScalarZero),
+    CLibType::new(
+        "FILE",
+        "slate_support::FILE",
+        1,
+        CLibInitializer::ScalarZero,
+    ),
     CLibType::new(
         "pthread_attr_t",
-        "libc::pthread_attr_t",
+        "slate_support::pthread_attr_t",
         1,
         CLibInitializer::ScalarZero,
     ),
     CLibType::new(
         "timespec",
-        "libc::timespec",
+        "slate_support::timespec",
         8,
         CLibInitializer::Fields(&["tv_sec", "tv_nsec"]),
     ),
@@ -1731,13 +1736,19 @@ impl Expr {
     pub fn reads_var(&self, name: &str) -> bool {
         match self {
             Expr::Var(v) => v.as_str() == name,
+            Expr::Path(path) => name.strip_prefix("slate_support::").is_some_and(|item| {
+                matches!(
+                    path.segments.as_slice(),
+                    [support, segment]
+                        if support.as_str() == "slate_support" && segment.as_str() == item
+                )
+            }),
             Expr::Value(_)
             | Expr::Str(_)
             | Expr::HexFloat(_)
             | Expr::ByteStr(_)
             | Expr::ConstBlock(_)
             | Expr::CStr(_)
-            | Expr::Path(_)
             | Expr::GenericPath { .. }
             | Expr::AtomicFence { .. }
             | Expr::Todo(_) => false,

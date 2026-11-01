@@ -14,17 +14,14 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let d: i32 = 5;
 // CHECK-NEXT:     let h: u32 = 171;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"{%d} %% \"quoted\" back\\slash %s|%c|%x\n".as_ptr(),
 // CHECK-NEXT:             d,
 // CHECK-NEXT:             c"hi".as_ptr() as *mut i8,
@@ -34,13 +31,15 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"}}%%{{[{][{]}}%d}}\n".as_ptr(), d) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"}}%%{{[{][{]}}%d}}\n".as_ptr(), d) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%%%%%d%%%%\n".as_ptr(), d) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%%%%%d%%%%\n".as_ptr(), d) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"{{[{][{]}}}}%s{{[{][{]}}}}\n".as_ptr(), c"mid".as_ptr() as *mut i8) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"{{[{][{]}}}}%s{{[{][{]}}}}\n".as_ptr(), c"mid".as_ptr() as *mut i8)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

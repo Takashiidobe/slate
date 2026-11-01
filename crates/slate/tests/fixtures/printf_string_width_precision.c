@@ -11,7 +11,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%5s|%-5s|%.1s|%6.1s\n".as_ptr(),
 // CHECK-NEXT:             c"hi".as_ptr() as *mut i8,
 // CHECK-NEXT:             c"hi".as_ptr() as *mut i8,

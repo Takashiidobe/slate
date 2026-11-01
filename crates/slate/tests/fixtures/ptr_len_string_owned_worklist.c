@@ -28,8 +28,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn malloc([[ARG_0]]: u64) -> *mut ();
+// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;

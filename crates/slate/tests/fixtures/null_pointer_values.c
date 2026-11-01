@@ -59,12 +59,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Node {
@@ -79,6 +73,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: static mut head: *mut Node = std::ptr::null_mut::<Node>();
 // CHECK-NEXT: static mut last_key: *const i8 = std::ptr::null::<i8>();
 // CHECK-NEXT: static mut opaque: *mut () = std::ptr::null_mut::<()>();
@@ -151,7 +148,7 @@ int main(void) {
 // CHECK-NEXT:         { * cursor }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%s %s\n".as_ptr(),
 // CHECK-NEXT:             name_or_default(entries.0[0].key),
 // CHECK-NEXT:             name_or_default(entries.0[1].key),
@@ -169,7 +166,9 @@ int main(void) {
 // CHECK-NEXT:         last_key = entries.0[0].key;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%d %s\n".as_ptr(), length(head as *const Node), last_key) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%d %s\n".as_ptr(), length(head as *const Node), last_key)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     if entries.0[1].slot.is_null() { 0 } else { 1 }
 // CHECK-NEXT: }

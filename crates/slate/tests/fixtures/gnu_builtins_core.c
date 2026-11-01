@@ -97,8 +97,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn __builtin_extract_return_addr([[ARG_0]]: *mut ()) -> *mut ();
+// CHECK-NEXT:     fn __builtin_extract_return_addr([[ARG_0:arg[0-9]+]]: *mut ()) -> *mut ();
 // CHECK-NEXT:     fn __builtin_frob_return_addr([[ARG_0]]: *mut ()) -> *mut ();
 // CHECK-NEXT:     fn __builtin_assume_aligned([[ARG_0]]: *const (), [[ARG_1:arg[0-9]+]]: u64, ...) -> *mut ();
 // CHECK-NEXT:     fn __builtin_expect([[ARG_0]]: i64, [[ARG_1]]: i64) -> i64;

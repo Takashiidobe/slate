@@ -163,13 +163,12 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn feclearexcept([[ARG_0:arg[0-9]+]]: i32) -> i32;
 // CHECK-NEXT:     fn fetestexcept([[ARG_0]]: i32) -> i32;
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const u8, ...) -> i32;
 // CHECK-NEXT:     fn malloc([[ARG_0]]: u64) -> *mut ();
 // CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
@@ -450,7 +449,7 @@ int main(void) {
 // CHECK-NEXT:     let fenv_flags: i32 = unsafe { fetestexcept(31i32) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n".as_ptr(), c"main".as_ptr() as *mut u8, α, c99_external_identifier_with_more_than_thirty_one_significant_characters, slash_comment_value, enhanced_arithmetic, flexible_total, vm_total, nonconstant_initializer.first + nonconstant_initializer.second, designated_initializer.first + designated_initializer.second, designated_array[0] + designated_array[2], idempotent_const_value, std::ptr::read_volatile(std::ptr::addr_of!(idempotent_volatile_value)), *restricted_pointer, hexadecimal_float as i32, compound_pair.first + compound_pair.second, compound_array_value, signed_quotient, signed_remainder, mixed_order, declaration_after_statement, for_total, c99_inline_square(8i32), c99_qualified_array_sum(qualified_values.as_mut_ptr() as *mut i32), macro_total, translation_limit_total, 17i32, fenv_clear, fenv_flags, c99_restrict_sum((qualified_values.as_mut_ptr() as *mut i32).add(0) as *const i32, (qualified_values.as_mut_ptr() as *mut i32).add(1) as *const i32))
+// CHECK-NEXT:         slate_support::printf(c"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n".as_ptr(), c"main".as_ptr() as *mut u8, α, c99_external_identifier_with_more_than_thirty_one_significant_characters, slash_comment_value, enhanced_arithmetic, flexible_total, vm_total, nonconstant_initializer.first + nonconstant_initializer.second, designated_initializer.first + designated_initializer.second, designated_array[0] + designated_array[2], idempotent_const_value, std::ptr::read_volatile(std::ptr::addr_of!(idempotent_volatile_value)), *restricted_pointer, hexadecimal_float as i32, compound_pair.first + compound_pair.second, compound_array_value, signed_quotient, signed_remainder, mixed_order, declaration_after_statement, for_total, c99_inline_square(8i32), c99_qualified_array_sum(qualified_values.as_mut_ptr() as *mut i32), macro_total, translation_limit_total, 17i32, fenv_clear, fenv_flags, c99_restrict_sum((qualified_values.as_mut_ptr() as *mut i32).add(0) as *const i32, (qualified_values.as_mut_ptr() as *mut i32).add(1) as *const i32))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0

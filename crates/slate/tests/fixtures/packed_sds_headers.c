@@ -208,15 +208,14 @@ int main(void) {
 // CHECK-NEXT: #![allow(arithmetic_overflow, unconditional_panic)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn malloc([[ARG_0]]: u64) -> *mut ();
+// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
 // CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -389,19 +388,25 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 3u64, 5u64, 17u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu %zu\n".as_ptr(), 3u64, 5u64, 17u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 2u64, 4u64, 17u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu %zu\n".as_ptr(), 2u64, 4u64, 17u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 9u64, 1u64, 12u64, 1u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%zu %zu %zu %zu\n".as_ptr(), 9u64, 1u64, 12u64, 1u64)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 48u64, 2u64, 10u64, 46u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%zu %zu %zu %zu\n".as_ptr(), 48u64, 2u64, 10u64, 46u64)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 14u64, 2u64, 2u64, 6u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%zu %zu %zu %zu\n".as_ptr(), 14u64, 2u64, 2u64, 6u64)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let types: [i32; 3] = [1, 2, 4];
 // CHECK-NEXT:     for i in 0i32..3i32 {
@@ -409,7 +414,7 @@ int main(void) {
 // CHECK-NEXT:         sdsinclen(s, 2u64);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d %zu %zu %s\n".as_ptr(),
 // CHECK-NEXT:                 types[i as usize],
 // CHECK-NEXT:                 sdslen(s),
@@ -469,7 +474,7 @@ int main(void) {
 // CHECK-NEXT:             };
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%zu %zu %d\n".as_ptr(),
 // CHECK-NEXT:                     offset,
 // CHECK-NEXT:                     header.payload_len,
@@ -506,7 +511,7 @@ int main(void) {
 // CHECK-NEXT:     let copy: event = holder.events[2];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%c %zu %u %d %llx %llx %d\n".as_ptr(),
 // CHECK-NEXT:             holder.tag as i32,
 // CHECK-NEXT:             holder.header.payload_len,
@@ -528,7 +533,14 @@ int main(void) {
 // CHECK-NEXT:     two.value ^= 65535;
 // CHECK-NEXT:     two.wide <<= 4i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%c %x %llx\n".as_ptr(), two.tag as i32, two.value, two.wide) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%c %x %llx\n".as_ptr(),
+// CHECK-NEXT:             two.tag as i32,
+// CHECK-NEXT:             two.value,
+// CHECK-NEXT:             two.wide,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

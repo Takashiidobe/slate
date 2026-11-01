@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-NEXT:   signature_compatible.c: [alpha] 2 compiled
 // CHECK-NEXT:   units/signature_compatible_helper.c: [alpha,beta] 4 compiled
 // CHECK-NEXT: total: 12 compiles across 2 targets
-// CHECK-NEXT: unit signature_compatible: 32 items, 14 gated, 0 duplicated functions
+// CHECK-NEXT: unit signature_compatible: 20 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 4 variants
 // CHECK-NEXT: unit signature_compatible_helper: 24 items, 7 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:scale: 2 variants
@@ -73,25 +73,7 @@ int main(void) {
 // CHECK-NEXT:     fn make_opaque() -> *mut opaque;
 // CHECK-NEXT:     fn read_handle([[ARG_0]]: *mut __SlateRecord_signature_compatible_c_13) -> i32;
 // CHECK-NEXT:     fn quit([[ARG_0]]: i32);
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn __va_start([[ARG_0]]: *mut *mut c_char, ...);
-// CHECK-NEXT:     fn __acrt_iob_func([[ARG_0]]: u32) -> *mut _iobuf;
-// CHECK-NEXT:     fn __stdio_common_vfprintf(
-// CHECK-NEXT:         [[ARG_0]]: u64,
-// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: *mut _iobuf,
-// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: *const c_char,
-// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut __crt_locale_pointers,
-// CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut c_char,
-// CHECK-NEXT:     ) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const c_char, ...) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(not(feature = "alpha"))]
@@ -107,78 +89,9 @@ int main(void) {
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: use core::ffi::c_long;
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct __crt_locale_pointers {
-// CHECK-NEXT:     locinfo: *mut __crt_locale_data,
-// CHECK-NEXT:     mbcinfo: *mut __crt_multibyte_data,
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct __crt_locale_data {}
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct __crt_multibyte_data {}
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: fn __local_stdio_printf_options() -> *mut u64 {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(_OptionsStorage) }
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct opaque {}
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: static mut _OptionsStorage: u64 = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _iobuf {
-// CHECK-NEXT:     _Placeholder: *mut (),
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: fn _vfprintf_l(
-// CHECK-NEXT:     _Stream: *mut _iobuf,
-// CHECK-NEXT:     _Format: *const c_char,
-// CHECK-NEXT:     _Locale: *mut __crt_locale_pointers,
-// CHECK-NEXT:     _ArgList: *mut c_char,
-// CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         __stdio_common_vfprintf(
-// CHECK-NEXT:             *__local_stdio_printf_options(),
-// CHECK-NEXT:             _Stream,
-// CHECK-NEXT:             _Format,
-// CHECK-NEXT:             _Locale,
-// CHECK-NEXT:             _ArgList,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     }
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: unsafe extern "C-unwind" fn printf(_Format: *const c_char, mut __va_args: ...) -> i32 {
-// CHECK-NEXT:     let mut _Result: i32 = 0;
-// CHECK-NEXT:     let mut _ArgList: *mut c_char = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *std::ptr::addr_of_mut!(_ArgList) =
-// CHECK-NEXT:             core::mem::transmute::<core::ffi::VaList<'_>, *mut i8>(__va_args.clone());
-// CHECK-NEXT:     }
-// CHECK-NEXT:     _Result = _vfprintf_l(
-// CHECK-NEXT:         unsafe { __acrt_iob_func(1u32) },
-// CHECK-NEXT:         _Format,
-// CHECK-NEXT:         std::ptr::null_mut::<__crt_locale_pointers>(),
-// CHECK-NEXT:         _ArgList,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     _ArgList = std::ptr::null_mut::<c_char>();
-// CHECK-NEXT:     _Result
-// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -191,7 +104,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(all(unix, not(feature = "alpha")))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%ld %ld %d %d %d %d %s %d %d\n".as_ptr(),
 // CHECK-NEXT:                 scale(2i32) as c_long,
 // CHECK-NEXT:                 native_long((3 as c_long)),
@@ -208,7 +121,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(all(unix, feature = "alpha"))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%ld %ld %d %d %d %d %s %d %d\n".as_ptr(),
 // CHECK-NEXT:                 scale((2 as c_long)),
 // CHECK-NEXT:                 native_long((3 as c_long)),
@@ -225,7 +138,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(all(windows, not(feature = "alpha")))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%ld %ld %d %d %d %d %s %d %d\n".as_ptr(),
 // CHECK-NEXT:                 scale(2i32),
 // CHECK-NEXT:                 native_long((3 as c_long)),
@@ -242,7 +155,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(all(windows, feature = "alpha"))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%ld %ld %d %d %d %d %s %d %d\n".as_ptr(),
 // CHECK-NEXT:                 scale((2 as c_long)),
 // CHECK-NEXT:                 native_long((3 as c_long)),

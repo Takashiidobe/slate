@@ -280,7 +280,6 @@ fn package_name(crate_dir: &Path) -> String {
 fn crate_manifest(
     package: &str,
     tests: &[String],
-    slate_support: bool,
     c_shims: bool,
     cargo_features: &BTreeSet<String>,
     lib_crate_types: Option<&[String]>,
@@ -298,11 +297,6 @@ harness = false
             )
         })
         .collect();
-    let support_dependency = if slate_support {
-        "slate-support = { path = \"slate-support\" }\n"
-    } else {
-        ""
-    };
     let build_section = if c_shims {
         "\n[build-dependencies]\ncc = \"1\"\n"
     } else {
@@ -340,12 +334,11 @@ edition = "2024"
 [workspace]
 
 [dependencies]
-libc = "0.2"
+slate-support = {{ path = "slate-support" }}
 aligned = {{ path = "aligned" }}
 bitint = {{ path = "bitint" }}
 num-complex = {{ path = "num-complex", default-features = false }}
 bitfields = {{ path = "{}" }}
-{support_dependency}
 {build_section}
 [profile.dev]
 overflow-checks = false
@@ -360,21 +353,13 @@ fn write_crate_manifest(
     crate_dir: &Path,
     package: &str,
     tests: &[String],
-    slate_support: bool,
     c_shims: bool,
     cargo_features: &BTreeSet<String>,
     lib_crate_types: Option<&[String]>,
 ) -> Result<(), String> {
     std::fs::write(
         crate_dir.join("Cargo.toml"),
-        crate_manifest(
-            package,
-            tests,
-            slate_support,
-            c_shims,
-            cargo_features,
-            lib_crate_types,
-        ),
+        crate_manifest(package, tests, c_shims, cargo_features, lib_crate_types),
     )
     .map_err(|e| format!("write {}: {e}", crate_dir.join("Cargo.toml").display()))
 }
@@ -390,10 +375,10 @@ fn init_crate(crate_dir: &Path, lib_crate_types: Option<&[String]>) -> Result<()
         &package,
         &[],
         false,
-        false,
         &BTreeSet::new(),
         lib_crate_types,
     )?;
+    write_slate_support(crate_dir)?;
     write_aligned_support(crate_dir)?;
     write_bitint_support(crate_dir)?;
     write_num_complex_support(crate_dir)?;
@@ -440,7 +425,23 @@ fn write_file(path: &Path, contents: &str) -> Result<(), String> {
     std::fs::write(path, contents).map_err(|e| format!("write {}: {e}", path.display()))
 }
 
+include!(concat!(env!("OUT_DIR"), "/vendored_libc.rs"));
+
+fn write_vendored_libc(crate_dir: &Path) -> Result<(), String> {
+    let libc_dir = crate_dir.join("libc");
+    for (relative, contents) in VENDORED_LIBC {
+        let path = libc_dir.join(relative);
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)
+                .map_err(|e| format!("create {}: {e}", parent.display()))?;
+        }
+        write_file(&path, contents)?;
+    }
+    Ok(())
+}
+
 fn write_slate_support(crate_dir: &Path) -> Result<(), String> {
+    write_vendored_libc(crate_dir)?;
     let support_dir = crate_dir.join("slate-support");
     let src_dir = support_dir.join("src");
     std::fs::create_dir_all(&src_dir).map_err(|e| format!("create {}: {e}", src_dir.display()))?;
@@ -993,10 +994,6 @@ fn write_project_crate(
         None => Some(crate_types.to_vec()),
     };
     init_crate(crate_dir, lib_crate_types.as_deref())?;
-    let slate_support = target_guard.is_some();
-    if slate_support {
-        write_slate_support(crate_dir)?;
-    }
     let crate_src = crate_dir.join("src");
     std::fs::create_dir_all(&crate_src)
         .map_err(|e| format!("create {}: {e}", crate_src.display()))?;
@@ -1152,7 +1149,6 @@ fn write_project_crate(
         crate_dir,
         &package_name(crate_dir),
         &[],
-        slate_support,
         has_shims,
         &cargo_features,
         lib_crate_types.as_deref(),

@@ -43,12 +43,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_zero_width_bitfield_abi_c_6 {
@@ -66,6 +60,9 @@ int main(void) {
 // CHECK-NEXT:     tag: i8,
 // CHECK-NEXT:     __slate_pad_1: [u8; 3],
 // CHECK-NEXT:     value: i32,
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn take_aligned(value: __SlateRecord_zero_width_bitfield_abi_c_6) -> i32 {
 // CHECK-NEXT:     value.value + 16
@@ -106,7 +103,7 @@ int main(void) {
 // CHECK-NEXT:     middle = round_trip(middle);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %d %d %zu %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             take_aligned(aligned),
 // CHECK-NEXT:             middle.value,

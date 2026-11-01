@@ -20,9 +20,8 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     #[link_name = "fma"]
-// CHECK-NEXT:     fn __builtin_fma([[ARG_0]]: f64, [[ARG_1:arg[0-9]+]]: f64, [[ARG_2:arg[0-9]+]]: f64) -> f64;
+// CHECK-NEXT:     fn __builtin_fma([[ARG_0:arg[0-9]+]]: f64, [[ARG_1:arg[0-9]+]]: f64, [[ARG_2:arg[0-9]+]]: f64) -> f64;
 // CHECK-NEXT:     #[link_name = "hypot"]
 // CHECK-NEXT:     fn __builtin_hypot([[ARG_0]]: f64, [[ARG_1]]: f64) -> f64;
 // CHECK-NEXT:     #[link_name = "fdim"]
@@ -39,7 +38,7 @@ int main(void) {
 // CHECK-NEXT:     fn __builtin_ilogb([[ARG_0]]: f64) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let fma_v: f64 = unsafe { __builtin_fma(2.0f64, 3.0f64, 1.0f64) };
@@ -53,7 +52,7 @@ int main(void) {
 // CHECK-NEXT:     let ilogb_v: i32 = unsafe { __builtin_ilogb(10.0f64) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %d\n".as_ptr(),
 // CHECK-NEXT:             fma_v,
 // CHECK-NEXT:             hypot_v,

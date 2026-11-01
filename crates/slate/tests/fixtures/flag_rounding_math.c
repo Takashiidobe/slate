@@ -166,9 +166,6 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fesetround([[ARG_0:arg[0-9]+]]: i32) -> i32;
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
-// I686-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0]]: *const u8, ...) -> i32;
 // CHECK-NEXT:     fn __slate_fenv_add_f64(_0: f64, _1: f64) -> f64;
 // CHECK-NEXT:     fn __slate_fenv_div_f32(_0: f32, _1: f32) -> f32;
 // CHECK-NEXT:     fn __slate_fenv_div_f64(_0: f64, _1: f64) -> f64;
@@ -181,7 +178,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: #[repr(C, align(16))]
@@ -279,7 +276,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fesetround(0i32) };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d %a %a %a %a %a\n".as_ptr(),
 // CHECK-NEXT:                 m,
 // CHECK-NEXT:                 folded,
@@ -292,7 +289,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d %a %a %a %a %a\n".as_ptr(),
 // CHECK-NEXT:                 m,
 // CHECK-NEXT:                 quot,
@@ -305,7 +302,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d %a %a %a %a %a %a\n".as_ptr(),
 // CHECK-NEXT:                 m,
 // CHECK-NEXT:                 fromi,

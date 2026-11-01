@@ -18,12 +18,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct OverAligned {
@@ -31,6 +25,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(64))]
 // CHECK-NEXT: struct __SlateAlign64<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut object: OverAligned = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: OverAligned = unsafe { std::mem::zeroed() };
@@ -40,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:     let mut local: __SlateAlign64<i32> = __SlateAlign64(11i32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %d %d\n".as_ptr(),
 // CHECK-NEXT:             32u64,
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(object) as u64) % 32,

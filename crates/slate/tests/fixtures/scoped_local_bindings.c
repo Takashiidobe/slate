@@ -92,10 +92,7 @@ int read_static_total(void) { return total; }
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut total: i32 = 100;
 // CHECK-NEXT: fn fill(out: &mut i32, value: i32) {
@@ -177,7 +174,9 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{} {} {} {} {}", x, outer_seen, first, second, third);
 // CHECK-NEXT:     println!("{} {} {}", total__0, keywords, shadow_params(2i32, 3i32));
-// CHECK-NEXT:     unsafe { printf(c"%d %ld %ld %d %d\n".as_ptr(), filled, a, b, chosen, sum) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%d %ld %ld %d %d\n".as_ptr(), filled, a, b, chosen, sum)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     total__0 + x & 63
 // CHECK-NEXT: }

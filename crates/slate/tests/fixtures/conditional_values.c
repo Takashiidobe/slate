@@ -41,12 +41,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Pair {
@@ -55,6 +49,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: fn sign(x: i32) -> i32 {
 // CHECK-NEXT:     if x > 0 { 1 } else { if x < 0 { -1 } else { 0 } }
 // CHECK-NEXT: }
@@ -94,11 +91,13 @@ int main(void) {
 // CHECK-NEXT:         total += 1000;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{} {} {} {}", total, clamp_add(3i32, 8i32), clamp_add(9i32, - 1i32), seq);
-// CHECK-NEXT:     unsafe { printf(c"%d %.1f %lu %d\n".as_ptr(), nested, half, wide, *cursor) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%d %.1f %lu %d\n".as_ptr(), nested, half, wide, *cursor)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%s %s\n".as_ptr(),
 // CHECK-NEXT:             pick(1i32, c"left".as_ptr(), c"right".as_ptr()),
 // CHECK-NEXT:             pick(0i32, c"left".as_ptr(), c"right".as_ptr()),

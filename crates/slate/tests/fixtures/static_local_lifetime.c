@@ -111,12 +111,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Point {
@@ -125,6 +119,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: static mut global_base: i32 = 100;
 // CHECK-NEXT: fn counter() -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (unsafe { count__11 }) + 1;
@@ -258,10 +255,10 @@ int main(void) {
 // CHECK-NEXT:     running_mean(1.0f64);
 // CHECK-NEXT:     running_mean(2.0f64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%g\n".as_ptr(), running_mean(6.0f64)) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%g\n".as_ptr(), running_mean(6.0f64)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%s %s\n".as_ptr(), name_of(2i32), name_of(0i32)) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%s %s\n".as_ptr(), name_of(2i32), name_of(0i32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let first: i32 = loop_scoped();
 // CHECK-NEXT:     let second: i32 = loop_scoped();

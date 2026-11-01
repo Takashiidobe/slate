@@ -43,8 +43,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-additional-options "-O1" }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn __builtin_expect([[ARG_0]]: i64, [[ARG_1:arg[0-9]+]]: i64) -> i64;
+// CHECK-NEXT:     fn __builtin_expect([[ARG_0:arg[0-9]+]]: i64, [[ARG_1:arg[0-9]+]]: i64) -> i64;
 // CHECK-NEXT:     fn __builtin_expect_with_probability([[ARG_0]]: i64, [[ARG_1]]: i64, [[ARG_2:arg[0-9]+]]: f64) -> i64;
 // CHECK-NEXT:     fn __builtin_unpredictable([[ARG_0]]: i64) -> i64;
 // CHECK-NEXT: }

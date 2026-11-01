@@ -25,17 +25,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Accounting {
 // CHECK-NEXT:     direct: u64,
 // CHECK-NEXT:     indirect: u64,
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut acc: Accounting = Accounting {
 // CHECK-NEXT:     direct: 0u64,
@@ -57,7 +54,7 @@ int main(void) {
 // CHECK-NEXT:     add(0i32, 5u64);
 // CHECK-NEXT:     add(1i32, 7u64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu %llu\n".as_ptr(), acc.direct, acc.indirect) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), acc.direct, acc.indirect) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

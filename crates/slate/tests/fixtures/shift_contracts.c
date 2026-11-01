@@ -44,14 +44,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: fn shl_mixed(value: i64, amount: i32) -> i64 {
 // CHECK-NEXT:     value << amount
 // CHECK-NEXT: }
@@ -66,18 +63,24 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), shl_mixed(1i64, 40i32)) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), shl_mixed(1i64, 40i32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", shl_by_wide(3i32, 4u64));
 // CHECK-NEXT:     println!("{} {} {}", sar(- 1i32, 31u8), sar(- 7i32, 1u8), sar(- 256i32, 4u8));
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%u %u\n".as_ptr(), shr(4294967295u32, 31i64), shr(2147483648u32, 0i64))
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%u %u\n".as_ptr(),
+// CHECK-NEXT:             shr(4294967295u32, 31i64),
+// CHECK-NEXT:             shr(2147483648u32, 0i64),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let top: u64 = 9223372036854775808u64;
 // CHECK-NEXT:     let neg: i64 = -5;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu %lld %lld\n".as_ptr(), top, neg >> 1i32, -1i64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%llu %lld %lld\n".as_ptr(), top, neg >> 1i32, -1i64)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let uc: u8 = 128u8;
 // CHECK-NEXT:     let sc: i8 = -128;
@@ -92,7 +95,9 @@ int main(void) {
 // CHECK-NEXT:     let mut b: u8 = 255u8;
 // CHECK-NEXT:     b = ((((b as u32) as i32) << 4i32) as i8) as u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%d %d %u\n".as_ptr(), s as i32, c as i32, b as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%d %d %u\n".as_ptr(), s as i32, c as i32, b as u32)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let amount: u64 = 5;
 // CHECK-NEXT:     let mut x: i32 = 1;
@@ -100,13 +105,13 @@ int main(void) {
 // CHECK-NEXT:     let mut wide: i64 = 1;
 // CHECK-NEXT:     wide <<= 33i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%d %ld\n".as_ptr(), x, wide) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%d %ld\n".as_ptr(), x, wide) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let shifts: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32, 1i32, 15i32, 30i32]);
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d:%u ".as_ptr(),
 // CHECK-NEXT:                 1i32 << shifts.0[i as usize],
 // CHECK-NEXT:                 3735928559u32 >> shifts.0[i as usize],

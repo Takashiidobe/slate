@@ -43,11 +43,10 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
+// CHECK-NEXT:     fn strlen([[ARG_0:arg[0-9]+]]: *const i8) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -113,11 +112,11 @@ int main(void) {
 // CHECK-NEXT: };
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 8u64, 2u64, 1u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu %zu\n".as_ptr(), 8u64, 2u64, 1u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %c %s %s\n".as_ptr(),
 // CHECK-NEXT:             (*(std::ptr::addr_of_mut!(tail) as *mut Tail)).count,
 // CHECK-NEXT:             (*(std::ptr::addr_of_mut!(tail) as *mut Tail)).tag as i32,
@@ -134,7 +133,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let copy: Tail = unsafe { *(std::ptr::addr_of_mut!(tail) as *mut Tail) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%d %c\n".as_ptr(), copy.count, copy.tag as i32) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%d %c\n".as_ptr(), copy.count, copy.tag as i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(tail) as * mut Tail)).name)
@@ -143,7 +142,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%s %zu\n".as_ptr(),
 // CHECK-NEXT:             name_pointer,
 // CHECK-NEXT:             strlen(

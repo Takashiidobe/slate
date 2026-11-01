@@ -29,7 +29,13 @@ int main(void) {
 // CHECK-NEXT:     let parameter: i32 = parameter_bound(3i32, values.as_mut_ptr() as *mut i32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%lu %lu %d %d\n".as_ptr(), evaluated, unevaluated, bound, parameter)
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%lu %lu %d %d\n".as_ptr(),
+// CHECK-NEXT:             evaluated,
+// CHECK-NEXT:             unevaluated,
+// CHECK-NEXT:             bound,
+// CHECK-NEXT:             parameter,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0

@@ -159,8 +159,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn snprintf([[ARG_0]]: *mut i8, [[ARG_1:arg[0-9]+]]: u64, [[ARG_2:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn snprintf([[ARG_0:arg[0-9]+]]: *mut i8, [[ARG_1:arg[0-9]+]]: u64, [[ARG_2:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn sscanf([[ARG_0]]: *const i8, [[ARG_1]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn strfromd([[ARG_0]]: *mut i8, [[ARG_1]]: u64, [[ARG_2]]: *const i8, [[ARG_3:arg[0-9]+]]: f64) -> i32;
 // CHECK-NEXT:     fn strfromf([[ARG_0]]: *mut i8, [[ARG_1]]: u64, [[ARG_2]]: *const i8, [[ARG_3]]: f32) -> i32;

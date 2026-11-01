@@ -27,10 +27,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut ri: i32 = 0;
@@ -76,7 +73,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_9]].checked_add([[T_10]]).is_none() || (([[T_11]] as u32) as i128) != [[T_11]]
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%d %u\n".as_ptr(), add_u, ru) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%d %u\n".as_ptr(), add_u, ru) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mul_ll: i32 = ({
 // CHECK-NEXT:         let [[T_12:__t[0-9]+]]: i128 = 3037000500 as i128;
@@ -88,7 +85,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_12]].checked_mul([[T_13]]).is_none() || (([[T_14]] as i64) as i128) != [[T_14]]
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%d %lld\n".as_ptr(), mul_ll, rll) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%d %lld\n".as_ptr(), mul_ll, rll) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

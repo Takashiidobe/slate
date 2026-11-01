@@ -60,12 +60,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Opaque {}
@@ -89,6 +83,9 @@ int main(void) {
 // CHECK-NEXT: struct Node {
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT:     next: *mut Node,
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn segment_length(s: &Segment) -> i64 {
 // CHECK-NEXT:     (((unsafe { (*(s as *const Segment)).to.x })
@@ -119,7 +116,7 @@ int main(void) {
 // CHECK-NEXT:     s.weight = 0.5f64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%ld %c %.2f\n".as_ptr(),
 // CHECK-NEXT:             segment_length(&(*std::ptr::addr_of_mut!(s))),
 // CHECK-NEXT:             s.tag as i32,

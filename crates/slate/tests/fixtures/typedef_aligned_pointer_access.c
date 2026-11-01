@@ -40,11 +40,10 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: i32, [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
+// CHECK-NEXT:     fn memset([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: i32, [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -102,7 +101,7 @@ int main(void) {
 // CHECK-NEXT:     set((unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(3) }) as *mut S);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
 // CHECK-NEXT:             sum((buffer.0.as_mut_ptr() as *mut i8).add(3) as *mut S),
 // CHECK-NEXT:         )
@@ -112,7 +111,7 @@ int main(void) {
 // CHECK-NEXT:     put((unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(17) }) as *mut W, 0i32, 4i64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld %lld\n".as_ptr(),
 // CHECK-NEXT:             lane((buffer.0.as_mut_ptr() as *mut i8).add(17) as *mut W, 0i32),
 // CHECK-NEXT:             lane((buffer.0.as_mut_ptr() as *mut i8).add(17) as *mut W, 1i32),

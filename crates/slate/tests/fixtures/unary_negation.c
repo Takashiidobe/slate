@@ -15,10 +15,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn neg_int(x: i32) -> i32 {
 // CHECK-NEXT:     -x
@@ -29,7 +26,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", neg_int(7i32));
 // CHECK-NEXT:     println!("{}", neg_int(- 12i32));
-// CHECK-NEXT:     unsafe { printf(c"%f\n".as_ptr(), neg_double(1.5f64)) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%f\n".as_ptr(), neg_double(1.5f64)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

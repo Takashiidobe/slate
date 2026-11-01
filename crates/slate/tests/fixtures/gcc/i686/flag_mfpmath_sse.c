@@ -68,7 +68,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-msse2 -mfpmath=sse" }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -157,7 +156,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
@@ -331,7 +330,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", 0i32);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"static %a %a %g %a %a %a %a %a %d\n".as_ptr(),
 // CHECK-NEXT:             literal,
 // CHECK-NEXT:             summed,
@@ -347,7 +346,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"chain %g store %g cast %g arg %g\n".as_ptr(),
 // CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(huge))
 // CHECK-NEXT:                 * std::ptr::read_volatile(std::ptr::addr_of!(ten))
@@ -362,7 +361,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"float %g %g\n".as_ptr(),
 // CHECK-NEXT:             (std::ptr::read_volatile(std::ptr::addr_of!(f))
 // CHECK-NEXT:                 + std::ptr::read_volatile(std::ptr::addr_of!(fone))
@@ -400,7 +399,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"lit %d %d %d %.17g %.17g\n".as_ptr(),
 // CHECK-NEXT:             ((0.1f32 as f64) == 0.1f64) as i32,
 // CHECK-NEXT:             ((0.1f32 as f64) == 0.1f64) as i32,
@@ -412,7 +411,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"fold %g %g\n".as_ptr(),
 // CHECK-NEXT:             1e308f64 * (10i32 as f64) / (10i32 as f64),
 // CHECK-NEXT:             1e308f64 * 10.0f64,
@@ -422,7 +421,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(yes)) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"arms %g %g %g\n".as_ptr(),
 // CHECK-NEXT:             (if std::ptr::read_volatile(std::ptr::addr_of!(yes)) != 0 {
 // CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(huge))
@@ -444,7 +443,7 @@ int main(void) {
 // CHECK-NEXT:         * unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"stmt %g\n".as_ptr(),
 // CHECK-NEXT:             [[V_1]] / std::ptr::read_volatile(std::ptr::addr_of!(ten)),
 // CHECK-NEXT:         )
@@ -474,7 +473,7 @@ int main(void) {
 // CHECK-NEXT:     assigned = [[V_2]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"update %g %g %g\n".as_ptr(),
 // CHECK-NEXT:             compound,
 // CHECK-NEXT:             stored,
@@ -484,7 +483,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"narrow %g %g %d %d\n".as_ptr(),
 // CHECK-NEXT:             (std::ptr::read_volatile(std::ptr::addr_of!(huge)) as f32) as f64,
 // CHECK-NEXT:             ((std::ptr::read_volatile(std::ptr::addr_of!(huge))
@@ -499,7 +498,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"widen %g %g\n".as_ptr(),
 // CHECK-NEXT:             ((std::ptr::read_volatile(std::ptr::addr_of!(fhuge)) * 10.0f32) as f64)
 // CHECK-NEXT:                 / (10.0f32 as f64),
@@ -510,7 +509,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"vararg %g\n".as_ptr(),
 // CHECK-NEXT:             (std::ptr::read_volatile(std::ptr::addr_of!(fhuge))
 // CHECK-NEXT:                 * std::ptr::read_volatile(std::ptr::addr_of!(fhuge))) as f64,
@@ -519,7 +518,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"int %d %g %d %g\n".as_ptr(),
 // CHECK-NEXT:             ((std::ptr::read_volatile(std::ptr::addr_of!(big)) as f64)
 // CHECK-NEXT:                 == (std::ptr::read_volatile(std::ptr::addr_of!(big)) as f64)) as i32,
@@ -533,7 +532,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"round %a %a\n".as_ptr(),
 // CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(c1))
 // CHECK-NEXT:                 * std::ptr::read_volatile(std::ptr::addr_of!(d1)),
@@ -553,7 +552,7 @@ int main(void) {
 // CHECK-NEXT:         z * unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) }
 // CHECK-NEXT:             / unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"complex %g %g %d\n".as_ptr(), zz.re, zz.im, true as i32) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"complex %g %g %d\n".as_ptr(), zz.re, zz.im, true as i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

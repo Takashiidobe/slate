@@ -25,8 +25,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-fcx-fortran-rules" }
 // CHECK-NEXT: unsafe extern "C" {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// I686-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -137,11 +135,10 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_to_f32(__a: LongDouble) -> f32;
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const u8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// I686-UNKNOWN-LINUX-GNU-NEXT: }
+// I686-UNKNOWN-LINUX-GNU-EMPTY:
+// I686-UNKNOWN-LINUX-GNU-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // I686-UNKNOWN-LINUX-GNU-NEXT: }
 // I686-UNKNOWN-LINUX-GNU-EMPTY:
 // I686-UNKNOWN-LINUX-GNU-NEXT: #[repr(C, align(16))]
@@ -243,7 +240,7 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT: fn show(name: *const i8, z: num_complex::Complex<f64>) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT: fn show(name: *const u8, z: num_complex::Complex<f64>) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%s %a %a\n".as_ptr(), name, z.re, z.im) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%s %a %a\n".as_ptr(), name, z.re, z.im) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -232,12 +232,6 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const u8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Small {
@@ -259,6 +253,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(4))]
 // CHECK-NEXT: struct __SlateAlign4<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: static mut small: __SlateAlign4<Small> = __SlateAlign4(unsafe { std::mem::zeroed() });
 // CHECK-NEXT: static mut large: Large = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: static mut holder: Holder = unsafe { std::mem::zeroed() };
@@ -267,13 +264,13 @@ int main(void) {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: Large = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: Small = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 4u64, 4u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu\n".as_ptr(), 4u64, 4u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 20u64, 4u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu\n".as_ptr(), 20u64, 4u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), 12u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), 12u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut loaded: Small = unsafe {
 // CHECK-NEXT:         __slate_libatomic::AtomicGeneric::from_ptr(
@@ -368,7 +365,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%c %d %d %d %c\n".as_ptr(),
 // CHECK-NEXT:             (holder.head as u32) as i32,
 // CHECK-NEXT:             (inner.a[0] as u32) as i32,

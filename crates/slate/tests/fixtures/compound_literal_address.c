@@ -50,7 +50,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%c %lu %c %lu\n".as_ptr(),
 // CHECK-NEXT:             *first.data.add(0) as i32,
 // CHECK-NEXT:             first.length,

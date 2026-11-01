@@ -45,12 +45,11 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn __builtin_unreachable();
-// CHECK-NEXT:     fn __builtin_assume([[ARG_0]]: bool);
+// CHECK-NEXT:     fn __builtin_assume([[ARG_0:arg[0-9]+]]: bool);
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn classify(x: i32) -> i32 {
 // CHECK-NEXT:     match x & 3 {
@@ -100,7 +99,7 @@ int main(void) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"\n%u\n".as_ptr(), checked(7u32)) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"\n%u\n".as_ptr(), checked(7u32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

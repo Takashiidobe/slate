@@ -299,6 +299,7 @@ fn bitfields_path() -> PathBuf {
 
 fn generated_crate_manifest(name: &str, project: &Path) -> Result<String, String> {
     support_crate_path("num-traits", project)?;
+    support_crate_path("libc", project)?;
     Ok(format!(
         r#"[package]
 name = "{name}"
@@ -306,7 +307,7 @@ version = "0.0.0"
 edition = "2024"
 
 [dependencies]
-libc = "0.2"
+slate-support = {{ path = "{}" }}
 aligned = {{ path = "{}" }}
 bitint = {{ path = "{}" }}
 num-complex = {{ path = "{}", default-features = false }}
@@ -324,6 +325,7 @@ codegen-units = 256
 
 [workspace]
 "#,
+        support_crate_path("slate-support", project)?.display(),
         support_crate_path("aligned", project)?.display(),
         support_crate_path("bitint", project)?.display(),
         support_crate_path("num-complex", project)?.display(),

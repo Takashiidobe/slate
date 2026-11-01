@@ -20,10 +20,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let pos: f64 = 1234.5678f64;
@@ -32,25 +29,27 @@ int main(void) {
 // CHECK-NEXT:     let big: f64 = 1e300f64;
 // CHECK-NEXT:     let small: f64 = 1e-300f64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%e %.2e %10.2e %+e\n".as_ptr(), pos, pos, pos, pos) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%e %.2e %10.2e %+e\n".as_ptr(), pos, pos, pos, pos)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%E %.2E\n".as_ptr(), pos, pos) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%E %.2E\n".as_ptr(), pos, pos) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%-10.2e|\n".as_ptr(), pos) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%-10.2e|\n".as_ptr(), pos) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%e %+e\n".as_ptr(), neg, neg) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%e %+e\n".as_ptr(), neg, neg) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%.0e\n".as_ptr(), pos) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%.0e\n".as_ptr(), pos) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%e\n".as_ptr(), zero) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%e\n".as_ptr(), zero) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%e %E\n".as_ptr(), big, small) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%e %E\n".as_ptr(), big, small) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

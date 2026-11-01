@@ -153,22 +153,24 @@ int main(void) {
 // CHECK-NEXT:     integer!(i8, u8, i16, u16, i32, u32, i64, u64, i128, u128);
 // CHECK-NEXT:     float!(f32, f64);
 // CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct holder {
 // CHECK-NEXT:     tag: i8,
 // CHECK-NEXT:     lanes: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32>,
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: fn show(name: *const i8, x: u128) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%s %016llx%016llx\n".as_ptr(), name, (x >> 64i32) as u64, x as u64)
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%s %016llx%016llx\n".as_ptr(),
+// CHECK-NEXT:             name,
+// CHECK-NEXT:             (x >> 64i32) as u64,
+// CHECK-NEXT:             x as u64,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
@@ -293,12 +295,14 @@ int main(void) {
 // CHECK-NEXT:             };
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"s[%d]=%lld\n".as_ptr(), i, s[i as usize] as i64) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(c"s[%d]=%lld\n".as_ptr(), i, s[i as usize] as i64)
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s[2] = s[0] * s[1];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"s[2]=%lld\n".as_ptr(), s[2] as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"s[2]=%lld\n".as_ptr(), s[2] as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut narrow: std::simd::Simd<u64, 2> = std::simd::Simd::from_array([
 // CHECK-NEXT:         18446744073709551615u64, 3u64,
@@ -311,7 +315,7 @@ int main(void) {
 // CHECK-NEXT:         b.to_array().map(|__lane| __lane as u64),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"back %llx %llx\n".as_ptr(), back[0], back[1]) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"back %llx %llx\n".as_ptr(), back[0], back[1]) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let bytes: std::simd::Simd<u8, 32> = unsafe {
 // CHECK-NEXT:         std::mem::transmute::<
@@ -344,7 +348,14 @@ int main(void) {
 // CHECK-NEXT:     show(c"h1".as_ptr(), h.lanes[1]);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%zu %zu %zu %zu %zu\n".as_ptr(), 32u64, 32u64, 64u64, 64u64, 64u64)
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%zu %zu %zu %zu %zu\n".as_ptr(),
+// CHECK-NEXT:             32u64,
+// CHECK-NEXT:             32u64,
+// CHECK-NEXT:             64u64,
+// CHECK-NEXT:             64u64,
+// CHECK-NEXT:             64u64,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0

@@ -133,10 +133,7 @@ int main(void) {
 // CHECK-NEXT:     float!(f32, f64);
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut seed: std::simd::Simd<u8, 2> = std::simd::Simd::from_array([3u8, 250u8]);
@@ -283,7 +280,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"spread %u %d %d\n".as_ptr(),
 // CHECK-NEXT:             total,
 // CHECK-NEXT:             (spread[1] as u32) as i32,
@@ -300,7 +297,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     f = f * f - f / __slate_vector::__SlateVector::splat(2i32 as f32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"f %g %g\n".as_ptr(), f[3] as f64, f[127] as f64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"f %g %g\n".as_ptr(), f[3] as f64, f[127] as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut w: __slate_vector::__SlateVector<i32, 96, __slate_vector::Align512> = __slate_vector::__SlateVector::from_array({
 // CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: [i32; 96] = unsafe { std::mem::zeroed() };
@@ -316,7 +313,15 @@ int main(void) {
 // CHECK-NEXT:         std::simd::Simd::from_array([[[T_4]][1], [[T_4]][127]])
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("pair {} {}", (pair[0] as u32) as i32, (pair[1] as u32) as i32);
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 128u64, 128u64, 512u64, 512u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
+// CHECK-NEXT:             128u64,
+// CHECK-NEXT:             128u64,
+// CHECK-NEXT:             512u64,
+// CHECK-NEXT:             512u64,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

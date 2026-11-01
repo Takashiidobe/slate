@@ -32,8 +32,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn memcmp([[ARG_0]]: *const (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> i32;
+// CHECK-NEXT:     fn memcmp([[ARG_0:arg[0-9]+]]: *const (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> i32;
 // CHECK-NEXT:     fn strcmp([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> i32;
 // CHECK-NEXT:     fn strncmp([[ARG_0]]: *const i8, [[ARG_1]]: *const i8, [[ARG_2]]: u64) -> i32;
 // CHECK-NEXT:     fn strchr([[ARG_0]]: *const i8, [[ARG_1]]: i32) -> *mut i8;
@@ -45,7 +44,7 @@ int main(void) {
 // CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut alpha: [i8; 4] = [97, 98, 99, 0];
@@ -62,7 +61,7 @@ int main(void) {
 // CHECK-NEXT:     let second_byte: i32 = 169;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %d %d %d %d\n".as_ptr(),
 // CHECK-NEXT:             strlen(alpha.as_mut_ptr() as *const i8),
 // CHECK-NEXT:             (strcmp(alpha.as_mut_ptr() as *const i8, alpha.as_mut_ptr() as *const i8)
@@ -86,7 +85,7 @@ int main(void) {
 // CHECK-NEXT:     let last: *mut i8 = unsafe { strrchr(hay.as_mut_ptr() as *const i8, 97i32) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%c %c %d %d %d %d %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             *first as i32,
 // CHECK-NEXT:             *last as i32,

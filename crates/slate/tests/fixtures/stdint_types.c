@@ -46,18 +46,15 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct FixedPair {
 // CHECK-NEXT:     left: i16,
 // CHECK-NEXT:     right: u32,
 // CHECK-NEXT:     count: u64,
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut global_u32: u32 = 4000000000;
 // CHECK-NEXT: static mut global_size: u64 = 7;
@@ -87,7 +84,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", add_i32(10i32, 20i16));
-// CHECK-NEXT:     unsafe { printf(c"%lu\n".as_ptr(), widen_u32(5u32)) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lu\n".as_ptr(), widen_u32(5u32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", use_fixed_types());
 // CHECK-NEXT:     0

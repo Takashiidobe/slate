@@ -21,9 +21,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![feature(link_llvm_intrinsics)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.x86.sse2.lfence"]
 // CHECK-NEXT:     fn __slate_intrinsic_6f7c5327cf9e8272();
@@ -36,7 +33,7 @@ int main(void) {
 // CHECK-NEXT:     #[link_name = "llvm.x86.sse.sfence"]
 // CHECK-NEXT:     fn __slate_intrinsic_b2ae1adafd1df521();
 // CHECK-NEXT:     #[link_name = "llvm.x86.flags.write.u64"]
-// CHECK-NEXT:     fn __slate_intrinsic_c6a72ac15744325c([[ARG_0]]: i64);
+// CHECK-NEXT:     fn __slate_intrinsic_c6a72ac15744325c([[ARG_0:arg[0-9]+]]: i64);
 // CHECK-NEXT:     #[link_name = "llvm.x86.sse2.pause"]
 // CHECK-NEXT:     fn __slate_intrinsic_cf7232a07549d448();
 // CHECK-NEXT: }

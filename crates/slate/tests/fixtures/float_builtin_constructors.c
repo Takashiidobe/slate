@@ -17,12 +17,11 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn nan([[ARG_0:arg[0-9]+]]: *const i8) -> f64;
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     #[link_name = "nan"]
 // CHECK-NEXT:     fn __builtin_nan([[ARG_0]]: *const i8) -> f64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -55,7 +54,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %d %d %08x %016llx %d\n".as_ptr(),
 // CHECK-NEXT:             ((if std::ptr::read_volatile(std::ptr::addr_of!(infinity)).is_infinite() {
 // CHECK-NEXT:                 if std::ptr::read_volatile(std::ptr::addr_of!(infinity))

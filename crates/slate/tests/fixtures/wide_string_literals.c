@@ -20,11 +20,10 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn wcslen([[ARG_0]]: *const i32) -> u64;
+// CHECK-NEXT:     fn wcslen([[ARG_0:arg[0-9]+]]: *const i32) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
@@ -45,7 +44,7 @@ int main(void) {
 // CHECK-NEXT:     buf.0[0] = 76;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %d %d\n".as_ptr(),
 // CHECK-NEXT:             wcslen(greeting),
 // CHECK-NEXT:             *unsafe { greeting }.add(5),
@@ -55,7 +54,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%x %x %x %x\n".as_ptr(),
 // CHECK-NEXT:             (*u16.add(0) as u32) as i32,
 // CHECK-NEXT:             (*u16.add(2) as u32) as i32,
@@ -65,7 +64,13 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%ls %zu\n".as_ptr(), buf.0.as_mut_ptr() as *mut i32, 16u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%ls %zu\n".as_ptr(),
+// CHECK-NEXT:             buf.0.as_mut_ptr() as *mut i32,
+// CHECK-NEXT:             16u64,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}", unsafe { __slate_str26[1] }, (unsafe { *

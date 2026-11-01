@@ -23,10 +23,6 @@ int later() { return bump() * 10; }
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-std=gnu17" }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: static mut counter: i32 = unsafe { std::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump() -> i32 {

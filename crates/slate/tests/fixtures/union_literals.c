@@ -93,7 +93,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -179,7 +178,7 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -411,7 +410,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%f %s %s\n".as_ptr(),
 // CHECK-NEXT:             second.real as f64,
 // CHECK-NEXT:             pointer.text,
@@ -431,7 +430,7 @@ int main(void) {
 // CHECK-NEXT:         "{} {}", zero_after((unsafe { std::ptr::addr_of!(record_static) }) as * const (),
 // CHECK-NEXT:         1u64, 4u64), __slate_f80_to_i32(unsafe { wide_static.wide })
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), bit_static.word) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), bit_static.word) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let seed: i32 = 3;
 // CHECK-NEXT:     let local: same_size = same_size {
@@ -456,7 +455,7 @@ int main(void) {
 // CHECK-NEXT:         (unsafe { local_partial.small }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%s %d\n".as_ptr(),
 // CHECK-NEXT:             local_array.text.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             zero_after(std::ptr::addr_of_mut!(local_array) as *const (), 2u64, 4u64),

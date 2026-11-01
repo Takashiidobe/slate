@@ -20,10 +20,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: /// noreturn via an infinite loop: correct C, but Slate's lowering does not yet
 // CHECK-NEXT: /// prove this diverges (the generated Rust loop keeps a conditional break
 // CHECK-NEXT: /// guard), so it must fall back to a conservative, non-`!` return type

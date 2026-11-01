@@ -41,16 +41,12 @@ int main(void) {
 // CHECK-NEXT: use crate::__slate_unit_shapes::shape_move;
 // CHECK-NEXT: use crate::__slate_unit_shapes::tag_score;
 // CHECK-EMPTY:
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut shapes: __SlateAlign16<[shape; 3]> = __SlateAlign16([
@@ -116,7 +112,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe { shape_area_sum(&shapes.0) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u %d\n".as_ptr(),
 // CHECK-NEXT:             shapes.0[2].flags.__slate_bits_0.__get_ready() as i32,
 // CHECK-NEXT:             shapes.0[2].flags.__slate_bits_0.__get_level() as i32,

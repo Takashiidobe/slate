@@ -164,9 +164,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     #[link_name = "alloca"]
-// CHECK-NEXT:     fn __builtin_alloca([[ARG_0]]: u64) -> *mut ();
+// CHECK-NEXT:     fn __builtin_alloca([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     fn __builtin_alloca_with_align([[ARG_0]]: u64, [[ARG_1:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     #[link_name = "memset"]
 // CHECK-NEXT:     fn __builtin_memset([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2:arg[0-9]+]]: u64) -> *mut ();

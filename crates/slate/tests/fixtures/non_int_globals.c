@@ -27,10 +27,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut small: i8 = 12;
 // CHECK-NEXT: static mut byte: u8 = 200;
@@ -59,13 +56,13 @@ int main(void) {
 // CHECK-NEXT:         total = add_double(total, ratio as f64);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", (unsafe { small }) as i32);
-// CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), (byte as u32) as i32) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), (byte as u32) as i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%f\n".as_ptr(), ratio as f64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%f\n".as_ptr(), ratio as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%f\n".as_ptr(), total) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%f\n".as_ptr(), total) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

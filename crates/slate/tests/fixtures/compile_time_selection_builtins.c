@@ -35,7 +35,7 @@ int main(void) {
 // CHECK-NEXT:     let d_name: *const i8 = c"double".as_ptr();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %d %d %d %s %s\n".as_ptr(),
 // CHECK-NEXT:             chosen_true,
 // CHECK-NEXT:             chosen_false,

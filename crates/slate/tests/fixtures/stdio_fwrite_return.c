@@ -20,83 +20,22 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn remove([[ARG_0:arg[0-9]+]]: *const i8) -> i32;
-// CHECK-NEXT:     fn fclose([[ARG_0]]: *mut _IO_FILE) -> i32;
-// CHECK-NEXT:     fn fopen([[ARG_0]]: *const i8, [[ARG_1:arg[0-9]+]]: *const i8) -> *mut _IO_FILE;
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn puts([[ARG_0]]: *const i8) -> i32;
-// CHECK-NEXT:     fn fwrite([[ARG_0]]: *const (), [[ARG_1]]: u64, [[ARG_2:arg[0-9]+]]: u64, [[ARG_3:arg[0-9]+]]: *mut _IO_FILE) -> u64;
+// CHECK-NEXT:     fn fwrite(
+// CHECK-NEXT:         [[ARG_0]]: *const (),
+// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: u64,
+// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: u64,
+// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut slate_support::FILE,
+// CHECK-NEXT:     ) -> u64;
 // CHECK-NEXT: }
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_FILE {
-// CHECK-NEXT:     _flags: i32,
-// CHECK-NEXT:     _IO_read_ptr: *mut i8,
-// CHECK-NEXT:     _IO_read_end: *mut i8,
-// CHECK-NEXT:     _IO_read_base: *mut i8,
-// CHECK-NEXT:     _IO_write_base: *mut i8,
-// CHECK-NEXT:     _IO_write_ptr: *mut i8,
-// CHECK-NEXT:     _IO_write_end: *mut i8,
-// CHECK-NEXT:     _IO_buf_base: *mut i8,
-// CHECK-NEXT:     _IO_buf_end: *mut i8,
-// CHECK-NEXT:     _IO_save_base: *mut i8,
-// CHECK-NEXT:     _IO_backup_base: *mut i8,
-// CHECK-NEXT:     _IO_save_end: *mut i8,
-// CHECK-NEXT:     _markers: *mut _IO_marker,
-// CHECK-NEXT:     _chain: *mut _IO_FILE,
-// CHECK-NEXT:     _fileno: i32,
-// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits4U0,
-// CHECK-NEXT:     _short_backupbuf: [i8; 1],
-// CHECK-NEXT:     _old_offset: i64,
-// CHECK-NEXT:     _cur_column: u16,
-// CHECK-NEXT:     _vtable_offset: i8,
-// CHECK-NEXT:     _shortbuf: [i8; 1],
-// CHECK-NEXT:     _lock: *mut (),
-// CHECK-NEXT:     _offset: i64,
-// CHECK-NEXT:     _codecvt: *mut _IO_codecvt,
-// CHECK-NEXT:     _wide_data: *mut _IO_wide_data,
-// CHECK-NEXT:     _freeres_list: *mut _IO_FILE,
-// CHECK-NEXT:     _freeres_buf: *mut (),
-// CHECK-NEXT:     _prevchain: *mut *mut _IO_FILE,
-// CHECK-NEXT:     _mode: i32,
-// CHECK-NEXT:     _unused3: i32,
-// CHECK-NEXT:     _total_written: u64,
-// CHECK-NEXT:     _unused2: [i8; 8],
-// CHECK-NEXT: }
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_marker {}
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_codecvt {}
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_wide_data {}
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         [u8;3],
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
-// CHECK-NEXT:     pub struct __SlateBits4U0 {
-// CHECK-NEXT:         #[bits(24)]
-// CHECK-NEXT:         pub _flags2: i32,
-// CHECK-NEXT:     }
-// CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe { remove(c"slate_stdio_fwrite_return.tmp".as_ptr()) };
-// CHECK-NEXT:     let f: *mut _IO_FILE = unsafe {
-// CHECK-NEXT:         fopen(c"slate_stdio_fwrite_return.tmp".as_ptr(), c"w".as_ptr())
+// CHECK-NEXT:     let f: *mut slate_support::FILE = unsafe {
+// CHECK-NEXT:         slate_support::fopen(c"slate_stdio_fwrite_return.tmp".as_ptr(), c"w".as_ptr())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if f.is_null() {
-// CHECK-NEXT:         unsafe { puts(c"open-fail".as_ptr()) };
+// CHECK-NEXT:         unsafe { slate_support::puts(c"open-fail".as_ptr()) };
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 16]> = __SlateAlign16([
@@ -104,8 +43,8 @@ int main(void) {
 // CHECK-NEXT:         100i8, 101i8, 0i8,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let n: u64 = unsafe { fwrite(buf.0.as_mut_ptr() as *const (), 1u64, 15u64, f) };
-// CHECK-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), n) };
-// CHECK-NEXT:     unsafe { fclose(f) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), n) };
+// CHECK-NEXT:     unsafe { slate_support::fclose(f) };
 // CHECK-NEXT:     unsafe { remove(c"slate_stdio_fwrite_return.tmp".as_ptr()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

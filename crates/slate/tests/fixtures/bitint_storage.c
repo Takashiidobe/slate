@@ -98,19 +98,21 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn dump(name: *const i8, p: *const (), n: u64) {
 // CHECK-NEXT:     let bytes: *const u8 = p as *const u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%s %zu:".as_ptr(), name, n) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%s %zu:".as_ptr(), name, n) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c" %02x".as_ptr(), (*bytes.add(i as usize) as u32) as i32) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c" %02x".as_ptr(),
+// CHECK-NEXT:                 (*bytes.add(i as usize) as u32) as i32,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
@@ -209,7 +211,7 @@ int main(void) {
 // CHECK-NEXT:     let mut forty: i64 = -123456789012i64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %d %d %d %d %lld\n".as_ptr(),
 // CHECK-NEXT:             (seven as u32) as i32,
 // CHECK-NEXT:             nine as i32,
@@ -254,7 +256,7 @@ int main(void) {
 // CHECK-NEXT:     >>::from_u128(flag as u128);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld %llu %lld %lld %llu %lld\n".as_ptr(),
 // CHECK-NEXT:             sixty_five.to_i128() as i64,
 // CHECK-NEXT:             unsigned_sixty_five.to_u128() as u64,
@@ -335,7 +337,7 @@ int main(void) {
 // CHECK-NEXT:     >>::from_bint(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(-1 as i128));
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu %zu %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             64u64,
 // CHECK-NEXT:             8u64,

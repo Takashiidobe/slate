@@ -78,7 +78,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -165,7 +164,7 @@ int main(void) {
 // CHECK-NEXT:     fn __slate_printf__ri32_pi8_f80(_0: *const i8, _1: LongDouble) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -444,14 +443,14 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%.12f %.12f\n".as_ptr(), s, c) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%.12f %.12f\n".as_ptr(), s, c) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}", below(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]), LongDouble([0, 0,
 // CHECK-NEXT:         0, 0, 0, 0, 0, 128, 0, 64])), below(LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0,
 // CHECK-NEXT:         64]), LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]))
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe { printf(c"%.3f\n".as_ptr(), square(1.5f32) as f64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%.3f\n".as_ptr(), square(1.5f32) as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -466,7 +465,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%.1f\n".as_ptr(), from_int(-42i32)) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%.1f\n".as_ptr(), from_int(-42i32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -478,7 +477,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%llx\n".as_ptr(), add_words(281483566841860u64, 4503737069535231u64))
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%llx\n".as_ptr(),
+// CHECK-NEXT:             add_words(281483566841860u64, 4503737069535231u64),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", add_dwords(5i32, - 7i32));

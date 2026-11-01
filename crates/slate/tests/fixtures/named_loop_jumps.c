@@ -74,10 +74,6 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-std=c2y" }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: fn grid(limit: i32) -> i32 {
 // CHECK-NEXT:     let mut j: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut i: i32 = unsafe { std::mem::zeroed() };

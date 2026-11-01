@@ -72,10 +72,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const u8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut global_cl: num_complex::Complex<f128> = num_complex::Complex {
 // CHECK-NEXT:     re: 1.25f128,
@@ -103,7 +100,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn show(name: *const u8, z: num_complex::Complex<f128>) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%s %a %a\n".as_ptr(), name, z.re as f64, z.im as f64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%s %a %a\n".as_ptr(), name, z.re as f64, z.im as f64)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -160,7 +159,9 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"narrow %a %a\n".as_ptr(), narrowed.re, narrowed.im) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"narrow %a %a\n".as_ptr(), narrowed.re, narrowed.im)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut f: num_complex::Complex<f32> = num_complex::Complex {
 // CHECK-NEXT:         re: 0.25f32,
@@ -207,7 +208,7 @@ int main(void) {
 // CHECK-NEXT:     let re: f128 = a.re;
 // CHECK-NEXT:     let truncated: i32 = a.re as i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%a %d\n".as_ptr(), re as f64, truncated) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%a %d\n".as_ptr(), re as f64, truncated) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

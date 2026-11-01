@@ -238,7 +238,6 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut re_registers,
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT:     fn regfree([[ARG_0]]: *mut re_pattern_buffer);
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn arc4random_uniform([[ARG_0]]: u32) -> u32;
 // CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT:     fn secure_getenv([[ARG_0]]: *const i8) -> *mut i8;

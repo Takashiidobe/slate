@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:     bits.__slate_bits_1.__set_tail(109517u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u %d %llu %u %zu\n".as_ptr(),
 // CHECK-NEXT:             (bits.tag as u32) as i32,
 // CHECK-NEXT:             bits.__slate_bits_0.__get_low() as i32,

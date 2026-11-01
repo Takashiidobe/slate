@@ -33,10 +33,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn add128(a: i128, b: i128) -> i128 {
 // CHECK-NEXT:     a + b
@@ -48,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:     let hi: u64 = (v >> 64i32) as u64;
 // CHECK-NEXT:     let lo: u64 = v as u64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu:%llu\n".as_ptr(), hi, lo) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu:%llu\n".as_ptr(), hi, lo) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

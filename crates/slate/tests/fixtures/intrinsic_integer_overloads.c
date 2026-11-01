@@ -19,19 +19,16 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![feature(link_llvm_intrinsics)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.bswap.i16"]
-// CHECK-NEXT:     fn __slate_intrinsic_1a0c079c71348b00([[ARG_0]]: u16) -> u16;
+// CHECK-NEXT:     fn __slate_intrinsic_1a0c079c71348b00([[ARG_0:arg[0-9]+]]: u16) -> u16;
 // CHECK-NEXT:     #[link_name = "llvm.bswap.i64"]
 // CHECK-NEXT:     fn __slate_intrinsic_5c27152fac4a123f([[ARG_0]]: u64) -> u64;
 // CHECK-NEXT:     #[link_name = "llvm.bswap.i32"]
 // CHECK-NEXT:     fn __slate_intrinsic_e94e9cf815168b51([[ARG_0]]: u32) -> u32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn input() -> u32 {
@@ -48,7 +45,13 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%x %x %llx %d\n".as_ptr(), (small as u32) as i32, medium, large, calls)
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%x %x %llx %d\n".as_ptr(),
+// CHECK-NEXT:             (small as u32) as i32,
+// CHECK-NEXT:             medium,
+// CHECK-NEXT:             large,
+// CHECK-NEXT:             calls,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0

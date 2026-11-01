@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%s %s %s\n".as_ptr(),
 // CHECK-NEXT:             mutable_pick(0i32),
 // CHECK-NEXT:             const_pick(0i32),

@@ -929,7 +929,7 @@ fn translation_uses_native_headers_without_sysroot() {
         "translate failed without an installed sysroot:\n{}",
         String::from_utf8_lossy(&output.stderr)
     );
-    assert!(String::from_utf8_lossy(&output.stdout).contains("fn printf"));
+    assert!(String::from_utf8_lossy(&output.stdout).contains("println!"));
 }
 
 #[cfg(unix)]

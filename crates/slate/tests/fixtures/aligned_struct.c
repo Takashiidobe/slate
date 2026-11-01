@@ -58,17 +58,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Aligned {
 // CHECK-NEXT:     a: i8,
 // CHECK-NEXT:     b: i32,
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn next_value() -> i32 {
 // CHECK-NEXT:     9
@@ -110,13 +107,13 @@ int main(void) {
 // CHECK-NEXT:     s.a = 5;
 // CHECK-NEXT:     s.b = 4660;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 16u64, 16u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu\n".as_ptr(), 16u64, 16u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 0u64, 4u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu\n".as_ptr(), 0u64, 4u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%d %x\n".as_ptr(), s.a as i32, s.b) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%d %x\n".as_ptr(), s.a as i32, s.b) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}", effectful_case(), repeated_case(), dependent_case(),

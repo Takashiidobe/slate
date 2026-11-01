@@ -41,12 +41,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct padded {
@@ -104,6 +98,9 @@ int main(void) {
 // CHECK-NEXT:         pub __slate_pad_2: u8,
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut padded: padded = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: padded = unsafe { std::mem::zeroed() };
@@ -138,7 +135,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u %d %u\n".as_ptr(),
 // CHECK-NEXT:             (padded.first as u32) as i32,
 // CHECK-NEXT:             (padded.second as u32) as i32,
@@ -157,7 +154,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u\n".as_ptr(),
 // CHECK-NEXT:             (padded.first as u32) as i32,
 // CHECK-NEXT:             (padded.second as u32) as i32,
@@ -182,7 +179,13 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%d %u\n".as_ptr(), set.first as i32, (set.second as u32) as i32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%d %u\n".as_ptr(),
+// CHECK-NEXT:             set.first as i32,
+// CHECK-NEXT:             (set.second as u32) as i32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut bits: bits = {
 // CHECK-NEXT:         let mut [[T_5:__t[0-9]+]]: bits = unsafe { std::mem::zeroed() };
@@ -201,7 +204,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u %u\n".as_ptr(),
 // CHECK-NEXT:             bits.__slate_bits_0.__get_low() as i32,
 // CHECK-NEXT:             bits.__slate_bits_0.__get_high() as i32,
@@ -227,7 +230,7 @@ int main(void) {
 // CHECK-NEXT:         seen = unsafe { std::mem::transmute::<u32, u32>([[T_7]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), seen) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), seen) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_8:__t[0-9]+]]: u32;
@@ -238,7 +241,13 @@ int main(void) {
 // CHECK-NEXT:         partial = unsafe { std::mem::transmute::<u32, partial>([[T_8]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%u %u\n".as_ptr(), (partial.byte as u32) as i32, partial.word) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%u %u\n".as_ptr(),
+// CHECK-NEXT:             (partial.byte as u32) as i32,
+// CHECK-NEXT:             partial.word,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut nested: nested = nested {
 // CHECK-NEXT:         inner: flags { first: false, second: 3 },
@@ -264,7 +273,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %u %d %d\n".as_ptr(),
 // CHECK-NEXT:             nested.inner.first as i32,
 // CHECK-NEXT:             (nested.inner.second as u32) as i32,
@@ -290,7 +299,7 @@ int main(void) {
 // CHECK-NEXT:         copy = unsafe { std::mem::transmute::<u64, wide>([[T_11]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%c %d\n".as_ptr(), copy.tag as i32, copy.value) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%c %d\n".as_ptr(), copy.tag as i32, copy.value) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

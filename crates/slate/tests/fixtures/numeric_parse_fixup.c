@@ -41,7 +41,7 @@ int main(void) {
 // CHECK-NEXT:     let mut end: *mut i8 = std::ptr::null_mut::<i8>();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %ld %lu %ld %ld %lu %.1f\n".as_ptr(),
 // CHECK-NEXT:             atoi(whole.as_mut_ptr() as *const i8),
 // CHECK-NEXT:             strtol(
@@ -73,7 +73,7 @@ int main(void) {
 // CHECK-NEXT:         strtol(end_source.as_mut_ptr() as *const i8, std::ptr::addr_of_mut!(end), 10i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%ld %c\n".as_ptr(), raw, *end as i32) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%ld %c\n".as_ptr(), raw, *end as i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

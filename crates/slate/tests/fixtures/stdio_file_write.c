@@ -28,25 +28,25 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe { remove(c"slate_stdio_file_write.tmp".as_ptr()) };
-// CHECK-NEXT:     let f: *mut _IO_FILE = unsafe {
-// CHECK-NEXT:         fopen(c"slate_stdio_file_write.tmp".as_ptr(), c"w".as_ptr())
+// CHECK-NEXT:     let f: *mut slate_support::FILE = unsafe {
+// CHECK-NEXT:         slate_support::fopen(c"slate_stdio_file_write.tmp".as_ptr(), c"w".as_ptr())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if f.is_null() {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { puts(c"open-fail".as_ptr()) };
+// CHECK-NEXT:         unsafe { slate_support::puts(c"open-fail".as_ptr()) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { fputs(c"owned\n".as_ptr(), f) };
+// CHECK-NEXT:     unsafe { slate_support::fputs(c"owned\n".as_ptr(), f) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     unsafe { fclose(f) };
-// CHECK-NEXT:     let g: *mut _IO_FILE = unsafe {
-// CHECK-NEXT:         fopen(c"slate_stdio_file_write.tmp".as_ptr(), c"r".as_ptr())
+// CHECK-NEXT:     unsafe { slate_support::fclose(f) };
+// CHECK-NEXT:     let g: *mut slate_support::FILE = unsafe {
+// CHECK-NEXT:         slate_support::fopen(c"slate_stdio_file_write.tmp".as_ptr(), c"r".as_ptr())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if g.is_null() {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { puts(c"reopen-fail".as_ptr()) };
+// CHECK-NEXT:         unsafe { slate_support::puts(c"reopen-fail".as_ptr()) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
@@ -56,9 +56,11 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     unsafe { fgets(buf.0.as_mut_ptr() as *mut i8, 16i32, g) };
-// CHECK-NEXT:     unsafe { fclose(g) };
+// CHECK-NEXT:     unsafe { slate_support::fclose(g) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { fputs(buf.0.as_mut_ptr() as *const i8, stdout) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::fputs(buf.0.as_mut_ptr() as *const i8, slate_support::stdout())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { remove(c"slate_stdio_file_write.tmp".as_ptr()) };
 // CHECK-NEXT:     0

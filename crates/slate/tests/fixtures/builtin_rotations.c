@@ -27,8 +27,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn __builtin_rotateleft8([[ARG_0]]: u8, [[ARG_1:arg[0-9]+]]: u8) -> u8;
+// CHECK-NEXT:     fn __builtin_rotateleft8([[ARG_0:arg[0-9]+]]: u8, [[ARG_1:arg[0-9]+]]: u8) -> u8;
 // CHECK-NEXT:     fn __builtin_rotateright8([[ARG_0]]: u8, [[ARG_1]]: u8) -> u8;
 // CHECK-NEXT:     fn __builtin_rotateleft16([[ARG_0]]: u16, [[ARG_1]]: u16) -> u16;
 // CHECK-NEXT:     fn __builtin_rotateright16([[ARG_0]]: u16, [[ARG_1]]: u16) -> u16;
@@ -38,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:     fn __builtin_rotateright64([[ARG_0]]: u64, [[ARG_1]]: u64) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
@@ -52,7 +51,7 @@ int main(void) {
 // CHECK-NEXT:             let n: u32 = i;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     8i32,
 // CHECK-NEXT:                     n,
@@ -75,7 +74,7 @@ int main(void) {
 // CHECK-NEXT:             let n: u32 = i;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     16i32,
 // CHECK-NEXT:                     n,
@@ -98,7 +97,7 @@ int main(void) {
 // CHECK-NEXT:             let n: u32 = i;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     32i32,
 // CHECK-NEXT:                     n,
@@ -121,7 +120,7 @@ int main(void) {
 // CHECK-NEXT:             let n: u32 = i;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     64i32,
 // CHECK-NEXT:                     n,
@@ -144,7 +143,7 @@ int main(void) {
 // CHECK-NEXT:     n = [[V_1]].wrapping_add(1);
 // CHECK-NEXT:     r = [[V_0]].rotate_left([[V_1]] as u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%u %u %u\n".as_ptr(), r, x, n) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%u %u %u\n".as_ptr(), r, x, n) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

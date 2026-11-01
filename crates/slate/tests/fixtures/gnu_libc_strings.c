@@ -121,7 +121,6 @@ int main(void) {
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT:     fn envz_remove([[ARG_0]]: *mut *mut i8, [[ARG_1]]: *mut u64, [[ARG_2]]: *const i8);
 // CHECK-NEXT:     fn envz_strip([[ARG_0]]: *mut *mut i8, [[ARG_1]]: *mut u64);
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]

@@ -59,10 +59,6 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-fms-extensions" }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: fn loop_label(mut n: i32) -> i32 {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u32 = 0;
 // CHECK-NEXT:     let mut acc: i32 = 0;

@@ -53,53 +53,50 @@ int main(void) {
 // CHECK-NEXT: #![allow(arithmetic_overflow, unconditional_panic)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn s5(a: i8, b: i8) {
 // CHECK-NEXT:     let mut r: i8 = (a.wrapping_add(b) as i8) << 3 >> 3;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_sub(b) as i8) << 3 >> 3;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_mul(b) as i8) << 3 >> 3;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = ((if b != 0 { ((a.wrapping_div(b) as i8) << 3 >> 3) as i32 } else { 0i32 })
 // CHECK-NEXT:         as i8) << 3 >> 3;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = ((if b != 0 { ((a.wrapping_rem(b) as i8) << 3 >> 3) as i32 } else { 0i32 })
 // CHECK-NEXT:         as i8) << 3 >> 3;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a & b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a | b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a ^ b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (!a as i8) << 3 >> 3;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_neg() as i8) << 3 >> 3;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
 // CHECK-NEXT:     r = (r.wrapping_add(b) as i8) << 3 >> 3;
@@ -109,7 +106,7 @@ int main(void) {
 // CHECK-NEXT:     r |= a;
 // CHECK-NEXT:     r &= b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}{}{}{}{}{}", (a == b) as i32, (a != b) as i32, (a < b) as i32, (a <= b) as
@@ -119,45 +116,45 @@ int main(void) {
 // CHECK-NEXT: fn u5(a: u8, b: u8) {
 // CHECK-NEXT:     let mut r: u8 = (a.wrapping_add(b) as u8) & 31;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_sub(b) as u8) & 31;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_mul(b) as u8) & 31;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = ((((if b != 0 { (((a.wrapping_div(b) as u8) & 31) as u32) as i32 } else { 0i32 })
 // CHECK-NEXT:         as i8) << 3 >> 3) as u8) & 31;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = ((((if b != 0 { (((a.wrapping_rem(b) as u8) & 31) as u32) as i32 } else { 0i32 })
 // CHECK-NEXT:         as i8) << 3 >> 3) as u8) & 31;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a & b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a | b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a ^ b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (!a as u8) & 31;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_neg() as u8) & 31;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
 // CHECK-NEXT:     r = (r.wrapping_add(b) as u8) & 31;
@@ -167,7 +164,7 @@ int main(void) {
 // CHECK-NEXT:     r |= a;
 // CHECK-NEXT:     r &= b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}{}{}{}{}{}", (a == b) as i32, (a != b) as i32, (a < b) as i32, (a <= b) as
@@ -177,45 +174,45 @@ int main(void) {
 // CHECK-NEXT: fn s9(a: i16, b: i16) {
 // CHECK-NEXT:     let mut r: i16 = (a.wrapping_add(b) as i16) << 7 >> 7;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_sub(b) as i16) << 7 >> 7;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_mul(b) as i16) << 7 >> 7;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = ((if b != 0 { ((a.wrapping_div(b) as i16) << 7 >> 7) as i32 } else { 0i32 })
 // CHECK-NEXT:         as i16) << 7 >> 7;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = ((if b != 0 { ((a.wrapping_rem(b) as i16) << 7 >> 7) as i32 } else { 0i32 })
 // CHECK-NEXT:         as i16) << 7 >> 7;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a & b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a | b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a ^ b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (!a as i16) << 7 >> 7;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_neg() as i16) << 7 >> 7;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
 // CHECK-NEXT:     r = (r.wrapping_add(b) as i16) << 7 >> 7;
@@ -225,7 +222,7 @@ int main(void) {
 // CHECK-NEXT:     r |= a;
 // CHECK-NEXT:     r &= b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}{}{}{}{}{}", (a == b) as i32, (a != b) as i32, (a < b) as i32, (a <= b) as
@@ -235,15 +232,15 @@ int main(void) {
 // CHECK-NEXT: fn u9(a: u16, b: u16) {
 // CHECK-NEXT:     let mut r: u16 = (a.wrapping_add(b) as u16) & 511;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_sub(b) as u16) & 511;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_mul(b) as u16) & 511;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = ((((if b != 0 {
 // CHECK-NEXT:         (((a.wrapping_div(b) as u16) & 511) as u32) as i32
@@ -251,7 +248,7 @@ int main(void) {
 // CHECK-NEXT:         0i32
 // CHECK-NEXT:     }) as i16) << 7 >> 7) as u16) & 511;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = ((((if b != 0 {
 // CHECK-NEXT:         (((a.wrapping_rem(b) as u16) & 511) as u32) as i32
@@ -259,27 +256,27 @@ int main(void) {
 // CHECK-NEXT:         0i32
 // CHECK-NEXT:     }) as i16) << 7 >> 7) as u16) & 511;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a & b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a | b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a ^ b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (!a as u16) & 511;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_neg() as u16) & 511;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
 // CHECK-NEXT:     r = (r.wrapping_add(b) as u16) & 511;
@@ -289,7 +286,7 @@ int main(void) {
 // CHECK-NEXT:     r |= a;
 // CHECK-NEXT:     r &= b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}{}{}{}{}{}", (a == b) as i32, (a != b) as i32, (a < b) as i32, (a <= b) as
@@ -299,43 +296,43 @@ int main(void) {
 // CHECK-NEXT: fn s33(a: i64, b: i64) {
 // CHECK-NEXT:     let mut r: i64 = (a.wrapping_add(b) as i64) << 31 >> 31;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_sub(b) as i64) << 31 >> 31;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_mul(b) as i64) << 31 >> 31;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b != 0 { (a.wrapping_div(b) as i64) << 31 >> 31 } else { 0i64 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b != 0 { (a.wrapping_rem(b) as i64) << 31 >> 31 } else { 0i64 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a & b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a | b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a ^ b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (!a as i64) << 31 >> 31;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_neg() as i64) << 31 >> 31;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
 // CHECK-NEXT:     r = (r.wrapping_add(b) as i64) << 31 >> 31;
@@ -345,7 +342,7 @@ int main(void) {
 // CHECK-NEXT:     r |= a;
 // CHECK-NEXT:     r &= b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}{}{}{}{}{}", (a == b) as i32, (a != b) as i32, (a < b) as i32, (a <= b) as
@@ -355,43 +352,43 @@ int main(void) {
 // CHECK-NEXT: fn u33(a: u64, b: u64) {
 // CHECK-NEXT:     let mut r: u64 = (a.wrapping_add(b) as u64) & 8589934591;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_sub(b) as u64) & 8589934591;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_mul(b) as u64) & 8589934591;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b != 0 { (a.wrapping_div(b) as u64) & 8589934591 } else { 0u64 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b != 0 { (a.wrapping_rem(b) as u64) & 8589934591 } else { 0u64 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a & b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a | b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a ^ b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (!a as u64) & 8589934591;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = (a.wrapping_neg() as u64) & 8589934591;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
 // CHECK-NEXT:     r = (r.wrapping_add(b) as u64) & 8589934591;
@@ -401,7 +398,7 @@ int main(void) {
 // CHECK-NEXT:     r |= a;
 // CHECK-NEXT:     r &= b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}{}{}{}{}{}", (a == b) as i32, (a != b) as i32, (a < b) as i32, (a <= b) as
@@ -411,43 +408,43 @@ int main(void) {
 // CHECK-NEXT: fn s64(a: i64, b: i64) {
 // CHECK-NEXT:     let mut r: i64 = a + b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a - b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a * b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b != 0 { a / b } else { 0 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b != 0 { a % b } else { 0 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a & b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a | b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a ^ b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = !a;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = -a;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
 // CHECK-NEXT:     r += b;
@@ -457,7 +454,7 @@ int main(void) {
 // CHECK-NEXT:     r |= a;
 // CHECK-NEXT:     r &= b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}{}{}{}{}{}", (a == b) as i32, (a != b) as i32, (a < b) as i32, (a <= b) as
@@ -467,43 +464,43 @@ int main(void) {
 // CHECK-NEXT: fn u64(a: u64, b: u64) {
 // CHECK-NEXT:     let mut r: u64 = a.wrapping_add(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_sub(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_mul(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b != 0 { a / b } else { 0 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b != 0 { a % b } else { 0 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a & b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a | b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a ^ b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = !a;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_neg();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
 // CHECK-NEXT:     r = r.wrapping_add(b);
@@ -513,7 +510,7 @@ int main(void) {
 // CHECK-NEXT:     r |= a;
 // CHECK-NEXT:     r &= b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}{}{}{}{}{}", (a == b) as i32, (a != b) as i32, (a < b) as i32, (a <= b) as
@@ -527,15 +524,15 @@ int main(void) {
 // CHECK-NEXT:     let mut r: bitint::BInt<100, 2, 16, bitint::A8> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     r = a.wrapping_add(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_sub(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_mul(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b.compare(<bitint::BInt<100, 2, 16, bitint::A8>>::from_u128(0)) != 0 {
 // CHECK-NEXT:         a.wrapping_div(b)
@@ -543,7 +540,7 @@ int main(void) {
 // CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(0 as i128)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b.compare(<bitint::BInt<100, 2, 16, bitint::A8>>::from_u128(0)) != 0 {
 // CHECK-NEXT:         a.wrapping_rem(b)
@@ -551,27 +548,27 @@ int main(void) {
 // CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(0 as i128)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitand_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitor_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitxor_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitnot();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_neg();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bitint::BInt<100, 2, 16, bitint::A8> = r;
@@ -587,7 +584,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_5:__v[0-9]+]]: bitint::BInt<100, 2, 16, bitint::A8> = r;
 // CHECK-NEXT:     r = [[V_5]].bitand_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}{}{}{}{}{}", (a.compare(b) == 0) as i32, (a.compare(b) != 0) as i32, (a
@@ -602,15 +599,15 @@ int main(void) {
 // CHECK-NEXT:     let mut r: bitint::BUint<100, 2, 16, bitint::A8> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     r = a.wrapping_add(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_sub(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_mul(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b.compare(<bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(0)) != 0 {
 // CHECK-NEXT:         a.wrapping_div(b)
@@ -623,7 +620,7 @@ int main(void) {
 // CHECK-NEXT:         >>::from_bint(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(0 as i128))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b.compare(<bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(0)) != 0 {
 // CHECK-NEXT:         a.wrapping_rem(b)
@@ -636,27 +633,27 @@ int main(void) {
 // CHECK-NEXT:         >>::from_bint(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(0 as i128))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitand_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitor_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitxor_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitnot();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_neg();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
 // CHECK-NEXT:     let mut [[V_0]]: bitint::BUint<100, 2, 16, bitint::A8> = r;
@@ -680,7 +677,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_5]]: bitint::BUint<100, 2, 16, bitint::A8> = r;
 // CHECK-NEXT:     r = [[V_5]].bitand_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}{}{}{}{}{}", (a.compare(b) == 0) as i32, (a.compare(b) != 0) as i32, (a
@@ -695,15 +692,15 @@ int main(void) {
 // CHECK-NEXT:     let mut r: bitint::BInt<128, 2, 16, bitint::A8> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     r = a.wrapping_add(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_sub(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_mul(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b.compare(<bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(0)) != 0 {
 // CHECK-NEXT:         a.wrapping_div(b)
@@ -711,7 +708,7 @@ int main(void) {
 // CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(0 as i128)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b.compare(<bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(0)) != 0 {
 // CHECK-NEXT:         a.wrapping_rem(b)
@@ -719,27 +716,27 @@ int main(void) {
 // CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(0 as i128)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitand_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitor_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitxor_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitnot();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_neg();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
 // CHECK-NEXT:     let mut [[V_0]]: bitint::BInt<128, 2, 16, bitint::A8> = r;
@@ -755,7 +752,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_5]]: bitint::BInt<128, 2, 16, bitint::A8> = r;
 // CHECK-NEXT:     r = [[V_5]].bitand_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}{}{}{}{}{}", (a.compare(b) == 0) as i32, (a.compare(b) != 0) as i32, (a
@@ -770,15 +767,15 @@ int main(void) {
 // CHECK-NEXT:     let mut r: bitint::BUint<128, 2, 16, bitint::A8> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     r = a.wrapping_add(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_sub(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_mul(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b.compare(<bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(0)) != 0 {
 // CHECK-NEXT:         a.wrapping_div(b)
@@ -791,7 +788,7 @@ int main(void) {
 // CHECK-NEXT:         >>::from_bint(<bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(0 as i128))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b.compare(<bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(0)) != 0 {
 // CHECK-NEXT:         a.wrapping_rem(b)
@@ -804,27 +801,27 @@ int main(void) {
 // CHECK-NEXT:         >>::from_bint(<bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(0 as i128))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitand_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitor_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitxor_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitnot();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_neg();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
 // CHECK-NEXT:     let mut [[V_0]]: bitint::BUint<128, 2, 16, bitint::A8> = r;
@@ -848,7 +845,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_5]]: bitint::BUint<128, 2, 16, bitint::A8> = r;
 // CHECK-NEXT:     r = [[V_5]].bitand_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}{}{}{}{}{}", (a.compare(b) == 0) as i32, (a.compare(b) != 0) as i32, (a
@@ -863,15 +860,15 @@ int main(void) {
 // CHECK-NEXT:     let mut r: bitint::BInt<200, 4, 32, bitint::A8> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     r = a.wrapping_add(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_sub(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_mul(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b.compare(<bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(0)) != 0 {
 // CHECK-NEXT:         a.wrapping_div(b)
@@ -879,7 +876,7 @@ int main(void) {
 // CHECK-NEXT:         <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(0 as i128)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b.compare(<bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(0)) != 0 {
 // CHECK-NEXT:         a.wrapping_rem(b)
@@ -887,27 +884,27 @@ int main(void) {
 // CHECK-NEXT:         <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(0 as i128)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitand_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitor_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitxor_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitnot();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_neg();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
 // CHECK-NEXT:     let mut [[V_0]]: bitint::BInt<200, 4, 32, bitint::A8> = r;
@@ -923,7 +920,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_5]]: bitint::BInt<200, 4, 32, bitint::A8> = r;
 // CHECK-NEXT:     r = [[V_5]].bitand_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), r.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}{}{}{}{}{}", (a.compare(b) == 0) as i32, (a.compare(b) != 0) as i32, (a
@@ -938,15 +935,15 @@ int main(void) {
 // CHECK-NEXT:     let mut r: bitint::BUint<200, 4, 32, bitint::A8> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     r = a.wrapping_add(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_sub(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_mul(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b.compare(<bitint::BUint<200, 4, 32, bitint::A8>>::from_u128(0)) != 0 {
 // CHECK-NEXT:         a.wrapping_div(b)
@@ -959,7 +956,7 @@ int main(void) {
 // CHECK-NEXT:         >>::from_bint(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(0 as i128))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = if b.compare(<bitint::BUint<200, 4, 32, bitint::A8>>::from_u128(0)) != 0 {
 // CHECK-NEXT:         a.wrapping_rem(b)
@@ -972,27 +969,27 @@ int main(void) {
 // CHECK-NEXT:         >>::from_bint(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(0 as i128))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitand_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitor_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitxor_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.bitnot();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a.wrapping_neg();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     r = a;
 // CHECK-NEXT:     let mut [[V_0]]: bitint::BUint<200, 4, 32, bitint::A8> = r;
@@ -1016,7 +1013,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_5]]: bitint::BUint<200, 4, 32, bitint::A8> = r;
 // CHECK-NEXT:     r = [[V_5]].bitand_bits(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu ".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}{}{}{}{}{}", (a.compare(b) == 0) as i32, (a.compare(b) != 0) as i32, (a
@@ -1129,7 +1126,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld %llu\n".as_ptr(),
 // CHECK-NEXT:             unsafe { g_add }.to_i128() as i64,
 // CHECK-NEXT:             unsafe { g_cmp }.to_u128() as u64,

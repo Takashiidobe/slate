@@ -103,80 +103,36 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn parse_printf_format([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: u64, [[ARG_2:arg[0-9]+]]: *mut i32) -> u64;
-// CHECK-NEXT:     fn fclose([[ARG_0]]: *mut _IO_FILE) -> i32;
-// CHECK-NEXT:     fn fflush([[ARG_0]]: *mut _IO_FILE) -> i32;
+// CHECK-NEXT:     fn fflush([[ARG_0]]: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT:     fn fopencookie(
 // CHECK-NEXT:         [[ARG_0]]: *mut (),
 // CHECK-NEXT:         [[ARG_1]]: *const i8,
 // CHECK-NEXT:         [[ARG_2]]: _IO_cookie_io_functions_t,
-// CHECK-NEXT:     ) -> *mut _IO_FILE;
-// CHECK-NEXT:     fn fmemopen([[ARG_0]]: *mut (), [[ARG_1]]: u64, [[ARG_2]]: *const i8) -> *mut _IO_FILE;
-// CHECK-NEXT:     fn open_memstream([[ARG_0]]: *mut *mut i8, [[ARG_1]]: *mut u64) -> *mut _IO_FILE;
-// CHECK-NEXT:     fn fprintf([[ARG_0]]: *mut _IO_FILE, [[ARG_1]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     ) -> *mut slate_support::FILE;
+// CHECK-NEXT:     fn fmemopen([[ARG_0]]: *mut (), [[ARG_1]]: u64, [[ARG_2]]: *const i8) -> *mut slate_support::FILE;
+// CHECK-NEXT:     fn open_memstream([[ARG_0]]: *mut *mut i8, [[ARG_1]]: *mut u64) -> *mut slate_support::FILE;
 // CHECK-NEXT:     fn asprintf([[ARG_0]]: *mut *mut i8, [[ARG_1]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn getdelim(
 // CHECK-NEXT:         [[ARG_0]]: *mut *mut i8,
 // CHECK-NEXT:         [[ARG_1]]: *mut u64,
 // CHECK-NEXT:         [[ARG_2]]: i32,
-// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut _IO_FILE,
+// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut slate_support::FILE,
 // CHECK-NEXT:     ) -> i64;
-// CHECK-NEXT:     fn getline([[ARG_0]]: *mut *mut i8, [[ARG_1]]: *mut u64, [[ARG_2]]: *mut _IO_FILE) -> i64;
-// CHECK-NEXT:     fn __fbufsize([[ARG_0]]: *mut _IO_FILE) -> u64;
-// CHECK-NEXT:     fn __freading([[ARG_0]]: *mut _IO_FILE) -> i32;
-// CHECK-NEXT:     fn __fwriting([[ARG_0]]: *mut _IO_FILE) -> i32;
-// CHECK-NEXT:     fn __fpending([[ARG_0]]: *mut _IO_FILE) -> u64;
+// CHECK-NEXT:     fn getline(
+// CHECK-NEXT:         [[ARG_0]]: *mut *mut i8,
+// CHECK-NEXT:         [[ARG_1]]: *mut u64,
+// CHECK-NEXT:         [[ARG_2]]: *mut slate_support::FILE,
+// CHECK-NEXT:     ) -> i64;
+// CHECK-NEXT:     fn __fbufsize([[ARG_0]]: *mut slate_support::FILE) -> u64;
+// CHECK-NEXT:     fn __freading([[ARG_0]]: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT:     fn __fwriting([[ARG_0]]: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT:     fn __fpending([[ARG_0]]: *mut slate_support::FILE) -> u64;
 // CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1]]: *const (), [[ARG_2]]: u64) -> *mut ();
 // CHECK-NEXT:     fn memcmp([[ARG_0]]: *const (), [[ARG_1]]: *const (), [[ARG_2]]: u64) -> i32;
 // CHECK-NEXT:     fn strcmp([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> i32;
 // CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
 // CHECK-NEXT: }
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_FILE {
-// CHECK-NEXT:     _flags: i32,
-// CHECK-NEXT:     _IO_read_ptr: *mut i8,
-// CHECK-NEXT:     _IO_read_end: *mut i8,
-// CHECK-NEXT:     _IO_read_base: *mut i8,
-// CHECK-NEXT:     _IO_write_base: *mut i8,
-// CHECK-NEXT:     _IO_write_ptr: *mut i8,
-// CHECK-NEXT:     _IO_write_end: *mut i8,
-// CHECK-NEXT:     _IO_buf_base: *mut i8,
-// CHECK-NEXT:     _IO_buf_end: *mut i8,
-// CHECK-NEXT:     _IO_save_base: *mut i8,
-// CHECK-NEXT:     _IO_backup_base: *mut i8,
-// CHECK-NEXT:     _IO_save_end: *mut i8,
-// CHECK-NEXT:     _markers: *mut _IO_marker,
-// CHECK-NEXT:     _chain: *mut _IO_FILE,
-// CHECK-NEXT:     _fileno: i32,
-// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits0U0,
-// CHECK-NEXT:     _short_backupbuf: [i8; 1],
-// CHECK-NEXT:     _old_offset: i64,
-// CHECK-NEXT:     _cur_column: u16,
-// CHECK-NEXT:     _vtable_offset: i8,
-// CHECK-NEXT:     _shortbuf: [i8; 1],
-// CHECK-NEXT:     _lock: *mut (),
-// CHECK-NEXT:     _offset: i64,
-// CHECK-NEXT:     _codecvt: *mut _IO_codecvt,
-// CHECK-NEXT:     _wide_data: *mut _IO_wide_data,
-// CHECK-NEXT:     _freeres_list: *mut _IO_FILE,
-// CHECK-NEXT:     _freeres_buf: *mut (),
-// CHECK-NEXT:     _prevchain: *mut *mut _IO_FILE,
-// CHECK-NEXT:     _mode: i32,
-// CHECK-NEXT:     _unused3: i32,
-// CHECK-NEXT:     _total_written: u64,
-// CHECK-NEXT:     _unused2: [i8; 8],
-// CHECK-NEXT: }
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_marker {}
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_codecvt {}
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_wide_data {}
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct _IO_cookie_io_functions_t {
@@ -194,23 +150,6 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         [u8;3],
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
-// CHECK-NEXT:     pub struct __SlateBits0U0 {
-// CHECK-NEXT:         #[bits(24)]
-// CHECK-NEXT:         pub _flags2: i32,
-// CHECK-NEXT:     }
-// CHECK-NEXT: }
 // CHECK-NEXT: extern "C-unwind" fn gnu_cookie_write(
 // CHECK-NEXT:     state: *mut (),
 // CHECK-NEXT:     buffer: *const i8,
@@ -256,7 +195,7 @@ int main(void) {
 // CHECK-NEXT:         + (((unsafe { strcmp(formatted as *const i8, c"gnu:23".as_ptr()) }) == 0)
 // CHECK-NEXT:             as i32);
 // CHECK-NEXT:     unsafe { free(formatted as *mut ()) };
-// CHECK-NEXT:     let stream: *mut _IO_FILE = unsafe {
+// CHECK-NEXT:     let stream: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         open_memstream(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(stream_data),
 // CHECK-NEXT:             std::ptr::addr_of_mut!(stream_size),
@@ -265,7 +204,12 @@ int main(void) {
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_3]] + (!stream.is_null() as i32);
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = ((unsafe {
-// CHECK-NEXT:         fprintf(stream, c"%s-%d".as_ptr(), c"slate".as_ptr() as *mut i8, 24i32)
+// CHECK-NEXT:         slate_support::fprintf(
+// CHECK-NEXT:             stream,
+// CHECK-NEXT:             c"%s-%d".as_ptr(),
+// CHECK-NEXT:             c"slate".as_ptr() as *mut i8,
+// CHECK-NEXT:             24i32,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 8) as i32;
 // CHECK-NEXT:     total += [[V_4]];
 // CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = ((unsafe { __fwriting(stream) }) != 0) as i32;
@@ -279,7 +223,7 @@ int main(void) {
 // CHECK-NEXT:     total = [[V_8]]
 // CHECK-NEXT:         + (((unsafe { strcmp(stream_data as *const i8, c"slate-24".as_ptr()) }) == 0)
 // CHECK-NEXT:             as i32);
-// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = ((unsafe { fclose(stream) }) == 0) as i32;
+// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = ((unsafe { slate_support::fclose(stream) }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_9]];
 // CHECK-NEXT:     unsafe { free(stream_data as *mut ()) };
 // CHECK-NEXT:     total
@@ -288,7 +232,7 @@ int main(void) {
 // CHECK-NEXT:     let mut source: [i8; 12] = [97, 108, 112, 104, 97, 124, 98, 101, 116, 97, 10, 0];
 // CHECK-NEXT:     let mut line: *mut i8 = std::ptr::null_mut::<i8>();
 // CHECK-NEXT:     let mut capacity: u64 = 0;
-// CHECK-NEXT:     let stream: *mut _IO_FILE = unsafe {
+// CHECK-NEXT:     let stream: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         fmemopen(
 // CHECK-NEXT:             source.as_mut_ptr() as *mut (),
 // CHECK-NEXT:             strlen(source.as_mut_ptr() as *const i8),
@@ -321,7 +265,7 @@ int main(void) {
 // CHECK-NEXT:     total += [[V_11]];
 // CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = ((unsafe { __fbufsize(stream) }) > 0) as i32;
 // CHECK-NEXT:     total += [[V_12]];
-// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe { fclose(stream) }) == 0) as i32;
+// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe { slate_support::fclose(stream) }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_13]];
 // CHECK-NEXT:     unsafe { free(line as *mut ()) };
 // CHECK-NEXT:     total
@@ -338,16 +282,21 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     functions.write = Some(gnu_cookie_write);
 // CHECK-NEXT:     functions.close = Some(gnu_cookie_close);
-// CHECK-NEXT:     let stream: *mut _IO_FILE = unsafe {
+// CHECK-NEXT:     let stream: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         fopencookie(std::ptr::addr_of_mut!(cookie) as *mut (), c"w".as_ptr(), functions)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_1]]: i32 = total;
 // CHECK-NEXT:     total = [[V_1]] + (!stream.is_null() as i32);
 // CHECK-NEXT:     let [[V_10]]: i32 = ((unsafe {
-// CHECK-NEXT:         fprintf(stream, c"%s:%d".as_ptr(), c"cookie".as_ptr() as *mut i8, 7i32)
+// CHECK-NEXT:         slate_support::fprintf(
+// CHECK-NEXT:             stream,
+// CHECK-NEXT:             c"%s:%d".as_ptr(),
+// CHECK-NEXT:             c"cookie".as_ptr() as *mut i8,
+// CHECK-NEXT:             7i32,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 8) as i32;
 // CHECK-NEXT:     total += [[V_10]];
-// CHECK-NEXT:     let [[V_3]]: i32 = ((unsafe { fclose(stream) }) == 0) as i32;
+// CHECK-NEXT:     let [[V_3]]: i32 = ((unsafe { slate_support::fclose(stream) }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_3]];
 // CHECK-NEXT:     total += (cookie.closed == 1) as i32;
 // CHECK-NEXT:     total += (cookie.length == 8) as i32;
@@ -378,7 +327,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %d %d %d\n".as_ptr(),
 // CHECK-NEXT:             gnu_allocating_stdio(),
 // CHECK-NEXT:             gnu_memory_stdio(),

@@ -12,21 +12,23 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let x: f32 = 1.5f32;
 // CHECK-NEXT:     let y: f64 = 2.25f64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%f %.2f %.0f\n".as_ptr(), (x + 0.5f32) as f64, y * 2.0f64, 3.0f64)
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%f %.2f %.0f\n".as_ptr(),
+// CHECK-NEXT:             (x + 0.5f32) as f64,
+// CHECK-NEXT:             y * 2.0f64,
+// CHECK-NEXT:             3.0f64,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"tail %.3f".as_ptr(), 1.25f64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"tail %.3f".as_ptr(), 1.25f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

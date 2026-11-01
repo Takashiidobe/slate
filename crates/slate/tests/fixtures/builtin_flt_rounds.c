@@ -19,7 +19,6 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fegetround() -> i32;
 // CHECK-NEXT:     fn fesetround([[ARG_0:arg[0-9]+]]: i32) -> i32;
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn __builtin_flt_rounds() -> i32;
 // CHECK-NEXT:     fn __slate_fenv_flt_rounds() -> i32;
 // CHECK-NEXT: }

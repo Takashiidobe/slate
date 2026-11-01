@@ -33,10 +33,9 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn cimag([[ARG_0:arg[0-9]+]]: num_complex::Complex<f64>) -> f64;
 // CHECK-NEXT:     fn creal([[ARG_0]]: num_complex::Complex<f64>) -> f64;
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let real: f64 = 0.5f64;
@@ -53,7 +52,7 @@ int main(void) {
 // CHECK-NEXT:     let quotient: num_complex::Complex<f64> = a.c_div(b, false);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%.4f %.4f %.4f %.4f\n".as_ptr(),
 // CHECK-NEXT:             creal(product),
 // CHECK-NEXT:             cimag(product),

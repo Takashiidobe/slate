@@ -32,6 +32,7 @@ mod padding;
 mod places;
 mod pointers;
 mod statements;
+mod stdio;
 mod switch;
 mod target_features;
 mod types;
@@ -89,6 +90,7 @@ struct Tables<'m> {
     unit: &'m str,
     types: HashMap<TypeId, &'m Span<ir::TypeDefinition>>,
     record_names: HashMap<TypeId, String>,
+    stdio: stdio::StdioBindings,
 }
 
 #[derive(Default)]
@@ -135,6 +137,7 @@ struct Dependencies {
     bit_units: Vec<Item>,
     bit_unit_impls: Vec<Item>,
     named_prims: BTreeMap<&'static str, Prim>,
+    stdio_layout_used: bool,
 }
 
 enum Record {
@@ -210,9 +213,22 @@ pub fn lower(
     files: &Files,
     options: &LowerOptions,
 ) -> std::result::Result<Lowered, InvalidIr> {
-    let mut lowerer = ModuleLowerer::new(module, files, options)?;
+    let mut lowerer = ModuleLowerer::new(module, files, options, true)?;
     lowerer.declare()?;
     lowerer.lower_bodies()?;
+    if lowerer.dependencies.stdio_layout_used {
+        lowerer = ModuleLowerer::new(module, files, options, false)?;
+        lowerer.declare()?;
+        lowerer.lower_bodies()?;
+        return Ok(lowerer.assemble());
+    }
+    let unreachable = lowerer.unreachable_stdio_helpers();
+    if !unreachable.is_empty() {
+        lowerer = ModuleLowerer::new(module, files, options, true)?;
+        lowerer.tables.stdio.unreachable = unreachable;
+        lowerer.declare()?;
+        lowerer.lower_bodies()?;
+    }
     Ok(lowerer.assemble())
 }
 
@@ -472,6 +488,7 @@ impl<'m> ModuleLowerer<'m> {
         module: &'m ir::Module,
         files: &Files,
         options: &'m LowerOptions,
+        stdio_bindings: bool,
     ) -> std::result::Result<Self, InvalidIr> {
         let mut barriers = Vec::new();
         let mut strings = HashMap::new();
@@ -616,6 +633,7 @@ impl<'m> ModuleLowerer<'m> {
                 .map(|definition| (definition.value.id, definition))
                 .collect(),
             record_names: record_names(module, files),
+            stdio: Default::default(),
         };
         tables.over_aligned = statics
             .iter()
@@ -637,6 +655,9 @@ impl<'m> ModuleLowerer<'m> {
                 Some((global.variable.id, tables.record_names.get(id)?.clone()))
             })
             .collect();
+        if stdio_bindings {
+            tables.bind_stdio(module);
+        }
         Ok(Self {
             module,
             options,
@@ -681,6 +702,8 @@ impl<'m> ModuleLowerer<'m> {
         for global in &module.globals {
             if !self.tables.statics.contains(&global.variable.id)
                 || alias_target(module, global).is_some()
+                || self.tables.stdio.android_streams == Some(global.variable.id)
+                || self.tables.stdio.unreachable.contains(&global.variable.id)
             {
                 continue;
             }
@@ -743,6 +766,8 @@ impl<'m> ModuleLowerer<'m> {
         }
         for function in &module.functions {
             if function.body.is_some()
+                || self.tables.stdio.functions.contains(&function.value.id)
+                || self.tables.stdio.unreachable.contains(&function.value.id)
                 || self.tables.intrinsics.contains_key(&function.value.id)
                 || self.tables.passes_long_double(function)
                     && function
@@ -796,6 +821,11 @@ impl<'m> ModuleLowerer<'m> {
             let Some(body) = &function.body else {
                 continue;
             };
+            if self.tables.stdio.functions.contains(&function.value.id)
+                || self.tables.stdio.unreachable.contains(&function.value.id)
+            {
+                continue;
+            }
             let lowered = if self.options.export_symbols
                 && matches!(function.linkage, ir::Linkage::External)
                 && !function.semantics.inline_only

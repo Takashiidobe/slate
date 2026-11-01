@@ -35,12 +35,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union Interrupt {
@@ -60,6 +54,9 @@ int main(void) {
 // CHECK-NEXT: union __SlateRecord_volatile_record_access_c_6 {
 // CHECK-NEXT:     interrupted: i32,
 // CHECK-NEXT:     padding: f64,
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut global: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
@@ -128,7 +125,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %u %d %d\n".as_ptr(),
 // CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(global)),
 // CHECK-NEXT:             (std::ptr::read_volatile((state.counters.as_mut_ptr() as *mut u16).add(2))

@@ -108,9 +108,8 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn __builtin_cpu_init();
-// CHECK-NEXT:     fn __builtin_cpu_supports([[ARG_0]]: *const i8) -> bool;
+// CHECK-NEXT:     fn __builtin_cpu_supports([[ARG_0:arg[0-9]+]]: *const i8) -> bool;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.vector.reduce.add.v4i32"]
@@ -191,7 +190,7 @@ int main(void) {
 // CHECK-NEXT:     fn __slate_intrinsic_f9af23aef3f58c56([[ARG_0]]: std::simd::Simd<i32, 16>) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -807,7 +806,7 @@ int main(void) {
 // CHECK-NEXT:         __slate_intrinsic_e38776902fc0d037(a) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"ureduce %u %u %lld\n".as_ptr(),
 // CHECK-NEXT:             __slate_intrinsic_6144ba70f3b1eac4(u),
 // CHECK-NEXT:             __slate_intrinsic_4596d33813d5b1(u),
@@ -824,7 +823,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
 // CHECK-NEXT:                 c"popcount".as_ptr() as *mut i8,
 // CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 4i32),
@@ -852,7 +851,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
 // CHECK-NEXT:                 c"max".as_ptr() as *mut i8,
 // CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 4i32),
@@ -880,7 +879,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
 // CHECK-NEXT:                 c"umax".as_ptr() as *mut i8,
 // CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 4i32),
@@ -908,7 +907,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
 // CHECK-NEXT:                 c"min".as_ptr() as *mut i8,
 // CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 4i32),
@@ -941,7 +940,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
 // CHECK-NEXT:                 c"bytemax".as_ptr() as *mut i8,
 // CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 16i32),
@@ -1004,7 +1003,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"hi %lld\n".as_ptr(), fold(out.0.as_mut_ptr() as *const i64, 2i32))
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"hi %lld\n".as_ptr(),
+// CHECK-NEXT:             fold(out.0.as_mut_ptr() as *const i64, 2i32),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe {
@@ -1015,7 +1017,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"lo %lld\n".as_ptr(), fold(out.0.as_mut_ptr() as *const i64, 2i32))
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"lo %lld\n".as_ptr(),
+// CHECK-NEXT:             fold(out.0.as_mut_ptr() as *const i64, 2i32),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let floats: std::simd::Simd<f32, 8> = unsafe {
@@ -1042,7 +1047,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"extractf %g %g %g %g\n".as_ptr(),
 // CHECK-NEXT:             f.0[0] as f64,
 // CHECK-NEXT:             f.0[1] as f64,
@@ -1059,7 +1064,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"extractf %g %g %g %g\n".as_ptr(),
 // CHECK-NEXT:             f.0[0] as f64,
 // CHECK-NEXT:             f.0[1] as f64,
@@ -1085,7 +1090,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"popcnt %lld\n".as_ptr(),
 // CHECK-NEXT:             _mm512_reduce_add_epi64(_mm512_popcnt_epi64(words)),
 // CHECK-NEXT:         )
@@ -1136,7 +1141,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"x4 %lld\n".as_ptr(), fold(out.0.as_mut_ptr() as *const i64, 4i32))
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"x4 %lld\n".as_ptr(),
+// CHECK-NEXT:             fold(out.0.as_mut_ptr() as *const i64, 4i32),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { _mm256_setzero_si256() };
@@ -1148,7 +1156,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"x4 %lld\n".as_ptr(), fold(out.0.as_mut_ptr() as *const i64, 4i32))
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"x4 %lld\n".as_ptr(),
+// CHECK-NEXT:             fold(out.0.as_mut_ptr() as *const i64, 4i32),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let floats: std::simd::Simd<f32, 16> = unsafe {
@@ -1176,7 +1187,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"fadd %.9g %.9g\n".as_ptr(),
 // CHECK-NEXT:             _mm512_reduce_add_ps(floats) as f64,
 // CHECK-NEXT:             _mm512_reduce_add_ps(fused) as f64,

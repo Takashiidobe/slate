@@ -80,18 +80,15 @@ int main(void) {
 // CHECK-NEXT: #![feature(portable_simd)]
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: struct __SlateAlign32<T>(T);
 // CHECK-NEXT: #[repr(C, align(64))]
 // CHECK-NEXT: struct __SlateAlign64<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: static mut pad0: i8 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: static mut table: __SlateAlign16<{{\[\[}}u64; 64]; 64]> = __SlateAlign16(unsafe {
 // CHECK-NEXT:     std::mem::zeroed()
@@ -210,7 +207,7 @@ int main(void) {
 // CHECK-NEXT:         const (), 16u64)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"table sum %llu\n".as_ptr(),
 // CHECK-NEXT:             sum_vectors(
 // CHECK-NEXT:                 (std::ptr::addr_of_mut!(table.0[5]) as *mut u64) as *const u64,
@@ -221,7 +218,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"small sum %llu\n".as_ptr(),
 // CHECK-NEXT:             sum_vectors(
 // CHECK-NEXT:                 (std::ptr::addr_of_mut!(small.0) as *mut u64) as *const u64,

@@ -32,14 +32,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: static mut greeting: [i8; 6] = [104, 101, 108, 108, 111, 0];
 // CHECK-NEXT: static mut padded: [i8; 8] = [97, 98, 0, 0, 0, 0, 0, 0];
 // CHECK-NEXT: static mut label: [i8; 6] = [108, 97, 98, 101, 108, 0];
@@ -73,7 +70,7 @@ int main(void) {
 // CHECK-NEXT:     local[0] = 76;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%s %s %s %s %s %s\n".as_ptr(),
 // CHECK-NEXT:             std::ptr::addr_of_mut!(greeting) as *mut i8,
 // CHECK-NEXT:             std::ptr::addr_of_mut!(padded) as *mut i8,
@@ -91,7 +88,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"%s\n".as_ptr(), words.0[i as usize]) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%s\n".as_ptr(), words.0[i as usize]) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total((unsafe { std::ptr::addr_of_mut!(greeting) as *mut i8 }) as *const i8) % 256

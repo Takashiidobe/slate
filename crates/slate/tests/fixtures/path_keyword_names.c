@@ -30,12 +30,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct writer {
@@ -49,6 +43,9 @@ int main(void) {
 // CHECK-NEXT:     self_: i32,
 // CHECK-NEXT:     crate_: i32,
 // CHECK-NEXT:     Self_: i32,
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut super_: i32 = 3;
 // CHECK-NEXT: fn combine(self_: i32, crate_: i32) -> i32 {
@@ -72,7 +69,7 @@ int main(void) {
 // CHECK-NEXT:     ctx.super_.phase += ctx.self_;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%s %d %d\n".as_ptr(),
 // CHECK-NEXT:             ctx.super_.name,
 // CHECK-NEXT:             ctx.super_.phase,

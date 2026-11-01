@@ -116,12 +116,6 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct tiny {
@@ -161,6 +155,9 @@ int main(void) {
 // CHECK-NEXT: union number {
 // CHECK-NEXT:     d: f64,
 // CHECK-NEXT:     i: i32,
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut saved: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum(n: i32, mut __va_args: ...) {
@@ -202,7 +199,7 @@ int main(void) {
 // CHECK-NEXT:             += b.a + b.b + b.c + ((o.c[0] as i32) as i64) + ((o.c[1] as i32) as i64)
 // CHECK-NEXT:                 + ((o.c[2] as i32) as i64) + ((unsafe { u.d }) as i64) + tail;
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"round %d: %ld\n".as_ptr(), i, total) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"round %d: %ld\n".as_ptr(), i, total) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -224,7 +221,15 @@ int main(void) {
 // CHECK-NEXT:         __slate_sysv_va::arg::<_, pair>(std::ptr::addr_of_mut!(saved), 5u32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%ld %ld %ld %ld\n".as_ptr(), first.a, first.b, again.a, again.b) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%ld %ld %ld %ld\n".as_ptr(),
+// CHECK-NEXT:             first.a,
+// CHECK-NEXT:             first.b,
+// CHECK-NEXT:             again.a,
+// CHECK-NEXT:             again.b,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

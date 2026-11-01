@@ -21,10 +21,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn add_char(a: i8, b: i8) -> i8 {
 // CHECK-NEXT:     let c: i8 = ((a as i32) + (b as i32)) as i8;
@@ -37,10 +34,10 @@ int main(void) {
 // CHECK-NEXT:     let letter: i8 = 65;
 // CHECK-NEXT:     println!("{}", add_char(x, z) as i32);
 // CHECK-NEXT:     println!("{}", (y as u32) as i32);
-// CHECK-NEXT:     unsafe { printf(c"%c\n".as_ptr(), letter as i32) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%c\n".as_ptr(), letter as i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%c\n".as_ptr(), (letter as i32) + 1) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%c\n".as_ptr(), (letter as i32) + 1) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

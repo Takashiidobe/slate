@@ -91,10 +91,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn typecheck_probe() -> i32 {
 // CHECK-NEXT:     unsafe {
@@ -243,7 +240,11 @@ int main(void) {
 // CHECK-NEXT:     });
 // CHECK-NEXT:     println!("{} {}", typecheck_probe(), __slate_printf_arg1);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%u %llu\n".as_ptr(), value_barrier(7u32), value_barrier_memory(41u64))
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%u %llu\n".as_ptr(),
+// CHECK-NEXT:             value_barrier(7u32),
+// CHECK-NEXT:             value_barrier_memory(41u64),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let __slate_printf_arg0 = input_barrier(&mut bytes);

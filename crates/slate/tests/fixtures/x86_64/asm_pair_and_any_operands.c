@@ -46,18 +46,15 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_asm_pair_and_any_operands_c_3 {
 // CHECK-NEXT:     a: i64,
 // CHECK-NEXT:     b: i64,
 // CHECK-NEXT:     c: i64,
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn pair_out() -> u128 {
 // CHECK-NEXT:     let mut r: u128 = 0;
@@ -142,14 +139,18 @@ int main(void) {
 // CHECK-NEXT:         c: 3,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lu %lu\n".as_ptr(), (a >> 64i32) as u64, a as u64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lu %lu\n".as_ptr(), (b >> 64i32) as u64, b as u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%lu %lu\n".as_ptr(), (a >> 64i32) as u64, a as u64)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(c"%lu %lu\n".as_ptr(), (b >> 64i32) as u64, b as u64)
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lu %lu %d\n".as_ptr(),
 // CHECK-NEXT:             pair_in_high((11 as u128) << 64i32 | 12),
 // CHECK-NEXT:             single_a(39u64),

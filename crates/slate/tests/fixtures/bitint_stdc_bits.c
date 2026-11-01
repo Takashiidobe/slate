@@ -68,14 +68,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: static mut seeds: __SlateAlign16<[u64; 24]> = __SlateAlign16([
 // CHECK-NEXT:     0u64, 1u64, 2u64, 3u64, 5u64, 8u64, 64u64, 100u64, 127u64, 128u64, 129u64, 255u64,
 // CHECK-NEXT:     256u64, 4097u64, 65535u64, 65536u64, 2147483647u64, 2147483648u64, 4294967295u64,
@@ -95,7 +92,7 @@ int main(void) {
 // CHECK-NEXT:             let x: bitint::BUint<100, 2, 16, bitint::A8> = w;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_0:__t[0-9]+]] = x;
@@ -192,7 +189,7 @@ int main(void) {
 // CHECK-NEXT:             let x: bitint::BUint<100, 2, 16, bitint::A8> = w.shl_bits(30 as usize);
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_18:__t[0-9]+]] = x;
@@ -289,7 +286,7 @@ int main(void) {
 // CHECK-NEXT:             let x: bitint::BUint<100, 2, 16, bitint::A8> = w.bitnot();
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_36:__t[0-9]+]] = x;
@@ -391,7 +388,7 @@ int main(void) {
 // CHECK-NEXT:             >>::from_u128((unsafe { seeds.0[i as usize] }) as u128);
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_54:__t[0-9]+]] = x;
@@ -494,7 +491,7 @@ int main(void) {
 // CHECK-NEXT:                 .bitnot();
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_72:__t[0-9]+]] = x;
@@ -597,7 +594,7 @@ int main(void) {
 // CHECK-NEXT:                 .shl_bits(64 as usize);
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_90:__t[0-9]+]] = x;
@@ -700,7 +697,7 @@ int main(void) {
 // CHECK-NEXT:                 .bitnot();
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_108:__t[0-9]+]] = x;
@@ -804,7 +801,7 @@ int main(void) {
 // CHECK-NEXT:             let x: u8 = s as u8;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_0]] = x;
@@ -899,7 +896,7 @@ int main(void) {
 // CHECK-NEXT:             let x: u16 = s as u16;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_18]] = x;
@@ -994,7 +991,7 @@ int main(void) {
 // CHECK-NEXT:             let x: u32 = s as u32;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_36]] = x;
@@ -1089,7 +1086,7 @@ int main(void) {
 // CHECK-NEXT:             let x: u64 = s;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_54]] = x;
@@ -1184,7 +1181,7 @@ int main(void) {
 // CHECK-NEXT:             let x: u8 = (s as u8) & 1;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_72]] = x;
@@ -1285,7 +1282,7 @@ int main(void) {
 // CHECK-NEXT:             let x: u8 = (s as u8) & 127;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_90]] = x;
@@ -1393,7 +1390,7 @@ int main(void) {
 // CHECK-NEXT:             let x: u16 = (s as u16) & 8191;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_108]] = x;
@@ -1502,7 +1499,7 @@ int main(void) {
 // CHECK-NEXT:             let x: u64 = (s as u64) & 137438953471;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_126:__t[0-9]+]] = x;
@@ -1616,7 +1613,7 @@ int main(void) {
 // CHECK-NEXT:             let x: u64 = s as u64;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_144:__t[0-9]+]] = x;
@@ -1712,7 +1709,7 @@ int main(void) {
 // CHECK-NEXT:             let x: u8 = (!((s as u8) & 127) as u8) & 127;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_162:__t[0-9]+]] = x;
@@ -1821,7 +1818,7 @@ int main(void) {
 // CHECK-NEXT:             let x: u16 = (!((s as u16) & 8191) as u16) & 8191;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_180:__t[0-9]+]] = x;
@@ -1930,7 +1927,7 @@ int main(void) {
 // CHECK-NEXT:             let x: u64 = (!((s as u64) & 137438953471) as u64) & 137438953471;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 printf(
+// CHECK-NEXT:                 slate_support::printf(
 // CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_198:__t[0-9]+]] = x;

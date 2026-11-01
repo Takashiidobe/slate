@@ -29,9 +29,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![allow(arithmetic_overflow, unconditional_panic)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: fn near(sp: u64, local: *const ()) -> i32 {
 // CHECK-NEXT:     let here: u64 = local as u64;
 // CHECK-NEXT:     let distance: u64 = if here > sp {

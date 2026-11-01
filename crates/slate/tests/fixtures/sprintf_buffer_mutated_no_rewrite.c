@@ -13,10 +13,9 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn sprintf([[ARG_0:arg[0-9]+]]: *mut i8, [[ARG_1:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn puts([[ARG_0]]: *const i8) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
@@ -25,7 +24,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { sprintf(buf.0.as_mut_ptr() as *mut i8, c"%d-%d".as_ptr(), 3i32, 4i32) };
 // CHECK-NEXT:     buf.0[0] = 88;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { puts(buf.0.as_mut_ptr() as *const i8) };
+// CHECK-NEXT:     unsafe { slate_support::puts(buf.0.as_mut_ptr() as *const i8) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

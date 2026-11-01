@@ -25,7 +25,6 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut environ: *mut *mut i8;
 // CHECK-NEXT:     fn open([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: i32, ...) -> i32;
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
 // CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
@@ -33,7 +32,7 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:     fn read([[ARG_0]]: i32, [[ARG_1]]: *mut (), [[ARG_2]]: u64) -> i64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
@@ -60,7 +59,11 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:     unsafe { close(fd) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%d %s\n".as_ptr(), (n > 0) as i32, buf.0.as_mut_ptr() as *mut i8)
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%d %s\n".as_ptr(),
+// CHECK-NEXT:             (n > 0) as i32,
+// CHECK-NEXT:             buf.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(

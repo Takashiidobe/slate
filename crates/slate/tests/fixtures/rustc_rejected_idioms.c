@@ -40,18 +40,15 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![allow(arithmetic_overflow, unconditional_panic)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct record {
 // CHECK-NEXT:     head: [i32; 3],
 // CHECK-NEXT:     tag: i8,
 // CHECK-NEXT:     tail: [i8; 2],
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn self_(value: i32) -> i32 {
 // CHECK-NEXT:     value + 1
@@ -94,7 +91,9 @@ int main(void) {
 // CHECK-NEXT:         unsafe extern "C-unwind" fn () -> i32 > = Some(same); __slate_function }) ==
 // CHECK-NEXT:         Some(same)) as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe { printf(c"%d %d %lu %lu\n".as_ptr(), elvis, other, tail, tag) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%d %d %lu %lu\n".as_ptr(), elvis, other, tail, tag)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

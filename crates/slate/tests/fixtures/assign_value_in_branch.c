@@ -16,10 +16,7 @@ int main() {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn bump(p: &mut u64, c: i32) -> u64 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u64 = if c != 0 {
@@ -44,7 +41,7 @@ int main() {
 // CHECK-NEXT:     let a: u64 = bump(unsafe { &mut (*std::ptr::addr_of_mut!(x)) }, 1i32);
 // CHECK-NEXT:     let b: u64 = bump(unsafe { &mut (*std::ptr::addr_of_mut!(x)) }, 0i32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lu %lu %lu\n".as_ptr(), a, b, x) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lu %lu %lu\n".as_ptr(), a, b, x) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

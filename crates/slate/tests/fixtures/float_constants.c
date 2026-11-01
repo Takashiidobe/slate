@@ -28,10 +28,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn half(x: f32) -> f32 {
 // CHECK-NEXT:     x * 0.5f32
@@ -54,21 +51,43 @@ int main(void) {
 // CHECK-NEXT:     let finf: f32 = -f32::INFINITY;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%a %a %a %a\n".as_ptr(), f0 as f64, fmn as f64, fsub as f64, fmx as f64)
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%a %a %a %a\n".as_ptr(),
+// CHECK-NEXT:             f0 as f64,
+// CHECK-NEXT:             fmn as f64,
+// CHECK-NEXT:             fsub as f64,
+// CHECK-NEXT:             fmx as f64,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%a %a %a %a %a %a\n".as_ptr(), d0, dsub, dmx, nz, neg, big) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%a %a %a %a %a %a\n".as_ptr(),
+// CHECK-NEXT:             d0,
+// CHECK-NEXT:             dsub,
+// CHECK-NEXT:             dmx,
+// CHECK-NEXT:             nz,
+// CHECK-NEXT:             neg,
+// CHECK-NEXT:             big,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%f %f\n".as_ptr(), inf, finf as f64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%a %a\n".as_ptr(), half(3.0f32) as f64, third(1.0f64)) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%f %f\n".as_ptr(), inf, finf as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%.17g %.9g\n".as_ptr(), 1.0f64 / 3.0f64, (2.0f32 / 3.0f32) as f64)
+// CHECK-NEXT:         slate_support::printf(c"%a %a\n".as_ptr(), half(3.0f32) as f64, third(1.0f64))
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%.17g %.9g\n".as_ptr(),
+// CHECK-NEXT:             1.0f64 / 3.0f64,
+// CHECK-NEXT:             (2.0f32 / 3.0f32) as f64,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0

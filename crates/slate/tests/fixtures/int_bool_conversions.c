@@ -41,10 +41,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn to_bool(x: i32) -> bool {
 // CHECK-NEXT:     x != 0
@@ -104,7 +101,7 @@ int main(void) {
 // CHECK-NEXT:         trunc_s(305419896i64) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %lld %llu\n".as_ptr(),
 // CHECK-NEXT:             widen_u(-3i8),
 // CHECK-NEXT:             widen_ll(65535u16),
@@ -113,7 +110,13 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%d %u\n".as_ptr(), reinterp(4294967295u32), reinterp_u(-2i32)) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%d %u\n".as_ptr(),
+// CHECK-NEXT:             reinterp(4294967295u32),
+// CHECK-NEXT:             reinterp_u(-2i32),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{} {}", promote(1u8, 2u8), promote_s(300i16, 300i16));
 // CHECK-NEXT:     let mut uc: u8 = 255u8;

@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT: target linux-musl-x86_64: 1 compiles
 // CHECK-NEXT:   target_properties.c: [] 1 compiled
 // CHECK-NEXT: total: 6 compiles across 6 targets
-// CHECK-NEXT: unit target_properties: 13 items, 5 gated, 0 duplicated functions
+// CHECK-NEXT: unit target_properties: 12 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:family: 2 variants
 // CHECK-NEXT:   hoisted fn:model: 2 variants
 // CHECK-NEXT: projection: 36 checked, 0 not translatable, 0 mismatches
@@ -57,12 +57,11 @@ int main(void) {
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn puts([[ARG_0:arg[0-9]+]]: *const c_char) -> i32;
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: const __SLATE_HOIST_family: &core::ffi::CStr = c"unix";
@@ -92,10 +91,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { puts(family()) };
+// CHECK-NEXT:     unsafe { slate_support::puts(family()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { puts(model()) };
+// CHECK-NEXT:     unsafe { slate_support::puts(model()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

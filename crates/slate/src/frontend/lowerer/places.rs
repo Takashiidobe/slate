@@ -346,6 +346,11 @@ impl FunctionLowerer<'_, '_> {
 
     pub(super) fn lower_place(&mut self, place: &ir::Place) -> Result<Expr> {
         let tables = self.tables;
+        if let PlaceKind::Binding(id) = place.kind
+            && (tables.stdio.functions.contains(&id) || tables.stdio.android_streams == Some(id))
+        {
+            self.dependencies.stdio_layout_used = true;
+        }
         if let PlaceKind::Binding(_) = place.kind
             && let Some(address) = self.vla_address(place)?
         {

@@ -89,16 +89,21 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     functions.write = Some(gnu_cookie_write);
 // CHECK-NEXT:     functions.close = Some(gnu_cookie_close);
-// CHECK-NEXT:     let stream: *mut _IO_FILE = unsafe {
+// CHECK-NEXT:     let stream: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         fopencookie(std::ptr::addr_of_mut!(cookie) as *mut (), c"w".as_ptr(), functions)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_0]] + (!stream.is_null() as i32);
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = ((unsafe {
-// CHECK-NEXT:         fprintf(stream, c"%s:%d".as_ptr(), c"cookie".as_ptr() as *mut i8, 7i32)
+// CHECK-NEXT:         slate_support::fprintf(
+// CHECK-NEXT:             stream,
+// CHECK-NEXT:             c"%s:%d".as_ptr(),
+// CHECK-NEXT:             c"cookie".as_ptr() as *mut i8,
+// CHECK-NEXT:             7i32,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 8) as i32;
 // CHECK-NEXT:     total += [[V_1]];
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = ((unsafe { fclose(stream) }) == 0) as i32;
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = ((unsafe { slate_support::fclose(stream) }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_2]];
 // CHECK-NEXT:     total += (cookie.closed == 1) as i32;
 // CHECK-NEXT:     total += (cookie.length == 8) as i32;

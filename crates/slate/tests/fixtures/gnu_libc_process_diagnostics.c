@@ -55,7 +55,6 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     fn mcheck([[ARG_0]]: Option<unsafe extern "C-unwind" fn(i32)>) -> i32;
 // CHECK-NEXT:     fn mprobe([[ARG_0]]: *mut ()) -> i32;
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn malloc([[ARG_0]]: u64) -> *mut ();
 // CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT:     fn on_exit(
@@ -64,7 +63,7 @@ int main(void) {
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: extern "C-unwind" fn handle_exit(status: i32, arg: *mut ()) {
 // CHECK-NEXT:     unsafe {
@@ -86,7 +85,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe { error(0i32, 0i32, c"first message".as_ptr()) };
 // CHECK-NEXT:     unsafe { error(0i32, 0i32, c"second message".as_ptr()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"count_after_two:%u\n".as_ptr(), error_message_count) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"count_after_two:%u\n".as_ptr(), error_message_count)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         error_one_per_line = 1;
@@ -110,7 +111,9 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"count_after_dedup:%u\n".as_ptr(), error_message_count) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"count_after_dedup:%u\n".as_ptr(), error_message_count)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         error_at_line(
@@ -122,7 +125,9 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"count_after_new_line:%u\n".as_ptr(), error_message_count) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"count_after_new_line:%u\n".as_ptr(), error_message_count)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { error(5i32, 0i32, c"fatal message".as_ptr()) };
 // CHECK-NEXT:     println!("unreachable");

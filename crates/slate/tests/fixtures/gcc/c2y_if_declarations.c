@@ -35,10 +35,6 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-std=c2y" }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: fn pick(n: i32) -> i32 {
 // CHECK-NEXT:     let doubled: i32 = n * 2;
 // CHECK-NEXT:     if doubled > 10 {

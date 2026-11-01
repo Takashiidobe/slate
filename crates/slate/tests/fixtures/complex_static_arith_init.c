@@ -86,7 +86,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -204,7 +203,7 @@ int main(void) {
 // CHECK-NEXT:     fn __slate_printf__ri32_pi8_f80(_0: *const i8, _1: LongDouble) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -293,21 +292,21 @@ int main(void) {
 // CHECK-NEXT:     let re: f64 = z.re;
 // CHECK-NEXT:     let im: f64 = z.im;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%s ".as_ptr(), name) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%s ".as_ptr(), name) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     if re.is_nan() {
 // CHECK-NEXT:         print!("nan ");
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"%a ".as_ptr(), re) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%a ".as_ptr(), re) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if im.is_nan() {
 // CHECK-NEXT:         println!("nan");
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"%a\n".as_ptr(), im) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%a\n".as_ptr(), im) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -315,7 +314,7 @@ int main(void) {
 // CHECK-NEXT:     let re: LongDouble = z.re;
 // CHECK-NEXT:     let im: LongDouble = z.im;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%s ".as_ptr(), name) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%s ".as_ptr(), name) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     if __slate_f80_is_fp_class(re, 3) {
 // CHECK-NEXT:         print!("nan ");

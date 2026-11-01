@@ -72,59 +72,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     static mut stdout: *mut _IO_FILE;
-// CHECK-NEXT:     fn fprintf([[ARG_0:arg[0-9]+]]: *mut _IO_FILE, [[ARG_1:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn printf([[ARG_0]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_FILE {
-// CHECK-NEXT:     _flags: i32,
-// CHECK-NEXT:     _IO_read_ptr: *mut i8,
-// CHECK-NEXT:     _IO_read_end: *mut i8,
-// CHECK-NEXT:     _IO_read_base: *mut i8,
-// CHECK-NEXT:     _IO_write_base: *mut i8,
-// CHECK-NEXT:     _IO_write_ptr: *mut i8,
-// CHECK-NEXT:     _IO_write_end: *mut i8,
-// CHECK-NEXT:     _IO_buf_base: *mut i8,
-// CHECK-NEXT:     _IO_buf_end: *mut i8,
-// CHECK-NEXT:     _IO_save_base: *mut i8,
-// CHECK-NEXT:     _IO_backup_base: *mut i8,
-// CHECK-NEXT:     _IO_save_end: *mut i8,
-// CHECK-NEXT:     _markers: *mut _IO_marker,
-// CHECK-NEXT:     _chain: *mut _IO_FILE,
-// CHECK-NEXT:     _fileno: i32,
-// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits3U0,
-// CHECK-NEXT:     _short_backupbuf: [i8; 1],
-// CHECK-NEXT:     _old_offset: i64,
-// CHECK-NEXT:     _cur_column: u16,
-// CHECK-NEXT:     _vtable_offset: i8,
-// CHECK-NEXT:     _shortbuf: [i8; 1],
-// CHECK-NEXT:     _lock: *mut (),
-// CHECK-NEXT:     _offset: i64,
-// CHECK-NEXT:     _codecvt: *mut _IO_codecvt,
-// CHECK-NEXT:     _wide_data: *mut _IO_wide_data,
-// CHECK-NEXT:     _freeres_list: *mut _IO_FILE,
-// CHECK-NEXT:     _freeres_buf: *mut (),
-// CHECK-NEXT:     _prevchain: *mut *mut _IO_FILE,
-// CHECK-NEXT:     _mode: i32,
-// CHECK-NEXT:     _unused3: i32,
-// CHECK-NEXT:     _total_written: u64,
-// CHECK-NEXT:     _unused2: [i8; 8],
-// CHECK-NEXT: }
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_marker {}
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_codecvt {}
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_wide_data {}
 // CHECK-NEXT: #[repr(C, align(8))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Flags {
@@ -149,21 +96,6 @@ int main(void) {
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits11U0,
 // CHECK-NEXT: }
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         [u8;3],
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
-// CHECK-NEXT:     pub struct __SlateBits3U0 {
-// CHECK-NEXT:         #[bits(24)]
-// CHECK-NEXT:         pub _flags2: i32,
-// CHECK-NEXT:     }
 // CHECK-NEXT:     #[bitfields::bitfield(
 // CHECK-NEXT:         [u8;3],
 // CHECK-NEXT:         c_names = true,
@@ -260,6 +192,9 @@ int main(void) {
 // CHECK-NEXT:         pub __slate_pad_1: u8,
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: static mut global: Flags = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: Flags = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_x(5u32);
@@ -316,7 +251,7 @@ int main(void) {
 // CHECK-NEXT:     local.__slate_bits_0.__set_x(12u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %u %u %d %u %d %d %c %d %lld %d %d %d\n".as_ptr(),
 // CHECK-NEXT:             assigned,
 // CHECK-NEXT:             local.__slate_bits_0.__get_x() as i32,
@@ -338,7 +273,7 @@ int main(void) {
 // CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!(global) });
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %lld %d %d\n".as_ptr(),
 // CHECK-NEXT:             local.__slate_bits_0.__get_a(),
 // CHECK-NEXT:             local.__slate_bits_2.__get_wide(),
@@ -349,7 +284,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u %d %u %d %d %c %d %lld %d %d\n".as_ptr(),
 // CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_0)).__get_x() as i32,
 // CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_0)).__get_set_x() as i32,
@@ -371,7 +306,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%x %x %d\n".as_ptr(),
 // CHECK-NEXT:             overlay.parts.__slate_bits_0.__get_low() as i32,
 // CHECK-NEXT:             overlay.parts.__slate_bits_0.__get_high() as i32,
@@ -386,10 +321,16 @@ int main(void) {
 // CHECK-NEXT:         overlay.__slate_bits_0.__set_signed_bits(-1i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%x %d\n".as_ptr(), overlay.whole, 4i32) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%x %d\n".as_ptr(), overlay.whole, 4i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { fprintf(stdout, c"%s\n".as_ptr(), c"file ok".as_ptr() as *mut i8) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::fprintf(
+// CHECK-NEXT:             slate_support::stdout(),
+// CHECK-NEXT:             c"%s\n".as_ptr(),
+// CHECK-NEXT:             c"file ok".as_ptr() as *mut i8,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

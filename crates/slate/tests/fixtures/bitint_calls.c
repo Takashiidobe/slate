@@ -62,17 +62,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct pair {
 // CHECK-NEXT:     a: i16,
 // CHECK-NEXT:     b: bitint::BInt<100, 2, 16, bitint::A8>,
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn id9(x: i16) -> i16 {
 // CHECK-NEXT:     x
@@ -173,11 +170,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", id9(- 200i16) as i32);
-// CHECK-NEXT:     unsafe { printf(c"%u\n".as_ptr(), add17(100000u32, 40000u32) as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%u\n".as_ptr(), add17(100000u32, 40000u32) as u32)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
 // CHECK-NEXT:             mix100(
 // CHECK-NEXT:                     -5i16,
@@ -215,7 +214,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%llu %llu\n".as_ptr(),
 // CHECK-NEXT:             r.to_u128() as u64,
 // CHECK-NEXT:             r.shr_bits(64 as usize).to_u128() as u64,
@@ -231,7 +230,7 @@ int main(void) {
 // CHECK-NEXT:         <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(77 as i128),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld %lld\n".as_ptr(), lo(s), hi(s)) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld %lld\n".as_ptr(), lo(s), hi(s)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut b: bitint::BUint<300, 5, 40, bitint::A8> = big(
 // CHECK-NEXT:         <bitint::BUint<
@@ -261,7 +260,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%llu %llu\n".as_ptr(),
 // CHECK-NEXT:             b.to_u128() as u64,
 // CHECK-NEXT:             b.shr_bits(256 as usize).to_u128() as u64,
@@ -276,7 +275,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %lld\n".as_ptr(),
 // CHECK-NEXT:             p.a as i32,
 // CHECK-NEXT:             p.b.shr_bits(70 as usize).to_i128() as i64,
@@ -284,7 +283,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), usepair(p).to_i128() as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), usepair(p).to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let fp: Option<
 // CHECK-NEXT:         unsafe extern "C-unwind" fn(
@@ -295,7 +294,7 @@ int main(void) {
 // CHECK-NEXT:     > = Some(mix100);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
 // CHECK-NEXT:             fp
 // CHECK-NEXT:                 .unwrap()(
@@ -309,7 +308,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
 // CHECK-NEXT:             vsum(5i32, -3i32, 70000u32, -5000000000i64, 5u32, 99i64),
 // CHECK-NEXT:         )

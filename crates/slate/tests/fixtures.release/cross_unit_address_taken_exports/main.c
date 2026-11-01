@@ -31,11 +31,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut api: api_routines;
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn apply(op: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, a: i32, b: i32) -> i32 {
@@ -70,7 +69,7 @@ int main(void) {
 // CHECK-NEXT:         ),
 // CHECK-NEXT:         apply(unsafe { api.add }, 4i32, 5i32)
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe { printf(c"%s %s\n".as_ptr(), name(), unsafe { api.name }.unwrap()()) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%s %s\n".as_ptr(), name(), unsafe { api.name }.unwrap()()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",

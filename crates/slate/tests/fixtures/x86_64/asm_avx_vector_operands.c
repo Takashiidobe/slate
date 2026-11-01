@@ -62,11 +62,10 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn __builtin_cpu_supports([[ARG_0]]: *const i8) -> bool;
+// CHECK-NEXT:     fn __builtin_cpu_supports([[ARG_0:arg[0-9]+]]: *const i8) -> bool;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sqrt_via_x(mut value: f32) -> f32 {
 // CHECK-NEXT:     let mut result: f32 = 0 as f32;
@@ -189,17 +188,21 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%.1f\n".as_ptr(), sqrt_via_x(6.25f32) as f64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%.1f\n".as_ptr(), sqrt_via_x(6.25f32) as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     if std::arch::is_x86_feature_detected!("avx") {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"%.1f\n".as_ptr(), avx_sum() as f64) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%.1f\n".as_ptr(), avx_sum() as f64) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if std::arch::is_x86_feature_detected!("avx512f") {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(c"%d %#x\n".as_ptr(), avx512_masked_sum(), avx512_equal_lanes())
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%d %#x\n".as_ptr(),
+// CHECK-NEXT:                 avx512_masked_sum(),
+// CHECK-NEXT:                 avx512_equal_lanes(),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }

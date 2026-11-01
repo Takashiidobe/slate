@@ -24,13 +24,12 @@ int main() {
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-std=gnu17" }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn abs(...) -> i32;
 // CHECK-NEXT:     fn atof(...) -> f64;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn add(a: i32, b: i32) -> i32 {
@@ -67,7 +66,7 @@ int main() {
 // CHECK-NEXT:         .unwrap()(-9i32)
 // CHECK-NEXT:     });
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
+// CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %.1f\n".as_ptr(),
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 std::mem::transmute::<

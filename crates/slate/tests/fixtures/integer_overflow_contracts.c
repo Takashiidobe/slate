@@ -48,10 +48,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn scale(value: u32, factor: u32) -> u32 {
 // CHECK-NEXT:     value.wrapping_mul(factor)
@@ -74,10 +71,25 @@ int main(void) {
 // CHECK-NEXT:     counter = counter.wrapping_add(1);
 // CHECK-NEXT:     let negated: u32 = top.wrapping_neg();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%u %u %llu %u %u\n".as_ptr(), top, zero, big, counter, negated) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%u %u %llu %u %u\n".as_ptr(),
+// CHECK-NEXT:             top,
+// CHECK-NEXT:             zero,
+// CHECK-NEXT:             big,
+// CHECK-NEXT:             counter,
+// CHECK-NEXT:             negated,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%u %llu\n".as_ptr(), scale(2147483649u32, 6u32), mix(42u64)) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%u %llu\n".as_ptr(),
+// CHECK-NEXT:             scale(2147483649u32, 6u32),
+// CHECK-NEXT:             mix(42u64),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut narrow: i32 = 0;
 // CHECK-NEXT:     let mut wide: i64 = 0;
@@ -147,10 +159,22 @@ int main(void) {
 // CHECK-NEXT:         [[T_18]].checked_mul([[T_19]]).is_none() || (([[T_20]] as i32) as i128) != [[T_20]]
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%d %ld %d %d %d %u\n".as_ptr(), a, wide, b, c, d, unsigned_out) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%d %ld %d %d %d %u\n".as_ptr(),
+// CHECK-NEXT:             a,
+// CHECK-NEXT:             wide,
+// CHECK-NEXT:             b,
+// CHECK-NEXT:             c,
+// CHECK-NEXT:             d,
+// CHECK-NEXT:             unsigned_out,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%d %d %lld %d %d\n".as_ptr(), e, f, ll_out, g, narrow) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%d %d %lld %d %d\n".as_ptr(), e, f, ll_out, g, narrow)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     if {
 // CHECK-NEXT:         let [[T_21:__t[0-9]+]]: i128 = 18446744073709551615u64 as i128;
@@ -162,7 +186,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_21]].checked_add([[T_22]]).is_none() || (([[T_23]] as u32) as i128) != [[T_23]]
 // CHECK-NEXT:     } {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"wrapped %u\n".as_ptr(), unsigned_out) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"wrapped %u\n".as_ptr(), unsigned_out) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (top.wrapping_add(zero) as i32) & 63

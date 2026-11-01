@@ -31,17 +31,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Box {
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT:     tag: u8,
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn add_alias(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     let c: i32 = a + b;
@@ -56,7 +53,7 @@ int main(void) {
 // CHECK-NEXT:     bx.tag = y;
 // CHECK-NEXT:     println!("{}", bx.value);
 // CHECK-NEXT:     println!("{}", (bx.tag as u32) as i32);
-// CHECK-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), z) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), z) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", 4i32);
 // CHECK-NEXT:     0

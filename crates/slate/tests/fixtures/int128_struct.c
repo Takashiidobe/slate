@@ -26,18 +26,15 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Wide {
 // CHECK-NEXT:     tag: i32,
 // CHECK-NEXT:     value: i128,
 // CHECK-NEXT:     uvalue: u128,
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut w: Wide = unsafe { std::mem::zeroed() };
@@ -48,19 +45,21 @@ int main(void) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u128 = w.uvalue;
 // CHECK-NEXT:     w.uvalue = [[V_0]].wrapping_mul(2);
 // CHECK-NEXT:     println!("{}", w.tag);
-// CHECK-NEXT:     unsafe { printf(c"%llu\n".as_ptr(), ((w.value >> 64i32) as i64) as u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%llu\n".as_ptr(), ((w.value >> 64i32) as i64) as u64)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu\n".as_ptr(), (w.value as i64) as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu\n".as_ptr(), (w.value as i64) as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu\n".as_ptr(), (w.uvalue >> 64i32) as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu\n".as_ptr(), (w.uvalue >> 64i32) as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%llu\n".as_ptr(), w.uvalue as u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%llu\n".as_ptr(), w.uvalue as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), 48u64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), 48u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

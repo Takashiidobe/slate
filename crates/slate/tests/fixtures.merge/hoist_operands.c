@@ -41,7 +41,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 2 compiles
 // CHECK-NEXT:   hoist_operands.c: [alpha] 2 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit hoist_operands: 21 items, 11 gated, 1 duplicated functions
+// CHECK-NEXT: unit hoist_operands: 20 items, 11 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:repeated: 2 variants
 // CHECK-NEXT:   hoisted fn:number: 2 variants
 // CHECK-NEXT:   hoisted fn:in_cast: 2 variants
@@ -60,13 +60,12 @@ int main(void) {
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn puts([[ARG_0:arg[0-9]+]]: *const c_char) -> i32;
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: use core::ffi::c_long;
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: const __SLATE_HOIST_number: i32 = 295;
@@ -133,7 +132,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { puts(name()) };
+// CHECK-NEXT:     unsafe { slate_support::puts(name()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     #[cfg(all(unix, feature = "alpha"))]
 // CHECK-NEXT:     {

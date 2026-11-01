@@ -20,14 +20,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let a: __SlateAlign16<[i32; 5]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32, 5i32]);
 // CHECK-NEXT:     let partial: __SlateAlign16<[i32; 4]> = __SlateAlign16({
@@ -44,11 +41,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", sum);
 // CHECK-NEXT:     println!("{} {}", partial.0[1], partial.0[3]);
-// CHECK-NEXT:     unsafe { printf(c"%s\n".as_ptr(), s.as_mut_ptr() as *mut i8) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%s\n".as_ptr(), s.as_mut_ptr() as *mut i8) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%s %d\n".as_ptr(), padded.as_mut_ptr() as *mut i8, padded[4] as i32)
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%s %d\n".as_ptr(),
+// CHECK-NEXT:             padded.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             padded[4] as i32,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0

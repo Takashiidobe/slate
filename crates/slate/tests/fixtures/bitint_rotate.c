@@ -59,14 +59,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: static mut counts: __SlateAlign16<[i32; 24]> = __SlateAlign16([
 // CHECK-NEXT:     0i32,
 // CHECK-NEXT:     1i32,
@@ -106,7 +103,7 @@ int main(void) {
 // CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(8) as u32,
 // CHECK-NEXT:             );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
@@ -124,7 +121,7 @@ int main(void) {
 // CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(16) as u32,
 // CHECK-NEXT:             );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
@@ -142,7 +139,7 @@ int main(void) {
 // CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(32) as u32,
 // CHECK-NEXT:             );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
@@ -160,7 +157,7 @@ int main(void) {
 // CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(64) as u32,
 // CHECK-NEXT:             );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"%llu %llu\n".as_ptr(), l, r) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l, r) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
@@ -180,7 +177,7 @@ int main(void) {
 // CHECK-NEXT:             (([[T_2]] >> [[T_3]] | [[T_2]] << (5 - [[T_3]]) % 5) as u8) & 31
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
@@ -200,7 +197,7 @@ int main(void) {
 // CHECK-NEXT:             (([[T_2]] >> [[T_3]] | [[T_2]] << (9 - [[T_3]]) % 9) as u16) & 511
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
@@ -220,7 +217,7 @@ int main(void) {
 // CHECK-NEXT:             (([[T_2]] >> [[T_3]] | [[T_2]] << (33 - [[T_3]]) % 33) as u64) & 8589934591
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
@@ -238,7 +235,7 @@ int main(void) {
 // CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(64) as u32,
 // CHECK-NEXT:             );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
@@ -271,7 +268,7 @@ int main(void) {
 // CHECK-NEXT:             );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%llu %llu %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                 l.to_u128() as u64,
 // CHECK-NEXT:                 l.shr_bits(64 as usize).to_u128() as u64,
@@ -311,7 +308,7 @@ int main(void) {
 // CHECK-NEXT:             );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             printf(
+// CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%llu %llu %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                 l.to_u128() as u64,
 // CHECK-NEXT:                 l.shr_bits(64 as usize).to_u128() as u64,

@@ -6,6 +6,10 @@ use crate::backend::rust_ast::{
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 
+const SUPPORT_WRITERS: &[&str] = &[
+    "printf", "fprintf", "puts", "fputs", "fputc", "putc", "__sputc", "putchar",
+];
+
 struct FormatPlan {
     macro_name: &'static str,
     format: String,
@@ -89,6 +93,12 @@ fn stdout_writer_shim_names(program: &Program) -> HashSet<String> {
             }
             _ => None,
         })
+        .chain(
+            SUPPORT_WRITERS
+                .iter()
+                .filter(|name| is_stdout_writer_symbol(name))
+                .map(|name| format!("slate_support::{name}")),
+        )
         .collect()
 }
 
@@ -97,10 +107,18 @@ fn is_stdout_writer_call(expr: &Expr, writer_names: &HashSet<String>) -> bool {
         Expr::Call { binding, .. } if matches!(binding.known(), Some(known) if STDOUT_WRITER_KNOWNS.contains(&known)) => {
             true
         }
-        Expr::Call { func, binding, .. } => {
-            matches!(func.as_ref(), Expr::Var(name) if writer_names.contains(name.as_str())
-                || (binding.is_header_inline() && is_stdout_writer_symbol(name.as_str())))
-        }
+        Expr::Call { func, binding, .. } => match func.as_ref() {
+            Expr::Var(name) => {
+                writer_names.contains(name.as_str())
+                    || (binding.is_header_inline() && is_stdout_writer_symbol(name.as_str()))
+            }
+            Expr::Path(path) => matches!(
+                path.segments.as_slice(),
+                [support, name] if support.as_str() == "slate_support"
+                    && is_stdout_writer_symbol(name.as_str())
+            ),
+            _ => false,
+        },
         _ => false,
     }
 }
