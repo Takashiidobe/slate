@@ -63,9 +63,9 @@ one `macro_rules` template per distinct body, and each site becomes a call. The
 old `macro_fold` pass still runs over everything else.
 
 - **Which expansions are kept**: `frontend/macro_keep.rs` decides on the IR,
-  before lowering. It rejects control flow leaving the body, bodies that call
-  project functions or read caller locals (Rust hygiene hides them), locals in
-  functions whose dispatch lowering hoists them, variadic or `#` macros, and
+  before lowering. It rejects control flow leaving the body, bodies that read
+  caller locals (Rust hygiene hides them), locals in functions whose dispatch
+  lowering hoists them, variadic or `#` macros, and
   place holes that are not plain (bit-fields, volatile, atomic, reduced
   alignment).
 - **Identity**: two bodies are the same template when their printed Rust and
@@ -89,7 +89,10 @@ old `macro_fold` pass still runs over everything else.
   `inline_temps` will not inline into a template argument. `string_params` and
   `pointer_lattice` keep any pointer a template argument names raw, so lifting
   never changes a type a template relies on. `length_lattice` rewrites calls inside
-  template arguments.
+  template arguments. A function named in a template body keeps its C signature in
+  every lift, because those passes do not rewrite template bodies. The name resolves
+  at the call site, so a template shared across units reaches each unit's own
+  `static` function of that name.
 - **Self-check**: with `SLATE_CHECK_MACRO_TEMPLATES=1` (set by the `project_merge`
   tests), the lowerer re-lowers each outermost site without structure and compares
   it to its expanded templates. A difference is `Invariant::MacroTemplateMismatch`.

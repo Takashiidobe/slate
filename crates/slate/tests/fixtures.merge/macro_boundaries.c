@@ -82,14 +82,6 @@ int main(void) {
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! ASSERT {
-// CHECK-NEXT:     ($cond:expr, $msg:expr) => {
-// CHECK-NEXT:         if !$cond {
-// CHECK-NEXT:             report($msg);
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! TRACE {
 // CHECK-NEXT:     ($($x:expr),*) => {
 // CHECK-NEXT:         if (unsafe { verbose }) > 0 {
@@ -106,6 +98,14 @@ int main(void) {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe { slate_support::printf($($x),*) };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! ASSERT {
+// CHECK-NEXT:     ($cond:expr, $msg:expr) => {
+// CHECK-NEXT:         if !$cond {
+// CHECK-NEXT:             report($msg as *const c_char);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -141,12 +141,12 @@ int main(void) {
 // CHECK-NEXT: fn checked(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     let mut count: i32 = 0;
 // CHECK-NEXT:     let mut state: i32 = 0;
-// CHECK-NEXT:     ASSERT!(a == b, c"a and b differ".as_ptr());
-// CHECK-NEXT:     ASSERT!(a + 1 == b + 1, c"still differ".as_ptr());
-// CHECK-NEXT:     ASSERT!(7i32 == 7, c"folded".as_ptr());
+// CHECK-NEXT:     ASSERT!(a == b, c"a and b differ".as_ptr() as *mut c_char);
+// CHECK-NEXT:     ASSERT!(a + 1 == b + 1, c"still differ".as_ptr() as *mut c_char);
+// CHECK-NEXT:     ASSERT!(7i32 == 7, c"folded".as_ptr() as *mut c_char);
 // CHECK-NEXT:     ASSERT!(
 // CHECK-NEXT:         next_id(unsafe { &mut (*std::ptr::addr_of_mut!(state)) }) == 1,
-// CHECK-NEXT:         c"side effect".as_ptr()
+// CHECK-NEXT:         c"side effect".as_ptr() as *mut c_char
 // CHECK-NEXT:     );
 // CHECK-NEXT:     TRACE!(c"a %d b %d\n".as_ptr(), a, b);
 // CHECK-NEXT:     NOTE!(a != 0, c"nonzero %d\n".as_ptr(), a);
@@ -155,7 +155,7 @@ int main(void) {
 // CHECK-NEXT:         return -1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if a > 100 {
-// CHECK-NEXT:         ASSERT!(b > 100, c"nested".as_ptr());
+// CHECK-NEXT:         ASSERT!(b > 100, c"nested".as_ptr() as *mut c_char);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..2i32 {
 // CHECK-NEXT:         TRACE!(c"loop %d\n".as_ptr(), i);

@@ -259,10 +259,12 @@ pub(in crate::backend) fn solve(
     programs: &[Program],
     symbols: &Symbols,
     liftable_exports: &BTreeSet<FnKey>,
+    pinned: &BTreeSet<FnKey>,
 ) -> BTreeMap<PointerBinding, PointerFact> {
     let fn_defs = interproc::fn_defs(programs);
     let candidates: BTreeMap<FnKey, Candidate> = fn_defs
         .iter()
+        .filter(|(key, _)| !pinned.contains(*key))
         .filter_map(|(key, f)| {
             candidate_for(f, liftable_exports.contains(key)).map(|c| (key.clone(), c))
         })
@@ -1404,12 +1406,13 @@ pub(in crate::backend) fn apply(
     programs: &mut [Program],
     liftable_exports: &BTreeSet<FnKey>,
     rust_bound: &BTreeSet<FnKey>,
+    pinned: &BTreeSet<FnKey>,
 ) {
     let symbols = Symbols::new(programs);
-    let facts = solve(programs, &symbols, liftable_exports);
+    let facts = solve(programs, &symbols, liftable_exports, pinned);
 
     if liftable_exports.len() == rust_bound.len() {
-        crate::backend::interproc::length_lattice::apply(programs, &facts, rust_bound);
+        crate::backend::interproc::length_lattice::apply(programs, &facts, rust_bound, pinned);
     } else {
         let fat_liftable_facts: BTreeMap<PointerBinding, PointerFact> = facts
             .iter()
@@ -1419,7 +1422,12 @@ pub(in crate::backend) fn apply(
             })
             .map(|(binding, fact)| (binding.clone(), fact.clone()))
             .collect();
-        crate::backend::interproc::length_lattice::apply(programs, &fat_liftable_facts, rust_bound);
+        crate::backend::interproc::length_lattice::apply(
+            programs,
+            &fat_liftable_facts,
+            rust_bound,
+            pinned,
+        );
     }
 
     let mut plans: BTreeMap<FnKey, BTreeMap<String, LiftPlan>> = BTreeMap::new();

@@ -14,7 +14,6 @@ pub trait MacroStructureVisitor {
     fn enter_place_hole(&mut self, _expansion: MacroExpansionId, _place: &Place) {}
     fn leave_place_hole(&mut self, _expansion: MacroExpansionId) {}
     fn binding(&mut self, _binding: BindingId) {}
-    fn direct_call(&mut self, _callee: BindingId) {}
 }
 
 struct KeepOnly<F>(F);
@@ -382,9 +381,8 @@ impl<V: MacroStructureVisitor> Walker<'_, V> {
             ValueKind::Call {
                 callee, arguments, ..
             } => {
-                match callee {
-                    Callee::Indirect(value) => self.value(value),
-                    Callee::Direct(binding) => self.visitor.direct_call(*binding),
+                if let Callee::Indirect(value) = callee {
+                    self.value(value);
                 }
                 for argument in arguments {
                     self.value(argument);

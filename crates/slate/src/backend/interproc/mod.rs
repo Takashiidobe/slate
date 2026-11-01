@@ -41,23 +41,50 @@ pub enum Exports {
 }
 
 pub(in crate::backend) fn run(programs: &mut [Program], exports: &Exports) -> Option<Program> {
+    let named_in_templates = functions_named_in_templates(programs);
     let Exports::Liftable {
         address_taken,
         modules,
     } = exports
     else {
-        string_params::run(programs, &BTreeSet::new());
-        pointer_lattice::apply(programs, &BTreeSet::new(), &BTreeSet::new());
+        string_params::run(programs, &BTreeSet::new(), &named_in_templates);
+        pointer_lattice::apply(
+            programs,
+            &BTreeSet::new(),
+            &BTreeSet::new(),
+            &named_in_templates,
+        );
         return None;
     };
     let types = link::SharedTypes::plan(programs);
-    let (liftable, c_abi) = export_candidates(programs, address_taken);
+    let (liftable, c_abi) = export_candidates(programs, address_taken, &named_in_templates);
     let rust_bound = link::rust_bound(programs, &liftable, &types);
     let c_bound = link::rust_bound(programs, &c_abi, &types);
-    string_params::run(programs, &rust_bound);
-    pointer_lattice::apply(programs, &liftable, &rust_bound);
+    string_params::run(programs, &rust_bound, &named_in_templates);
+    pointer_lattice::apply(programs, &liftable, &rust_bound, &named_in_templates);
     link::bind_calls(programs, &rust_bound, &c_bound, modules);
     types.hoist(programs)
+}
+
+fn functions_named_in_templates(programs: &[Program]) -> BTreeSet<FnKey> {
+    let symbols = Symbols::new(programs);
+    let mut named = BTreeSet::new();
+    for (unit, program) in programs.iter().enumerate() {
+        for item in &program.items {
+            let Item::MacroRules { body, .. } = item else {
+                continue;
+            };
+            let mut vars = Vec::new();
+            for stmt in body {
+                stmt.collect_vars(&mut vars);
+            }
+            named.extend(
+                vars.iter()
+                    .filter_map(|name| symbols.resolve(unit, name.as_str())),
+            );
+        }
+    }
+    named
 }
 
 pub(in crate::backend) struct Symbols {
@@ -162,6 +189,7 @@ pub(in crate::backend) fn for_each_extern_fn<'a>(
 fn export_candidates(
     programs: &[Program],
     address_taken: &BTreeSet<String>,
+    named_in_templates: &BTreeSet<FnKey>,
 ) -> (BTreeSet<FnKey>, BTreeSet<FnKey>) {
     let defs = fn_defs(programs);
     let exported = exported_symbols(&defs);
@@ -198,7 +226,10 @@ fn export_candidates(
         if pinned.contains(symbol) || !is_path_bindable(defs[key]) {
             continue;
         }
-        if address_taken.contains(symbol) || !is_liftable_export(defs[key]) {
+        if address_taken.contains(symbol)
+            || named_in_templates.contains(key)
+            || !is_liftable_export(defs[key])
+        {
             c_abi.insert(key.clone());
         } else {
             liftable.insert(key.clone());

@@ -16,7 +16,6 @@ struct OpenExpansion {
 
 struct Survey<'a> {
     globals: &'a HashSet<BindingId>,
-    project_functions: &'a HashSet<BindingId>,
     open: Vec<(MacroExpansionId, OpenExpansion)>,
     declared: HashMap<BindingId, Vec<MacroExpansionId>>,
     seen: Vec<MacroExpansionId>,
@@ -38,16 +37,6 @@ impl Survey<'_> {
         for (id, open) in &self.open {
             if !open.jump_targets.contains(&target) {
                 self.unfit.insert(*id);
-            }
-        }
-    }
-
-    fn reads_function(&mut self, binding: BindingId) {
-        if self.project_functions.contains(&binding) {
-            for (id, open) in &self.open {
-                if open.in_hole == 0 {
-                    self.unfit.insert(*id);
-                }
             }
         }
     }
@@ -131,7 +120,6 @@ impl MacroStructureVisitor for Survey<'_> {
     }
 
     fn binding(&mut self, binding: BindingId) {
-        self.reads_function(binding);
         if self.globals.contains(&binding) {
             return;
         }
@@ -146,10 +134,6 @@ impl MacroStructureVisitor for Survey<'_> {
                 self.unfit.insert(*id);
             }
         }
-    }
-
-    fn direct_call(&mut self, callee: BindingId) {
-        self.reads_function(callee);
     }
 }
 
@@ -173,12 +157,8 @@ pub(super) fn kept_expansions(module: &mut Module) -> HashSet<MacroExpansionId> 
         .iter()
         .map(|global| global.value.variable.id)
         .collect();
-    let mut project_functions = HashSet::new();
     for function in &module.functions {
         globals.insert(function.value.id);
-        if function.value.body.is_some() || function.provenance.system_header.is_none() {
-            project_functions.insert(function.value.id);
-        }
     }
     let mut unfit = HashSet::new();
     let mut seen = HashSet::new();
@@ -188,7 +168,6 @@ pub(super) fn kept_expansions(module: &mut Module) -> HashSet<MacroExpansionId> 
         };
         let mut survey = Survey {
             globals: &globals,
-            project_functions: &project_functions,
             open: Vec::new(),
             declared: HashMap::new(),
             seen: Vec::new(),

@@ -20,12 +20,17 @@ struct AliasInfo {
     established: BTreeSet<String>,
 }
 
-pub(in crate::backend) fn run(programs: &mut [Program], rust_bound: &BTreeSet<FnKey>) {
+pub(in crate::backend) fn run(
+    programs: &mut [Program],
+    rust_bound: &BTreeSet<FnKey>,
+    pinned: &BTreeSet<FnKey>,
+) {
     let symbols = Symbols::new(programs);
     let fn_defs = interproc::fn_defs(programs);
 
     let candidates: BTreeMap<FnKey, CandidateFn> = fn_defs
         .iter()
+        .filter(|(key, _)| !pinned.contains(*key))
         .filter_map(|(key, f)| candidate_for(f, rust_bound.contains(key)).map(|c| (key.clone(), c)))
         .collect();
     if candidates.is_empty() {
