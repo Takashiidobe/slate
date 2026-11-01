@@ -40,7 +40,7 @@ int g(A *a) { return *a; }
 // IR-NEXT:         return read<vector<i64, 2>, align=1>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]])))) [c="V"];
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_a:[0-9]+]] a: ptr<i32> [c="A *"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(A *)"] {
-// IR-NEXT:         return read<i32, align=1>(deref(read<ptr<i32>>(%[[VALUE_a]])));
+// IR-NEXT:         return reinterpret<i32>(read<i32, align=1>(deref(read<ptr<i32>>(%[[VALUE_a]]))) [c="A"]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

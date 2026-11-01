@@ -58,7 +58,7 @@ int main(void) {
 // DEFAULT-NEXT:         return shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x]]) [c="ull"], read<i32>(%[[VALUE_global]])) [c="ull"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE_bar]], const<u64>(81985529216486895) [c="ull"]) [c="ull"], shr<u64, amount_out_of_range=ub, fill=zero_extend>(const<u64>(81985529216486895), const<i32>(18)) [c="ull"])
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE_bar]], reinterpret<u64, reason=arg>(const<u64>(81985529216486895)) [c="ull"]) [c="ull"], reinterpret<u64, reason=usual_arith>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(const<u64>(81985529216486895), const<i32>(18))) [c="ull"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

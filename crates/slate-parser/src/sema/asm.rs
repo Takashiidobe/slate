@@ -349,6 +349,7 @@ impl Lowerer {
                     | ConversionKind::PtrToInt
                     | ConversionKind::IntToPtr
                     | ConversionKind::Reinterpret
+                    | ConversionKind::IntCast
                     | ConversionKind::BitCast
                     | ConversionKind::Widen
                     | ConversionKind::Truncate,

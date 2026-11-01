@@ -426,52 +426,52 @@ int main(){
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_one]]>(12), read<u64>(%[[VALUE_exp_sizeof_one]]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_one]]>(12), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_one]]) [c="size_t"]))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_two]]>(16), read<u64>(%[[VALUE_exp_sizeof_two]]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_two]]>(16), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_two]]) [c="size_t"]))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_three]]>(6), read<u64>(%[[VALUE_exp_sizeof_three]]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_three]]>(6), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_three]]) [c="size_t"]))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_four]]>(8), read<u64>(%[[VALUE_exp_sizeof_four]]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_four]]>(8), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_four]]) [c="size_t"]))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_five]]>(3), read<u64>(%[[VALUE_exp_sizeof_five]]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_five]]>(3), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_five]]) [c="size_t"]))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_six]]>(8), read<u64>(%[[VALUE_exp_sizeof_six]]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_six]]>(8), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_six]]) [c="size_t"]))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_seven]]>(3), read<u64>(%[[VALUE_exp_sizeof_seven]]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_seven]]>(3), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_seven]]) [c="size_t"]))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_eight]]>(4), read<u64>(%[[VALUE_exp_sizeof_eight]]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_eight]]>(4), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_eight]]) [c="size_t"]))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_nine]]>(8), read<u64>(%[[VALUE_exp_sizeof_nine]]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_nine]]>(8), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_nine]]) [c="size_t"]))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_ten]]>(16), read<u64>(%[[VALUE_exp_sizeof_ten]]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_ten]]>(16), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_ten]]) [c="size_t"]))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;

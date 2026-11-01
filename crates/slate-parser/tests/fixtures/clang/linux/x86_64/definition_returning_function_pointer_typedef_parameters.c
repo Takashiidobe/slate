@@ -58,7 +58,7 @@ int main(void) { gp(1)(2); return gs((S){1})(0, 0) + (arr() != 0) + (nested() !=
 // IR-NEXT:         return addr_of<ptr<array<i32, 4>>>(%[[VALUE_a]]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// IR-NEXT:         call<void>(call<ptr<fn(i32) -> void>>(%[[VALUE_gp]], const<i32>(1)) [c="void (*)(T)"], const<i32>(2) [c="T"]);
+// IR-NEXT:         call<void>(call<ptr<fn(i32) -> void>>(%[[VALUE_gp]], const<i32>(1)) [c="void (*)(T)"], reinterpret<i32>(const<i32>(2)) [c="T"]);
 // IR-NEXT:         return add<i32>(add<i32>(call<i32>(call<ptr<fn(ptr<@type[[TYPE_S]]>, i32) -> i32>, abi=sysv64(native_c) -> scalar>(%[[VALUE_gs]], copy<@type[[TYPE_S]], reason=arg>(read<@type[[TYPE_S]]>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(1))) [c="S"]) [c="S"]) [c="int (*)(S *, int)"], null<ptr<@type[[TYPE_S]]>> [c="S *"], const<i32>(0)), from_bool<i32>(ne<ptr<array<i32, 4>>>(call<ptr<array<i32, 4>>>(%[[VALUE_arr]]), null<ptr<array<i32, 4>>>))), from_bool<i32>(ne<ptr<fn(ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void>>>(call<ptr<fn(ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void>>>(%[[VALUE_nested]]) [c="void (*(*)(void (*)(T)))(T)"], null<ptr<fn(ptr<fn(i32) -> void>) -> ptr<fn(i32) -> void>>> [c="void (*(*)(void (*)(T)))(T)"])));
 // IR-NEXT:     }
 // IR-NEXT: }

@@ -84,7 +84,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_char_pos:[0-9]+]] char_pos: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_get_id:[0-9]+]] @get_id(%[[VALUE_c:[0-9]+]] c: i8) -> u16 [linkage=external] [fallthrough=ub_if_used] [c="WORD(char)"] {
-// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field0(field1(%[[VALUE_curval]]))), const<i32>(0))), read<i8>(%[[VALUE_c]]) [c="TEXT"]) [c="TEXT"];
+// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field0(field1(%[[VALUE_curval]]))), const<i32>(0))), reinterpret<i8, reason=assign>(read<i8>(%[[VALUE_c]])) [c="TEXT"]) [c="TEXT"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_get_tok:[0-9]+]] @get_tok() -> u16 [linkage=external] [fallthrough=ub_if_used] [c="WORD(void)"] {
 // DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(99));

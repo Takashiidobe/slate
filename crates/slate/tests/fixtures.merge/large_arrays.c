@@ -58,7 +58,7 @@ int main(void) {
 // CHECK-NEXT: target linux-aarch64: 1 compiles
 // CHECK-NEXT:   large_arrays.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 4 targets
-// CHECK-NEXT: unit large_arrays: 30 items, 16 gated, 1 duplicated functions
+// CHECK-NEXT: unit large_arrays: 30 items, 15 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:read_crossing: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 4 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
@@ -79,7 +79,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: use core::ffi::c_long;
-// CHECK-NEXT: #[cfg(not(target_arch = "x86"))]
 // CHECK-NEXT: use slate_support::uintptr_t;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
@@ -238,7 +237,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(any(windows, target_arch = "x86"))]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn read_crossing() -> i32 {
-// CHECK-NEXT:     unsafe { crossing[1] }
+// CHECK-NEXT:     (unsafe { crossing[1] }) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -328,8 +327,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_arch = "x86")]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         if ((unsafe { std::ptr::addr_of!(explicit_large.0) as *const c_char }) as u32) % 16 != 0
-// CHECK-NEXT:             || ((unsafe { std::ptr::addr_of!(larger.0) as *const c_char }) as u32) % 32 != 0
+// CHECK-NEXT:         if (((unsafe { std::ptr::addr_of!(explicit_large.0) as *const c_char }) as uintptr_t)
+// CHECK-NEXT:             as u32)
+// CHECK-NEXT:             % 16
+// CHECK-NEXT:             != 0
+// CHECK-NEXT:             || (((unsafe { std::ptr::addr_of!(larger.0) as *const c_char }) as uintptr_t) as u32)
+// CHECK-NEXT:                 % 32
+// CHECK-NEXT:                 != 0
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 1;
 // CHECK-NEXT:         }

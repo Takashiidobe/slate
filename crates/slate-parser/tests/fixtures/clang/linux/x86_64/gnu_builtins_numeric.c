@@ -231,7 +231,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE72:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE71]]), widen<u64, reason=usual_arith>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], const<u32>(16909060))));
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_total_2]], read<u64>(%[[VALUE72]]));
 // DEFAULT-NEXT:         let %[[VALUE73:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_total_2]]);
-// DEFAULT-NEXT:         let %[[VALUE74:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE73]]), call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], const<u64>(72623859790382856)));
+// DEFAULT-NEXT:         let %[[VALUE74:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE73]]), reinterpret<u64, reason=usual_arith>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg>(const<u64>(72623859790382856)))));
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_total_2]], read<u64>(%[[VALUE74]]));
 // DEFAULT-NEXT:         let %[[VALUE75:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_total_2]]);
 // DEFAULT-NEXT:         let %[[VALUE76:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE75]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u8, signature=fn(u8) -> u8>(%[[VALUE___builtin_bitreverse8]], truncate<u8, reason=arg, fits=always>(const<u32>(18))))))));
@@ -243,7 +243,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE80:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE79]]), widen<u64, reason=usual_arith>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bitreverse32]], const<u32>(305419896))));
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_total_2]], read<u64>(%[[VALUE80]]));
 // DEFAULT-NEXT:         let %[[VALUE81:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_total_2]]);
-// DEFAULT-NEXT:         let %[[VALUE82:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE81]]), call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bitreverse64]], const<u64>(81985529216486895)));
+// DEFAULT-NEXT:         let %[[VALUE82:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE81]]), reinterpret<u64, reason=usual_arith>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bitreverse64]], reinterpret<u64, reason=arg>(const<u64>(81985529216486895)))));
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_total_2]], read<u64>(%[[VALUE82]]));
 // DEFAULT-NEXT:         let %[[VALUE83:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_total_2]]);
 // DEFAULT-NEXT:         let %[[VALUE84:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE83]]), widen<u64, reason=usual_arith>(call<u32, signature=fn(u32, u32) -> u32>(%[[VALUE___builtin_rotateleft32]], const<u32>(305419896), reinterpret<u32, reason=arg, fits=always>(const<i32>(8)))));

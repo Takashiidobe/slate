@@ -59,14 +59,14 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_i:[0-9]+]] i: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"] [c="size_t"];
-// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%[[VALUE_i]]) [c="size_t"], size_of<u64, array<u8, 4>>(4) [c="size_t"])
+// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%[[VALUE_i]]) [c="size_t"], reinterpret<u64, reason=usual_arith>(size_of<u64, array<u8, 4>>(4)) [c="size_t"])
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_i]]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE1]]) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="size_t"]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                 write<u64>(%[[VALUE_i]], read<u64>(%[[VALUE2]]) [c="size_t"]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             counted: %[[VALUE_i]] in reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"]..size_of<u64, array<u8, 4>>(4) [c="size_t"]
+// DEFAULT-NEXT:             counted: %[[VALUE_i]] in reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"]..reinterpret<u64, reason=usual_arith>(size_of<u64, array<u8, 4>>(4)) [c="size_t"]
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     call<i32, signature=fn(i32) -> i32>(%[[VALUE_putchar]], reinterpret<i32, reason=arg, fits=unknown>(widen<u32, reason=arg>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=Some(4)>(%[[VALUE_data]]), read<u64>(%[[VALUE_i]])))))));

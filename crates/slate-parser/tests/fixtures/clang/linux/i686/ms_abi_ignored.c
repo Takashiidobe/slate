@@ -32,7 +32,7 @@ long use(void) { return ms_ignored(1, 2.0) + sysv_native(1); }
 // IR-NEXT:     fn %[[VALUE_ms_ignored:[0-9]+]] @ms_ignored(%[[VALUE_a:[0-9]+]] a: i32, ...) -> i32 [linkage=external];
 // IR-NEXT:     fn %[[VALUE_sysv_native:[0-9]+]] @sysv_native(%[[VALUE_a_2:[0-9]+]] a: i32) -> i32 [linkage=external];
 // IR-NEXT:     fn %[[VALUE_use:[0-9]+]] @use() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<i32>(call<i32>(%[[VALUE_ms_ignored]], const<i32>(1), const<f64>(2.0)), call<i32>(%[[VALUE_sysv_native]], const<i32>(1)));
+// IR-NEXT:         return add<i32>(call<i32>(%[[VALUE_ms_ignored]], reinterpret<i32>(const<i32>(1)), const<f64>(2.0)), call<i32>(%[[VALUE_sysv_native]], reinterpret<i32>(const<i32>(1))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

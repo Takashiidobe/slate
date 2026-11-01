@@ -101,7 +101,7 @@ int main() {
 // DEFAULT-NEXT:                     do %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:                         let %[[VALUE3:[0-9]+]]: ptr<i32> [synthetic] = read<ptr<i32>>(%[[VALUE_p0]]) [c="T0 *"] [c="T0 *"];
 // DEFAULT-NEXT:                         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%[[VALUE3]]))) [c="T0"] [c="T0"];
-// DEFAULT-NEXT:                         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]) [c="T0"], read<i32>(deref(read<ptr<i32>>(%[[VALUE_p0]])))) [c="T0"] [c="T0"];
+// DEFAULT-NEXT:                         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE4]]) [c="T0"]), reinterpret<i32, reason=promotion>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_p0]]))) [c="T0"]))) [c="T0"] [c="T0"];
 // DEFAULT-NEXT:                         write<i32>(deref(read<ptr<i32>>(%[[VALUE3]])), read<i32>(%[[VALUE5]]) [c="T0"]) [c="T0"] [c="T0"];
 // DEFAULT-NEXT:                     while {
 // DEFAULT-NEXT:                         let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n]]);
@@ -109,7 +109,7 @@ int main() {
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_n]], read<i32>(%[[VALUE7]]));
 // DEFAULT-NEXT:                         yield ne<i32>(read<i32>(%[[VALUE7]]), const<i32>(0));
 // DEFAULT-NEXT:                     };
-// DEFAULT-NEXT:                 return from_bool<i32, reason=return>(eq<i32>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_p0]]))), const<i32>(0)));
+// DEFAULT-NEXT:                 return from_bool<i32, reason=return>(eq<i32>(reinterpret<i32, reason=promotion>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_p0]]))) [c="T0"]), const<i32>(0)));
 // DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(1):
 // DEFAULT-NEXT:                     do %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:                         let %[[VALUE9:[0-9]+]]: ptr<i64> [synthetic] = read<ptr<i64>>(%[[VALUE_p1]]) [c="T1 *"] [c="T1 *"];
@@ -144,13 +144,13 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_v0:[0-9]+]] v0: i32 [storage=automatic] [c="T0"];
 // DEFAULT-NEXT:         let %[[VALUE_v1:[0-9]+]] v1: i64 [storage=automatic] [c="T1"];
 // DEFAULT-NEXT:         let %[[VALUE_v2:[0-9]+]] v2: i64 [storage=automatic] [c="T2"];
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_v0]], const<i32>(1) [c="T0"]) [c="T0"];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_v0]], reinterpret<i32, reason=assign>(const<i32>(1)) [c="T0"]) [c="T0"];
 // DEFAULT-NEXT:         call<i32, signature=fn(i32, i32, ptr<void>) -> i32>(%[[VALUE_doit]], const<i32>(0), const<i32>(5), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_v0]]) [c="T0 *"]));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_v1]], widen<i64, reason=assign>(const<i32>(1)) [c="T1"]) [c="T1"];
 // DEFAULT-NEXT:         call<i32, signature=fn(i32, i32, ptr<void>) -> i32>(%[[VALUE_doit]], const<i32>(1), const<i32>(5), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i64>>(%[[VALUE_v1]]) [c="T1 *"]));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_v2]], widen<i64, reason=assign>(const<i32>(1)) [c="T2"]) [c="T2"];
 // DEFAULT-NEXT:         call<i32, signature=fn(i32, i32, ptr<void>) -> i32>(%[[VALUE_doit]], const<i32>(2), const<i32>(5), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i64>>(%[[VALUE_v2]]) [c="T2 *"]));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_v0]]), const<i32>(32))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_v0]]) [c="T0"]), const<i32>(32))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE_v1]]) [c="T1"], widen<i64, reason=usual_arith>(const<i32>(32)) [c="T1"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

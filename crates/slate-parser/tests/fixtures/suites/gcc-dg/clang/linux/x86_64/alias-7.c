@@ -52,7 +52,7 @@ main (void)
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_foo]]), addr_of<ptr<i32>>(%[[VALUE_bar]])), ne<i32>(read<i32>(%[[VALUE_foo]]), const<i32>(0))), ne<i32>(read<i32>(%[[VALUE_bar]]) [c="typeof(foo)"], const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         return read<i32>(%[[VALUE_bar]]);
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(read<i32>(%[[VALUE_bar]]) [c="typeof(foo)"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

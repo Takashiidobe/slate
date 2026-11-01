@@ -49,6 +49,6 @@ long hosted = __STDC_HOSTED__;
 // IR-DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // IR-DEFAULT-NEXT:     }
 // IR-DEFAULT-NEXT:     global %[[VALUE_version:[0-9]+]] version: i32 [storage=static] = const<i32>(201710) [linkage=external];
-// IR-DEFAULT-NEXT:     global %[[VALUE_hosted:[0-9]+]] hosted: i32 [storage=static] = const<i32>(1) [linkage=external];
+// IR-DEFAULT-NEXT:     global %[[VALUE_hosted:[0-9]+]] hosted: i32 [storage=static] = reinterpret<i32>(const<i32>(1)) [linkage=external];
 // IR-DEFAULT-NEXT: }
 // SLATE-FILECHECK-END IR-DEFAULT

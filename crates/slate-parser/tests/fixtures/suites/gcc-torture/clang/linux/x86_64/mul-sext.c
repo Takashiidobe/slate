@@ -48,8 +48,8 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: i64 [storage=automatic] = const<i64>(1244422862270365697) [c="int64_t"] [c="int64_t"];
-// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: i64 [storage=automatic] = const<i64>(1808618562365947905) [c="int64_t"] [c="int64_t"];
+// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: i64 [storage=automatic] = reinterpret<i64, reason=assign>(const<i64>(1244422862270365697)) [c="int64_t"] [c="int64_t"];
+// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: i64 [storage=automatic] = reinterpret<i64, reason=assign>(const<i64>(1808618562365947905)) [c="int64_t"] [c="int64_t"];
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%[[VALUE_f]], read<i64>(%[[VALUE_a_2]]) [c="int64_t"], read<i64>(%[[VALUE_b_2]]) [c="int64_t"]) [c="int64_t"], widen<i64, reason=usual_arith>(const<i32>(1)) [c="int64_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }

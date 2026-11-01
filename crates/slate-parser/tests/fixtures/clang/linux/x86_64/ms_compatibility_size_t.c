@@ -39,7 +39,7 @@ size_t twice(size_t n) {
 // DEFAULT-NEXT:     fn %[[VALUE_length:[0-9]+]] @length(%[[VALUE_s:[0-9]+]] s: ptr<const i8>) -> u64 [linkage=external] [c="size_t(const char *)"];
 // DEFAULT-NEXT:     fn %[[VALUE_twice:[0-9]+]] @twice(%[[VALUE_n:[0-9]+]] n: u64 [c="size_t"]) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="size_t(size_t)"] {
 // DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: i32 [storage=automatic] = reinterpret<i32>(truncate<u32>(read<u64>(%[[VALUE_n]]) [c="size_t"])) [c="size_t"] [c="size_t"];
-// DEFAULT-NEXT:         return reinterpret<u64>(widen<i64>(mul<i32>(read<i32>(%[[VALUE_local]]), const<i32>(2)))) [c="size_t"];
+// DEFAULT-NEXT:         return reinterpret<u64>(widen<i64>(mul<i32>(reinterpret<i32>(read<i32>(%[[VALUE_local]]) [c="size_t"]), const<i32>(2)))) [c="size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

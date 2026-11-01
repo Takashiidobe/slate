@@ -52,10 +52,10 @@ int main() {
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<u32>(%[[VALUE_a]], reinterpret<u32, reason=assign, fits=always>(const<i32>(7)) [c="uint32_t"]) [c="uint32_t"];
-// DEFAULT-NEXT:             condition: le<u32>(read<u32>(%[[VALUE_a]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
+// DEFAULT-NEXT:             condition: le<u32>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_a]]) [c="uint32_t"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_a]]) [c="uint32_t"] [c="uint32_t"];
-// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE1]]) [c="uint32_t"], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))) [c="uint32_t"] [c="uint32_t"];
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u32 [synthetic] = reinterpret<u32, reason=assign>(add<u32, overflow=wrap>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE1]]) [c="uint32_t"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))) [c="uint32_t"] [c="uint32_t"];
 // DEFAULT-NEXT:                 write<u32>(%[[VALUE_a]], read<u32>(%[[VALUE2]]) [c="uint32_t"]) [c="uint32_t"] [c="uint32_t"];
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
@@ -63,9 +63,9 @@ int main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %[[VALUE_d:[0-9]+]] d: i8 [storage=automatic] = reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(read<u32>(%[[VALUE_a]]) [c="uint32_t"]));
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE_c]], reinterpret<u32, reason=assign, fits=unknown>(widen<i32, reason=assign>(read<i8>(%[[VALUE_d]]))) [c="uint32_t"]) [c="uint32_t"];
-// DEFAULT-NEXT:                     write<i32>(%[[VALUE_b]], from_bool<i32, reason=assign>(eq<u32>(read<u32>(%[[VALUE_a]]), read<u32>(%[[VALUE_c]]))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_b]], from_bool<i32, reason=assign>(eq<u32>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_a]]) [c="uint32_t"]), reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_c]]) [c="uint32_t"]))));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_a]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(7)))
+// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_a]]) [c="uint32_t"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(7)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -314,7 +314,7 @@ int main(void) {
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_key]]), const<i32>(110))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<i32>(field0(deref(read<ptr<@type[[TYPE_GNUArguments]]>>(%[[VALUE_arguments]]))), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_argument]]))));
-// DEFAULT-NEXT:                 return const<i32>(0) [c="error_t"];
+// DEFAULT-NEXT:                 return reinterpret<i32, reason=return>(const<i32>(0)) [c="error_t"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_key]]), const<i32>(0))
 // DEFAULT-NEXT:             {
@@ -322,18 +322,18 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(field1(deref(read<ptr<@type[[TYPE_GNUArguments]]>>(%[[VALUE0]]))));
 // DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%[[VALUE_strcmp]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_argument]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str]]))), const<i32>(0))));
 // DEFAULT-NEXT:                 write<i32>(field1(deref(read<ptr<@type[[TYPE_GNUArguments]]>>(%[[VALUE0]]))), read<i32>(%[[VALUE2]]));
-// DEFAULT-NEXT:                 return const<i32>(0) [c="error_t"];
+// DEFAULT-NEXT:                 return reinterpret<i32, reason=return>(const<i32>(0)) [c="error_t"];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(eq<i32>(read<i32>(%[[VALUE_key]]), const<i32>(16777217)), eq<i32>(read<i32>(%[[VALUE_key]]), const<i32>(16777219))), eq<i32>(read<i32>(%[[VALUE_key]]), const<i32>(16777218))), eq<i32>(read<i32>(%[[VALUE_key]]), const<i32>(16777220))), eq<i32>(read<i32>(%[[VALUE_key]]), const<i32>(16777223)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 return const<i32>(0) [c="error_t"];
+// DEFAULT-NEXT:                 return reinterpret<i32, reason=return>(const<i32>(0)) [c="error_t"];
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return const<i32>(7) [c="error_t"];
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(const<i32>(7)) [c="error_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_gnu_qsort_extension:[0-9]+]] @gnu_qsort_extension() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_values:[0-9]+]] values: array<i32, 4> [storage=automatic] [align=16] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(4), index1 = const<i32>(1), index2 = const<i32>(3), index3 = const<i32>(2));
 // DEFAULT-NEXT:         let %[[VALUE_direction_2:[0-9]+]] direction: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, u64, u64, ptr<fn(ptr<const void>, ptr<const void>, ptr<void>) -> i32>, ptr<void>) -> void>(%[[VALUE_qsort_r]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_values]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4))) [c="size_t"], size_of<u64, i32>(4) [c="size_t"], function_decay<ptr<fn(ptr<const void>, ptr<const void>, ptr<void>) -> i32>>(%[[VALUE_gnu_compare_with_direction]]) [c="__compar_d_fn_t"], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_direction_2]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, u64, u64, ptr<fn(ptr<const void>, ptr<const void>, ptr<void>) -> i32>, ptr<void>) -> void>(%[[VALUE_qsort_r]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_values]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4))) [c="size_t"], reinterpret<u64, reason=arg>(size_of<u64, i32>(4)) [c="size_t"], function_decay<ptr<fn(ptr<const void>, ptr<const void>, ptr<void>) -> i32>>(%[[VALUE_gnu_compare_with_direction]]) [c="__compar_d_fn_t"], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_direction_2]])));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_values]]), const<i32>(0)))), const<i32>(1000)), mul<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_values]]), const<i32>(1)))), const<i32>(100))), mul<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_values]]), const<i32>(2)))), const<i32>(10))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_values]]), const<i32>(3)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_gnu_getopt_extensions:[0-9]+]] @gnu_getopt_extensions() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
@@ -373,7 +373,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_option_2:[0-9]+]] option: array<i8, 11> [storage=automatic] = code_units<array<i8, 11>>([45, 45, 110, 117, 109, 98, 101, 114, 61, 53, 0]);
 // DEFAULT-NEXT:         let %[[VALUE_item:[0-9]+]] item: array<i8, 5> [storage=automatic] = code_units<array<i8, 5>>([105, 116, 101, 109, 0]);
 // DEFAULT-NEXT:         let %[[VALUE_arguments_3:[0-9]+]] arguments: array<ptr<i8>, 4> [storage=automatic] [align=16] = aggregate<array<ptr<i8>, 4>, zero_fill=false>(index0 = array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_program_2]]), index1 = array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_option_2]]), index2 = array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_item]]), index3 = null<ptr<i8>>);
-// DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: i32 [storage=automatic] = call<i32, signature=fn(ptr<const @type[[TYPE_argp]]>, i32, ptr<ptr<i8>>, u32, ptr<i32>, ptr<void>) -> i32>(%[[VALUE_argp_parse]], pointer_cast<ptr<const @type[[TYPE_argp]]>, reason=arg>(addr_of<ptr<@type[[TYPE_argp]]>>(%[[VALUE_parser]])), const<i32>(3), array_decay<ptr<ptr<i8>>, length=Some(4)>(%[[VALUE_arguments_3]]), reinterpret<u32, reason=arg, fits=unknown>(or<i32>(const<i32>(32), const<i32>(16))), null<ptr<i32>>, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_GNUArguments]]>>(%[[VALUE_parsed]])));
+// DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: i32 [storage=automatic] = reinterpret<i32, reason=assign>(call<i32, signature=fn(ptr<const @type[[TYPE_argp]]>, i32, ptr<ptr<i8>>, u32, ptr<i32>, ptr<void>) -> i32>(%[[VALUE_argp_parse]], pointer_cast<ptr<const @type[[TYPE_argp]]>, reason=arg>(addr_of<ptr<@type[[TYPE_argp]]>>(%[[VALUE_parser]])), const<i32>(3), array_decay<ptr<ptr<i8>>, length=Some(4)>(%[[VALUE_arguments_3]]), reinterpret<u32, reason=arg, fits=unknown>(or<i32>(const<i32>(32), const<i32>(16))), null<ptr<i32>>, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_GNUArguments]]>>(%[[VALUE_parsed]]))) [c="error_t"]);
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(from_bool<i32, reason=promotion>(eq<i32>(read<i32>(%[[VALUE_result]]), const<i32>(0))), mul<i32, overflow=ub>(read<i32>(field0(%[[VALUE_parsed]])), const<i32>(10))), read<i32>(field1(%[[VALUE_parsed]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_gnu_search_extensions:[0-9]+]] @gnu_search_extensions() -> i32 [linkage=internal] [fallthrough=ub_if_used] {

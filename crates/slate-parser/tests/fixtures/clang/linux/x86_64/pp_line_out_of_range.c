@@ -33,8 +33,8 @@ long long zero = __LINE__;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %[[VALUE_max_unsigned:[0-9]+]] max_unsigned: i64 [storage=static] = const<i64>(4294967295) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_past_int:[0-9]+]] past_int: i64 [storage=static] = const<i64>(2147483648) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_max_unsigned:[0-9]+]] max_unsigned: i64 [storage=static] = reinterpret<i64>(const<i64>(4294967295)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_past_int:[0-9]+]] past_int: i64 [storage=static] = reinterpret<i64>(const<i64>(2147483648)) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_max_int:[0-9]+]] max_int: i64 [storage=static] = widen<i64>(const<i32>(2147483647)) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_zero:[0-9]+]] zero: i64 [storage=static] = widen<i64>(const<i32>(0)) [linkage=external];
 // DEFAULT-NEXT: }

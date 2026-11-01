@@ -76,7 +76,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_info:[0-9]+]] info: @type[[TYPE_stat]] [storage=automatic] = aggregate<@type[[TYPE_stat]], zero_fill=true>(field0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="__dev_t"]);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<@type[[TYPE_stat]]>) -> i32>(%[[VALUE_stat]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])), addr_of<ptr<@type[[TYPE_stat]]>>(%[[VALUE_info]])), const<i32>(0))
 // DEFAULT-NEXT:             return const<i32>(1);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str_2]])), read<i64>(field0(field12(%[[VALUE_info]]))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str_2]])), reinterpret<i64, reason=explicit>(read<i64>(field0(field12(%[[VALUE_info]]))) [c="__time_t"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

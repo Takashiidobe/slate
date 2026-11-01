@@ -213,7 +213,7 @@ int sprintf_nonstring_2 (char *d, NONSTRING const char *s)
 // DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_strdup]], read<ptr<const i8>>(%[[VALUE_s_7]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_strlen_nonstring:[0-9]+]] @strlen_nonstring(%[[VALUE_s_8:[0-9]+]] s: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="size_t(const char *)"] {
-// DEFAULT-NEXT:         return call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE_s_8]])) [c="size_t"];
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE_s_8]]))) [c="size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_printf_nonstring:[0-9]+]] @printf_nonstring(%[[VALUE_s_9:[0-9]+]] s: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], read<ptr<const i8>>(%[[VALUE_s_9]]));

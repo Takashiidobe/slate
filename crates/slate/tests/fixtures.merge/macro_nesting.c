@@ -82,7 +82,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_nesting.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_nesting: 31 items, 1 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_nesting: 30 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 15 function-like, 13 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   inline split_argument: 4
@@ -189,19 +189,7 @@ int main(void) {
 // CHECK-NEXT:             used = __v + 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             bytes.0[__v as usize] = $c;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! PUT_BYTE__2 {
-// CHECK-NEXT:     ($c:expr) => {
-// CHECK-NEXT:         let __v: i32 = unsafe { used };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             used = __v + 1;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             bytes.0[__v as usize] = (($c) as i8) as u8;
+// CHECK-NEXT:             bytes.0[__v as usize] = ($c) as u8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -209,14 +197,14 @@ int main(void) {
 // CHECK-NEXT: macro_rules! PUT_SHORT {
 // CHECK-NEXT:     ($w:expr) => {
 // CHECK-NEXT:         PUT_BYTE!(((((($w) as u32) as i32) & 255) as i8) as u8);
-// CHECK-NEXT:         PUT_BYTE!(((((($w) as u32) as i32) >> 8i32) as i8) as u8);
+// CHECK-NEXT:         PUT_BYTE!((((((($w) as u16) as u32) as i32) >> 8i32) as i8) as u8);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! PUT_SHORT__2 {
 // CHECK-NEXT:     ($w:expr) => {
 // CHECK-NEXT:         PUT_BYTE!(((($w) & 255) as i8) as u8);
-// CHECK-NEXT:         PUT_BYTE!(((((((($w) as i16) as u16) as u32) as i32) >> 8i32) as i8) as u8);
+// CHECK-NEXT:         PUT_BYTE!((((((($w) as u16) as u32) as i32) >> 8i32) as i8) as u8);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -237,11 +225,11 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SEND__2 {
+// CHECK-NEXT: macro_rules! SEND {
 // CHECK-NEXT:     ($value:expr, $length:expr) => {
-// CHECK-NEXT:         let width: i32 = (($length) as u32) as i32;
+// CHECK-NEXT:         let width: i32 = $length;
 // CHECK-NEXT:         if width > 8 {
-// CHECK-NEXT:             let val: i32 = (($value) as u32) as i32;
+// CHECK-NEXT:             let val: i32 = ($value) as i32;
 // CHECK-NEXT:             let __v: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 buffer = ((((__v as u32) as i32) | ((((val as i16) as u16) as u32) as i32)) as i16)
@@ -254,7 +242,8 @@ int main(void) {
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = (((([[V_0]] as u32) as i32) | ((($value) as u32) as i32)) as i16) as u16;
+// CHECK-NEXT:                 buffer =
+// CHECK-NEXT:                     (((([[V_0]] as u32) as i32) | (((($value) as u16) as u32) as i32)) as i16) as u16;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 total = total + width;
@@ -263,11 +252,11 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SEND {
+// CHECK-NEXT: macro_rules! SEND__2 {
 // CHECK-NEXT:     ($value:expr, $length:expr) => {
-// CHECK-NEXT:         let width: i32 = $length;
+// CHECK-NEXT:         let width: i32 = (($length) as u32) as i32;
 // CHECK-NEXT:         if width > 8 {
-// CHECK-NEXT:             let val: i32 = $value;
+// CHECK-NEXT:             let val: i32 = ($value) as i32;
 // CHECK-NEXT:             let __v: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 buffer = ((((__v as u32) as i32) | ((((val as i16) as u16) as u32) as i32)) as i16)
@@ -280,8 +269,8 @@ int main(void) {
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             let [[V_0]]: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = (((([[V_0]] as u32) as i32) | ((((($value) as i16) as u16) as u32) as i32))
-// CHECK-NEXT:                     as i16) as u16;
+// CHECK-NEXT:                 buffer =
+// CHECK-NEXT:                     (((([[V_0]] as u32) as i32) | (((($value) as u16) as u32) as i32)) as i16) as u16;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 total = total + width;
@@ -342,7 +331,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn direct(value: i32) {
-// CHECK-NEXT:     PUT_BYTE__2!(value);
+// CHECK-NEXT:     PUT_BYTE!(value);
 // CHECK-NEXT:     PUT_SHORT__2!(value + 1);
 // CHECK-NEXT:     SEND!(value, value + 5);
 // CHECK-NEXT:     ADD!(value);

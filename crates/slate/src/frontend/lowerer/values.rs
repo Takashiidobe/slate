@@ -1045,6 +1045,15 @@ impl FunctionLowerer<'_, '_> {
             {
                 self.lower_vector_unary(value, *op, operand)?
             }
+            ValueKind::Convert {
+                kind: ir::ConversionKind::Reinterpret,
+                operand,
+                ..
+            } if operand.ty == value.ty
+                && self.lower_value_type(operand)? == self.lower_value_type(value)? =>
+            {
+                self.lower_value(operand)?
+            }
             ValueKind::Convert { operand, .. } => {
                 let operand = if odd_width(self.tables.resolve_type(&value.ty)).is_none() {
                     let target = self.lower_value_type(value)?;

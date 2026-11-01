@@ -92,7 +92,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_arguments.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_arguments: 38 items, 12 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_arguments: 36 items, 8 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced record:odd_fields: 2 variants
 // CHECK-NEXT:   spliced fn:thrice: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
@@ -150,14 +150,6 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: macro_rules! CAST_TO__2 {
-// CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         $x
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! CAST_TO {
 // CHECK-NEXT:     ($T:ty, $x:expr) => {
 // CHECK-NEXT:         ($x) as $T
@@ -188,15 +180,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! NESTED_CAST {
-// CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         CAST_TO__2!($x) + 1
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! NESTED_CAST__2 {
 // CHECK-NEXT:     ($T:ty, $x:expr) => {
 // CHECK-NEXT:         CAST_TO!($T, $x) + (1i32 as $T)
 // CHECK-NEXT:     };
@@ -452,20 +436,11 @@ int main(void) {
 // CHECK-NEXT:     let f4: i32 = NESTED_FIELD!(p, right);
 // CHECK-NEXT:     SET_FIELD!(p, left, 10i32);
 // CHECK-NEXT:     SET_FIELD!(p, right, 11i32);
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let c: c_long = CAST_TO__2!(i);
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let d: i32 = CAST_TO__2!(m);
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let c2: c_long = NESTED_CAST!(i);
+// CHECK-NEXT:     let c: c_long = CAST_TO!(c_long, i);
+// CHECK-NEXT:     let d: i32 = CAST_TO!(i32, m);
+// CHECK-NEXT:     let c2: c_long = NESTED_CAST!(c_long, i);
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let z: c_ulong = SIZE_PLUS__2!(i32, 1i32) as c_ulong;
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     let c: c_long = CAST_TO!(c_long, i);
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     let d: i32 = CAST_TO!(i32, m);
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     let c2: c_long = NESTED_CAST__2!(c_long, i);
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     let z: c_ulong = SIZE_PLUS!(i32, 1i32);
 // CHECK-NEXT:     let e: i32 = APPLY__2!(i);

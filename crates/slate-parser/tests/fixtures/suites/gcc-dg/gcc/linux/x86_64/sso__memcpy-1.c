@@ -98,7 +98,7 @@ int main(void)
 // DEFAULT-NEXT:     type @type[[TYPE_upal_u32le_t:[0-9]+]] upal_u32le_t = @type[[TYPE1]];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_bswap32:[0-9]+]] @__builtin_bswap32(%[[VALUE0:[0-9]+]] <unnamed>: u32) -> u32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_native_to_big_endian:[0-9]+]] @native_to_big_endian(%[[VALUE_t:[0-9]+]] t: u32 [c="uint32_t"]) -> u32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] [c="uint32_t(uint32_t)"] {
-// DEFAULT-NEXT:         return call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], read<u32>(%[[VALUE_t]])) [c="uint32_t"];
+// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg>(read<u32>(%[[VALUE_t]]) [c="uint32_t"]))) [c="uint32_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_native_to_little_endian:[0-9]+]] @native_to_little_endian(%[[VALUE_t_2:[0-9]+]] t: u32 [c="uint32_t"]) -> u32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] [c="uint32_t(uint32_t)"] {
 // DEFAULT-NEXT:         return read<u32>(%[[VALUE_t_2]]) [c="uint32_t"];

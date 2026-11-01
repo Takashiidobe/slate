@@ -295,6 +295,14 @@ impl DisplayValue<'_> {
 }
 
 impl Value {
+    pub fn is_macro_hole(&self) -> bool {
+        match &self.node.value {
+            ValueKind::MacroArg { .. } => true,
+            ValueKind::Read { place, .. } => matches!(place.kind, PlaceKind::MacroArg { .. }),
+            _ => false,
+        }
+    }
+
     pub fn display(&self, show_spans: bool) -> DisplayValue<'_> {
         DisplayValue {
             value: self,

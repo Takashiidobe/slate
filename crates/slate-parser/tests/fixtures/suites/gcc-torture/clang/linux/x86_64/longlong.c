@@ -85,8 +85,8 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if eq<u64>(size_of<u64, u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(32)>(%[[VALUE_b]]), const<i32>(17))), const<u64>(3160194) [c="uint64"]) [c="uint64"];
-// DEFAULT-NEXT:                 write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(32)>(%[[VALUE_b]]), const<i32>(2))), const<u64>(6003104017374052362) [c="uint64"]) [c="uint64"];
+// DEFAULT-NEXT:                 write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(32)>(%[[VALUE_b]]), const<i32>(17))), reinterpret<u64, reason=assign>(const<u64>(3160194)) [c="uint64"]) [c="uint64"];
+// DEFAULT-NEXT:                 write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(32)>(%[[VALUE_b]]), const<i32>(2))), reinterpret<u64, reason=assign>(const<u64>(6003104017374052362)) [c="uint64"]) [c="uint64"];
 // DEFAULT-NEXT:                 write<u64>(%[[VALUE_pars]], widen<u64, reason=assign>(const<u32>(2281701442)));
 // DEFAULT-NEXT:                 call<void, signature=fn(unprototyped) -> void>(%[[VALUE_alpha_ep_extbl_i_eq_0]]);
 // DEFAULT-NEXT:                 if ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(32)>(%[[VALUE_b]]), const<i32>(2)))) [c="uint64"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(77))) [c="uint64"])

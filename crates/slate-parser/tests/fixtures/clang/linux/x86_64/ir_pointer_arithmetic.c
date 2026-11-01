@@ -72,7 +72,7 @@ long pointers(Element *p, const int *q, unsigned long n, struct Pair *r, int (*r
 // IR-NEXT:         write<u64>(%[[VALUE_n]], read<u64>(%[[VALUE9]]));
 // IR-NEXT:         let %[[VALUE10:[0-9]+]]: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_p]]) [c="Element *"], read<u64>(%[[VALUE8]])) [c="Element *"] [c="Element *"];
 // IR-NEXT:         let %[[VALUE11:[0-9]+]]: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%[[VALUE10]]))) [c="Element"] [c="Element"];
-// IR-NEXT:         let %[[VALUE12:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE11]]) [c="Element"], const<i32>(1)) [c="Element"] [c="Element"];
+// IR-NEXT:         let %[[VALUE12:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE11]]) [c="Element"]), const<i32>(1))) [c="Element"] [c="Element"];
 // IR-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE10]])), read<i32>(%[[VALUE12]]) [c="Element"]) [c="Element"] [c="Element"];
 // IR-NEXT:         return ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(%[[VALUE_p]]) [c="Element *"], read<ptr<const i32>>(%[[VALUE_q]]));
 // IR-NEXT:     }

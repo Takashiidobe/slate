@@ -60,7 +60,7 @@ int widen(char c) { return c; }
 // DEFAULT-NEXT:     global %[[VALUE_wchar_size:[0-9]+]] wchar_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, i32>(4))) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_wide_char_size:[0-9]+]] wide_char_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, i32>(4))) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_wide_string_size:[0-9]+]] wide_string_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, array<i32, 3>>(12))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_wchar_negative:[0-9]+]] wchar_negative: i32 [storage=static] = from_bool<i32>(lt<i32>(neg<i32>(const<i32>(1)), const<i32>(0))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wchar_negative:[0-9]+]] wchar_negative: i32 [storage=static] = from_bool<i32>(lt<i32>(reinterpret<i32>(reinterpret<i32>(neg<i32>(const<i32>(1))) [c="wchar_t"]), const<i32>(0))) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_wchar_width:[0-9]+]] wchar_width: i32 [storage=static] = const<i32>(32) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_wide:[0-9]+]] wide: array<i32, 2> [storage=static] = code_units<array<i32, 2>>([65535, 0]) [linkage=external] [c="wchar_t[]"];
 // DEFAULT-NEXT:     fn %[[VALUE_widen:[0-9]+]] @widen(%[[VALUE_c:[0-9]+]] c: i8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -97,7 +97,7 @@ int widen(char c) { return c; }
 // UNSIGNED-NEXT:     global %[[VALUE_wchar_size:[0-9]+]] wchar_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, i32>(4))) [linkage=external];
 // UNSIGNED-NEXT:     global %[[VALUE_wide_char_size:[0-9]+]] wide_char_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, i32>(4))) [linkage=external];
 // UNSIGNED-NEXT:     global %[[VALUE_wide_string_size:[0-9]+]] wide_string_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, array<i32, 3>>(12))) [linkage=external];
-// UNSIGNED-NEXT:     global %[[VALUE_wchar_negative:[0-9]+]] wchar_negative: i32 [storage=static] = from_bool<i32>(lt<i32>(neg<i32>(const<i32>(1)), const<i32>(0))) [linkage=external];
+// UNSIGNED-NEXT:     global %[[VALUE_wchar_negative:[0-9]+]] wchar_negative: i32 [storage=static] = from_bool<i32>(lt<i32>(reinterpret<i32>(reinterpret<i32>(neg<i32>(const<i32>(1))) [c="wchar_t"]), const<i32>(0))) [linkage=external];
 // UNSIGNED-NEXT:     global %[[VALUE_wchar_width:[0-9]+]] wchar_width: i32 [storage=static] = const<i32>(32) [linkage=external];
 // UNSIGNED-NEXT:     global %[[VALUE_wide:[0-9]+]] wide: array<i32, 2> [storage=static] = code_units<array<i32, 2>>([65535, 0]) [linkage=external] [c="wchar_t[]"];
 // UNSIGNED-NEXT:     fn %[[VALUE_widen:[0-9]+]] @widen(%[[VALUE_c:[0-9]+]] c: u8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -134,7 +134,7 @@ int widen(char c) { return c; }
 // NOSIGNED-NEXT:     global %[[VALUE_wchar_size:[0-9]+]] wchar_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, i32>(4))) [linkage=external];
 // NOSIGNED-NEXT:     global %[[VALUE_wide_char_size:[0-9]+]] wide_char_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, i32>(4))) [linkage=external];
 // NOSIGNED-NEXT:     global %[[VALUE_wide_string_size:[0-9]+]] wide_string_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, array<i32, 3>>(12))) [linkage=external];
-// NOSIGNED-NEXT:     global %[[VALUE_wchar_negative:[0-9]+]] wchar_negative: i32 [storage=static] = from_bool<i32>(lt<i32>(neg<i32>(const<i32>(1)), const<i32>(0))) [linkage=external];
+// NOSIGNED-NEXT:     global %[[VALUE_wchar_negative:[0-9]+]] wchar_negative: i32 [storage=static] = from_bool<i32>(lt<i32>(reinterpret<i32>(reinterpret<i32>(neg<i32>(const<i32>(1))) [c="wchar_t"]), const<i32>(0))) [linkage=external];
 // NOSIGNED-NEXT:     global %[[VALUE_wchar_width:[0-9]+]] wchar_width: i32 [storage=static] = const<i32>(32) [linkage=external];
 // NOSIGNED-NEXT:     global %[[VALUE_wide:[0-9]+]] wide: array<i32, 2> [storage=static] = code_units<array<i32, 2>>([65535, 0]) [linkage=external] [c="wchar_t[]"];
 // NOSIGNED-NEXT:     fn %[[VALUE_widen:[0-9]+]] @widen(%[[VALUE_c:[0-9]+]] c: u8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -171,7 +171,7 @@ int widen(char c) { return c; }
 // RESIGNED-NEXT:     global %[[VALUE_wchar_size:[0-9]+]] wchar_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, i32>(4))) [linkage=external];
 // RESIGNED-NEXT:     global %[[VALUE_wide_char_size:[0-9]+]] wide_char_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, i32>(4))) [linkage=external];
 // RESIGNED-NEXT:     global %[[VALUE_wide_string_size:[0-9]+]] wide_string_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, array<i32, 3>>(12))) [linkage=external];
-// RESIGNED-NEXT:     global %[[VALUE_wchar_negative:[0-9]+]] wchar_negative: i32 [storage=static] = from_bool<i32>(lt<i32>(neg<i32>(const<i32>(1)), const<i32>(0))) [linkage=external];
+// RESIGNED-NEXT:     global %[[VALUE_wchar_negative:[0-9]+]] wchar_negative: i32 [storage=static] = from_bool<i32>(lt<i32>(reinterpret<i32>(reinterpret<i32>(neg<i32>(const<i32>(1))) [c="wchar_t"]), const<i32>(0))) [linkage=external];
 // RESIGNED-NEXT:     global %[[VALUE_wchar_width:[0-9]+]] wchar_width: i32 [storage=static] = const<i32>(32) [linkage=external];
 // RESIGNED-NEXT:     global %[[VALUE_wide:[0-9]+]] wide: array<i32, 2> [storage=static] = code_units<array<i32, 2>>([65535, 0]) [linkage=external] [c="wchar_t[]"];
 // RESIGNED-NEXT:     fn %[[VALUE_widen:[0-9]+]] @widen(%[[VALUE_c:[0-9]+]] c: i8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -245,7 +245,7 @@ int widen(char c) { return c; }
 // UNSHORT-NEXT:     global %[[VALUE_wchar_size:[0-9]+]] wchar_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, i32>(4))) [linkage=external];
 // UNSHORT-NEXT:     global %[[VALUE_wide_char_size:[0-9]+]] wide_char_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, i32>(4))) [linkage=external];
 // UNSHORT-NEXT:     global %[[VALUE_wide_string_size:[0-9]+]] wide_string_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, array<i32, 3>>(12))) [linkage=external];
-// UNSHORT-NEXT:     global %[[VALUE_wchar_negative:[0-9]+]] wchar_negative: i32 [storage=static] = from_bool<i32>(lt<i32>(neg<i32>(const<i32>(1)), const<i32>(0))) [linkage=external];
+// UNSHORT-NEXT:     global %[[VALUE_wchar_negative:[0-9]+]] wchar_negative: i32 [storage=static] = from_bool<i32>(lt<i32>(reinterpret<i32>(reinterpret<i32>(neg<i32>(const<i32>(1))) [c="wchar_t"]), const<i32>(0))) [linkage=external];
 // UNSHORT-NEXT:     global %[[VALUE_wchar_width:[0-9]+]] wchar_width: i32 [storage=static] = const<i32>(32) [linkage=external];
 // UNSHORT-NEXT:     global %[[VALUE_wide:[0-9]+]] wide: array<i32, 2> [storage=static] = code_units<array<i32, 2>>([65535, 0]) [linkage=external] [c="wchar_t[]"];
 // UNSHORT-NEXT:     fn %[[VALUE_widen:[0-9]+]] @widen(%[[VALUE_c:[0-9]+]] c: i8) -> i32 [linkage=external] [fallthrough=ub_if_used] {

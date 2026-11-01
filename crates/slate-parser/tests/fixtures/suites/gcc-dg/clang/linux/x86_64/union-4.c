@@ -58,7 +58,7 @@ void foo(void)
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_data:[0-9]+]] data: @type[[TYPE0]] [storage=automatic] [c="u64"];
 // DEFAULT-NEXT:         write<u64>(field1(%[[VALUE_data]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1))) [c="uint64"]) [c="uint64"];
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(field0(%[[VALUE_data]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(read<u32>(field0(%[[VALUE_data]])) [c="uint32"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

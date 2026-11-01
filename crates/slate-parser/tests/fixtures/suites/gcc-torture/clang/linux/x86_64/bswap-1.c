@@ -75,7 +75,7 @@ int main(void) {
 // DEFAULT-NEXT:         field1 b: array<u8, 8>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_a:[0-9]+]] a: u64) -> u64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64:[0-9]+]], read<u64>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64:[0-9]+]], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_a]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_bswap64]] @__builtin_bswap64(%[[VALUE0:[0-9]+]] <unnamed>: u64) -> u64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_c:[0-9]+]] c: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {

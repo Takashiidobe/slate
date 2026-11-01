@@ -42,6 +42,6 @@ unsigned long widths[] = {
 // IR-NEXT:     type @type[[TYPE_odd9:[0-9]+]] odd9 = struct {
 // IR-NEXT:         field0 a: array<i8, 9>;
 // IR-NEXT:     } [size=9, align=1, offsets=[0]];
-// IR-NEXT:     global %[[VALUE_widths:[0-9]+]] widths: array<u32, 8> [storage=static] = aggregate<array<u32, 8>, zero_fill=false>(index0 = const<u32>(8), index1 = const<u32>(8), index2 = const<u32>(9), index3 = const<u32>(1), index4 = const<u32>(8), index5 = const<u32>(8), index6 = size_of<u32, i64>(8), index7 = align_of<u32, i64>(4)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_widths:[0-9]+]] widths: array<u32, 8> [storage=static] = aggregate<array<u32, 8>, zero_fill=false>(index0 = reinterpret<u32, reason=assign>(const<u32>(8)), index1 = reinterpret<u32, reason=assign>(const<u32>(8)), index2 = reinterpret<u32, reason=assign>(const<u32>(9)), index3 = reinterpret<u32, reason=assign>(const<u32>(1)), index4 = reinterpret<u32, reason=assign>(const<u32>(8)), index5 = reinterpret<u32, reason=assign>(const<u32>(8)), index6 = reinterpret<u32, reason=assign>(size_of<u32, i64>(8)), index7 = reinterpret<u32, reason=assign>(align_of<u32, i64>(4))) [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

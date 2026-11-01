@@ -65,7 +65,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_l:[0-9]+]] @l() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i8>(%[[VALUE_a]], truncate<i8, reason=assign, fits=unknown>(or<i32>(const<i32>(5), read<i32>(%[[VALUE_g]]))));
-// DEFAULT-NEXT:         write<i8>(%[[VALUE_b]], call<i8, signature=fn(i8) -> i8>(%[[VALUE_h]], read<i8>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         write<i8>(%[[VALUE_b]], call<i8, signature=fn(i8) -> i8>(%[[VALUE_h]], reinterpret<i8, reason=arg>(read<i8>(%[[VALUE_a]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_m:[0-9]+]] @m() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i16>(%[[VALUE_e]], call<i16, signature=fn(i16, i32) -> i16>(%[[VALUE_j]], truncate<i16, reason=arg, fits=unknown>(or<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_d]])), const<i32>(9766))), const<i32>(11)));

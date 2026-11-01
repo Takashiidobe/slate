@@ -141,10 +141,10 @@ void f(void) {
 // DEFAULT-NEXT:         call<u64, signature=fn(u32) -> u64>(%[[VALUE___readmsr]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE___readcr3]]);
 // DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%[[VALUE___writecr3]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<volatile i32>, i32) -> i32>(%[[VALUE__InterlockedExchange_HLEAcquire]], null<ptr<volatile i32>>, const<i32>(0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<volatile i32>, i32) -> i32>(%[[VALUE__InterlockedExchange_HLERelease]], null<ptr<volatile i32>>, const<i32>(0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<volatile i32>, i32, i32) -> i32>(%[[VALUE__InterlockedCompareExchange_HLEAcquire]], null<ptr<volatile i32>>, const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<volatile i32>, i32, i32) -> i32>(%[[VALUE__InterlockedCompareExchange_HLERelease]], null<ptr<volatile i32>>, const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<volatile i32>, i32) -> i32>(%[[VALUE__InterlockedExchange_HLEAcquire]], null<ptr<volatile i32>>, reinterpret<i32, reason=arg>(const<i32>(0)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<volatile i32>, i32) -> i32>(%[[VALUE__InterlockedExchange_HLERelease]], null<ptr<volatile i32>>, reinterpret<i32, reason=arg>(const<i32>(0)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<volatile i32>, i32, i32) -> i32>(%[[VALUE__InterlockedCompareExchange_HLEAcquire]], null<ptr<volatile i32>>, reinterpret<i32, reason=arg>(const<i32>(0)), reinterpret<i32, reason=arg>(const<i32>(0)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<volatile i32>, i32, i32) -> i32>(%[[VALUE__InterlockedCompareExchange_HLERelease]], null<ptr<volatile i32>>, reinterpret<i32, reason=arg>(const<i32>(0)), reinterpret<i32, reason=arg>(const<i32>(0)));
 // DEFAULT-NEXT:         asm "mov eax, ebx" [dialect=att];
 // DEFAULT-NEXT:         asm ".att_syntax\nmovl %ebx, %eax" [dialect=att];
 // DEFAULT-NEXT:         asm "mov eax, ebx" [dialect=att];

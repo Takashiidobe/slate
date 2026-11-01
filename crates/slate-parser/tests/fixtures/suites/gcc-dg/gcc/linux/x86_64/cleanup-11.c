@@ -490,7 +490,7 @@ int main()
 // DEFAULT-NEXT:     fn %[[VALUE_sysconf:[0-9]+]] @sysconf(%[[VALUE___name:[0-9]+]] __name: i32) -> i64 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE___s:[0-9]+]] __s: ptr<void>, %[[VALUE___c:[0-9]+]] __c: i32, %[[VALUE___n:[0-9]+]] __n: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(void *, int, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_force_unwind_stop:[0-9]+]] @force_unwind_stop(%[[VALUE_version:[0-9]+]] version: i32, %[[VALUE_actions:[0-9]+]] actions: i32 [c="_Unwind_Action"], %[[VALUE_exc_class:[0-9]+]] exc_class: u64 [c="_Unwind_Exception_Class"], %[[VALUE_exc_obj:[0-9]+]] exc_obj: ptr<@type[[TYPE__Unwind_Exception]]>, %[[VALUE_context:[0-9]+]] context: ptr<@type[[TYPE__Unwind_Context]]>, %[[VALUE_stop_parameter:[0-9]+]] stop_parameter: ptr<void>) -> @type[[TYPE0]] [linkage=internal] [fallthrough=ub_if_used] [c="_Unwind_Reason_Code(int, _Unwind_Action, _Unwind_Exception_Class, struct _Unwind_Exception *, struct _Unwind_Context *, void *)"] {
-// DEFAULT-NEXT:         if ne<i32>(and<i32>(read<i32>(%[[VALUE_actions]]), const<i32>(16)), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_actions]]) [c="_Unwind_Action"]), const<i32>(16)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE__SC_VERSION]]);
 // DEFAULT-NEXT:         return int_to_enum<@type[[TYPE0]], reason=return>(reinterpret<u32, reason=return, fits=always>(const<i32>(0))) [c="_Unwind_Reason_Code"];
 // DEFAULT-NEXT:     }
@@ -535,7 +535,7 @@ int main()
 // DEFAULT-NEXT:         write<u64>(field2(%[[VALUE_ss]]), reinterpret<u64, reason=assign, fits=unknown>(mul<i64, overflow=ub>(widen<i64, reason=usual_arith>(const<i32>(4)), call<i64, signature=fn(i32) -> i64>(%[[VALUE_sysconf]], const<i32>(30)))) [c="size_t"]) [c="size_t"];
 // DEFAULT-NEXT:         if lt<u64>(read<u64>(field2(%[[VALUE_ss]])) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8192))) [c="size_t"])
 // DEFAULT-NEXT:             write<u64>(field2(%[[VALUE_ss]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(8192))) [c="size_t"]) [c="size_t"];
-// DEFAULT-NEXT:         write<ptr<void>>(field0(%[[VALUE_ss]]), call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE__SC_MQ_PRIO_MAX]], read<u64>(field2(%[[VALUE_ss]]))));
+// DEFAULT-NEXT:         write<ptr<void>>(field0(%[[VALUE_ss]]), call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE__SC_MQ_PRIO_MAX]], reinterpret<u64, reason=arg>(read<u64>(field2(%[[VALUE_ss]])) [c="size_t"])));
 // DEFAULT-NEXT:         if eq<ptr<void>>(read<ptr<void>>(field0(%[[VALUE_ss]])), null<ptr<void>>)
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE__SC_RTSIG_MAX]], const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_ss]]), const<i32>(0));

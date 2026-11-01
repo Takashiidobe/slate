@@ -47,7 +47,7 @@ void postProcess_MMX2()
 // DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_width:[0-9]+]] width: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=readonly,nostack] {
-// DEFAULT-NEXT:             in 0 "m" [mem] width 32 read<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 0 "m" [mem] width 32 reinterpret<i32, reason=explicit>(read<i32>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_blockCopy_MMX2]], addr_of<ptr<i32>>(%[[VALUE_c]]));
 // DEFAULT-NEXT:     }

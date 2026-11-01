@@ -93,11 +93,11 @@ int main ()
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_char16_t:[0-9]+]] char16_t = u16;
-// DEFAULT-NEXT:     global %[[VALUE_c0:[0-9]+]] c0: u16 [storage=static] = const<u16>(97) [c="char16_t"] [linkage=external] [c="char16_t"];
-// DEFAULT-NEXT:     global %[[VALUE_c1:[0-9]+]] c1: u16 [storage=static] = const<u16>(0) [c="char16_t"] [linkage=external] [c="char16_t"];
-// DEFAULT-NEXT:     global %[[VALUE_c2:[0-9]+]] c2: u16 [storage=static] = const<u16>(36) [c="char16_t"] [linkage=external] [c="char16_t"];
-// DEFAULT-NEXT:     global %[[VALUE_c3:[0-9]+]] c3: u16 [storage=static] = const<u16>(8233) [c="char16_t"] [linkage=external] [c="char16_t"];
-// DEFAULT-NEXT:     global %[[VALUE_c4:[0-9]+]] c4: u16 [storage=static] = const<u16>(32784) [c="char16_t"] [linkage=external] [c="char16_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c0:[0-9]+]] c0: u16 [storage=static] = reinterpret<u16, reason=assign>(const<u16>(97)) [c="char16_t"] [linkage=external] [c="char16_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c1:[0-9]+]] c1: u16 [storage=static] = reinterpret<u16, reason=assign>(const<u16>(0)) [c="char16_t"] [linkage=external] [c="char16_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c2:[0-9]+]] c2: u16 [storage=static] = reinterpret<u16, reason=assign>(const<u16>(36)) [c="char16_t"] [linkage=external] [c="char16_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c3:[0-9]+]] c3: u16 [storage=static] = reinterpret<u16, reason=assign>(const<u16>(8233)) [c="char16_t"] [linkage=external] [c="char16_t"];
+// DEFAULT-NEXT:     global %[[VALUE_c4:[0-9]+]] c4: u16 [storage=static] = reinterpret<u16, reason=assign>(const<u16>(32784)) [c="char16_t"] [linkage=external] [c="char16_t"];
 // DEFAULT-NEXT:     global %[[VALUE_c5:[0-9]+]] c5: u16 [storage=static] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(97))) [c="char16_t"] [linkage=external] [c="char16_t"];
 // DEFAULT-NEXT:     global %[[VALUE_c6:[0-9]+]] c6: u16 [storage=static] = truncate<u16, reason=assign, fits=always>(const<u32>(97)) [c="char16_t"] [linkage=external] [c="char16_t"];
 // DEFAULT-NEXT:     global %[[VALUE_c7:[0-9]+]] c7: u16 [storage=static] = truncate<u16, reason=assign, fits=always>(const<u32>(8233)) [c="char16_t"] [linkage=external] [c="char16_t"];

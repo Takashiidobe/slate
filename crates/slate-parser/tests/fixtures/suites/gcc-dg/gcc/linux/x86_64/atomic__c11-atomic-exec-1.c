@@ -279,7 +279,7 @@ main (void)
 // DEFAULT-NEXT:     global %[[VALUE_a_81:[0-9]+]] a: volatile atomic i64 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_b_81:[0-9]+]] b: volatile atomic i64 [storage=static] = reinterpret<i64, reason=explicit, fits=unknown>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), const<i32>(63))) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_a_82:[0-9]+]] a: volatile atomic u64 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_b_82:[0-9]+]] b: volatile atomic u64 [storage=static] = shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), const<i32>(63)) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_b_82:[0-9]+]] b: volatile atomic u64 [storage=static] = reinterpret<u64, reason=explicit>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), const<i32>(63))) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_a_83:[0-9]+]] a: volatile atomic i64 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_b_83:[0-9]+]] b: volatile atomic i64 [storage=static] = reinterpret<i64, reason=explicit, fits=unknown>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), const<i32>(63))) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_a_84:[0-9]+]] a: volatile atomic u64 [storage=static] [linkage=internal];
@@ -1533,13 +1533,13 @@ main (void)
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         if ne<u64>(read<u64, volatile, atomic=seq_cst>(%[[VALUE_a_82]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:                         if ne<u64>(read<u64, volatile, atomic=seq_cst>(%[[VALUE_b_82]]), shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), const<i32>(63)))
+// DEFAULT-NEXT:                         if ne<u64>(read<u64, volatile, atomic=seq_cst>(%[[VALUE_b_82]]), reinterpret<u64, reason=explicit>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), const<i32>(63))))
 // DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                         let %[[VALUE172:[0-9]+]]: u64 [synthetic] = read<u64, volatile, atomic=seq_cst>(%[[VALUE_b_82]]);
 // DEFAULT-NEXT:                         write<u64, volatile, atomic=seq_cst>(%[[VALUE_a_82]], read<u64>(%[[VALUE172]]));
-// DEFAULT-NEXT:                         if ne<u64>(read<u64>(%[[VALUE172]]), shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), const<i32>(63)))
+// DEFAULT-NEXT:                         if ne<u64>(read<u64>(%[[VALUE172]]), reinterpret<u64, reason=explicit>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), const<i32>(63))))
 // DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:                         if ne<u64>(read<u64, volatile, atomic=seq_cst>(%[[VALUE_a_82]]), shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), const<i32>(63)))
+// DEFAULT-NEXT:                         if ne<u64>(read<u64, volatile, atomic=seq_cst>(%[[VALUE_a_82]]), reinterpret<u64, reason=explicit>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), const<i32>(63))))
 // DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));

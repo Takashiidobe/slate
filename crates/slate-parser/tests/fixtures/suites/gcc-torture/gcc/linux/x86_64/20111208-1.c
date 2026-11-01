@@ -162,7 +162,7 @@ int main(void) {
 // DEFAULT-NEXT:                                             let %[[VALUE7:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_s]]);
 // DEFAULT-NEXT:                                             let %[[VALUE8:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE7]]), size_of<u64, i32>(4));
 // DEFAULT-NEXT:                                             write<ptr<i8>>(%[[VALUE_s]], read<ptr<i8>>(%[[VALUE8]]));
-// DEFAULT-NEXT:                                             call<void, signature=fn(i32) -> void>(%[[VALUE_do_something]], read<i32>(field0(%[[VALUE_v_2]])));
+// DEFAULT-NEXT:                                             call<void, signature=fn(i32) -> void>(%[[VALUE_do_something]], reinterpret<i32, reason=arg>(read<i32>(field0(%[[VALUE_v_2]])) [c="int32_t"]));
 // DEFAULT-NEXT:                                         }
 // DEFAULT-NEXT:                                     break %[[VALUE4]];
 // DEFAULT-NEXT:                                 }

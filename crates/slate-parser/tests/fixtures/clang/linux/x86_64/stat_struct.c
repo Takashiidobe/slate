@@ -75,7 +75,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_info:[0-9]+]] info: @type[[TYPE_stat]] [storage=automatic] = aggregate<@type[[TYPE_stat]], zero_fill=true>(field0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="__dev_t"]);
 // DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i8>, ptr<@type[[TYPE_stat]]>) -> i32>(%[[VALUE_stat]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])), addr_of<ptr<@type[[TYPE_stat]]>>(%[[VALUE_info]]));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_2]])), read<i32>(%[[VALUE_result]]), read<i64>(field8(%[[VALUE_info]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_2]])), read<i32>(%[[VALUE_result]]), reinterpret<i64, reason=explicit>(read<i64>(field8(%[[VALUE_info]])) [c="__off_t"]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

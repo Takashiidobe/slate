@@ -79,7 +79,7 @@ void rvalues(int c, int x, long l, int *p, struct S *s, enum E e, struct S y) {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3;
 // IR-NEXT:             in 0 "m" [mem] width 32 reinterpret<u32, reason=explicit, fits=unknown>(read<i32>(%[[VALUE_x]]));
 // IR-NEXT:             in 1 "m" [mem] width 64 ptr_to_int<i64, reason=explicit>(read<ptr<i32>>(%[[VALUE_p]]));
-// IR-NEXT:             in 2 "m" [mem] width 64 read<i64>(%[[VALUE_l]]);
+// IR-NEXT:             in 2 "m" [mem] width 64 reinterpret<i64, reason=explicit>(read<i64>(%[[VALUE_l]]));
 // IR-NEXT:             in 3 "m" [mem] width 32 enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e]]));
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1" [dialect=att] [options=readonly,nostack] {

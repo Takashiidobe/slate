@@ -424,7 +424,7 @@ void* malloc (size_t n)             // { dg-warning "-Winfinite-recursion" }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE34:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE_n_10:[0-9]+]] n: u64 [c="size_t"]) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] [c="void *(size_t)"] {
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<u64> [storage=automatic] = pointer_cast<ptr<u64>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], add<u64, overflow=wrap>(read<u64>(%[[VALUE_n_10]]) [c="size_t"], size_of<u64, u64>(8) [c="size_t"]))) [c="size_t *"] [c="size_t *"];
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<u64> [storage=automatic] = pointer_cast<ptr<u64>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], reinterpret<u64, reason=arg>(add<u64, overflow=wrap>(read<u64>(%[[VALUE_n_10]]) [c="size_t"], reinterpret<u64, reason=usual_arith>(size_of<u64, u64>(8)) [c="size_t"]) [c="size_t"]))) [c="size_t *"] [c="size_t *"];
 // DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE_p]])), read<u64>(%[[VALUE_n_10]]) [c="size_t"]) [c="size_t"];
 // DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%[[VALUE_p]]) [c="size_t *"], const<i32>(1)) [c="size_t *"]);
 // DEFAULT-NEXT:     }

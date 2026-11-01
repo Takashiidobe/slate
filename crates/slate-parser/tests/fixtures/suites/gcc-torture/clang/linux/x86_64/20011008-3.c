@@ -194,7 +194,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), conditional<i32>(not<bool>(ne<u32>(and<u32>(read<u32>(%[[VALUE_flags]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), const<u32>(0))), const<i32>(1), read<i32>(field0(field2(field2(deref(read<ptr<@type[[TYPE___db_txnlist]]>>(%[[VALUE_elp]]))))))))
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), conditional<i32>(not<bool>(ne<u32>(and<u32>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_flags]]) [c="u_int32_t"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), const<u32>(0))), const<i32>(1), reinterpret<i32, reason=promotion>(read<i32>(field0(field2(field2(deref(read<ptr<@type[[TYPE___db_txnlist]]>>(%[[VALUE_elp]])))))) [c="int32_t"])))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
@@ -211,7 +211,7 @@ int main(void) {
 // DEFAULT-NEXT:                     for %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:                         init:
 // DEFAULT-NEXT:                             write<i32>(%[[VALUE___j]], const<i32>(0));
-// DEFAULT-NEXT:                         condition: lt<i32>(read<i32>(%[[VALUE___j]]), sub<i32, overflow=ub>(read<i32>(field0(field2(field2(deref(read<ptr<@type[[TYPE___db_txnlist]]>>(%[[VALUE_elp]])))))), const<i32>(1)))
+// DEFAULT-NEXT:                         condition: lt<i32>(read<i32>(%[[VALUE___j]]), sub<i32, overflow=ub>(reinterpret<i32, reason=promotion>(read<i32>(field0(field2(field2(deref(read<ptr<@type[[TYPE___db_txnlist]]>>(%[[VALUE_elp]])))))) [c="int32_t"]), const<i32>(1)))
 // DEFAULT-NEXT:                         increment: {
 // DEFAULT-NEXT:                             let %[[VALUE7:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___j]]);
 // DEFAULT-NEXT:                             let %[[VALUE8:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE7]]), const<i32>(1));
@@ -233,7 +233,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_el:[0-9]+]] el: @type[[TYPE___db_txnlist]] [storage=automatic] [c="DB_TXNLIST"];
 // DEFAULT-NEXT:         let %[[VALUE_lsn:[0-9]+]] lsn: @type[[TYPE___db_lsn]] [storage=automatic] [c="DB_LSN"];
 // DEFAULT-NEXT:         let %[[VALUE_lsn_a:[0-9]+]] lsn_a: array<@type[[TYPE___db_lsn]], 1235> [storage=automatic] [align=16] [c="DB_LSN[1235]"];
-// DEFAULT-NEXT:         write<i32>(field0(field2(field2(%[[VALUE_el]]))), sub<i32, overflow=ub>(const<i32>(1235), const<i32>(1)) [c="int32_t"]) [c="int32_t"];
+// DEFAULT-NEXT:         write<i32>(field0(field2(field2(%[[VALUE_el]]))), reinterpret<i32, reason=assign>(sub<i32, overflow=ub>(const<i32>(1235), const<i32>(1))) [c="int32_t"]) [c="int32_t"];
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE___db_lsn]]>>(field2(field2(field2(%[[VALUE_el]]))), array_decay<ptr<@type[[TYPE___db_lsn]]>, length=Some(1235)>(%[[VALUE_lsn_a]]) [c="DB_LSN *"]) [c="DB_LSN *"];
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<@type[[TYPE___db_txnlist]]>, ptr<@type[[TYPE___db_lsn]]>, u32) -> i32>(%[[VALUE___db_txnlist_lsnadd]], const<i32>(0), addr_of<ptr<@type[[TYPE___db_txnlist]]>>(%[[VALUE_el]]) [c="DB_TXNLIST *"], addr_of<ptr<@type[[TYPE___db_lsn]]>>(%[[VALUE_lsn]]) [c="DB_LSN *"], reinterpret<u32, reason=arg, fits=always>(const<i32>(0)) [c="u_int32_t"]), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_TXNLIST_LSN]]);

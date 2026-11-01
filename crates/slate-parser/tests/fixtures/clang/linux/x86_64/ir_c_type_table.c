@@ -68,12 +68,12 @@ uLong named(uLong a, offset n, struct S *s, _Complex double *z) {
 // IR-NEXT:         return from_bool<i32, reason=return>(lt<u64>(read<u64>(%[[VALUE_a]]) [c="uLong"], read<u64>(%[[VALUE_b]]) [c="uLong"]));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_plain:[0-9]+]] @plain(%[[VALUE_a_2:[0-9]+]] a: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="uLong(unsigned long)"] {
-// IR-NEXT:         return add<u64, overflow=wrap>(read<u64>(%[[VALUE_a_2]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))) [c="uLong"];
+// IR-NEXT:         return reinterpret<u64, reason=return>(add<u64, overflow=wrap>(read<u64>(%[[VALUE_a_2]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))) [c="uLong"];
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_named:[0-9]+]] @named(%[[VALUE_a_3:[0-9]+]] a: u64 [c="uLong"], %[[VALUE_n:[0-9]+]] n: i64 [c="offset"], %[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE_S]]>, %[[VALUE_z:[0-9]+]] z: ptr<complex<f64>>) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="uLong(uLong, offset, struct S *, _Complex double *)"] {
 // IR-NEXT:         let %[[VALUE_sum:[0-9]+]] sum: u64 [storage=automatic] = rem<u64, by_zero=ub>(read<u64>(%[[VALUE_a_3]]) [c="uLong"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(65521))) [c="uLong"]) [c="uLong"] [c="uLong"];
 // IR-NEXT:         let %[[VALUE_rem:[0-9]+]] rem: u32 [storage=automatic] = reinterpret<u32, reason=explicit, fits=unknown>(truncate<i32, reason=explicit, fits=unknown>(rem<i64, by_zero=ub, min_by_neg_one=ub>(read<i64>(%[[VALUE_n]]) [c="offset"], widen<i64, reason=usual_arith>(const<i32>(65521)) [c="offset"]) [c="offset"]));
-// IR-NEXT:         write<u64>(%[[VALUE_sum]], add<u64, overflow=wrap>(mul<u64, overflow=wrap>(widen<u64, reason=explicit>(read<u32>(%[[VALUE_rem]])) [c="uLong"], read<u64>(%[[VALUE_sum]]) [c="uLong"]) [c="uLong"], const<u64>(1) [c="uLong"]) [c="uLong"]) [c="uLong"];
+// IR-NEXT:         write<u64>(%[[VALUE_sum]], add<u64, overflow=wrap>(mul<u64, overflow=wrap>(widen<u64, reason=explicit>(read<u32>(%[[VALUE_rem]])) [c="uLong"], read<u64>(%[[VALUE_sum]]) [c="uLong"]) [c="uLong"], reinterpret<u64, reason=usual_arith>(const<u64>(1)) [c="uLong"]) [c="uLong"]) [c="uLong"];
 // IR-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_total]]) [c="uLong"] [c="uLong"];
 // IR-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE0]]) [c="uLong"], read<u64>(%[[VALUE_sum]]) [c="uLong"]) [c="uLong"] [c="uLong"];
 // IR-NEXT:         write<u64>(%[[VALUE_total]], read<u64>(%[[VALUE1]]) [c="uLong"]) [c="uLong"] [c="uLong"];
@@ -83,7 +83,7 @@ uLong named(uLong a, offset n, struct S *s, _Complex double *z) {
 // IR-NEXT:         write<u64>(%[[VALUE_total]], read<u64>(%[[VALUE3]]) [c="uLong"]) [c="uLong"] [c="uLong"];
 // IR-NEXT:         write<u64>(%[[VALUE_old]], read<u64>(%[[VALUE2]]) [c="uLong"]) [c="uLong"];
 // IR-NEXT:         write<u64>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_s]]))), read<u64>(%[[VALUE_old]]) [c="uLong"]) [c="uLong"];
-// IR-NEXT:         write<u64>(field1(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_s]]))), read<u64>(%[[VALUE_sum]]));
+// IR-NEXT:         write<u64>(field1(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_s]]))), reinterpret<u64, reason=assign>(read<u64>(%[[VALUE_sum]]) [c="uLong"]));
 // IR-NEXT:         write<u64>(deref(read<ptr<u64>>(field2(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_s]]))))), read<u64>(%[[VALUE_sum]]) [c="uLong"]) [c="uLong"];
 // IR-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%[[VALUE_sum]]) [c="uLong *"] [c="uLong *"];
 // IR-NEXT:         write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%[[VALUE_p]]), const<i32>(1))), read<u64>(deref(read<ptr<u64>>(%[[VALUE_p]]))) [c="uLong"]) [c="uLong"];

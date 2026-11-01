@@ -44,7 +44,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shr<i64, amount_out_of_range=ub, fill=sign_extend>(mul<i64, overflow=ub>(read<i64>(%[[VALUE_a]]), read<i64>(%[[VALUE_b]])), const<i32>(16));
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(mul<i64, overflow=ub>(reinterpret<i64, reason=explicit>(read<i64>(%[[VALUE_a]])), reinterpret<i64, reason=explicit>(read<i64>(%[[VALUE_b]]))), const<i32>(16)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if lt<i64>(call<i64, signature=fn(unprototyped) -> i64>(%[[VALUE_f]]), widen<i64, reason=usual_arith>(const<i32>(0)))

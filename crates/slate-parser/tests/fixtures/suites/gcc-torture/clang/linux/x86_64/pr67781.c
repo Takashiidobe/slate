@@ -64,7 +64,7 @@ int main() {
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE0]] [storage=static] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1193046)) [c="uint32_t"], field1 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(120))) [c="uint8_t"]) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_pr67781:[0-9]+]] @pr67781(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: u32 [storage=automatic] = or<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(field0(%[[VALUE_s]])), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field1(%[[VALUE_s]])) [c="uint8_t"])))) [c="uint32_t"] [c="uint32_t"];
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: u32 [storage=automatic] = reinterpret<u32, reason=assign>(or<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(field0(%[[VALUE_s]])) [c="uint32_t"]), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field1(%[[VALUE_s]])) [c="uint8_t"]))))) [c="uint32_t"] [c="uint32_t"];
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE_c]]) [c="uint32_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];

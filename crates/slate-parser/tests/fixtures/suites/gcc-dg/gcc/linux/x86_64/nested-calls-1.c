@@ -71,16 +71,16 @@ int main(void)
 // DEFAULT-NEXT:     type @type[[TYPE_uns64_t:[0-9]+]] uns64_t = u64;
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_lo:[0-9]+]] @lo(%[[VALUE_p:[0-9]+]] p: u64 [c="uns64_t"]) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="uns32_t(uns64_t)"] {
-// DEFAULT-NEXT:         return read<u64>(%[[VALUE_p]]) [c="uns32_t"];
+// DEFAULT-NEXT:         return reinterpret<u64, reason=explicit>(read<u64>(%[[VALUE_p]]) [c="uns64_t"]) [c="uns32_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_concat:[0-9]+]] @concat(%[[VALUE_p1:[0-9]+]] p1: u64 [c="uns32_t"], %[[VALUE_p2:[0-9]+]] p2: u64 [c="uns32_t"]) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="uns64_t(uns32_t, uns32_t)"] {
-// DEFAULT-NEXT:         return or<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%[[VALUE_p1]]) [c="uns64_t"], const<i32>(32)) [c="uns64_t"], read<u64>(%[[VALUE_p2]]) [c="uns64_t"]) [c="uns64_t"];
+// DEFAULT-NEXT:         return or<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(reinterpret<u64, reason=explicit>(read<u64>(%[[VALUE_p1]]) [c="uns32_t"]) [c="uns64_t"], const<i32>(32)) [c="uns64_t"], reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_p2]]) [c="uns32_t"]) [c="uns64_t"]) [c="uns64_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshift32:[0-9]+]] @lshift32(%[[VALUE_p1_2:[0-9]+]] p1: u64 [c="uns64_t"], %[[VALUE_p2_2:[0-9]+]] p2: u64 [c="uns32_t"]) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="uns64_t(uns64_t, uns32_t)"] {
 // DEFAULT-NEXT:         return call<u64, signature=fn(u64, u64) -> u64>(%[[VALUE_concat]], call<u64, signature=fn(u64) -> u64>(%[[VALUE_lo]], read<u64>(%[[VALUE_p1_2]]) [c="uns64_t"]) [c="uns32_t"], read<u64>(%[[VALUE_p2_2]]) [c="uns32_t"]) [c="uns64_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64, u64) -> u64>(%[[VALUE_lshift32]], const<u64>(18446744069720004216) [c="uns64_t"], const<u64>(2427178479) [c="uns32_t"]) [c="uns64_t"], const<u64>(1311768467294899695) [c="uns64_t"])
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64, u64) -> u64>(%[[VALUE_lshift32]], reinterpret<u64, reason=arg>(const<u64>(18446744069720004216)) [c="uns64_t"], reinterpret<u64, reason=arg>(const<u64>(2427178479)) [c="uns32_t"]) [c="uns64_t"], reinterpret<u64, reason=usual_arith>(const<u64>(1311768467294899695)) [c="uns64_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

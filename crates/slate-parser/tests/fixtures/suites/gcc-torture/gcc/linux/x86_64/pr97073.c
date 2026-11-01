@@ -62,7 +62,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<u64>(field0(%[[VALUE_u]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(5))) [c="L"]) [c="L"];
-// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_foo]], neg<u64, overflow=wrap>(const<u64>(1)) [c="L"]);
+// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_foo]], reinterpret<u64, reason=arg>(neg<u64, overflow=wrap>(const<u64>(1))) [c="L"]);
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(field1(field1(%[[VALUE_u]]))) [c="L"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5))) [c="L"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

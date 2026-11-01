@@ -106,7 +106,7 @@ void chunk_capture(int chunk, int *out) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false>(read<ptr<i32>>(%[[VALUE_out]]), read<i32>(%[[VALUE_i_2]]))), read<i32>(%[[VALUE_i_2]]));
 // DEFAULT-NEXT:         omp_for %[[VALUE1:[0-9]+]]
-// DEFAULT-NEXT:             schedule: static, chunk const<i32>(4)
+// DEFAULT-NEXT:             schedule: static, chunk reinterpret<i32>(const<i32>(4))
 // DEFAULT-NEXT:             nowait
 // DEFAULT-NEXT:             loop %[[VALUE_i_3:[0-9]+]] i: i32 [storage=automatic]
 // DEFAULT-NEXT:                 lower: const<i32>(0)
@@ -115,7 +115,7 @@ void chunk_capture(int chunk, int *out) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false>(read<ptr<i32>>(%[[VALUE_out]]), read<i32>(%[[VALUE_i_3]]))), read<i32>(%[[VALUE_i_3]]));
 // DEFAULT-NEXT:         omp_for %[[VALUE2:[0-9]+]]
-// DEFAULT-NEXT:             schedule: dynamic, chunk conditional<i32>(ne<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0)), const<i32>(2), const<i32>(4))
+// DEFAULT-NEXT:             schedule: dynamic, chunk reinterpret<i32>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0)), const<i32>(2), const<i32>(4)))
 // DEFAULT-NEXT:             loop %[[VALUE_i_4:[0-9]+]] i: i32 [storage=automatic]
 // DEFAULT-NEXT:                 lower: const<i32>(0)
 // DEFAULT-NEXT:                 condition: lt read<i32>(%[[VALUE_n]])
@@ -156,8 +156,8 @@ void chunk_capture(int chunk, int *out) {
 // DEFAULT-NEXT:                             write<f64>(deref(ptr_offset<ptr<f64>, subtract=false>(read<ptr<f64>>(%[[VALUE_first]]), read<i32>(%[[VALUE_u_2]]))), int_to_float<f64>(const<i32>(0)));
 // DEFAULT-NEXT:                     omp_for %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:                         loop %[[VALUE_k_2:[0-9]+]] k: i32 [storage=automatic]
-// DEFAULT-NEXT:                             lower: read<i32>(%[[VALUE_count]])
-// DEFAULT-NEXT:                             condition: gt const<i32>(0)
+// DEFAULT-NEXT:                             lower: reinterpret<i32>(read<i32>(%[[VALUE_count]]))
+// DEFAULT-NEXT:                             condition: gt reinterpret<i32>(const<i32>(0))
 // DEFAULT-NEXT:                             step: sub const<i32>(1)
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             write<f64>(deref(ptr_offset<ptr<f64>, subtract=false>(read<ptr<f64>>(%[[VALUE_first]]), read<i32>(%[[VALUE_k_2]]))), int_to_float<f64>(const<i32>(2)));
@@ -180,7 +180,7 @@ void chunk_capture(int chunk, int *out) {
 // DEFAULT-NEXT:             private %[[VALUE_sum]]: %[[VALUE_sum_2:[0-9]+]] sum: i32 [storage=automatic]
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 omp_for %[[VALUE8:[0-9]+]]
-// DEFAULT-NEXT:                     schedule: static, chunk const<i32>(2)
+// DEFAULT-NEXT:                     schedule: static, chunk reinterpret<i32>(const<i32>(2))
 // DEFAULT-NEXT:                     loop %[[VALUE_i_10:[0-9]+]] i: i32 [storage=automatic]
 // DEFAULT-NEXT:                         lower: const<i32>(0)
 // DEFAULT-NEXT:                         condition: lt read<i32>(%[[VALUE_n_2]])
@@ -250,7 +250,7 @@ void chunk_capture(int chunk, int *out) {
 // DEFAULT-NEXT:             firstprivate %[[VALUE_chunk]]: %[[VALUE_chunk_2:[0-9]+]] chunk: i32 [storage=automatic]
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 omp_for %[[VALUE20:[0-9]+]]
-// DEFAULT-NEXT:                     schedule: static, chunk read<i32>(%[[VALUE_chunk]])
+// DEFAULT-NEXT:                     schedule: static, chunk reinterpret<i32>(read<i32>(%[[VALUE_chunk]]))
 // DEFAULT-NEXT:                     loop %[[VALUE_i_15:[0-9]+]] i: i32 [storage=automatic]
 // DEFAULT-NEXT:                         lower: const<i32>(0)
 // DEFAULT-NEXT:                         condition: lt const<i32>(8)

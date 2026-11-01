@@ -91,10 +91,10 @@ main ()
 // DEFAULT-NEXT:             write<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_load_tmp]])), read<i64, atomic=relaxed>(deref(read<ptr<atomic i64>>(%[[VALUE___atomic_load_ptr]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
 // DEFAULT-NEXT:             write<i64>(%[[VALUE0]], read<i64>(%[[VALUE___atomic_load_tmp]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_count]]) [c="typeof((cast)0, *__atomic_load_ptr)"] [c="typeof((cast)0, *__atomic_load_ptr)"];
-// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE1]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i64>(%[[VALUE_count]], read<i64>(%[[VALUE2]])) [c="typeof((cast)0, *__atomic_load_ptr)"];
-// DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE0]]) [c="typeof((cast)0, *__atomic_load_ptr)"], read<i64>(%[[VALUE1]]) [c="typeof((cast)0, *__atomic_load_ptr)"])
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE1]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_count]], read<i64>(%[[VALUE2]]));
+// DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE0]]) [c="typeof((cast)0, *__atomic_load_ptr)"], reinterpret<i64, reason=usual_arith>(read<i64>(%[[VALUE1]])) [c="typeof((cast)0, *__atomic_load_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: i64 [synthetic] = update<i64, result=old, atomic=seq_cst>(%[[VALUE_v]], add<i64, overflow=ub>(old<i64>, widen<i64, reason=usual_arith>(const<i32>(1))));
@@ -105,10 +105,10 @@ main ()
 // DEFAULT-NEXT:             write<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_load_tmp_2]])), read<i64, atomic=acquire>(deref(read<ptr<atomic i64>>(%[[VALUE___atomic_load_ptr_2]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
 // DEFAULT-NEXT:             write<i64>(%[[VALUE4]], read<i64>(%[[VALUE___atomic_load_tmp_2]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_count]]) [c="typeof((cast)0, *__atomic_load_ptr)"] [c="typeof((cast)0, *__atomic_load_ptr)"];
-// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE5]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i64>(%[[VALUE_count]], read<i64>(%[[VALUE6]])) [c="typeof((cast)0, *__atomic_load_ptr)"];
-// DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE4]]) [c="typeof((cast)0, *__atomic_load_ptr)"], read<i64>(%[[VALUE5]]) [c="typeof((cast)0, *__atomic_load_ptr)"])
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE5]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_count]], read<i64>(%[[VALUE6]]));
+// DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE4]]) [c="typeof((cast)0, *__atomic_load_ptr)"], reinterpret<i64, reason=usual_arith>(read<i64>(%[[VALUE5]])) [c="typeof((cast)0, *__atomic_load_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             let %[[VALUE7:[0-9]+]]: i64 [synthetic] = update<i64, result=old, atomic=seq_cst>(%[[VALUE_v]], add<i64, overflow=ub>(old<i64>, widen<i64, reason=usual_arith>(const<i32>(1))));
@@ -119,10 +119,10 @@ main ()
 // DEFAULT-NEXT:             write<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_load_tmp_3]])), read<i64, atomic=consume>(deref(read<ptr<atomic i64>>(%[[VALUE___atomic_load_ptr_3]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
 // DEFAULT-NEXT:             write<i64>(%[[VALUE8]], read<i64>(%[[VALUE___atomic_load_tmp_3]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_count]]) [c="typeof((cast)0, *__atomic_load_ptr)"] [c="typeof((cast)0, *__atomic_load_ptr)"];
-// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE9]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i64>(%[[VALUE_count]], read<i64>(%[[VALUE10]])) [c="typeof((cast)0, *__atomic_load_ptr)"];
-// DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE8]]) [c="typeof((cast)0, *__atomic_load_ptr)"], read<i64>(%[[VALUE9]]) [c="typeof((cast)0, *__atomic_load_ptr)"])
+// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE9]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_count]], read<i64>(%[[VALUE10]]));
+// DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE8]]) [c="typeof((cast)0, *__atomic_load_ptr)"], reinterpret<i64, reason=usual_arith>(read<i64>(%[[VALUE9]])) [c="typeof((cast)0, *__atomic_load_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             let %[[VALUE11:[0-9]+]]: i64 [synthetic] = update<i64, result=old, atomic=seq_cst>(%[[VALUE_v]], add<i64, overflow=ub>(old<i64>, widen<i64, reason=usual_arith>(const<i32>(1))));
@@ -133,10 +133,10 @@ main ()
 // DEFAULT-NEXT:             write<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_load_tmp_4]])), read<i64, atomic=seq_cst>(deref(read<ptr<atomic i64>>(%[[VALUE___atomic_load_ptr_4]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
 // DEFAULT-NEXT:             write<i64>(%[[VALUE12]], read<i64>(%[[VALUE___atomic_load_tmp_4]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_count]]) [c="typeof((cast)0, *__atomic_load_ptr)"] [c="typeof((cast)0, *__atomic_load_ptr)"];
-// DEFAULT-NEXT:         let %[[VALUE14:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE13]]) [c="typeof((cast)0, *__atomic_load_ptr)"], widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i64>(%[[VALUE_count]], read<i64>(%[[VALUE14]])) [c="typeof((cast)0, *__atomic_load_ptr)"];
-// DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE12]]) [c="typeof((cast)0, *__atomic_load_ptr)"], read<i64>(%[[VALUE13]]) [c="typeof((cast)0, *__atomic_load_ptr)"])
+// DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE14:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE13]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_count]], read<i64>(%[[VALUE14]]));
+// DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE12]]) [c="typeof((cast)0, *__atomic_load_ptr)"], reinterpret<i64, reason=usual_arith>(read<i64>(%[[VALUE13]])) [c="typeof((cast)0, *__atomic_load_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             let %[[VALUE15:[0-9]+]]: i64 [synthetic] = update<i64, result=old, atomic=seq_cst>(%[[VALUE_v]], add<i64, overflow=ub>(old<i64>, widen<i64, reason=usual_arith>(const<i32>(1))));
@@ -147,7 +147,7 @@ main ()
 // DEFAULT-NEXT:             write<i64>(deref(addr_of<ptr<i64>>(%[[VALUE___atomic_load_tmp_5]])), read<i64, atomic=seq_cst>(deref(read<ptr<atomic i64>>(%[[VALUE___atomic_load_ptr_5]])))) [c="typeof((cast)0, *__atomic_load_ptr)"];
 // DEFAULT-NEXT:             write<i64>(%[[VALUE16]], read<i64>(%[[VALUE___atomic_load_tmp_5]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE16]]) [c="typeof((cast)0, *__atomic_load_ptr)"], read<i64>(%[[VALUE_count]]) [c="typeof((cast)0, *__atomic_load_ptr)"])
+// DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE16]]) [c="typeof((cast)0, *__atomic_load_ptr)"], reinterpret<i64, reason=usual_arith>(read<i64>(%[[VALUE_count]])) [c="typeof((cast)0, *__atomic_load_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -81,7 +81,7 @@ void attribute_scope(void) {
 // DEFAULT-NEXT:     global %[[VALUE_aligned_type:[0-9]+]] aligned_type: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_aligned_expression:[0-9]+]] aligned_expression: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_nested_scopes:[0-9]+]] @nested_scopes(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_outer:[0-9]+]] outer: i32 [storage=automatic] = const<i32>(0) [c="T"] [c="T"];
+// DEFAULT-NEXT:         let %[[VALUE_outer:[0-9]+]] outer: i32 [storage=automatic] = reinterpret<i32, reason=assign>(const<i32>(0)) [c="T"] [c="T"];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_T:[0-9]+]] T: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
@@ -115,7 +115,7 @@ void attribute_scope(void) {
 // DEFAULT-NEXT:                     let %[[VALUE12:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE11]]))), size_of<u64, i32>(4))));
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE12]]));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_x]]))), size_of<u64, i32>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_outer]]))))));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_x]]))), size_of<u64, i32>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_outer]]) [c="T"]))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_parameter_scope:[0-9]+]] @parameter_scope(%[[VALUE_T_3:[0-9]+]] T: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, i32>(4)));

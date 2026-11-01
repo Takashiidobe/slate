@@ -2694,7 +2694,7 @@ void literals(int i) {
 // IR-NEXT:     fn %[[VALUE_literals:[0-9]+]] @literals(%[[VALUE_i:[0-9]+]] i: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(2), index1 = const<i32>(3))), read<i32>(%[[VALUE_i]]))));
 // IR-NEXT:         read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field0(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_pair]], zero_fill=false>(field0 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(4), index1 = const<i32>(5))))), read<i32>(%[[VALUE_i]]))));
-// IR-NEXT:         addr_of<ptr<i32>>(compound_literal %[[VALUE3:[0-9]+]] [storage=static] = const<i32>(6)) [c="T *"];
+// IR-NEXT:         addr_of<ptr<i32>>(compound_literal %[[VALUE3:[0-9]+]] [storage=static] = reinterpret<i32, reason=assign>(const<i32>(6))) [c="T *"];
 // IR-NEXT:         const<i32>(7);
 // IR-NEXT:         const<i32>(8);
 // IR-NEXT:         addr_of<ptr<const i32>>(compound_literal %[[VALUE4:[0-9]+]] [storage=static] = const<i32>(9));

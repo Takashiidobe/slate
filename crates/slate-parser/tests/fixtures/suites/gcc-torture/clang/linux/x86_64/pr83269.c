@@ -40,7 +40,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: volatile u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i64 [storage=automatic] = const<i64>(2147483648);
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i64 [storage=automatic] = reinterpret<i64, reason=assign>(const<i64>(2147483648));
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i32 [storage=automatic] = neg<i32, overflow=ub>(sub<i32, overflow=ub>(truncate<i32, reason=explicit, fits=unknown>(neg<i64, overflow=ub>(read<i64>(%[[VALUE_b]]))), mul<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8, volatile>(%[[VALUE_a]]))))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

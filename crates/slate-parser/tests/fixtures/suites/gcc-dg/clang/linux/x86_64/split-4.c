@@ -161,7 +161,7 @@ main (void)
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: @type[[TYPE_rlimit]] [storage=automatic];
 // DEFAULT-NEXT:         write<u64>(field0(%[[VALUE_r]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(8192), const<i32>(1024)))) [c="rlim_t"]) [c="rlim_t"];
 // DEFAULT-NEXT:         write<u64>(field1(%[[VALUE_r]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(8192), const<i32>(1024)))) [c="rlim_t"]) [c="rlim_t"];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const @type[[TYPE_rlimit]]>) -> i32>(%[[VALUE_setrlimit]], const<i32>(3) [c="__rlimit_resource_t"], pointer_cast<ptr<const @type[[TYPE_rlimit]]>, reason=arg>(addr_of<ptr<@type[[TYPE_rlimit]]>>(%[[VALUE_r]]))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const @type[[TYPE_rlimit]]>) -> i32>(%[[VALUE_setrlimit]], reinterpret<i32, reason=arg>(const<i32>(3)) [c="__rlimit_resource_t"], pointer_cast<ptr<const @type[[TYPE_rlimit]]>, reason=arg>(addr_of<ptr<@type[[TYPE_rlimit]]>>(%[[VALUE_r]]))), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_RLIMIT_DATA]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_down1]], const<i32>(1000));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_down2]], const<i32>(1000));

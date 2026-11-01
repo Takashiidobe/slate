@@ -59,7 +59,7 @@ ULONGLONG shift_left(ULONGLONG value, DWORD count) {
 // IR-NEXT:     global %[[VALUE_large_integer_size:[0-9]+]] large_integer_size: u32 [storage=static] = size_of<u32, @type[[TYPE__LARGE_INTEGER]]>(8) [linkage=external];
 // IR-NEXT:     global %[[VALUE_large_integer_align:[0-9]+]] large_integer_align: u32 [storage=static] = align_of<u32, @type[[TYPE__LARGE_INTEGER]]>(8) [linkage=external];
 // IR-NEXT:     fn %[[VALUE_shift_left:[0-9]+]] @shift_left(%[[VALUE_value:[0-9]+]] value: u64 [c="ULONGLONG"], %[[VALUE_count:[0-9]+]] count: u32 [c="DWORD"]) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="ULONGLONG(ULONGLONG, DWORD)"] {
-// IR-NEXT:         return shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%[[VALUE_value]]), read<u32>(%[[VALUE_count]]) [c="DWORD"]) [c="ULONGLONG"];
+// IR-NEXT:         return reinterpret<u64, reason=return>(shl<u64, overflow=wrap, amount_out_of_range=ub>(reinterpret<u64, reason=explicit>(read<u64>(%[[VALUE_value]]) [c="ULONGLONG"]), read<u32>(%[[VALUE_count]]) [c="DWORD"])) [c="ULONGLONG"];
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

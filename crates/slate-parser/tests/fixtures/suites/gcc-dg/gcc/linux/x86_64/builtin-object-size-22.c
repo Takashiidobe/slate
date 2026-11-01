@@ -138,7 +138,7 @@ void fa0c0 (void)
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(35));
-// DEFAULT-NEXT:         if eq<u64>(const<u64>(1), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(1), reinterpret<u64, reason=usual_arith>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))) [c="size_t"]))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(36));
@@ -158,7 +158,7 @@ void fa0c0 (void)
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(41));
-// DEFAULT-NEXT:         if eq<u64>(const<u64>(1), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))))
+// DEFAULT-NEXT:         if eq<u64>(const<u64>(1), reinterpret<u64, reason=usual_arith>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))) [c="size_t"]))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_fail]], const<i32>(42));

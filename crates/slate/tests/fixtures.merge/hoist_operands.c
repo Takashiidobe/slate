@@ -155,7 +155,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         number() + in_cast() + repeated(387i32) - 3 * 387 + same_type_everywhere((2 as c_long)) - 4
+// CHECK-NEXT:         number() + in_cast() + repeated(387i32) - 3 * 387
+// CHECK-NEXT:             + (same_type_everywhere((2 as c_long)) as i32)
+// CHECK-NEXT:             - 4
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

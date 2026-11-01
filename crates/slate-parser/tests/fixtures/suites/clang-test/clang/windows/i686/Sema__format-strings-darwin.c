@@ -93,7 +93,7 @@ void testScanf(short *x, long *y) {
 // DEFAULT-NEXT:     fn %[[VALUE_scanf:[0-9]+]] @scanf(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_justRight:[0-9]+]] justRight: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         let %[[VALUE_tooLong:[0-9]+]] tooLong: i32 [storage=automatic] = const<i32>(2);
+// DEFAULT-NEXT:         let %[[VALUE_tooLong:[0-9]+]] tooLong: i32 [storage=automatic] = reinterpret<i32, reason=assign>(const<i32>(2));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])), read<i32>(%[[VALUE_justRight]]));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_2]])), read<i32>(%[[VALUE_tooLong]]));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_3]])), read<i32>(%[[VALUE_justRight]]));

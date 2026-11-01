@@ -64,8 +64,8 @@ unsigned long hex_above_long_max = 0x8000000000000000;
 // C99-NEXT:         storage d128 [size=16, align=16];
 // C99-NEXT:     }
 // C99-NEXT:     global %[[VALUE_at_long_max:[0-9]+]] at_long_max: u64 [storage=static] = reinterpret<u64, reason=assign, fits=always>(const<i64>(9223372036854775807)) [linkage=external];
-// C99-NEXT:     global %[[VALUE_above_long_max:[0-9]+]] above_long_max: u64 [storage=static] = const<u64>(9223372036854775808) [linkage=external];
-// C99-NEXT:     global %[[VALUE_at_unsigned_long_max:[0-9]+]] at_unsigned_long_max: u64 [storage=static] = const<u64>(18446744073709551615) [linkage=external];
+// C99-NEXT:     global %[[VALUE_above_long_max:[0-9]+]] above_long_max: u64 [storage=static] = reinterpret<u64, reason=assign>(const<u64>(9223372036854775808)) [linkage=external];
+// C99-NEXT:     global %[[VALUE_at_unsigned_long_max:[0-9]+]] at_unsigned_long_max: u64 [storage=static] = reinterpret<u64, reason=assign>(const<u64>(18446744073709551615)) [linkage=external];
 // C99-NEXT:     global %[[VALUE_hex_above_long_max:[0-9]+]] hex_above_long_max: u64 [storage=static] = const<u64>(9223372036854775808) [linkage=external];
 // C99-NEXT: }
 // SLATE-FILECHECK-END C99
@@ -93,8 +93,8 @@ unsigned long hex_above_long_max = 0x8000000000000000;
 // C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
 // C23-NEXT:     global %[[VALUE_at_long_max:[0-9]+]] at_long_max: u64 [storage=static] = reinterpret<u64, reason=assign, fits=always>(const<i64>(9223372036854775807)) [linkage=external];
-// C23-NEXT:     global %[[VALUE_above_long_max:[0-9]+]] above_long_max: u64 [storage=static] = const<u64>(9223372036854775808) [linkage=external];
-// C23-NEXT:     global %[[VALUE_at_unsigned_long_max:[0-9]+]] at_unsigned_long_max: u64 [storage=static] = const<u64>(18446744073709551615) [linkage=external];
+// C23-NEXT:     global %[[VALUE_above_long_max:[0-9]+]] above_long_max: u64 [storage=static] = reinterpret<u64, reason=assign>(const<u64>(9223372036854775808)) [linkage=external];
+// C23-NEXT:     global %[[VALUE_at_unsigned_long_max:[0-9]+]] at_unsigned_long_max: u64 [storage=static] = reinterpret<u64, reason=assign>(const<u64>(18446744073709551615)) [linkage=external];
 // C23-NEXT:     global %[[VALUE_hex_above_long_max:[0-9]+]] hex_above_long_max: u64 [storage=static] = const<u64>(9223372036854775808) [linkage=external];
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23

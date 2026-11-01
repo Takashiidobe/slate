@@ -60,7 +60,7 @@ int main() {
 // DEFAULT-NEXT:         return read<u32>(%[[VALUE_count]]) [c="Uint"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn() -> u32>(%[[VALUE_f]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(147)))
+// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn() -> u32>(%[[VALUE_f]]) [c="Uint"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(147)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

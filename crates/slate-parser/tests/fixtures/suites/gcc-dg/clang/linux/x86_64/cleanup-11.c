@@ -546,7 +546,7 @@ int main()
 // DEFAULT-NEXT:         write<u64>(field2(%[[VALUE_ss]]), reinterpret<u64, reason=assign, fits=unknown>(mul<i64, overflow=ub>(widen<i64, reason=usual_arith>(const<i32>(4)), call<i64, signature=fn(i32) -> i64>(%[[VALUE_sysconf]], const<i32>(30)))) [c="size_t"]) [c="size_t"];
 // DEFAULT-NEXT:         if lt<u64>(read<u64>(field2(%[[VALUE_ss]])) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8192))) [c="size_t"])
 // DEFAULT-NEXT:             write<u64>(field2(%[[VALUE_ss]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(8192))) [c="size_t"]) [c="size_t"];
-// DEFAULT-NEXT:         write<ptr<void>>(field0(%[[VALUE_ss]]), call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE__SC_BC_SCALE_MAX]], read<u64>(field2(%[[VALUE_ss]]))));
+// DEFAULT-NEXT:         write<ptr<void>>(field0(%[[VALUE_ss]]), call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE__SC_BC_SCALE_MAX]], reinterpret<u64, reason=arg>(read<u64>(field2(%[[VALUE_ss]])) [c="size_t"])));
 // DEFAULT-NEXT:         if eq<ptr<void>>(read<ptr<void>>(field0(%[[VALUE_ss]])), null<ptr<void>>)
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE__SC_EQUIV_CLASS_MAX]], const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_ss]]), const<i32>(0));

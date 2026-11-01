@@ -63,7 +63,7 @@ void internal_noreturn(void) { _Exit(1); }
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE___builtin_popcount:[0-9]+]] @__builtin_popcount(%[[VALUE6:[0-9]+]] <unnamed>: u32) -> i32 [linkage=external] [memory=none];
 // IR-NEXT:     fn %[[VALUE_matching:[0-9]+]] @matching(%[[VALUE_s:[0-9]+]] s: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="size_t(const char *)"] {
-// IR-NEXT:         return call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE_s]])) [c="size_t"];
+// IR-NEXT:         return reinterpret<u64, reason=return>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE_s]]))) [c="size_t"];
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_missing_noreturn:[0-9]+]] @missing_noreturn() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -78,7 +78,7 @@ void internal_noreturn(void) { _Exit(1); }
 // IR-NEXT:         return call<f64, signature=fn(f64) -> f64>(%[[VALUE_fabs]], read<f64>(%[[VALUE_x_3]]));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_restricted:[0-9]+]] @restricted(%[[VALUE_d:[0-9]+]] d: ptr<void>, %[[VALUE_s_2:[0-9]+]] s: ptr<const void>, %[[VALUE_n:[0-9]+]] n: u64 [c="size_t"]) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] [c="void *(void *, const void *, size_t)"] {
-// IR-NEXT:         return call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], read<ptr<void>>(%[[VALUE_d]]), read<ptr<const void>>(%[[VALUE_s_2]]), read<u64>(%[[VALUE_n]]));
+// IR-NEXT:         return call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], read<ptr<void>>(%[[VALUE_d]]), read<ptr<const void>>(%[[VALUE_s_2]]), reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_n]]) [c="size_t"]));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_internal_linkage:[0-9]+]] @internal_linkage(%[[VALUE_x_4:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return call<i32, signature=fn(i32) -> i32>(%[[VALUE_labs]], read<i32>(%[[VALUE_x_4]]));
@@ -92,7 +92,7 @@ void internal_noreturn(void) { _Exit(1); }
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE___builtin_strlen:[0-9]+]] @__builtin_strlen(%[[VALUE9:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external];
 // IR-NEXT:     fn %[[VALUE_undeclared:[0-9]+]] @undeclared(%[[VALUE_s_3:[0-9]+]] s: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="size_t(const char *)"] {
-// IR-NEXT:         return call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], read<ptr<const i8>>(%[[VALUE_s_3]])) [c="size_t"];
+// IR-NEXT:         return reinterpret<u64, reason=return>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], read<ptr<const i8>>(%[[VALUE_s_3]]))) [c="size_t"];
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE10:[0-9]+]] <unnamed>: i64) -> i32 [linkage=external] [noreturn];
 // IR-NEXT:     fn %[[VALUE_incompatible_noreturn:[0-9]+]] @incompatible_noreturn() -> i32 [linkage=external] [fallthrough=ub_if_used] {

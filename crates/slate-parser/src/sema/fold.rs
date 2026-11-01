@@ -412,7 +412,10 @@ fn evaluate(value: &Value, depth: usize, env: Env) -> Option<BigInt> {
         } => address(operand, depth, env)?,
         ValueKind::Convert { kind, operand, .. } => {
             match kind {
-                ConversionKind::Widen | ConversionKind::Truncate | ConversionKind::Reinterpret
+                ConversionKind::Widen
+                | ConversionKind::Truncate
+                | ConversionKind::Reinterpret
+                | ConversionKind::IntCast
                     if matches!(operand.ty, Type::Numeric(NumericType::Integer { .. })) => {}
                 ConversionKind::FromBool if operand.ty == Type::Bool => {}
                 _ => return None,

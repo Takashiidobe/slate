@@ -97,17 +97,17 @@ clear (atomic_int *i)
 // DEFAULT-NEXT:     fn %[[VALUE_store:[0-9]+]] @store(%[[VALUE_i:[0-9]+]] i: ptr<atomic i32> [c="atomic_int *"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(atomic_int *)"] {
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr:[0-9]+]] __atomic_store_ptr: ptr<atomic i32> [storage=automatic] = read<ptr<atomic i32>>(%[[VALUE_i]]) [c="atomic_int *"] [c="atomic_int *"];
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp:[0-9]+]] __atomic_store_tmp: i32 [storage=automatic] = const<i32>(0) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp:[0-9]+]] __atomic_store_tmp: i32 [storage=automatic] = reinterpret<i32, reason=assign>(const<i32>(0)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
 // DEFAULT-NEXT:             write<i32, atomic=consume>(deref(read<ptr<atomic i32>>(%[[VALUE___atomic_store_ptr]])), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_store_tmp]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="atomic_int"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_2:[0-9]+]] __atomic_store_ptr: ptr<atomic i32> [storage=automatic] = read<ptr<atomic i32>>(%[[VALUE_i]]) [c="atomic_int *"] [c="atomic_int *"];
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_2:[0-9]+]] __atomic_store_tmp: i32 [storage=automatic] = const<i32>(0) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_2:[0-9]+]] __atomic_store_tmp: i32 [storage=automatic] = reinterpret<i32, reason=assign>(const<i32>(0)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
 // DEFAULT-NEXT:             write<i32, atomic=acquire>(deref(read<ptr<atomic i32>>(%[[VALUE___atomic_store_ptr_2]])), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_store_tmp_2]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="atomic_int"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_3:[0-9]+]] __atomic_store_ptr: ptr<atomic i32> [storage=automatic] = read<ptr<atomic i32>>(%[[VALUE_i]]) [c="atomic_int *"] [c="atomic_int *"];
-// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_3:[0-9]+]] __atomic_store_tmp: i32 [storage=automatic] = const<i32>(0) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_3:[0-9]+]] __atomic_store_tmp: i32 [storage=automatic] = reinterpret<i32, reason=assign>(const<i32>(0)) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
 // DEFAULT-NEXT:             write<i32, atomic=acq_rel>(deref(read<ptr<atomic i32>>(%[[VALUE___atomic_store_ptr_3]])), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_store_tmp_3]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="atomic_int"];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
@@ -120,7 +120,7 @@ clear (atomic_int *i)
 // DEFAULT-NEXT:             write<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_load_tmp]])), read<i32, atomic=release>(deref(read<ptr<atomic i32>>(%[[VALUE___atomic_load_ptr]]))) [c="atomic_int"]) [c="typeof((cast)0, *__atomic_load_ptr)"];
 // DEFAULT-NEXT:             write<i32>(%[[VALUE0]], read<i32>(%[[VALUE___atomic_load_tmp]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         write<i32, atomic=seq_cst>(%[[VALUE_j]], read<i32>(%[[VALUE0]])) [c="atomic_int"];
+// DEFAULT-NEXT:         write<i32, atomic=seq_cst>(%[[VALUE_j]], reinterpret<i32, reason=assign>(read<i32>(%[[VALUE0]]) [c="typeof((cast)0, *__atomic_load_ptr)"])) [c="atomic_int"];
 // DEFAULT-NEXT:         let %[[VALUE_k:[0-9]+]] k: atomic i32 [storage=automatic] [c="atomic_int"];
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic];
 // DEFAULT-NEXT:         {
@@ -129,49 +129,49 @@ clear (atomic_int *i)
 // DEFAULT-NEXT:             write<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_load_tmp_2]])), read<i32, atomic=acq_rel>(deref(read<ptr<atomic i32>>(%[[VALUE___atomic_load_ptr_2]]))) [c="atomic_int"]) [c="typeof((cast)0, *__atomic_load_ptr)"];
 // DEFAULT-NEXT:             write<i32>(%[[VALUE1]], read<i32>(%[[VALUE___atomic_load_tmp_2]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         write<i32, atomic=seq_cst>(%[[VALUE_k]], read<i32>(%[[VALUE1]])) [c="atomic_int"];
+// DEFAULT-NEXT:         write<i32, atomic=seq_cst>(%[[VALUE_k]], reinterpret<i32, reason=assign>(read<i32>(%[[VALUE1]]) [c="typeof((cast)0, *__atomic_load_ptr)"])) [c="atomic_int"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_exchange:[0-9]+]] @exchange(%[[VALUE_i_3:[0-9]+]] i: ptr<atomic i32> [c="atomic_int *"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(atomic_int *)"] {
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i32> [storage=automatic] = read<ptr<atomic i32>>(%[[VALUE_i_3]]) [c="atomic_int *"] [c="atomic_int *"];
-// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp:[0-9]+]] __atomic_compare_exchange_tmp: i32 [storage=automatic] = const<i32>(0) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp:[0-9]+]] __atomic_compare_exchange_tmp: i32 [storage=automatic] = reinterpret<i32, reason=assign>(const<i32>(0)) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
 // DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=seq_cst, failure=release>(deref(read<ptr<atomic i32>>(%[[VALUE___atomic_compare_exchange_ptr]])), addr_of<ptr<i32>>(%[[VALUE_r]]), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_compare_exchange_tmp]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:             write<bool>(%[[VALUE2]], read<bool>(%[[VALUE3]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr_2:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i32> [storage=automatic] = read<ptr<atomic i32>>(%[[VALUE_i_3]]) [c="atomic_int *"] [c="atomic_int *"];
-// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_2:[0-9]+]] __atomic_compare_exchange_tmp: i32 [storage=automatic] = const<i32>(0) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_2:[0-9]+]] __atomic_compare_exchange_tmp: i32 [storage=automatic] = reinterpret<i32, reason=assign>(const<i32>(0)) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
 // DEFAULT-NEXT:             let %[[VALUE5:[0-9]+]]: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=seq_cst, failure=acq_rel>(deref(read<ptr<atomic i32>>(%[[VALUE___atomic_compare_exchange_ptr_2]])), addr_of<ptr<i32>>(%[[VALUE_r]]), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_compare_exchange_tmp_2]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:             write<bool>(%[[VALUE4]], read<bool>(%[[VALUE5]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr_3:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i32> [storage=automatic] = read<ptr<atomic i32>>(%[[VALUE_i_3]]) [c="atomic_int *"] [c="atomic_int *"];
-// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_3:[0-9]+]] __atomic_compare_exchange_tmp: i32 [storage=automatic] = const<i32>(0) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_3:[0-9]+]] __atomic_compare_exchange_tmp: i32 [storage=automatic] = reinterpret<i32, reason=assign>(const<i32>(0)) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
 // DEFAULT-NEXT:             let %[[VALUE7:[0-9]+]]: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=relaxed, failure=consume>(deref(read<ptr<atomic i32>>(%[[VALUE___atomic_compare_exchange_ptr_3]])), addr_of<ptr<i32>>(%[[VALUE_r]]), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_compare_exchange_tmp_3]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:             write<bool>(%[[VALUE6]], read<bool>(%[[VALUE7]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr_4:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i32> [storage=automatic] = read<ptr<atomic i32>>(%[[VALUE_i_3]]) [c="atomic_int *"] [c="atomic_int *"];
-// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_4:[0-9]+]] __atomic_compare_exchange_tmp: i32 [storage=automatic] = const<i32>(0) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_4:[0-9]+]] __atomic_compare_exchange_tmp: i32 [storage=automatic] = reinterpret<i32, reason=assign>(const<i32>(0)) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
 // DEFAULT-NEXT:             let %[[VALUE9:[0-9]+]]: bool [synthetic] = compare_exchange<i32, form=write_back, weak=true, success=seq_cst, failure=release>(deref(read<ptr<atomic i32>>(%[[VALUE___atomic_compare_exchange_ptr_4]])), addr_of<ptr<i32>>(%[[VALUE_r]]), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_compare_exchange_tmp_4]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:             write<bool>(%[[VALUE8]], read<bool>(%[[VALUE9]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr_5:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i32> [storage=automatic] = read<ptr<atomic i32>>(%[[VALUE_i_3]]) [c="atomic_int *"] [c="atomic_int *"];
-// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_5:[0-9]+]] __atomic_compare_exchange_tmp: i32 [storage=automatic] = const<i32>(0) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_5:[0-9]+]] __atomic_compare_exchange_tmp: i32 [storage=automatic] = reinterpret<i32, reason=assign>(const<i32>(0)) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
 // DEFAULT-NEXT:             let %[[VALUE11:[0-9]+]]: bool [synthetic] = compare_exchange<i32, form=write_back, weak=true, success=seq_cst, failure=acq_rel>(deref(read<ptr<atomic i32>>(%[[VALUE___atomic_compare_exchange_ptr_5]])), addr_of<ptr<i32>>(%[[VALUE_r]]), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_compare_exchange_tmp_5]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:             write<bool>(%[[VALUE10]], read<bool>(%[[VALUE11]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr_6:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i32> [storage=automatic] = read<ptr<atomic i32>>(%[[VALUE_i_3]]) [c="atomic_int *"] [c="atomic_int *"];
-// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_6:[0-9]+]] __atomic_compare_exchange_tmp: i32 [storage=automatic] = const<i32>(0) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_6:[0-9]+]] __atomic_compare_exchange_tmp: i32 [storage=automatic] = reinterpret<i32, reason=assign>(const<i32>(0)) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"] [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"];
 // DEFAULT-NEXT:             let %[[VALUE13:[0-9]+]]: bool [synthetic] = compare_exchange<i32, form=write_back, weak=true, success=relaxed, failure=consume>(deref(read<ptr<atomic i32>>(%[[VALUE___atomic_compare_exchange_ptr_6]])), addr_of<ptr<i32>>(%[[VALUE_r]]), read<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_compare_exchange_tmp_6]]))) [c="typeof((cast)0, *__atomic_compare_exchange_ptr)"]);
 // DEFAULT-NEXT:             write<bool>(%[[VALUE12]], read<bool>(%[[VALUE13]]));
 // DEFAULT-NEXT:         }

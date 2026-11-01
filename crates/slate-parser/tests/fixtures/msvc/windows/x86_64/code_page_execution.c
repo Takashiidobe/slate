@@ -55,7 +55,7 @@ int character = '\u0416';
 // IR-CP1251-NEXT:         storage d64 [size=8, align=8];
 // IR-CP1251-NEXT:         storage d128 [size=16, align=16];
 // IR-CP1251-NEXT:     }
-// IR-CP1251-NEXT:     global %[[VALUE_code_page:[0-9]+]] code_page: i32 [storage=static] = const<i32>(1251) [linkage=external];
+// IR-CP1251-NEXT:     global %[[VALUE_code_page:[0-9]+]] code_page: i32 [storage=static] = reinterpret<i32>(const<i32>(1251)) [linkage=external];
 // IR-CP1251-NEXT:     global %[[VALUE_text:[0-9]+]] text: array<i8, 6> [storage=static] [const] = code_units<array<i8, 6>>([198, 63, 136, 137, 63, 0]) [linkage=external];
 // IR-CP1251-NEXT:     global %[[VALUE_character:[0-9]+]] character: i32 [storage=static] = const<i32>(-58) [linkage=external];
 // IR-CP1251-NEXT: }
@@ -82,7 +82,7 @@ int character = '\u0416';
 // CP437-NEXT:         storage d64 [size=8, align=8];
 // CP437-NEXT:         storage d128 [size=16, align=16];
 // CP437-NEXT:     }
-// CP437-NEXT:     global %[[VALUE_code_page:[0-9]+]] code_page: i32 [storage=static] = const<i32>(437) [linkage=external];
+// CP437-NEXT:     global %[[VALUE_code_page:[0-9]+]] code_page: i32 [storage=static] = reinterpret<i32>(const<i32>(437)) [linkage=external];
 // CP437-NEXT:     global %[[VALUE_text:[0-9]+]] text: array<i8, 6> [storage=static] [const] = code_units<array<i8, 6>>([63, 130, 63, 63, 201, 0]) [linkage=external];
 // CP437-NEXT:     global %[[VALUE_character:[0-9]+]] character: i32 [storage=static] = const<i32>(63) [linkage=external];
 // CP437-NEXT: }
@@ -109,7 +109,7 @@ int character = '\u0416';
 // ASCII-NEXT:         storage d64 [size=8, align=8];
 // ASCII-NEXT:         storage d128 [size=16, align=16];
 // ASCII-NEXT:     }
-// ASCII-NEXT:     global %[[VALUE_code_page:[0-9]+]] code_page: i32 [storage=static] = const<i32>(20127) [linkage=external];
+// ASCII-NEXT:     global %[[VALUE_code_page:[0-9]+]] code_page: i32 [storage=static] = reinterpret<i32>(const<i32>(20127)) [linkage=external];
 // ASCII-NEXT:     global %[[VALUE_text:[0-9]+]] text: array<i8, 6> [storage=static] [const] = code_units<array<i8, 6>>([63, 63, 63, 63, 63, 0]) [linkage=external];
 // ASCII-NEXT:     global %[[VALUE_character:[0-9]+]] character: i32 [storage=static] = const<i32>(63) [linkage=external];
 // ASCII-NEXT: }
@@ -136,7 +136,7 @@ int character = '\u0416';
 // KOI8-NEXT:         storage d64 [size=8, align=8];
 // KOI8-NEXT:         storage d128 [size=16, align=16];
 // KOI8-NEXT:     }
-// KOI8-NEXT:     global %[[VALUE_code_page:[0-9]+]] code_page: i32 [storage=static] = const<i32>(20866) [linkage=external];
+// KOI8-NEXT:     global %[[VALUE_code_page:[0-9]+]] code_page: i32 [storage=static] = reinterpret<i32>(const<i32>(20866)) [linkage=external];
 // KOI8-NEXT:     global %[[VALUE_text:[0-9]+]] text: array<i8, 6> [storage=static] [const] = code_units<array<i8, 6>>([246, 63, 63, 63, 165, 0]) [linkage=external];
 // KOI8-NEXT:     global %[[VALUE_character:[0-9]+]] character: i32 [storage=static] = const<i32>(-10) [linkage=external];
 // KOI8-NEXT: }

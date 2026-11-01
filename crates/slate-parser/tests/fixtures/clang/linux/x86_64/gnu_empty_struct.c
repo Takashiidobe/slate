@@ -44,7 +44,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 122, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_empty_size:[0-9]+]] @empty_size(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_GNUEmpty]]) -> u64 [linkage=internal] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] [c="size_t(struct GNUEmpty)"] {
-// DEFAULT-NEXT:         return size_of<u64, @type[[TYPE_GNUEmpty]]>(0) [c="size_t"];
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return>(size_of<u64, @type[[TYPE_GNUEmpty]]>(0)) [c="size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_value_2:[0-9]+]] value: @type[[TYPE_GNUEmpty]] [storage=automatic] = aggregate<@type[[TYPE_GNUEmpty]], zero_fill=false>();

@@ -99,17 +99,17 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %[[VALUE_m:[0-9]+]] m: @type[[TYPE_S]] [storage=automatic] = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(5) [c="int32_t"], field1 = const<i32>(0) [c="int32_t"], field2 = neg<i32, overflow=ub>(const<i32>(5)) [c="int32_t"], field3 = const<i32>(9) [c="int32_t"], field4 = const<i32>(5) [c="int32_t"]);
+// DEFAULT-NEXT:                     let %[[VALUE_m:[0-9]+]] m: @type[[TYPE_S]] [storage=automatic] = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = reinterpret<i32, reason=assign>(const<i32>(5)) [c="int32_t"], field1 = reinterpret<i32, reason=assign>(const<i32>(0)) [c="int32_t"], field2 = reinterpret<i32, reason=assign>(neg<i32, overflow=ub>(const<i32>(5))) [c="int32_t"], field3 = reinterpret<i32, reason=assign>(const<i32>(9)) [c="int32_t"], field4 = reinterpret<i32, reason=assign>(const<i32>(5)) [c="int32_t"]);
 // DEFAULT-NEXT:                     write<@type[[TYPE_S]]>(%[[VALUE_h]], copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_m]])));
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(%[[VALUE_g]]), const<i32>(0))
 // DEFAULT-NEXT:                         write<@type[[TYPE_S]]>(%[[VALUE_i]], copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_m]])));
-// DEFAULT-NEXT:                     write<i32>(bitfield3<unit=0, bytes=0..9, bits=43..58>(%[[VALUE_h]]), const<i32>(0) [c="int32_t"]) [c="int32_t"];
+// DEFAULT-NEXT:                     write<i32>(bitfield3<unit=0, bytes=0..9, bits=43..58>(%[[VALUE_h]]), reinterpret<i32, reason=assign>(const<i32>(0)) [c="int32_t"]) [c="int32_t"];
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_foo]]);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(bitfield3<unit=0, bytes=0..9, bits=43..58>(%[[VALUE_h]])), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(read<i32>(bitfield3<unit=0, bytes=0..9, bits=43..58>(%[[VALUE_h]])) [c="int32_t"]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

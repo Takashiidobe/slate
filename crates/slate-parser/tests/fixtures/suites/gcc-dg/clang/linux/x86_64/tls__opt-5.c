@@ -214,7 +214,7 @@ __gen_tempname (char *tmpl, int kind)
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fd]], call<i32, signature=fn(ptr<const i8>, i32, ...) -> i32>(%[[VALUE___open64]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_tmpl]])), or<i32>(or<i32>(const<i32>(2), const<i32>(512)), const<i32>(2048)), or<i32>(const<i32>(256), const<i32>(128))));
 // DEFAULT-NEXT:                             break %[[VALUE15]];
 // DEFAULT-NEXT:                             case %[[VALUE15]] const<i32>(2):
-// DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fd]], call<i32, signature=fn(ptr<const i8>, i32) -> i32>(%[[VALUE___mkdir]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_tmpl]])), or<i32>(or<i32>(const<i32>(256), const<i32>(128)), const<i32>(64)) [c="__mode_t"]));
+// DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fd]], call<i32, signature=fn(ptr<const i8>, i32) -> i32>(%[[VALUE___mkdir]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_tmpl]])), reinterpret<i32, reason=arg>(or<i32>(or<i32>(const<i32>(256), const<i32>(128)), const<i32>(64))) [c="__mode_t"]));
 // DEFAULT-NEXT:                             break %[[VALUE15]];
 // DEFAULT-NEXT:                             case %[[VALUE15]] const<i32>(3):
 // DEFAULT-NEXT:                                 if lt<i32>(call<i32, signature=fn(i32, ptr<const i8>, ptr<@type[[TYPE_stat64]]>) -> i32>(%[[VALUE___lxstat64]], const<i32>(2), pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_tmpl]])), addr_of<ptr<@type[[TYPE_stat64]]>>(%[[VALUE_st]])), const<i32>(0))

@@ -46,14 +46,14 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_qualified:[0-9]+]] qualified: volatile i32 [storage=automatic] [const] = const<i32>(9);
-// DEFAULT-NEXT:         let %[[VALUE_copy:[0-9]+]] copy: i32 [storage=automatic] = read<i32, volatile>(%[[VALUE_qualified]]) [c="typeof_unqual(qualified)"] [c="typeof_unqual(qualified)"];
+// DEFAULT-NEXT:         let %[[VALUE_copy:[0-9]+]] copy: i32 [storage=automatic] = reinterpret<i32, reason=assign>(read<i32, volatile>(%[[VALUE_qualified]])) [c="typeof_unqual(qualified)"] [c="typeof_unqual(qualified)"];
 // DEFAULT-NEXT:         let %[[VALUE_preserved:[0-9]+]] preserved: volatile i32 [storage=automatic] [const] = const<i32>(12) [c="typeof(qualified)"];
 // DEFAULT-NEXT:         let %[[VALUE_pointer:[0-9]+]] pointer: ptr<i32> [storage=automatic] = null<ptr<i32>>;
 // DEFAULT-NEXT:         let %[[VALUE_width:[0-9]+]] width: i32 [storage=automatic] [const] [constexpr] = const<i32>(7);
 // DEFAULT-NEXT:         let %[[VALUE_narrow:[0-9]+]] narrow: u7b [storage=automatic] = reinterpret<u7b, reason=assign, fits=unknown>(truncate<i7b, reason=assign, fits=unknown>(const<i32>(100)));
 // DEFAULT-NEXT:         let %[[VALUE_unqualified:[0-9]+]] unqualified: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         let %[[VALUE_still_qualified:[0-9]+]] still_qualified: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%[[VALUE_str]])), read<i32>(%[[VALUE_copy]]), read<i32, volatile>(%[[VALUE_preserved]]), from_bool<i32, reason=vararg>(eq<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pointer]]), null<ptr<i32>>)), reinterpret<i32, reason=explicit, fits=unknown>(widen<u32, reason=explicit>(read<u7b>(%[[VALUE_narrow]]))), add<i32, overflow=ub>(read<i32>(%[[VALUE_unqualified]]), read<i32>(%[[VALUE_still_qualified]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%[[VALUE_str]])), reinterpret<i32, reason=vararg>(read<i32>(%[[VALUE_copy]]) [c="typeof_unqual(qualified)"]), read<i32, volatile>(%[[VALUE_preserved]]), from_bool<i32, reason=vararg>(eq<ptr<i32>>(read<ptr<i32>>(%[[VALUE_pointer]]), null<ptr<i32>>)), reinterpret<i32, reason=explicit, fits=unknown>(widen<u32, reason=explicit>(read<u7b>(%[[VALUE_narrow]]))), add<i32, overflow=ub>(read<i32>(%[[VALUE_unqualified]]), read<i32>(%[[VALUE_still_qualified]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

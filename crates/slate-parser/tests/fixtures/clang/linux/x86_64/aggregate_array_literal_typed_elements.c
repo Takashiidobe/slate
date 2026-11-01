@@ -98,14 +98,14 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_i_2:[0-9]+]] i: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"] [c="size_t"];
-// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%[[VALUE_i_2]]) [c="size_t"], div<u64, by_zero=ub>(size_of<u64, array<bool, 2>>(2), size_of<u64, bool>(1)) [c="size_t"])
+// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%[[VALUE_i_2]]) [c="size_t"], reinterpret<u64, reason=usual_arith>(div<u64, by_zero=ub>(size_of<u64, array<bool, 2>>(2), size_of<u64, bool>(1))) [c="size_t"])
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_i_2]]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE6]]) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="size_t"]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                 write<u64>(%[[VALUE_i_2]], read<u64>(%[[VALUE7]]) [c="size_t"]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             counted: %[[VALUE_i_2]] in reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"]..div<u64, by_zero=ub>(size_of<u64, array<bool, 2>>(2), size_of<u64, bool>(1)) [c="size_t"]
+// DEFAULT-NEXT:             counted: %[[VALUE_i_2]] in reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"]..reinterpret<u64, reason=usual_arith>(div<u64, by_zero=ub>(size_of<u64, array<bool, 2>>(2), size_of<u64, bool>(1))) [c="size_t"]
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if read<bool>(deref(ptr_offset<ptr<bool>, subtract=false, element=bool, overflow=ub>(array_decay<ptr<bool>, length=Some(2)>(%[[VALUE_values]]), read<u64>(%[[VALUE_i_2]]))))

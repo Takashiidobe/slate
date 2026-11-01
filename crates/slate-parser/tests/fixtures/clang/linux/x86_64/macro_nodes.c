@@ -118,7 +118,7 @@ int use(struct pair *pair, int i, int j) {
 // IR-NEXT:             while ne<i32>(const<i32>(0) [macro=WRAP#9 body], const<i32>(0) [macro=WRAP#9 body]) [macro=WRAP#9 body];
 // IR-NEXT:         }
 // IR-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_results]]);
-// IR-NEXT:         let %[[VALUE8:[0-9]+]]: i32 [synthetic] = truncate<i32>(add<i64>(widen<i64>(read<i32>(%[[VALUE7]])), macro_value<i64>(#[[#NODE6:]], statements=0, widen<i64>(macro_arg<i32>(#{{[0-9]+}}, 1, read<i32>(%[[VALUE_i]]) [macro=CAST#10 arg1]) [macro=CAST#10 arg1]) [macro=CAST#10 body]) [macro=CAST#10 body]));
+// IR-NEXT:         let %[[VALUE8:[0-9]+]]: i32 [synthetic] = truncate<i32>(add<i64>(widen<i64>(read<i32>(%[[VALUE7]])), macro_value<i64>(#[[#NODE6:]], statements=0, int_cast<i64>(macro_arg<i32>(#{{[0-9]+}}, 1, read<i32>(%[[VALUE_i]]) [macro=CAST#10 arg1]) [macro=CAST#10 arg1]) [macro=CAST#10 body]) [macro=CAST#10 body]));
 // IR-NEXT:         write<i32>(%[[VALUE_results]], read<i32>(%[[VALUE8]]));
 // IR-NEXT:         let %[[VALUE9:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_results]]);
 // IR-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE9]]), from_bool<i32>(ne<ptr<i8>>(macro_value<ptr<i8>>(#[[#NODE7:]], statements=0, int_to_ptr<ptr<i8>>(macro_arg<i32>(#{{[0-9]+}}, 1, read<i32>(%[[VALUE_i]]) [macro=CAST#11 arg1]) [macro=CAST#11 arg1]) [macro=CAST#11 body]) [macro=CAST#11 body], null<ptr<i8>>)));

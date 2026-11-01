@@ -83,9 +83,9 @@ int locals(void) {
 // IR-NEXT:     global %[[VALUE_global_requested:[0-9]+]] global_requested: i64 [storage=static] [align=4] [linkage=external] [c="packed_long"];
 // IR-NEXT:     global %[[VALUE_alignments:[0-9]+]] alignments: array<u64, 11> [storage=static] [align=16] = aggregate<array<u64, 11>, zero_fill=false>(index0 = align_of<u64, @type[[TYPE_holds_raised]]>(16), index1 = align_of<u64, @type[[TYPE_holds_lowered]]>(1), index2 = align_of<u64, @type[[TYPE_holds_chain]]>(16), index3 = align_of<u64, @type[[TYPE_holds_array]]>(2), index4 = const<u64>(16), index5 = const<u64>(1), index6 = const<u64>(16), index7 = align_of<u64, i32>(4), index8 = const<u64>(2), index9 = const<u64>(4), index10 = const<u64>(1)) [linkage=external];
 // IR-NEXT:     fn %[[VALUE_locals:[0-9]+]] @locals() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic] [align=16] = const<i32>(1) [c="raised"] [c="raised"];
-// IR-NEXT:         let %[[VALUE_l:[0-9]+]] l: i32 [storage=automatic] [align=1] = const<i32>(2) [c="lowered"] [c="lowered"];
-// IR-NEXT:         return add<i32>(read<i32>(%[[VALUE_r]]), read<i32, align=1>(%[[VALUE_l]]));
+// IR-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic] [align=16] = reinterpret<i32>(const<i32>(1)) [c="raised"] [c="raised"];
+// IR-NEXT:         let %[[VALUE_l:[0-9]+]] l: i32 [storage=automatic] [align=1] = reinterpret<i32>(const<i32>(2)) [c="lowered"] [c="lowered"];
+// IR-NEXT:         return add<i32>(reinterpret<i32>(read<i32>(%[[VALUE_r]]) [c="raised"]), reinterpret<i32>(read<i32, align=1>(%[[VALUE_l]]) [c="lowered"]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

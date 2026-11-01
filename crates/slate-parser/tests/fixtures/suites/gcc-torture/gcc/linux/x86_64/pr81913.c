@@ -51,7 +51,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_e]]) [c="u32"] [c="u32"];
-// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE1]]) [c="u32"], add<u32, overflow=wrap>(read<u32>(%[[VALUE_g]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))) [c="u32"] [c="u32"];
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u32 [synthetic] = reinterpret<u32, reason=assign>(add<u32, overflow=wrap>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE1]]) [c="u32"]), add<u32, overflow=wrap>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_g]]) [c="u32"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))))) [c="u32"] [c="u32"];
 // DEFAULT-NEXT:                 write<u32>(%[[VALUE_e]], read<u32>(%[[VALUE2]]) [c="u32"]) [c="u32"] [c="u32"];
 // DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: u8 [synthetic] = read<u8>(%[[VALUE_d]]) [c="u8"] [c="u8"];
 // DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: u8 [synthetic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE3]]) [c="u8"])), const<i32>(1)))) [c="u8"] [c="u8"];
@@ -63,7 +63,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u32 [storage=automatic] = call<u32, signature=fn(u8, u32, u32) -> u32>(%[[VALUE_b]], reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(1))) [c="u8"], reinterpret<u32, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(3639044))) [c="u32"], reinterpret<u32, reason=arg, fits=unknown>(not<i32>(const<i32>(12215548))) [c="u32"]) [c="u32"] [c="u32"];
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_x]]), const<u32>(3643904208))
+// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_x]]) [c="u32"]), const<u32>(3643904208))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

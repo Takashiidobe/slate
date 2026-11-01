@@ -81,7 +81,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(windows, feature = "alpha", feature = "beta", not(feature = "gamma")))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), widen((1 as c_long))) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), widen((1 as c_long)) as i32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {

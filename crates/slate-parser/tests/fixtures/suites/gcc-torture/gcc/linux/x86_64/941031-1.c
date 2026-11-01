@@ -58,8 +58,8 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_us:[0-9]+]] us: i64 [c="mpt"], %[[VALUE_vs:[0-9]+]] vs: i64 [c="mpt"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(mpt, mpt)"] {
 // DEFAULT-NEXT:         let %[[VALUE_aus:[0-9]+]] aus: i64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_avs:[0-9]+]] avs: i64 [storage=automatic];
-// DEFAULT-NEXT:         write<i64>(%[[VALUE_aus]], conditional<i64>(ge<i64>(read<i64>(%[[VALUE_us]]) [c="mpt"], widen<i64, reason=usual_arith>(const<i32>(0)) [c="mpt"]), read<i64>(%[[VALUE_us]]) [c="mpt"], neg<i64, overflow=ub>(read<i64>(%[[VALUE_us]]) [c="mpt"]) [c="mpt"]));
-// DEFAULT-NEXT:         write<i64>(%[[VALUE_avs]], conditional<i64>(ge<i64>(read<i64>(%[[VALUE_vs]]) [c="mpt"], widen<i64, reason=usual_arith>(const<i32>(0)) [c="mpt"]), read<i64>(%[[VALUE_vs]]) [c="mpt"], neg<i64, overflow=ub>(read<i64>(%[[VALUE_vs]]) [c="mpt"]) [c="mpt"]));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_aus]], reinterpret<i64, reason=assign>(conditional<i64>(ge<i64>(read<i64>(%[[VALUE_us]]) [c="mpt"], widen<i64, reason=usual_arith>(const<i32>(0)) [c="mpt"]), read<i64>(%[[VALUE_us]]) [c="mpt"], neg<i64, overflow=ub>(read<i64>(%[[VALUE_us]]) [c="mpt"]) [c="mpt"]) [c="mpt"]));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_avs]], reinterpret<i64, reason=assign>(conditional<i64>(ge<i64>(read<i64>(%[[VALUE_vs]]) [c="mpt"], widen<i64, reason=usual_arith>(const<i32>(0)) [c="mpt"]), read<i64>(%[[VALUE_vs]]) [c="mpt"], neg<i64, overflow=ub>(read<i64>(%[[VALUE_vs]]) [c="mpt"]) [c="mpt"]) [c="mpt"]));
 // DEFAULT-NEXT:         if lt<i64>(read<i64>(%[[VALUE_aus]]), read<i64>(%[[VALUE_avs]]))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_t:[0-9]+]] t: i64 [storage=automatic] = read<i64>(%[[VALUE_aus]]);

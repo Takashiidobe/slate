@@ -39,7 +39,7 @@ const wchar_t *wmemchr_test(const wchar_t *s, const wchar_t c, size_t n) {
 // DEFAULT-NEXT:     type @type[[TYPE_wchar_t:[0-9]+]] wchar_t = u16;
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_wmemchr:[0-9]+]] @__builtin_wmemchr(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const u16>, %[[VALUE1:[0-9]+]] <unnamed>: u16, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<u16> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_wmemchr_test:[0-9]+]] @wmemchr_test(%[[VALUE_s:[0-9]+]] s: ptr<const u16> [c="const wchar_t *"], %[[VALUE_c:[0-9]+]] c: u16 [const] [c="const wchar_t"], %[[VALUE_n:[0-9]+]] n: u64 [c="size_t"]) -> ptr<const u16> [linkage=external] [fallthrough=ub_if_used] [c="const wchar_t *(const wchar_t *, const wchar_t, size_t)"] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<const u16>, reason=return>(call<ptr<u16>, signature=fn(ptr<const u16>, u16, u64) -> ptr<u16>>(%[[VALUE___builtin_wmemchr]], read<ptr<const u16>>(%[[VALUE_s]]), read<u16>(%[[VALUE_c]]), read<u64>(%[[VALUE_n]]))) [c="const wchar_t *"];
+// DEFAULT-NEXT:         return pointer_cast<ptr<const u16>, reason=return>(call<ptr<u16>, signature=fn(ptr<const u16>, u16, u64) -> ptr<u16>>(%[[VALUE___builtin_wmemchr]], read<ptr<const u16>>(%[[VALUE_s]]), reinterpret<u16, reason=arg>(read<u16>(%[[VALUE_c]]) [c="wchar_t"]), reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_n]]) [c="size_t"]))) [c="const wchar_t *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

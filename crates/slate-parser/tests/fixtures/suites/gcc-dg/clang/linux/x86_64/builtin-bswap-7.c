@@ -71,22 +71,22 @@ int foo4 (uint64_t a, uint64_t b)
 // DEFAULT-NEXT:     type @type[[TYPE_uint64_t:[0-9]+]] uint64_t = u64 [c="__uint64_t"];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_bswap64:[0-9]+]] @__builtin_bswap64(%[[VALUE0:[0-9]+]] <unnamed>: u64) -> u64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_foo1:[0-9]+]] @foo1(%[[VALUE_a:[0-9]+]] a: u64 [c="uint64_t"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(uint64_t)"] {
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_a]])), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(42949672960)))
+// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_a]]) [c="uint64_t"])), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(42949672960)))
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo2:[0-9]+]] @foo2(%[[VALUE_a_2:[0-9]+]] a: u64 [c="uint64_t"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(uint64_t)"] {
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_a_2]])), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(42949672960)))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_a_2]]) [c="uint64_t"])), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(42949672960)))
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo3:[0-9]+]] @foo3(%[[VALUE_a_3:[0-9]+]] a: u64 [c="uint64_t"], %[[VALUE_b:[0-9]+]] b: u64 [c="uint64_t"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(uint64_t, uint64_t)"] {
-// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_a_3]])), call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_b]])))
+// DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_a_3]]) [c="uint64_t"])), call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_b]]) [c="uint64_t"])))
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo4:[0-9]+]] @foo4(%[[VALUE_a_4:[0-9]+]] a: u64 [c="uint64_t"], %[[VALUE_b_2:[0-9]+]] b: u64 [c="uint64_t"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(uint64_t, uint64_t)"] {
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_a_4]])), call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_b_2]])))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_a_4]]) [c="uint64_t"])), call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_b_2]]) [c="uint64_t"])))
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

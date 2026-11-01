@@ -49,7 +49,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x_3:[0-9]+]] x: i64) -> i64 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(i64) -> u32>(%[[VALUE_foo]], read<i64>(%[[VALUE_x_3]])), const<u32>(0))
-// DEFAULT-NEXT:             return neg<i64, overflow=ub>(const<i64>(1000));
+// DEFAULT-NEXT:             return reinterpret<i64, reason=return>(neg<i64, overflow=ub>(const<i64>(1000)));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             return shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(%[[VALUE_x_3]]), const<i32>(16));
 // DEFAULT-NEXT:     }

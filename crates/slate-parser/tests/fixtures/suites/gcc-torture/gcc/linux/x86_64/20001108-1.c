@@ -51,13 +51,13 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_signed_poly:[0-9]+]] @signed_poly(%[[VALUE_sum:[0-9]+]] sum: i64, %[[VALUE_x:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_sum]]);
-// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE1]]), mul<i64, overflow=ub>(read<i64>(%[[VALUE_sum]]), read<i64>(%[[VALUE_x]])));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE1]]), mul<i64, overflow=ub>(reinterpret<i64, reason=explicit>(reinterpret<i64, reason=explicit>(read<i64>(%[[VALUE_sum]]))), reinterpret<i64, reason=explicit>(read<i64>(%[[VALUE_x]]))));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_sum]], read<i64>(%[[VALUE2]]));
 // DEFAULT-NEXT:         return read<i64>(%[[VALUE_sum]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_unsigned_poly:[0-9]+]] @unsigned_poly(%[[VALUE_sum_2:[0-9]+]] sum: u64, %[[VALUE_x_2:[0-9]+]] x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_sum_2]]);
-// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE3]]), mul<u64, overflow=wrap>(read<u64>(%[[VALUE_sum_2]]), read<u64>(%[[VALUE_x_2]])));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE3]]), mul<u64, overflow=wrap>(reinterpret<u64, reason=explicit>(reinterpret<u64, reason=explicit>(read<u64>(%[[VALUE_sum_2]]))), reinterpret<u64, reason=explicit>(read<u64>(%[[VALUE_x_2]]))));
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_sum_2]], read<u64>(%[[VALUE4]]));
 // DEFAULT-NEXT:         return read<u64>(%[[VALUE_sum_2]]);
 // DEFAULT-NEXT:     }

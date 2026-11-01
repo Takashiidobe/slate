@@ -64,7 +64,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_new_value]], read<u64>(%[[VALUE1]]) [c="uint64_t"]) [c="uint64_t"] [c="uint64_t"];
 // DEFAULT-NEXT:         if gt<u64>(read<u64>(%[[VALUE_tmp]]) [c="uint64_t"], read<u64>(%[[VALUE_new_value]]) [c="uint64_t"])
 // DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_new_value]]) [c="uint64_t"] [c="uint64_t"];
-// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE2]]) [c="uint64_t"], shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), read<i32>(%[[VALUE_bit_size]])) [c="uint64_t"]) [c="uint64_t"] [c="uint64_t"];
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE2]]) [c="uint64_t"], reinterpret<u64, reason=usual_arith>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), read<i32>(%[[VALUE_bit_size]]))) [c="uint64_t"]) [c="uint64_t"] [c="uint64_t"];
 // DEFAULT-NEXT:             write<u64>(%[[VALUE_new_value]], read<u64>(%[[VALUE3]]) [c="uint64_t"]) [c="uint64_t"] [c="uint64_t"];
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_new_value]]) [c="uint64_t"] [c="uint64_t"];
 // DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE4]]) [c="uint64_t"], and<u64>(read<u64>(%[[VALUE_old_value]]) [c="uint64_t"], not<u64>(read<u64>(%[[VALUE_mask]]) [c="uint64_t"]) [c="uint64_t"]) [c="uint64_t"]) [c="uint64_t"] [c="uint64_t"];

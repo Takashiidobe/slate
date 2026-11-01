@@ -93,7 +93,7 @@ int main(void) {
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(%[[VALUE_major]]), const<i32>(22)), read<i32>(%[[VALUE_minor]]))) [c="kdev_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_do_mknod:[0-9]+]] @do_mknod(%[[VALUE_filename:[0-9]+]] filename: ptr<const i8>, %[[VALUE_mode:[0-9]+]] mode: i32, %[[VALUE_dev_2:[0-9]+]] dev: u32 [c="kdev_t"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(const char *, int, kdev_t)"] {
-// DEFAULT-NEXT:         if eq<u32>(read<u32>(%[[VALUE_dev_2]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(360710264)))
+// DEFAULT-NEXT:         if eq<u32>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_dev_2]]) [c="kdev_t"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(360710264)))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

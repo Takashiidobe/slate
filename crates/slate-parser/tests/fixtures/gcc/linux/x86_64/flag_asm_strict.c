@@ -34,8 +34,8 @@ int keywords(int value) {
 // IR-NEXT:         asm volatile "" [dialect=att] [options=nomem,nostack] {
 // IR-NEXT:             inlateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_value]]);
 // IR-NEXT:         }
-// IR-NEXT:         let %[[VALUE_copy:[0-9]+]] copy: i32 [storage=automatic] = read<i32>(%[[VALUE_value]]) [c="typeof(value)"] [c="typeof(value)"];
-// IR-NEXT:         return read<i32>(%[[VALUE_copy]]);
+// IR-NEXT:         let %[[VALUE_copy:[0-9]+]] copy: i32 [storage=automatic] = reinterpret<i32>(read<i32>(%[[VALUE_value]])) [c="typeof(value)"] [c="typeof(value)"];
+// IR-NEXT:         return reinterpret<i32>(read<i32>(%[[VALUE_copy]]) [c="typeof(value)"]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

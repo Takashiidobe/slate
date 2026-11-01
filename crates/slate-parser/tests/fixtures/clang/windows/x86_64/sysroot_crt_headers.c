@@ -68,17 +68,17 @@ int format_number(char *buffer, size_t size, int value) {
 // IR-NEXT:         let %[[VALUE__Result_2:[0-9]+]] _Result: i32 [storage=automatic];
 // IR-NEXT:         let %[[VALUE__ArgList_3:[0-9]+]] _ArgList: ptr<i8> [storage=automatic] [c="va_list"];
 // IR-NEXT:         va_start(%[[VALUE__ArgList_3]]);
-// IR-NEXT:         write<i32>(%[[VALUE__Result_2]], call<i32, signature=fn(ptr<i8>, u64, ptr<const i8>, ptr<i8>) -> i32>(%[[VALUE_vsnprintf]], read<ptr<i8>>(%[[VALUE__Buffer_3]]), read<u64>(%[[VALUE__BufferCount_3]]), read<ptr<const i8>>(%[[VALUE__Format_3]]), read<ptr<i8>>(%[[VALUE__ArgList_3]])));
+// IR-NEXT:         write<i32>(%[[VALUE__Result_2]], call<i32, signature=fn(ptr<i8>, u64, ptr<const i8>, ptr<i8>) -> i32>(%[[VALUE_vsnprintf]], read<ptr<i8>>(%[[VALUE__Buffer_3]]), reinterpret<u64, reason=arg>(read<u64>(%[[VALUE__BufferCount_3]]) [c="size_t"]), read<ptr<const i8>>(%[[VALUE__Format_3]]), read<ptr<i8>>(%[[VALUE__ArgList_3]])));
 // IR-NEXT:         va_end(%[[VALUE__ArgList_3]]);
 // IR-NEXT:         return read<i32>(%[[VALUE__Result_2]]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_abs:[0-9]+]] @abs(%[[VALUE__Number:[0-9]+]] _Number: i32) -> i32 [linkage=external] [memory=none];
 // IR-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE__Str:[0-9]+]] _Str: ptr<const i8>) -> u64 [linkage=external] [c="size_t(const char *)"];
 // IR-NEXT:     fn %[[VALUE_magnitude_digits:[0-9]+]] @magnitude_digits(%[[VALUE_digits:[0-9]+]] digits: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="size_t(const char *)"] {
-// IR-NEXT:         return add<u64, overflow=wrap>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE_digits]])), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_abs]], neg<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(size_of<u64, ptr<@type[[TYPE__iobuf]]>>(8)))))))) [c="size_t"];
+// IR-NEXT:         return reinterpret<u64, reason=return>(add<u64, overflow=wrap>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE_digits]])), reinterpret<u64, reason=usual_arith>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_abs]], neg<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(size_of<u64, ptr<@type[[TYPE__iobuf]]>>(8))))))) [c="size_t"]))) [c="size_t"];
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_format_number:[0-9]+]] @format_number(%[[VALUE_buffer:[0-9]+]] buffer: ptr<i8>, %[[VALUE_size:[0-9]+]] size: u64 [c="size_t"], %[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(char *, size_t, int)"] {
-// IR-NEXT:         return call<i32, signature=fn(ptr<i8>, u64, ptr<const i8>, ...) -> i32>(%[[VALUE_snprintf]], read<ptr<i8>>(%[[VALUE_buffer]]), read<u64>(%[[VALUE_size]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])), read<i32>(%[[VALUE_value]]));
+// IR-NEXT:         return call<i32, signature=fn(ptr<i8>, u64, ptr<const i8>, ...) -> i32>(%[[VALUE_snprintf]], read<ptr<i8>>(%[[VALUE_buffer]]), reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_size]]) [c="size_t"]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])), read<i32>(%[[VALUE_value]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

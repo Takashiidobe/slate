@@ -78,13 +78,13 @@ int main() {
 // DEFAULT-NEXT:         return shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i64, reason=explicit>(read<i32>(%[[VALUE_x_4]]) [c="int32_t"]), const<i32>(4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32) -> u64>(%[[VALUE_f1]], reinterpret<i32, reason=arg, fits=unknown>(const<u32>(4026531840)) [c="int32_t"]), const<u64>(18446744069414584320))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32) -> u64>(%[[VALUE_f1]], reinterpret<i32, reason=arg, fits=unknown>(const<u32>(4026531840)) [c="int32_t"]), reinterpret<u64, reason=usual_arith>(const<u64>(18446744069414584320)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(u32) -> i64>(%[[VALUE_f2]], const<u32>(4026531840) [c="uint32_t"]), const<i64>(64424509440))
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(u32) -> i64>(%[[VALUE_f2]], reinterpret<u32, reason=arg>(const<u32>(4026531840)) [c="uint32_t"]), reinterpret<i64, reason=usual_arith>(const<i64>(64424509440)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u32) -> u64>(%[[VALUE_f3]], const<u32>(4026531840) [c="uint32_t"]), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(64424509440)))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u32) -> u64>(%[[VALUE_f3]], reinterpret<u32, reason=arg>(const<u32>(4026531840)) [c="uint32_t"]), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(64424509440)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(call<i64, signature=fn(i32) -> i64>(%[[VALUE_f4]], reinterpret<i32, reason=arg, fits=unknown>(const<u32>(4026531840)) [c="int32_t"])), const<u64>(18446744069414584320))
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(call<i64, signature=fn(i32) -> i64>(%[[VALUE_f4]], reinterpret<i32, reason=arg, fits=unknown>(const<u32>(4026531840)) [c="int32_t"])), reinterpret<u64, reason=usual_arith>(const<u64>(18446744069414584320)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

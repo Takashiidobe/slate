@@ -383,10 +383,18 @@ impl Tables<'_> {
                 }
             }
             ValueKind::Convert {
-                kind: ir::ConversionKind::Widen | ir::ConversionKind::Truncate,
+                kind:
+                    ir::ConversionKind::Widen
+                    | ir::ConversionKind::Truncate
+                    | ir::ConversionKind::IntCast,
                 operand,
                 ..
             } => self.fold_integer(operand)?,
+            ValueKind::Convert {
+                kind: ir::ConversionKind::Reinterpret,
+                operand,
+                ..
+            } if operand.ty == value.ty => self.fold_integer(operand)?,
             ValueKind::Convert {
                 kind: ir::ConversionKind::FloatToInt,
                 operand,

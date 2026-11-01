@@ -285,14 +285,14 @@ int nested_bound(int (*callback)(int T, int a[sizeof(int[(T) + 1])]), int b[size
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_result_2]], read<i32>(%[[VALUE7]]));
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE8:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_result_2]]);
-// DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE8]]), const<i32>(1));
+// DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE8]]), reinterpret<i32, reason=promotion>(reinterpret<i32, reason=explicit>(const<i32>(1)) [c="T"]));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_result_2]], read<i32>(%[[VALUE9]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             let %[[VALUE10:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_result_2]]);
 // DEFAULT-NEXT:             let %[[VALUE11:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE10]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_T_3]]), const<i32>(1)));
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_result_2]], read<i32>(%[[VALUE11]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_result_2]]), const<i32>(1));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_result_2]]), reinterpret<i32, reason=promotion>(reinterpret<i32, reason=explicit>(const<i32>(1)) [c="T"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_object_generic:[0-9]+]] @object_generic() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_result_3:[0-9]+]] result: i32 [storage=automatic] = const<i32>(0);
@@ -359,14 +359,14 @@ int nested_bound(int (*callback)(int T, int a[sizeof(int[(T) + 1])]), int b[size
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_result_6]], read<i32>(%[[VALUE35]]));
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE36:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_result_6]]);
-// DEFAULT-NEXT:                 let %[[VALUE37:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE36]]), const<i32>(1));
+// DEFAULT-NEXT:                 let %[[VALUE37:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE36]]), reinterpret<i32, reason=promotion>(reinterpret<i32, reason=explicit>(const<i32>(1)) [c="T"]));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_result_6]], read<i32>(%[[VALUE37]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             let %[[VALUE38:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_result_6]]);
 // DEFAULT-NEXT:             let %[[VALUE39:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE38]]), add<i32, overflow=ub>(const<i32>(2), const<i32>(1)));
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_result_6]], read<i32>(%[[VALUE39]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_result_6]]), const<i32>(1));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_result_6]]), reinterpret<i32, reason=promotion>(reinterpret<i32, reason=explicit>(const<i32>(1)) [c="T"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_enumerator_generic:[0-9]+]] @enumerator_generic() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_result_7:[0-9]+]] result: i32 [storage=automatic] = const<i32>(0);
@@ -427,14 +427,14 @@ int nested_bound(int (*callback)(int T, int a[sizeof(int[(T) + 1])]), int b[size
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_result_10]], read<i32>(%[[VALUE59]]));
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE60:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_result_10]]);
-// DEFAULT-NEXT:                 let %[[VALUE61:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE60]]), const<i32>(1));
+// DEFAULT-NEXT:                 let %[[VALUE61:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE60]]), reinterpret<i32, reason=promotion>(reinterpret<i32, reason=explicit>(const<i32>(1)) [c="T"]));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_result_10]], read<i32>(%[[VALUE61]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             let %[[VALUE62:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_result_10]]);
 // DEFAULT-NEXT:             let %[[VALUE63:[0-9]+]]: i32 [synthetic] = truncate<i32, reason=assign, fits=unknown>(add<i64, overflow=ub>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE62]])) [c="T"], widen<i64, reason=explicit>(const<i32>(1)) [c="T"]));
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_result_10]], read<i32>(%[[VALUE63]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_result_10]]), const<i32>(1));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_result_10]]), reinterpret<i32, reason=promotion>(reinterpret<i32, reason=explicit>(const<i32>(1)) [c="T"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_typedef_generic:[0-9]+]] @typedef_generic() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_result_11:[0-9]+]] result: i32 [storage=automatic] = const<i32>(0);
@@ -506,7 +506,7 @@ int nested_bound(int (*callback)(int T, int a[sizeof(int[(T) + 1])]), int b[size
 // DEFAULT-NEXT:                 let %[[VALUE84:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_value_2]]);
 // DEFAULT-NEXT:                 let %[[VALUE85:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE84]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_T_8]]), const<i32>(1)));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_value_2]], read<i32>(%[[VALUE85]]));
-// DEFAULT-NEXT:         return const<i32>(1);
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(reinterpret<i32, reason=explicit>(const<i32>(1)) [c="T"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_parameter_cast:[0-9]+]] @parameter_cast(%[[VALUE_T_9:[0-9]+]] T: i32, %[[VALUE_a_2:[0-9]+]] a: ptr<i32> [array=*]) -> i32 [linkage=external] [c="int(int, int[*])"];
 // DEFAULT-NEXT:     fn %[[VALUE_nested_cast:[0-9]+]] @nested_cast(%[[VALUE_callback_2:[0-9]+]] callback: ptr<fn(i32, ptr<i32>) -> i32> [c="int (*)(int, int[*])"], %[[VALUE_b_2:[0-9]+]] b: ptr<i32> [array=1]) -> i32 [linkage=external] [c="int(int (*)(int, int[*]), int[1])"];

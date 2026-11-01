@@ -157,7 +157,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(10374)), div<i32, by_zero=ub, min_by_neg_one=ub>(mul<i32, overflow=ub>(const<i32>(15), const<i32>(16)), const<i32>(2)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, u64, u64) -> i32>(%[[VALUE_bar]], const<i32>(25), const<i32>(37), const<u64>(16045690984300797613), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4)))), const<i32>(42))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, u64, u64) -> i32>(%[[VALUE_bar]], const<i32>(25), const<i32>(37), reinterpret<u64, reason=explicit>(const<u64>(16045690984300797613)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4)))), const<i32>(42))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, u64, u64) -> i32>(%[[VALUE_bar]], const<i32>(25), const<i32>(4), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(15))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(15)))), const<i32>(22))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

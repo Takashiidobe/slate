@@ -163,13 +163,13 @@ main ()
 // DEFAULT-NEXT:         let %[[VALUE22:[0-9]+]]: i16 [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_ptr_6:[0-9]+]] __atomic_exchange_ptr: ptr<atomic i16> [storage=automatic] = addr_of<ptr<atomic i16>>(%[[VALUE_v]]);
-// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_val_6:[0-9]+]] __atomic_exchange_val: i16 [storage=automatic] = read<i16>(%[[VALUE_count]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"] [c="typeof((cast)0, *__atomic_exchange_ptr)"];
+// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_val_6:[0-9]+]] __atomic_exchange_val: i16 [storage=automatic] = reinterpret<i16, reason=assign>(read<i16>(%[[VALUE_count]])) [c="typeof((cast)0, *__atomic_exchange_ptr)"] [c="typeof((cast)0, *__atomic_exchange_ptr)"];
 // DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_tmp_6:[0-9]+]] __atomic_exchange_tmp: i16 [storage=automatic] [c="typeof((cast)0, *__atomic_exchange_ptr)"];
 // DEFAULT-NEXT:             let %[[VALUE23:[0-9]+]]: i16 [synthetic] = update<i16, result=old, atomic=seq_cst>(deref(read<ptr<atomic i16>>(%[[VALUE___atomic_exchange_ptr_6]])), read<i16>(deref(addr_of<ptr<i16>>(%[[VALUE___atomic_exchange_val_6]]))) [c="typeof((cast)0, *__atomic_exchange_ptr)"]);
 // DEFAULT-NEXT:             write<i16>(deref(addr_of<ptr<i16>>(%[[VALUE___atomic_exchange_tmp_6]])), read<i16>(%[[VALUE23]])) [c="typeof((cast)0, *__atomic_exchange_ptr)"];
 // DEFAULT-NEXT:             write<i16>(%[[VALUE22]], read<i16>(%[[VALUE___atomic_exchange_tmp_6]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         write<i16>(%[[VALUE_ret]], read<i16>(%[[VALUE22]]));
+// DEFAULT-NEXT:         write<i16>(%[[VALUE_ret]], reinterpret<i16, reason=assign>(read<i16>(%[[VALUE22]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_ret]])), sub<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_count]])), const<i32>(1))), ne<i32>(widen<i32, reason=promotion>(read<i16, atomic=seq_cst>(%[[VALUE_v]])), widen<i32, reason=promotion>(read<i16>(%[[VALUE_count]]))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

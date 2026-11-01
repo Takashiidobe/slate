@@ -140,7 +140,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%ld %ld %d %d %d %d %s %d %d\n".as_ptr(),
-// CHECK-NEXT:                 scale(2i32),
+// CHECK-NEXT:                 scale(2i32) as c_long,
 // CHECK-NEXT:                 native_long((3 as c_long)),
 // CHECK-NEXT:                 unprototyped(4i32),
 // CHECK-NEXT:                 *(std::ptr::addr_of_mut!(table) as *mut i32).add(1),

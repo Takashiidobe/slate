@@ -2,7 +2,7 @@ use super::builtins::{AlignBuiltin, ClangBuiltin, CustomBuiltin};
 use super::ctype::convert::CastKind;
 use super::ctype::{CTypeKind, CTypes, Extent, QualType};
 use super::initializer::InitializerSource;
-use super::numeric::{Context, ResolveError};
+use super::numeric::{Context, ResolveError, conversion};
 use super::operand::{Lvalue, Operand};
 use super::typer::{Choice, Lanes, Slot, Step, StepKind};
 use super::types::TypeResolver;
@@ -1322,6 +1322,11 @@ impl Lowerer {
         reason: ConversionReason,
     ) -> Result<Value, ResolveError> {
         let ty = self.types.ir_type(to);
+        if matches!(kind, CastKind::Identity | CastKind::Arithmetic)
+            && let Some((kept, semantics)) = self.types.kept_integer_conversion(&value, to, reason)
+        {
+            return Ok(conversion(value.value, ty, kept, reason, semantics));
+        }
         let value = value.value;
         match kind {
             CastKind::Identity => self.emit_convert_to(value, to, reason),

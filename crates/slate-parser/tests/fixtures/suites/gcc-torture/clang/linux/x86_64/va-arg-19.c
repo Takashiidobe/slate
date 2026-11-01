@@ -70,23 +70,23 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_vafunction:[0-9]+]] @vafunction(%[[VALUE_dummy:[0-9]+]] dummy: ptr<i8>, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
-// DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%[[VALUE_ap]]), const<i32>(1))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(va_arg<i32>(%[[VALUE_ap]]) [c="TYPE"]), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%[[VALUE_ap]]), const<i32>(2))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(va_arg<i32>(%[[VALUE_ap]]) [c="TYPE"]), const<i32>(2))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%[[VALUE_ap]]), const<i32>(3))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(va_arg<i32>(%[[VALUE_ap]]) [c="TYPE"]), const<i32>(3))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%[[VALUE_ap]]), const<i32>(4))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(va_arg<i32>(%[[VALUE_ap]]) [c="TYPE"]), const<i32>(4))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%[[VALUE_ap]]), const<i32>(5))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(va_arg<i32>(%[[VALUE_ap]]) [c="TYPE"]), const<i32>(5))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%[[VALUE_ap]]), const<i32>(6))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(va_arg<i32>(%[[VALUE_ap]]) [c="TYPE"]), const<i32>(6))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%[[VALUE_ap]]), const<i32>(7))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(va_arg<i32>(%[[VALUE_ap]]) [c="TYPE"]), const<i32>(7))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%[[VALUE_ap]]), const<i32>(8))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(va_arg<i32>(%[[VALUE_ap]]) [c="TYPE"]), const<i32>(8))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%[[VALUE_ap]]), const<i32>(9))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(va_arg<i32>(%[[VALUE_ap]]) [c="TYPE"]), const<i32>(9))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:     }

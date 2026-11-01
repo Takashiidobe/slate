@@ -73,7 +73,7 @@ int call_main() {
 // CAST-NEXT:     type @type[[TYPE_A:[0-9]+]] A = i32;
 // CAST-NEXT:     global %[[VALUE_B:[0-9]+]] B: i32 [storage=static] [linkage=external];
 // CAST-NEXT:     fn %[[VALUE_cast_main:[0-9]+]] @cast_main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// CAST-NEXT:         read<i32>(%[[VALUE_B]]) [c="A"];
+// CAST-NEXT:         reinterpret<i32, reason=explicit>(read<i32>(%[[VALUE_B]])) [c="A"];
 // CAST-NEXT:         return const<i32>(0);
 // CAST-NEXT:     }
 // CAST-NEXT: }

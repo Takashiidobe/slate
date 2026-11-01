@@ -621,7 +621,7 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
 ### Operations
 
 ```ebnf
-conversion = "widen" | "truncate" | "reinterpret" | "bit_cast" | "from_bool"
+conversion = "widen" | "truncate" | "reinterpret" | "int_cast" | "bit_cast" | "from_bool"
            | "int_to_float" | "float_widen" | "float_narrow" | "float_convert"
            | "float_to_int" | "pointer_cast" | "address_space_cast"
            | "ptr_to_int" | "int_to_ptr"
@@ -674,7 +674,7 @@ exceptions        = "ignore" | "observable" ;
 - A policy is the operation's behavior _if_ the case occurs, not a claim that it
   does. `overflow=ub` is signed C arithmetic; `wrap` is unsigned or `-fwrapv`;
   `trap` is `-ftrapv`.
-- `fits` appears on `truncate`/`reinterpret`; `exact=` on `int_to_float`;
+- `fits` appears on `truncate`/`reinterpret`/`int_cast`; `exact=` on `int_to_float`;
   `out_of_range=ub` on `float_to_int`; `floating` on the other float conversions
   that can round.
 - The arithmetic choices are, in order: `and`/`or`/`xor`/`not` and floating

@@ -465,9 +465,9 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_srcp1_4:[0-9]+]] srcp1: i64 [storage=automatic] = ptr_to_int<i64, reason=explicit>(read<ptr<const void>>(%[[VALUE_s1]]));
 // DEFAULT-NEXT:         let %[[VALUE_srcp2_4:[0-9]+]] srcp2: i64 [storage=automatic] = ptr_to_int<i64, reason=explicit>(read<ptr<const void>>(%[[VALUE_s2]]));
 // DEFAULT-NEXT:         if eq<u64>(rem<u64, by_zero=ub>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%[[VALUE_srcp1_4]])), size_of<u64, u64>(8)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
-// DEFAULT-NEXT:             return call<i32, signature=fn(i64, i64, u64) -> i32>(%[[VALUE_mymemcmp2]], read<i64>(%[[VALUE_srcp1_4]]), read<i64>(%[[VALUE_srcp2_4]]), div<u64, by_zero=ub>(read<u64>(%[[VALUE_len_3]]) [c="size_t"], size_of<u64, u64>(8) [c="size_t"]) [c="size_t"]);
+// DEFAULT-NEXT:             return call<i32, signature=fn(i64, i64, u64) -> i32>(%[[VALUE_mymemcmp2]], read<i64>(%[[VALUE_srcp1_4]]), read<i64>(%[[VALUE_srcp2_4]]), div<u64, by_zero=ub>(read<u64>(%[[VALUE_len_3]]) [c="size_t"], reinterpret<u64, reason=usual_arith>(size_of<u64, u64>(8)) [c="size_t"]) [c="size_t"]);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             return call<i32, signature=fn(i64, i64, u64) -> i32>(%[[VALUE_mymemcmp3]], read<i64>(%[[VALUE_srcp1_4]]), read<i64>(%[[VALUE_srcp2_4]]), div<u64, by_zero=ub>(read<u64>(%[[VALUE_len_3]]) [c="size_t"], size_of<u64, u64>(8) [c="size_t"]) [c="size_t"]);
+// DEFAULT-NEXT:             return call<i32, signature=fn(i64, i64, u64) -> i32>(%[[VALUE_mymemcmp3]], read<i64>(%[[VALUE_srcp1_4]]), read<i64>(%[[VALUE_srcp2_4]]), div<u64, by_zero=ub>(read<u64>(%[[VALUE_len_3]]) [c="size_t"], reinterpret<u64, reason=usual_arith>(size_of<u64, u64>(8)) [c="size_t"]) [c="size_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE59:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE60:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE61:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];

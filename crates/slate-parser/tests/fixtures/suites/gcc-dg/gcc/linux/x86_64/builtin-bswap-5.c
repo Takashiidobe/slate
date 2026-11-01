@@ -53,7 +53,7 @@ main (void)
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], const<u32>(2309737967)), const<u32>(4023233417))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], const<u64>(81985529216486895)), const<u64>(17279655951921914625))
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg>(const<u64>(81985529216486895)))), const<u64>(17279655951921914625))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

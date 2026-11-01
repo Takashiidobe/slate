@@ -214,7 +214,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_vv6:[0-9]+]] vv6: @type[[TYPE_at6]] [storage=static] = aggregate<@type[[TYPE_at6]], zero_fill=false>() [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_wv6:[0-9]+]] wv6: @type[[TYPE_et6]] [storage=static] = aggregate<@type[[TYPE_et6]], zero_fill=false>(field0 = aggregate<@type[[TYPE_bt6]], zero_fill=false>(field0 = const<i32>(8), field1 = const<i32>(9), field2 = const<i32>(2), field3 = const<i32>(4), field4 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(16))), field5 = const<u32>(67426805), field6 = const<i64>(1047191860)), field1 = const<u64>(1366022414), field2 = const<i32>(858), field3 = const<i32>(1), field4 = const<i32>(1), field5 = const<i32>(305), field6 = aggregate<@type[[TYPE_ct6]], zero_fill=false>(field0 = const<i64>(1069379046)), field7 = int_to_ptr<ptr<i32>, reason=explicit>(const<u32>(358273621)), field8 = aggregate<@type[[TYPE_dt6]], zero_fill=false>(field0 = const<f64>(3318.041978))) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_xv6:[0-9]+]] xv6: f64 [storage=static] = const<f64>(19239.101269) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_yv6:[0-9]+]] yv6: i64 [storage=static] = const<i64>(1207859169) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_yv6:[0-9]+]] yv6: i64 [storage=static] = reinterpret<i64, reason=assign>(const<i64>(1207859169)) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_zv6:[0-9]+]] zv6: i32 [storage=static] = const<i32>(660195606) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_uv7:[0-9]+]] uv7: u8 [storage=static] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(70))) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_vv7:[0-9]+]] vv7: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(96636.982442)) [linkage=internal];
@@ -225,7 +225,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_bav7:[0-9]+]] bav7: i32 [storage=static] = const<i32>(1345451862) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_bbv7:[0-9]+]] bbv7: @type[[TYPE_gt7]] [storage=static] = aggregate<@type[[TYPE_gt7]], zero_fill=false>(field0 = const<f64>(47875.491954)) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_bcv7:[0-9]+]] bcv7: array<i64, 1> [storage=static] = aggregate<array<i64, 1>, zero_fill=false>(index0 = const<i64>(1732133482)) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_bdv7:[0-9]+]] bdv7: i64 [storage=static] = const<i64>(381678602) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_bdv7:[0-9]+]] bdv7: i64 [storage=static] = reinterpret<i64, reason=assign>(const<i64>(381678602)) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_callee_af6:[0-9]+]] @callee_af6(%[[VALUE_ap6:[0-9]+]] ap6: @type[[TYPE_et6]], %[[VALUE_bp6:[0-9]+]] bp6: f64, %[[VALUE_cp6:[0-9]+]] cp6: i64, %[[VALUE_dp6:[0-9]+]] dp6: i32) -> @type[[TYPE_at6]] [linkage=internal] [abi=sysv64(native_c, scalar, scalar, scalar) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if not<bool>(eq<i32>(read<i32>(bitfield0<unit=0, bytes=0..3, bits=0..6>(field0(%[[VALUE_wv6]]))), read<i32>(bitfield0<unit=0, bytes=0..3, bits=0..6>(field0(%[[VALUE_ap6]])))))

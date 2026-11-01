@@ -153,11 +153,11 @@ __statfs64 (const char *file, struct statfs64 *buf)
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE_statfs64]]>>(%[[VALUE_buf]]))), read<i32>(field0(%[[VALUE_buf32]])));
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE_statfs64]]>>(%[[VALUE_buf]]))), read<i32>(field1(%[[VALUE_buf32]])));
-// DEFAULT-NEXT:         write<u64>(field2(deref(read<ptr<@type[[TYPE_statfs64]]>>(%[[VALUE_buf]]))), read<u64>(field2(%[[VALUE_buf32]])) [c="__fsblkcnt64_t"]) [c="__fsblkcnt64_t"];
-// DEFAULT-NEXT:         write<u64>(field3(deref(read<ptr<@type[[TYPE_statfs64]]>>(%[[VALUE_buf]]))), read<u64>(field3(%[[VALUE_buf32]])) [c="__fsblkcnt64_t"]) [c="__fsblkcnt64_t"];
-// DEFAULT-NEXT:         write<u64>(field4(deref(read<ptr<@type[[TYPE_statfs64]]>>(%[[VALUE_buf]]))), read<u64>(field4(%[[VALUE_buf32]])) [c="__fsblkcnt64_t"]) [c="__fsblkcnt64_t"];
-// DEFAULT-NEXT:         write<u64>(field5(deref(read<ptr<@type[[TYPE_statfs64]]>>(%[[VALUE_buf]]))), read<u64>(field5(%[[VALUE_buf32]])) [c="__fsfilcnt64_t"]) [c="__fsfilcnt64_t"];
-// DEFAULT-NEXT:         write<u64>(field6(deref(read<ptr<@type[[TYPE_statfs64]]>>(%[[VALUE_buf]]))), read<u64>(field6(%[[VALUE_buf32]])) [c="__fsfilcnt64_t"]) [c="__fsfilcnt64_t"];
+// DEFAULT-NEXT:         write<u64>(field2(deref(read<ptr<@type[[TYPE_statfs64]]>>(%[[VALUE_buf]]))), reinterpret<u64, reason=assign>(read<u64>(field2(%[[VALUE_buf32]])) [c="__fsblkcnt_t"]) [c="__fsblkcnt64_t"]) [c="__fsblkcnt64_t"];
+// DEFAULT-NEXT:         write<u64>(field3(deref(read<ptr<@type[[TYPE_statfs64]]>>(%[[VALUE_buf]]))), reinterpret<u64, reason=assign>(read<u64>(field3(%[[VALUE_buf32]])) [c="__fsblkcnt_t"]) [c="__fsblkcnt64_t"]) [c="__fsblkcnt64_t"];
+// DEFAULT-NEXT:         write<u64>(field4(deref(read<ptr<@type[[TYPE_statfs64]]>>(%[[VALUE_buf]]))), reinterpret<u64, reason=assign>(read<u64>(field4(%[[VALUE_buf32]])) [c="__fsblkcnt_t"]) [c="__fsblkcnt64_t"]) [c="__fsblkcnt64_t"];
+// DEFAULT-NEXT:         write<u64>(field5(deref(read<ptr<@type[[TYPE_statfs64]]>>(%[[VALUE_buf]]))), reinterpret<u64, reason=assign>(read<u64>(field5(%[[VALUE_buf32]])) [c="__fsfilcnt_t"]) [c="__fsfilcnt64_t"]) [c="__fsfilcnt64_t"];
+// DEFAULT-NEXT:         write<u64>(field6(deref(read<ptr<@type[[TYPE_statfs64]]>>(%[[VALUE_buf]]))), reinterpret<u64, reason=assign>(read<u64>(field6(%[[VALUE_buf32]])) [c="__fsfilcnt_t"]) [c="__fsfilcnt64_t"]) [c="__fsfilcnt64_t"];
 // DEFAULT-NEXT:         write<@type[[TYPE0]]>(field7(deref(read<ptr<@type[[TYPE_statfs64]]>>(%[[VALUE_buf]]))), copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(field7(%[[VALUE_buf32]])) [c="__fsid_t"]) [c="__fsid_t"]) [c="__fsid_t"];
 // DEFAULT-NEXT:         write<i32>(field8(deref(read<ptr<@type[[TYPE_statfs64]]>>(%[[VALUE_buf]]))), read<i32>(field8(%[[VALUE_buf32]])));
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(6)>(field9(deref(read<ptr<@type[[TYPE_statfs64]]>>(%[[VALUE_buf]]))))), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(6)>(field9(%[[VALUE_buf32]]))), size_of<u64, array<i32, 6>>(24));

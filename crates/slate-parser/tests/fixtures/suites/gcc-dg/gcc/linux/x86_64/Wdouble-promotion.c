@@ -185,11 +185,11 @@ non_evaluated (void)
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_d]], float_widen<f64, reason=assign>(call<f32, signature=fn() -> f32>(%[[VALUE_float_fn]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_non_evaluated:[0-9]+]] @non_evaluated() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_s]], size_of<u64, f64>(8) [c="size_t"]) [c="size_t"];
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_s]], align_of<u64, f64>(8) [c="size_t"]) [c="size_t"];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_s]], reinterpret<u64, reason=assign>(size_of<u64, f64>(8)) [c="size_t"]) [c="size_t"];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_s]], reinterpret<u64, reason=assign>(align_of<u64, f64>(8)) [c="size_t"]) [c="size_t"];
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_d]], float_widen<f64, reason=explicit>(read<f32>(%[[VALUE_f]])));
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_s]], size_of<u64, f64>(8) [c="size_t"]) [c="size_t"];
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_s]], size_of<u64, void>(1) [c="size_t"]) [c="size_t"];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_s]], reinterpret<u64, reason=assign>(size_of<u64, f64>(8)) [c="size_t"]) [c="size_t"];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_s]], reinterpret<u64, reason=assign>(size_of<u64, void>(1)) [c="size_t"]) [c="size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

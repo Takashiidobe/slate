@@ -597,7 +597,7 @@ unsigned short test_u16_15(unsigned short x) {
 // DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_79]])))), const<i32>(63)), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_u64_56_255:[0-9]+]] @test_u64_56_255(%[[VALUE_x_80:[0-9]+]] x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_x_80]])), const<i32>(56)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(255))));
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_x_80]]))), const<i32>(56)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(255)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_bswap16:[0-9]+]] @__builtin_bswap16(%[[VALUE2:[0-9]+]] <unnamed>: u16) -> u16 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_test_s16_0_1:[0-9]+]] @test_s16_0_1(%[[VALUE_x_81:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
@@ -700,16 +700,16 @@ unsigned short test_u16_15(unsigned short x) {
 // DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_113]]))), const<i32>(63)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_u64_56:[0-9]+]] @test_u64_56(%[[VALUE_x_114:[0-9]+]] x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_x_114]])), const<i32>(56));
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_x_114]]))), const<i32>(56)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_u64_57:[0-9]+]] @test_u64_57(%[[VALUE_x_115:[0-9]+]] x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_x_115]])), const<i32>(57));
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_x_115]]))), const<i32>(57)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_u64_62:[0-9]+]] @test_u64_62(%[[VALUE_x_116:[0-9]+]] x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_x_116]])), const<i32>(62));
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_x_116]]))), const<i32>(62)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_u64_63:[0-9]+]] @test_u64_63(%[[VALUE_x_117:[0-9]+]] x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_x_117]])), const<i32>(63));
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_x_117]]))), const<i32>(63)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_s16_8:[0-9]+]] @test_s16_8(%[[VALUE_x_118:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_118]]))))), const<i32>(8)));

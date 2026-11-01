@@ -153,7 +153,7 @@ int main() {
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_dsgn_2]], const<i32>(1));
 // DEFAULT-NEXT:                                 let %[[VALUE3:[0-9]+]]: i64 [synthetic] = read<i64>(field0(%[[VALUE_u]]));
-// DEFAULT-NEXT:                                 let %[[VALUE4:[0-9]+]]: i64 [synthetic] = and<i64>(read<i64>(%[[VALUE3]]), const<i64>(9223372036854775807));
+// DEFAULT-NEXT:                                 let %[[VALUE4:[0-9]+]]: i64 [synthetic] = reinterpret<i64, reason=assign>(and<i64>(reinterpret<i64, reason=usual_arith>(read<i64>(%[[VALUE3]])), const<i64>(9223372036854775807)));
 // DEFAULT-NEXT:                                 write<i64>(field0(%[[VALUE_u]]), read<i64>(%[[VALUE4]]));
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                         else

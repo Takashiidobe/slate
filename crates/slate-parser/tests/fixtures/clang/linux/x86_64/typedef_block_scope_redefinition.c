@@ -41,13 +41,13 @@ int f(void) {
 // IR-NEXT:     type @type[[TYPE_T_3:[0-9]+]] T = i64;
 // IR-NEXT:     type @type[[TYPE_T_4:[0-9]+]] T = i64;
 // IR-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic] = const<i32>(1) [c="T"] [c="T"];
+// IR-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic] = reinterpret<i32>(const<i32>(1)) [c="T"] [c="T"];
 // IR-NEXT:         {
 // IR-NEXT:             let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]) [c="T"] [c="T"];
-// IR-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE0]]) [c="T"], reinterpret<i32>(truncate<u32>(size_of<u64, i64>(8)))) [c="T"] [c="T"];
+// IR-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = reinterpret<i32>(add<i32>(reinterpret<i32>(read<i32>(%[[VALUE0]]) [c="T"]), reinterpret<i32>(truncate<u32>(size_of<u64, i64>(8))))) [c="T"] [c="T"];
 // IR-NEXT:             write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE1]]) [c="T"]) [c="T"] [c="T"];
 // IR-NEXT:         }
-// IR-NEXT:         return read<i32>(%[[VALUE_x]]);
+// IR-NEXT:         return reinterpret<i32>(read<i32>(%[[VALUE_x]]) [c="T"]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR
