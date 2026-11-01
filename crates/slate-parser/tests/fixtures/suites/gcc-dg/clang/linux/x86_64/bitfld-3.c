@@ -134,11 +134,11 @@ int main (void)
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(24), const<u64>(24))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_A]]>(24), size_of<u64, @type[[TYPE_B]]>(24))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(24), const<u64>(24))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_A]]>(24), size_of<u64, @type[[TYPE_C]]>(24))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(24), const<u64>(24))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_A]]>(24), size_of<u64, @type[[TYPE_D]]>(24))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(field2(%[[VALUE_a]])), addr_of<ptr<i8>>(field0(%[[VALUE_a]]))), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(field2(%[[VALUE_b]])), addr_of<ptr<i8>>(field0(%[[VALUE_b]]))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

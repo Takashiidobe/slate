@@ -490,7 +490,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE13:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i]]))), const<u64>(4))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i]]))), size_of<u64, @type[[TYPE_A]]>(4))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE14:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:                 let %[[VALUE15:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE14]]), const<i32>(1));
@@ -569,7 +569,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE26:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_2]]))), const<u64>(8))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_2]]))), size_of<u64, @type[[TYPE_B]]>(8))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE27:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_2]]);
 // DEFAULT-NEXT:                 let %[[VALUE28:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE27]]), const<i32>(1));
@@ -648,7 +648,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE39:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_3]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_3]]))), const<u64>(8))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_3]]))), size_of<u64, @type[[TYPE_C]]>(8))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE40:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_3]]);
 // DEFAULT-NEXT:                 let %[[VALUE41:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE40]]), const<i32>(1));
@@ -727,7 +727,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE52:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_4]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_4]]))), const<u64>(8))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_4]]))), size_of<u64, @type[[TYPE_D]]>(8))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE53:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_4]]);
 // DEFAULT-NEXT:                 let %[[VALUE54:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE53]]), const<i32>(1));
@@ -806,7 +806,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE65:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_5]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_5]]))), const<u64>(16))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_5]]))), size_of<u64, @type[[TYPE_E]]>(16))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE66:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_5]]);
 // DEFAULT-NEXT:                 let %[[VALUE67:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE66]]), const<i32>(1));
@@ -885,7 +885,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE78:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_6]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_6]]))), const<u64>(16))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_6]]))), size_of<u64, @type[[TYPE_F]]>(16))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE79:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_6]]);
 // DEFAULT-NEXT:                 let %[[VALUE80:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE79]]), const<i32>(1));
@@ -964,7 +964,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE91:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_7]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_7]]))), const<u64>(16))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_7]]))), size_of<u64, @type[[TYPE_G]]>(16))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE92:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_7]]);
 // DEFAULT-NEXT:                 let %[[VALUE93:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE92]]), const<i32>(1));
@@ -1043,7 +1043,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE104:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_8]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_8]]))), const<u64>(16))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_8]]))), size_of<u64, @type[[TYPE_H]]>(16))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE105:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_8]]);
 // DEFAULT-NEXT:                 let %[[VALUE106:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE105]]), const<i32>(1));
@@ -1122,7 +1122,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE117:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_9]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_9]]))), const<u64>(16))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_9]]))), size_of<u64, @type[[TYPE_I]]>(16))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE118:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_9]]);
 // DEFAULT-NEXT:                 let %[[VALUE119:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE118]]), const<i32>(1));
@@ -1201,7 +1201,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE130:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_10]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_10]]))), const<u64>(4))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_10]]))), size_of<u64, @type[[TYPE_J]]>(4))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE131:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_10]]);
 // DEFAULT-NEXT:                 let %[[VALUE132:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE131]]), const<i32>(1));
@@ -1280,7 +1280,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE143:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_11]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_11]]))), const<u64>(4))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_11]]))), size_of<u64, @type[[TYPE_K]]>(4))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE144:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_11]]);
 // DEFAULT-NEXT:                 let %[[VALUE145:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE144]]), const<i32>(1));
@@ -1359,7 +1359,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE156:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_12]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_12]]))), const<u64>(8))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_12]]))), size_of<u64, @type[[TYPE_L]]>(8))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE157:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_12]]);
 // DEFAULT-NEXT:                 let %[[VALUE158:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE157]]), const<i32>(1));
@@ -1438,7 +1438,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE169:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_13]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_13]]))), const<u64>(8))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_13]]))), size_of<u64, @type[[TYPE_M]]>(8))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE170:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_13]]);
 // DEFAULT-NEXT:                 let %[[VALUE171:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE170]]), const<i32>(1));
@@ -1517,7 +1517,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE182:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_14]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_14]]))), const<u64>(8))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_14]]))), size_of<u64, @type[[TYPE_N]]>(8))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE183:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_14]]);
 // DEFAULT-NEXT:                 let %[[VALUE184:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE183]]), const<i32>(1));
@@ -1596,7 +1596,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE195:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_15]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_15]]))), const<u64>(16))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_15]]))), size_of<u64, @type[[TYPE_O]]>(16))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE196:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_15]]);
 // DEFAULT-NEXT:                 let %[[VALUE197:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE196]]), const<i32>(1));
@@ -1675,7 +1675,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE208:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_16]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_16]]))), const<u64>(16))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_16]]))), size_of<u64, @type[[TYPE_P]]>(16))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE209:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_16]]);
 // DEFAULT-NEXT:                 let %[[VALUE210:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE209]]), const<i32>(1));
@@ -1754,7 +1754,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE221:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_17]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_17]]))), const<u64>(16))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_17]]))), size_of<u64, @type[[TYPE_Q]]>(16))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE222:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_17]]);
 // DEFAULT-NEXT:                 let %[[VALUE223:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE222]]), const<i32>(1));
@@ -1833,7 +1833,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE234:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_18]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_18]]))), const<u64>(16))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_18]]))), size_of<u64, @type[[TYPE_R]]>(16))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE235:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_18]]);
 // DEFAULT-NEXT:                 let %[[VALUE236:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE235]]), const<i32>(1));
@@ -1912,7 +1912,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE247:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_19]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_19]]))), const<u64>(16))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_19]]))), size_of<u64, @type[[TYPE_S]]>(16))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE248:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_19]]);
 // DEFAULT-NEXT:                 let %[[VALUE249:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE248]]), const<i32>(1));
@@ -1991,7 +1991,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE260:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_20]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_20]]))), const<u64>(4))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_20]]))), size_of<u64, @type[[TYPE_T]]>(4))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE261:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_20]]);
 // DEFAULT-NEXT:                 let %[[VALUE262:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE261]]), const<i32>(1));
@@ -2070,7 +2070,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE273:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_21]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_21]]))), const<u64>(16))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_21]]))), size_of<u64, @type[[TYPE_U]]>(16))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE274:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_21]]);
 // DEFAULT-NEXT:                 let %[[VALUE275:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE274]]), const<i32>(1));
@@ -2149,7 +2149,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE286:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_22]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_22]]))), const<u64>(4))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_22]]))), size_of<u64, @type[[TYPE_V]]>(4))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE287:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_22]]);
 // DEFAULT-NEXT:                 let %[[VALUE288:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE287]]), const<i32>(1));
@@ -2228,7 +2228,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE299:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_23]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_23]]))), const<u64>(32))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_23]]))), size_of<u64, @type[[TYPE_W]]>(32))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE300:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_23]]);
 // DEFAULT-NEXT:                 let %[[VALUE301:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE300]]), const<i32>(1));
@@ -2307,7 +2307,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE312:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_24]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_24]]))), const<u64>(32))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_24]]))), size_of<u64, @type[[TYPE_X]]>(32))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE313:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_24]]);
 // DEFAULT-NEXT:                 let %[[VALUE314:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE313]]), const<i32>(1));
@@ -2386,7 +2386,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE325:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_25]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_25]]))), const<u64>(32))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_25]]))), size_of<u64, @type[[TYPE_Y]]>(32))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE326:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_25]]);
 // DEFAULT-NEXT:                 let %[[VALUE327:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE326]]), const<i32>(1));
@@ -2465,7 +2465,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE338:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_26]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_26]]))), const<u64>(32))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_26]]))), size_of<u64, @type[[TYPE_Z]]>(32))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE339:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_26]]);
 // DEFAULT-NEXT:                 let %[[VALUE340:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE339]]), const<i32>(1));

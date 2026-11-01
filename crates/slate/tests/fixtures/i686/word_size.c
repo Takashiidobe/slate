@@ -10,7 +10,14 @@ int main(void) { long l = 5; printf("%zu %zu %ld\n", sizeof(void *), sizeof(long
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let l: i32 = 5;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu %ld\n".as_ptr(), 4u32, 4u32, l) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%zu %zu %ld\n".as_ptr(),
+// CHECK-NEXT:             std::mem::size_of::<*mut ()>() as u32,
+// CHECK-NEXT:             std::mem::size_of::<i32>() as u32,
+// CHECK-NEXT:             l,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

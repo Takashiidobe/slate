@@ -41,13 +41,13 @@ long double one(void) {
 // CHECK-NEXT:         storage d128 [size=16, align=16];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     fn %[[VALUE_object_size:[0-9]+]] @object_size() -> u64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(void)"] {
-// CHECK-NEXT:         return const<u64>(16) [size_of="f80"];
+// CHECK-NEXT:         return size_of<u64, f80>(16);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     fn %[[VALUE_object_alignment:[0-9]+]] @object_alignment() -> u64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(void)"] {
 // CHECK-NEXT:         return const<u64>(16) [align_of="f80"];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     fn %[[VALUE_integer_size:[0-9]+]] @integer_size() -> u64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(void)"] {
-// CHECK-NEXT:         return const<u64>(8) [size_of="u64"];
+// CHECK-NEXT:         return size_of<u64, u64>(8);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     fn %[[VALUE_one:[0-9]+]] @one() -> f80 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="long double"] [c="long double(void)"] {
 // CHECK-NEXT:         return const<f80>(1);

@@ -77,15 +77,15 @@ int main ()
 // DEFAULT-NEXT:     global %[[VALUE_c4:[0-9]+]] c4: u32 [storage=static] = const<u32>(410401) [c="char32_t"] [linkage=external] [c="char32_t"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(4), const<u64>(4))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u32>(4), size_of<u64, u32>(4))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(4), const<u64>(4))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u32>(4), size_of<u64, u32>(4))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(4), const<u64>(4))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u32>(4), size_of<u64, u32>(4))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(4), const<u64>(4))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u32>(4), size_of<u64, u32>(4))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(4), const<u64>(4))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u32>(4), size_of<u64, u32>(4))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_c0]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(97)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

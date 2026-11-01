@@ -40,7 +40,10 @@ int main(void) {
 // CHECK-NEXT:         (*(c as *mut cursor)).p = (*(c as *mut cursor)).buf.as_mut_ptr() as *mut u8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     while (unsafe { (*(c as *mut cursor)).p })
-// CHECK-NEXT:         < unsafe { ((*(c as *mut cursor)).buf.as_mut_ptr() as *mut u8).add(8) }
+// CHECK-NEXT:         < unsafe {
+// CHECK-NEXT:             ((*(c as *mut cursor)).buf.as_mut_ptr() as *mut u8)
+// CHECK-NEXT:                 .offset(std::mem::size_of::<[u8; 8]>() as isize)
+// CHECK-NEXT:         }
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *(*(c as *mut cursor)).p = n;

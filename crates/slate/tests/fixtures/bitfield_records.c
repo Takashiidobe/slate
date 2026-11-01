@@ -265,7 +265,7 @@ int main(void) {
 // CHECK-NEXT:             local.__slate_bits_2.__get_wide(),
 // CHECK-NEXT:             local.__slate_bits_2.__get_last() as i32,
 // CHECK-NEXT:             local.after as i32,
-// CHECK-NEXT:             24i32,
+// CHECK-NEXT:             std::mem::size_of::<Flags>() as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -321,7 +321,13 @@ int main(void) {
 // CHECK-NEXT:         overlay.__slate_bits_0.__set_signed_bits(-1i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%x %d\n".as_ptr(), overlay.whole, 4i32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%x %d\n".as_ptr(),
+// CHECK-NEXT:             overlay.whole,
+// CHECK-NEXT:             std::mem::size_of::<Overlay>() as i32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

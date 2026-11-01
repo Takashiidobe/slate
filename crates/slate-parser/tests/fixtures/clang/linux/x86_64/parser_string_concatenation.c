@@ -61,7 +61,7 @@ int literals(void) {
 // DEFAULT-NEXT:         let %[[VALUE_local_utf32:[0-9]+]] local_utf32: array<u32, 4> [storage=automatic] [align=16] = code_units<array<u32, 4>>([1, 50, 51, 0]);
 // DEFAULT-NEXT:         let %[[VALUE_local_wide:[0-9]+]] local_wide: array<i32, 3> [storage=automatic] = code_units<array<i32, 3>>([1, 50, 0]);
 // DEFAULT-NEXT:         let %[[VALUE_local_utf8:[0-9]+]] local_utf8: array<i8, 3> [storage=automatic] = code_units<array<i8, 3>>([1, 50, 0]);
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(3), const<u64>(4)), const<u64>(3)), const<u64>(6)), const<u64>(16)), const<u64>(12)), const<u64>(3))));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(size_of<u64, array<i8, 3>>(3), size_of<u64, array<i8, 4>>(4)), size_of<u64, array<i8, 3>>(3)), size_of<u64, array<u16, 3>>(6)), size_of<u64, array<u32, 4>>(16)), size_of<u64, array<i32, 3>>(12)), size_of<u64, array<i8, 3>>(3))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

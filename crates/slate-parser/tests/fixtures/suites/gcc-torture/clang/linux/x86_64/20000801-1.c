@@ -89,10 +89,10 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_one:[0-9]+]] one: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(4), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))), const<u64>(1)))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, i32>(4), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))), size_of<u64, i8>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>, u32) -> void>(%[[VALUE_foo]], pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_one]])), truncate<u32, reason=arg, fits=always>(const<u64>(4)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>, u32) -> void>(%[[VALUE_foo]], pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_one]])), truncate<u32, reason=arg, fits=always>(const<u64>(4)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>, u32) -> void>(%[[VALUE_foo]], pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_one]])), truncate<u32, reason=arg, fits=always>(size_of<u64, i32>(4)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>, u32) -> void>(%[[VALUE_foo]], pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_one]])), truncate<u32, reason=arg, fits=always>(size_of<u64, i32>(4)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_one]]), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

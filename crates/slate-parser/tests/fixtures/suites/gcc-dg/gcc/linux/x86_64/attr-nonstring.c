@@ -180,16 +180,16 @@ int sprintf_nonstring_2 (char *d, NONSTRING const char *s)
 // DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%[[VALUE_strcmp]], read<ptr<const i8>>(%[[VALUE_a_2]]), read<ptr<const i8>>(%[[VALUE_b_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_strncmp_nonstring_1:[0-9]+]] @strncmp_nonstring_1(%[[VALUE_s:[0-9]+]] s: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%[[VALUE_strncmp]], read<ptr<const i8>>(%[[VALUE_s]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_ns5]])), add<u64, overflow=wrap>(const<u64>(5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%[[VALUE_strncmp]], read<ptr<const i8>>(%[[VALUE_s]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_ns5]])), add<u64, overflow=wrap>(size_of<u64, array<i8, 5>>(5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_strncmp_nonstring_2:[0-9]+]] @strncmp_nonstring_2(%[[VALUE_s_2:[0-9]+]] s: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%[[VALUE_strncmp]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_ns5]])), read<ptr<const i8>>(%[[VALUE_s_2]]), add<u64, overflow=wrap>(const<u64>(5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%[[VALUE_strncmp]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_ns5]])), read<ptr<const i8>>(%[[VALUE_s_2]]), add<u64, overflow=wrap>(size_of<u64, array<i8, 5>>(5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_stpcpy_nonstring:[0-9]+]] @stpcpy_nonstring(%[[VALUE_d:[0-9]+]] d: ptr<i8>, %[[VALUE_s_3:[0-9]+]] s: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%[[VALUE_stpcpy]], read<ptr<i8>>(%[[VALUE_d]]), read<ptr<const i8>>(%[[VALUE_s_3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_stpncpy_nonstring:[0-9]+]] @stpncpy_nonstring(%[[VALUE_d_2:[0-9]+]] d: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE_stpncpy]], read<ptr<i8>>(%[[VALUE_d_2]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_ns5]])), add<u64, overflow=wrap>(const<u64>(5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE_stpncpy]], read<ptr<i8>>(%[[VALUE_d_2]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_ns5]])), add<u64, overflow=wrap>(size_of<u64, array<i8, 5>>(5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_strchr_nonstring:[0-9]+]] @strchr_nonstring(%[[VALUE_s_4:[0-9]+]] s: ptr<const i8>, %[[VALUE_c:[0-9]+]] c: i32) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%[[VALUE_strchr]], read<ptr<const i8>>(%[[VALUE_s_4]]), read<i32>(%[[VALUE_c]]));
@@ -201,7 +201,7 @@ int sprintf_nonstring_2 (char *d, NONSTRING const char *s)
 // DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%[[VALUE_strcpy]], read<ptr<i8>>(%[[VALUE_d_3]]), read<ptr<const i8>>(%[[VALUE_s_6]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_strncpy_nonstring:[0-9]+]] @strncpy_nonstring(%[[VALUE_d_4:[0-9]+]] d: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE_strncpy]], read<ptr<i8>>(%[[VALUE_d_4]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_ns5]])), add<u64, overflow=wrap>(const<u64>(5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE_strncpy]], read<ptr<i8>>(%[[VALUE_d_4]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_ns5]])), add<u64, overflow=wrap>(size_of<u64, array<i8, 5>>(5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_strstr_nonstring_1:[0-9]+]] @strstr_nonstring_1(%[[VALUE_a_3:[0-9]+]] a: ptr<const i8>, %[[VALUE_b_3:[0-9]+]] b: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<i8>>(%[[VALUE_strstr]], read<ptr<const i8>>(%[[VALUE_a_3]]), read<ptr<const i8>>(%[[VALUE_b_3]]));

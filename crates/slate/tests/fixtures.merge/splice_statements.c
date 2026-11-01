@@ -369,12 +369,8 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         s.extra = 4;
 // CHECK-NEXT:         s.tail += s.extra;
-// CHECK-NEXT:         { s.head + s.tail + 12 }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(not(feature = "alpha"))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         s.head + s.tail + 8
-// CHECK-NEXT:     }
+// CHECK-NEXT:     s.head + s.tail + (std::mem::size_of::<state>() as i32)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

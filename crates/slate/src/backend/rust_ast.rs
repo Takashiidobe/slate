@@ -1307,6 +1307,42 @@ pub enum Expr {
         path: Path,
         type_args: Vec<Type>,
     },
+    LayoutQuery {
+        query: LayoutQuery,
+        amount: TargetAmount,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum LayoutQuery {
+    SizeOf(Type),
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct TargetAmount(pub u64);
+
+impl PartialEq for TargetAmount {
+    fn eq(&self, _: &Self) -> bool {
+        true
+    }
+}
+
+impl Eq for TargetAmount {}
+
+impl PartialOrd for TargetAmount {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for TargetAmount {
+    fn cmp(&self, _: &Self) -> std::cmp::Ordering {
+        std::cmp::Ordering::Equal
+    }
+}
+
+impl std::hash::Hash for TargetAmount {
+    fn hash<H: std::hash::Hasher>(&self, _: &mut H) {}
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -1767,6 +1803,7 @@ impl Expr {
             | Expr::ByteStr(_)
             | Expr::ConstBlock(_)
             | Expr::CStr(_)
+            | Expr::LayoutQuery { .. }
             | Expr::GenericPath { .. }
             | Expr::AtomicFence { .. }
             | Expr::Todo(_) => false,
@@ -1849,6 +1886,7 @@ impl Expr {
             | Expr::ConstBlock(_)
             | Expr::CStr(_)
             | Expr::Path(_)
+            | Expr::LayoutQuery { .. }
             | Expr::GenericPath { .. }
             | Expr::AtomicFence { .. }
             | Expr::Todo(_) => {}
@@ -1999,6 +2037,7 @@ impl Expr {
             | Expr::ConstBlock(_)
             | Expr::CStr(_)
             | Expr::Path(_)
+            | Expr::LayoutQuery { .. }
             | Expr::GenericPath { .. }
             | Expr::AtomicFence { .. }
             | Expr::Todo(_) => {}
@@ -2141,6 +2180,7 @@ impl Expr {
             | Expr::ConstBlock(_)
             | Expr::CStr(_)
             | Expr::Path(_)
+            | Expr::LayoutQuery { .. }
             | Expr::GenericPath { .. }
             | Expr::AtomicFence { .. }
             | Expr::Todo(_) => {}
@@ -2280,6 +2320,7 @@ impl Expr {
             | Expr::CStr(_)
             | Expr::Var(_)
             | Expr::Path(_)
+            | Expr::LayoutQuery { .. }
             | Expr::GenericPath { .. } => false,
             Expr::Unary { expr, .. }
             | Expr::Cast { expr, .. }

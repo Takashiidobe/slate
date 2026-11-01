@@ -85,24 +85,24 @@ void attribute_scope(void) {
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_T:[0-9]+]] T: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
-// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE0]]))), const<u64>(4))));
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE0]]))), size_of<u64, i32>(4))));
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE1]]));
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
-// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE2]]))), const<u64>(8))));
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE2]]))), size_of<u64, i64>(8))));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
-// DEFAULT-NEXT:             let %[[VALUE5:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE4]]))), const<u64>(4))));
+// DEFAULT-NEXT:             let %[[VALUE5:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE4]]))), size_of<u64, i32>(4))));
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE5]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
-// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE6]]))), const<u64>(4))));
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE6]]))), size_of<u64, i32>(4))));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE7]]));
 // DEFAULT-NEXT:         for %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_T_2:[0-9]+]] T: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_T_2]]))), const<u64>(4))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_T_2]]))), size_of<u64, i32>(4))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_T_2]]);
 // DEFAULT-NEXT:                 let %[[VALUE10:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE9]]), const<i32>(1));
@@ -112,21 +112,21 @@ void attribute_scope(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %[[VALUE11:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
-// DEFAULT-NEXT:                     let %[[VALUE12:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE11]]))), const<u64>(4))));
+// DEFAULT-NEXT:                     let %[[VALUE12:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE11]]))), size_of<u64, i32>(4))));
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE12]]));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_x]]))), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_outer]]))))));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_x]]))), size_of<u64, i32>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_outer]]))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_parameter_scope:[0-9]+]] @parameter_scope(%[[VALUE_T_3:[0-9]+]] T: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, i32>(4)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_statement_expression:[0-9]+]] @statement_expression() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: u64 [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_T_4:[0-9]+]] T: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:             write<u64>(%[[VALUE13]], const<u64>(4));
+// DEFAULT-NEXT:             write<u64>(%[[VALUE13]], size_of<u64, i32>(4));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(read<u64>(%[[VALUE13]]), const<u64>(4))));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(read<u64>(%[[VALUE13]]), size_of<u64, i32>(4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_prototype:[0-9]+]] @prototype(%[[VALUE_callback:[0-9]+]] callback: ptr<fn(i32) -> i32>, %[[VALUE_value:[0-9]+]] value: i32 [c="T"]) -> i32 [linkage=external] [c="int(int (*)(int), T)"];
 // DEFAULT-NEXT:     fn %[[VALUE_attribute_scope:[0-9]+]] @attribute_scope() -> void [linkage=external] [fallthrough=ret_void] {

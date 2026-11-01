@@ -51,7 +51,7 @@ int         main() {
 // DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE0:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_my_alloc:[0-9]+]] @my_alloc() -> ptr<@type[[TYPE_X]]> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_X]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_X]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], const<u64>(8)));
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_X]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_X]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], size_of<u64, @type[[TYPE_X]]>(8)));
 // DEFAULT-NEXT:         write<ptr<i32>>(field0(deref(read<ptr<@type[[TYPE_X]]>>(%[[VALUE_p]]))), addr_of<ptr<i32>>(%[[VALUE_i]]));
 // DEFAULT-NEXT:         return read<ptr<@type[[TYPE_X]]>>(%[[VALUE_p]]);
 // DEFAULT-NEXT:     }

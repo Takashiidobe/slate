@@ -55,19 +55,19 @@ int chosen_by_void_size(void *p) {
 // IR-NEXT:     global %[[VALUE_void_sized:[0-9]+]] void_sized: array<i32, 1> [storage=static] [linkage=external];
 // IR-NEXT:     fn %[[VALUE_nothing:[0-9]+]] @nothing() -> void [linkage=external];
 // IR-NEXT:     fn %[[VALUE_dereferenced_size:[0-9]+]] @dereferenced_size(%[[VALUE_p:[0-9]+]] p: ptr<void>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(1);
+// IR-NEXT:         return size_of<u64, void>(1);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_dereferenced_alignment:[0-9]+]] @dereferenced_alignment(%[[VALUE_p_2:[0-9]+]] p: ptr<void>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return add<u64, overflow=wrap>(const<u64>(1), const<u64>(1));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_void_call_size:[0-9]+]] @void_call_size() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(1);
+// IR-NEXT:         return size_of<u64, void>(1);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_conditional_size:[0-9]+]] @conditional_size(%[[VALUE_c:[0-9]+]] c: i32, %[[VALUE_p_3:[0-9]+]] p: ptr<void>, %[[VALUE_q:[0-9]+]] q: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(1);
+// IR-NEXT:         return size_of<u64, void>(1);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_is_constexpr_size:[0-9]+]] @is_constexpr_size(%[[VALUE_n:[0-9]+]] n: i64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(1);
+// IR-NEXT:         return size_of<u64, void>(1);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_chosen_by_void_size:[0-9]+]] @chosen_by_void_size(%[[VALUE_p_4:[0-9]+]] p: ptr<void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<i32>(1);

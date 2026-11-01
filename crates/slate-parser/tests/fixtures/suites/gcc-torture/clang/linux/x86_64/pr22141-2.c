@@ -134,7 +134,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_c1:[0-9]+]] @c1(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_T]]>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(deref(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_p]]))))), const<i32>(1)), ne<i32>(widen<i32, reason=promotion>(read<i8>(field1(deref(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_p]]))))), const<i32>(2))), ne<i32>(widen<i32, reason=promotion>(read<i8>(field2(deref(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_p]]))))), const<i32>(3))), ne<i32>(widen<i32, reason=promotion>(read<i8>(field3(deref(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_p]]))))), const<i32>(4)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_p]])), const<i32>(170), const<u64>(4));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_p]])), const<i32>(170), size_of<u64, @type[[TYPE_T]]>(4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_c2:[0-9]+]] @c2(%[[VALUE_p_2:[0-9]+]] p: ptr<@type[[TYPE_S]]>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_T]]>) -> void>(%[[VALUE_c1]], addr_of<ptr<@type[[TYPE_T]]>>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p_2]])))));

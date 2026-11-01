@@ -72,10 +72,10 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: array<i64, 7> [storage=automatic] [align=16] = aggregate<array<i64, 7>, zero_fill=false>(index0 = widen<i64, reason=assign>(const<i32>(975)), index1 = widen<i64, reason=assign>(const<i32>(975)), index2 = widen<i64, reason=assign>(const<i32>(975)), index3 = widen<i64, reason=assign>(const<i32>(975)), index4 = widen<i64, reason=assign>(const<i32>(975)), index5 = widen<i64, reason=assign>(const<i32>(975)), index6 = widen<i64, reason=assign>(const<i32>(975)));
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i64 [storage=automatic] = call<i64, signature=fn(ptr<i64>, i32) -> i64>(%[[VALUE_test]], array_decay<ptr<i64>, length=Some(7)>(%[[VALUE_d]]), const<i32>(7));
-// DEFAULT-NEXT:         if logical_and<bool>(eq<u64>(mul<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(64)))), ne<i32>(read<i32>(%[[VALUE_v]]), const<i32>(1)))
+// DEFAULT-NEXT:         if logical_and<bool>(eq<u64>(mul<u64, overflow=wrap>(size_of<u64, i64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(64)))), ne<i32>(read<i32>(%[[VALUE_v]]), const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             if logical_and<bool>(eq<u64>(mul<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32)))), ne<i32>(read<i32>(%[[VALUE_v]]), const<i32>(4)))
+// DEFAULT-NEXT:             if logical_and<bool>(eq<u64>(mul<u64, overflow=wrap>(size_of<u64, i64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32)))), ne<i32>(read<i32>(%[[VALUE_v]]), const<i32>(4)))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -48,8 +48,12 @@ int main(void) {
 // CHECK-NEXT:     (unsafe { (pointer as *mut i8).add(4) }) as *mut ()
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let values: *mut i32 = allocate(12u64, 4u64) as *mut i32;
-// CHECK-NEXT:     let zeroed: *mut i32 = allocate_array(2u64, 4u64) as *mut i32;
+// CHECK-NEXT:     let values: *mut i32 = allocate(
+// CHECK-NEXT:         3u64.wrapping_mul(std::mem::size_of::<i32>() as u64),
+// CHECK-NEXT:         4u64,
+// CHECK-NEXT:     ) as *mut i32;
+// CHECK-NEXT:     let zeroed: *mut i32 = allocate_array(2u64, std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:         as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *values.add(0) = 7;
 // CHECK-NEXT:     }

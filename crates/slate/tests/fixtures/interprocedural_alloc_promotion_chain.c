@@ -22,7 +22,7 @@ int main(void) {
 // CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT: }
 // CHECK-NEXT: fn alloc() -> *mut i32 {
-// CHECK-NEXT:     (unsafe { malloc(40u64) }) as *mut i32
+// CHECK-NEXT:     (unsafe { malloc((std::mem::size_of::<i32>() as u64).wrapping_mul(10)) }) as *mut i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn indirect() -> *mut i32 {
 // CHECK-NEXT:     alloc()

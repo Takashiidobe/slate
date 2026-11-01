@@ -65,8 +65,8 @@ int main(void) {
 // CHECK-NEXT:   cover_refine.c: [alpha,beta,gamma,delta,epsilon] 32 compiled
 // CHECK-NEXT:     8 assignments preprocess like a compiled one
 // CHECK-NEXT: total: 48 compiles across 2 targets
-// CHECK-NEXT: unit cover_refine: 15 items, 7 gated, 0 duplicated functions
-// CHECK-NEXT:   hoisted fn:state_size: 5 variants
+// CHECK-NEXT: unit cover_refine: 12 items, 3 gated, 0 duplicated functions
+// CHECK-NEXT:   spliced record:state: 4 variants
 // CHECK-NEXT:   spliced fn:nested: 5 variants
 // CHECK-NEXT:   spliced fn:joint: 4 variants
 // CHECK-NEXT:   spliced fn:shape: 3 variants
@@ -86,45 +86,29 @@ int main(void) {
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
+// CHECK-NEXT: #[cfg(any(feature = "alpha", feature = "beta"))]
+// CHECK-NEXT: use core::ffi::c_long;
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: use core::ffi::c_ulong;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct state {
+// CHECK-NEXT:     head: i32,
+// CHECK-NEXT:     #[cfg(feature = "alpha")]
+// CHECK-NEXT:     a: c_long,
+// CHECK-NEXT:     #[cfg(feature = "beta")]
+// CHECK-NEXT:     b: c_long,
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: use core::ffi::c_ulong;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(not(feature = "alpha"), not(feature = "beta")))]
-// CHECK-NEXT: const __SLATE_HOIST_state_size: i32 = 4;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     unix,
-// CHECK-NEXT:     any(
-// CHECK-NEXT:         all(feature = "alpha", not(feature = "beta")),
-// CHECK-NEXT:         all(not(feature = "alpha"), feature = "beta")
-// CHECK-NEXT:     )
-// CHECK-NEXT: ))]
-// CHECK-NEXT: const __SLATE_HOIST_state_size: i32 = 16;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(unix, feature = "alpha", feature = "beta"))]
-// CHECK-NEXT: const __SLATE_HOIST_state_size: i32 = 24;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     windows,
-// CHECK-NEXT:     any(
-// CHECK-NEXT:         all(feature = "alpha", not(feature = "beta")),
-// CHECK-NEXT:         all(not(feature = "alpha"), feature = "beta")
-// CHECK-NEXT:     )
-// CHECK-NEXT: ))]
-// CHECK-NEXT: const __SLATE_HOIST_state_size: i32 = 8;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(windows, feature = "alpha", feature = "beta"))]
-// CHECK-NEXT: const __SLATE_HOIST_state_size: i32 = 12;
-// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn state_size() -> i32 {
-// CHECK-NEXT:     __SLATE_HOIST_state_size
+// CHECK-NEXT:     std::mem::size_of::<state>() as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

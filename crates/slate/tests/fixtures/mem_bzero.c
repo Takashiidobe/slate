@@ -21,7 +21,12 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut a: __SlateAlign16<[i32; 5]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32, 5i32]);
-// CHECK-NEXT:     unsafe { __builtin_bzero(a.0.as_mut_ptr() as *mut (), 20u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         __builtin_bzero(
+// CHECK-NEXT:             a.0.as_mut_ptr() as *mut (),
+// CHECK-NEXT:             std::mem::size_of::<[i32; 5]>() as u64,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0i32..5i32 {
 // CHECK-NEXT:         sum += a.0[i as usize];

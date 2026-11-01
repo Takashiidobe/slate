@@ -46,10 +46,10 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_k:[0-9]+]] k: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return or<i32>(const<i32>(2), shr<i32, amount_out_of_range=ub, fill=sign_extend>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_k]]), const<i32>(1)), sub<i32, overflow=ub>(mul<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(4))), const<i32>(8)), const<i32>(1))));
+// DEFAULT-NEXT:         return or<i32>(const<i32>(2), shr<i32, amount_out_of_range=ub, fill=sign_extend>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_k]]), const<i32>(1)), sub<i32, overflow=ub>(mul<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(size_of<u64, i32>(4))), const<i32>(8)), const<i32>(1))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_k_2:[0-9]+]] k: i64) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return or<i64>(const<i64>(2), shr<i64, amount_out_of_range=ub, fill=sign_extend>(sub<i64, overflow=ub>(read<i64>(%[[VALUE_k_2]]), const<i64>(1)), sub<i32, overflow=ub>(mul<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(8))), const<i32>(8)), const<i32>(1))));
+// DEFAULT-NEXT:         return or<i64>(const<i64>(2), shr<i64, amount_out_of_range=ub, fill=sign_extend>(sub<i64, overflow=ub>(read<i64>(%[[VALUE_k_2]]), const<i64>(1)), sub<i32, overflow=ub>(mul<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(size_of<u64, i64>(8))), const<i32>(8)), const<i32>(1))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_k_3:[0-9]+]] k: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_k_3]]);

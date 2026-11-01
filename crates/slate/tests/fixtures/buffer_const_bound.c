@@ -65,7 +65,9 @@ int main(void) {
 // CHECK-NEXT:     scale_fixed(unsafe {
 // CHECK-NEXT:         std::slice::from_raw_parts_mut(a.as_mut_ptr() as *mut i32, 3usize)
 // CHECK-NEXT:     });
-// CHECK-NEXT:     let m: *mut i32 = (unsafe { malloc(12u64) }) as *mut i32;
+// CHECK-NEXT:     let m: *mut i32 = (unsafe {
+// CHECK-NEXT:         malloc(3u64.wrapping_mul(std::mem::size_of::<i32>() as u64))
+// CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *m.add(0) = 5;
 // CHECK-NEXT:     }

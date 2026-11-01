@@ -63,7 +63,7 @@ void baz(int i, int j) {
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], read<i32>(deref(read<ptr<i32>>(%[[VALUE_i_2]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_i_3:[0-9]+]] i: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%[[VALUE_a]]), div<u64, by_zero=ub>(const<u64>(12), const<u64>(4)))));
+// DEFAULT-NEXT:         let %[[VALUE_i_3:[0-9]+]] i: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%[[VALUE_a]]), div<u64, by_zero=ub>(size_of<u64, array<i32, 3>>(12), size_of<u64, i32>(4)))));
 // DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] {
 // DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: ptr<i32> [synthetic] = read<ptr<i32>>(%[[VALUE_i_3]]);
 // DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=true, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE1]]), const<i32>(1));

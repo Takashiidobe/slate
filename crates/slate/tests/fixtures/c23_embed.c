@@ -31,12 +31,13 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     for i in 0u64..4u64 {
+// CHECK-NEXT:     for i in 0..std::mem::size_of::<[u8; 4]>() as u64 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::putchar((data[i as usize] as u32) as i32) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let framed_ok: i32 = (true && (((unsafe { framed[0] }) as u32) as i32) == 170
+// CHECK-NEXT:     let framed_ok: i32 = ((std::mem::size_of::<[u8; 8]>() as u64) == 8
+// CHECK-NEXT:         && (((unsafe { framed[0] }) as u32) as i32) == 170
 // CHECK-NEXT:         && (((unsafe { framed[1] }) as u32) as i32) == 187
 // CHECK-NEXT:         && (((unsafe { framed[2] }) as u32) as i32) == 67
 // CHECK-NEXT:         && (((unsafe { framed[3] }) as u32) as i32) == 50
@@ -44,8 +45,10 @@ int main(void) {
 // CHECK-NEXT:         && (((unsafe { framed[5] }) as u32) as i32) == 10
 // CHECK-NEXT:         && (((unsafe { framed[6] }) as u32) as i32) == 204
 // CHECK-NEXT:         && (((unsafe { framed[7] }) as u32) as i32) == 221) as i32;
-// CHECK-NEXT:     let empty_ok: i32 = (true && (((unsafe { empty[0] }) as u32) as i32) == 238) as i32;
-// CHECK-NEXT:     if true && (((unsafe { data[0] }) as u32) as i32) == 67
+// CHECK-NEXT:     let empty_ok: i32 = ((std::mem::size_of::<[u8; 1]>() as u64) == 1
+// CHECK-NEXT:         && (((unsafe { empty[0] }) as u32) as i32) == 238) as i32;
+// CHECK-NEXT:     if (std::mem::size_of::<[u8; 4]>() as u64) == 4
+// CHECK-NEXT:         && (((unsafe { data[0] }) as u32) as i32) == 67
 // CHECK-NEXT:         && (((unsafe { data[1] }) as u32) as i32) == 50
 // CHECK-NEXT:         && (((unsafe { data[2] }) as u32) as i32) == 51
 // CHECK-NEXT:         && (((unsafe { data[3] }) as u32) as i32) == 10 && framed_ok != 0

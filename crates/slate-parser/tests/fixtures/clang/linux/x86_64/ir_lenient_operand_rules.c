@@ -62,7 +62,7 @@ void floating_offset(void) { __atomic_fetch_add(slots, 1.5, 5); }
 // IR-DEFAULT-NEXT:     global %[[VALUE_slots:[0-9]+]] slots: ptr<ptr<i32>> [storage=static] [linkage=external];
 // IR-DEFAULT-NEXT:     global %[[VALUE_bits:[0-9]+]] bits: i64 [storage=static] [linkage=external];
 // IR-DEFAULT-NEXT:     global %[[VALUE_flag:[0-9]+]] flag: i32 [storage=static] [linkage=external];
-// IR-DEFAULT-NEXT:     global %[[VALUE_pair_size:[0-9]+]] pair_size: u64 [storage=static] = const<u64>(8) [linkage=external];
+// IR-DEFAULT-NEXT:     global %[[VALUE_pair_size:[0-9]+]] pair_size: u64 [storage=static] = size_of<u64, array<i32, 2>>(8) [linkage=external];
 // IR-DEFAULT-NEXT:     fn %[[VALUE_mismatched:[0-9]+]] @mismatched() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // IR-DEFAULT-NEXT:         return conditional<ptr<void>>(ne<i32>(read<i32>(%[[VALUE_flag]]), const<i32>(0)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%[[VALUE_ints]])), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<f32>>(%[[VALUE_floats]])));
 // IR-DEFAULT-NEXT:     }

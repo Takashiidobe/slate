@@ -158,7 +158,7 @@ _Sat _Accum saturating_compound(_Sat _Accum a, int n) {
 // IR-NEXT:     global %[[VALUE_unsigned_accum:[0-9]+]] unsigned_accum: fixed<u32, 16> [storage=static] [linkage=external];
 // IR-NEXT:     global %[[VALUE_saturating_short_fract:[0-9]+]] saturating_short_fract: sat_fixed<i8, 7> [storage=static] [linkage=external];
 // IR-NEXT:     global %[[VALUE_saturating_long_accum:[0-9]+]] saturating_long_accum: sat_fixed<i64, 31> [storage=static] [linkage=external];
-// IR-NEXT:     global %[[VALUE_sizes:[0-9]+]] sizes: array<u64, 8> [storage=static] [align=16] = aggregate<array<u64, 8>, zero_fill=false>(index0 = const<u64>(1), index1 = const<u64>(1), index2 = const<u64>(4), index3 = const<u64>(4), index4 = const<u64>(8), index5 = const<u64>(8), index6 = const<u64>(16), index7 = const<u64>(16)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_sizes:[0-9]+]] sizes: array<u64, 8> [storage=static] [align=16] = aggregate<array<u64, 8>, zero_fill=false>(index0 = size_of<u64, fixed<i8, 7>>(1), index1 = const<u64>(1), index2 = size_of<u64, fixed<i32, 15>>(4), index3 = const<u64>(4), index4 = size_of<u64, fixed<i64, 31>>(8), index5 = const<u64>(8), index6 = size_of<u64, fixed<i128, 63>>(16), index7 = const<u64>(16)) [linkage=external];
 // IR-NEXT:     fn %[[VALUE_add:[0-9]+]] @add(%[[VALUE_a:[0-9]+]] a: fixed<i32, 15>, %[[VALUE_b:[0-9]+]] b: fixed<i32, 15>) -> fixed<i32, 15> [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return add<fixed<i32, 15>, overflow=ub, rounding=toward_zero>(read<fixed<i32, 15>>(%[[VALUE_a]]), read<fixed<i32, 15>>(%[[VALUE_b]]));
 // IR-NEXT:     }

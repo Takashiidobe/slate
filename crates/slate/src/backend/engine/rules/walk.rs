@@ -82,6 +82,7 @@ pub(in crate::backend::engine) fn child_exprs(expr: &Expr) -> Vec<&Expr> {
         | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
+        | Expr::LayoutQuery { .. }
         | Expr::GenericPath { .. }
         | Expr::Todo(_)
         | Expr::AtomicFence { .. }
@@ -171,6 +172,7 @@ pub(in crate::backend::engine) fn child_exprs_mut(expr: &mut Expr) -> Vec<&mut E
         | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
+        | Expr::LayoutQuery { .. }
         | Expr::GenericPath { .. }
         | Expr::Todo(_)
         | Expr::AtomicFence { .. }

@@ -81,7 +81,9 @@ int main(void) {
 // CHECK-NEXT: ]);
 // CHECK-NEXT: fn wide() {
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while (i as u64) < 192 / 8 {
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while (i as u64)
+// CHECK-NEXT:         < (std::mem::size_of::<[u64; 24]>() as u64) / (std::mem::size_of::<u64>() as u64)
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let mut w: bitint::BUint<100, 2, 16, bitint::A8> = <bitint::BUint<
 // CHECK-NEXT:             100,
 // CHECK-NEXT:             2,
@@ -795,7 +797,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_8:__slate_break_[0-9]+]]: while (i as u64) < 192 / 8 {
+// CHECK-NEXT:     '[[SLATE_BREAK_8:__slate_break_[0-9]+]]: while (i as u64)
+// CHECK-NEXT:         < (std::mem::size_of::<[u64; 24]>() as u64) / (std::mem::size_of::<u64>() as u64)
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let s: u64 = unsafe { seeds.0[i as usize] };
 // CHECK-NEXT:         '[[SLATE_BREAK_1]]: loop {
 // CHECK-NEXT:             let x: u8 = s as u8;

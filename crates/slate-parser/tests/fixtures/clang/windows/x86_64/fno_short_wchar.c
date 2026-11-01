@@ -41,7 +41,7 @@ wchar_t wide[] = L"a";
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_wchar_t:[0-9]+]] wchar_t = u16;
 // DEFAULT-NEXT:     global %[[VALUE_char_unsigned:[0-9]+]] char_unsigned: i32 [storage=static] = const<i32>(0) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_wchar_size:[0-9]+]] wchar_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(2))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wchar_size:[0-9]+]] wchar_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, u16>(2))) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_wchar_width:[0-9]+]] wchar_width: i32 [storage=static] = const<i32>(16) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_wide:[0-9]+]] wide: array<u16, 2> [storage=static] = code_units<array<u16, 2>>([97, 0]) [linkage=external] [c="wchar_t[]"];
 // DEFAULT-NEXT: }
@@ -70,7 +70,7 @@ wchar_t wide[] = L"a";
 // LONG-NEXT:     }
 // LONG-NEXT:     type @type[[TYPE_wchar_t:[0-9]+]] wchar_t = i32;
 // LONG-NEXT:     global %[[VALUE_char_unsigned:[0-9]+]] char_unsigned: i32 [storage=static] = const<i32>(1) [linkage=external];
-// LONG-NEXT:     global %[[VALUE_wchar_size:[0-9]+]] wchar_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(4))) [linkage=external];
+// LONG-NEXT:     global %[[VALUE_wchar_size:[0-9]+]] wchar_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, i32>(4))) [linkage=external];
 // LONG-NEXT:     global %[[VALUE_wchar_width:[0-9]+]] wchar_width: i32 [storage=static] = const<i32>(32) [linkage=external];
 // LONG-NEXT:     global %[[VALUE_wide:[0-9]+]] wide: array<i32, 2> [storage=static] = code_units<array<i32, 2>>([97, 0]) [linkage=external] [c="wchar_t[]"];
 // LONG-NEXT: }

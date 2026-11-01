@@ -627,7 +627,13 @@ int main(void) {
 // CHECK-NEXT:     let add: Option<
 // CHECK-NEXT:         unsafe extern "C-unwind" fn(*mut i32, *const i32, *const i32, u64),
 // CHECK-NEXT:     > = select_add();
-// CHECK-NEXT:     unsafe { std::ptr::write_bytes(out.0.as_mut_ptr() as *mut u8, 0u8, 180 as usize) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:             out.0.as_mut_ptr() as *mut u8,
+// CHECK-NEXT:             0u8,
+// CHECK-NEXT:             std::mem::size_of::<[i32; 45]>(),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         add
 // CHECK-NEXT:             .unwrap()(

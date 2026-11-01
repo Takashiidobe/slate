@@ -149,8 +149,15 @@ int main(void) {
 // CHECK-NEXT:         [[T_1]].__slate_bits_2.__set_z(3i32);
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 12u64, 24u64) };
-// I686-UNKNOWN-LINUX-GNU-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 12u32, 24u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%zu %zu\n".as_ptr(),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<mixed_units>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<widening>() as u64,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<mixed_units>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             24u32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d %d %d %d %d\n".as_ptr(),

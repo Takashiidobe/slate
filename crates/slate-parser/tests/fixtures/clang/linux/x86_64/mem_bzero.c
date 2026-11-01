@@ -43,7 +43,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_bzero:[0-9]+]] @__builtin_bzero(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: u64) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: array<i32, 5> [storage=automatic] [align=16] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4), index4 = const<i32>(5));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, u64) -> void>(%[[VALUE___builtin_bzero]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(5)>(%[[VALUE_a]])), const<u64>(20));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, u64) -> void>(%[[VALUE___builtin_bzero]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(5)>(%[[VALUE_a]])), size_of<u64, array<i32, 5>>(20));
 // DEFAULT-NEXT:         let %[[VALUE_sum:[0-9]+]] sum: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             init:

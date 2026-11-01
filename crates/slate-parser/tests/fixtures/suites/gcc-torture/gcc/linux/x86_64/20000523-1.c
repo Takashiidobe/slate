@@ -32,6 +32,6 @@ int i = sizeof(void *);
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
 // DEFAULT-NEXT:         %[[VALUE_foo:[0-9]+]] foo = const<i32>(8);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(8))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, ptr<void>>(8))) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

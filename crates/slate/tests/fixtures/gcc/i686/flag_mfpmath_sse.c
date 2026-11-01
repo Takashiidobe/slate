@@ -552,7 +552,14 @@ int main(void) {
 // CHECK-NEXT:         z * unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) }
 // CHECK-NEXT:             / unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"complex %g %g %d\n".as_ptr(), zz.re, zz.im, true as i32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"complex %g %g %d\n".as_ptr(),
+// CHECK-NEXT:             zz.re,
+// CHECK-NEXT:             zz.im,
+// CHECK-NEXT:             ((std::mem::size_of::<f32>() as u32) == (std::mem::size_of::<f32>() as u32)) as i32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

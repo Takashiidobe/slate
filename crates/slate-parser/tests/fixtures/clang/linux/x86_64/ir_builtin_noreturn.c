@@ -78,7 +78,7 @@ void again(void) {
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE___builtin_abs:[0-9]+]] @__builtin_abs(%[[VALUE1:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external] [memory=none] [c_builtin="__builtin_abs"] [c_builtin_kind="builtin"] [c_builtin_header="stdlib.h"] [c_builtin_library="abs"];
 // IR-NEXT:     fn %[[VALUE_ordinary:[0-9]+]] @ordinary(%[[VALUE_value_2:[0-9]+]] value: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int)"] {
-// IR-NEXT:         return add<i32>(add<i32>(call<i32>(%[[VALUE___builtin_abs]], read<i32>(%[[VALUE_value_2]])), reinterpret<i32>(truncate<u32>(const<u64>(8) [size_of="i64"]))), call<i32>(%[[VALUE___builtin_abs]], neg<i32>(read<i32>(%[[VALUE_value_2]]))));
+// IR-NEXT:         return add<i32>(add<i32>(call<i32>(%[[VALUE___builtin_abs]], read<i32>(%[[VALUE_value_2]])), reinterpret<i32>(truncate<u32>(size_of<u64, i64>(8)))), call<i32>(%[[VALUE___builtin_abs]], neg<i32>(read<i32>(%[[VALUE_value_2]]))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_again:[0-9]+]] @again() -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(void)"] {
 // IR-NEXT:         call<void>(%[[VALUE___builtin_trap]]);

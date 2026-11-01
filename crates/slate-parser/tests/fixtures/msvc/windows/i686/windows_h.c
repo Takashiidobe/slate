@@ -54,9 +54,9 @@ ULONGLONG shift_left(ULONGLONG value, DWORD count) {
 // IR-NEXT:         field1 HighPart: i32 [c="LONG"];
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // IR-NEXT:     type @type[[TYPE_LARGE_INTEGER:[0-9]+]] LARGE_INTEGER = @type[[TYPE__LARGE_INTEGER]];
-// IR-NEXT:     global %[[VALUE_handle_size:[0-9]+]] handle_size: u32 [storage=static] = const<u32>(4) [linkage=external];
-// IR-NEXT:     global %[[VALUE_long_ptr_size:[0-9]+]] long_ptr_size: u32 [storage=static] = const<u32>(4) [linkage=external];
-// IR-NEXT:     global %[[VALUE_large_integer_size:[0-9]+]] large_integer_size: u32 [storage=static] = const<u32>(8) [linkage=external];
+// IR-NEXT:     global %[[VALUE_handle_size:[0-9]+]] handle_size: u32 [storage=static] = size_of<u32, ptr<void>>(4) [linkage=external];
+// IR-NEXT:     global %[[VALUE_long_ptr_size:[0-9]+]] long_ptr_size: u32 [storage=static] = size_of<u32, i32>(4) [linkage=external];
+// IR-NEXT:     global %[[VALUE_large_integer_size:[0-9]+]] large_integer_size: u32 [storage=static] = size_of<u32, @type[[TYPE__LARGE_INTEGER]]>(8) [linkage=external];
 // IR-NEXT:     global %[[VALUE_large_integer_align:[0-9]+]] large_integer_align: u32 [storage=static] = const<u32>(8) [linkage=external];
 // IR-NEXT:     fn %[[VALUE_Int64ShllMod32:[0-9]+]] @Int64ShllMod32(%[[VALUE_Value:[0-9]+]] Value: u64 [c="ULONGLONG"], %[[VALUE_ShiftCount:[0-9]+]] ShiftCount: u32 [c="DWORD"]) -> u64 [linkage=external] [inline=hint] [definition=discardable] [abi=x86_win32 stdcall(scalar, scalar) -> scalar] [fallthrough=ret(or<u64>(widen<u64, reason=return>(read<u32>(%[[VALUE0:[0-9]+]])), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%[[VALUE1:[0-9]+]])), const<u32>(32))))] [c="ULONGLONG(ULONGLONG, DWORD) __attribute__((stdcall))"] {
 // IR-NEXT:         let %[[VALUE0]]: u32 [synthetic] = const<u32>(0);

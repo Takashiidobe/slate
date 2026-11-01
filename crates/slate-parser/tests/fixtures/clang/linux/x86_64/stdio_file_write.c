@@ -125,7 +125,7 @@ int main(void) {
 // DEFAULT-NEXT:                 return const<i32>(0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: array<i8, 16> [storage=automatic] [align=16] = aggregate<array<i8, 16>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, i32, ptr<@type[[TYPE__IO_FILE]]>) -> ptr<i8>>(%[[VALUE_fgets]], array_decay<ptr<i8>, length=Some(16)>(%[[VALUE_buf]]), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(16))), read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_g]]) [c="FILE *"]);
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, i32, ptr<@type[[TYPE__IO_FILE]]>) -> ptr<i8>>(%[[VALUE_fgets]], array_decay<ptr<i8>, length=Some(16)>(%[[VALUE_buf]]), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(size_of<u64, array<i8, 16>>(16))), read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_g]]) [c="FILE *"]);
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>) -> i32>(%[[VALUE_fclose]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_g]]) [c="FILE *"]);
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ptr<@type[[TYPE__IO_FILE]]>) -> i32>(%[[VALUE_fputs]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%[[VALUE_buf]])), read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"]);
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_remove]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(27)>(%[[VALUE_str_9]])));

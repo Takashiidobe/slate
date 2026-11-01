@@ -77,7 +77,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_len_2:[0-9]+]] len: i32 [storage=automatic] = const<i32>(3);
-// DEFAULT-NEXT:         let %[[VALUE_values_2:[0-9]+]] values: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(read<i32>(%[[VALUE_len_2]]), const<i32>(1)))), const<u64>(4))));
+// DEFAULT-NEXT:         let %[[VALUE_values_2:[0-9]+]] values: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(read<i32>(%[[VALUE_len_2]]), const<i32>(1)))), size_of<u64, i32>(4))));
 // DEFAULT-NEXT:         let %[[VALUE_sum_2:[0-9]+]] sum: i32 [storage=automatic] = call<i32, signature=fn(ptr<i32>, i32) -> i32>(%[[VALUE_consume_extra_capacity]], read<ptr<i32>>(%[[VALUE_values_2]]), read<i32>(%[[VALUE_len_2]]));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), read<i32>(%[[VALUE_sum_2]]));
 // DEFAULT-NEXT:         return const<i32>(0);

@@ -45,8 +45,10 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let start: *mut () = (unsafe { std::ptr::addr_of_mut!(bytes.0) as *mut u8 })
 // CHECK-NEXT:         as *mut ();
-// CHECK-NEXT:     let end: *mut () = (unsafe { (std::ptr::addr_of_mut!(bytes.0) as *mut u8).add(16) })
-// CHECK-NEXT:         as *mut ();
+// CHECK-NEXT:     let end: *mut () = (unsafe {
+// CHECK-NEXT:         (std::ptr::addr_of_mut!(bytes.0) as *mut u8)
+// CHECK-NEXT:             .offset(std::mem::size_of::<[u8; 16]>() as isize)
+// CHECK-NEXT:     }) as *mut ();
 // CHECK-NEXT:     let middle: *const () = ((unsafe { (start as *const u8).add(5) }) as *mut ())
 // CHECK-NEXT:         as *const ();
 // CHECK-NEXT:     let mut cursor: *mut () = end;

@@ -76,7 +76,7 @@ int main(void) {
 // CHECK-NEXT:             value.[[SLATE_ANON_0]].integer,
 // CHECK-NEXT:             value.[[SLATE_ANON_1]].x,
 // CHECK-NEXT:             value.[[SLATE_ANON_1]].y,
-// CHECK-NEXT:             16u64,
+// CHECK-NEXT:             std::mem::size_of::<container>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

@@ -63,7 +63,7 @@ int main(void) {
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_v]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_y_3:[0-9]+]] y: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(4)));
+// DEFAULT-NEXT:         let %[[VALUE_y_3:[0-9]+]] y: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], size_of<u64, i32>(4)));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_y_3]])), const<i32>(41));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), call<i32, signature=fn(ptr<i32>) -> i32>(%[[VALUE_use_and_free]], read<ptr<i32>>(%[[VALUE_y_3]])));
 // DEFAULT-NEXT:         return const<i32>(0);

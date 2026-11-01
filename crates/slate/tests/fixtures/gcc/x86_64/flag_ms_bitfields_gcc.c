@@ -19,15 +19,212 @@ int main(void) { printf("%zu %zu %zu %zu %zu\n", sizeof(struct plain), sizeof(st
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: // { dg-options "-mms-bitfields" }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct plain {
+// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits0U0,
+// CHECK-NEXT:     __slate_bits_1: __slate_bits::__SlateBits0U1,
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, align(4))]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct gs {
+// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits1U0,
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct off {
+// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits2U0,
+// CHECK-NEXT:     __slate_bits_1: __slate_bits::__SlateBits2U1,
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct reset {
+// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits3U0,
+// CHECK-NEXT:     __slate_bits_1: __slate_bits::__SlateBits3U1,
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct on {
+// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits4U0,
+// CHECK-NEXT:     __slate_bits_1: __slate_bits::__SlateBits4U1,
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: mod __slate_bits {
+// CHECK-NEXT:     #[bitfields::bitfield(
+// CHECK-NEXT:         u8,
+// CHECK-NEXT:         c_names = true,
+// CHECK-NEXT:         new = false,
+// CHECK-NEXT:         from_into_bits = false,
+// CHECK-NEXT:         from_traits = false,
+// CHECK-NEXT:         default = false,
+// CHECK-NEXT:         debug = false,
+// CHECK-NEXT:         builder = false,
+// CHECK-NEXT:         bit_ops = false
+// CHECK-NEXT:     )]
+// CHECK-NEXT:     pub struct __SlateBits0U0 {
+// CHECK-NEXT:         #[bits(3)]
+// CHECK-NEXT:         pub a: i8,
+// CHECK-NEXT:         #[bits(5, access = na)]
+// CHECK-NEXT:         pub __slate_pad_1: u8,
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[bitfields::bitfield(
+// CHECK-NEXT:         u32,
+// CHECK-NEXT:         c_names = true,
+// CHECK-NEXT:         new = false,
+// CHECK-NEXT:         from_into_bits = false,
+// CHECK-NEXT:         from_traits = false,
+// CHECK-NEXT:         default = false,
+// CHECK-NEXT:         debug = false,
+// CHECK-NEXT:         builder = false,
+// CHECK-NEXT:         bit_ops = false
+// CHECK-NEXT:     )]
+// CHECK-NEXT:     pub struct __SlateBits0U1 {
+// CHECK-NEXT:         #[bits(4)]
+// CHECK-NEXT:         pub b: i32,
+// CHECK-NEXT:         #[bits(28, access = na)]
+// CHECK-NEXT:         pub __slate_pad_1: u32,
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[bitfields::bitfield(
+// CHECK-NEXT:         u8,
+// CHECK-NEXT:         c_names = true,
+// CHECK-NEXT:         new = false,
+// CHECK-NEXT:         from_into_bits = false,
+// CHECK-NEXT:         from_traits = false,
+// CHECK-NEXT:         default = false,
+// CHECK-NEXT:         debug = false,
+// CHECK-NEXT:         builder = false,
+// CHECK-NEXT:         bit_ops = false
+// CHECK-NEXT:     )]
+// CHECK-NEXT:     pub struct __SlateBits1U0 {
+// CHECK-NEXT:         #[bits(3)]
+// CHECK-NEXT:         pub a: i8,
+// CHECK-NEXT:         #[bits(4)]
+// CHECK-NEXT:         pub b: i32,
+// CHECK-NEXT:         #[bits(1, access = na)]
+// CHECK-NEXT:         pub __slate_pad_2: u8,
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[bitfields::bitfield(
+// CHECK-NEXT:         u8,
+// CHECK-NEXT:         c_names = true,
+// CHECK-NEXT:         new = false,
+// CHECK-NEXT:         from_into_bits = false,
+// CHECK-NEXT:         from_traits = false,
+// CHECK-NEXT:         default = false,
+// CHECK-NEXT:         debug = false,
+// CHECK-NEXT:         builder = false,
+// CHECK-NEXT:         bit_ops = false
+// CHECK-NEXT:     )]
+// CHECK-NEXT:     pub struct __SlateBits2U0 {
+// CHECK-NEXT:         #[bits(3)]
+// CHECK-NEXT:         pub a: i8,
+// CHECK-NEXT:         #[bits(5, access = na)]
+// CHECK-NEXT:         pub __slate_pad_1: u8,
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[bitfields::bitfield(
+// CHECK-NEXT:         u32,
+// CHECK-NEXT:         c_names = true,
+// CHECK-NEXT:         new = false,
+// CHECK-NEXT:         from_into_bits = false,
+// CHECK-NEXT:         from_traits = false,
+// CHECK-NEXT:         default = false,
+// CHECK-NEXT:         debug = false,
+// CHECK-NEXT:         builder = false,
+// CHECK-NEXT:         bit_ops = false
+// CHECK-NEXT:     )]
+// CHECK-NEXT:     pub struct __SlateBits2U1 {
+// CHECK-NEXT:         #[bits(4)]
+// CHECK-NEXT:         pub b: i32,
+// CHECK-NEXT:         #[bits(28, access = na)]
+// CHECK-NEXT:         pub __slate_pad_1: u32,
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[bitfields::bitfield(
+// CHECK-NEXT:         u8,
+// CHECK-NEXT:         c_names = true,
+// CHECK-NEXT:         new = false,
+// CHECK-NEXT:         from_into_bits = false,
+// CHECK-NEXT:         from_traits = false,
+// CHECK-NEXT:         default = false,
+// CHECK-NEXT:         debug = false,
+// CHECK-NEXT:         builder = false,
+// CHECK-NEXT:         bit_ops = false
+// CHECK-NEXT:     )]
+// CHECK-NEXT:     pub struct __SlateBits3U0 {
+// CHECK-NEXT:         #[bits(3)]
+// CHECK-NEXT:         pub a: i8,
+// CHECK-NEXT:         #[bits(5, access = na)]
+// CHECK-NEXT:         pub __slate_pad_1: u8,
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[bitfields::bitfield(
+// CHECK-NEXT:         u32,
+// CHECK-NEXT:         c_names = true,
+// CHECK-NEXT:         new = false,
+// CHECK-NEXT:         from_into_bits = false,
+// CHECK-NEXT:         from_traits = false,
+// CHECK-NEXT:         default = false,
+// CHECK-NEXT:         debug = false,
+// CHECK-NEXT:         builder = false,
+// CHECK-NEXT:         bit_ops = false
+// CHECK-NEXT:     )]
+// CHECK-NEXT:     pub struct __SlateBits3U1 {
+// CHECK-NEXT:         #[bits(4)]
+// CHECK-NEXT:         pub b: i32,
+// CHECK-NEXT:         #[bits(28, access = na)]
+// CHECK-NEXT:         pub __slate_pad_1: u32,
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[bitfields::bitfield(
+// CHECK-NEXT:         u8,
+// CHECK-NEXT:         c_names = true,
+// CHECK-NEXT:         new = false,
+// CHECK-NEXT:         from_into_bits = false,
+// CHECK-NEXT:         from_traits = false,
+// CHECK-NEXT:         default = false,
+// CHECK-NEXT:         debug = false,
+// CHECK-NEXT:         builder = false,
+// CHECK-NEXT:         bit_ops = false
+// CHECK-NEXT:     )]
+// CHECK-NEXT:     pub struct __SlateBits4U0 {
+// CHECK-NEXT:         #[bits(3)]
+// CHECK-NEXT:         pub a: i8,
+// CHECK-NEXT:         #[bits(5, access = na)]
+// CHECK-NEXT:         pub __slate_pad_1: u8,
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[bitfields::bitfield(
+// CHECK-NEXT:         u32,
+// CHECK-NEXT:         c_names = true,
+// CHECK-NEXT:         new = false,
+// CHECK-NEXT:         from_into_bits = false,
+// CHECK-NEXT:         from_traits = false,
+// CHECK-NEXT:         default = false,
+// CHECK-NEXT:         debug = false,
+// CHECK-NEXT:         builder = false,
+// CHECK-NEXT:         bit_ops = false
+// CHECK-NEXT:     )]
+// CHECK-NEXT:     pub struct __SlateBits4U1 {
+// CHECK-NEXT:         #[bits(4)]
+// CHECK-NEXT:         pub b: i32,
+// CHECK-NEXT:         #[bits(28, access = na)]
+// CHECK-NEXT:         pub __slate_pad_1: u32,
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu %zu\n".as_ptr(),
-// CHECK-NEXT:             12u64,
-// CHECK-NEXT:             4u64,
-// CHECK-NEXT:             12u64,
-// CHECK-NEXT:             12u64,
-// CHECK-NEXT:             12u64,
+// CHECK-NEXT:             std::mem::size_of::<plain>() as u64,
+// CHECK-NEXT:             std::mem::size_of::<gs>() as u64,
+// CHECK-NEXT:             std::mem::size_of::<off>() as u64,
+// CHECK-NEXT:             std::mem::size_of::<reset>() as u64,
+// CHECK-NEXT:             std::mem::size_of::<on>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0

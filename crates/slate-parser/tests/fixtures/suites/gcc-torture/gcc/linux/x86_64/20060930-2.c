@@ -66,7 +66,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_s_2:[0-9]+]] s: ptr<void>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_T]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_T]]>, reason=assign>(read<ptr<void>>(%[[VALUE_s_2]]));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<ptr<@type[[TYPE_T]]>>>(field0(deref(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_p]]))))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<ptr<@type[[TYPE_T]]>>>(field0(%[[VALUE_t]]))), const<u64>(8));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<ptr<@type[[TYPE_T]]>>>(field0(deref(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_p]]))))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<ptr<@type[[TYPE_T]]>>>(field0(%[[VALUE_t]]))), size_of<u64, ptr<@type[[TYPE_T]]>>(8));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_p_2:[0-9]+]] p: ptr<void>, %[[VALUE_q:[0-9]+]] q: ptr<@type[[TYPE_S]]>) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_S]]>>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_q]]))), addr_of<ptr<@type[[TYPE_S]]>>(%[[VALUE_s]]));

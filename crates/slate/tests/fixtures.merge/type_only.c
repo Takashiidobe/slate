@@ -22,8 +22,8 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 2 compiles
 // CHECK-NEXT:   type_only.c: [alpha] 2 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit type_only: 10 items, 5 gated, 0 duplicated functions
-// CHECK-NEXT:   hoisted fn:state_size: 3 variants
+// CHECK-NEXT: unit type_only: 9 items, 3 gated, 0 duplicated functions
+// CHECK-NEXT:   spliced record:state: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
@@ -39,27 +39,27 @@ int main(void) {
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
+// CHECK-NEXT: #[cfg(feature = "alpha")]
+// CHECK-NEXT: use core::ffi::c_long;
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: use core::ffi::c_ulong;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct state {
+// CHECK-NEXT:     head: i32,
+// CHECK-NEXT:     #[cfg(feature = "alpha")]
+// CHECK-NEXT:     extra: c_long,
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: use core::ffi::c_ulong;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(feature = "alpha"))]
-// CHECK-NEXT: const __SLATE_HOIST_state_size: i32 = 4;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(unix, feature = "alpha"))]
-// CHECK-NEXT: const __SLATE_HOIST_state_size: i32 = 16;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(windows, feature = "alpha"))]
-// CHECK-NEXT: const __SLATE_HOIST_state_size: i32 = 8;
-// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn state_size() -> i32 {
-// CHECK-NEXT:     __SLATE_HOIST_state_size
+// CHECK-NEXT:     std::mem::size_of::<state>() as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

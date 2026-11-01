@@ -364,6 +364,7 @@ impl Tables<'_> {
             ValueKind::Constant(ir::Number::SignedInteger(number)) => {
                 i128::try_from(number).ok()?
             }
+            ValueKind::LayoutQuery { amount, .. } => i128::from(*amount),
             ValueKind::Unary {
                 op: ir::UnaryArithOp::Neg,
                 operand,
@@ -436,7 +437,7 @@ impl Tables<'_> {
 
     fn locally_propagated(&self, value: &ir::Value) -> bool {
         match &value.node.value {
-            ValueKind::Constant(_) => true,
+            ValueKind::Constant(_) | ValueKind::LayoutQuery { .. } => true,
             ValueKind::Read {
                 place:
                     place @ ir::Place {

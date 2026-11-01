@@ -59,7 +59,7 @@ void init(void)
 // DEFAULT-NEXT:     global %[[VALUE_m:[0-9]+]] m: @type[[TYPE_S2]] [storage=thread] [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE_s:[0-9]+]] s: ptr<void>, %[[VALUE_c:[0-9]+]] c: i32, %[[VALUE_n:[0-9]+]] n: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_init:[0-9]+]] @init() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_S1]]>>(field1(%[[VALUE_m]]))), const<i32>(0), const<u64>(4));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_S1]]>>(field1(%[[VALUE_m]]))), const<i32>(0), size_of<u64, @type[[TYPE_S1]]>(4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

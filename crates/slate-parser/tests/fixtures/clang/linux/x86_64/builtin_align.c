@@ -69,7 +69,7 @@ int aligned_integer(int value) { return __builtin_is_aligned(value, 2) + sizeof(
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_aligned_integer:[0-9]+]] @aligned_integer(%[[VALUE_value_3:[0-9]+]] value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = sub<i32>(const<i32>(2), const<i32>(1));
-// IR-NEXT:         return reinterpret<i32>(truncate<u32>(add<u64>(reinterpret<u64>(widen<i64>(from_bool<i32>(eq<i32>(and<i32>(read<i32>(%[[VALUE_value_3]]), read<i32>(%[[VALUE10]])), const<i32>(0))))), const<u64>(1))));
+// IR-NEXT:         return reinterpret<i32>(truncate<u32>(add<u64>(reinterpret<u64>(widen<i64>(from_bool<i32>(eq<i32>(and<i32>(read<i32>(%[[VALUE_value_3]]), read<i32>(%[[VALUE10]])), const<i32>(0))))), size_of<u64, bool>(1))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

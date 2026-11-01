@@ -97,7 +97,7 @@ int main(void) {
 // CHECK-NEXT:         format
 // CHECK-NEXT:             .unwrap()(
 // CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             32u64,
+// CHECK-NEXT:             std::mem::size_of::<[i8; 32]>() as u64,
 // CHECK-NEXT:             c"%d %.1f".as_ptr(),
 // CHECK-NEXT:             a as i32,
 // CHECK-NEXT:             b as f64,

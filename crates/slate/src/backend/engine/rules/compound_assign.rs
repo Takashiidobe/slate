@@ -22,7 +22,7 @@ fn foldable(op: BinOp) -> bool {
 
 fn pure_operand(expr: &Expr) -> bool {
     match expr {
-        Expr::Var(_) | Expr::Value(_) => true,
+        Expr::Var(_) | Expr::Value(_) | Expr::LayoutQuery { .. } => true,
         Expr::Cast { expr, .. } => pure_operand(expr),
         _ => false,
     }

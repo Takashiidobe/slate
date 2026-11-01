@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:     fn %[[VALUE___assert_fail:[0-9]+]] @__assert_fail(%[[VALUE___assertion:[0-9]+]] __assertion: ptr<const i8>, %[[VALUE___file:[0-9]+]] __file: ptr<const i8>, %[[VALUE___line:[0-9]+]] __line: u32, %[[VALUE___function:[0-9]+]] __function: ptr<const i8>) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         const<u64>(4);
+// DEFAULT-NEXT:         size_of<u64, i32>(4);
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             if eq<i32>(read<i32>(%[[VALUE_argc]]), const<i32>(2))
 // DEFAULT-NEXT:                 ;

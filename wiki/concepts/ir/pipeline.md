@@ -215,11 +215,17 @@ Per-value expansion chains are not in the IR yet (only atomic builtins record
 
 - Keep source expressions for Rust: `1 + 2` stays an `add`. Never fold
   ordinary arithmetic, casts, comparisons, or conditionals.
-- Fold only where a concrete constant is required: `sizeof`/`_Alignof`/
-  `offsetof` leaves (with `size_of`/`align_of`/`offset_of` metadata), array
-  bounds, `_BitInt` widths, case labels, bit-field widths, alignment
-  requests, atomic orderings. `sizeof(int) * 8` folds the leaf and keeps the
-  `mul`.
+- Fold only where a concrete constant is required: `_Alignof`/`offsetof`
+  leaves (with `align_of`/`offset_of` metadata), array bounds, `_BitInt`
+  widths, case labels, bit-field widths, alignment requests, atomic orderings.
+- `sizeof` keeps its operand type as a `size_of<size_t, T>(N)` leaf
+  (`ValueKind::LayoutQuery`), which every constant evaluator reads as `N`, so
+  `sizeof(int) * 8` stays a `mul` over the leaf and a case label folds to a
+  `const`. Rust lowering prints `size_of::<T>()` where the Rust layout of `T`
+  matches and `N` otherwise (void, long double, vectors, complex, `_BitInt`,
+  flexible arrays, and any record holding one of these, an `_Atomic` field, or
+  a bit-field unit that Rust aligns below its size). An `_Atomic` operand, a declared alignment, and a function operand have no
+  usable `T` and stay a `const` with `size_of` metadata.
 - An `offsetof` member name resolves through anonymous struct and union
   members at any depth, as member access does, and adds each level's offset
   (`clang/linux/x86_64/offsetof_anonymous_members.c`). A bit-field found that

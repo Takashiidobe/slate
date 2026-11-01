@@ -64,7 +64,7 @@ int main(void) {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(value) as *const ()) as *const u8,
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(bits) as *mut ()) as *mut u8,
-// CHECK-NEXT:             4 as usize,
+// CHECK-NEXT:             std::mem::size_of::<u32>(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     bits
@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(value) as *const ()) as *const u8,
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(bits) as *mut ()) as *mut u8,
-// CHECK-NEXT:             8 as usize,
+// CHECK-NEXT:             std::mem::size_of::<u64>(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     bits

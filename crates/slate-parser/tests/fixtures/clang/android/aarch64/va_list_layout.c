@@ -35,7 +35,7 @@ int sum(int count, ...) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %[[VALUE_va_list_size:[0-9]+]] va_list_size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(32))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_va_list_size:[0-9]+]] va_list_size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, va_list>(32))) [linkage=external];
 // IR-NEXT:     global %[[VALUE_va_list_align:[0-9]+]] va_list_align: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(8))) [linkage=external];
 // IR-NEXT:     fn %[[VALUE_sum:[0-9]+]] @sum(%[[VALUE_count:[0-9]+]] count: i32, ...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];

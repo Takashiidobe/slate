@@ -64,7 +64,7 @@ int fallthrough(int x) {
 // IR-NEXT:     fn %[[VALUE_make:[0-9]+]] @make() -> @type[[TYPE_result]] [linkage=external] [abi=sysv64() -> native_c] [c="struct result(void)"];
 // IR-NEXT:     fn %[[VALUE_take:[0-9]+]] @take(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_pair]]> [c="struct pair *"]) -> void [linkage=external] [c="void(struct pair *)"];
 // IR-NEXT:     fn %[[VALUE_conversions:[0-9]+]] @conversions() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
-// IR-NEXT:         let %[[VALUE_size:[0-9]+]] size: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(8) [size_of="i64"])) [c="int"];
+// IR-NEXT:         let %[[VALUE_size:[0-9]+]] size: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, i64>(8))) [c="int"];
 // IR-NEXT:         return read<i32>(%[[VALUE_size]]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_initialized:[0-9]+]] @initialized() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {

@@ -159,10 +159,10 @@ int main() {
 // DEFAULT-NEXT:         return read<i32>(field1(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_f]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_DUPFFnew:[0-9]+]] @DUPFFnew(%[[VALUE_maxdeg:[0-9]+]] maxdeg: i32 [const]) -> ptr<@type[[TYPE_DUPFFstruct]]> [linkage=external] [fallthrough=ub_if_used] [c="DUPFF(const int)"] {
-// DEFAULT-NEXT:         let %[[VALUE_ans:[0-9]+]] ans: ptr<@type[[TYPE_DUPFFstruct]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_DUPFFstruct]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(16))) [c="DUPFF"] [c="DUPFF"];
+// DEFAULT-NEXT:         let %[[VALUE_ans:[0-9]+]] ans: ptr<@type[[TYPE_DUPFFstruct]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_DUPFFstruct]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], size_of<u64, @type[[TYPE_DUPFFstruct]]>(16))) [c="DUPFF"] [c="DUPFF"];
 // DEFAULT-NEXT:         write<ptr<u32>>(field2(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_ans]]))), null<ptr<u32>> [c="FFelem *"]) [c="FFelem *"];
 // DEFAULT-NEXT:         if ge<i32>(read<i32>(%[[VALUE_maxdeg]]), const<i32>(0))
-// DEFAULT-NEXT:             write<ptr<u32>>(field2(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_ans]]))), pointer_cast<ptr<u32>, reason=explicit>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_calloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(add<i32, overflow=ub>(read<i32>(%[[VALUE_maxdeg]]), const<i32>(1)))), const<u64>(4))) [c="FFelem *"]) [c="FFelem *"];
+// DEFAULT-NEXT:             write<ptr<u32>>(field2(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_ans]]))), pointer_cast<ptr<u32>, reason=explicit>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_calloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(add<i32, overflow=ub>(read<i32>(%[[VALUE_maxdeg]]), const<i32>(1)))), size_of<u64, u32>(4))) [c="FFelem *"]) [c="FFelem *"];
 // DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_ans]]))), read<i32>(%[[VALUE_maxdeg]]));
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_ans]]))), neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         return read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_ans]]) [c="DUPFF"];

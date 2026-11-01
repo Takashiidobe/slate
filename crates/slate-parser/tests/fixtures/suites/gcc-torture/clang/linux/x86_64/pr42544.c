@@ -40,7 +40,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: i16 [storage=automatic] = truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)));
-// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(4))
+// DEFAULT-NEXT:         if eq<u64>(size_of<u64, i64>(8), size_of<u64, u32>(4))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         if ge<u64>(widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i16>(%[[VALUE_s]])))), const<u64>(4294967296))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

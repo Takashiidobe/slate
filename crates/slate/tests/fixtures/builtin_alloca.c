@@ -276,7 +276,8 @@ int main(void) {
 // CHECK-NEXT:     let mut slots: __SlateAlign16<[*mut i32; 8]> = __SlateAlign16([0 as *mut i32; 8]);
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         slots.0[i as usize] = (__slate_alloca::alloca(
-// CHECK-NEXT:             4u64.wrapping_mul(((i + 1) as i64) as u64) as usize,
+// CHECK-NEXT:             (std::mem::size_of::<i32>() as u64).wrapping_mul(((i + 1) as i64) as u64)
+// CHECK-NEXT:                 as usize,
 // CHECK-NEXT:             16usize,
 // CHECK-NEXT:         ) as *mut ()) as *mut i32;
 // CHECK-NEXT:         let mut j: i32 = 0;
@@ -316,7 +317,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if argc < min {
 // CHECK-NEXT:         f.args = (__slate_alloca::alloca(
-// CHECK-NEXT:             4u64.wrapping_mul((min as i64) as u64) as usize,
+// CHECK-NEXT:             (std::mem::size_of::<i32>() as u64).wrapping_mul((min as i64) as u64)
+// CHECK-NEXT:                 as usize,
 // CHECK-NEXT:             16usize,
 // CHECK-NEXT:         ) as *mut ()) as *mut i32;
 // CHECK-NEXT:         for i in 0..argc {
@@ -375,8 +377,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn recursive_alloca(depth: i32) -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
-// CHECK-NEXT:     let cell: *mut i32 = (__slate_alloca::alloca(4 as usize, 16usize) as *mut ())
-// CHECK-NEXT:         as *mut i32;
+// CHECK-NEXT:     let cell: *mut i32 = (__slate_alloca::alloca(std::mem::size_of::<i32>(), 16usize)
+// CHECK-NEXT:         as *mut ()) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *cell = depth;
 // CHECK-NEXT:     }

@@ -2540,6 +2540,18 @@ impl Lowerer {
         value
     }
 
+    fn size_query(&mut self, e: &Expr, ty: Type, c: QualType, amount: u64) -> Operand {
+        let size_type = self.types.ctypes.size_type(&self.context.target);
+        self.operand(
+            e,
+            size_type,
+            ValueKind::LayoutQuery {
+                query: LayoutQuery::SizeOf { ty, c },
+                amount,
+            },
+        )
+    }
+
     pub fn expr(&mut self, e: &Expr) -> Result<Operand, ResolveError> {
         if self.is_binary_chain(e) {
             return self.binary_chain(e);
@@ -3140,11 +3152,14 @@ impl Lowerer {
                     let size = self.runtime_size(e, &ty)?;
                     return Ok(self.with_extents(e, extents, size));
                 }
-                let layout = self
+                let measured = self
                     .types
                     .measured_storage(&ty, atomic, matches!(e.value, ExprKind::SizeOfType { .. }))
                     .map_err(ResolveError::checked)?;
-                let layout = self.types.declared_storage(resolved, layout)?;
+                let layout = self.types.declared_storage(resolved, measured)?;
+                if matches!(e.value, ExprKind::SizeOfType { .. }) && !atomic && layout == measured {
+                    return Ok(self.size_query(e, ty, resolved, layout.size_bytes));
+                }
                 let value = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     layout.size_bytes
                 } else {
@@ -3175,7 +3190,7 @@ impl Lowerer {
                     let size = self.runtime_size(e, &ty)?;
                     return Ok(self.after_operand(e, evaluated, size));
                 }
-                let layout = self
+                let measured = self
                     .types
                     .measured_storage(
                         &ty,
@@ -3183,7 +3198,13 @@ impl Lowerer {
                         matches!(e.value, ExprKind::SizeOfExpr(_)),
                     )
                     .map_err(ResolveError::checked)?;
-                let layout = self.types.declared_storage(c, layout)?;
+                let layout = self.types.declared_storage(c, measured)?;
+                if matches!(e.value, ExprKind::SizeOfExpr(_))
+                    && !access.atomic
+                    && layout == measured
+                {
+                    return Ok(self.size_query(e, ty, c, layout.size_bytes));
+                }
                 let amount = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
                 } else {

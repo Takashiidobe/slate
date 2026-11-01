@@ -95,7 +95,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_11:__v[0-9]+]]: u8 = 3u8;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}", ((small.wrapping_add([[V_10]]) & ! [[V_10]]) as u32) as i32, ((small & !
-// CHECK-NEXT:         [[V_11]]) as u32) as i32, 1i32
+// CHECK-NEXT:         [[V_11]]) as u32) as i32, std::mem::size_of::< u8 > () as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = next().wrapping_sub(1);
 // CHECK-NEXT:     println!("{} {}", 100i32.wrapping_add([[V_12]]) & ! [[V_12]], unsafe { calls });

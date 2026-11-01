@@ -72,13 +72,20 @@ int main(void) {
 // CHECK-NEXT:         4i32, 1i32, 5i32, 3i32, 2i32,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut key: i32 = 3;
-// CHECK-NEXT:     unsafe { qsort(nums.0.as_mut_ptr() as *mut (), 5u64, 4u64, Some(cmp_int)) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         qsort(
+// CHECK-NEXT:             nums.0.as_mut_ptr() as *mut (),
+// CHECK-NEXT:             5u64,
+// CHECK-NEXT:             std::mem::size_of::<i32>() as u64,
+// CHECK-NEXT:             Some(cmp_int),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let hit: *mut i32 = (unsafe {
 // CHECK-NEXT:         bsearch(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(key) as *const (),
 // CHECK-NEXT:             nums.0.as_mut_ptr() as *const (),
 // CHECK-NEXT:             5u64,
-// CHECK-NEXT:             4u64,
+// CHECK-NEXT:             std::mem::size_of::<i32>() as u64,
 // CHECK-NEXT:             Some(cmp_int),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) as *mut i32;
@@ -89,13 +96,20 @@ int main(void) {
 // CHECK-NEXT:         Item { key: 2, value: 20 },
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut needle: Item = Item { key: 4, value: 0 };
-// CHECK-NEXT:     unsafe { qsort(items.0.as_mut_ptr() as *mut (), 4u64, 8u64, Some(cmp_item)) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         qsort(
+// CHECK-NEXT:             items.0.as_mut_ptr() as *mut (),
+// CHECK-NEXT:             4u64,
+// CHECK-NEXT:             std::mem::size_of::<Item>() as u64,
+// CHECK-NEXT:             Some(cmp_item),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let found: *mut Item = (unsafe {
 // CHECK-NEXT:         bsearch(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(needle) as *const (),
 // CHECK-NEXT:             items.0.as_mut_ptr() as *const (),
 // CHECK-NEXT:             4u64,
-// CHECK-NEXT:             8u64,
+// CHECK-NEXT:             std::mem::size_of::<Item>() as u64,
 // CHECK-NEXT:             Some(cmp_item),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) as *mut Item;

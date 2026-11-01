@@ -83,7 +83,7 @@ int main(void) {
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
+// DEFAULT-NEXT:         if eq<u64>(size_of<u64, u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(32)>(%[[VALUE_b]]), const<i32>(17))), const<u64>(3160194) [c="uint64"]) [c="uint64"];
 // DEFAULT-NEXT:                 write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(32)>(%[[VALUE_b]]), const<i32>(2))), const<u64>(6003104017374052362) [c="uint64"]) [c="uint64"];

@@ -102,12 +102,12 @@ void test_memchr_cst_char (void)
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(33)>(%[[VALUE_str_3]])), const<i32>(28), array_decay<ptr<i8>, length=Some(20)>(%[[VALUE_str_4]]));
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(call<ptr<void>, signature=fn(ptr<const void>, i32, u64) -> ptr<void>>(%[[VALUE_memchr]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(8)>(%[[VALUE_a]])), const<i32>(99), const<u64>(8)), null<ptr<void>>))
+// DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(call<ptr<void>, signature=fn(ptr<const void>, i32, u64) -> ptr<void>>(%[[VALUE_memchr]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(8)>(%[[VALUE_a]])), const<i32>(99), size_of<u64, array<i8, 8>>(8)), null<ptr<void>>))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(33)>(%[[VALUE_str_5]])), const<i32>(29), array_decay<ptr<i8>, length=Some(27)>(%[[VALUE_str_6]]));
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if eq<ptr<const i8>>(addr_of<ptr<const i8>>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(8)>(%[[VALUE_a]]), const<i32>(1)))), pointer_cast<ptr<const i8>, reason=usual_arith>(call<ptr<void>, signature=fn(ptr<const void>, i32, u64) -> ptr<void>>(%[[VALUE_memchr]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(8)>(%[[VALUE_a]])), const<i32>(0), const<u64>(8))))
+// DEFAULT-NEXT:         if eq<ptr<const i8>>(addr_of<ptr<const i8>>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(8)>(%[[VALUE_a]]), const<i32>(1)))), pointer_cast<ptr<const i8>, reason=usual_arith>(call<ptr<void>, signature=fn(ptr<const void>, i32, u64) -> ptr<void>>(%[[VALUE_memchr]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(8)>(%[[VALUE_a]])), const<i32>(0), size_of<u64, array<i8, 8>>(8))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(33)>(%[[VALUE_str_7]])), const<i32>(30), array_decay<ptr<i8>, length=Some(33)>(%[[VALUE_str_8]]));
@@ -117,7 +117,7 @@ void test_memchr_cst_char (void)
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(33)>(%[[VALUE_str_9]])), const<i32>(32), array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_10]]));
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if eq<ptr<const i8>>(addr_of<ptr<const i8>>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(3)>(%[[VALUE_b]]), const<i32>(2)))), pointer_cast<ptr<const i8>, reason=usual_arith>(call<ptr<void>, signature=fn(ptr<const void>, i32, u64) -> ptr<void>>(%[[VALUE_memchr]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(3)>(%[[VALUE_b]])), const<i32>(0), const<u64>(3))))
+// DEFAULT-NEXT:         if eq<ptr<const i8>>(addr_of<ptr<const i8>>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(3)>(%[[VALUE_b]]), const<i32>(2)))), pointer_cast<ptr<const i8>, reason=usual_arith>(call<ptr<void>, signature=fn(ptr<const void>, i32, u64) -> ptr<void>>(%[[VALUE_memchr]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(3)>(%[[VALUE_b]])), const<i32>(0), size_of<u64, array<i8, 3>>(3))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(33)>(%[[VALUE_str_11]])), const<i32>(33), array_decay<ptr<i8>, length=Some(33)>(%[[VALUE_str_12]]));
@@ -132,7 +132,7 @@ void test_memchr_cst_char (void)
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(33)>(%[[VALUE_str_15]])), const<i32>(36), array_decay<ptr<i8>, length=Some(26)>(%[[VALUE_str_16]]));
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if eq<ptr<const i8>>(addr_of<ptr<const i8>>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(8)>(%[[VALUE_c]]), const<i32>(3)))), pointer_cast<ptr<const i8>, reason=usual_arith>(call<ptr<void>, signature=fn(ptr<const void>, i32, u64) -> ptr<void>>(%[[VALUE_memchr]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(8)>(%[[VALUE_c]])), const<i32>(0), const<u64>(8))))
+// DEFAULT-NEXT:         if eq<ptr<const i8>>(addr_of<ptr<const i8>>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(8)>(%[[VALUE_c]]), const<i32>(3)))), pointer_cast<ptr<const i8>, reason=usual_arith>(call<ptr<void>, signature=fn(ptr<const void>, i32, u64) -> ptr<void>>(%[[VALUE_memchr]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(8)>(%[[VALUE_c]])), const<i32>(0), size_of<u64, array<i8, 8>>(8))))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(33)>(%[[VALUE_str_17]])), const<i32>(37), array_decay<ptr<i8>, length=Some(33)>(%[[VALUE_str_18]]));

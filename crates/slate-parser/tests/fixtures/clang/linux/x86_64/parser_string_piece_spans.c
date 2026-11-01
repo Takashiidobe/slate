@@ -34,7 +34,7 @@ int f(void) {
 // DEFAULT-NEXT:     global %[[VALUE_global:[0-9]+]] global: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([1, 50, 0]) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: array<i8, 3> [storage=automatic] = code_units<array<i8, 3>>([1, 50, 0]);
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(3)));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, array<i8, 3>>(3)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -65,7 +65,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_warn:[0-9]+]] warn: i32 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_warn]])), const<i32>(0), const<u64>(4));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_warn]])), const<i32>(0), size_of<u64, i32>(4));
 // DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_pwarn]], addr_of<ptr<i32>>(%[[VALUE_warn]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_warn]], const<i32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_bla]]);

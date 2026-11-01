@@ -42,7 +42,7 @@ int only_without_trigraphs;
 // C17-NEXT:         storage d128 [size=16, align=16];
 // C17-NEXT:     }
 // C17-NEXT:     global %[[VALUE_spelled:[0-9]+]] spelled: array<i8, 19> [storage=static] [const] [align=16] = code_units<array<i8, 19>>([35, 32, 91, 32, 93, 32, 123, 32, 125, 32, 94, 32, 124, 32, 126, 32, 63, 92, 0]) [linkage=external];
-// C17-NEXT:     global %[[VALUE_escape_width:[0-9]+]] escape_width: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(2))) [linkage=external];
+// C17-NEXT:     global %[[VALUE_escape_width:[0-9]+]] escape_width: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, array<i8, 2>>(2))) [linkage=external];
 // C17-NEXT: }
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN GNU17
@@ -69,7 +69,7 @@ int only_without_trigraphs;
 // GNU17-NEXT:         storage d128 [size=16, align=16];
 // GNU17-NEXT:     }
 // GNU17-NEXT:     global %[[VALUE_spelled:[0-9]+]] spelled: array<i8, 40> [storage=static] [const] [align=16] = code_units<array<i8, 40>>([63, 63, 61, 32, 63, 63, 40, 32, 63, 63, 41, 32, 63, 63, 60, 32, 63, 63, 62, 32, 63, 63, 39, 32, 63, 63, 33, 32, 63, 63, 45, 32, 63, 63, 63, 47, 63, 63, 47, 0]) [linkage=external];
-// GNU17-NEXT:     global %[[VALUE_escape_width:[0-9]+]] escape_width: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(5))) [linkage=external];
+// GNU17-NEXT:     global %[[VALUE_escape_width:[0-9]+]] escape_width: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, array<i8, 5>>(5))) [linkage=external];
 // GNU17-NEXT:     global %[[VALUE_only_without_trigraphs:[0-9]+]] only_without_trigraphs: i32 [storage=static] [linkage=external];
 // GNU17-NEXT: }
 // SLATE-FILECHECK-END GNU17
@@ -97,7 +97,7 @@ int only_without_trigraphs;
 // C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
 // C23-NEXT:     global %[[VALUE_spelled:[0-9]+]] spelled: array<i8, 40> [storage=static] [const] [align=16] = code_units<array<i8, 40>>([63, 63, 61, 32, 63, 63, 40, 32, 63, 63, 41, 32, 63, 63, 60, 32, 63, 63, 62, 32, 63, 63, 39, 32, 63, 63, 33, 32, 63, 63, 45, 32, 63, 63, 63, 47, 63, 63, 47, 0]) [linkage=external];
-// C23-NEXT:     global %[[VALUE_escape_width:[0-9]+]] escape_width: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(5))) [linkage=external];
+// C23-NEXT:     global %[[VALUE_escape_width:[0-9]+]] escape_width: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, array<i8, 5>>(5))) [linkage=external];
 // C23-NEXT:     global %[[VALUE_only_without_trigraphs:[0-9]+]] only_without_trigraphs: i32 [storage=static] [linkage=external];
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23
@@ -125,7 +125,7 @@ int only_without_trigraphs;
 // GNU17-TRIGRAPHS-NEXT:         storage d128 [size=16, align=16];
 // GNU17-TRIGRAPHS-NEXT:     }
 // GNU17-TRIGRAPHS-NEXT:     global %[[VALUE_spelled:[0-9]+]] spelled: array<i8, 19> [storage=static] [const] [align=16] = code_units<array<i8, 19>>([35, 32, 91, 32, 93, 32, 123, 32, 125, 32, 94, 32, 124, 32, 126, 32, 63, 92, 0]) [linkage=external];
-// GNU17-TRIGRAPHS-NEXT:     global %[[VALUE_escape_width:[0-9]+]] escape_width: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(2))) [linkage=external];
+// GNU17-TRIGRAPHS-NEXT:     global %[[VALUE_escape_width:[0-9]+]] escape_width: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, array<i8, 2>>(2))) [linkage=external];
 // GNU17-TRIGRAPHS-NEXT: }
 // SLATE-FILECHECK-END GNU17-TRIGRAPHS
 // SLATE-FILECHECK-BEGIN C17-NO-TRIGRAPHS
@@ -152,7 +152,7 @@ int only_without_trigraphs;
 // C17-NO-TRIGRAPHS-NEXT:         storage d128 [size=16, align=16];
 // C17-NO-TRIGRAPHS-NEXT:     }
 // C17-NO-TRIGRAPHS-NEXT:     global %[[VALUE_spelled:[0-9]+]] spelled: array<i8, 40> [storage=static] [const] [align=16] = code_units<array<i8, 40>>([63, 63, 61, 32, 63, 63, 40, 32, 63, 63, 41, 32, 63, 63, 60, 32, 63, 63, 62, 32, 63, 63, 39, 32, 63, 63, 33, 32, 63, 63, 45, 32, 63, 63, 63, 47, 63, 63, 47, 0]) [linkage=external];
-// C17-NO-TRIGRAPHS-NEXT:     global %[[VALUE_escape_width:[0-9]+]] escape_width: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(5))) [linkage=external];
+// C17-NO-TRIGRAPHS-NEXT:     global %[[VALUE_escape_width:[0-9]+]] escape_width: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, array<i8, 5>>(5))) [linkage=external];
 // C17-NO-TRIGRAPHS-NEXT:     global %[[VALUE_only_without_trigraphs:[0-9]+]] only_without_trigraphs: i32 [storage=static] [linkage=external];
 // C17-NO-TRIGRAPHS-NEXT: }
 // SLATE-FILECHECK-END C17-NO-TRIGRAPHS

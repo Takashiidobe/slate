@@ -48,7 +48,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_alloca:[0-9]+]] @__builtin_alloca(%[[VALUE1:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_ptr:[0-9]+]] ptr: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], const<u64>(4)));
+// DEFAULT-NEXT:         let %[[VALUE_ptr:[0-9]+]] ptr: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], size_of<u64, i32>(4)));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ptr]])), const<i32>(5));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_foo]], read<ptr<i32>>(%[[VALUE_ptr]]));
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_ptr]]))), const<i32>(5))

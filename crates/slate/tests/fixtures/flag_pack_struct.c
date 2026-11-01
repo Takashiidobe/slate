@@ -70,10 +70,28 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 16u64, 2u64, 8u64, 2u64) };
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 18u64, 2u64) };
-// I686-UNKNOWN-LINUX-GNU-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 16u32, 2u32, 8u32, 2u32) };
-// I686-UNKNOWN-LINUX-GNU-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 18u32, 2u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<mixed>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             2u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             8u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             2u64,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<mixed>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             2u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             8u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             2u32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%zu %zu\n".as_ptr(),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<nested>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             2u64,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<nested>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             2u32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d %d %g %d %g\n".as_ptr(),

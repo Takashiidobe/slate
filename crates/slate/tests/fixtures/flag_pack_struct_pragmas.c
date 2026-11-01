@@ -30,44 +30,104 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: // { dg-options "-fpack-struct=2" }
+// CHECK-NEXT: #[repr(C, packed(2))]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct ua {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     i: i32,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// X86_64-UNKNOWN-LINUX-GNU-NEXT: #[repr(C, packed(4))]
+// I686-UNKNOWN-LINUX-GNU-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct p4 {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     d: f64,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, packed(2))]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct reset {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     d: f64,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct p8 {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     d: f64,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, packed(2))]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct popped {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     d: f64,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, packed(2))]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: union u {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     d: f64,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, align(2))]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct bf {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits7U0,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: mod __slate_bits {
+// CHECK-NEXT:     #[bitfields::bitfield([u8; 3], c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
+// CHECK-NEXT:     pub struct __SlateBits7U0 {
+// CHECK-NEXT:         #[bits(4)]
+// CHECK-NEXT:         pub x: i32,
+// CHECK-NEXT:         #[bits(20)]
+// CHECK-NEXT:         pub y: i32,
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %zu | %zu %zu | %zu %zu | %zu %zu | %zu %zu | %zu %zu | %zu %zu | %zu %zu\n"
 // CHECK-NEXT:                 .as_ptr(),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             6u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<ua>() as u64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             2u64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             2u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             12u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<p4>() as u64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             4u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             10u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<reset>() as u64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             2u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             16u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<p8>() as u64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             8u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             10u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<popped>() as u64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             2u64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             16u64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             16u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             8u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<u>() as u64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             2u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             4u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<bf>() as u64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             2u64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             6u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<ua>() as u32,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             2u32,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             2u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             12u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<p4>() as u32,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             4u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             10u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<reset>() as u32,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             2u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             12u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<p8>() as u32,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             4u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             10u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<popped>() as u32,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             2u32,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             16u32,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             16u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             8u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<u>() as u32,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             2u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             4u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<bf>() as u32,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             2u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

@@ -30,7 +30,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     check(3i32, 3i32);
+// CHECK-NEXT:     check(std::mem::size_of::<[i8; 3]>() as i32, 3i32);
 // CHECK-NEXT:     check((((unsafe { text[0] }) as u8) as u32) as i32, 233i32);
 // CHECK-NEXT:     check((((unsafe { text[1] }) as u8) as u32) as i32, 128i32);
 // CHECK-NEXT:     0

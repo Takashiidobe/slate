@@ -44,7 +44,7 @@ int main(void) {
 // CHECK-NEXT:             bits.__slate_bits_0.__get_delta(),
 // CHECK-NEXT:             bits.__slate_bits_1.__get_wide(),
 // CHECK-NEXT:             bits.__slate_bits_1.__get_tail() as i32,
-// CHECK-NEXT:             11u64,
+// CHECK-NEXT:             std::mem::size_of::<MixedBits>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

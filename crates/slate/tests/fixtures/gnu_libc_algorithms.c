@@ -333,7 +333,7 @@ int main(void) {
 // CHECK-NEXT:         qsort_r(
 // CHECK-NEXT:             values.0.as_mut_ptr() as *mut (),
 // CHECK-NEXT:             4u64,
-// CHECK-NEXT:             4u64,
+// CHECK-NEXT:             std::mem::size_of::<i32>() as u64,
 // CHECK-NEXT:             Some(gnu_compare_with_direction),
 // CHECK-NEXT:             std::ptr::addr_of_mut!(direction) as *mut (),
 // CHECK-NEXT:         )
@@ -509,7 +509,8 @@ int main(void) {
 // CHECK-NEXT:             as i32);
 // CHECK-NEXT:     unsafe { hdestroy_r(std::ptr::addr_of_mut!(table)) };
 // CHECK-NEXT:     for index in 0u64..4u64 {
-// CHECK-NEXT:         let value: *mut i32 = (unsafe { malloc(4u64) }) as *mut i32;
+// CHECK-NEXT:         let value: *mut i32 = (unsafe { malloc(std::mem::size_of::<i32>() as u64) })
+// CHECK-NEXT:             as *mut i32;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *value = values.0[index as usize];
 // CHECK-NEXT:         }

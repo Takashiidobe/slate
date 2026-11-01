@@ -47,8 +47,36 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct IgnoredBadAlign {
+// CHECK-NEXT:     a: i8,
+// CHECK-NEXT:     b: i32,
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C, packed)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct NamedPushed {
+// CHECK-NEXT:     a: i8,
+// CHECK-NEXT:     b: i32,
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct AfterNamedPop {
+// CHECK-NEXT:     a: i8,
+// CHECK-NEXT:     b: i32,
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct AfterExtraPop {
+// CHECK-NEXT:     a: i8,
+// CHECK-NEXT:     b: i32,
+// CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{} {} {} {} {} {} {}", 8i32, 5i32, 8i32, 8i32, 16i32, 16i32, 1i32);
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {} {} {} {} {} {}", std::mem::size_of::< IgnoredBadAlign > () as i32,
+// CHECK-NEXT:         std::mem::size_of::< NamedPushed > () as i32, std::mem::size_of::< AfterNamedPop
+// CHECK-NEXT:         > () as i32, std::mem::size_of::< AfterExtraPop > () as i32, 16i32, 16i32, 1i32
+// CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

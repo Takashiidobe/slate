@@ -522,7 +522,7 @@ main (void)
 // DEFAULT-NEXT:             for %[[VALUE39:[0-9]+]]
 // DEFAULT-NEXT:                 init:
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_i]], const<i32>(0));
-// DEFAULT-NEXT:                 condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i]]))), const<u64>(1))
+// DEFAULT-NEXT:                 condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i]]))), size_of<u64, @type[[TYPE_foo]]>(1))
 // DEFAULT-NEXT:                 increment: {
 // DEFAULT-NEXT:                     let %[[VALUE40:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:                     let %[[VALUE41:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE40]]), const<i32>(1));

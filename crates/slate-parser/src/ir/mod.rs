@@ -69,6 +69,10 @@ pub enum Callee {
 #[derive(Debug, Clone)]
 pub enum ValueKind {
     Constant(Number),
+    LayoutQuery {
+        query: LayoutQuery,
+        amount: u64,
+    },
     Copy {
         operand: Box<Value>,
         reason: ConversionReason,
@@ -231,6 +235,14 @@ pub enum ValueKind {
     Intrinsic {
         name: String,
         arguments: Vec<Value>,
+    },
+}
+
+#[derive(Debug, Clone)]
+pub enum LayoutQuery {
+    SizeOf {
+        ty: Type,
+        c: crate::sema::ctype::QualType,
     },
 }
 
@@ -619,6 +631,10 @@ impl Value {
             ValueKind::AddressOf(place) => {
                 write!(f, "addr_of<{}>({})", self.ty, place.display_mode(compact))
             }
+            ValueKind::LayoutQuery {
+                query: LayoutQuery::SizeOf { ty, .. },
+                amount,
+            } => write!(f, "size_of<{}, {ty}>({amount})", self.ty),
             ValueKind::Constant(Number::Bool(value)) => write!(f, "const<{}>({value})", self.ty),
             ValueKind::Constant(Number::Integer(value)) => write!(f, "const<{}>({value})", self.ty),
             ValueKind::Constant(Number::SignedInteger(value)) => {

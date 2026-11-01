@@ -175,7 +175,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_intrinsic_7eb885185d29c159(
 // CHECK-NEXT:             code.as_mut_ptr() as *mut (),
-// CHECK-NEXT:             (code.as_mut_ptr() as *mut i8).add(8) as *mut (),
+// CHECK-NEXT:             (code.as_mut_ptr() as *mut i8)
+// CHECK-NEXT:                 .offset(std::mem::size_of::<[u8; 8]>() as isize) as *mut (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gnu_builtin_never)) }) != 0 {

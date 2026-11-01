@@ -495,7 +495,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE9]]));
 // DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_directory]], call<ptr<i8>, signature=fn() -> ptr<i8>>(%[[VALUE__SC_2_UPE]]));
 // DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_canonical]], call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE__SC_GETGR_R_SIZE_MAX]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_6]]))));
-// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = from_bool<i32, reason=promotion>(ne<ptr<i8>>(call<ptr<i8>, signature=fn(ptr<i8>, u64) -> ptr<i8>>(%[[VALUE__SC_2_C_VERSION]], array_decay<ptr<i8>, length=Some(4096)>(%[[VALUE_current]]), const<u64>(4096) [c="size_t"]), null<ptr<i8>>));
+// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = from_bool<i32, reason=promotion>(ne<ptr<i8>>(call<ptr<i8>, signature=fn(ptr<i8>, u64) -> ptr<i8>>(%[[VALUE__SC_2_C_VERSION]], array_decay<ptr<i8>, length=Some(4096)>(%[[VALUE_current]]), size_of<u64, array<i8, 4096>>(4096) [c="size_t"]), null<ptr<i8>>));
 // DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
 // DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE11]]), read<i32>(%[[VALUE10]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE12]]));
@@ -602,7 +602,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE51:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total_4]]);
 // DEFAULT-NEXT:         let %[[VALUE52:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE51]]), read<i32>(%[[VALUE50]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_total_4]], read<i32>(%[[VALUE52]]));
-// DEFAULT-NEXT:         let %[[VALUE53:[0-9]+]]: i32 [synthetic] = from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<void>, u64) -> i32>(%[[VALUE__SC_AVPHYS_PAGES]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<u8>, length=Some(8)>(%[[VALUE_random_bytes]])), const<u64>(8) [c="size_t"]), const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE53:[0-9]+]]: i32 [synthetic] = from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<void>, u64) -> i32>(%[[VALUE__SC_AVPHYS_PAGES]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<u8>, length=Some(8)>(%[[VALUE_random_bytes]])), size_of<u64, array<u8, 8>>(8) [c="size_t"]), const<i32>(0)));
 // DEFAULT-NEXT:         let %[[VALUE54:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total_4]]);
 // DEFAULT-NEXT:         let %[[VALUE55:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE54]]), read<i32>(%[[VALUE53]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_total_4]], read<i32>(%[[VALUE55]]));

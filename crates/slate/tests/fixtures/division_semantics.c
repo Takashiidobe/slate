@@ -69,7 +69,10 @@ int main(void) {
 // CHECK-NEXT:         [2147483647i32, -1i32],
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     while (i as u64) < 56 / 8 {
+// CHECK-NEXT:     while (i as u64)
+// CHECK-NEXT:         < (std::mem::size_of::<{{\[\[}}i32; 2]; 7]>() as u64)
+// CHECK-NEXT:             / (std::mem::size_of::<[i32; 2]>() as u64)
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let a: i32 = pairs.0[i as usize][0];
 // CHECK-NEXT:         let b: i32 = pairs.0[i as usize][1];
 // CHECK-NEXT:         println!(

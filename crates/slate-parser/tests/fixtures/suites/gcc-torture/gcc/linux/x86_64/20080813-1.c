@@ -62,10 +62,10 @@ int main(void) {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), const<u64>(2))
+// DEFAULT-NEXT:         if eq<u64>(size_of<u64, i32>(4), size_of<u64, i16>(2))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         call<void, signature=fn(u16) -> void>(%[[VALUE_foo]], reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))));
-// DEFAULT-NEXT:         if gt<u64>(const<u64>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))
+// DEFAULT-NEXT:         if gt<u64>(size_of<u64, i16>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))
 // DEFAULT-NEXT:             call<void, signature=fn(u16) -> void>(%[[VALUE_bar]], reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

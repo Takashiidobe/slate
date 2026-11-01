@@ -97,8 +97,8 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memset:[0-9]+]] @__builtin_memset(%[[VALUE6:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE7:[0-9]+]] <unnamed>: i32, %[[VALUE8:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_input:[0-9]+]] input: array<u8, 97> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<u8>, length=Some(97)>(%[[VALUE_input]])), const<i32>(0), const<u64>(97));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(97)>(%[[VALUE_input]]), const<i32>(1))), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(81)>(%[[VALUE_data]])), const<u64>(81));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<u8>, length=Some(97)>(%[[VALUE_input]])), const<i32>(0), size_of<u64, array<u8, 97>>(97));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(97)>(%[[VALUE_input]]), const<i32>(1))), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(81)>(%[[VALUE_data]])), size_of<u64, array<i8, 81>>(81));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const u8>) -> void>(%[[VALUE_bar]], pointer_cast<ptr<const u8>, reason=arg>(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(97)>(%[[VALUE_input]]), const<i32>(1))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

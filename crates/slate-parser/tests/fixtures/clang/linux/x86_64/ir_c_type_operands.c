@@ -93,7 +93,7 @@ int forwarded_truth(int a, int b) { return (a, a < b) && (b, a > b); }
 // DEFAULT-NEXT:         return ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<const i32>>(%[[VALUE_a_2]]), read<ptr<i32>>(%[[VALUE_b_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_truth_size:[0-9]+]] @truth_size(%[[VALUE_a_3:[0-9]+]] a: i32 [c="int"], %[[VALUE_b_3:[0-9]+]] b: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int, int)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4) [size_of="i32"]));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, i32>(4)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_variadic:[0-9]+]] @variadic(%[[VALUE_tag:[0-9]+]] tag: i32 [c="int"], ...) -> i32 [linkage=external] [c="int(int, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_half_argument:[0-9]+]] @half_argument(%[[VALUE_value:[0-9]+]] value: f16 [c="_Float16"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(_Float16)"] {

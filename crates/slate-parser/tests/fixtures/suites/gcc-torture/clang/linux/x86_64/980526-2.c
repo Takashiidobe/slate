@@ -86,7 +86,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_to_kdev_t:[0-9]+]] @to_kdev_t(%[[VALUE_dev:[0-9]+]] dev: i32) -> u32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] [c="kdev_t(int)"] {
 // DEFAULT-NEXT:         let %[[VALUE_major:[0-9]+]] major: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_minor:[0-9]+]] minor: i32 [storage=automatic];
-// DEFAULT-NEXT:         if eq<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))))
+// DEFAULT-NEXT:         if eq<u64>(size_of<u64, u32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))))
 // DEFAULT-NEXT:             return reinterpret<u32, reason=explicit, fits=unknown>(read<i32>(%[[VALUE_dev]])) [c="kdev_t"];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_major]], shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_dev]]), const<i32>(8)));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_minor]], and<i32>(read<i32>(%[[VALUE_dev]]), const<i32>(255)));
@@ -128,7 +128,7 @@ int main(void) {
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_error]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, i32, u32) -> i32>(%[[VALUE_sys_mknod]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str]])), const<i32>(1), reinterpret<u32, reason=arg, fits=always>(const<i32>(305419896)) [c="dev_t"]);
 // DEFAULT-NEXT:     }

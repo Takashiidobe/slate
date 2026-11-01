@@ -149,7 +149,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memset:[0-9]+]] @__builtin_memset(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: i32, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_x_3:[0-9]+]] x: u32) -> ptr<@type[[TYPE_V]]> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_V]]>>(%[[VALUE_v]])), const<i32>(85), const<u64>(72));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_V]]>>(%[[VALUE_v]])), const<i32>(85), size_of<u64, @type[[TYPE_V]]>(72));
 // DEFAULT-NEXT:         return addr_of<ptr<@type[[TYPE_V]]>>(%[[VALUE_v]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_check:[0-9]+]] @check(%[[VALUE_x_4:[0-9]+]] x: ptr<void>, %[[VALUE_y_2:[0-9]+]] y: ptr<@type[[TYPE_S]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -164,7 +164,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_v_2]], call<ptr<void>, signature=fn(ptr<void>) -> ptr<void>>(%[[VALUE_dummy1]], read<ptr<void>>(%[[VALUE_y_3]])));
 // DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(read<ptr<void>>(%[[VALUE_v_2]]), null<ptr<void>>))
 // DEFAULT-NEXT:             return null<ptr<@type[[TYPE_V]]>>;
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE_V]]>>(%[[VALUE_u]], call<ptr<@type[[TYPE_V]]>, signature=fn(u32) -> ptr<@type[[TYPE_V]]>>(%[[VALUE_baz]], truncate<u32, reason=arg, fits=always>(const<u64>(72))));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_V]]>>(%[[VALUE_u]], call<ptr<@type[[TYPE_V]]>, signature=fn(u32) -> ptr<@type[[TYPE_V]]>>(%[[VALUE_baz]], truncate<u32, reason=arg, fits=always>(size_of<u64, @type[[TYPE_V]]>(72))));
 // DEFAULT-NEXT:         write<u32>(field0(deref(read<ptr<@type[[TYPE_V]]>>(%[[VALUE_u]]))), read<u32>(%[[VALUE_x_5]]));
 // DEFAULT-NEXT:         write<u32>(field0(field0(field1(deref(read<ptr<@type[[TYPE_V]]>>(%[[VALUE_u]]))))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field1(field0(field1(deref(read<ptr<@type[[TYPE_V]]>>(%[[VALUE_u]]))))), copy<@type[[TYPE_T]], reason=assign>(read<@type[[TYPE_T]]>(%[[VALUE_t]])));

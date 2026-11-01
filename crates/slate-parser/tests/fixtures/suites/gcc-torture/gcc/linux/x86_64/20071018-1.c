@@ -64,10 +64,10 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE0:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_f:[0-9]+]] f: ptr<ptr<@type[[TYPE_foo]]>>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE_foo]]>>(deref(read<ptr<ptr<@type[[TYPE_foo]]>>>(%[[VALUE_f]])), pointer_cast<ptr<@type[[TYPE_foo]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], const<u64>(16))));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_foo]]>>(deref(read<ptr<ptr<@type[[TYPE_foo]]>>>(%[[VALUE_f]])), pointer_cast<ptr<@type[[TYPE_foo]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], size_of<u64, @type[[TYPE_foo]]>(16))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_rank:[0-9]+]] rank: i32) -> ptr<@type[[TYPE_foo]]> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], const<u64>(32));
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], size_of<u64, @type[[TYPE_mem]]>(32));
 // DEFAULT-NEXT:         let %[[VALUE_as:[0-9]+]] as: ptr<@type[[TYPE_mem]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_mem]]>, reason=assign>(read<ptr<void>>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         let %[[VALUE_upper:[0-9]+]] upper: ptr<ptr<@type[[TYPE_foo]]>> [storage=automatic] = addr_of<ptr<ptr<@type[[TYPE_foo]]>>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_foo]]>>, subtract=false, element=ptr<@type[[TYPE_foo]]>, overflow=ub>(array_decay<ptr<ptr<@type[[TYPE_foo]]>>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_mem]]>>(%[[VALUE_as]])))), sub<i32, overflow=ub>(mul<i32, overflow=ub>(read<i32>(%[[VALUE_rank]]), const<i32>(8)), const<i32>(5)))));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_foo]]>>(deref(read<ptr<ptr<@type[[TYPE_foo]]>>>(%[[VALUE_upper]])), null<ptr<@type[[TYPE_foo]]>>);

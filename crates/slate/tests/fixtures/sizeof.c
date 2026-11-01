@@ -30,11 +30,26 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct Pair {
+// CHECK-NEXT:     left: i32,
+// CHECK-NEXT:     right: i32,
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: union Slot {
+// CHECK-NEXT:     value: i32,
+// CHECK-NEXT:     raw: u32,
+// CHECK-NEXT: }
 // CHECK-NEXT: fn sizeof_values() -> i32 {
-// CHECK-NEXT:     28i32
+// CHECK-NEXT:     ((std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:         .wrapping_add(std::mem::size_of::<[i32; 3]>() as u64)
+// CHECK-NEXT:         .wrapping_add(std::mem::size_of::<Pair>() as u64)
+// CHECK-NEXT:         .wrapping_add(std::mem::size_of::<Slot>() as u64) as u32) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sizeof_expr() -> i32 {
-// CHECK-NEXT:     4
+// CHECK-NEXT:     std::mem::size_of::<i32>() as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", sizeof_values());

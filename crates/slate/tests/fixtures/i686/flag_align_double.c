@@ -237,7 +237,15 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].l = 4i64;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 32u32, 8u32, 24u32, 8u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
+// CHECK-NEXT:             std::mem::size_of::<wide>() as u32,
+// CHECK-NEXT:             8u32,
+// CHECK-NEXT:             24u32,
+// CHECK-NEXT:             8u32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { printf(c"%d %g %d %lld\n".as_ptr(), w.c as i32, w.d, w.i, w.l) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
@@ -258,7 +266,13 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 8u32, 8u32, 8u32, 8u32) };
 // CHECK-NEXT:     let mut image: wide = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     unsafe { __builtin_memset(std::ptr::addr_of_mut!(image) as *mut (), 170i32, 32u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         __builtin_memset(
+// CHECK-NEXT:             std::ptr::addr_of_mut!(image) as *mut (),
+// CHECK-NEXT:             170i32,
+// CHECK-NEXT:             std::mem::size_of::<wide>() as u32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     image.c = 1;
 // CHECK-NEXT:     image.d = 2.5f64;
 // CHECK-NEXT:     image.i = 3;
@@ -266,10 +280,16 @@ int main(void) {
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"wide".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(image) as *const (),
-// CHECK-NEXT:         32u32,
+// CHECK-NEXT:         std::mem::size_of::<wide>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut n: nested = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     unsafe { __builtin_memset(std::ptr::addr_of_mut!(n) as *mut (), 0i32, 48u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         __builtin_memset(
+// CHECK-NEXT:             std::ptr::addr_of_mut!(n) as *mut (),
+// CHECK-NEXT:             0i32,
+// CHECK-NEXT:             std::mem::size_of::<nested>() as u32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     n.tag = 9;
 // CHECK-NEXT:     n.inner.c = w.c;
 // CHECK-NEXT:     n.inner.d = w.d;
@@ -279,7 +299,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"nested %zu %zu %u %u %u\n".as_ptr(),
-// CHECK-NEXT:             48u32,
+// CHECK-NEXT:             std::mem::size_of::<nested>() as u32,
 // CHECK-NEXT:             8u32,
 // CHECK-NEXT:             offset(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(n) as *const (),
@@ -298,7 +318,7 @@ int main(void) {
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"nested".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(n) as *const (),
-// CHECK-NEXT:         48u32,
+// CHECK-NEXT:         std::mem::size_of::<nested>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut a: arrays = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: arrays = unsafe { std::mem::zeroed() };
@@ -310,7 +330,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"arrays %zu %u %u %u\n".as_ptr(),
-// CHECK-NEXT:             32u32,
+// CHECK-NEXT:             std::mem::size_of::<arrays>() as u32,
 // CHECK-NEXT:             offset(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(a) as *const (),
 // CHECK-NEXT:                 (a.d.as_mut_ptr() as *mut f64).add(0) as *const (),
@@ -341,8 +361,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"union %zu %zu %zu %u %g\n".as_ptr(),
-// CHECK-NEXT:             8u32,
-// CHECK-NEXT:             16u32,
+// CHECK-NEXT:             std::mem::size_of::<either>() as u32,
+// CHECK-NEXT:             std::mem::size_of::<holds_union>() as u32,
 // CHECK-NEXT:             8u32,
 // CHECK-NEXT:             offset(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(h) as *const (),
@@ -352,14 +372,20 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut b: bits = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     unsafe { __builtin_memset(std::ptr::addr_of_mut!(b) as *mut (), 0i32, 8u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         __builtin_memset(
+// CHECK-NEXT:             std::ptr::addr_of_mut!(b) as *mut (),
+// CHECK-NEXT:             0i32,
+// CHECK-NEXT:             std::mem::size_of::<bits>() as u32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     b.c = 1;
 // CHECK-NEXT:     b.__slate_bits_0.__set_b(-3i64);
 // CHECK-NEXT:     b.__slate_bits_0.__set_rest(123456789i64);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"bits %zu %zu %d %lld\n".as_ptr(),
-// CHECK-NEXT:             8u32,
+// CHECK-NEXT:             std::mem::size_of::<bits>() as u32,
 // CHECK-NEXT:             8u32,
 // CHECK-NEXT:             b.__slate_bits_0.__get_b() as i32,
 // CHECK-NEXT:             b.__slate_bits_0.__get_rest(),
@@ -368,7 +394,7 @@ int main(void) {
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"bits".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(b) as *const (),
-// CHECK-NEXT:         8u32,
+// CHECK-NEXT:         std::mem::size_of::<bits>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut cm: complex_member = {
 // CHECK-NEXT:         let mut [[T_4:__t[0-9]+]]: complex_member = unsafe { std::mem::zeroed() };
@@ -403,7 +429,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"list %zu %u %u\n".as_ptr(),
-// CHECK-NEXT:             96u32,
+// CHECK-NEXT:             std::mem::size_of::<[wide; 3]>() as u32,
 // CHECK-NEXT:             offset(
 // CHECK-NEXT:                 (list.as_mut_ptr() as *mut wide).add(0) as *const (),
 // CHECK-NEXT:                 (list.as_mut_ptr() as *mut wide).add(1) as *const (),

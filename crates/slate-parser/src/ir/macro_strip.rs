@@ -468,6 +468,7 @@ impl<V: MacroStructureVisitor> Walker<'_, V> {
             ValueKind::Fence { ordering, .. } => self.atomicity(ordering),
             ValueKind::OldValue
             | ValueKind::Constant(_)
+            | ValueKind::LayoutQuery { .. }
             | ValueKind::Null
             | ValueKind::LabelAddress(_)
             | ValueKind::Seh(_)

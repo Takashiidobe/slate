@@ -549,9 +549,9 @@ const tree __t = __extension__ ({ const tree __t = (expr); char const __c = tree
 // DEFAULT-NEXT:     fn %[[VALUE_ggc_alloc_stat:[0-9]+]] @ggc_alloc_stat(unprototyped) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_ssa_operand_alloc:[0-9]+]] @ssa_operand_alloc(%[[VALUE_size:[0-9]+]] size: u32) -> ptr<void> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_ptr:[0-9]+]] ptr: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         if ge<u64>(widen<u64, reason=usual_arith>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_operand_memory_index]]), read<u32>(%[[VALUE_size]]))), sub<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2048))), const<u64>(8)))
+// DEFAULT-NEXT:         if ge<u64>(widen<u64, reason=usual_arith>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_operand_memory_index]]), read<u32>(%[[VALUE_size]]))), sub<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2048))), size_of<u64, ptr<void>>(8)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_ptr]], int_to_ptr<ptr<i8>, reason=assign>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_ggc_alloc_stat]], const<u64>(2040))));
+// DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_ptr]], int_to_ptr<ptr<i8>, reason=assign>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_ggc_alloc_stat]], size_of<u64, @type[[TYPE_ssa_operand_memory_d]]>(2040))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_ptr]], addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(2040)>(field0(deref(read<ptr<@type[[TYPE_ssa_operand_memory_d]]>>(%[[VALUE_operand_memory]])))), read<u32>(%[[VALUE_operand_memory_index]])))));
 // DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(read<ptr<i8>>(%[[VALUE_ptr]]));
@@ -590,7 +590,7 @@ const tree __t = __extension__ ({ const tree __t = (expr); char const __c = tree
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_free_uses]], read<ptr<@type[[TYPE_use_optype_d]]>>(field0(deref(read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_free_uses]])))) [c="use_optype_p"]) [c="use_optype_p"];
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         write<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ret]], pointer_cast<ptr<@type[[TYPE_use_optype_d]]>, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE_ssa_operand_alloc]], truncate<u32, reason=arg, fits=always>(const<u64>(40)))));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ret]], pointer_cast<ptr<@type[[TYPE_use_optype_d]]>, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE_ssa_operand_alloc]], truncate<u32, reason=arg, fits=always>(size_of<u64, @type[[TYPE_use_optype_d]]>(40)))));
 // DEFAULT-NEXT:         return read<ptr<@type[[TYPE_use_optype_d]]>>(%[[VALUE_ret]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_finalize_ssa_use_ops:[0-9]+]] @finalize_ssa_use_ops(%[[VALUE_stmt_3:[0-9]+]] stmt: ptr<@type[[TYPE_tree_node]]> [c="tree"]) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] [c="void(tree)"] {
@@ -799,7 +799,7 @@ const tree __t = __extension__ ({ const tree __t = (expr); char const __c = tree
 // DEFAULT-NEXT:             write<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE29]], addr_of<ptr<ptr<@type[[TYPE_tree_node]]>>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_tree_node]]>>, subtract=false, element=ptr<@type[[TYPE_tree_node]]>, overflow=ub>(array_decay<ptr<ptr<@type[[TYPE_tree_node]]>>, length=Some(1)>(field0(field3(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE___t_6]]))))), read<i32>(%[[VALUE___i_3]])))) [c="tree *"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_noutputs]], call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_list_length]], read<ptr<@type[[TYPE_tree_node]]>>(deref(read<ptr<ptr<@type[[TYPE_tree_node]]>>>(%[[VALUE29]]))) [c="tree"]));
-// DEFAULT-NEXT:         let %[[VALUE_oconstraints:[0-9]+]] oconstraints: ptr<ptr<const i8>> [storage=automatic] = pointer_cast<ptr<ptr<const i8>>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_noutputs]]))), const<u64>(8))));
+// DEFAULT-NEXT:         let %[[VALUE_oconstraints:[0-9]+]] oconstraints: ptr<ptr<const i8>> [storage=automatic] = pointer_cast<ptr<ptr<const i8>>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_noutputs]]))), size_of<u64, ptr<const i8>>(8))));
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_link:[0-9]+]] link: ptr<@type[[TYPE_tree_node]]> [storage=automatic] [c="tree"];
 // DEFAULT-NEXT:         let %[[VALUE_constraint:[0-9]+]] constraint: ptr<const i8> [storage=automatic];

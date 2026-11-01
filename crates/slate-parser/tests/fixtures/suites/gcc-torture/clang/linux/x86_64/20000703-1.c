@@ -84,7 +84,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: ptr<void> [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_s:[0-9]+]] s: ptr<void> [storage=automatic] = pointer_cast<ptr<void>, reason=assign>(read<ptr<@type[[TYPE_baz]]>>(%[[VALUE_p_2]]));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], read<ptr<void>>(%[[VALUE_s]]), const<i32>(0), const<u64>(28));
+// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], read<ptr<void>>(%[[VALUE_s]]), const<i32>(0), size_of<u64, @type[[TYPE_baz]]>(28));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE7]], read<ptr<void>>(%[[VALUE_s]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(field0(deref(read<ptr<@type[[TYPE_baz]]>>(%[[VALUE_p_2]]))))), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_2]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(17))));

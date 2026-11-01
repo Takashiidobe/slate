@@ -71,15 +71,15 @@ main (void)
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_sfoo:[0-9]+]] @sfoo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(32), const<u64>(0))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_foo_2]]>(32), const<u64>(0))
 // DEFAULT-NEXT:             const<i32>(0);
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(1)));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, @type[[TYPE_foo]]>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_t]], call<i32, signature=fn() -> i32>(%[[VALUE_sfoo]]));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_u]], reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(1))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_u]], reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, @type[[TYPE_foo]]>(1))));
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_t]]), read<i32>(%[[VALUE_u]]))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         else

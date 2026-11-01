@@ -56,7 +56,7 @@ int block(void) {
 // IR-NEXT:         let %[[VALUE_local:[0-9]+]] local: i32 [storage=automatic] [const] = const<i32>(5);
 // IR-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_local]])));
 // IR-NEXT:         let %[[VALUE_automatic:[0-9]+]] automatic: vla<i32, %[[VALUE0]]> [storage=automatic];
-// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(20), const<u64>(12)), mul<u64, overflow=wrap>(read<u64>(%[[VALUE0]]), const<u64>(4))), const<u64>(12))));
+// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(size_of<u64, array<i32, 5>>(20), size_of<u64, array<i32, 3>>(12)), mul<u64, overflow=wrap>(read<u64>(%[[VALUE0]]), const<u64>(4))), size_of<u64, array<i32, 3>>(12))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

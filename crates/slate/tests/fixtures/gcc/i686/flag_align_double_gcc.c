@@ -297,7 +297,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %u %u\n".as_ptr(),
-// CHECK-NEXT:             24u32,
+// CHECK-NEXT:             std::mem::size_of::<wide>() as u32,
 // CHECK-NEXT:             8u32,
 // CHECK-NEXT:             offset(
 // CHECK-NEXT:                 &(*(std::ptr::addr_of_mut!(w) as *const ())),

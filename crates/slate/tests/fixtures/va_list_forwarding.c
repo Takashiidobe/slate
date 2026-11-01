@@ -241,7 +241,7 @@ int main(void) {
 // CHECK-NEXT:     let rendered: i32 = unsafe {
 // CHECK-NEXT:         render(
 // CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             64u64,
+// CHECK-NEXT:             std::mem::size_of::<[i8; 64]>() as u64,
 // CHECK-NEXT:             c"[%d|%s|%c]".as_ptr(),
 // CHECK-NEXT:             7i32,
 // CHECK-NEXT:             c"seven".as_ptr() as *mut i8,

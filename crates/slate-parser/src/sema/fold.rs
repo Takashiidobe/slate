@@ -381,6 +381,7 @@ fn evaluate(value: &Value, depth: usize, env: Env) -> Option<BigInt> {
     }
     let (width, signed) = integer_type(&value.ty)?;
     let result = match &value.node.value {
+        ValueKind::LayoutQuery { amount, .. } => BigInt::from(*amount),
         ValueKind::Constant(Number::Bool(value)) => BigInt::from(u8::from(*value)),
         ValueKind::Constant(Number::Integer(value)) => {
             if value.bits() > u64::from(MAX_WIDTH) {

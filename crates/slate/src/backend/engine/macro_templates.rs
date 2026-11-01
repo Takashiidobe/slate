@@ -4,8 +4,8 @@ use super::rules::walk::{child_exprs, child_exprs_mut, stmt_exprs, stmt_exprs_mu
 use super::shadow::visit_names;
 use crate::backend::codegen::is_rust_keyword;
 use crate::backend::rust_ast::{
-    Block, Expr, Ident, ImplItem, Item, Label, MacroParam, Program, Stmt, Type, UnaryOp,
-    macro_template_base,
+    Block, Expr, Ident, ImplItem, Item, Label, LayoutQuery, MacroParam, Program, Stmt, Type,
+    UnaryOp, macro_template_base,
 };
 use crate::function_identity::CallBinding;
 
@@ -143,8 +143,14 @@ fn each_template_type(stmts: &mut [Stmt], visit: &mut impl FnMut(&mut Type)) {
         stmt_exprs_mut(stmt, &mut exprs);
         for expr in exprs {
             visit_expr_mut(expr, &mut |expr| match expr {
-                Expr::Cast { expr: operand, .. } if matches!(**operand, Expr::Value(_)) => {}
-                Expr::Cast { ty, .. } | Expr::MacroType(ty) => visit(ty),
+                Expr::Cast { expr: operand, .. }
+                    if matches!(**operand, Expr::Value(_) | Expr::LayoutQuery { .. }) => {}
+                Expr::Cast { ty, .. }
+                | Expr::MacroType(ty)
+                | Expr::LayoutQuery {
+                    query: LayoutQuery::SizeOf(ty),
+                    ..
+                } => visit(ty),
                 Expr::Block(block) | Expr::Unsafe(block) => {
                     each_template_type(&mut block.stmts, visit);
                 }

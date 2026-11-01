@@ -420,7 +420,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}", zero_after((unsafe { std::ptr::addr_of!(partial_static) }) as * const
-// CHECK-NEXT:         (), 1u64, 8u64), (unsafe { partial_static.small }) as i32
+// CHECK-NEXT:         (), 1u64, std::mem::size_of::< partial > () as u64), (unsafe { partial_static
+// CHECK-NEXT:         .small }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}", (unsafe { record_static.record.tag }) as i32, unsafe { record_static
@@ -451,14 +452,19 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}", ((unsafe { local.code }) as u32) as i32,
-// CHECK-NEXT:         zero_after(std::ptr::addr_of_mut!(local_partial) as * const (), 1u64, 8u64),
-// CHECK-NEXT:         (unsafe { local_partial.small }) as i32
+// CHECK-NEXT:         zero_after(std::ptr::addr_of_mut!(local_partial) as * const (), 1u64,
+// CHECK-NEXT:         std::mem::size_of::< partial > () as u64), (unsafe { local_partial.small }) as
+// CHECK-NEXT:         i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%s %d\n".as_ptr(),
 // CHECK-NEXT:             local_array.text.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             zero_after(std::ptr::addr_of_mut!(local_array) as *const (), 2u64, 4u64),
+// CHECK-NEXT:             zero_after(
+// CHECK-NEXT:                 std::ptr::addr_of_mut!(local_array) as *const (),
+// CHECK-NEXT:                 2u64,
+// CHECK-NEXT:                 std::mem::size_of::<array_member>() as u64,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

@@ -93,7 +93,9 @@ int main(void) {
 // CHECK-NEXT: fn r_uchar() {
 // CHECK-NEXT:     let x: u8 = 165u8;
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     while (i as u64) < 96 / 4 {
+// CHECK-NEXT:     while (i as u64)
+// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let l: u8 = x
 // CHECK-NEXT:             .rotate_left(
 // CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(8) as u32,
@@ -111,7 +113,9 @@ int main(void) {
 // CHECK-NEXT: fn r_ushort() {
 // CHECK-NEXT:     let x: u16 = 35889u16;
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     while (i as u64) < 96 / 4 {
+// CHECK-NEXT:     while (i as u64)
+// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let l: u16 = x
 // CHECK-NEXT:             .rotate_left(
 // CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(16) as u32,
@@ -129,7 +133,9 @@ int main(void) {
 // CHECK-NEXT: fn r_uint() {
 // CHECK-NEXT:     let x: u32 = 2160132078;
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     while (i as u64) < 96 / 4 {
+// CHECK-NEXT:     while (i as u64)
+// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let l: u32 = x
 // CHECK-NEXT:             .rotate_left(
 // CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(32) as u32,
@@ -147,7 +153,9 @@ int main(void) {
 // CHECK-NEXT: fn r_ull() {
 // CHECK-NEXT:     let x: u64 = 9305357566071262703;
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     while (i as u64) < 96 / 4 {
+// CHECK-NEXT:     while (i as u64)
+// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let l: u64 = x
 // CHECK-NEXT:             .rotate_left(
 // CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(64) as u32,
@@ -165,7 +173,9 @@ int main(void) {
 // CHECK-NEXT: fn r_u5() {
 // CHECK-NEXT:     let x: u8 = 21u8;
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while (i as u64) < 96 / 4 {
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while (i as u64)
+// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let l: u8 = {
 // CHECK-NEXT:             let [[T_0:__t[0-9]+]] = x;
 // CHECK-NEXT:             let [[T_1:__t[0-9]+]] = ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(5) as u32;
@@ -185,7 +195,9 @@ int main(void) {
 // CHECK-NEXT: fn r_u9() {
 // CHECK-NEXT:     let x: u16 = 421u16;
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_0]]: while (i as u64) < 96 / 4 {
+// CHECK-NEXT:     '[[SLATE_BREAK_0]]: while (i as u64)
+// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let l: u16 = {
 // CHECK-NEXT:             let [[T_0]] = x;
 // CHECK-NEXT:             let [[T_1]] = ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(9) as u32;
@@ -205,7 +217,9 @@ int main(void) {
 // CHECK-NEXT: fn r_u33() {
 // CHECK-NEXT:     let x: u64 = 7532965393;
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_0]]: while (i as u64) < 96 / 4 {
+// CHECK-NEXT:     '[[SLATE_BREAK_0]]: while (i as u64)
+// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let l: u64 = {
 // CHECK-NEXT:             let [[T_0]] = x;
 // CHECK-NEXT:             let [[T_1]] = ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(33) as u32;
@@ -225,7 +239,9 @@ int main(void) {
 // CHECK-NEXT: fn r_u64() {
 // CHECK-NEXT:     let x: u64 = 17297757509875842799;
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     while (i as u64) < 96 / 4 {
+// CHECK-NEXT:     while (i as u64)
+// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let l: u64 = x
 // CHECK-NEXT:             .rotate_left(
 // CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(64) as u32,
@@ -257,7 +273,9 @@ int main(void) {
 // CHECK-NEXT:             >>::from_u128(1311768467294899695 as u128),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     while (i as u64) < 96 / 4 {
+// CHECK-NEXT:     while (i as u64)
+// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let mut l: bitint::BUint<100, 2, 16, bitint::A8> = x
 // CHECK-NEXT:             .rotate_left_bits(
 // CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(100) as u32,
@@ -297,7 +315,9 @@ int main(void) {
 // CHECK-NEXT:             >>::from_bint(<bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(7 as i128)),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     while (i as u64) < 96 / 4 {
+// CHECK-NEXT:     while (i as u64)
+// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let mut l: bitint::BUint<128, 2, 16, bitint::A8> = x
 // CHECK-NEXT:             .rotate_left_bits(
 // CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(128) as u32,

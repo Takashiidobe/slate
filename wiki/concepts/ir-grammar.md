@@ -506,6 +506,7 @@ scope    = "device" | "workgroup" | "wavefront" | "single" | "cluster"
 ```ebnf
 value      = core { metadata } ;
 core       = "const<" type ">(" constant ")"
+           | "size_of<" type "," type ">(" int ")"
            | "null<" type ">"
            | "void"
            | "code_units<" type ">(" int_list ")"

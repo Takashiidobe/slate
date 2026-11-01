@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:         if eq<i64>(read<i64>(%[[VALUE_n]]) [c="T"], widen<i64, reason=usual_arith>(const<i32>(0)) [c="T"])
 // DEFAULT-NEXT:             return array_decay<ptr<i64>, length=Some(1024)>(%[[VALUE_buf]]) [c="T *"];
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: i64 [storage=automatic] = ptr_to_int<i64, reason=explicit>(call<ptr<i64>, signature=fn(i64) -> ptr<i64>>(%[[VALUE_foo]], sub<i64, overflow=ub>(read<i64>(%[[VALUE_n]]) [c="T"], widen<i64, reason=usual_arith>(const<i32>(1)) [c="T"]) [c="T"]) [c="T *"]) [c="T"] [c="T"];
-// DEFAULT-NEXT:         return int_to_ptr<ptr<i64>, reason=explicit>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%[[VALUE_s]]) [c="T"]), const<u64>(8))) [c="T *"];
+// DEFAULT-NEXT:         return int_to_ptr<ptr<i64>, reason=explicit>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%[[VALUE_s]]) [c="T"]), size_of<u64, i64>(8))) [c="T *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_n_2:[0-9]+]] n: i64 [c="T"]) -> ptr<i64> [linkage=external] [fallthrough=ub_if_used] [c="T *(T)"] {
 // DEFAULT-NEXT:         if eq<i64>(read<i64>(%[[VALUE_n_2]]) [c="T"], widen<i64, reason=usual_arith>(const<i32>(0)) [c="T"])

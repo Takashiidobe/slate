@@ -59,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_bound]], read<i32>(%[[VALUE4]]));
 // DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE3]])));
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_evaluated]], mul<u64, overflow=wrap>(read<u64>(%[[VALUE5]]), const<u64>(4)));
-// DEFAULT-NEXT:         let %[[VALUE_unevaluated:[0-9]+]] unevaluated: u64 [storage=automatic] = const<u64>(8);
+// DEFAULT-NEXT:         let %[[VALUE_unevaluated:[0-9]+]] unevaluated: u64 [storage=automatic] = size_of<u64, ptr<vla<i32, %[[VALUE6:[0-9]+]]>>>(8);
 // DEFAULT-NEXT:         let %[[VALUE_values_2:[0-9]+]] values: array<i32, 3> [storage=automatic] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(7), index1 = const<i32>(8), index2 = const<i32>(9));
 // DEFAULT-NEXT:         let %[[VALUE_parameter:[0-9]+]] parameter: i32 [storage=automatic] = call<i32, signature=fn(i32, ptr<i32>) -> i32>(%[[VALUE_parameter_bound]], const<i32>(3), array_decay<ptr<i32>, length=Some(3)>(%[[VALUE_values_2]]));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(15)>(%[[VALUE_str]])), read<u64>(%[[VALUE_evaluated]]), read<u64>(%[[VALUE_unevaluated]]), read<i32>(%[[VALUE_bound]]), read<i32>(%[[VALUE_parameter]]));

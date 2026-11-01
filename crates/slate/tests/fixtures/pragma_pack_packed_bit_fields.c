@@ -36,6 +36,42 @@ int main(void) {
 // CHECK-NEXT:     c: i8,
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits0U0,
 // CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C, packed)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct plain {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     i: i32,
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct char_bits {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits2U0,
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C, align(4))]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct wide_bits {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits3U0,
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct field_packed {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits4U0,
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct unnamed {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits5U0,
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C, align(4))]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct eight {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits6U0,
+// CHECK-NEXT: }
 // CHECK-NEXT: mod __slate_bits {
 // CHECK-NEXT:     #[bitfields::bitfield(
 // CHECK-NEXT:         [u8;3],
@@ -54,6 +90,89 @@ int main(void) {
 // CHECK-NEXT:         #[bits(20)]
 // CHECK-NEXT:         pub y: i32,
 // CHECK-NEXT:     }
+// CHECK-NEXT:     #[bitfields::bitfield(
+// CHECK-NEXT:         u8,
+// CHECK-NEXT:         c_names = true,
+// CHECK-NEXT:         new = false,
+// CHECK-NEXT:         from_into_bits = false,
+// CHECK-NEXT:         from_traits = false,
+// CHECK-NEXT:         default = false,
+// CHECK-NEXT:         debug = false,
+// CHECK-NEXT:         builder = false,
+// CHECK-NEXT:         bit_ops = false
+// CHECK-NEXT:     )]
+// CHECK-NEXT:     pub struct __SlateBits2U0 {
+// CHECK-NEXT:         #[bits(4)]
+// CHECK-NEXT:         pub x: i8,
+// CHECK-NEXT:         #[bits(4, access = na)]
+// CHECK-NEXT:         pub __slate_pad_1: u8,
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[bitfields::bitfield(
+// CHECK-NEXT:         u8,
+// CHECK-NEXT:         c_names = true,
+// CHECK-NEXT:         new = false,
+// CHECK-NEXT:         from_into_bits = false,
+// CHECK-NEXT:         from_traits = false,
+// CHECK-NEXT:         default = false,
+// CHECK-NEXT:         debug = false,
+// CHECK-NEXT:         builder = false,
+// CHECK-NEXT:         bit_ops = false
+// CHECK-NEXT:     )]
+// CHECK-NEXT:     pub struct __SlateBits3U0 {
+// CHECK-NEXT:         #[bits(4)]
+// CHECK-NEXT:         pub x: i64,
+// CHECK-NEXT:         #[bits(4, access = na)]
+// CHECK-NEXT:         pub __slate_pad_1: u8,
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[bitfields::bitfield(
+// CHECK-NEXT:         u8,
+// CHECK-NEXT:         c_names = true,
+// CHECK-NEXT:         new = false,
+// CHECK-NEXT:         from_into_bits = false,
+// CHECK-NEXT:         from_traits = false,
+// CHECK-NEXT:         default = false,
+// CHECK-NEXT:         debug = false,
+// CHECK-NEXT:         builder = false,
+// CHECK-NEXT:         bit_ops = false
+// CHECK-NEXT:     )]
+// CHECK-NEXT:     pub struct __SlateBits4U0 {
+// CHECK-NEXT:         #[bits(4)]
+// CHECK-NEXT:         pub x: i8,
+// CHECK-NEXT:         #[bits(4, access = na)]
+// CHECK-NEXT:         pub __slate_pad_1: u8,
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[bitfields::bitfield(
+// CHECK-NEXT:         u8,
+// CHECK-NEXT:         c_names = true,
+// CHECK-NEXT:         new = false,
+// CHECK-NEXT:         from_into_bits = false,
+// CHECK-NEXT:         from_traits = false,
+// CHECK-NEXT:         default = false,
+// CHECK-NEXT:         debug = false,
+// CHECK-NEXT:         builder = false,
+// CHECK-NEXT:         bit_ops = false
+// CHECK-NEXT:     )]
+// CHECK-NEXT:     pub struct __SlateBits5U0 {
+// CHECK-NEXT:         #[bits(8, access = na)]
+// CHECK-NEXT:         pub __slate_pad_0: u8,
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[bitfields::bitfield(
+// CHECK-NEXT:         u8,
+// CHECK-NEXT:         c_names = true,
+// CHECK-NEXT:         new = false,
+// CHECK-NEXT:         from_into_bits = false,
+// CHECK-NEXT:         from_traits = false,
+// CHECK-NEXT:         default = false,
+// CHECK-NEXT:         debug = false,
+// CHECK-NEXT:         builder = false,
+// CHECK-NEXT:         bit_ops = false
+// CHECK-NEXT:     )]
+// CHECK-NEXT:     pub struct __SlateBits6U0 {
+// CHECK-NEXT:         #[bits(4)]
+// CHECK-NEXT:         pub x: i32,
+// CHECK-NEXT:         #[bits(4, access = na)]
+// CHECK-NEXT:         pub __slate_pad_1: u8,
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut b: int_bits = {
@@ -63,14 +182,49 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_y(1000i32);
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 4u64, 2u64, 5u64, 1u64) };
-// I686-UNKNOWN-LINUX-GNU-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 4u32, 2u32, 5u32, 1u32) };
 // CHECK-NEXT:     unsafe {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:         printf(c"%zu %zu %zu %zu %zu %zu\n".as_ptr(), 2u64, 1u64, 4u64, 4u64, 2u64, 1u64)
-// I686-UNKNOWN-LINUX-GNU-NEXT:         printf(c"%zu %zu %zu %zu %zu %zu\n".as_ptr(), 2u32, 1u32, 4u32, 4u32, 2u32, 1u32)
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<int_bits>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             2u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<plain>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             1u64,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<int_bits>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             2u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<plain>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             1u32,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 2u64, 1u64, 4u64, 4u64) };
-// I686-UNKNOWN-LINUX-GNU-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 2u32, 1u32, 4u32, 4u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%zu %zu %zu %zu %zu %zu\n".as_ptr(),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<char_bits>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             1u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<wide_bits>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             4u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<field_packed>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             1u64,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<char_bits>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             1u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<wide_bits>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             4u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<field_packed>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             1u32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<unnamed>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             1u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<eight>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             4u64,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<unnamed>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             1u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<eight>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             4u32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d %d\n".as_ptr(),

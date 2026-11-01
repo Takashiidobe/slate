@@ -334,13 +334,13 @@ int main(void) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut () = if n < 0 {
 // CHECK-NEXT:         std::ptr::null_mut::<()>()
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         unsafe { malloc((16 as c_ulong)) }
+// CHECK-NEXT:         unsafe { malloc((4 as c_ulong).wrapping_mul(std::mem::size_of::<i32>() as c_ulong)) }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let [[V_0]]: *mut () = if n < 0 {
 // CHECK-NEXT:         std::ptr::null_mut::<()>()
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         unsafe { malloc(16u64) }
+// CHECK-NEXT:         unsafe { malloc(4u64.wrapping_mul(std::mem::size_of::<i32>() as u64)) }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let p: *mut i32 = [[V_0]] as *mut i32;
 // CHECK-NEXT:     NULL_GUARD__2!(p);
@@ -361,9 +361,13 @@ int main(void) {
 // CHECK-NEXT: fn hidden_buffer_return(n: i32) -> *mut i32 {
 // CHECK-NEXT:     NEG_NULL!(n);
 // CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     let p: *mut i32 = (unsafe { malloc((n as c_ulong).wrapping_mul(4)) }) as *mut i32;
+// CHECK-NEXT:     let p: *mut i32 =
+// CHECK-NEXT:         (unsafe { malloc((n as c_ulong).wrapping_mul(std::mem::size_of::<i32>() as c_ulong)) })
+// CHECK-NEXT:             as *mut i32;
 // CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let p: *mut i32 = (unsafe { malloc(((n as i64) as u64).wrapping_mul(4)) }) as *mut i32;
+// CHECK-NEXT:     let p: *mut i32 =
+// CHECK-NEXT:         (unsafe { malloc(((n as i64) as u64).wrapping_mul(std::mem::size_of::<i32>() as u64)) })
+// CHECK-NEXT:             as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p.add(0) = n;
 // CHECK-NEXT:     }

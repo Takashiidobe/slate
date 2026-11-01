@@ -46,6 +46,24 @@ fn yields_ptr_or_int(expr: &Expr, vars: &VarTypes) -> bool {
     }
 }
 
+fn holds_amount(ty: &Type, amount: u64) -> bool {
+    let Type::Prim(prim) = ty else {
+        return false;
+    };
+    let bits = match prim.resolved() {
+        Prim::I8 => 7,
+        Prim::U8 => 8,
+        Prim::I16 => 15,
+        Prim::U16 => 16,
+        Prim::I32 | Prim::Isize => 31,
+        Prim::U32 | Prim::Usize => 32,
+        Prim::I64 => 63,
+        Prim::U64 => 64,
+        _ => return false,
+    };
+    bits == 64 || amount >> bits == 0
+}
+
 fn collapsible_pair(expr: &Expr, vars: &VarTypes) -> bool {
     let Expr::Cast {
         expr: inner,
@@ -64,6 +82,10 @@ fn collapsible_pair(expr: &Expr, vars: &VarTypes) -> bool {
     if inner_ty == outer_ty {
         return true;
     }
+    if let Expr::LayoutQuery { amount, .. } = innermost.as_ref() {
+        return holds_amount(inner_ty, amount.0)
+            && matches!(outer_ty, Type::Prim(prim) if is_int_prim(*prim));
+    }
     is_thin_raw_ptr(inner_ty) && is_thin_raw_ptr(outer_ty) && yields_ptr_or_int(innermost, vars)
 }
 
@@ -81,6 +103,14 @@ fn collapse_here(expr: &mut Expr, vars: &VarTypes) -> bool {
         };
         let innermost = std::mem::replace(innermost.as_mut(), Expr::Todo(String::new()));
         **inner = innermost;
+        changed = true;
+    }
+    if let Expr::Cast { expr: inner, ty } = expr
+        && matches!(ty, Type::Prim(Prim::Usize))
+        && matches!(**inner, Expr::LayoutQuery { .. })
+    {
+        let query = std::mem::replace(inner.as_mut(), Expr::Todo(String::new()));
+        *expr = query;
         changed = true;
     }
     changed

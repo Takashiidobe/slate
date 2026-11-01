@@ -42,7 +42,7 @@ fn (int i)
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : i32 {
 // DEFAULT-NEXT:         %[[VALUE_A:[0-9]+]] A = const<i32>(-2147483648);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %[[VALUE_k:[0-9]+]] k: i32 [storage=static] = shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), sub<u64, overflow=wrap>(mul<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_k:[0-9]+]] k: i32 [storage=static] = shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), sub<u64, overflow=wrap>(mul<u64, overflow=wrap>(size_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_fn:[0-9]+]] @fn(%[[VALUE_i:[0-9]+]] i: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<i32>(%[[VALUE_i]])
 // DEFAULT-NEXT:             case %[[VALUE0]] const<i32>(-2147483648):

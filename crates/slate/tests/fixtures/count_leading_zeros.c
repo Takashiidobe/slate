@@ -36,7 +36,9 @@ int main(void) {
 // CHECK-NEXT:         18446744073709551615u64,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     while (i as u64) < 56 / 8 {
+// CHECK-NEXT:     while (i as u64)
+// CHECK-NEXT:         < (std::mem::size_of::<[u64; 7]>() as u64) / (std::mem::size_of::<u64>() as u64)
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_printf_arg0 = unsafe {
 // CHECK-NEXT:             std::ptr::read_volatile((values.0.as_mut_ptr() as *mut u64).add(i as usize))
 // CHECK-NEXT:         }

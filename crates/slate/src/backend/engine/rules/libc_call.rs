@@ -187,6 +187,7 @@ fn const_len(expr: &Expr) -> Option<u64> {
         Expr::Value(RustValue::U128(n)) => u64::try_from(*n).ok(),
         Expr::Value(RustValue::TypedInt(n, _)) => u64::try_from(*n).ok(),
         Expr::Value(RustValue::TypedUInt(n, _)) => u64::try_from(*n).ok(),
+        Expr::LayoutQuery { amount, .. } => Some(amount.0),
         _ => None,
     }
 }

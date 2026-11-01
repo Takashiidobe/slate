@@ -49,7 +49,7 @@ here:
 // IR-NEXT:         return addr_of<ptr<void>>(%[[VALUE_incomplete_object]]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_void_size:[0-9]+]] @void_size() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(1);
+// IR-NEXT:         return size_of<u64, void>(1);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_void_align:[0-9]+]] @void_align() -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<u64>(1);

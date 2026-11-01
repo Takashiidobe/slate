@@ -796,17 +796,17 @@ int main(void) {
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"int".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(i) as *const (),
-// CHECK-NEXT:         4u32,
+// CHECK-NEXT:         std::mem::size_of::<i32>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"float".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(f) as *const (),
-// CHECK-NEXT:         4u32,
+// CHECK-NEXT:         std::mem::size_of::<f32>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"double".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(d) as *const (),
-// CHECK-NEXT:         8u32,
+// CHECK-NEXT:         std::mem::size_of::<f64>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"long double".as_ptr(),
@@ -816,54 +816,62 @@ int main(void) {
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"pointer".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(p) as *const (),
-// CHECK-NEXT:         8u32,
+// CHECK-NEXT:         std::mem::size_of::<*mut ()>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"lone bool".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(lone) as *const (),
-// CHECK-NEXT:         1u32,
+// CHECK-NEXT:         std::mem::size_of::<bool>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"complex".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(cf) as *const (),
 // CHECK-NEXT:         8u32,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     dump(c"array".as_ptr(), arr.as_mut_ptr() as *const (), 12u32);
+// CHECK-NEXT:     dump(
+// CHECK-NEXT:         c"array".as_ptr(),
+// CHECK-NEXT:         arr.as_mut_ptr() as *const (),
+// CHECK-NEXT:         std::mem::size_of::<[i32; 3]>() as u32,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"mixed.i".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(mix.i) as *const (),
-// CHECK-NEXT:         4u32,
+// CHECK-NEXT:         std::mem::size_of::<i32>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"mixed.f".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(mix.f) as *const (),
-// CHECK-NEXT:         4u32,
+// CHECK-NEXT:         std::mem::size_of::<f32>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"mixed.c".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(mix.c) as *const (),
-// CHECK-NEXT:         1u32,
+// CHECK-NEXT:         std::mem::size_of::<i8>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"mixed.d".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(mix.d) as *const (),
-// CHECK-NEXT:         8u32,
+// CHECK-NEXT:         std::mem::size_of::<f64>() as u32,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     dump(c"flags.b".as_ptr(), fl.b.as_mut_ptr() as *const (), 2u32);
+// CHECK-NEXT:     dump(
+// CHECK-NEXT:         c"flags.b".as_ptr(),
+// CHECK-NEXT:         fl.b.as_mut_ptr() as *const (),
+// CHECK-NEXT:         std::mem::size_of::<[bool; 2]>() as u32,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"flags.c".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(fl.c) as *const (),
-// CHECK-NEXT:         1u32,
+// CHECK-NEXT:         std::mem::size_of::<i8>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"bits.pre".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(bf.pre) as *const (),
-// CHECK-NEXT:         1u32,
+// CHECK-NEXT:         std::mem::size_of::<i8>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"bits.post".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(bf.post) as *const (),
-// CHECK-NEXT:         1u32,
+// CHECK-NEXT:         std::mem::size_of::<i8>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"bits".as_ptr(),
@@ -873,7 +881,7 @@ int main(void) {
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"union".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(un) as *const (),
-// CHECK-NEXT:         8u32,
+// CHECK-NEXT:         std::mem::size_of::<either>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"narrow".as_ptr(),
@@ -903,22 +911,22 @@ int main(void) {
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"holes".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(holes) as *const (),
-// CHECK-NEXT:         8u32,
+// CHECK-NEXT:         std::mem::size_of::<holes>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"bits_only".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(bits_only) as *const (),
-// CHECK-NEXT:         4u32,
+// CHECK-NEXT:         std::mem::size_of::<bits_only>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"nested_bits".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(nested_bits) as *const (),
-// CHECK-NEXT:         4u32,
+// CHECK-NEXT:         std::mem::size_of::<nested_bits>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"padded_member".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(padded_member) as *const (),
-// CHECK-NEXT:         8u32,
+// CHECK-NEXT:         std::mem::size_of::<padded_member>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"tail".as_ptr(),
@@ -943,7 +951,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"pairs: %08x\n".as_ptr(),
-// CHECK-NEXT:             hash(pairs.0.as_mut_ptr() as *const (), 4800u32),
+// CHECK-NEXT:             hash(
+// CHECK-NEXT:                 pairs.0.as_mut_ptr() as *const (),
+// CHECK-NEXT:                 std::mem::size_of::<[pair; 600]>() as u32,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0

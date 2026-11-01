@@ -53,13 +53,13 @@ baz (void *p)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memmove:[0-9]+]] @__builtin_memmove(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i64b [storage=automatic] = read<i64b>(deref(pointer_cast<ptr<i64b>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memmove]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i64b>>(%[[VALUE_b]])), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_p]])), const<u64>(8)))));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i64b [storage=automatic] = read<i64b>(deref(pointer_cast<ptr<i64b>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memmove]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i64b>>(%[[VALUE_b]])), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_p]])), size_of<u64, i64b>(8)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_p_2:[0-9]+]] p: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: i128b [storage=automatic] = read<i128b>(deref(pointer_cast<ptr<i128b>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memmove]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i128b>>(%[[VALUE_b_2]])), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_p_2]])), const<u64>(16)))));
+// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: i128b [storage=automatic] = read<i128b>(deref(pointer_cast<ptr<i128b>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memmove]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i128b>>(%[[VALUE_b_2]])), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_p_2]])), size_of<u64, i128b>(16)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_p_3:[0-9]+]] p: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_b_3:[0-9]+]] b: i256b [storage=automatic] = read<i256b>(deref(pointer_cast<ptr<i256b>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memmove]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i256b>>(%[[VALUE_b_3]])), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_p_3]])), const<u64>(32)))));
+// DEFAULT-NEXT:         let %[[VALUE_b_3:[0-9]+]] b: i256b [storage=automatic] = read<i256b>(deref(pointer_cast<ptr<i256b>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memmove]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i256b>>(%[[VALUE_b_3]])), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_p_3]])), size_of<u64, i256b>(32)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

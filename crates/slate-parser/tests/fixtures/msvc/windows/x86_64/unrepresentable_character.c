@@ -69,6 +69,7 @@ int size = sizeof("\u4E02");
 // DEFAULT:  7 │ int character = '\u4E01';
 // DEFAULT:  8 │ int size = sizeof("\u4E02");
 // DEFAULT:    ·                   ────────
+// DEFAULT:  9 │
 // DEFAULT:    ╰────
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN REENABLED
@@ -124,6 +125,7 @@ int size = sizeof("\u4E02");
 // REENABLED:  7 │ int character = '\u4E01';
 // REENABLED:  8 │ int size = sizeof("\u4E02");
 // REENABLED:    ·                   ────────
+// REENABLED:  9 │
 // REENABLED:    ╰────
 // SLATE-FILECHECK-END REENABLED
 // SLATE-FILECHECK-BEGIN IR-DEFAULT
@@ -157,7 +159,7 @@ int size = sizeof("\u4E02");
 // IR-DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([228, 184, 128, 0]) [linkage=internal];
 // IR-DEFAULT-NEXT:     global %[[VALUE_utf8:[0-9]+]] utf8: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_4]])) [linkage=external];
 // IR-DEFAULT-NEXT:     global %[[VALUE_character:[0-9]+]] character: i32 [storage=static] = const<i32>(63) [linkage=external];
-// IR-DEFAULT-NEXT:     global %[[VALUE_size:[0-9]+]] size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(2))) [linkage=external];
+// IR-DEFAULT-NEXT:     global %[[VALUE_size:[0-9]+]] size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, array<i8, 2>>(2))) [linkage=external];
 // IR-DEFAULT-NEXT: }
 // SLATE-FILECHECK-END IR-DEFAULT
 // SLATE-FILECHECK-BEGIN W0
@@ -191,7 +193,7 @@ int size = sizeof("\u4E02");
 // W0-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([228, 184, 128, 0]) [linkage=internal];
 // W0-NEXT:     global %[[VALUE_utf8:[0-9]+]] utf8: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_4]])) [linkage=external];
 // W0-NEXT:     global %[[VALUE_character:[0-9]+]] character: i32 [storage=static] = const<i32>(63) [linkage=external];
-// W0-NEXT:     global %[[VALUE_size:[0-9]+]] size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(2))) [linkage=external];
+// W0-NEXT:     global %[[VALUE_size:[0-9]+]] size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, array<i8, 2>>(2))) [linkage=external];
 // W0-NEXT: }
 // SLATE-FILECHECK-END W0
 // SLATE-FILECHECK-BEGIN IR-REENABLED
@@ -225,7 +227,7 @@ int size = sizeof("\u4E02");
 // IR-REENABLED-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([228, 184, 128, 0]) [linkage=internal];
 // IR-REENABLED-NEXT:     global %[[VALUE_utf8:[0-9]+]] utf8: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_4]])) [linkage=external];
 // IR-REENABLED-NEXT:     global %[[VALUE_character:[0-9]+]] character: i32 [storage=static] = const<i32>(63) [linkage=external];
-// IR-REENABLED-NEXT:     global %[[VALUE_size:[0-9]+]] size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(2))) [linkage=external];
+// IR-REENABLED-NEXT:     global %[[VALUE_size:[0-9]+]] size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, array<i8, 2>>(2))) [linkage=external];
 // IR-REENABLED-NEXT: }
 // SLATE-FILECHECK-END IR-REENABLED
 // SLATE-FILECHECK-BEGIN UTF8
@@ -259,6 +261,6 @@ int size = sizeof("\u4E02");
 // UTF8-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([228, 184, 128, 0]) [linkage=internal];
 // UTF8-NEXT:     global %[[VALUE_utf8:[0-9]+]] utf8: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_4]])) [linkage=external];
 // UTF8-NEXT:     global %[[VALUE_character:[0-9]+]] character: i32 [storage=static] = const<i32>(14989441) [linkage=external];
-// UTF8-NEXT:     global %[[VALUE_size:[0-9]+]] size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(4))) [linkage=external];
+// UTF8-NEXT:     global %[[VALUE_size:[0-9]+]] size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, array<i8, 4>>(4))) [linkage=external];
 // UTF8-NEXT: }
 // SLATE-FILECHECK-END UTF8

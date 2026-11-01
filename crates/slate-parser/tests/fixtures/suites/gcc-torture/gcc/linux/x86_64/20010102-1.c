@@ -181,7 +181,7 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i64>(%[[VALUE_i]], reinterpret<i64, reason=assign, fits=unknown>(sub<u64, overflow=wrap>(div<u64, by_zero=ub>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%[[VALUE_obj_size]])), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))));
+// DEFAULT-NEXT:                         write<i64>(%[[VALUE_i]], reinterpret<i64, reason=assign, fits=unknown>(sub<u64, overflow=wrap>(div<u64, by_zero=ub>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%[[VALUE_obj_size]])), size_of<u64, i32>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))));
 // DEFAULT-NEXT:                     condition: ge<i64>(read<i64>(%[[VALUE_i]]), widen<i64, reason=usual_arith>(const<i32>(0)))
 // DEFAULT-NEXT:                     increment: {
 // DEFAULT-NEXT:                         let %[[VALUE3:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_i]]);
@@ -191,7 +191,7 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(pointer_cast<ptr<i32>, reason=explicit>(array_decay<ptr<i8>, length=Some(4)>(field2(deref(read<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE_new_chunk]]))))), read<i64>(%[[VALUE_i]]))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(pointer_cast<ptr<i32>, reason=explicit>(read<ptr<i8>>(field2(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]]))))), read<i64>(%[[VALUE_i]])))));
-// DEFAULT-NEXT:                 write<i64>(%[[VALUE_already]], reinterpret<i64, reason=assign, fits=unknown>(mul<u64, overflow=wrap>(div<u64, by_zero=ub>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%[[VALUE_obj_size]])), const<u64>(4)), const<u64>(4))));
+// DEFAULT-NEXT:                 write<i64>(%[[VALUE_already]], reinterpret<i64, reason=assign, fits=unknown>(mul<u64, overflow=wrap>(div<u64, by_zero=ub>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%[[VALUE_obj_size]])), size_of<u64, i32>(4)), size_of<u64, i32>(4))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<i64>(%[[VALUE_already]], widen<i64, reason=assign>(const<i32>(0)));

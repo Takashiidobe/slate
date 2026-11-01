@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].d = 4.5f64;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     check(16i32, 16i32);
+// CHECK-NEXT:     check(std::mem::size_of::<mixed>() as i32, 16i32);
 // CHECK-NEXT:     check((((2usize as *mut i32) as u64) as u32) as i32, 2i32);
 // CHECK-NEXT:     check((((8usize as *mut f64) as u64) as u32) as i32, 8i32);
 // CHECK-NEXT:     check(m.c as i32, 1i32);

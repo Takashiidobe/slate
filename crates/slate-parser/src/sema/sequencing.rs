@@ -224,6 +224,7 @@ fn walk_value(value: &Value, found: &mut Touches) {
         | ValueKind::Fence { .. }
         | ValueKind::OldValue
         | ValueKind::Constant(_)
+        | ValueKind::LayoutQuery { .. }
         | ValueKind::Null
         | ValueKind::LabelAddress(_)
         | ValueKind::Seh(_)
@@ -256,6 +257,7 @@ fn constant_index(value: &Value) -> Option<i128> {
         ValueKind::MacroExpansion { evaluation, .. } => constant_index(&evaluation.value),
         ValueKind::Constant(Number::Integer(value)) => i128::try_from(value.clone()).ok(),
         ValueKind::Constant(Number::SignedInteger(value)) => i128::try_from(value.clone()).ok(),
+        ValueKind::LayoutQuery { amount, .. } => Some(i128::from(*amount)),
         _ => None,
     }
 }

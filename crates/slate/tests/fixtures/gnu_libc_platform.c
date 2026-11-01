@@ -376,8 +376,13 @@ int main(void) {
 // CHECK-NEXT:     let directory: *mut i8 = unsafe { get_current_dir_name() };
 // CHECK-NEXT:     let canonical: *mut i8 = unsafe { canonicalize_file_name(c".".as_ptr()) };
 // CHECK-NEXT:     total
-// CHECK-NEXT:         += !unsafe { getcwd(current.0.as_mut_ptr() as *mut i8, 4096u64) }.is_null()
-// CHECK-NEXT:             as i32;
+// CHECK-NEXT:         += !unsafe {
+// CHECK-NEXT:             getcwd(
+// CHECK-NEXT:                 current.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:                 std::mem::size_of::<[i8; 4096]>() as u64,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }
+// CHECK-NEXT:             .is_null() as i32;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_0]]
 // CHECK-NEXT:         + ((!directory.is_null()
@@ -524,8 +529,12 @@ int main(void) {
 // CHECK-NEXT:     let [[V_7]]: i32 = ((unsafe { gettid() }) == ((unsafe { syscall(186i64) }) as i32))
 // CHECK-NEXT:         as i32;
 // CHECK-NEXT:     total += [[V_7]];
-// CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = ((unsafe { getentropy(random_bytes.as_mut_ptr() as *mut (), 8u64) })
-// CHECK-NEXT:         == 0) as i32;
+// CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:         getentropy(
+// CHECK-NEXT:             random_bytes.as_mut_ptr() as *mut (),
+// CHECK-NEXT:             std::mem::size_of::<[u8; 8]>() as u64,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_12]];
 // CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe { arc4random_uniform(1u32) }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_13]];

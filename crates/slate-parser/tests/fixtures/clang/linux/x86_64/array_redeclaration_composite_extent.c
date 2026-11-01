@@ -54,7 +54,7 @@ int sizes(void) {
 // DEFAULT-NEXT:     global %[[VALUE_external:[0-9]+]] external: array<i32, 4> [storage=static] [align=16] = aggregate<array<i32, 4>, zero_fill=true>(index0 = const<i32>(1), index1 = const<i32>(2)) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_declared:[0-9]+]] declared: array<i32, 3> [storage=static] = aggregate<array<i32, 3>, zero_fill=true>(index0 = const<i32>(7)) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_sizes:[0-9]+]] @sizes() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(128), const<u64>(16)), const<u64>(12))));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(size_of<u64, array<@type[[TYPE_handler]], 8>>(128), size_of<u64, array<i32, 4>>(16)), size_of<u64, array<i32, 3>>(12))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -195,7 +195,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE___h:[0-9]+]] __h: ptr<@type[[TYPE_obstack]]> [storage=automatic] = addr_of<ptr<@type[[TYPE_obstack]]>>(field1(deref(read<ptr<@type[[TYPE_objfile]]>>(field1(deref(read<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type]])))))));
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %[[VALUE___o:[0-9]+]] __o: ptr<@type[[TYPE_obstack]]> [storage=automatic] = read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___h]]);
-// DEFAULT-NEXT:                     let %[[VALUE___len:[0-9]+]] __len: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(32)));
+// DEFAULT-NEXT:                     let %[[VALUE___len:[0-9]+]] __len: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, @type[[TYPE_field]]>(32)));
 // DEFAULT-NEXT:                     if lt<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(field4(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o]])))), read<ptr<i8>>(field3(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o]]))))), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE___len]])))
 // DEFAULT-NEXT:                         call<void, signature=fn(ptr<@type[[TYPE_obstack]]>, i32) -> void>(%[[VALUE__obstack_newchunk]], read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o]]), read<i32>(%[[VALUE___len]]));
 // DEFAULT-NEXT:                     let %[[VALUE6:[0-9]+]]: ptr<@type[[TYPE_obstack]]> [synthetic] = read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o]]);
@@ -222,15 +222,15 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE4]], read<ptr<void>>(%[[VALUE5]]));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE4]], call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE_xmalloc]], truncate<u32, reason=arg, fits=always>(const<u64>(32))));
+// DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE4]], call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE_xmalloc]], truncate<u32, reason=arg, fits=always>(size_of<u64, @type[[TYPE_field]]>(32))));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_field]]>>(field3(deref(read<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type]]))), pointer_cast<ptr<@type[[TYPE_field]]>, reason=explicit>(read<ptr<void>>(%[[VALUE4]])));
 // DEFAULT-NEXT:         return read<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_element_type_2:[0-9]+]] element_type: @type[[TYPE_type]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_result_type_2:[0-9]+]] result_type: @type[[TYPE_type]] [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_type]]>>(%[[VALUE_element_type_2]])), const<i32>(0), const<u64>(32));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type_2]])), const<i32>(0), const<u64>(32));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_type]]>>(%[[VALUE_element_type_2]])), const<i32>(0), size_of<u64, @type[[TYPE_type]]>(32));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type_2]])), const<i32>(0), size_of<u64, @type[[TYPE_type]]>(32));
 // DEFAULT-NEXT:         write<u32>(field0(%[[VALUE_element_type_2]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(4)));
 // DEFAULT-NEXT:         call<ptr<@type[[TYPE_type]]>, signature=fn(ptr<@type[[TYPE_type]]>, ptr<@type[[TYPE_type]]>) -> ptr<@type[[TYPE_type]]>>(%[[VALUE_create_array_type]], addr_of<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type_2]]), addr_of<ptr<@type[[TYPE_type]]>>(%[[VALUE_element_type_2]]));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(field0(%[[VALUE_result_type_2]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(12)))

@@ -70,7 +70,9 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]][0] = 0i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
-// CHECK-NEXT:     unsafe { fgets(buf.0.as_mut_ptr() as *mut i8, 16i32, g) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         fgets(buf.0.as_mut_ptr() as *mut i8, std::mem::size_of::<[i8; 16]>() as i32, g)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { slate_support::fclose(g) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

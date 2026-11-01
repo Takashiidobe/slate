@@ -49,8 +49,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let len: i32 = 4;
-// CHECK-NEXT:     let text: *mut i8 = (unsafe { malloc(((len as i64) as u64).wrapping_mul(1)) })
-// CHECK-NEXT:         as *mut i8;
+// CHECK-NEXT:     let text: *mut i8 = (unsafe {
+// CHECK-NEXT:         malloc(((len as i64) as u64).wrapping_mul(std::mem::size_of::<i8>() as u64))
+// CHECK-NEXT:     }) as *mut i8;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             c"abc".as_ptr() as *const u8,

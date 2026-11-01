@@ -597,7 +597,13 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = (stop
 // CHECK-NEXT:         == ((unsafe { (destination.as_mut_ptr() as *mut i8).add(3) }) as *mut ())
 // CHECK-NEXT:         && (destination[2] as i32) == 99) as i32;
-// CHECK-NEXT:     unsafe { memset_explicit(secret.as_mut_ptr() as *mut (), 0i32, 7u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         memset_explicit(
+// CHECK-NEXT:             secret.as_mut_ptr() as *mut (),
+// CHECK-NEXT:             0i32,
+// CHECK-NEXT:             std::mem::size_of::<[i8; 7]>() as u64,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     total += ((secret[0] as i32) == 0 && (secret[5] as i32) == 0) as i32;
 // CHECK-NEXT:     let first_copy: *mut i8 = unsafe { strdup(c"c23".as_ptr()) };
 // CHECK-NEXT:     let second_copy: *mut i8 = unsafe { strndup(c"library".as_ptr(), 3u64) };
@@ -684,7 +690,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         strftime(
 // CHECK-NEXT:             month.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             32u64,
+// CHECK-NEXT:             std::mem::size_of::<[i8; 32]>() as u64,
 // CHECK-NEXT:             c"%OB".as_ptr(),
 // CHECK-NEXT:             std::ptr::addr_of_mut!(utc) as *const tm,
 // CHECK-NEXT:         )
@@ -766,7 +772,7 @@ int main(void) {
 // CHECK-NEXT:     let written: i32 = unsafe {
 // CHECK-NEXT:         snprintf(
 // CHECK-NEXT:             output.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             64u64,
+// CHECK-NEXT:             std::mem::size_of::<[i8; 64]>() as u64,
 // CHECK-NEXT:             c"%b %w16u %wf16u".as_ptr(),
 // CHECK-NEXT:             13u32,
 // CHECK-NEXT:             21i32,
@@ -783,12 +789,17 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let floating_written: i32 = (unsafe {
-// CHECK-NEXT:         strfromf(float_output.0.as_mut_ptr() as *mut i8, 16u64, c"%.1f".as_ptr(), 1.5f32)
+// CHECK-NEXT:         strfromf(
+// CHECK-NEXT:             float_output.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             std::mem::size_of::<[i8; 16]>() as u64,
+// CHECK-NEXT:             c"%.1f".as_ptr(),
+// CHECK-NEXT:             1.5f32,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     })
 // CHECK-NEXT:         + unsafe {
 // CHECK-NEXT:             strfromd(
 // CHECK-NEXT:                 double_output.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:                 16u64,
+// CHECK-NEXT:                 std::mem::size_of::<[i8; 16]>() as u64,
 // CHECK-NEXT:                 c"%.1f".as_ptr(),
 // CHECK-NEXT:                 2.5f64,
 // CHECK-NEXT:             )
@@ -796,7 +807,7 @@ int main(void) {
 // CHECK-NEXT:         + unsafe {
 // CHECK-NEXT:             __slate_strfroml__ri32_pi8_u64_pi8_f80(
 // CHECK-NEXT:                 long_double_output.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:                 16u64,
+// CHECK-NEXT:                 std::mem::size_of::<[i8; 16]>() as u64,
 // CHECK-NEXT:                 c"%.1f".as_ptr(),
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 0, 64]),
 // CHECK-NEXT:             )
@@ -829,7 +840,10 @@ int main(void) {
 // CHECK-NEXT:         + ((LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127])
 // CHECK-NEXT:             <= LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127])) as i32)
 // CHECK-NEXT:         + ((1i32 >= -1i32) as i32) + ((1i32 >= -1i32) as i32) + ((1i32 >= -1i32) as i32)
-// CHECK-NEXT:         + (true as i32) + (true as i32) + (true as i32);
+// CHECK-NEXT:         + (((std::mem::size_of::<f32>() as u64) == (std::mem::size_of::<f32>() as u64))
+// CHECK-NEXT:             as i32)
+// CHECK-NEXT:         + (((std::mem::size_of::<f64>() as u64) == (std::mem::size_of::<f64>() as u64))
+// CHECK-NEXT:             as i32) + (true as i32);
 // CHECK-NEXT:     let header_versions: i32 = (true as i32) + (true as i32) + (true as i32)
 // CHECK-NEXT:         + (true as i32) + (true as i32) + (true as i32) + (true as i32);
 // CHECK-NEXT:     integer_widths + floating_limits + header_versions

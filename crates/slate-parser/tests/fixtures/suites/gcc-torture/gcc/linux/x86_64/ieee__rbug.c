@@ -94,7 +94,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_k_3:[0-9]+]] k: u64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_x_3:[0-9]+]] x: f64 [storage=automatic];
-// DEFAULT-NEXT:         if ge<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
+// DEFAULT-NEXT:         if ge<u64>(size_of<u64, f64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<u64>(%[[VALUE_k_3]], const<u64>(9697299402072392705));
 // DEFAULT-NEXT:                 write<f64>(%[[VALUE_x_3]], call<f64, signature=fn(u64) -> f64>(%[[VALUE_d]], read<u64>(%[[VALUE_k_3]])));

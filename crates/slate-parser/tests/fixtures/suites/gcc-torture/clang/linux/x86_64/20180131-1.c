@@ -61,7 +61,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_u_2:[0-9]+]] u: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))) [c="U"];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, i32, i32, @type[[TYPE0]]) -> i32, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> scalar>(%[[VALUE_f]], const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_u_2]]) [c="U"]) [c="U"]), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), mul<u64, overflow=wrap>(const<u64>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, i32, i32, @type[[TYPE0]]) -> i32, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> scalar>(%[[VALUE_f]], const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_u_2]]) [c="U"]) [c="U"]), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), mul<u64, overflow=wrap>(size_of<u64, i16>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

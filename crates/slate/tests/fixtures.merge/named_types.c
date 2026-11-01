@@ -76,8 +76,7 @@ int main(void) {
 // CHECK-NEXT:   named_types.c: [] 1 compiled
 // CHECK-NEXT:   units/named_types_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit named_types: 21 items, 2 gated, 0 duplicated functions
-// CHECK-NEXT:   hoisted fn:width_of_long: 2 variants
+// CHECK-NEXT: unit named_types: 19 items, 0 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:add_total: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: unit named_types_helper: 6 items, 2 gated, 1 duplicated functions
@@ -188,15 +187,9 @@ int main(void) {
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: const __SLATE_HOIST_width_of_long: size_t = 8;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: const __SLATE_HOIST_width_of_long: size_t = 4;
-// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn width_of_long() -> size_t {
-// CHECK-NEXT:     __SLATE_HOIST_width_of_long
+// CHECK-NEXT:     std::mem::size_of::<c_long>() as size_t
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -279,7 +272,12 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), (width_of_long() == 4) as i32) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%d\n".as_ptr(),
+// CHECK-NEXT:                 (width_of_long() == (std::mem::size_of::<c_long>() as size_t)) as i32,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
@@ -294,7 +292,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", (width_of_long() == 8) as i32);
+// CHECK-NEXT:         println!(
+// CHECK-NEXT:             "{}",
+// CHECK-NEXT:             (width_of_long() == (std::mem::size_of::<c_long>() as size_t)) as i32
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

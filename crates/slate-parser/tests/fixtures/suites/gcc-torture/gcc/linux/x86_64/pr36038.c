@@ -118,7 +118,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_markstack_ptr]]), neg<i32, overflow=ub>(const<i32>(2)))), const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<i64>>(%[[VALUE_stack_base]], ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(10)>(%[[VALUE_list]]), const<i32>(2)));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_doit]]);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i64>, length=Some(10)>(%[[VALUE_expect]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i64>, length=Some(10)>(%[[VALUE_list]])), const<u64>(80)), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i64>, length=Some(10)>(%[[VALUE_expect]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i64>, length=Some(10)>(%[[VALUE_list]])), size_of<u64, array<i64, 10>>(80)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

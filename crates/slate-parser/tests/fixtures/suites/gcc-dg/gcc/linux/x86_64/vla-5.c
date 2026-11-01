@@ -57,13 +57,13 @@ void foo7(__typeof__ (int (*)(int o[*])) i);
 // DEFAULT-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_j]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo5:[0-9]+]] @foo5(%[[VALUE_a_2:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: ptr<array<i32, 10>> [array=10], %[[VALUE_c:[0-9]+]] c: ptr<i32> [array=400]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int, int[*][*], int[*])"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(8)));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, ptr<i32>>(8)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo6:[0-9]+]] @foo6(%[[VALUE_a_3:[0-9]+]] a: i32, %[[VALUE_b_2:[0-9]+]] b: ptr<vla<i32, %[[VALUE1:[0-9]+]]>> [array=%[[VALUE2:[0-9]+]]], %[[VALUE_c_2:[0-9]+]] c: ptr<i32> [array=%[[VALUE3:[0-9]+]]]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int, int[*][*], int[*])"] {
 // DEFAULT-NEXT:         let %[[VALUE2]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_a_3]])));
 // DEFAULT-NEXT:         let %[[VALUE1]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_a_3]])));
 // DEFAULT-NEXT:         let %[[VALUE3]]: u64 [synthetic] = mul<u64, overflow=wrap>(read<u64>(%[[VALUE1]]), const<u64>(4));
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(8)));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, ptr<i32>>(8)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo7:[0-9]+]] @foo7(%[[VALUE_i:[0-9]+]] i: ptr<fn(ptr<i32>) -> i32> [c="typeof(int (*)(int[*]))"]) -> void [linkage=external] [c="void(typeof(int (*)(int[*])))"];
 // DEFAULT-NEXT: }

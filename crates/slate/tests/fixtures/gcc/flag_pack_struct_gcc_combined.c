@@ -30,27 +30,86 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: // { dg-options "-fpack-struct -fpack-struct=2" }
+// CHECK-NEXT: #[repr(C, packed(2))]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct ua {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     i: i32,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, packed)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct p4 {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     d: f64,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, packed)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct reset {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     d: f64,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, packed)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct p8 {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     d: f64,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, packed)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct popped {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     d: f64,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, packed)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: union u {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     d: f64,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, align(2))]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct bf {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits7U0,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: mod __slate_bits {
+// CHECK-NEXT:     #[bitfields::bitfield([u8; 3], c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
+// CHECK-NEXT:     pub struct __SlateBits7U0 {
+// CHECK-NEXT:         #[bits(4)]
+// CHECK-NEXT:         pub x: i32,
+// CHECK-NEXT:         #[bits(20)]
+// CHECK-NEXT:         pub y: i32,
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %zu | %zu %zu | %zu %zu | %zu %zu | %zu %zu | %zu %zu | %zu %zu | %zu %zu\n"
 // CHECK-NEXT:                 .as_ptr(),
-// CHECK-NEXT:             6u64,
+// CHECK-NEXT:             std::mem::size_of::<ua>() as u64,
 // CHECK-NEXT:             2u64,
 // CHECK-NEXT:             2u64,
-// CHECK-NEXT:             9u64,
+// CHECK-NEXT:             std::mem::size_of::<p4>() as u64,
 // CHECK-NEXT:             1u64,
-// CHECK-NEXT:             9u64,
+// CHECK-NEXT:             std::mem::size_of::<reset>() as u64,
 // CHECK-NEXT:             1u64,
-// CHECK-NEXT:             9u64,
+// CHECK-NEXT:             std::mem::size_of::<p8>() as u64,
 // CHECK-NEXT:             1u64,
-// CHECK-NEXT:             9u64,
+// CHECK-NEXT:             std::mem::size_of::<popped>() as u64,
 // CHECK-NEXT:             1u64,
 // CHECK-NEXT:             16u64,
 // CHECK-NEXT:             16u64,
-// CHECK-NEXT:             8u64,
+// CHECK-NEXT:             std::mem::size_of::<u>() as u64,
 // CHECK-NEXT:             1u64,
-// CHECK-NEXT:             4u64,
+// CHECK-NEXT:             std::mem::size_of::<bf>() as u64,
 // CHECK-NEXT:             2u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

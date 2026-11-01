@@ -68,7 +68,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%ls %zu\n".as_ptr(),
 // CHECK-NEXT:             buf.0.as_mut_ptr() as *mut i32,
-// CHECK-NEXT:             16u64,
+// CHECK-NEXT:             std::mem::size_of::<[i32; 4]>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

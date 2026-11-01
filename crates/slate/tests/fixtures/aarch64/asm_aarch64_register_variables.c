@@ -96,7 +96,7 @@ int main(void) {
 // CHECK-NEXT:         64i64,
 // CHECK-NEXT:         1i64,
 // CHECK-NEXT:         (unsafe { std::ptr::addr_of!(message) as *const u8 }) as i64,
-// CHECK-NEXT:         15i64,
+// CHECK-NEXT:         (std::mem::size_of::<[u8; 16]>() as u64).wrapping_sub(1) as i64,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

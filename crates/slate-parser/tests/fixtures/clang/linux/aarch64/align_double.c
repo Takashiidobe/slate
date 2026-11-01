@@ -44,9 +44,9 @@ int extended_align = _Alignof(struct extended);
 // DEFAULT-NEXT:         field0 c: u8;
 // DEFAULT-NEXT:         field1 x: f128;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 16]];
-// DEFAULT-NEXT:     global %[[VALUE_wide_size:[0-9]+]] wide_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(32))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wide_size:[0-9]+]] wide_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_wide]]>(32))) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_wide_align:[0-9]+]] wide_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(8))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_extended_size:[0-9]+]] extended_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(32))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_extended_size:[0-9]+]] extended_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_extended]]>(32))) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_extended_align:[0-9]+]] extended_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(16))) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
@@ -82,9 +82,9 @@ int extended_align = _Alignof(struct extended);
 // ON-NEXT:         field0 c: u8;
 // ON-NEXT:         field1 x: f128;
 // ON-NEXT:     } [size=24, align=8, offsets=[0, 8]];
-// ON-NEXT:     global %[[VALUE_wide_size:[0-9]+]] wide_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(32))) [linkage=external];
+// ON-NEXT:     global %[[VALUE_wide_size:[0-9]+]] wide_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_wide]]>(32))) [linkage=external];
 // ON-NEXT:     global %[[VALUE_wide_align:[0-9]+]] wide_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(8))) [linkage=external];
-// ON-NEXT:     global %[[VALUE_extended_size:[0-9]+]] extended_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(24))) [linkage=external];
+// ON-NEXT:     global %[[VALUE_extended_size:[0-9]+]] extended_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_extended]]>(24))) [linkage=external];
 // ON-NEXT:     global %[[VALUE_extended_align:[0-9]+]] extended_align: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(8))) [linkage=external];
 // ON-NEXT: }
 // SLATE-FILECHECK-END ON

@@ -42,9 +42,8 @@ int main(void) {
 // CHECK-NEXT: total: 12 compiles across 2 targets
 // CHECK-NEXT: unit signature_compatible: 20 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 4 variants
-// CHECK-NEXT: unit signature_compatible_helper: 24 items, 7 gated, 0 duplicated functions
+// CHECK-NEXT: unit signature_compatible_helper: 22 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:scale: 2 variants
-// CHECK-NEXT:   hoisted fn:native_long: 2 variants
 // CHECK-NEXT:   spliced record:opaque: 2 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
@@ -221,15 +220,9 @@ int main(void) {
 // CHECK-NEXT:     x * 2
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: const __SLATE_HOIST_native_long: c_long = 8;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: const __SLATE_HOIST_native_long: c_long = 4;
-// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn native_long(x: c_long) -> c_long {
-// CHECK-NEXT:     x + __SLATE_HOIST_native_long
+// CHECK-NEXT:     x + (std::mem::size_of::<c_long>() as c_long)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

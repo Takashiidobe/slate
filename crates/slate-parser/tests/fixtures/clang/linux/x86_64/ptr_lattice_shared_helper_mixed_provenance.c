@@ -69,7 +69,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_stack_val:[0-9]+]] stack_val: i32 [storage=automatic] = const<i32>(10);
 // DEFAULT-NEXT:         let %[[VALUE_stack_ptr:[0-9]+]] stack_ptr: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%[[VALUE_stack_val]]);
 // DEFAULT-NEXT:         let %[[VALUE_from_stack:[0-9]+]] from_stack: i32 [storage=automatic] = call<i32, signature=fn(ptr<i32>, i32) -> i32>(%[[VALUE_touch_and_maybe_free]], read<ptr<i32>>(%[[VALUE_stack_ptr]]), const<i32>(0));
-// DEFAULT-NEXT:         let %[[VALUE_heap_ptr:[0-9]+]] heap_ptr: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(4)));
+// DEFAULT-NEXT:         let %[[VALUE_heap_ptr:[0-9]+]] heap_ptr: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], size_of<u64, i32>(4)));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_heap_ptr]])), const<i32>(100));
 // DEFAULT-NEXT:         let %[[VALUE_from_heap:[0-9]+]] from_heap: i32 [storage=automatic] = call<i32, signature=fn(ptr<i32>, i32) -> i32>(%[[VALUE_touch_and_maybe_free]], read<ptr<i32>>(%[[VALUE_heap_ptr]]), const<i32>(1));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])), read<i32>(%[[VALUE_stack_val]]), read<i32>(%[[VALUE_from_stack]]), read<i32>(%[[VALUE_from_heap]]));

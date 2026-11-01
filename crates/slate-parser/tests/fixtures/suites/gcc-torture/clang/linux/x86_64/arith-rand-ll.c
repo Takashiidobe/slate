@@ -185,7 +185,7 @@ int main(void) {
 // DEFAULT-NEXT:                                 let %[[VALUE6:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_x]]);
 // DEFAULT-NEXT:                                 let %[[VALUE7:[0-9]+]]: u64 [synthetic] = or<u64>(read<u64>(%[[VALUE6]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(sub<i32, overflow=ub>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), read<i32>(%[[VALUE_n_bits]])), const<i32>(1)))));
 // DEFAULT-NEXT:                                 write<u64>(%[[VALUE_x]], read<u64>(%[[VALUE7]]));
-// DEFAULT-NEXT:                             if gt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_tot_bits]]))), add<u64, overflow=wrap>(mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(8)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(6)))))
+// DEFAULT-NEXT:                             if gt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_tot_bits]]))), add<u64, overflow=wrap>(mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), size_of<u64, i64>(8)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(6)))))
 // DEFAULT-NEXT:                                 return read<u64>(%[[VALUE_x]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                 }
@@ -208,7 +208,7 @@ int main(void) {
 // DEFAULT-NEXT:                     let %[[VALUE_y:[0-9]+]] y: u64 [storage=automatic];
 // DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], call<u64, signature=fn(unprototyped) -> u64>(%[[VALUE_random_bitstring]]));
 // DEFAULT-NEXT:                     write<u64>(%[[VALUE_y]], call<u64, signature=fn(unprototyped) -> u64>(%[[VALUE_random_bitstring]]));
-// DEFAULT-NEXT:                     if eq<u64>(const<u64>(4), const<u64>(8))
+// DEFAULT-NEXT:                     if eq<u64>(size_of<u64, i32>(4), size_of<u64, i64>(8))
 // DEFAULT-NEXT:                         goto %[[VALUE_save_time:[0-9]+]];
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         let %[[VALUE_xx:[0-9]+]] xx: u64 [storage=automatic] = read<u64>(%[[VALUE_x_2]]);

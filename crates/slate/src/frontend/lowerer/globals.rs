@@ -145,6 +145,7 @@ impl Tables<'_> {
     pub(super) fn is_constant_initializer(&self, value: &ir::Value) -> bool {
         match &value.node.value {
             ValueKind::Constant(_)
+            | ValueKind::LayoutQuery { .. }
             | ValueKind::CodeUnits(_)
             | ValueKind::Null
             | ValueKind::LabelAddress(_)

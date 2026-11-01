@@ -93,7 +93,7 @@ main ()
 // DEFAULT-NEXT:     global %[[VALUE_ones:[0-9]+]] ones: @type[[TYPE_test]] [storage=static] = aggregate<@type[[TYPE_test]], zero_fill=false>(field0 = aggregate<array<i32, 10>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(1), index2 = const<i32>(1), index3 = const<i32>(1), index4 = const<i32>(1), index5 = const<i32>(1), index6 = const<i32>(1), index7 = const<i32>(1), index8 = const<i32>(1), index9 = const<i32>(1))) [linkage=external] [c="test_struct"];
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: atomic @type[[TYPE_test]] [storage=static] [linkage=external] [c="_Atomic test_struct"];
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: @type[[TYPE_test]] [storage=static] [linkage=external] [c="test_struct"];
-// DEFAULT-NEXT:     global %[[VALUE_size:[0-9]+]] size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(40))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_size:[0-9]+]] size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, @type[[TYPE_test]]>(40))) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_memcmp:[0-9]+]] @memcmp(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {

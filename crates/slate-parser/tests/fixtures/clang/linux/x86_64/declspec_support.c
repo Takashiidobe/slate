@@ -129,7 +129,7 @@ int packed_size = sizeof(struct Packed);
 // IR-WARN-NEXT:     global %[[VALUE_vector:[0-9]+]] vector: i32 [storage=static] [linkage=external];
 // IR-WARN-NEXT:     global %[[VALUE_aligned:[0-9]+]] aligned: i32 [storage=static] [align=16] [linkage=external];
 // IR-WARN-NEXT:     global %[[VALUE_selected:[0-9]+]] selected: i32 [storage=static] = const<i32>(1) [linkage=external] [selectany];
-// IR-WARN-NEXT:     global %[[VALUE_packed_size:[0-9]+]] packed_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(8))) [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_packed_size:[0-9]+]] packed_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_Packed]]>(8))) [linkage=external];
 // IR-WARN-NEXT:     fn %[[VALUE_wrapped:[0-9]+]] @wrapped() -> void [linkage=external];
 // IR-WARN-NEXT: }
 // SLATE-FILECHECK-END IR-WARN

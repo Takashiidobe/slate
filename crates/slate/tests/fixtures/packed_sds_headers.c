@@ -395,17 +395,35 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"%zu %zu %zu %zu\n".as_ptr(), 9u64, 1u64, 12u64, 1u64)
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
+// CHECK-NEXT:             std::mem::size_of::<payloadHeader>() as u64,
+// CHECK-NEXT:             1u64,
+// CHECK-NEXT:             std::mem::size_of::<event>() as u64,
+// CHECK-NEXT:             1u64,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"%zu %zu %zu %zu\n".as_ptr(), 48u64, 2u64, 10u64, 46u64)
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
+// CHECK-NEXT:             std::mem::size_of::<holder>() as u64,
+// CHECK-NEXT:             2u64,
+// CHECK-NEXT:             10u64,
+// CHECK-NEXT:             46u64,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"%zu %zu %zu %zu\n".as_ptr(), 14u64, 2u64, 2u64, 6u64)
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
+// CHECK-NEXT:             std::mem::size_of::<pack_two>() as u64,
+// CHECK-NEXT:             2u64,
+// CHECK-NEXT:             2u64,
+// CHECK-NEXT:             6u64,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let types: [i32; 3] = [1, 2, 4];
@@ -437,7 +455,13 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[u8; 64]> = __SlateAlign16([0u8; 64]);
-// CHECK-NEXT:     unsafe { std::ptr::write_bytes(buffer.0.as_mut_ptr() as *mut u8, 0u8, 64 as usize) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut u8,
+// CHECK-NEXT:             0u8,
+// CHECK-NEXT:             std::mem::size_of::<[u8; 64]>(),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut used: u64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: i32 = 1;
@@ -455,7 +479,11 @@ int main(void) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 (*header).payload_len = [[V_1]].wrapping_add(7);
 // CHECK-NEXT:             }
-// CHECK-NEXT:             used = used.wrapping_add(9u64.wrapping_add((i as i64) as u64));
+// CHECK-NEXT:             used = used
+// CHECK-NEXT:                 .wrapping_add(
+// CHECK-NEXT:                     (std::mem::size_of::<payloadHeader>() as u64)
+// CHECK-NEXT:                         .wrapping_add((i as i64) as u64),
+// CHECK-NEXT:                 );
 // CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -469,7 +497,7 @@ int main(void) {
 // CHECK-NEXT:                     ((buffer.0.as_mut_ptr() as *mut u8).add(offset as usize)
 // CHECK-NEXT:                         as *const ()) as *const u8,
 // CHECK-NEXT:                     (std::ptr::addr_of_mut!(header) as *mut ()) as *mut u8,
-// CHECK-NEXT:                     9 as usize,
+// CHECK-NEXT:                     std::mem::size_of::<payloadHeader>(),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -482,7 +510,10 @@ int main(void) {
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:             offset = offset.wrapping_add(9u64.wrapping_add(i));
+// CHECK-NEXT:             offset = offset
+// CHECK-NEXT:                 .wrapping_add(
+// CHECK-NEXT:                     (std::mem::size_of::<payloadHeader>() as u64).wrapping_add(i),
+// CHECK-NEXT:                 );
 // CHECK-NEXT:             i = i.wrapping_add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -491,7 +522,7 @@ int main(void) {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(holder) as *mut ()) as *mut u8,
 // CHECK-NEXT:             0u8,
-// CHECK-NEXT:             48 as usize,
+// CHECK-NEXT:             std::mem::size_of::<holder>(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     holder.tag = 104;

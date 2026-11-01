@@ -59,7 +59,7 @@ unsigned long alignment(int n, int *p) { return _Alignof(*(int (*)[n])p); }
 // IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%[[VALUE4]]), const<u64>(4));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_pointer:[0-9]+]] @pointer(%[[VALUE_p_4:[0-9]+]] p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(8);
+// IR-NEXT:         return size_of<u64, ptr<vla<i32, *>>>(8);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_alignment:[0-9]+]] @alignment(%[[VALUE_n_4:[0-9]+]] n: i32, %[[VALUE_p_5:[0-9]+]] p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<u64>(4);

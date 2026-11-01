@@ -260,6 +260,9 @@ int main(void) {
 // CHECK-NEXT:     c: i8,
 // CHECK-NEXT:     inner: std::mem::MaybeUninit<[u8; 32]>,
 // CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct Empty {}
 // CHECK-NEXT: mod __slate_bits {
 // CHECK-NEXT:     #[bitfields::bitfield(
 // CHECK-NEXT:         [u8;4],
@@ -356,7 +359,13 @@ int main(void) {
 // CHECK-NEXT:     let same: P = p;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"%zu %zu %zu %zu\n".as_ptr(), 21u64, 33u64, 0u64, 1u64)
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
+// CHECK-NEXT:             21u64,
+// CHECK-NEXT:             33u64,
+// CHECK-NEXT:             std::mem::size_of::<Empty>() as u64,
+// CHECK-NEXT:             1u64,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

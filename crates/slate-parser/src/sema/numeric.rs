@@ -2078,6 +2078,7 @@ where
             ValueKind::Constant(Number::Integer(integer)) => {
                 Some(F::from_u128(u128::try_from(integer).ok()?).value)
             }
+            ValueKind::LayoutQuery { amount, .. } => Some(F::from_u128((*amount).into()).value),
             _ => None,
         },
         ValueKind::Convert {
@@ -2182,6 +2183,11 @@ pub(super) fn integer_fits(value: &Value, width: u32, signed: bool) -> Fits {
             integer_fits(&evaluation.value, width, signed)
         }
         ValueKind::Constant(Number::Integer(value)) if fits_rank(value, width, signed) => {
+            Fits::Always
+        }
+        ValueKind::LayoutQuery { amount, .. }
+            if fits_rank(&BigUint::from(*amount), width, signed) =>
+        {
             Fits::Always
         }
         ValueKind::Convert {

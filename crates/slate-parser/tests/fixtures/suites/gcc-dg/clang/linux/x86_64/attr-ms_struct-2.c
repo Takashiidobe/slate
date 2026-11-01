@@ -75,7 +75,7 @@ main (void)
 // DEFAULT-NEXT:     global %[[VALUE_test_struct_0:[0-9]+]] test_struct_0: @type[[TYPE__struct_0]] [storage=static] = aggregate<@type[[TYPE__struct_0]], zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(18557917)), field1 = truncate<i16, reason=assign, fits=always>(const<i32>(17)), field2 = truncate<i8, reason=assign, fits=always>(const<i32>(3)), field3 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))), field4 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(80))), field5 = truncate<i16, reason=assign, fits=always>(const<i32>(6487)), field7 = truncate<i8, reason=assign, fits=always>(const<i32>(93))) [linkage=external] [c="struct_0"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort(unprototyped) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(20))), const<u64>(32))
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(20))), size_of<u64, @type[[TYPE__struct_0]]>(32))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

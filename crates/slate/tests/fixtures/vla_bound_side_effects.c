@@ -24,7 +24,7 @@ int main(void) {
 // CHECK-NEXT:     bound = [[V_0]] + 1;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u64 = ([[V_0]] as i64) as u64;
 // CHECK-NEXT:     evaluated = [[V_1]].wrapping_mul(4);
-// CHECK-NEXT:     let unevaluated: u64 = 8;
+// CHECK-NEXT:     let unevaluated: u64 = std::mem::size_of::<*mut [i32; 0]>() as u64;
 // CHECK-NEXT:     let mut values: [i32; 3] = [7, 8, 9];
 // CHECK-NEXT:     let parameter: i32 = parameter_bound(3i32, values.as_mut_ptr() as *mut i32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

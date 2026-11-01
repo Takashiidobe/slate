@@ -503,7 +503,7 @@ int main(void) {
 // CHECK-NEXT:     let mut logical: i32 = 0;
 // CHECK-NEXT:     let mut conditional: i32 = 0;
 // CHECK-NEXT:     let mut comma_value: i32 = 0;
-// CHECK-NEXT:     let string_length: i32 = 3 - 1;
+// CHECK-NEXT:     let string_length: i32 = (std::mem::size_of::<[i8; 3]>() as i32) - 1;
 // CHECK-NEXT:     let mut static_calls: i32 = 0;
 // CHECK-NEXT:     let mut variadic_total: i32 = 0;
 // CHECK-NEXT:     let mut control_total: i32 = 0;

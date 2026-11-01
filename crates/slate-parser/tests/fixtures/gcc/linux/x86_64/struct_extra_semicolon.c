@@ -51,8 +51,8 @@ int size_guard = sizeof(guard_t);
 // DEFAULT-NEXT:     type @type[[TYPE_u:[0-9]+]] u = union {
 // DEFAULT-NEXT:         field0 y: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %[[VALUE_size_s:[0-9]+]] size_s: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(4))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_size_u:[0-9]+]] size_u: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(4))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_size_guard:[0-9]+]] size_guard: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(8))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_size_s:[0-9]+]] size_s: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_s]]>(4))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_size_u:[0-9]+]] size_u: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_u]]>(4))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_size_guard:[0-9]+]] size_guard: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE0]]>(8))) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

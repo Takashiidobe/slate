@@ -74,7 +74,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(field0(field1(%[[VALUE_value]])), const<i32>(31));
 // DEFAULT-NEXT:         write<i32>(field0(field2(%[[VALUE_value]])), const<i32>(37));
 // DEFAULT-NEXT:         write<i32>(field1(field2(%[[VALUE_value]])), const<i32>(41));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%[[VALUE_str]])), read<i32>(field0(%[[VALUE_value]])), read<i32>(field0(field1(%[[VALUE_value]]))), read<i32>(field0(field2(%[[VALUE_value]]))), read<i32>(field1(field2(%[[VALUE_value]]))), const<u64>(16));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%[[VALUE_str]])), read<i32>(field0(%[[VALUE_value]])), read<i32>(field0(field1(%[[VALUE_value]]))), read<i32>(field0(field2(%[[VALUE_value]]))), read<i32>(field1(field2(%[[VALUE_value]]))), size_of<u64, @type[[TYPE_container]]>(16));
 // DEFAULT-NEXT:         write<f32>(field1(field1(%[[VALUE_value]])), const<f32>(2.5));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(field1(field1(%[[VALUE_value]])))));
 // DEFAULT-NEXT:         return const<i32>(0);

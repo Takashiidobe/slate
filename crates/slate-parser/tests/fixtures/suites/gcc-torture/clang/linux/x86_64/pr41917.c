@@ -50,7 +50,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: u32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: u32 [storage=automatic];
-// DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))), gt<i32>(reinterpret<i32, reason=explicit, fits=unknown>(const<u32>(3352447838)), const<i32>(0)))
+// DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(size_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))), gt<i32>(reinterpret<i32, reason=explicit, fits=unknown>(const<u32>(3352447838)), const<i32>(0)))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_c]], const<u32>(3352447838));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_d]], or<u32>(read<u32>(%[[VALUE_a]]), reinterpret<u32, reason=usual_arith, fits=unknown>(neg<i32, overflow=ub>(const<i32>(2)))));

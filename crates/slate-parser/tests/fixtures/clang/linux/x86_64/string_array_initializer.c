@@ -46,7 +46,7 @@ int local(void) {
 // IR-NEXT:     fn %[[VALUE_local:[0-9]+]] @local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: array<i8, 4> [storage=automatic] = code_units<array<i8, 4>>([120, 121, 122, 0]);
 // IR-NEXT:         let %[[VALUE_wide:[0-9]+]] wide: array<i8, 6> [storage=automatic] = code_units<array<i8, 6>>([120, 121, 0, 0, 0, 0]);
-// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_wide]]), const<i32>(0))))))))));
+// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(size_of<u64, array<i8, 4>>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_wide]]), const<i32>(0))))))))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

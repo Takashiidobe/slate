@@ -45,7 +45,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_db1:[0-9]+]] db1: f64 [storage=automatic] = const<f64>(1.7976931348623157e308);
 // DEFAULT-NEXT:         let %[[VALUE_ldb1:[0-9]+]] ldb1: f80 [storage=automatic] = float_widen<f80, reason=assign>(read<f64>(%[[VALUE_db1]]));
-// DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), ne<u64>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16)))))
+// DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(size_of<u64, f64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), ne<u64>(size_of<u64, f80>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16)))))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(%[[VALUE_ldb1]]), float_widen<f80, reason=usual_arith>(const<f64>(1.7976931348623157e308)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

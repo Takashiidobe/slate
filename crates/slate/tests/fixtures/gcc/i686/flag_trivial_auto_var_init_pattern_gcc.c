@@ -252,12 +252,12 @@ int main(void) {
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"long".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(l) as *const (),
-// CHECK-NEXT:         4u32,
+// CHECK-NEXT:         std::mem::size_of::<i32>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"pointer".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(p) as *const (),
-// CHECK-NEXT:         4u32,
+// CHECK-NEXT:         std::mem::size_of::<*mut ()>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"long double".as_ptr(),

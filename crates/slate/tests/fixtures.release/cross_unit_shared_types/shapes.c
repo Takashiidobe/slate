@@ -71,7 +71,8 @@ int count_vowels(const char *text) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn registry_new() -> *mut registry {
-// CHECK-NEXT:     let registry: *mut registry = (unsafe { malloc(16u64) }) as *mut registry;
+// CHECK-NEXT:     let registry: *mut registry =
+// CHECK-NEXT:         (unsafe { malloc(std::mem::size_of::<registry>() as u64) }) as *mut registry;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*registry).head = std::ptr::null_mut::<shape>();
 // CHECK-NEXT:     }

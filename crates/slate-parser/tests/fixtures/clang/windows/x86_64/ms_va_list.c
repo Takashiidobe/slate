@@ -70,7 +70,7 @@ long long consume(__builtin_ms_va_list ap) {
 // IR-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE_tiny]] [storage=automatic] = copy<@type[[TYPE_tiny]], reason=assign>(va_arg<@type[[TYPE_tiny]]>(%[[VALUE_ap]]));
 // IR-NEXT:         va_end(%[[VALUE_copy]]);
 // IR-NEXT:         va_end(%[[VALUE_ap]]);
-// IR-NEXT:         return add<i64>(add<i64>(add<i64>(add<i64>(read<i64>(%[[VALUE_first]]), float_to_int<i64>(read<f64>(%[[VALUE_d]]))), read<i64>(field2(%[[VALUE_w]]))), widen<i64>(widen<i32>(read<i8>(field2(%[[VALUE_t]]))))), reinterpret<i64>(const<u64>(8)));
+// IR-NEXT:         return add<i64>(add<i64>(add<i64>(add<i64>(read<i64>(%[[VALUE_first]]), float_to_int<i64>(read<f64>(%[[VALUE_d]]))), read<i64>(field2(%[[VALUE_w]]))), widen<i64>(widen<i32>(read<i8>(field2(%[[VALUE_t]]))))), reinterpret<i64>(size_of<u64, ptr<i8>>(8)));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_consume:[0-9]+]] @consume(%[[VALUE_ap_2:[0-9]+]] ap: ptr<i8>) -> i64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %[[VALUE_raw:[0-9]+]] raw: ptr<i8> [storage=automatic] = read<ptr<i8>>(%[[VALUE_ap_2]]);

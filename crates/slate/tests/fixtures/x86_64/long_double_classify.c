@@ -261,7 +261,7 @@ int main(void) {
 // CHECK-NEXT: fn string2ld(s: *const i8, slen: u64, dp: *mut LongDouble) -> i32 {
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     let mut eptr: *mut i8 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     if slen == 0 || slen >= 64 {
+// CHECK-NEXT:     if slen == 0 || slen >= (std::mem::size_of::<[i8; 64]>() as u64) {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
@@ -405,7 +405,9 @@ int main(void) {
 // CHECK-NEXT:         c"12x".as_ptr(),
 // CHECK-NEXT:         c"".as_ptr(),
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     for i in 0..6u64 {
+// CHECK-NEXT:     for i in 0..((std::mem::size_of::<[*const i8; 6]>() as u64)
+// CHECK-NEXT:         / (std::mem::size_of::<*const i8>() as u64))
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let mut d: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]);
 // CHECK-NEXT:         let ok: i32 = string2ld(
 // CHECK-NEXT:             inputs.0[i as usize],
@@ -415,7 +417,11 @@ int main(void) {
 // CHECK-NEXT:         let mut out: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:         let mut n: i32 = 0;
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = if ok != 0 {
-// CHECK-NEXT:             ld2string(out.0.as_mut_ptr() as *mut i8, 64u64, d)
+// CHECK-NEXT:             ld2string(
+// CHECK-NEXT:                 out.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:                 std::mem::size_of::<[i8; 64]>() as u64,
+// CHECK-NEXT:                 d,
+// CHECK-NEXT:             )
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             0
 // CHECK-NEXT:         };
@@ -448,7 +454,11 @@ int main(void) {
 // CHECK-NEXT:         accepted += [[V_1]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut out: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
-// CHECK-NEXT:     let n: i32 = ld2string(out.0.as_mut_ptr() as *mut i8, 64u64, acc);
+// CHECK-NEXT:     let n: i32 = ld2string(
+// CHECK-NEXT:         out.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:         std::mem::size_of::<[i8; 64]>() as u64,
+// CHECK-NEXT:         acc,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

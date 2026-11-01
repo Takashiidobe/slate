@@ -167,80 +167,80 @@ main (void)
 // DEFAULT-NEXT:     fn %[[VALUE_memcmp:[0-9]+]] @memcmp(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> i32 [linkage=external] [c="int(const void *, const void *, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(4), const<u64>(4))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, array<i8, 4>>(4), size_of<u64, array<i8, 4>>(4))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE4]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(4)>(%[[VALUE_su8]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(4)>(%[[VALUE_su8a]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(4)>(%[[VALUE_su8]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(4)>(%[[VALUE_su8a]])), size_of<u64, array<i8, 4>>(4)), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE4]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(4), const<u64>(4))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, array<u16, 2>>(4), size_of<u64, array<u16, 2>>(4))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE5]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const u16>, length=Some(2)>(%[[VALUE_su16]]) [c="const char16_t *"]), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const u16>, length=Some(2)>(%[[VALUE_su16a]]) [c="const char16_t *"]), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const u16>, length=Some(2)>(%[[VALUE_su16]]) [c="const char16_t *"]), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const u16>, length=Some(2)>(%[[VALUE_su16a]]) [c="const char16_t *"]), size_of<u64, array<u16, 2>>(4)), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE5]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(8), const<u64>(8))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, array<u32, 2>>(8), size_of<u64, array<u32, 2>>(8))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE6]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const u32>, length=Some(2)>(%[[VALUE_su32]]) [c="const char32_t *"]), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const u32>, length=Some(2)>(%[[VALUE_su32a]]) [c="const char32_t *"]), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const u32>, length=Some(2)>(%[[VALUE_su32]]) [c="const char32_t *"]), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const u32>, length=Some(2)>(%[[VALUE_su32a]]) [c="const char32_t *"]), size_of<u64, array<u32, 2>>(8)), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE6]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(5), const<u64>(5))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, array<i8, 5>>(5), size_of<u64, array<i8, 5>>(5))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE7]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE7]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(5)>(%[[VALUE_tu]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(5)>(%[[VALUE_tua]])), const<u64>(5)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE7]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(5)>(%[[VALUE_tu]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(5)>(%[[VALUE_tua]])), size_of<u64, array<i8, 5>>(5)), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE7]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(7), const<u64>(7))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, array<i8, 7>>(7), size_of<u64, array<i8, 7>>(7))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE8]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE8]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(7)>(%[[VALUE_tu8]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(7)>(%[[VALUE_tu8a]])), const<u64>(7)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE8]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(7)>(%[[VALUE_tu8]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(7)>(%[[VALUE_tu8a]])), size_of<u64, array<i8, 7>>(7)), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE8]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(6), const<u64>(6))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, array<i8, 6>>(6), size_of<u64, array<i8, 6>>(6))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE9]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE9]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(6)>(%[[VALUE_tu16]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(6)>(%[[VALUE_tu16a]])), const<u64>(6)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE9]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(6)>(%[[VALUE_tu16]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(6)>(%[[VALUE_tu16a]])), size_of<u64, array<i8, 6>>(6)), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE9]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(6), const<u64>(6))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, array<i8, 6>>(6), size_of<u64, array<i8, 6>>(6))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE10]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE10]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(6)>(%[[VALUE_tu32]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(6)>(%[[VALUE_tu32a]])), const<u64>(6)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE10]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(6)>(%[[VALUE_tu32]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(6)>(%[[VALUE_tu32a]])), size_of<u64, array<i8, 6>>(6)), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE10]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(6), const<u64>(6))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, array<i8, 6>>(6), size_of<u64, array<i8, 6>>(6))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE11]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE11]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(6)>(%[[VALUE_tl]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(6)>(%[[VALUE_tla]])), const<u64>(6)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE11]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(6)>(%[[VALUE_tl]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(6)>(%[[VALUE_tla]])), size_of<u64, array<i8, 6>>(6)), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE11]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(16), const<u64>(16))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, array<i8, 16>>(16), size_of<u64, array<i8, 16>>(16))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE12]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE12]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(16)>(%[[VALUE_ts]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(16)>(%[[VALUE_tsa]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE12]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(16)>(%[[VALUE_ts]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(16)>(%[[VALUE_tsa]])), size_of<u64, array<i8, 16>>(16)), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE12]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(2), const<u64>(2))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, array<i8, 2>>(2), size_of<u64, array<i8, 2>>(2))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE13]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE13]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(2)>(%[[VALUE_tm16]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(2)>(%[[VALUE_tm16a]])), const<u64>(2)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE13]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(2)>(%[[VALUE_tm16]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(2)>(%[[VALUE_tm16a]])), size_of<u64, array<i8, 2>>(2)), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE13]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE14:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(2), const<u64>(2))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, array<i8, 2>>(2), size_of<u64, array<i8, 2>>(2))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE14]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE14]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(2)>(%[[VALUE_tm32]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(2)>(%[[VALUE_tm32a]])), const<u64>(2)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE14]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(2)>(%[[VALUE_tm32]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(2)>(%[[VALUE_tm32a]])), size_of<u64, array<i8, 2>>(2)), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE14]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(const<u16>(291))), const<i32>(291))

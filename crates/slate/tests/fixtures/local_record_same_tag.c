@@ -67,7 +67,10 @@ int main(void) {
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     while (i as u64) < 32 / 16 {
+// CHECK-NEXT:     while (i as u64)
+// CHECK-NEXT:         < (std::mem::size_of::<[Rec__6; 2]>() as u64)
+// CHECK-NEXT:             / (std::mem::size_of::<Rec__6>() as u64)
+// CHECK-NEXT:     {
 // CHECK-NEXT:         total
 // CHECK-NEXT:             += ((items.0[i as usize].code as u32) as i32)
 // CHECK-NEXT:                 + ((unsafe { *items.0[i as usize].text.add(0) }) as i32);
@@ -94,7 +97,10 @@ int main(void) {
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let mut i: u32 = 0;
-// CHECK-NEXT:     while (i as u64) < 48 / 24 {
+// CHECK-NEXT:     while (i as u64)
+// CHECK-NEXT:         < (std::mem::size_of::<[Rec__18; 2]>() as u64)
+// CHECK-NEXT:             / (std::mem::size_of::<Rec__18>() as u64)
+// CHECK-NEXT:     {
 // CHECK-NEXT:         total
 // CHECK-NEXT:             += ((items.0[i as usize].n as u32) as i32)
 // CHECK-NEXT:                 + ((items.0[i as usize].code as u32) as i32)

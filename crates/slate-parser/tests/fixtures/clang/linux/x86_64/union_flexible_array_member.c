@@ -67,7 +67,7 @@ int read_tail(union Tail *p) { return p->tail[1]; }
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 d: array<f64, incomplete>;
 // IR-NEXT:     } [size=1, align=1, offsets=[0, 0]];
-// IR-NEXT:     global %[[VALUE_sizes:[0-9]+]] sizes: array<u64, 6> [storage=static] [align=16] = aggregate<array<u64, 6>, zero_fill=false>(index0 = const<u64>(4), index1 = const<u64>(4), index2 = const<u64>(0), index3 = const<u64>(4), index4 = const<u64>(8), index5 = const<u64>(1)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_sizes:[0-9]+]] sizes: array<u64, 6> [storage=static] [align=16] = aggregate<array<u64, 6>, zero_fill=false>(index0 = size_of<u64, @type[[TYPE_Tail]]>(4), index1 = size_of<u64, @type[[TYPE_Lead]]>(4), index2 = size_of<u64, @type[[TYPE_Only]]>(0), index3 = size_of<u64, @type[[TYPE_Two]]>(4), index4 = size_of<u64, @type[[TYPE_Wide]]>(8), index5 = size_of<u64, @type[[TYPE_Packed]]>(1)) [linkage=external];
 // IR-NEXT:     global %[[VALUE_aligns:[0-9]+]] aligns: array<u64, 2> [storage=static] [align=16] = aggregate<array<u64, 2>, zero_fill=false>(index0 = const<u64>(4), index1 = const<u64>(8)) [linkage=external];
 // IR-NEXT:     global %[[VALUE_scalar:[0-9]+]] scalar: @type[[TYPE_Tail]] [storage=static] = aggregate<@type[[TYPE_Tail]], zero_fill=false>(field0 = const<i32>(5)) [linkage=external];
 // IR-NEXT:     global %[[VALUE_short_tail:[0-9]+]] short_tail: @type[[TYPE_Tail]] [storage=static] = aggregate<@type[[TYPE_Tail]], zero_fill=false>(field1 = aggregate<array<i8, 2>, zero_fill=false>(index0 = truncate<i8>(const<i32>(1)), index1 = truncate<i8>(const<i32>(2)))) [linkage=external];

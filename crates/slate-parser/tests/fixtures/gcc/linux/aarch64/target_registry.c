@@ -42,9 +42,9 @@ struct pair record(struct pair value) { return value; }
 // AARCH64-LINUX-GNU-GCC-NEXT:         field1 b: i32;
 // AARCH64-LINUX-GNU-GCC-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // AARCH64-LINUX-GNU-GCC-NEXT:     global %[[VALUE_gnuc:[0-9]+]] gnuc: i32 [storage=static] = const<i32>(16) [linkage=external];
-// AARCH64-LINUX-GNU-GCC-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u64 [storage=static] = const<u64>(8) [linkage=external];
-// AARCH64-LINUX-GNU-GCC-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u64 [storage=static] = const<u64>(16) [linkage=external];
-// AARCH64-LINUX-GNU-GCC-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u64 [storage=static] = const<u64>(32) [linkage=external];
+// AARCH64-LINUX-GNU-GCC-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u64 [storage=static] = size_of<u64, i64>(8) [linkage=external];
+// AARCH64-LINUX-GNU-GCC-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u64 [storage=static] = size_of<u64, f128>(16) [linkage=external];
+// AARCH64-LINUX-GNU-GCC-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u64 [storage=static] = size_of<u64, va_list>(32) [linkage=external];
 // AARCH64-LINUX-GNU-GCC-NEXT:     global %[[VALUE_alignof_long_long:[0-9]+]] alignof_long_long: u64 [storage=static] = const<u64>(8) [linkage=external];
 // AARCH64-LINUX-GNU-GCC-NEXT:     fn %[[VALUE_record:[0-9]+]] @record(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_pair]]) -> @type[[TYPE_pair]] [linkage=external] [abi=aapcs64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // AARCH64-LINUX-GNU-GCC-NEXT:         return copy<@type[[TYPE_pair]], reason=return>(read<@type[[TYPE_pair]]>(%[[VALUE_value]]));

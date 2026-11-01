@@ -44,7 +44,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_str]])));
-// DEFAULT-NEXT:         const<u64>(4);
+// DEFAULT-NEXT:         size_of<u64, i32>(4);
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             if eq<i32>(const<i32>(5), const<i32>(5))
 // DEFAULT-NEXT:                 ;

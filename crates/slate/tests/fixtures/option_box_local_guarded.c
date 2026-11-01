@@ -33,7 +33,7 @@ int main(void) {
 // CHECK-NEXT: fn compute(flag: i32) -> i32 {
 // CHECK-NEXT:     let mut p: *mut i32 = std::ptr::null_mut::<i32>();
 // CHECK-NEXT:     if flag != 0 {
-// CHECK-NEXT:         p = (unsafe { malloc(4u64) }) as *mut i32;
+// CHECK-NEXT:         p = (unsafe { malloc(std::mem::size_of::<i32>() as u64) }) as *mut i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if !p.is_null() {
 // CHECK-NEXT:         unsafe {

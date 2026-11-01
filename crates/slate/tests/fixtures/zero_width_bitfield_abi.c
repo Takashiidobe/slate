@@ -65,7 +65,8 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn take_aligned(value: __SlateRecord_zero_width_bitfield_abi_c_6) -> i32 {
-// CHECK-NEXT:     value.value + 16
+// CHECK-NEXT:     value.value
+// CHECK-NEXT:         + (std::mem::size_of::<__SlateRecord_zero_width_bitfield_abi_c_6>() as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn round_trip(
 // CHECK-NEXT:     mut value: __SlateRecord_zero_width_bitfield_abi_c_12,
@@ -74,7 +75,8 @@ int main(void) {
 // CHECK-NEXT:     return value;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn take_packed(value: __SlateRecord_zero_width_bitfield_abi_c_18) -> i32 {
-// CHECK-NEXT:     (value.tag as i32) + value.value + 8
+// CHECK-NEXT:     (value.tag as i32) + value.value
+// CHECK-NEXT:         + (std::mem::size_of::<__SlateRecord_zero_width_bitfield_abi_c_18>() as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let aligned: __SlateRecord_zero_width_bitfield_abi_c_6 = {
@@ -108,9 +110,9 @@ int main(void) {
 // CHECK-NEXT:             take_aligned(aligned),
 // CHECK-NEXT:             middle.value,
 // CHECK-NEXT:             take_packed(packed),
-// CHECK-NEXT:             16u64,
-// CHECK-NEXT:             8u64,
-// CHECK-NEXT:             8u64,
+// CHECK-NEXT:             std::mem::size_of::<__SlateRecord_zero_width_bitfield_abi_c_6>() as u64,
+// CHECK-NEXT:             std::mem::size_of::<__SlateRecord_zero_width_bitfield_abi_c_12>() as u64,
+// CHECK-NEXT:             std::mem::size_of::<__SlateRecord_zero_width_bitfield_abi_c_18>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

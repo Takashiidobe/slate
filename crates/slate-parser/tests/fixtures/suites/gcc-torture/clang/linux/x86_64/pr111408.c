@@ -52,7 +52,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i16 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_c]], reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(rem<u64, by_zero=ub>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_a]]))), mul<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_c]], reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(rem<u64, by_zero=ub>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_a]]))), mul<u64, overflow=wrap>(size_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))))));
 // DEFAULT-NEXT:         if ne<i32>(and<i32>(read<i32>(%[[VALUE_b]]), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), read<i32>(%[[VALUE_c]]))), const<i32>(0))
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:         return const<i32>(0);

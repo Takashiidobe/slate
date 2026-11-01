@@ -930,6 +930,7 @@ fn integer_value(expr: &Expr) -> Option<u64> {
         Expr::Value(crate::backend::rust_ast::RustValue::TypedUInt(value, _)) => {
             u64::try_from(*value).ok()
         }
+        Expr::LayoutQuery { amount, .. } => Some(amount.0),
         _ => None,
     }
 }

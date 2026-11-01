@@ -198,7 +198,7 @@ int main(void) {
 // CHECK-NEXT: fn with_align_uninitialized(n: i32) -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let p: *mut i32 = (__slate_alloca::alloca(
-// CHECK-NEXT:         4u64.wrapping_mul((n as i64) as u64) as usize,
+// CHECK-NEXT:         (std::mem::size_of::<i32>() as u64).wrapping_mul((n as i64) as u64) as usize,
 // CHECK-NEXT:         (1024 as usize) / 8usize,
 // CHECK-NEXT:     ) as *mut ()) as *mut i32;
 // CHECK-NEXT:     for i in 0..n {

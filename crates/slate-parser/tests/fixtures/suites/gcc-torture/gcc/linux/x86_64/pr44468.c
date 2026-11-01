@@ -90,7 +90,7 @@ int         main() {
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_Q]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_q:[0-9]+]] q: ptr<void>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: ptr<@type[[TYPE_S]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_S]]>, reason=explicit>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<void>>(%[[VALUE_q]])), const<u64>(4)));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: ptr<@type[[TYPE_S]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_S]]>, reason=explicit>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<void>>(%[[VALUE_q]])), size_of<u64, i32>(4)));
 // DEFAULT-NEXT:         write<i32>(field0(field1(%[[VALUE_s]])), const<i32>(0));
 // DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_b]]))), const<i32>(3));
 // DEFAULT-NEXT:         return read<i32>(field0(field1(%[[VALUE_s]])));
@@ -103,12 +103,12 @@ int         main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3(%[[VALUE_q_3:[0-9]+]] q: ptr<void>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<i32>(field0(field1(%[[VALUE_s]])), const<i32>(0));
-// DEFAULT-NEXT:         write<i32>(field0(deref(pointer_cast<ptr<@type[[TYPE_S]]>, reason=explicit>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<void>>(%[[VALUE_q_3]])), const<u64>(4))))), const<i32>(3));
+// DEFAULT-NEXT:         write<i32>(field0(deref(pointer_cast<ptr<@type[[TYPE_S]]>, reason=explicit>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<void>>(%[[VALUE_q_3]])), size_of<u64, i32>(4))))), const<i32>(3));
 // DEFAULT-NEXT:         return read<i32>(field0(field1(%[[VALUE_s]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<u64>(const<u64>(4), const<u64>(4)), ne<u64>(const<u64>(4), const<u64>(4))), ne<u64>(const<u64>(4), const<u64>(4)))
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<u64>(size_of<u64, f32>(4), size_of<u64, i32>(4)), ne<u64>(const<u64>(4), size_of<u64, i32>(4))), ne<u64>(const<u64>(4), size_of<u64, i32>(4)))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         write<i32>(field0(field1(%[[VALUE_s]])), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(field1(field1(%[[VALUE_s]])), const<i32>(2));

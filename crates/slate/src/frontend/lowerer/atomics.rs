@@ -128,7 +128,10 @@ enum Combine {
 
 fn update_children(value: &ir::Value) -> Option<Vec<&ir::Value>> {
     Some(match &value.node.value {
-        ValueKind::Constant(_) | ValueKind::OldValue | ValueKind::Null => Vec::new(),
+        ValueKind::Constant(_)
+        | ValueKind::LayoutQuery { .. }
+        | ValueKind::OldValue
+        | ValueKind::Null => Vec::new(),
         ValueKind::Read {
             place,
             ordering: None,

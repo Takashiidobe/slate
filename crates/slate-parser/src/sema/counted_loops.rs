@@ -358,6 +358,7 @@ impl Uses {
             ValueKind::Fence { .. }
             | ValueKind::OldValue
             | ValueKind::Constant(_)
+            | ValueKind::LayoutQuery { .. }
             | ValueKind::Null
             | ValueKind::LabelAddress(_)
             | ValueKind::Seh(_)
@@ -552,7 +553,7 @@ fn reads(value: &Value, id: BindingId) -> bool {
 
 fn invariant(value: &Value, reads: &mut HashSet<BindingId>) -> bool {
     match &value.node.value {
-        ValueKind::Constant(_) => true,
+        ValueKind::Constant(_) | ValueKind::LayoutQuery { .. } => true,
         ValueKind::Copy { operand, .. }
         | ValueKind::Convert { operand, .. }
         | ValueKind::Unary { operand, .. } => invariant(operand, reads),
@@ -646,6 +647,7 @@ fn integer_constant(value: &Value) -> Option<BigInt> {
     let constant = match &value.node.value {
         ValueKind::Constant(Number::Integer(value)) => BigInt::from(value.clone()),
         ValueKind::Constant(Number::SignedInteger(value)) => value.clone(),
+        ValueKind::LayoutQuery { amount, .. } => BigInt::from(*amount),
         ValueKind::Copy { operand, .. } | ValueKind::Convert { operand, .. } => {
             integer_constant(operand)?
         }

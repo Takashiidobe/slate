@@ -74,11 +74,23 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(all(windows, not(feature = "beta")))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), 3i32) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%d\n".as_ptr(),
+// CHECK-NEXT:                 (((std::mem::size_of::<[i32; 3]>() as u64) / (std::mem::size_of::<i32>() as u64))
+// CHECK-NEXT:                     as u32) as i32,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(windows, feature = "beta"))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), 2i32) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%d\n".as_ptr(),
+// CHECK-NEXT:                 (((std::mem::size_of::<[i32; 2]>() as u64) / (std::mem::size_of::<i32>() as u64))
+// CHECK-NEXT:                     as u32) as i32,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
@@ -90,11 +102,19 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(unix, not(feature = "beta")))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", 3i32);
+// CHECK-NEXT:         println!(
+// CHECK-NEXT:             "{}",
+// CHECK-NEXT:             (((std::mem::size_of::<[i32; 3]>() as c_ulong)
+// CHECK-NEXT:                 / (std::mem::size_of::<i32>() as c_ulong)) as u32) as i32
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(unix, feature = "beta"))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", 2i32);
+// CHECK-NEXT:         println!(
+// CHECK-NEXT:             "{}",
+// CHECK-NEXT:             (((std::mem::size_of::<[i32; 2]>() as c_ulong)
+// CHECK-NEXT:                 / (std::mem::size_of::<i32>() as c_ulong)) as u32) as i32
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

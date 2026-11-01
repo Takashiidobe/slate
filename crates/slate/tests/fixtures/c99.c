@@ -351,7 +351,9 @@ int main(void) {
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }) as i32);
 // CHECK-NEXT:     let mut flexible_total: i32 = 0;
-// CHECK-NEXT:     let flexible: *mut C99Flexible = (unsafe { malloc(20u64) }) as *mut C99Flexible;
+// CHECK-NEXT:     let flexible: *mut C99Flexible = (unsafe {
+// CHECK-NEXT:         malloc(8u64.wrapping_add(3u64.wrapping_mul(std::mem::size_of::<i32>() as u64)))
+// CHECK-NEXT:     }) as *mut C99Flexible;
 // CHECK-NEXT:     if flexible.is_null() {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }

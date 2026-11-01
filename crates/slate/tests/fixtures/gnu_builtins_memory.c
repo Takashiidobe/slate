@@ -302,7 +302,7 @@ int main(void) {
 // CHECK-NEXT:             (first.0.as_mut_ptr() as *mut u8).add(8) as *mut (),
 // CHECK-NEXT:             (source.0.as_mut_ptr() as *mut u8).add(8) as *const (),
 // CHECK-NEXT:             8u64,
-// CHECK-NEXT:             24u64,
+// CHECK-NEXT:             (std::mem::size_of::<[u8; 32]>() as u64).wrapping_sub(8),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -310,7 +310,7 @@ int main(void) {
 // CHECK-NEXT:             (second.0.as_mut_ptr() as *mut u8).add(1) as *mut (),
 // CHECK-NEXT:             second.0.as_mut_ptr() as *const (),
 // CHECK-NEXT:             7u64,
-// CHECK-NEXT:             31u64,
+// CHECK-NEXT:             (std::mem::size_of::<[u8; 32]>() as u64).wrapping_sub(1),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -318,7 +318,7 @@ int main(void) {
 // CHECK-NEXT:             (second.0.as_mut_ptr() as *mut u8).add(16) as *mut (),
 // CHECK-NEXT:             9i32,
 // CHECK-NEXT:             4u64,
-// CHECK-NEXT:             16u64,
+// CHECK-NEXT:             (std::mem::size_of::<[u8; 32]>() as u64).wrapping_sub(16),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ((end == ((unsafe { (first.0.as_mut_ptr() as *mut u8).add(8) }) as *mut ())) as i32)
@@ -374,18 +374,22 @@ int main(void) {
 // CHECK-NEXT:         __builtin___strcpy_chk(
 // CHECK-NEXT:             second.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             c"clang".as_ptr(),
-// CHECK-NEXT:             64u64,
+// CHECK-NEXT:             std::mem::size_of::<[i8; 64]>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin___stpcpy_chk(
 // CHECK-NEXT:             (second.0.as_mut_ptr() as *mut i8).add(5),
 // CHECK-NEXT:             c"-head".as_ptr(),
-// CHECK-NEXT:             59u64,
+// CHECK-NEXT:             (std::mem::size_of::<[i8; 64]>() as u64).wrapping_sub(5),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         __builtin___strcat_chk(second.0.as_mut_ptr() as *mut i8, c"-gnu".as_ptr(), 64u64)
+// CHECK-NEXT:         __builtin___strcat_chk(
+// CHECK-NEXT:             second.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             c"-gnu".as_ptr(),
+// CHECK-NEXT:             std::mem::size_of::<[i8; 64]>() as u64,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (((unsafe { __builtin_strlen(first.0.as_mut_ptr() as *const i8) }) as u32) as i32)
 // CHECK-NEXT:         + ((end == unsafe { (first.0.as_mut_ptr() as *mut i8).add(11) }) as i32)

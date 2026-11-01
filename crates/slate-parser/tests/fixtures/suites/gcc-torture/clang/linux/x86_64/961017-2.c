@@ -58,7 +58,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         if eq<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
+// DEFAULT-NEXT:         if eq<u64>(size_of<u64, u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_z:[0-9]+]] z: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:                 do %[[VALUE1:[0-9]+]]
@@ -76,7 +76,7 @@ int main(void) {
 // DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             if eq<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
+// DEFAULT-NEXT:             if eq<u64>(size_of<u64, u32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %[[VALUE_z_2:[0-9]+]] z: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:                     do %[[VALUE6:[0-9]+]]

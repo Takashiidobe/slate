@@ -32,9 +32,12 @@ fn expr_is_zero(expr: &Expr) -> bool {
 
 pub(super) fn expr_is_pure_and_closed(expr: &Expr) -> bool {
     match expr {
-        Expr::Value(_) | Expr::Str(_) | Expr::HexFloat(_) | Expr::ByteStr(_) | Expr::CStr(_) => {
-            true
-        }
+        Expr::Value(_)
+        | Expr::Str(_)
+        | Expr::HexFloat(_)
+        | Expr::ByteStr(_)
+        | Expr::CStr(_)
+        | Expr::LayoutQuery { .. } => true,
         Expr::Unary { expr, .. } | Expr::Cast { expr, .. } => expr_is_pure_and_closed(expr),
         Expr::Binary { lhs, rhs, .. }
         | Expr::Range {

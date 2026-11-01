@@ -109,7 +109,7 @@ void f(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_aligned_char:[0-9]+]] aligned_char = i8;
 // DEFAULT-NEXT:     global %[[VALUE_leading:[0-9]+]] leading: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(1))) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_trailing:[0-9]+]] trailing: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(1))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_unchanged_size:[0-9]+]] unchanged_size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(3))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unchanged_size:[0-9]+]] unchanged_size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, array<i8, 3>>(3))) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_whole_type:[0-9]+]] whole_type: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(8))) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_reduced:[0-9]+]] reduced: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(4))) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_biggest:[0-9]+]] biggest: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(1))) [linkage=external];
@@ -146,7 +146,7 @@ void f(void) {
 // IR-WARN-NEXT:     type @type[[TYPE_aligned_char:[0-9]+]] aligned_char = i8;
 // IR-WARN-NEXT:     global %[[VALUE_leading:[0-9]+]] leading: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(1))) [linkage=external];
 // IR-WARN-NEXT:     global %[[VALUE_trailing:[0-9]+]] trailing: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(1))) [linkage=external];
-// IR-WARN-NEXT:     global %[[VALUE_unchanged_size:[0-9]+]] unchanged_size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(3))) [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_unchanged_size:[0-9]+]] unchanged_size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, array<i8, 3>>(3))) [linkage=external];
 // IR-WARN-NEXT:     global %[[VALUE_whole_type:[0-9]+]] whole_type: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(8))) [linkage=external];
 // IR-WARN-NEXT:     global %[[VALUE_reduced:[0-9]+]] reduced: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(4))) [linkage=external];
 // IR-WARN-NEXT:     global %[[VALUE_biggest:[0-9]+]] biggest: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(1))) [linkage=external];

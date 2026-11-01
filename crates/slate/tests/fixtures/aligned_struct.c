@@ -107,7 +107,13 @@ int main(void) {
 // CHECK-NEXT:     s.a = 5;
 // CHECK-NEXT:     s.b = 4660;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu\n".as_ptr(), 16u64, 16u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%zu %zu\n".as_ptr(),
+// CHECK-NEXT:             std::mem::size_of::<Aligned>() as u64,
+// CHECK-NEXT:             16u64,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu\n".as_ptr(), 0u64, 4u64) };

@@ -81,33 +81,37 @@ int main(void) {
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"int".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(i) as *const (),
-// CHECK-NEXT:         4u32,
+// CHECK-NEXT:         std::mem::size_of::<i32>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"float".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(f) as *const (),
-// CHECK-NEXT:         4u32,
+// CHECK-NEXT:         std::mem::size_of::<f32>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"pointer".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(p) as *const (),
-// CHECK-NEXT:         8u32,
+// CHECK-NEXT:         std::mem::size_of::<*mut ()>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"bool".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(b) as *const (),
-// CHECK-NEXT:         1u32,
+// CHECK-NEXT:         std::mem::size_of::<bool>() as u32,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     dump(c"array".as_ptr(), arr.0.as_mut_ptr() as *const (), 256u32);
+// CHECK-NEXT:     dump(
+// CHECK-NEXT:         c"array".as_ptr(),
+// CHECK-NEXT:         arr.0.as_mut_ptr() as *const (),
+// CHECK-NEXT:         std::mem::size_of::<[i32; 64]>() as u32,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"padded".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(s) as *const (),
-// CHECK-NEXT:         24u32,
+// CHECK-NEXT:         std::mem::size_of::<padded>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"padded[]".as_ptr(),
 // CHECK-NEXT:         many.0.as_mut_ptr() as *const (),
-// CHECK-NEXT:         96u32,
+// CHECK-NEXT:         std::mem::size_of::<[padded; 4]>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

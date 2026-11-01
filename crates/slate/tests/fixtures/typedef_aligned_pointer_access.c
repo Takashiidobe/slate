@@ -92,7 +92,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
-// CHECK-NEXT:     unsafe { std::ptr::write_bytes(buffer.0.as_mut_ptr() as *mut u8, 0u8, 64 as usize) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut u8,
+// CHECK-NEXT:             0u8,
+// CHECK-NEXT:             std::mem::size_of::<[i8; 64]>(),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     store((unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(1) }) as *mut i32, 42i32);
 // CHECK-NEXT:     let __slate_printf_arg0 = load(
 // CHECK-NEXT:         (unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(1) }) as *mut i32,

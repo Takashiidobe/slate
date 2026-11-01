@@ -172,7 +172,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic] = call<i32, signature=fn(ptr<i32>) -> i32>(%[[VALUE_sum_fixed]], array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_arr]]));
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: array<i32, 3> [storage=automatic] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_scale_fixed]], array_decay<ptr<i32>, length=Some(3)>(%[[VALUE_a]]));
-// DEFAULT-NEXT:         let %[[VALUE_m:[0-9]+]] m: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3))), const<u64>(4))));
+// DEFAULT-NEXT:         let %[[VALUE_m:[0-9]+]] m: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3))), size_of<u64, i32>(4))));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_m]]), const<i32>(0))), const<i32>(5));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_m]]), const<i32>(1))), const<i32>(6));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_m]]), const<i32>(2))), const<i32>(7));

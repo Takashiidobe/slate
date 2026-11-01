@@ -94,20 +94,20 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memset:[0-9]+]] @__builtin_memset(%[[VALUE4:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE5:[0-9]+]] <unnamed>: i32, %[[VALUE6:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_qux:[0-9]+]] @qux() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: array<i8, 100> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%[[VALUE_b]])), const<i32>(120), const<u64>(100));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%[[VALUE_b]])), const<i32>(120), size_of<u64, array<i8, 100>>(100));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>) -> void>(%[[VALUE_quux]], array_decay<ptr<i8>, length=Some(100)>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE7:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE8:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE9:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: array<i8, 100> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%[[VALUE_b_2]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(9)>(%[[VALUE_u]])), const<u64>(9));
-// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(100)>(%[[VALUE_b_2]]), const<u64>(9))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%[[VALUE_b_2]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(9)>(%[[VALUE_u]])), size_of<u64, array<u8, 9>>(9));
+// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(100)>(%[[VALUE_b_2]]), size_of<u64, array<u8, 9>>(9))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>) -> void>(%[[VALUE_foo]], array_decay<ptr<i8>, length=Some(100)>(%[[VALUE_b_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_b_3:[0-9]+]] b: array<i8, 100> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%[[VALUE_b_3]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(9)>(%[[VALUE_u_2]])), const<u64>(9));
-// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(100)>(%[[VALUE_b_3]]), const<u64>(9))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%[[VALUE_b_3]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(9)>(%[[VALUE_u_2]])), size_of<u64, array<u8, 9>>(9));
+// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(100)>(%[[VALUE_b_3]]), size_of<u64, array<u8, 9>>(9))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>) -> void>(%[[VALUE_foo]], array_decay<ptr<i8>, length=Some(100)>(%[[VALUE_b_3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

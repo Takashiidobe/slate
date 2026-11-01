@@ -130,16 +130,20 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = if false || 0u64 != 0 {
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = if (std::mem::size_of::<i32>() as u64) > (std::mem::size_of::<i64>() as u64)
+// CHECK-NEXT:             || (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:                 & (std::mem::size_of::<i32>() as u64).wrapping_sub(1)
+// CHECK-NEXT:                 != 0
+// CHECK-NEXT:         {
 // CHECK-NEXT:             let [[V_1:__v[0-9]+]]: *mut i8 = ap;
-// CHECK-NEXT:             let [[V_2:__v[0-9]+]]: *mut i8 = unsafe { [[V_1]].add(8) };
+// CHECK-NEXT:             let [[V_2:__v[0-9]+]]: *mut i8 = unsafe { [[V_1]].offset(std::mem::size_of::<i64>() as isize) };
 // CHECK-NEXT:             ap = [[V_2]];
-// CHECK-NEXT:             unsafe { *(*([[V_2]].sub(8) as *mut *mut i32)) }
+// CHECK-NEXT:             unsafe { *(*([[V_2]].offset(-(std::mem::size_of::<i64>() as isize)) as *mut *mut i32)) }
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             let [[V_3:__v[0-9]+]]: *mut i8 = ap;
-// CHECK-NEXT:             let [[V_4:__v[0-9]+]]: *mut i8 = unsafe { [[V_3]].add(8) };
+// CHECK-NEXT:             let [[V_4:__v[0-9]+]]: *mut i8 = unsafe { [[V_3]].offset(std::mem::size_of::<i64>() as isize) };
 // CHECK-NEXT:             ap = [[V_4]];
-// CHECK-NEXT:             unsafe { *([[V_4]].sub(8) as *mut i32) }
+// CHECK-NEXT:             unsafe { *([[V_4]].offset(-(std::mem::size_of::<i64>() as isize)) as *mut i32) }
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = [[V_0]];
 // CHECK-NEXT:         total += [[V_5]] as i64;
@@ -158,42 +162,53 @@ int main(void) {
 // CHECK-NEXT:     copy = ap;
 // CHECK-NEXT:     let mut total: f64 = 0i32 as f64;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         let [[V_0]]: f64 = if false || 0u64 != 0 {
+// CHECK-NEXT:         let [[V_0]]: f64 = if (std::mem::size_of::<f64>() as u64) > (std::mem::size_of::<i64>() as u64)
+// CHECK-NEXT:             || (std::mem::size_of::<f64>() as u64)
+// CHECK-NEXT:                 & (std::mem::size_of::<f64>() as u64).wrapping_sub(1)
+// CHECK-NEXT:                 != 0
+// CHECK-NEXT:         {
 // CHECK-NEXT:             let [[V_1]]: *mut i8 = ap;
-// CHECK-NEXT:             let [[V_2]]: *mut i8 = unsafe { [[V_1]].add(8) };
+// CHECK-NEXT:             let [[V_2]]: *mut i8 = unsafe { [[V_1]].offset(std::mem::size_of::<i64>() as isize) };
 // CHECK-NEXT:             ap = [[V_2]];
-// CHECK-NEXT:             unsafe { *(*([[V_2]].sub(8) as *mut *mut f64)) }
+// CHECK-NEXT:             unsafe { *(*([[V_2]].offset(-(std::mem::size_of::<i64>() as isize)) as *mut *mut f64)) }
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             let [[V_3]]: *mut i8 = ap;
-// CHECK-NEXT:             let [[V_4]]: *mut i8 = unsafe { [[V_3]].add(8) };
+// CHECK-NEXT:             let [[V_4]]: *mut i8 = unsafe { [[V_3]].offset(std::mem::size_of::<i64>() as isize) };
 // CHECK-NEXT:             ap = [[V_4]];
-// CHECK-NEXT:             unsafe { *([[V_4]].sub(8) as *mut f64) }
+// CHECK-NEXT:             unsafe { *([[V_4]].offset(-(std::mem::size_of::<i64>() as isize)) as *mut f64) }
 // CHECK-NEXT:         };
 // CHECK-NEXT:         total += [[V_0]];
-// CHECK-NEXT:         let [[V_6:__v[0-9]+]]: big = if true || 16u64 != 0 {
+// CHECK-NEXT:         let [[V_6:__v[0-9]+]]: big = if (std::mem::size_of::<big>() as u64) > (std::mem::size_of::<i64>() as u64)
+// CHECK-NEXT:             || (std::mem::size_of::<big>() as u64)
+// CHECK-NEXT:                 & (std::mem::size_of::<big>() as u64).wrapping_sub(1)
+// CHECK-NEXT:                 != 0
+// CHECK-NEXT:         {
 // CHECK-NEXT:             let [[V_7:__v[0-9]+]]: *mut i8 = ap;
-// CHECK-NEXT:             let [[V_8:__v[0-9]+]]: *mut i8 = unsafe { [[V_7]].add(8) };
+// CHECK-NEXT:             let [[V_8:__v[0-9]+]]: *mut i8 = unsafe { [[V_7]].offset(std::mem::size_of::<i64>() as isize) };
 // CHECK-NEXT:             ap = [[V_8]];
-// CHECK-NEXT:             unsafe { *(*([[V_8]].sub(8) as *mut *mut big)) }
+// CHECK-NEXT:             unsafe { *(*([[V_8]].offset(-(std::mem::size_of::<i64>() as isize)) as *mut *mut big)) }
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             let [[V_9:__v[0-9]+]]: *mut i8 = ap;
-// CHECK-NEXT:             let [[V_10:__v[0-9]+]]: *mut i8 = unsafe { [[V_9]].add(8) };
+// CHECK-NEXT:             let [[V_10:__v[0-9]+]]: *mut i8 = unsafe { [[V_9]].offset(std::mem::size_of::<i64>() as isize) };
 // CHECK-NEXT:             ap = [[V_10]];
-// CHECK-NEXT:             unsafe { *([[V_10]].sub(8) as *mut big) }
+// CHECK-NEXT:             unsafe { *([[V_10]].offset(-(std::mem::size_of::<i64>() as isize)) as *mut big) }
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let b: big = [[V_6]];
 // CHECK-NEXT:         total += (b.a + b.b + b.c) as f64;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: f64 = if false || 0u64 != 0 {
+// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: f64 = if (std::mem::size_of::<f64>() as u64) > (std::mem::size_of::<i64>() as u64)
+// CHECK-NEXT:         || (std::mem::size_of::<f64>() as u64) & (std::mem::size_of::<f64>() as u64).wrapping_sub(1)
+// CHECK-NEXT:             != 0
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[V_12:__v[0-9]+]]: *mut i8 = copy;
-// CHECK-NEXT:         let [[V_13:__v[0-9]+]]: *mut i8 = unsafe { [[V_12]].add(8) };
+// CHECK-NEXT:         let [[V_13:__v[0-9]+]]: *mut i8 = unsafe { [[V_12]].offset(std::mem::size_of::<i64>() as isize) };
 // CHECK-NEXT:         copy = [[V_13]];
-// CHECK-NEXT:         unsafe { *(*([[V_13]].sub(8) as *mut *mut f64)) }
+// CHECK-NEXT:         unsafe { *(*([[V_13]].offset(-(std::mem::size_of::<i64>() as isize)) as *mut *mut f64)) }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         let [[V_14:__v[0-9]+]]: *mut i8 = copy;
-// CHECK-NEXT:         let [[V_15:__v[0-9]+]]: *mut i8 = unsafe { [[V_14]].add(8) };
+// CHECK-NEXT:         let [[V_15:__v[0-9]+]]: *mut i8 = unsafe { [[V_14]].offset(std::mem::size_of::<i64>() as isize) };
 // CHECK-NEXT:         copy = [[V_15]];
-// CHECK-NEXT:         unsafe { *([[V_15]].sub(8) as *mut f64) }
+// CHECK-NEXT:         unsafe { *([[V_15]].offset(-(std::mem::size_of::<i64>() as isize)) as *mut f64) }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_16:__v[0-9]+]]: f64 = [[V_11]];
 // CHECK-NEXT:     total += [[V_16]];
@@ -237,7 +252,7 @@ int main(void) {
 // CHECK-NEXT:     if (unsafe {
 // CHECK-NEXT:         forward(
 // CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             64u64,
+// CHECK-NEXT:             std::mem::size_of::<[i8; 64]>() as u64,
 // CHECK-NEXT:             c"%d-%s-%lld".as_ptr(),
 // CHECK-NEXT:             7i32,
 // CHECK-NEXT:             c"x".as_ptr() as *mut i8,

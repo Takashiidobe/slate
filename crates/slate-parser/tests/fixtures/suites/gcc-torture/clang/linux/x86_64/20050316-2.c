@@ -91,7 +91,7 @@ int main(void) {
 // DEFAULT-NEXT:         return vector_bit_cast<i64, reason=explicit>(vector_bit_cast<vector<f32, 2>, reason=explicit>(read<vector<i32, 2>>(%[[VALUE_x_3]]) [c="V2SI"]) [c="V2SF"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<u64>(const<u64>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), ne<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))), ne<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<u64>(size_of<u64, i16>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), ne<u64>(size_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))), ne<u64>(size_of<u64, i64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_x_4:[0-9]+]] x: vector<f32, 2> [storage=automatic] = aggregate<vector<f32, 2>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))) [c="V2SF"];
 // DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE0]] [storage=automatic];

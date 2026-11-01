@@ -363,7 +363,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn make_buffer(count: i32) -> *mut i32 {
-// CHECK-NEXT:     let buffer: *mut i32 = (unsafe { malloc((count as size_t).wrapping_mul(4)) }) as *mut i32;
+// CHECK-NEXT:     let buffer: *mut i32 =
+// CHECK-NEXT:         (unsafe { malloc((count as size_t).wrapping_mul(std::mem::size_of::<i32>() as size_t)) })
+// CHECK-NEXT:             as *mut i32;
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *buffer.offset(i as isize) = i + 1;

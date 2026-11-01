@@ -82,7 +82,7 @@ int main() {
 // DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE_q:[0-9]+]] q: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), const<i32>(2))))))), const<u64>(4))));
+// DEFAULT-NEXT:             let %[[VALUE_q:[0-9]+]] q: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), const<i32>(2))))))), size_of<u64, i32>(4))));
 // DEFAULT-NEXT:             let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:             for %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:                 init:

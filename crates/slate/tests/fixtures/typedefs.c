@@ -55,7 +55,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", (bx.tag as u32) as i32);
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), z) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{}", 4i32);
+// CHECK-NEXT:     println!("{}", std::mem::size_of::< i32 > () as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

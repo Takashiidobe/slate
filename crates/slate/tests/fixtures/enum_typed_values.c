@@ -102,7 +102,14 @@ int main(void) {
 // CHECK-NEXT:         "{} {} {} {}", (unsafe { favorite }) as u32, (unsafe { levels[0] }) as i32,
 // CHECK-NEXT:         (unsafe { levels[1] }) as i32, (unsafe { levels[2] }) as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu %zu\n".as_ptr(), 4u64, 1u64, 12u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%zu %zu %zu\n".as_ptr(),
+// CHECK-NEXT:             std::mem::size_of::<u32>() as u64,
+// CHECK-NEXT:             std::mem::size_of::<u8>() as u64,
+// CHECK-NEXT:             std::mem::size_of::<Lamp>() as u64,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     (((unsafe { levels[0] }) as i32) as u32).wrapping_add((unsafe { favorite }) as u32)
 // CHECK-NEXT:         as i32

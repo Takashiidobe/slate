@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-NEXT:             ((text[0] as u8) as u32) as i32,
 // CHECK-NEXT:             ((text[1] as u8) as u32) as i32,
 // CHECK-NEXT:             ((text[2] as u8) as u32) as i32,
-// CHECK-NEXT:             3u64,
+// CHECK-NEXT:             std::mem::size_of::<[i8; 3]>() as u64,
 // CHECK-NEXT:             alignment,
 // CHECK-NEXT:             repeated,
 // CHECK-NEXT:         )

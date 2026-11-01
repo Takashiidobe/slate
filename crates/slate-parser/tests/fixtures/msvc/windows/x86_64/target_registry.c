@@ -42,9 +42,9 @@ struct pair record(struct pair value) { return value; }
 // X86-64-WINDOWS-MSVC-MSVC-NEXT:         field1 b: i32;
 // X86-64-WINDOWS-MSVC-MSVC-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // X86-64-WINDOWS-MSVC-MSVC-NEXT:     global %[[VALUE_msc_ver:[0-9]+]] msc_ver: i32 [storage=static] = const<i32>(1951) [linkage=external];
-// X86-64-WINDOWS-MSVC-MSVC-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u32 [storage=static] = truncate<u32>(const<u64>(4)) [linkage=external];
-// X86-64-WINDOWS-MSVC-MSVC-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u32 [storage=static] = truncate<u32>(const<u64>(8)) [linkage=external];
-// X86-64-WINDOWS-MSVC-MSVC-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u32 [storage=static] = truncate<u32>(const<u64>(8)) [linkage=external];
+// X86-64-WINDOWS-MSVC-MSVC-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u32 [storage=static] = truncate<u32>(size_of<u64, i32>(4)) [linkage=external];
+// X86-64-WINDOWS-MSVC-MSVC-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u32 [storage=static] = truncate<u32>(size_of<u64, f64>(8)) [linkage=external];
+// X86-64-WINDOWS-MSVC-MSVC-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u32 [storage=static] = truncate<u32>(size_of<u64, ptr<i8>>(8)) [linkage=external];
 // X86-64-WINDOWS-MSVC-MSVC-NEXT:     global %[[VALUE_alignof_long_long:[0-9]+]] alignof_long_long: u32 [storage=static] = truncate<u32>(const<u64>(8)) [linkage=external];
 // X86-64-WINDOWS-MSVC-MSVC-NEXT:     fn %[[VALUE_record:[0-9]+]] @record(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_pair]]) -> @type[[TYPE_pair]] [linkage=external] [abi=win64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // X86-64-WINDOWS-MSVC-MSVC-NEXT:         return copy<@type[[TYPE_pair]], reason=return>(read<@type[[TYPE_pair]]>(%[[VALUE_value]]));

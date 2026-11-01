@@ -60,8 +60,14 @@ int main(void) {
 // CHECK-NEXT:     let mut suite: __SlateRecord_pointer_to_function_pointer_field_c_9 = unsafe {
 // CHECK-NEXT:         std::mem::zeroed()
 // CHECK-NEXT:     };
-// CHECK-NEXT:     suite.tests = (unsafe { malloc(16u64) })
-// CHECK-NEXT:         as *mut Option<unsafe extern "C-unwind" fn()>;
+// CHECK-NEXT:     suite.tests = (unsafe {
+// CHECK-NEXT:         malloc(
+// CHECK-NEXT:             2u64
+// CHECK-NEXT:                 .wrapping_mul(
+// CHECK-NEXT:                     std::mem::size_of::<Option<unsafe extern "C-unwind" fn()>>() as u64,
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     }) as *mut Option<unsafe extern "C-unwind" fn()>;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *suite.tests.add(0) = Some(test_a);
 // CHECK-NEXT:     }

@@ -36,7 +36,7 @@ int main(void) {
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let y: *mut i32 = (unsafe { malloc(4u64) }) as *mut i32;
+// CHECK-NEXT:     let y: *mut i32 = (unsafe { malloc(std::mem::size_of::<i32>() as u64) }) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *y = 41;
 // CHECK-NEXT:     }

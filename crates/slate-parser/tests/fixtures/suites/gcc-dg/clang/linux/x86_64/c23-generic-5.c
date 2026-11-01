@@ -83,15 +83,15 @@ f ()
 // DEFAULT-NEXT:         const<i32>(3);
 // DEFAULT-NEXT:         const<i32>(2);
 // DEFAULT-NEXT:         const<i32>(3);
-// DEFAULT-NEXT:         const<u64>(4);
-// DEFAULT-NEXT:         const<u64>(4);
-// DEFAULT-NEXT:         const<u64>(4);
-// DEFAULT-NEXT:         const<u64>(4);
-// DEFAULT-NEXT:         const<u64>(4);
+// DEFAULT-NEXT:         size_of<u64, i32>(4);
+// DEFAULT-NEXT:         size_of<u64, i32>(4);
+// DEFAULT-NEXT:         size_of<u64, i32>(4);
+// DEFAULT-NEXT:         size_of<u64, i32>(4);
+// DEFAULT-NEXT:         size_of<u64, i32>(4);
 // DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_not_ok1]]);
 // DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_not_ok2]]);
-// DEFAULT-NEXT:         const<u64>(4);
-// DEFAULT-NEXT:         const<u64>(4);
+// DEFAULT-NEXT:         size_of<u64, i32>(4);
+// DEFAULT-NEXT:         size_of<u64, i32>(4);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

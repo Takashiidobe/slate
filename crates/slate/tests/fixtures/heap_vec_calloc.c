@@ -16,7 +16,8 @@ int main(void) {
 // CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let p: *mut i32 = (unsafe { calloc(4u64, 4u64) }) as *mut i32;
+// CHECK-NEXT:     let p: *mut i32 = (unsafe { calloc(4u64, std::mem::size_of::<i32>() as u64) })
+// CHECK-NEXT:         as *mut i32;
 // CHECK-NEXT:     println!("{}", (unsafe { * p.add(0) }) + unsafe { * p.add(3) });
 // CHECK-NEXT:     unsafe { free(p as *mut ()) };
 // CHECK-NEXT:     0

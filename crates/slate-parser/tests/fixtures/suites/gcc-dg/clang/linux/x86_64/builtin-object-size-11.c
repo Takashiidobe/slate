@@ -57,7 +57,7 @@ main()
 // DEFAULT-NEXT:         return const<u64>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn() -> u64>(%[[VALUE_f]]), const<u64>(6))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn() -> u64>(%[[VALUE_f]]), size_of<u64, array<i8, 6>>(6))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

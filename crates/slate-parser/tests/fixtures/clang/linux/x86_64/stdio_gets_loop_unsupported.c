@@ -137,7 +137,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         let %[[VALUE_line:[0-9]+]] line: array<i8, 64> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_count:[0-9]+]] count: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<ptr<i8>>(call<ptr<i8>, signature=fn(ptr<i8>, i32, ptr<@type[[TYPE__IO_FILE]]>) -> ptr<i8>>(%[[VALUE_fgets]], array_decay<ptr<i8>, length=Some(64)>(%[[VALUE_line]]), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(64))), read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_g]]) [c="FILE *"]), null<ptr<i8>>)
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<ptr<i8>>(call<ptr<i8>, signature=fn(ptr<i8>, i32, ptr<@type[[TYPE__IO_FILE]]>) -> ptr<i8>>(%[[VALUE_fgets]], array_decay<ptr<i8>, length=Some(64)>(%[[VALUE_line]]), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(size_of<u64, array<i8, 64>>(64))), read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_g]]) [c="FILE *"]), null<ptr<i8>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_count]]);
 // DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(%[[VALUE_line]]))))));

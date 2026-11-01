@@ -69,7 +69,11 @@ int main(void) {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut line: [i8; 8] = [0i8; 8];
-// CHECK-NEXT:     while !unsafe { fgets(line.as_mut_ptr() as *mut i8, 8i32, g) }.is_null() {
+// CHECK-NEXT:     while !unsafe {
+// CHECK-NEXT:         fgets(line.as_mut_ptr() as *mut i8, std::mem::size_of::<[i8; 8]>() as i32, g)
+// CHECK-NEXT:     }
+// CHECK-NEXT:         .is_null()
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::fputs(line.as_mut_ptr() as *const i8, slate_support::stdout())

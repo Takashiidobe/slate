@@ -99,13 +99,13 @@ main()
 // DEFAULT-NEXT:     global %[[VALUE_resetalign:[0-9]+]] resetalign: @type[[TYPE4]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if lt<u64>(const<u64>(16), const<u64>(16))
+// DEFAULT-NEXT:         if lt<u64>(size_of<u64, @type[[TYPE1]]>(16), size_of<u64, @type[[TYPE0]]>(16))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ge<u64>(const<u64>(9), const<u64>(16))
+// DEFAULT-NEXT:         if ge<u64>(size_of<u64, @type[[TYPE2]]>(9), size_of<u64, @type[[TYPE0]]>(16))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if le<u64>(const<u64>(10), const<u64>(9))
+// DEFAULT-NEXT:         if le<u64>(size_of<u64, @type[[TYPE3]]>(10), size_of<u64, @type[[TYPE2]]>(9))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(16), const<u64>(16))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE4]]>(16), size_of<u64, @type[[TYPE0]]>(16))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

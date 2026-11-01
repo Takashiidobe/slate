@@ -250,7 +250,7 @@ fn adapt_type(expr: Expr, from: &rust::Type, to: &rust::Type) -> Expr {
 
 fn constant_argument(value: &ir::Value) -> bool {
     match &value.node.value {
-        ValueKind::Constant(_) => true,
+        ValueKind::Constant(_) | ValueKind::LayoutQuery { .. } => true,
         ValueKind::Copy { operand, .. }
         | ValueKind::Convert { operand, .. }
         | ValueKind::Unary { operand, .. } => constant_argument(operand),

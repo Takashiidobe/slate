@@ -66,7 +66,11 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut line: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     let mut count: i32 = 0;
-// CHECK-NEXT:     while !unsafe { fgets(line.0.as_mut_ptr() as *mut i8, 64i32, g) }.is_null() {
+// CHECK-NEXT:     while !unsafe {
+// CHECK-NEXT:         fgets(line.0.as_mut_ptr() as *mut i8, std::mem::size_of::<[i8; 64]>() as i32, g)
+// CHECK-NEXT:     }
+// CHECK-NEXT:         .is_null()
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = count;
 // CHECK-NEXT:         count = [[V_0]]
 // CHECK-NEXT:             + (((unsafe { strlen(line.0.as_mut_ptr() as *const i8) }) as u32) as i32);

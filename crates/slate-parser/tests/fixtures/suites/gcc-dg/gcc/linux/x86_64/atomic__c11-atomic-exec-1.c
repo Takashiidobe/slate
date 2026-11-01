@@ -2217,18 +2217,18 @@ main (void)
 // DEFAULT-NEXT:         let %[[VALUE270:[0-9]+]]: @type[[TYPE_s]] [synthetic] = copy<@type[[TYPE_s]], reason=assign>(read<@type[[TYPE_s]]>(%[[VALUE_init]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_s]], atomic=seq_cst>(%[[VALUE_s1]], read<@type[[TYPE_s]]>(%[[VALUE270]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_s]]>(%[[VALUE_copy]], copy<@type[[TYPE_s]], reason=assign>(read<@type[[TYPE_s]]>(%[[VALUE270]])));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_init]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_copy]])), const<u64>(2048)), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_init]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_copy]])), size_of<u64, @type[[TYPE_s]]>(2048)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE271:[0-9]+]]: @type[[TYPE_s]] [synthetic] = copy<@type[[TYPE_s]], reason=assign>(read<@type[[TYPE_s]], atomic=seq_cst>(%[[VALUE_s1]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_s]], atomic=seq_cst>(%[[VALUE_s2]], read<@type[[TYPE_s]]>(%[[VALUE271]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_s]]>(%[[VALUE_copy]], copy<@type[[TYPE_s]], reason=assign>(read<@type[[TYPE_s]]>(%[[VALUE271]])));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_init]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_copy]])), const<u64>(2048)), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_init]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_copy]])), size_of<u64, @type[[TYPE_s]]>(2048)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<@type[[TYPE_s]]>(%[[VALUE_copy]], copy<@type[[TYPE_s]], reason=assign>(read<@type[[TYPE_s]], atomic=seq_cst>(%[[VALUE_s1]])));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_init]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_copy]])), const<u64>(2048)), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_init]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_copy]])), size_of<u64, @type[[TYPE_s]]>(2048)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<@type[[TYPE_s]]>(%[[VALUE_copy]], copy<@type[[TYPE_s]], reason=assign>(read<@type[[TYPE_s]], atomic=seq_cst>(%[[VALUE_s2]])));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_init]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_copy]])), const<u64>(2048)), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_init]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_copy]])), size_of<u64, @type[[TYPE_s]]>(2048)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

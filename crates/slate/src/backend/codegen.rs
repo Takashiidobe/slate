@@ -3,9 +3,9 @@ use std::fmt::{self, Write};
 use crate::backend::rust_ast::{
     Abi, AsmKind, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr,
     Block, Cfg, Comment, CommentAttach, CrateAttr, Derive, Expr, ExternDecl, FnDef, GenericParam,
-    ImplBlock, ImplItem, InlineAsm, InlineHint, Item, MacroParamShape, Method, Path, Pattern,
-    Precedence, Prim, Program, RecordDef, RecordField, Repr, RustValue, SelfKind, Stmt, StructDef,
-    StructFields, TraitBound, TraitRef, Type,
+    ImplBlock, ImplItem, InlineAsm, InlineHint, Item, LayoutQuery, MacroParamShape, Method, Path,
+    Pattern, Precedence, Prim, Program, RecordDef, RecordField, Repr, RustValue, SelfKind, Stmt,
+    StructDef, StructFields, TraitBound, TraitRef, Type,
 };
 
 const INDENT: &str = "    ";
@@ -1250,6 +1250,14 @@ impl<W: Write> Codegen<W> {
                     self.ty(ty)?;
                 }
                 self.out.write_char('>')
+            }
+            Expr::LayoutQuery {
+                query: LayoutQuery::SizeOf(ty),
+                ..
+            } => {
+                self.out.write_str("std::mem::size_of::<")?;
+                self.ty(ty)?;
+                self.out.write_str(">()")
             }
             Expr::Var(s) => self.ident(s.as_str()),
             Expr::Unary { op, expr } => {

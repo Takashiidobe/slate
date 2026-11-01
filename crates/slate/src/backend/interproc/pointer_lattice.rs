@@ -1193,6 +1193,7 @@ impl ClassifyCtx<'_> {
             | Expr::AtomicNew { .. }
             | Expr::Todo(_)
             | Expr::Path(_)
+            | Expr::LayoutQuery { .. }
             | Expr::GenericPath { .. } => {}
         }
     }
@@ -2356,6 +2357,7 @@ fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
         | Expr::ConstBlock(_)
         | Expr::CStr(_)
         | Expr::Path(_)
+        | Expr::LayoutQuery { .. }
         | Expr::GenericPath { .. }
         | Expr::AtomicFence { .. }
         | Expr::Todo(_) => {}

@@ -119,10 +119,10 @@ int values(void) {
 // IR-NEXT:         return const<i32>(0);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_table:[0-9]+]] @table() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<u64, overflow=wrap>(const<u64>(12), const<u64>(16));
+// IR-NEXT:         return add<u64, overflow=wrap>(size_of<u64, array<i32, 3>>(12), size_of<u64, array<i32, 4>>(16));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_values:[0-9]+]] @values() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(4), const<i32>(2)), const<i32>(-4)), const<i32>(5)), const<i32>(1)), const<i32>(1)), const<i32>(1)), const<i32>(0)), const<i32>(1)), const<i32>(0)), const<i32>(4)), const<i32>(24)), const<i32>(16)), const<i32>(20)), const<i32>(24)))), const<u64>(4))));
+// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(4), const<i32>(2)), const<i32>(-4)), const<i32>(5)), const<i32>(1)), const<i32>(1)), const<i32>(1)), const<i32>(0)), const<i32>(1)), const<i32>(0)), const<i32>(4)), const<i32>(24)), const<i32>(16)), const<i32>(20)), const<i32>(24)))), size_of<u64, @type[[TYPE_flags]]>(4))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

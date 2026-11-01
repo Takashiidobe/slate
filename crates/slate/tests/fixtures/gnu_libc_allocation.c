@@ -136,7 +136,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_allocation_extensions() -> i32 {
 // CHECK-NEXT:     let values: *mut i32 = (unsafe {
-// CHECK-NEXT:         reallocarray(std::ptr::null_mut::<()>(), 4u64, 4u64)
+// CHECK-NEXT:         reallocarray(std::ptr::null_mut::<()>(), 4u64, std::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     let aligned: *mut () = unsafe { memalign(64u64, 80u64) };
 // CHECK-NEXT:     let page: *mut () = unsafe { valloc(1u64) };
@@ -151,7 +151,8 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT:         += (unsafe { *values.add(0) }) + unsafe { *values.add(1) }
 // CHECK-NEXT:             + unsafe { *values.add(2) } + unsafe { *values.add(3) };
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = ((unsafe { malloc_usable_size(values as *mut ()) }) >= 16u64) as i32;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = ((unsafe { malloc_usable_size(values as *mut ()) })
+// CHECK-NEXT:         >= 4u64.wrapping_mul(std::mem::size_of::<i32>() as u64)) as i32;
 // CHECK-NEXT:     total += [[V_0]];
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_1]] + ((!aligned.is_null() && (aligned as u64) % 64 == 0) as i32);
@@ -235,7 +236,9 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*__o1).next_free = if false {
+// CHECK-NEXT:             (*__o1).next_free = if (std::mem::size_of::<i64>() as u64)
+// CHECK-NEXT:                 < (std::mem::size_of::<*mut ()>() as u64)
+// CHECK-NEXT:             {
 // CHECK-NEXT:                 (*__o1).object_base
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 std::ptr::null_mut::<i8>()
@@ -243,7 +246,9 @@ int main(void) {
 // CHECK-NEXT:                 .offset(
 // CHECK-NEXT:                     ((unsafe { (*__o1).next_free }
 // CHECK-NEXT:                         .offset_from(
-// CHECK-NEXT:                             (if false {
+// CHECK-NEXT:                             (if (std::mem::size_of::<i64>() as u64)
+// CHECK-NEXT:                                 < (std::mem::size_of::<*mut ()>() as u64)
+// CHECK-NEXT:                             {
 // CHECK-NEXT:                                 (*__o1).object_base
 // CHECK-NEXT:                             } else {
 // CHECK-NEXT:                                 std::ptr::null_mut::<i8>()
@@ -308,7 +313,9 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*__o1).next_free = if false {
+// CHECK-NEXT:         (*__o1).next_free = if (std::mem::size_of::<i64>() as u64)
+// CHECK-NEXT:             < (std::mem::size_of::<*mut ()>() as u64)
+// CHECK-NEXT:         {
 // CHECK-NEXT:             (*__o1).object_base
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             std::ptr::null_mut::<i8>()
@@ -316,7 +323,9 @@ int main(void) {
 // CHECK-NEXT:             .offset(
 // CHECK-NEXT:                 ((unsafe { (*__o1).next_free }
 // CHECK-NEXT:                     .offset_from(
-// CHECK-NEXT:                         (if false {
+// CHECK-NEXT:                         (if (std::mem::size_of::<i64>() as u64)
+// CHECK-NEXT:                             < (std::mem::size_of::<*mut ()>() as u64)
+// CHECK-NEXT:                         {
 // CHECK-NEXT:                             (*__o1).object_base
 // CHECK-NEXT:                         } else {
 // CHECK-NEXT:                             std::ptr::null_mut::<i8>()

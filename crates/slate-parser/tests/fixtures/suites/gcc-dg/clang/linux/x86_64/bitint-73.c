@@ -46,7 +46,7 @@ foo (void)
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i129b [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memset:[0-9]+]] @__builtin_memset(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i129b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i129b>>(%[[VALUE_a]])), const<i32>(6), const<u64>(24));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i129b>>(%[[VALUE_a]])), const<i32>(6), size_of<u64, i129b>(24));
 // DEFAULT-NEXT:         return read<i129b>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -165,27 +165,27 @@ int nested_typedef(void) {
 // C89-NEXT:             ;
 // C89-NEXT:     }
 // C89-NEXT:     fn %[[VALUE_condition_typedef:[0-9]+]] @condition_typedef() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// C89-NEXT:         if ne<u64>(const<u64>(4), const<u64>(0))
-// C89-NEXT:             const<u64>(4);
-// C89-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
+// C89-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE0]]>(4), const<u64>(0))
+// C89-NEXT:             size_of<u64, i32>(4);
+// C89-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, i32>(4)));
 // C89-NEXT:     }
 // C89-NEXT:     fn %[[VALUE_body_typedef:[0-9]+]] @body_typedef() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // C89-NEXT:         if ne<i32>(const<i32>(1), const<i32>(0))
-// C89-NEXT:             const<u64>(4);
-// C89-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
+// C89-NEXT:             size_of<u64, @type[[TYPE1]]>(4);
+// C89-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, i32>(4)));
 // C89-NEXT:     }
 // C89-NEXT:     fn %[[VALUE_do_typedef:[0-9]+]] @do_typedef() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // C89-NEXT:         do %[[VALUE36:[0-9]+]]
-// C89-NEXT:             const<u64>(4);
-// C89-NEXT:         while ne<u64>(const<u64>(4), const<u64>(0));
-// C89-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
+// C89-NEXT:             size_of<u64, @type[[TYPE2]]>(4);
+// C89-NEXT:         while ne<u64>(size_of<u64, i32>(4), const<u64>(0));
+// C89-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, i32>(4)));
 // C89-NEXT:     }
 // C89-NEXT:     fn %[[VALUE_nested_typedef:[0-9]+]] @nested_typedef() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// C89-NEXT:         if ne<u64>(const<u64>(4), const<u64>(0))
+// C89-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE3]]>(4), const<u64>(0))
 // C89-NEXT:             {
 // C89-NEXT:                 let %[[VALUE_x_2:[0-9]+]] x: i32 [storage=automatic] [c="T"];
 // C89-NEXT:             }
-// C89-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
+// C89-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, i32>(4)));
 // C89-NEXT:     }
 // C89-NEXT: }
 // SLATE-FILECHECK-END C89
@@ -317,27 +317,27 @@ int nested_typedef(void) {
 // C99-NEXT:             ;
 // C99-NEXT:     }
 // C99-NEXT:     fn %[[VALUE_condition_typedef:[0-9]+]] @condition_typedef() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// C99-NEXT:         if ne<u64>(const<u64>(4), const<u64>(0))
-// C99-NEXT:             const<u64>(4);
-// C99-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
+// C99-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE0]]>(4), const<u64>(0))
+// C99-NEXT:             size_of<u64, i32>(4);
+// C99-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, i32>(4)));
 // C99-NEXT:     }
 // C99-NEXT:     fn %[[VALUE_body_typedef:[0-9]+]] @body_typedef() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // C99-NEXT:         if ne<i32>(const<i32>(1), const<i32>(0))
-// C99-NEXT:             const<u64>(4);
-// C99-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
+// C99-NEXT:             size_of<u64, @type[[TYPE1]]>(4);
+// C99-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, i32>(4)));
 // C99-NEXT:     }
 // C99-NEXT:     fn %[[VALUE_do_typedef:[0-9]+]] @do_typedef() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // C99-NEXT:         do %[[VALUE36:[0-9]+]]
-// C99-NEXT:             const<u64>(4);
-// C99-NEXT:         while ne<u64>(const<u64>(4), const<u64>(0));
-// C99-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
+// C99-NEXT:             size_of<u64, @type[[TYPE2]]>(4);
+// C99-NEXT:         while ne<u64>(size_of<u64, i32>(4), const<u64>(0));
+// C99-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, i32>(4)));
 // C99-NEXT:     }
 // C99-NEXT:     fn %[[VALUE_nested_typedef:[0-9]+]] @nested_typedef() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// C99-NEXT:         if ne<u64>(const<u64>(4), const<u64>(0))
+// C99-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE3]]>(4), const<u64>(0))
 // C99-NEXT:             {
 // C99-NEXT:                 let %[[VALUE_x_2:[0-9]+]] x: i32 [storage=automatic] [c="T"];
 // C99-NEXT:             }
-// C99-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
+// C99-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, i32>(4)));
 // C99-NEXT:     }
 // C99-NEXT: }
 // SLATE-FILECHECK-END C99

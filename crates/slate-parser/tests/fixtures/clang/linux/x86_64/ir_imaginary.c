@@ -148,7 +148,7 @@ void assign(double _Imaginary *out, double _Imaginary y) {
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     global %[[VALUE_global:[0-9]+]] global: imaginary<f64> [storage=static] [linkage=external];
-// IR-NEXT:     global %[[VALUE_sizes:[0-9]+]] sizes: array<u64, 6> [storage=static] [align=16] = aggregate<array<u64, 6>, zero_fill=false>(index0 = const<u64>(4), index1 = const<u64>(4), index2 = const<u64>(8), index3 = const<u64>(8), index4 = const<u64>(16), index5 = const<u64>(16)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_sizes:[0-9]+]] sizes: array<u64, 6> [storage=static] [align=16] = aggregate<array<u64, 6>, zero_fill=false>(index0 = size_of<u64, imaginary<f32>>(4), index1 = const<u64>(4), index2 = size_of<u64, imaginary<f64>>(8), index3 = const<u64>(8), index4 = size_of<u64, imaginary<f80>>(16), index5 = const<u64>(16)) [linkage=external];
 // IR-NEXT:     fn %[[VALUE_literal:[0-9]+]] @literal() -> complex<f64> [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0));
 // IR-NEXT:     }

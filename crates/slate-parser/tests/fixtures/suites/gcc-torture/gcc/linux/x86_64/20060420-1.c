@@ -96,8 +96,8 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_dst:[0-9]+]] dst: ptr<f32>, %[[VALUE_src:[0-9]+]] src: ptr<ptr<f32>>, %[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(const<u64>(16), const<u64>(4))));
-// DEFAULT-NEXT:         let %[[VALUE_m:[0-9]+]] m: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(sub<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(size_of<u64, vector<f32, 4>>(16), size_of<u64, f32>(4))));
+// DEFAULT-NEXT:         let %[[VALUE_m:[0-9]+]] m: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(sub<u64, overflow=wrap>(size_of<u64, vector<f32, 4>>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_j]], const<i32>(0));
@@ -208,7 +208,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_cptr:[0-9]+]] cptr: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_cptr]], pointer_cast<ptr<i8>, reason=explicit>(array_decay<ptr<f32>, length=Some(64)>(%[[VALUE_buffer]])));
 // DEFAULT-NEXT:         let %[[VALUE30:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_cptr]]);
-// DEFAULT-NEXT:         let %[[VALUE31:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE30]]), and<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(neg<i64, overflow=ub>(ptr_to_int<i64, reason=explicit>(array_decay<ptr<f32>, length=Some(64)>(%[[VALUE_buffer]])))), sub<u64, overflow=wrap>(mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))));
+// DEFAULT-NEXT:         let %[[VALUE31:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE30]]), and<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(neg<i64, overflow=ub>(ptr_to_int<i64, reason=explicit>(array_decay<ptr<f32>, length=Some(64)>(%[[VALUE_buffer]])))), sub<u64, overflow=wrap>(mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))), size_of<u64, f32>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))));
 // DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_cptr]], read<ptr<i8>>(%[[VALUE31]]));
 // DEFAULT-NEXT:         write<ptr<f32>>(%[[VALUE_dst_2]], pointer_cast<ptr<f32>, reason=explicit>(read<ptr<i8>>(%[[VALUE_cptr]])));
 // DEFAULT-NEXT:         write<ptr<f32>>(deref(ptr_offset<ptr<ptr<f32>>, subtract=false, element=ptr<f32>, overflow=ub>(array_decay<ptr<ptr<f32>>, length=Some(2)>(%[[VALUE_src_2]]), const<i32>(0))), ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%[[VALUE_dst_2]]), const<i32>(16)));

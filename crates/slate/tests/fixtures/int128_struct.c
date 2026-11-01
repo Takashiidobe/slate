@@ -59,7 +59,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%llu\n".as_ptr(), w.uvalue as u64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), 48u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%zu\n".as_ptr(), std::mem::size_of::<Wide>() as u64)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -52,7 +52,11 @@ int main(void) {
 // CHECK-NEXT:         __builtin_memchr(buf.as_mut_ptr() as *const (), 10i32, 0u64)
 // CHECK-NEXT:     }) as *mut u8;
 // CHECK-NEXT:     let nul_after: *mut i8 = (unsafe {
-// CHECK-NEXT:         __builtin_memchr(word.as_mut_ptr() as *const (), 0i32, 4u64)
+// CHECK-NEXT:         __builtin_memchr(
+// CHECK-NEXT:             word.as_mut_ptr() as *const (),
+// CHECK-NEXT:             0i32,
+// CHECK-NEXT:             std::mem::size_of::<[i8; 4]>() as u64,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     }) as *mut i8;
 // CHECK-NEXT:     let nul_equal: *mut i8 = (unsafe {
 // CHECK-NEXT:         __builtin_memchr(word.as_mut_ptr() as *const (), 0i32, 3u64)
@@ -72,7 +76,11 @@ int main(void) {
 // CHECK-NEXT:         __builtin_memchr(offset_base as *const (), needle, 2u64)
 // CHECK-NEXT:     }) as *mut u8;
 // CHECK-NEXT:     let const_hit: *const u8 = (unsafe {
-// CHECK-NEXT:         __builtin_memchr(cbuf.as_ptr() as *const (), 7i32, 4u64)
+// CHECK-NEXT:         __builtin_memchr(
+// CHECK-NEXT:             cbuf.as_ptr() as *const (),
+// CHECK-NEXT:             7i32,
+// CHECK-NEXT:             std::mem::size_of::<[u8; 4]>() as u64,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     }) as *const u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

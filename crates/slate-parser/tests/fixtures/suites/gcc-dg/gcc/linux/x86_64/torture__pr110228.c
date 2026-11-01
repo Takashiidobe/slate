@@ -101,7 +101,7 @@ int main()
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(42));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<u32>, ptr<u32>, i32, i32) -> void>(%[[VALUE_bug]], addr_of<ptr<u32>>(%[[VALUE_r]]), array_decay<ptr<u32>, length=Some(4)>(%[[VALUE_a]]), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=unknown>(div<u64, by_zero=ub>(const<u64>(16), const<u64>(4)))), const<i32>(1));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<u32>, ptr<u32>, i32, i32) -> void>(%[[VALUE_bug]], addr_of<ptr<u32>>(%[[VALUE_r]]), array_decay<ptr<u32>, length=Some(4)>(%[[VALUE_a]]), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=unknown>(div<u64, by_zero=ub>(size_of<u64, array<u32, 4>>(16), size_of<u64, u32>(4)))), const<i32>(1));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE___builtin_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), read<u32>(%[[VALUE_r]]));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_r]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

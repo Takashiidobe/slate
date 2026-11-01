@@ -422,7 +422,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE28:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE27]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_automatic_value]], read<i32>(%[[VALUE28]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_comma_value]], add<i32, overflow=ub>(read<i32>(%[[VALUE_automatic_value]]), const<i32>(49)));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_string_length]], sub<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(3))), const<i32>(1)));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_string_length]], sub<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(size_of<u64, array<i8, 3>>(3))), const<i32>(1)));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_static_calls]], add<i32, overflow=ub>(mul<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%[[VALUE_c89_static_local]]), const<i32>(10)), call<i32, signature=fn() -> i32>(%[[VALUE_c89_static_local]])));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_variadic_total]], call<i32, signature=fn(i32, ...) -> i32>(%[[VALUE_c89_variadic_sum]], const<i32>(4), const<i32>(2), const<i32>(3), const<i32>(5), const<i32>(7)));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_control_total]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_c89_control_flow]], const<i32>(4)));

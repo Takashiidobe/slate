@@ -55,14 +55,14 @@ int main() {
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 4, 8]];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memset:[0-9]+]] @__builtin_memset(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: ptr<@type[[TYPE_A]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<u32>>(field2(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]]))))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(mul<i64, overflow=ub>(mul<i64, overflow=ub>(reinterpret<i64, reason=explicit, fits=always>(const<u64>(4)), reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(read<u32>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]]))))))), reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(read<u32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]])))))))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<u32>>(field2(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]]))))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(mul<i64, overflow=ub>(mul<i64, overflow=ub>(reinterpret<i64, reason=explicit, fits=always>(size_of<u64, u32>(4)), reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(read<u32>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]]))))))), reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(read<u32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]])))))))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: @type[[TYPE_A]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: array<u32, 256> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<u32>, length=Some(256)>(%[[VALUE_b]])), const<i32>(85), const<u64>(1024));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<u32>, length=Some(256)>(%[[VALUE_b]])), const<i32>(85), size_of<u64, array<u32, 256>>(1024));
 // DEFAULT-NEXT:         write<u32>(field0(%[[VALUE_a_2]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(15)));
 // DEFAULT-NEXT:         write<u32>(field1(%[[VALUE_a_2]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(15)));
 // DEFAULT-NEXT:         write<ptr<u32>>(field2(%[[VALUE_a_2]]), array_decay<ptr<u32>, length=Some(256)>(%[[VALUE_b]]));

@@ -60,7 +60,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_fill:[0-9]+]] @fill(%[[VALUE_c:[0-9]+]] c: ptr<@type[[TYPE_cursor]]>, %[[VALUE_n:[0-9]+]] n: u8) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<ptr<u8>>(field0(deref(read<ptr<@type[[TYPE_cursor]]>>(%[[VALUE_c]]))), array_decay<ptr<u8>, length=Some(8)>(field1(deref(read<ptr<@type[[TYPE_cursor]]>>(%[[VALUE_c]])))));
-// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] lt<ptr<u8>>(read<ptr<u8>>(field0(deref(read<ptr<@type[[TYPE_cursor]]>>(%[[VALUE_c]])))), addr_of<ptr<u8>>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(8)>(field1(deref(read<ptr<@type[[TYPE_cursor]]>>(%[[VALUE_c]])))), const<u64>(8)))))
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] lt<ptr<u8>>(read<ptr<u8>>(field0(deref(read<ptr<@type[[TYPE_cursor]]>>(%[[VALUE_c]])))), addr_of<ptr<u8>>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(8)>(field1(deref(read<ptr<@type[[TYPE_cursor]]>>(%[[VALUE_c]])))), size_of<u64, array<u8, 8>>(8)))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<u8>(deref(read<ptr<u8>>(field0(deref(read<ptr<@type[[TYPE_cursor]]>>(%[[VALUE_c]]))))), read<u8>(%[[VALUE_n]]));
 // DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u8 [synthetic] = read<u8>(%[[VALUE_n]]);

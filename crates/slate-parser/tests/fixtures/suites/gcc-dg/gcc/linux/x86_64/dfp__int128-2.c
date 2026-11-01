@@ -256,7 +256,7 @@ main ()
 // DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(0.))
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE3]], const<bool>(true));
 // DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%[[VALUE3]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE3]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:             let %[[VALUE4:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE3]])
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE4]], const<bool>(true));
@@ -267,7 +267,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(7.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE5]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE5]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE5]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE4]], read<bool>(%[[VALUE5]]));
 // DEFAULT-NEXT:             let %[[VALUE6:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE4]])
@@ -280,7 +280,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(42.)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE8]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE8]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE8]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE6]], read<bool>(%[[VALUE8]]));
 // DEFAULT-NEXT:             let %[[VALUE9:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE6]])
@@ -293,7 +293,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(777777777.)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE11]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE11]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE11]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE9]], read<bool>(%[[VALUE11]]));
 // DEFAULT-NEXT:             let %[[VALUE12:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE9]])
@@ -305,7 +305,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999000.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE13]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE13]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE13]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE12]], read<bool>(%[[VALUE13]]));
 // DEFAULT-NEXT:             let %[[VALUE14:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE12]])
@@ -318,7 +318,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(9999999999999999.)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE16]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE16]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE16]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE14]], read<bool>(%[[VALUE16]]));
 // DEFAULT-NEXT:             let %[[VALUE17:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE14]])
@@ -331,7 +331,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(9999999999999999.e+1)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE19]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE19]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE19]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE17]], read<bool>(%[[VALUE19]]));
 // DEFAULT-NEXT:             let %[[VALUE20:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE17]])
@@ -343,7 +343,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(1000000000000000.e+2))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE21]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE21]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE21]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE20]], read<bool>(%[[VALUE21]]));
 // DEFAULT-NEXT:             let %[[VALUE22:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE20]])
@@ -355,7 +355,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+2))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE23]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE23]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE23]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE22]], read<bool>(%[[VALUE23]]));
 // DEFAULT-NEXT:             let %[[VALUE24:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE22]])
@@ -367,7 +367,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+2))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE25]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE25]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE25]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE24]], read<bool>(%[[VALUE25]]));
 // DEFAULT-NEXT:             let %[[VALUE26:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE24]])
@@ -380,7 +380,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(9999999999999999.e+3)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE28]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE28]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE28]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE26]], read<bool>(%[[VALUE28]]));
 // DEFAULT-NEXT:             let %[[VALUE29:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE26]])
@@ -392,7 +392,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+3))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE30]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE30]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE30]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE29]], read<bool>(%[[VALUE30]]));
 // DEFAULT-NEXT:             let %[[VALUE31:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE29]])
@@ -404,7 +404,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+5))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE32]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE32]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE32]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE31]], read<bool>(%[[VALUE32]]));
 // DEFAULT-NEXT:             let %[[VALUE33:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE31]])
@@ -416,7 +416,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+5))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE34]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE34]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE34]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE33]], read<bool>(%[[VALUE34]]));
 // DEFAULT-NEXT:             let %[[VALUE35:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE33]])
@@ -429,7 +429,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(9999999999999999.e+6)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE37]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE37]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE37]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE35]], read<bool>(%[[VALUE37]]));
 // DEFAULT-NEXT:             let %[[VALUE38:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE35]])
@@ -442,7 +442,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(9999999999999999.e+6)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE40]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE40]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE40]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE38]], read<bool>(%[[VALUE40]]));
 // DEFAULT-NEXT:             let %[[VALUE41:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE38]])
@@ -454,7 +454,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(1234567890123456.e+8))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE42]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE42]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE42]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE41]], read<bool>(%[[VALUE42]]));
 // DEFAULT-NEXT:             let %[[VALUE43:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE41]])
@@ -466,7 +466,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(3424231985445429e+21))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE44]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE44]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE44]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE43]], read<bool>(%[[VALUE44]]));
 // DEFAULT-NEXT:             let %[[VALUE45:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE43]])
@@ -478,7 +478,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+22))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE46]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE46]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE46]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE45]], read<bool>(%[[VALUE46]]));
 // DEFAULT-NEXT:             let %[[VALUE47:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE45]])
@@ -490,7 +490,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+22))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE48]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE48]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE48]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE47]], read<bool>(%[[VALUE48]]));
 // DEFAULT-NEXT:             let %[[VALUE49:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE47]])
@@ -503,7 +503,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(9999999999999999.e+22)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE51]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE51]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE51]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE49]], read<bool>(%[[VALUE51]]));
 // DEFAULT-NEXT:             let %[[VALUE52:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE49]])
@@ -516,7 +516,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694459e+22)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE54]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE54]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE54]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE52]], read<bool>(%[[VALUE54]]));
 // DEFAULT-NEXT:             let %[[VALUE55:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE52]])
@@ -529,7 +529,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694460e+22)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE57]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE57]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE57]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE55]], read<bool>(%[[VALUE57]]));
 // DEFAULT-NEXT:             let %[[VALUE58:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE55]])
@@ -542,7 +542,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694459e+22)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE60]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE60]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE60]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE58]], read<bool>(%[[VALUE60]]));
 // DEFAULT-NEXT:             let %[[VALUE61:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE58]])
@@ -555,7 +555,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694460e+22)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE63]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE63]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE63]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE61]], read<bool>(%[[VALUE63]]));
 // DEFAULT-NEXT:             let %[[VALUE64:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE61]])
@@ -568,7 +568,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694458e+22)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE66]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE66]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE66]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE64]], read<bool>(%[[VALUE66]]));
 // DEFAULT-NEXT:             let %[[VALUE67:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE64]])
@@ -581,7 +581,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694458e+22)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE69]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE69]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE69]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE67]], read<bool>(%[[VALUE69]]));
 // DEFAULT-NEXT:             let %[[VALUE70:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE67]])
@@ -594,7 +594,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694459e+22)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE72]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE72]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE72]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE70]], read<bool>(%[[VALUE72]]));
 // DEFAULT-NEXT:             let %[[VALUE73:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE70]])
@@ -606,7 +606,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(1701411834604692e+23))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE74]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE74]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE74]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE73]], read<bool>(%[[VALUE74]]));
 // DEFAULT-NEXT:             let %[[VALUE75:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE73]])
@@ -618,7 +618,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(1701411834604692e+23))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE76]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE76]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE76]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE75]], read<bool>(%[[VALUE76]]));
 // DEFAULT-NEXT:             let %[[VALUE77:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE75]])
@@ -631,7 +631,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(1701411834604692e+23)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE79]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE79]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE79]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE77]], read<bool>(%[[VALUE79]]));
 // DEFAULT-NEXT:             let %[[VALUE80:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE77]])
@@ -644,7 +644,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(1701411834604692e+23)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE82]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE82]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE82]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE80]], read<bool>(%[[VALUE82]]));
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE80]])
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
@@ -654,7 +654,7 @@ main ()
 // DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(0.))
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE83]], const<bool>(true));
 // DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%[[VALUE83]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE83]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:             let %[[VALUE84:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE83]])
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE84]], const<bool>(true));
@@ -665,7 +665,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(7.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE85]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE85]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE85]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE84]], read<bool>(%[[VALUE85]]));
 // DEFAULT-NEXT:             let %[[VALUE86:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE84]])
@@ -677,7 +677,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(42.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE87]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE87]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE87]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE86]], read<bool>(%[[VALUE87]]));
 // DEFAULT-NEXT:             let %[[VALUE88:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE86]])
@@ -689,7 +689,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(777777777.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE89]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE89]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE89]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE88]], read<bool>(%[[VALUE89]]));
 // DEFAULT-NEXT:             let %[[VALUE90:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE88]])
@@ -701,7 +701,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999000.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE91]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE91]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE91]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE90]], read<bool>(%[[VALUE91]]));
 // DEFAULT-NEXT:             let %[[VALUE92:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE90]])
@@ -713,7 +713,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+2))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE93]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE93]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE93]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE92]], read<bool>(%[[VALUE93]]));
 // DEFAULT-NEXT:             let %[[VALUE94:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE92]])
@@ -725,7 +725,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+3))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE95]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE95]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE95]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE94]], read<bool>(%[[VALUE95]]));
 // DEFAULT-NEXT:             let %[[VALUE96:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE94]])
@@ -737,7 +737,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+4))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE97]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE97]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE97]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE96]], read<bool>(%[[VALUE97]]));
 // DEFAULT-NEXT:             let %[[VALUE98:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE96]])
@@ -749,7 +749,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+5))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE99]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE99]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE99]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE98]], read<bool>(%[[VALUE99]]));
 // DEFAULT-NEXT:             let %[[VALUE100:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE98]])
@@ -761,7 +761,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+6))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE101]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE101]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE101]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE100]], read<bool>(%[[VALUE101]]));
 // DEFAULT-NEXT:             let %[[VALUE102:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE100]])
@@ -773,7 +773,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(1234567890123456.e+8))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE103]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE103]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE103]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE102]], read<bool>(%[[VALUE103]]));
 // DEFAULT-NEXT:             let %[[VALUE104:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE102]])
@@ -785,7 +785,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(3424231985445429e+22))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE105]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE105]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE105]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE104]], read<bool>(%[[VALUE105]]));
 // DEFAULT-NEXT:             let %[[VALUE106:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE104]])
@@ -797,7 +797,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465179e+22))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE107]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE107]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE107]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE106]], read<bool>(%[[VALUE107]]));
 // DEFAULT-NEXT:             let %[[VALUE108:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE106]])
@@ -809,7 +809,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465180e+22))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE109]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE109]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE109]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE108]], read<bool>(%[[VALUE109]]));
 // DEFAULT-NEXT:             let %[[VALUE110:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE108]])
@@ -821,7 +821,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465179e+22))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE111]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE111]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE111]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE110]], read<bool>(%[[VALUE111]]));
 // DEFAULT-NEXT:             let %[[VALUE112:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE110]])
@@ -833,7 +833,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465180e+22))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE113]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE113]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE113]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE112]], read<bool>(%[[VALUE113]]));
 // DEFAULT-NEXT:             let %[[VALUE114:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE112]])
@@ -845,7 +845,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465178e+22))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE115]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE115]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE115]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE114]], read<bool>(%[[VALUE115]]));
 // DEFAULT-NEXT:             let %[[VALUE116:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE114]])
@@ -857,7 +857,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465178e+22))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE117]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE117]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE117]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE116]], read<bool>(%[[VALUE117]]));
 // DEFAULT-NEXT:             let %[[VALUE118:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE116]])
@@ -869,7 +869,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465179e+22))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE119]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE119]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE119]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE118]], read<bool>(%[[VALUE119]]));
 // DEFAULT-NEXT:             let %[[VALUE120:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE118]])
@@ -881,7 +881,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+22))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE121]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE121]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE121]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE120]], read<bool>(%[[VALUE121]]));
 // DEFAULT-NEXT:             let %[[VALUE122:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE120]])
@@ -893,7 +893,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(340282366920938.4e+24))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE123]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE123]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE123]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE122]], read<bool>(%[[VALUE123]]));
 // DEFAULT-NEXT:             let %[[VALUE124:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE122]])
@@ -905,7 +905,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(340282366920938.4e+24))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE125]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE125]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE125]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE124]], read<bool>(%[[VALUE125]]));
 // DEFAULT-NEXT:             let %[[VALUE126:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE124]])
@@ -917,7 +917,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(340282366920938.4e+24))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE127]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE127]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE127]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE126]], read<bool>(%[[VALUE127]]));
 // DEFAULT-NEXT:             let %[[VALUE128:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE126]])
@@ -929,7 +929,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(340282366920938.5e+24))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE129]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE129]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE129]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE128]], read<bool>(%[[VALUE129]]));
 // DEFAULT-NEXT:             let %[[VALUE130:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE128]])
@@ -941,7 +941,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(340282366920938.5e+24))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE131]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE131]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE131]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE130]], read<bool>(%[[VALUE131]]));
 // DEFAULT-NEXT:             let %[[VALUE132:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE130]])
@@ -953,7 +953,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(340282366920938.5e+24))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE133]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE133]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE133]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_7]])), size_of<u64, d64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE132]], read<bool>(%[[VALUE133]]));
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE132]])
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
@@ -967,7 +967,7 @@ main ()
 // DEFAULT-NEXT:             if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(0.))
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE134]], const<bool>(true));
 // DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%[[VALUE134]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE134]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:             let %[[VALUE135:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE134]])
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE135]], const<bool>(true));
@@ -978,7 +978,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(7.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE136]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE136]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE136]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE135]], read<bool>(%[[VALUE136]]));
 // DEFAULT-NEXT:             let %[[VALUE137:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE135]])
@@ -991,7 +991,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), neg<d32>(const<d32>(42.)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE139]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE139]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE139]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE137]], read<bool>(%[[VALUE139]]));
 // DEFAULT-NEXT:             let %[[VALUE140:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE137]])
@@ -1004,7 +1004,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), neg<d32>(const<d32>(777777.)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE142]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE142]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE142]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE140]], read<bool>(%[[VALUE142]]));
 // DEFAULT-NEXT:             let %[[VALUE143:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE140]])
@@ -1016,7 +1016,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(9999000.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE144]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE144]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE144]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE143]], read<bool>(%[[VALUE144]]));
 // DEFAULT-NEXT:             let %[[VALUE145:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE143]])
@@ -1029,7 +1029,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), neg<d32>(const<d32>(9999999.)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE147]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE147]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE147]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE145]], read<bool>(%[[VALUE147]]));
 // DEFAULT-NEXT:             let %[[VALUE148:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE145]])
@@ -1041,7 +1041,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(9999999.e+1))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE149]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE149]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE149]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE148]], read<bool>(%[[VALUE149]]));
 // DEFAULT-NEXT:             let %[[VALUE150:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE148]])
@@ -1053,7 +1053,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(1000000.e+2))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE151]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE151]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE151]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE150]], read<bool>(%[[VALUE151]]));
 // DEFAULT-NEXT:             let %[[VALUE152:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE150]])
@@ -1065,7 +1065,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(9999999.e+2))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE153]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE153]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE153]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE152]], read<bool>(%[[VALUE153]]));
 // DEFAULT-NEXT:             let %[[VALUE154:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE152]])
@@ -1078,7 +1078,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), neg<d32>(const<d32>(9999999.e+3)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE156]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE156]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE156]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE154]], read<bool>(%[[VALUE156]]));
 // DEFAULT-NEXT:             let %[[VALUE157:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE154]])
@@ -1090,7 +1090,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(9999999.e+5))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE158]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE158]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE158]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE157]], read<bool>(%[[VALUE158]]));
 // DEFAULT-NEXT:             let %[[VALUE159:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE157]])
@@ -1103,7 +1103,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), neg<d32>(const<d32>(9999999.e+6)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE161]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE161]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE161]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE159]], read<bool>(%[[VALUE161]]));
 // DEFAULT-NEXT:             let %[[VALUE162:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE159]])
@@ -1115,7 +1115,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(1234567.e+11))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE163]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE163]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE163]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE162]], read<bool>(%[[VALUE163]]));
 // DEFAULT-NEXT:             let %[[VALUE164:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE162]])
@@ -1127,7 +1127,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(3424231e+22))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE165]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE165]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE165]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE164]], read<bool>(%[[VALUE165]]));
 // DEFAULT-NEXT:             let %[[VALUE166:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE164]])
@@ -1139,7 +1139,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(9999999.e+31))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE167]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE167]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE167]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE166]], read<bool>(%[[VALUE167]]));
 // DEFAULT-NEXT:             let %[[VALUE168:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE166]])
@@ -1152,7 +1152,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), neg<d32>(const<d32>(9999999.e+31)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE170]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE170]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE170]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE168]], read<bool>(%[[VALUE170]]));
 // DEFAULT-NEXT:             let %[[VALUE171:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE168]])
@@ -1165,7 +1165,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), neg<d32>(const<d32>(2138551e+31)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE173]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE173]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE173]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE171]], read<bool>(%[[VALUE173]]));
 // DEFAULT-NEXT:             let %[[VALUE174:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE171]])
@@ -1178,7 +1178,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), neg<d32>(const<d32>(2138552e+31)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE176]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE176]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE176]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE174]], read<bool>(%[[VALUE176]]));
 // DEFAULT-NEXT:             let %[[VALUE177:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE174]])
@@ -1191,7 +1191,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), neg<d32>(const<d32>(2138551e+31)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE179]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE179]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE179]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE177]], read<bool>(%[[VALUE179]]));
 // DEFAULT-NEXT:             let %[[VALUE180:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE177]])
@@ -1204,7 +1204,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), neg<d32>(const<d32>(2138552e+31)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE182]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE182]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE182]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE180]], read<bool>(%[[VALUE182]]));
 // DEFAULT-NEXT:             let %[[VALUE183:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE180]])
@@ -1217,7 +1217,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), neg<d32>(const<d32>(2138552e+31)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE185]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE185]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE185]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE183]], read<bool>(%[[VALUE185]]));
 // DEFAULT-NEXT:             let %[[VALUE186:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE183]])
@@ -1230,7 +1230,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), neg<d32>(const<d32>(2138552e+31)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE188]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE188]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE188]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE186]], read<bool>(%[[VALUE188]]));
 // DEFAULT-NEXT:             let %[[VALUE189:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE186]])
@@ -1243,7 +1243,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), neg<d32>(const<d32>(2138553e+31)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE191]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE191]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE191]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE189]], read<bool>(%[[VALUE191]]));
 // DEFAULT-NEXT:             let %[[VALUE192:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE189]])
@@ -1255,7 +1255,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(1701411e+32))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE193]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE193]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE193]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE192]], read<bool>(%[[VALUE193]]));
 // DEFAULT-NEXT:             let %[[VALUE194:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE192]])
@@ -1267,7 +1267,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(1701412e+32))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE195]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE195]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE195]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE194]], read<bool>(%[[VALUE195]]));
 // DEFAULT-NEXT:             let %[[VALUE196:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE194]])
@@ -1280,7 +1280,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), neg<d32>(const<d32>(1701411e+32)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE198]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE198]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE198]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE196]], read<bool>(%[[VALUE198]]));
 // DEFAULT-NEXT:             let %[[VALUE199:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE196]])
@@ -1293,7 +1293,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), neg<d32>(const<d32>(1701412e+32)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE201]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE201]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE201]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE199]], read<bool>(%[[VALUE201]]));
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE199]])
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
@@ -1303,7 +1303,7 @@ main ()
 // DEFAULT-NEXT:             if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(0.))
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE202]], const<bool>(true));
 // DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%[[VALUE202]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE202]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:             let %[[VALUE203:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE202]])
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE203]], const<bool>(true));
@@ -1314,7 +1314,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(7.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE204]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE204]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE204]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE203]], read<bool>(%[[VALUE204]]));
 // DEFAULT-NEXT:             let %[[VALUE205:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE203]])
@@ -1326,7 +1326,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(42.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE206]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE206]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE206]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE205]], read<bool>(%[[VALUE206]]));
 // DEFAULT-NEXT:             let %[[VALUE207:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE205]])
@@ -1338,7 +1338,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(77777.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE208]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE208]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE208]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE207]], read<bool>(%[[VALUE208]]));
 // DEFAULT-NEXT:             let %[[VALUE209:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE207]])
@@ -1350,7 +1350,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(9999000.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE210]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE210]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE210]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE209]], read<bool>(%[[VALUE210]]));
 // DEFAULT-NEXT:             let %[[VALUE211:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE209]])
@@ -1362,7 +1362,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(9999999.e+2))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE212]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE212]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE212]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE211]], read<bool>(%[[VALUE212]]));
 // DEFAULT-NEXT:             let %[[VALUE213:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE211]])
@@ -1374,7 +1374,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(9999999.e+2))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE214]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE214]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE214]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE213]], read<bool>(%[[VALUE214]]));
 // DEFAULT-NEXT:             let %[[VALUE215:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE213]])
@@ -1386,7 +1386,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(9999999.e+3))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE216]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE216]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE216]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE215]], read<bool>(%[[VALUE216]]));
 // DEFAULT-NEXT:             let %[[VALUE217:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE215]])
@@ -1398,7 +1398,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(9999999.e+3))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE218]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE218]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE218]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE217]], read<bool>(%[[VALUE218]]));
 // DEFAULT-NEXT:             let %[[VALUE219:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE217]])
@@ -1410,7 +1410,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(9999999.e+5))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE220]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE220]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE220]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE219]], read<bool>(%[[VALUE220]]));
 // DEFAULT-NEXT:             let %[[VALUE221:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE219]])
@@ -1422,7 +1422,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(9999999.e+6))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE222]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE222]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE222]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE221]], read<bool>(%[[VALUE222]]));
 // DEFAULT-NEXT:             let %[[VALUE223:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE221]])
@@ -1434,7 +1434,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(1234567.e+8))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE224]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE224]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE224]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE223]], read<bool>(%[[VALUE224]]));
 // DEFAULT-NEXT:             let %[[VALUE225:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE223]])
@@ -1446,7 +1446,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(3424231e+22))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE226]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE226]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE226]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE225]], read<bool>(%[[VALUE226]]));
 // DEFAULT-NEXT:             let %[[VALUE227:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE225]])
@@ -1458,7 +1458,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(9999999.e+30))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE228]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE228]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE228]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE227]], read<bool>(%[[VALUE228]]));
 // DEFAULT-NEXT:             let %[[VALUE229:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE227]])
@@ -1470,7 +1470,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(6189359e+31))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE230]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE230]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE230]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE229]], read<bool>(%[[VALUE230]]));
 // DEFAULT-NEXT:             let %[[VALUE231:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE229]])
@@ -1482,7 +1482,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(6189360e+31))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE232]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE232]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE232]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE231]], read<bool>(%[[VALUE232]]));
 // DEFAULT-NEXT:             let %[[VALUE233:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE231]])
@@ -1494,7 +1494,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(6189359e+31))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE234]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE234]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE234]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE233]], read<bool>(%[[VALUE234]]));
 // DEFAULT-NEXT:             let %[[VALUE235:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE233]])
@@ -1506,7 +1506,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(6189360e+31))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE236]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE236]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE236]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE235]], read<bool>(%[[VALUE236]]));
 // DEFAULT-NEXT:             let %[[VALUE237:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE235]])
@@ -1518,7 +1518,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(6189358e+31))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE238]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE238]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE238]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE237]], read<bool>(%[[VALUE238]]));
 // DEFAULT-NEXT:             let %[[VALUE239:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE237]])
@@ -1530,7 +1530,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(6189358e+31))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE240]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE240]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE240]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE239]], read<bool>(%[[VALUE240]]));
 // DEFAULT-NEXT:             let %[[VALUE241:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE239]])
@@ -1542,7 +1542,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(6189359e+31))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE242]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE242]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE242]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE241]], read<bool>(%[[VALUE242]]));
 // DEFAULT-NEXT:             let %[[VALUE243:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE241]])
@@ -1554,7 +1554,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(3402823e+32))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE244]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE244]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE244]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE243]], read<bool>(%[[VALUE244]]));
 // DEFAULT-NEXT:             let %[[VALUE245:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE243]])
@@ -1566,7 +1566,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d32, exceptions=observable>(read<d32>(%[[VALUE_a_2]]), const<d32>(3402824e+32))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE246]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE246]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE246]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_a_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d32>>(%[[VALUE_b_8]])), size_of<u64, d32>(4)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE245]], read<bool>(%[[VALUE246]]));
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE245]])
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
@@ -1580,7 +1580,7 @@ main ()
 // DEFAULT-NEXT:             if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(0.))
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE247]], const<bool>(true));
 // DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%[[VALUE247]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE247]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:             let %[[VALUE248:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE247]])
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE248]], const<bool>(true));
@@ -1591,7 +1591,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(7.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE249]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE249]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE249]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE248]], read<bool>(%[[VALUE249]]));
 // DEFAULT-NEXT:             let %[[VALUE250:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE248]])
@@ -1604,7 +1604,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), neg<d128>(const<d128>(42.)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE252]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE252]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE252]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE250]], read<bool>(%[[VALUE252]]));
 // DEFAULT-NEXT:             let %[[VALUE253:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE250]])
@@ -1617,7 +1617,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), neg<d128>(const<d128>(777777777.)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE255]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE255]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE255]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE253]], read<bool>(%[[VALUE255]]));
 // DEFAULT-NEXT:             let %[[VALUE256:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE253]])
@@ -1630,7 +1630,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), neg<d128>(const<d128>(12345678912345.)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE258]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE258]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE258]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE256]], read<bool>(%[[VALUE258]]));
 // DEFAULT-NEXT:             let %[[VALUE259:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE256]])
@@ -1642,7 +1642,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(123456789123456789.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE260]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE260]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE260]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE259]], read<bool>(%[[VALUE260]]));
 // DEFAULT-NEXT:             let %[[VALUE261:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE259]])
@@ -1654,7 +1654,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(777777777777777777777777777.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE262]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE262]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE262]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE261]], read<bool>(%[[VALUE262]]));
 // DEFAULT-NEXT:             let %[[VALUE263:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE261]])
@@ -1666,7 +1666,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(9999999999999999999999999900000000.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE264]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE264]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE264]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE263]], read<bool>(%[[VALUE264]]));
 // DEFAULT-NEXT:             let %[[VALUE265:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE263]])
@@ -1679,7 +1679,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), neg<d128>(const<d128>(9999999999999999999999999999999999.)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE267]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE267]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE267]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE265]], read<bool>(%[[VALUE267]]));
 // DEFAULT-NEXT:             let %[[VALUE268:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE265]])
@@ -1692,7 +1692,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), neg<d128>(const<d128>(9999999999999999999999999999999999.e+1)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE270]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE270]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE270]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE268]], read<bool>(%[[VALUE270]]));
 // DEFAULT-NEXT:             let %[[VALUE271:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE268]])
@@ -1704,7 +1704,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(1000000000000000000000000000000000.e+2))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE272]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE272]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE272]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE271]], read<bool>(%[[VALUE272]]));
 // DEFAULT-NEXT:             let %[[VALUE273:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE271]])
@@ -1716,7 +1716,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(9999999999999999999999999999999999.e+2))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE274]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE274]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE274]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE273]], read<bool>(%[[VALUE274]]));
 // DEFAULT-NEXT:             let %[[VALUE275:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE273]])
@@ -1728,7 +1728,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(9999999999999999999999999999999999.e+2))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE276]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE276]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE276]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE275]], read<bool>(%[[VALUE276]]));
 // DEFAULT-NEXT:             let %[[VALUE277:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE275]])
@@ -1741,7 +1741,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), neg<d128>(const<d128>(9999999999999999999999999999999999.e+3)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE279]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE279]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE279]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE277]], read<bool>(%[[VALUE279]]));
 // DEFAULT-NEXT:             let %[[VALUE280:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE277]])
@@ -1753,7 +1753,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(9999999999999999999999999999999999.e+3))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE281]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE281]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE281]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE280]], read<bool>(%[[VALUE281]]));
 // DEFAULT-NEXT:             let %[[VALUE282:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE280]])
@@ -1765,7 +1765,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(1701411834604692317316873037158841.e+5))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE283]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE283]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE283]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE282]], read<bool>(%[[VALUE283]]));
 // DEFAULT-NEXT:             let %[[VALUE284:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE282]])
@@ -1777,7 +1777,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(1701411834604692317316873037158841.e+5))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE285]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE285]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE285]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE284]], read<bool>(%[[VALUE285]]));
 // DEFAULT-NEXT:             let %[[VALUE286:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE284]])
@@ -1790,7 +1790,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), neg<d128>(const<d128>(1701411834604692317316873037158841.e+5)))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE288]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE288]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE288]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE286]], read<bool>(%[[VALUE288]]));
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE286]])
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
@@ -1800,7 +1800,7 @@ main ()
 // DEFAULT-NEXT:             if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(0.))
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE289]], const<bool>(true));
 // DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%[[VALUE289]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE289]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:             let %[[VALUE290:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE289]])
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE290]], const<bool>(true));
@@ -1811,7 +1811,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(7.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE291]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE291]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE291]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE290]], read<bool>(%[[VALUE291]]));
 // DEFAULT-NEXT:             let %[[VALUE292:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE290]])
@@ -1823,7 +1823,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(42.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE293]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE293]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE293]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE292]], read<bool>(%[[VALUE293]]));
 // DEFAULT-NEXT:             let %[[VALUE294:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE292]])
@@ -1835,7 +1835,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(777777777.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE295]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE295]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE295]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE294]], read<bool>(%[[VALUE295]]));
 // DEFAULT-NEXT:             let %[[VALUE296:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE294]])
@@ -1847,7 +1847,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(99999999999999999999999999000.))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE297]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE297]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE297]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE296]], read<bool>(%[[VALUE297]]));
 // DEFAULT-NEXT:             let %[[VALUE298:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE296]])
@@ -1859,7 +1859,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(9999999999999999999999999999999999.e+2))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE299]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE299]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE299]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE298]], read<bool>(%[[VALUE299]]));
 // DEFAULT-NEXT:             let %[[VALUE300:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE298]])
@@ -1871,7 +1871,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(9999999999999999999999999999999999.e+3))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE301]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE301]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE301]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE300]], read<bool>(%[[VALUE301]]));
 // DEFAULT-NEXT:             let %[[VALUE302:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE300]])
@@ -1883,7 +1883,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(9999999999999999999999999999999999.e+4))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE303]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE303]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE303]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE302]], read<bool>(%[[VALUE303]]));
 // DEFAULT-NEXT:             let %[[VALUE304:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE302]])
@@ -1895,7 +1895,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(3402823669209384634633746074317682.e+5))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE305]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE305]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE305]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE304]], read<bool>(%[[VALUE305]]));
 // DEFAULT-NEXT:             let %[[VALUE306:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE304]])
@@ -1907,7 +1907,7 @@ main ()
 // DEFAULT-NEXT:                 if ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a_3]]), const<d128>(3402823669209384634633746074317682.e+5))
 // DEFAULT-NEXT:                     write<bool>(%[[VALUE307]], const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%[[VALUE307]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), const<u64>(16)), const<i32>(0)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE307]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_a_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_b_9]])), size_of<u64, d128>(16)), const<i32>(0)));
 // DEFAULT-NEXT:                 write<bool>(%[[VALUE306]], read<bool>(%[[VALUE307]]));
 // DEFAULT-NEXT:             if read<bool>(%[[VALUE306]])
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

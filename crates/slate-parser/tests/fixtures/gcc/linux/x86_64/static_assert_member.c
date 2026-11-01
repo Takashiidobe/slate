@@ -62,7 +62,7 @@ int f(void) {
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: @type[[TYPE_local]] [storage=automatic] = aggregate<@type[[TYPE_local]], zero_fill=false>(field0 = const<i32>(4));
-// DEFAULT-NEXT:         return add<i32>(add<i32>(read<i32>(field0(%[[VALUE_v]])), reinterpret<i32>(truncate<u32>(const<u64>(20)))), reinterpret<i32>(truncate<u32>(const<u64>(4))));
+// DEFAULT-NEXT:         return add<i32>(add<i32>(read<i32>(field0(%[[VALUE_v]])), reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_s]]>(20)))), reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_u]]>(4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

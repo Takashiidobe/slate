@@ -92,7 +92,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         jb_stack = malloc(1600u64) as *mut [__jmp_buf_tag; 1];
+// CHECK-NEXT:         jb_stack = malloc(
+// CHECK-NEXT:             (std::mem::size_of::<[__jmp_buf_tag; 1]>() as u64).wrapping_mul(8),
+// CHECK-NEXT:         ) as *mut [__jmp_buf_tag; 1];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     run_case(0i32, 0i32);
 // CHECK-NEXT:     run_case(1i32, 1i32);

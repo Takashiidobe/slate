@@ -87,7 +87,7 @@ pub(super) fn is_integer_abs(builtin: &str) -> bool {
 
 fn effect_free_value(value: &ir::Value) -> bool {
     match &value.node.value {
-        ValueKind::Constant(_) | ValueKind::Null => true,
+        ValueKind::Constant(_) | ValueKind::LayoutQuery { .. } | ValueKind::Null => true,
         ValueKind::Read {
             place,
             ordering: None,
@@ -460,6 +460,9 @@ impl FunctionLowerer<'_, '_> {
                     *ty = self.lower_value_type(value)?;
                 }
                 literal
+            }
+            ValueKind::LayoutQuery { query, amount } => {
+                self.lower_layout_query(value, query, *amount)?
             }
             ValueKind::CodeUnits(units) => {
                 let ir::Type::Array { element, .. } = &value.ty else {

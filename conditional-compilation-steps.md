@@ -7,11 +7,13 @@ Macro epic `slate-f2zu.9.5.12`, in order.
 - [x] 3. `.18`: drop hole types from the template key.
 - [x] 4. `9.5.6`: pass caller locals as hidden arguments, then regenerate zlib.
 - [x] 5. `.10`: allow `return`, `break` and `continue` in templates.
-- [ ] 6. `.20`: keep `sizeof` unfolded in templates.
-- [ ] 7. `.11` and `.13`: keep integer casts and conversions in sema.
-- [ ] 8. `.19`: decide whether `goto` out of a macro can lift.
-- [ ] 9. `.14`: audit zlib, with all-features `validate_merge` and both full profiles.
-- [ ] 10. `.12`: lift variadic and `#`/`##` macros if a project needs them.
-- [ ] 11. `.22`: lift macros that declare locals in functions with dispatch lowering.
+- [x] 6. `.20`: keep `sizeof` unfolded in templates.
+- [ ] 7. `.24`: lower `alignof` to `align_of::<T>()` where usable.
+- [ ] 8. `.25`: lower `offsetof` to `offset_of!` where usable.
+- [ ] 9. `.11` and `.13`: keep integer casts and conversions in sema.
+- [ ] 10. `.19`: decide whether `goto` out of a macro can lift.
+- [ ] 11. `.14`: audit zlib, with all-features `validate_merge` and both full profiles.
+- [ ] 12. `.12`: lift variadic and `#`/`##` macros if a project needs them.
+- [ ] 13. `.22`: lift macros that declare locals in functions with dispatch lowering.
 
 Deferred: `.17` (remeasure after step 4), `.16`.

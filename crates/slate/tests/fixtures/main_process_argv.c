@@ -55,7 +55,13 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let fd: i32 = unsafe { open(c"/proc/self/cmdline".as_ptr(), 0i32) };
-// CHECK-NEXT:     let n: i64 = unsafe { read(fd, buf.0.as_mut_ptr() as *mut (), 63u64) };
+// CHECK-NEXT:     let n: i64 = unsafe {
+// CHECK-NEXT:         read(
+// CHECK-NEXT:             fd,
+// CHECK-NEXT:             buf.0.as_mut_ptr() as *mut (),
+// CHECK-NEXT:             (std::mem::size_of::<[i8; 64]>() as u64).wrapping_sub(1),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { close(fd) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

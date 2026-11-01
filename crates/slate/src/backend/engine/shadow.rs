@@ -182,6 +182,7 @@ fn walk_expr(expr: &mut Expr, names: &mut impl Names) {
         | Expr::ByteStr(_)
         | Expr::CStr(_)
         | Expr::Path(_)
+        | Expr::LayoutQuery { .. }
         | Expr::GenericPath { .. }
         | Expr::Todo(_)
         | Expr::AtomicFence { .. } => {}

@@ -190,7 +190,14 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu %zu\n".as_ptr(), 4u64, 12u64, 8u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%zu %zu %zu\n".as_ptr(),
+// CHECK-NEXT:             std::mem::size_of::<i32>() as u64,
+// CHECK-NEXT:             std::mem::size_of::<[u32; 3]>() as u64,
+// CHECK-NEXT:             std::mem::size_of::<Point>() as u64,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     (unsafe { counter.0 }) % 9
 // CHECK-NEXT: }

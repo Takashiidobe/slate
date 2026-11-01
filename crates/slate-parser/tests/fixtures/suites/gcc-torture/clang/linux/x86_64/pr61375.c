@@ -68,9 +68,9 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i128 [synthetic] = read<i128>(%[[VALUE_in]]);
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i128 [synthetic] = shl<i128, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i128>(%[[VALUE0]]), const<i32>(64));
 // DEFAULT-NEXT:         write<i128>(%[[VALUE_in]], read<i128>(%[[VALUE1]]));
-// DEFAULT-NEXT:         if ne<u64>(mul<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(64))))
+// DEFAULT-NEXT:         if ne<u64>(mul<u64, overflow=wrap>(size_of<u64, u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(64))))
 // DEFAULT-NEXT:             return const<i32>(0);
-// DEFAULT-NEXT:         if ne<u64>(mul<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(128))))
+// DEFAULT-NEXT:         if ne<u64>(mul<u64, overflow=wrap>(size_of<u64, u128>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(128))))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u128, u64) -> u64>(%[[VALUE_uint128_central_bitsi_ior]], reinterpret<u128, reason=arg, fits=unknown>(read<i128>(%[[VALUE_in]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))) [c="uint64_t"]) [c="uint64_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(258))) [c="uint64_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

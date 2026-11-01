@@ -131,7 +131,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<u16>(field0(%[[VALUE_a_2]]), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(512))));
 // DEFAULT-NEXT:         write<u64>(field1(%[[VALUE_a_2]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(4242))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_C]]>>(%[[VALUE_b_2]])), const<i32>(0), const<u64>(28));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_C]]>>(%[[VALUE_b_2]])), const<i32>(0), size_of<u64, @type[[TYPE_C]]>(28));
 // DEFAULT-NEXT:         write<i32>(field2(deref(ptr_offset<ptr<@type[[TYPE_B]]>, subtract=false, element=@type[[TYPE_B]], overflow=ub>(array_decay<ptr<@type[[TYPE_B]]>, length=Some(1)>(field0(%[[VALUE_b_2]])), const<i32>(0)))), const<i32>(424242));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_b_2]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_c_2]], call<i32, signature=fn(ptr<@type[[TYPE_C]]>, ptr<@type[[TYPE_A]]>) -> i32>(%[[VALUE_bar]], addr_of<ptr<@type[[TYPE_C]]>>(%[[VALUE_b_2]]), addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_a_2]])));

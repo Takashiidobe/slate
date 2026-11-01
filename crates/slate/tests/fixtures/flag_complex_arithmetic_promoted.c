@@ -599,7 +599,7 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 bits.as_mut_ptr() as *mut u8,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 parts.as_mut_ptr() as *const u8,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 bits.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:                 16 as usize,
+// CHECK-NEXT:                 std::mem::size_of::<[u64; 2]>(),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         hash = hash
@@ -646,7 +646,7 @@ int main(void) {
 // CHECK-NEXT:             std::ptr::copy_nonoverlapping(
 // CHECK-NEXT:                 partsf.as_mut_ptr() as *const u8,
 // CHECK-NEXT:                 bitsf.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:                 8 as usize,
+// CHECK-NEXT:                 std::mem::size_of::<[u32; 2]>(),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         hashf = hashf

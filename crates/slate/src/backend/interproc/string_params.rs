@@ -751,6 +751,7 @@ fn expr_ok(expr: &Expr, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
         | Expr::ConstBlock(_)
         | Expr::CStr(_)
         | Expr::Path(_)
+        | Expr::LayoutQuery { .. }
         | Expr::GenericPath { .. }
         | Expr::AtomicFence { .. }
         | Expr::Todo(_) => true,
@@ -1201,6 +1202,7 @@ fn rewrite_calls_in_expr(expr: &mut Expr, ctx: &RewriteCtx) -> bool {
         | Expr::ConstBlock(_)
         | Expr::CStr(_)
         | Expr::Path(_)
+        | Expr::LayoutQuery { .. }
         | Expr::GenericPath { .. }
         | Expr::AtomicFence { .. }
         | Expr::Todo(_) => {}

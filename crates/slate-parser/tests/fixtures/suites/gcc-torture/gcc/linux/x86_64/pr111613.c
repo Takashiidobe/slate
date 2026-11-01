@@ -65,7 +65,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(deref(read<ptr<@type[[TYPE_bitfield]]>>(%[[VALUE_b]]))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_new_bitfield:[0-9]+]] @new_bitfield() -> ptr<@type[[TYPE_bitfield]]> [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: ptr<@type[[TYPE_bitfield]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_bitfield]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(4)));
+// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: ptr<@type[[TYPE_bitfield]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_bitfield]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], size_of<u64, @type[[TYPE_bitfield]]>(4)));
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..1, bits=2..3>(deref(read<ptr<@type[[TYPE_bitfield]]>>(%[[VALUE_b_2]]))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_bitfield]]>) -> void>(%[[VALUE_set_field1_and_field2]], read<ptr<@type[[TYPE_bitfield]]>>(%[[VALUE_b_2]]));
 // DEFAULT-NEXT:         return read<ptr<@type[[TYPE_bitfield]]>>(%[[VALUE_b_2]]);

@@ -236,15 +236,15 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! SIZE_PLUS__2 {
-// CHECK-NEXT:     ($n:expr) => {
-// CHECK-NEXT:         4u64.wrapping_add((($n) as i64) as u64)
+// CHECK-NEXT:     ($T:ty, $n:expr) => {
+// CHECK-NEXT:         (std::mem::size_of::<$T>() as u64).wrapping_add((($n) as i64) as u64)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! SIZE_PLUS {
-// CHECK-NEXT:     ($n:expr) => {
-// CHECK-NEXT:         (4 as c_ulong).wrapping_add(($n) as c_ulong)
+// CHECK-NEXT:     ($T:ty, $n:expr) => {
+// CHECK-NEXT:         (std::mem::size_of::<$T>() as c_ulong).wrapping_add(($n) as c_ulong)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -459,7 +459,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let c2: c_long = NESTED_CAST!(i);
 // CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let z: c_ulong = SIZE_PLUS__2!(1i32) as c_ulong;
+// CHECK-NEXT:     let z: c_ulong = SIZE_PLUS__2!(i32, 1i32) as c_ulong;
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     let c: c_long = CAST_TO!(c_long, i);
 // CHECK-NEXT:     #[cfg(unix)]
@@ -467,7 +467,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     let c2: c_long = NESTED_CAST__2!(c_long, i);
 // CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     let z: c_ulong = SIZE_PLUS!(1i32);
+// CHECK-NEXT:     let z: c_ulong = SIZE_PLUS!(i32, 1i32);
 // CHECK-NEXT:     let e: i32 = APPLY__2!(i);
 // CHECK-NEXT:     let e2: i32 = APPLY!(r#fn, i);
 // CHECK-NEXT:     let g: i32 = CALL2!(i, j);

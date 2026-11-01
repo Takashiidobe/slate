@@ -39,7 +39,7 @@ int         main() {
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:         if gt<u64>(const<u64>(8), const<u64>(4))
+// DEFAULT-NEXT:         if gt<u64>(size_of<u64, i64>(8), size_of<u64, i32>(4))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE0]], ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_bar]], neg<i32, overflow=ub>(const<i32>(1))), neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(false));

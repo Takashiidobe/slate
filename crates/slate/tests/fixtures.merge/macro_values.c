@@ -1229,7 +1229,7 @@ int main(void) {
 // CHECK-NEXT:                 size,
 // CHECK-NEXT:                 kept_static,
 // CHECK-NEXT:                 sized.0[3],
-// CHECK-NEXT:                 4i32,
+// CHECK-NEXT:                 std::mem::size_of::<c_long>() as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -1248,7 +1248,7 @@ int main(void) {
 // CHECK-NEXT:             size,
 // CHECK-NEXT:             unsafe { kept_static },
 // CHECK-NEXT:             sized.0[3],
-// CHECK-NEXT:             8i32
+// CHECK-NEXT:             std::mem::size_of::<c_long>() as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:         println!("{}", LOCAL_READ!(1i32, hidden));
 // CHECK-NEXT:     }

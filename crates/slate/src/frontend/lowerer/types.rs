@@ -182,7 +182,86 @@ impl<'m> Tables<'m> {
     }
 }
 
+impl Tables<'_> {
+    fn rust_layout_matches_c(&self, ty: &ir::Type) -> bool {
+        match self.resolve_type(ty) {
+            ir::Type::Bool
+            | ir::Type::Numeric(
+                ir::NumericType::Integer {
+                    bit_precise: false, ..
+                }
+                | ir::NumericType::Float(ir::FloatType::F32 | ir::FloatType::F64),
+            )
+            | ir::Type::Pointer {
+                space: ir::PointerSpace::Default,
+                ..
+            } => true,
+            ir::Type::Array {
+                element,
+                length: Some(_),
+            } => self.rust_layout_matches_c(element),
+            ir::Type::Defined(id) => match self.types.get(id).map(|definition| &definition.kind) {
+                Some(ir::TypeDefinitionKind::Record {
+                    fields: Some(fields),
+                    layout: Some(layout),
+                    ..
+                }) => {
+                    fields
+                        .iter()
+                        .all(|field| !field.access.atomic && self.rust_layout_matches_c(&field.ty))
+                        && layout
+                            .bit_units
+                            .iter()
+                            .all(|unit| self.bit_unit_keeps_its_alignment(unit.size))
+                }
+                _ => false,
+            },
+            _ => false,
+        }
+    }
+
+    fn bit_unit_keeps_its_alignment(&self, size: u64) -> bool {
+        !matches!(size, 1 | 2 | 4 | 8 | 16)
+            || self
+                .rust_layout
+                .storage_of(ir::Type::Numeric(ir::NumericType::integer(
+                    size as u32 * 8,
+                    false,
+                )))
+                .is_ok_and(|layout| u64::from(layout.alignment_bytes) == size)
+    }
+}
+
 impl FunctionLowerer<'_, '_> {
+    pub(super) fn lower_layout_query(
+        &mut self,
+        value: &ir::Value,
+        query: &ir::LayoutQuery,
+        amount: u64,
+    ) -> Result<Expr> {
+        let ir::LayoutQuery::SizeOf { ty: queried, c } = query;
+        if self.tables.rust_layout_matches_c(queried)
+            && self
+                .tables
+                .storage_of(queried)
+                .is_some_and(|(size, _)| size == amount)
+            && let Ok(ty) = self.lower_c_type(queried, Some(*c))
+        {
+            return Ok(Expr::Cast {
+                expr: Box::new(Expr::LayoutQuery {
+                    query: rust::LayoutQuery::SizeOf(ty),
+                    amount: rust::TargetAmount(amount),
+                }),
+                ty: self.lower_value_type(value)?,
+            });
+        }
+        let mut literal = self.lower_number(&ir::Number::Integer(amount.into()), &value.ty)?;
+        if let Expr::Cast { ty, .. } = &mut literal {
+            *ty = self.lower_value_type(value)?;
+        }
+        Ok(literal)
+    }
+
     pub(super) fn lower_record(&mut self, id: TypeId) -> Result<String> {
         let tables = self.tables;
         let name = tables.record_names[&id].clone();

@@ -64,7 +64,7 @@ fn is_movable_pure_bit_operand(expr: &Expr) -> bool {
 
 fn is_movable_pure_expr(expr: &Expr) -> bool {
     match expr {
-        Expr::Value(_) | Expr::Var(_) => true,
+        Expr::Value(_) | Expr::Var(_) | Expr::LayoutQuery { .. } => true,
         Expr::Cast { expr, .. } => is_movable_pure_expr(expr),
         Expr::Unary { op, expr } => !matches!(op, UnaryOp::Not) && is_movable_pure_expr(expr),
         Expr::Binary { lhs, rhs, .. } => is_movable_pure_expr(lhs) && is_movable_pure_expr(rhs),
@@ -200,6 +200,7 @@ pub(super) fn expr_effects(expr: &Expr) -> Effects {
         | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
+        | Expr::LayoutQuery { .. }
         | Expr::GenericPath { .. }
         | Expr::Todo(_) => Effects::default(),
         Expr::Unary { expr, .. }
@@ -387,6 +388,7 @@ fn expr_any(expr: &Expr, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
         | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
+        | Expr::LayoutQuery { .. }
         | Expr::GenericPath { .. }
         | Expr::Todo(_)
         | Expr::AtomicFence { .. } => false,
@@ -635,6 +637,7 @@ fn is_obviously_pure_expr(expr: &Expr) -> bool {
         | Expr::HexFloat(_)
         | Expr::Var(_)
         | Expr::Path(_)
+        | Expr::LayoutQuery { .. }
         | Expr::GenericPath { .. } => true,
         Expr::Cast { expr, .. } | Expr::Unary { expr, .. } => is_obviously_pure_expr(expr),
         _ => false,
@@ -687,6 +690,7 @@ fn e_ident_count(expr: &Expr, name: Ident) -> usize {
         | Expr::ConstBlock(_)
         | Expr::CStr(_)
         | Expr::Path(_)
+        | Expr::LayoutQuery { .. }
         | Expr::GenericPath { .. }
         | Expr::Todo(_)
         | Expr::AtomicFence { .. } => 0,

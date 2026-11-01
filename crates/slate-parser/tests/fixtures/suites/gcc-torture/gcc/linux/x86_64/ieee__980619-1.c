@@ -58,7 +58,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_reale:[0-9]+]] reale: f32 [storage=automatic] = const<f32>(1.0);
 // DEFAULT-NEXT:         let %[[VALUE_oneplus:[0-9]+]] oneplus: f32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, f32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:

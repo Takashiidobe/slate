@@ -9,7 +9,7 @@ pub(super) fn has_effects(value: &Value) -> bool {
 
 fn is_constant(value: &Value) -> bool {
     match &value.node.value {
-        ValueKind::Constant(_) | ValueKind::Null => true,
+        ValueKind::Constant(_) | ValueKind::LayoutQuery { .. } | ValueKind::Null => true,
         ValueKind::Convert { operand, .. } | ValueKind::MacroArg { value: operand, .. } => {
             is_constant(operand)
         }
@@ -886,6 +886,7 @@ impl Hoister {
                 place: self.place(place, out)?,
             },
             leaf @ (ValueKind::Constant(_)
+            | ValueKind::LayoutQuery { .. }
             | ValueKind::Null
             | ValueKind::LabelAddress(_)
             | ValueKind::Seh(_)
@@ -1019,6 +1020,7 @@ impl Hoister {
             | ValueKind::FunctionDecay { place } => self.place_effects(place),
             ValueKind::OldValue
             | ValueKind::Constant(_)
+            | ValueKind::LayoutQuery { .. }
             | ValueKind::Null
             | ValueKind::LabelAddress(_)
             | ValueKind::Seh(_)

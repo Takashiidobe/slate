@@ -39,12 +39,20 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct mixed {
+// CHECK-NEXT:     c: i8,
+// CHECK-NEXT:     l: i32,
+// CHECK-NEXT:     ll: i64,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     check(4i64, 4i64);
-// CHECK-NEXT:     check(8i64, 8i64);
-// CHECK-NEXT:     check(2i64, 2i64);
-// CHECK-NEXT:     check(16i64, 16i64);
-// CHECK-NEXT:     check(8i64, 8i64);
+// CHECK-NEXT:     check(std::mem::size_of::<i32>() as i64, 4i64);
+// CHECK-NEXT:     check(std::mem::size_of::<*mut ()>() as i64, 8i64);
+// CHECK-NEXT:     check(std::mem::size_of::<u16>() as i64, 2i64);
+// CHECK-NEXT:     check(std::mem::size_of::<mixed>() as i64, 16i64);
+// CHECK-NEXT:     check(std::mem::size_of::<f64>() as i64, 8i64);
 // CHECK-NEXT:     3
 // CHECK-NEXT: }
 // CHECK-EMPTY:

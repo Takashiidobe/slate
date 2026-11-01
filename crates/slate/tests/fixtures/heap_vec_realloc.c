@@ -22,14 +22,18 @@ int main(void) {
 // CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut p: *mut i32 = (unsafe { malloc(8u64) }) as *mut i32;
+// CHECK-NEXT:     let mut p: *mut i32 = (unsafe {
+// CHECK-NEXT:         malloc((std::mem::size_of::<i32>() as u64).wrapping_mul(2))
+// CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p.add(0) = 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p.add(1) = 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     p = (unsafe { realloc(p as *mut (), 16u64) }) as *mut i32;
+// CHECK-NEXT:     p = (unsafe {
+// CHECK-NEXT:         realloc(p as *mut (), (std::mem::size_of::<i32>() as u64).wrapping_mul(4))
+// CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p.add(2) = 3;
 // CHECK-NEXT:     }

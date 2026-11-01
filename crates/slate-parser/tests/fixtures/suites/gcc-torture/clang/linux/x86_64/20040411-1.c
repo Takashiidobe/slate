@@ -53,14 +53,14 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: array<i32, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_j]]), const<i32>(2))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%[[VALUE_x]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%[[VALUE_y]])), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(10))), const<u64>(4)));
+// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%[[VALUE_x]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%[[VALUE_y]])), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(10))), size_of<u64, i32>(4)));
 // DEFAULT-NEXT:                 return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(mul<u64, overflow=wrap>(read<u64>(%[[VALUE0]]), const<u64>(4))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(mul<u64, overflow=wrap>(mul<u64, overflow=wrap>(read<u64>(%[[VALUE0]]), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_sub1]], const<i32>(20), const<i32>(3)))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(66))), const<u64>(4)))
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_sub1]], const<i32>(20), const<i32>(3)))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(66))), size_of<u64, i32>(4)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
