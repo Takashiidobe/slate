@@ -19,10 +19,7 @@ const README_PATH: &str = "../README.md";
 const IMPL_LIB_RS_PATH: &str = "../bitfields_impl/src/lib.rs";
 
 fn main() {
-    // Always tell Cargo to re-run when the env var or README changes.
     println!("cargo:rerun-if-env-changed=UPDATE_DOCS");
-    println!("cargo:rerun-if-changed={README_PATH}");
-    println!("cargo:rerun-if-changed={IMPL_LIB_RS_PATH}");
 
     // Only perform the injection when UPDATE_DOCS is set.
     // `UPDATE_DOCS=1 cargo build`

@@ -279,10 +279,6 @@ fn support_crate_path(name: &str, project: &Path) -> Result<PathBuf, String> {
     let template = source.join("Cargo.toml.template");
     let manifest = std::fs::read_to_string(&template)
         .map_err(|e| format!("read {}: {e}", template.display()))?;
-    let manifest = manifest.replace(
-        "build = \"build.rs\"",
-        &format!("build = {:?}", source.join("build.rs").to_string_lossy()),
-    );
     let manifest = format!(
         "{manifest}\n[lib]\npath = {:?}\n",
         source.join("src/lib.rs").to_string_lossy()
@@ -290,6 +286,13 @@ fn support_crate_path(name: &str, project: &Path) -> Result<PathBuf, String> {
     let dest = project.join("vendor").join(name);
     write_if_changed(dest.join("Cargo.toml"), manifest.as_bytes())
         .map_err(|e| format!("write {name} manifest: {e}"))?;
+    let build_script = source.join("build.rs");
+    if build_script.exists() {
+        let contents = std::fs::read(&build_script)
+            .map_err(|e| format!("read {}: {e}", build_script.display()))?;
+        write_if_changed(dest.join("build.rs"), &contents)
+            .map_err(|e| format!("write {name} build script: {e}"))?;
+    }
     Ok(dest)
 }
 
