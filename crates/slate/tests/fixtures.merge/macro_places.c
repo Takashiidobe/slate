@@ -219,17 +219,17 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! INC {
-// CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         $x = ($x) + 1;
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! INC__2 {
 // CHECK-NEXT:     ($x:expr) => {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             $x = ($x) + 1;
 // CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! INC {
+// CHECK-NEXT:     ($x:expr) => {
+// CHECK-NEXT:         $x = ($x) + 1;
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -296,7 +296,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! SHOW_COUNT {
 // CHECK-NEXT:     ($s:expr) => {
-// CHECK-NEXT:         println!("{}", $s.count);
+// CHECK-NEXT:         println!("{}", unsafe { $s.count });
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -312,7 +312,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! SHOW_COUNT__2 {
 // CHECK-NEXT:     ($s:expr) => {
-// CHECK-NEXT:         println!("{}", unsafe { $s.count });
+// CHECK-NEXT:         println!("{}", $s.count);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -521,8 +521,8 @@ int main(void) {
 // CHECK-NEXT:         &mut (*std::ptr::addr_of_mut!(top))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     SET_COUNT__2!(s);
-// CHECK-NEXT:     SHOW_COUNT!(s);
-// CHECK-NEXT:     SHOW_COUNT__2!(*ps);
+// CHECK-NEXT:     SHOW_COUNT__2!(s);
+// CHECK-NEXT:     SHOW_COUNT!(*ps);
 // CHECK-NEXT:     SET_COUNT!(*ps);
 // CHECK-NEXT:     INC__2!((*ps).count);
 // CHECK-NEXT:     INC!(array[index as usize]);

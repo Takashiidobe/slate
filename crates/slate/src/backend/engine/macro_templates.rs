@@ -100,7 +100,7 @@ pub fn make_field_parameter(template: &mut [Stmt], parameter: &str, field_name: 
     found
 }
 
-pub fn replace_type(ty: &mut Type, concrete: &Type, parameter: &str) -> bool {
+fn replace_type(ty: &mut Type, concrete: &Type, parameter: &str) -> bool {
     if ty == concrete {
         *ty = Type::TyVar(Ident::new(format!("${parameter}")));
         return true;

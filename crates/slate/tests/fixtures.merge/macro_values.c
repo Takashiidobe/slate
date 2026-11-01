@@ -231,7 +231,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_values.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_values: 53 items, 2 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_values: 50 items, 0 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:double_it: 2 variants
 // CHECK-NEXT:   spliced fn:show_trace: 2 variants
 // CHECK-NEXT:   spliced fn:plain_values: 2 variants
@@ -346,6 +346,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! MAX {
+// CHECK-NEXT:     ($a:expr, $b:expr) => {
+// CHECK-NEXT:         if ($a) > $b { $a } else { $b }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! MAX__2 {
 // CHECK-NEXT:     ($a:expr, $b:expr) => {
 // CHECK-NEXT:         if ((($a) as u32) as i32) > $b {
@@ -356,29 +362,11 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! MAX {
-// CHECK-NEXT:     ($a:expr, $b:expr) => {
-// CHECK-NEXT:         if ($a) > $b { $a } else { $b }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! MIN__3 {
+// CHECK-NEXT: macro_rules! MIN__2 {
 // CHECK-NEXT:     ($a:expr, $b:expr) => {{[{][{]}}
 // CHECK-NEXT:         let __v: i32 = if ($a) < $b { $a } else { $b };
 // CHECK-NEXT:         __v
 // CHECK-NEXT:     }};
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! MIN__2 {
-// CHECK-NEXT:     ($a:expr, $b:expr) => {
-// CHECK-NEXT:         if ($a) < $b { $a } else { $b }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! MIN__4 {
-// CHECK-NEXT:     ($a:expr, $b:expr) => {
-// CHECK-NEXT:         if ($a) < $b { $a } else { $b }
-// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! MIN {
@@ -428,30 +416,18 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! TWICE__2 {
-// CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         ((($x) as u32) as i32) + ((($x) as u32) as i32)
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! TWICE {
 // CHECK-NEXT:     ($x:expr) => {
 // CHECK-NEXT:         ($x) + $x
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: macro_rules! WIDE_MIN__2 {
-// CHECK-NEXT:     ($a:expr, $b:expr) => {
-// CHECK-NEXT:         if ($a) > (($b) as c_ulong) {
-// CHECK-NEXT:             ($b) as c_ulong
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             $a
-// CHECK-NEXT:         }
+// CHECK-NEXT: macro_rules! TWICE__2 {
+// CHECK-NEXT:     ($x:expr) => {
+// CHECK-NEXT:         ((($x) as u32) as i32) + ((($x) as u32) as i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! WIDE_MIN {
 // CHECK-NEXT:     ($a:expr, $b:expr) => {
 // CHECK-NEXT:         if ($a) > (($b) as c_ulong) {
@@ -596,7 +572,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let wide: c_long = MIN__2!(5000000000i64, 7000000000i64) as c_long;
+// CHECK-NEXT:     let wide: c_long = MIN!(5000000000i64, 7000000000i64) as c_long;
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("{} {} {}", smallest, largest, MIN!(a + 1, b - 1) * 2);
@@ -607,7 +583,7 @@ int main(void) {
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     let wide: c_long = MIN__2!((5000000000 as c_long), (7000000000 as c_long));
+// CHECK-NEXT:     let wide: c_long = MIN!((5000000000 as c_long), (7000000000 as c_long));
 // CHECK-NEXT:     let small: u8 = 200u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
@@ -633,7 +609,7 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let half: f64 = MIN__4!(0.5f64, 1.5f64);
+// CHECK-NEXT:     let half: f64 = MIN!(0.5f64, 1.5f64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
@@ -698,7 +674,7 @@ int main(void) {
 // CHECK-NEXT:         println!("{} {}", picked, j);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let calls_before: i32 = unsafe { calls };
-// CHECK-NEXT:     let low: i32 = MIN__3!(counted_call(), 1000i32);
+// CHECK-NEXT:     let low: i32 = MIN__2!(counted_call(), 1000i32);
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
@@ -1334,7 +1310,7 @@ int main(void) {
 // CHECK-NEXT:                 c"%d %d %d\n".as_ptr(),
 // CHECK-NEXT:                 shifted,
 // CHECK-NEXT:                 global_size,
-// CHECK-NEXT:                 WIDE_MIN__2!((100 as c_ulong), unsafe { global_size }) as i32,
+// CHECK-NEXT:                 WIDE_MIN!((100 as c_ulong), unsafe { global_size }) as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };

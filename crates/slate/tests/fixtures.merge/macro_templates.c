@@ -80,7 +80,7 @@ int main(void) {
 // CHECK-NEXT:   macro_templates.c: [] 1 compiled
 // CHECK-NEXT:   units/macro_templates_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit macro_templates: 45 items, 30 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_templates: 43 items, 26 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: unit macro_templates_helper: 10 items, 7 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:helper: 2 variants
@@ -138,7 +138,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: macro_rules! WIDEN__5 {
+// CHECK-NEXT: macro_rules! WIDEN__4 {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%ld\n".as_ptr(), $a) };
@@ -174,7 +174,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         WIDEN__5!(a);
+// CHECK-NEXT:         WIDEN__4!(a);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     a * 2
 // CHECK-NEXT: }
@@ -358,7 +358,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! TEMP {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let temp: i32 = $a;
+// CHECK-NEXT:         let temp: i32 = (($a) as u32) as i32;
 // CHECK-NEXT:         println!("{}", temp + 1);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -366,7 +366,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! TEMP {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let temp: i32 = $a;
+// CHECK-NEXT:         let temp: i32 = (($a) as u32) as i32;
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), temp + 1) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -376,7 +376,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! TEMP__2 {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let temp: i32 = (($a) as u32) as i32;
+// CHECK-NEXT:         let temp: i32 = $a;
 // CHECK-NEXT:         println!("{}", temp + 1);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -384,7 +384,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! TEMP__2 {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let temp: i32 = (($a) as u32) as i32;
+// CHECK-NEXT:         let temp: i32 = $a;
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), temp + 1) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -423,7 +423,6 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! WIDEN {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let __v: c_long = unsafe { total };
@@ -433,28 +432,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: macro_rules! WIDEN__2 {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let __v: c_long = unsafe { total };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + (($a) as c_long);
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! WIDEN__4 {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let __v: c_long = unsafe { total };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + (($a) as c_long);
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! WIDEN__6 {
+// CHECK-NEXT: macro_rules! WIDEN__5 {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let __v: c_long = unsafe { total };
 // CHECK-NEXT:         unsafe {
@@ -463,12 +442,11 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! WIDEN__7 {
+// CHECK-NEXT: macro_rules! WIDEN__2 {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let __v: c_long = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + $a;
+// CHECK-NEXT:             total = __v + (($a) as c_long);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -529,23 +507,28 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         SHOW!(wide >> 30i32);
 // CHECK-NEXT:         WIDEN!(local);
-// CHECK-NEXT:         WIDEN!(wide);
-// CHECK-NEXT:         WIDEN__2!(byte);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         SHOW__3!(wide >> 30i32);
-// CHECK-NEXT:         WIDEN__4!(local);
-// CHECK-NEXT:         WIDEN__7!(wide);
-// CHECK-NEXT:         WIDEN__6!(byte);
+// CHECK-NEXT:         WIDEN__2!(local);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     WIDEN!(wide);
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         WIDEN__2!(byte);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         WIDEN__5!(byte);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     TWICE!(next());
 // CHECK-NEXT:     AFTER!(unsafe { calls });
 // CHECK-NEXT:     let moved: i32 = unsafe { calls };
 // CHECK-NEXT:     AFTER!(moved);
 // CHECK-NEXT:     UNUSED!(local);
-// CHECK-NEXT:     TEMP!(local);
-// CHECK-NEXT:     TEMP__2!(byte);
+// CHECK-NEXT:     TEMP__2!(local);
+// CHECK-NEXT:     TEMP!(byte);
 // CHECK-NEXT:     OUTER!(local, wide > 0);
 // CHECK-NEXT:     OUTER__2!(local + 2, 3i32);
 // CHECK-NEXT:     BUMP!(std::ptr::addr_of_mut!(s));

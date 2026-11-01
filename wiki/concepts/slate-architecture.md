@@ -74,10 +74,13 @@ other expansion stays inline, and `macro_keep.rs` records why in the merge repor
   value position. While the rules run its body ends in `Stmt::Return(value)`, which
   no other template has because `macro_keep.rs` rejects `return`; codegen prints it
   as the expression, or a block ending in it.
-- **Identity**: two bodies are the same template when their printed Rust and
-  printed hole types match. Spans and local names do not count. Text is the key
-  because `NamedPrim`'s `Debug` includes the target width: a `c_ulong` body merges
-  across targets, and a body that lowers differently on one target gets a variant.
+- **Identity**: two bodies are the same template when their parameters and printed
+  Rust match. Spans, local names and argument types do not count: a hole is an
+  opaque `$a()` to every rule, and filling it gives back that site's own body. Text
+  is the key because `NamedPrim`'s `Debug` includes the target width: a `c_ulong`
+  body merges across targets, and a body that lowers differently on one target gets
+  a variant. The key is taken before the rules run, so two bodies that only converge
+  under the rules stay separate names.
 - **Names**: templates carry a hash, `NAME__slate_template_<fnv16>`, through
   compilation so function merge compares equal across units and targets.
   `assign_template_names` renames them at the end of the merge to `NAME`,
