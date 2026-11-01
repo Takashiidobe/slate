@@ -12,7 +12,6 @@ int main(int argc, char **argv) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __assert_fail([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: *const i8, [[ARG_2:arg[0-9]+]]: u32, [[ARG_3:arg[0-9]+]]: *const i8);
-// CHECK-NEXT:     fn __assert_single_arg([[ARG_0]]: bool) -> bool;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main(argc: i32, argv: *mut *mut i8) -> i32 {
 // CHECK-NEXT:     if argc != 2 {

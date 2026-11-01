@@ -22,22 +22,17 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn __ctype_b_loc() -> *mut *const u16;
 // CHECK-NEXT:     fn setlocale([[ARG_0:arg[0-9]+]]: i32, [[ARG_1:arg[0-9]+]]: *const i8) -> *mut i8;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe { setlocale(6i32, c"".as_ptr()) };
 // CHECK-NEXT:     let c: i8 = 65;
-// CHECK-NEXT:     if (((unsafe { *unsafe { *__ctype_b_loc() }.offset((c as i32) as isize) }) as u32)
-// CHECK-NEXT:         as i32) & 1024 != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if (unsafe { slate_support::isalpha(c as i32) }) != 0 {
 // CHECK-NEXT:         println!("yes");
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         println!("no");
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (((unsafe { *unsafe { *__ctype_b_loc() }.offset((c as i32) as isize) }) as u32)
-// CHECK-NEXT:         as i32) & 2048 != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if (unsafe { slate_support::isdigit(c as i32) }) != 0 {
 // CHECK-NEXT:         println!("digit");
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         println!("not-digit");

@@ -1,7 +1,8 @@
-use slate_parser::target_info::TargetOs;
+use slate_parser::target_info::{Endian, TargetOs};
 
 use super::*;
 use crate::backend::engine::shadow::visit_names;
+use crate::function_identity::Known;
 
 const SUPPORT_CRATE: &str = "slate_support";
 const FILE_RECORDS: &[&str] = &["_IO_FILE", "__sFILE", "_iobuf"];
@@ -12,21 +13,48 @@ enum Arg {
     File,
     Text,
     Int,
+    IntPointer,
 }
 
 struct Binding {
     name: &'static str,
+    support: &'static str,
     params: &'static [Arg],
     variadic: bool,
     ret: Arg,
+    replaces_body: bool,
 }
 
 const fn binding(name: &'static str, params: &'static [Arg], variadic: bool, ret: Arg) -> Binding {
     Binding {
         name,
+        support: name,
         params,
         variadic,
         ret,
+        replaces_body: false,
+    }
+}
+
+const fn errno_binding(name: &'static str) -> Binding {
+    Binding {
+        name,
+        support: "errno_location",
+        params: &[],
+        variadic: false,
+        ret: Arg::IntPointer,
+        replaces_body: false,
+    }
+}
+
+const fn ctype_binding(name: &'static str, support: &'static str) -> Binding {
+    Binding {
+        name,
+        support,
+        params: &[Arg::Int],
+        variadic: false,
+        ret: Arg::Int,
+        replaces_body: true,
     }
 }
 
@@ -46,7 +74,31 @@ const BINDINGS: &[Binding] = &[
     binding("ferror", &[Arg::File], false, Arg::Int),
     binding("fclose", &[Arg::File], false, Arg::Int),
     binding("fopen", &[Arg::Text, Arg::Text], false, Arg::File),
+    errno_binding("__errno_location"),
+    errno_binding("__errno"),
+    errno_binding("__error"),
+    errno_binding("_errno"),
+    ctype_binding("isalnum", "isalnum"),
+    ctype_binding("isalpha", "isalpha"),
+    ctype_binding("isblank", "isblank"),
+    ctype_binding("iscntrl", "iscntrl"),
+    ctype_binding("isdigit", "isdigit"),
+    ctype_binding("isgraph", "isgraph"),
+    ctype_binding("islower", "islower"),
+    ctype_binding("isprint", "isprint"),
+    ctype_binding("ispunct", "ispunct"),
+    ctype_binding("isspace", "isspace"),
+    ctype_binding("isupper", "isupper"),
+    ctype_binding("isxdigit", "isxdigit"),
+    ctype_binding("tolower", "tolower"),
+    ctype_binding("toupper", "toupper"),
+    ctype_binding("__sbtolower", "tolower"),
+    ctype_binding("__sbtoupper", "toupper"),
 ];
+
+pub(super) fn ctype_identity(support: &str) -> FunctionIdentity {
+    Known::from_symbol(support).map_or(FunctionIdentity::Unknown, FunctionIdentity::Known)
+}
 
 pub(super) fn file_type() -> rust::Type {
     rust::Type::Custom(format!("{SUPPORT_CRATE}::FILE"))
@@ -61,9 +113,11 @@ pub(super) fn support_path(name: &str) -> Expr {
 #[derive(Default)]
 pub(super) struct StdioBindings {
     pub(super) file_records: HashSet<TypeId>,
-    pub(super) functions: HashSet<BindingId>,
+    pub(super) functions: HashMap<BindingId, &'static str>,
     pub(super) stream_globals: HashMap<BindingId, &'static str>,
     pub(super) android_streams: Option<BindingId>,
+    pub(super) glibc_ctype_table: Option<BindingId>,
+    pub(super) freebsd_ctype_test: Option<BindingId>,
     pub(super) unreachable: HashSet<BindingId>,
 }
 
@@ -90,7 +144,7 @@ impl ModuleLowerer<'_> {
         let functions = self.module.functions.iter().filter(|function| {
             function.provenance.system_header.is_some()
                 && !function.symbol.used
-                && !tables.stdio.functions.contains(&function.value.id)
+                && !tables.stdio.functions.contains_key(&function.value.id)
                 && (function.body.is_none()
                     || function.semantics.inlining.is_some()
                     || !matches!(function.linkage, ir::Linkage::External))
@@ -108,9 +162,9 @@ impl ModuleLowerer<'_> {
                     .iter()
                     .filter(|global| {
                         global.provenance.system_header.is_some()
-                            && global.definition
                             && !global.symbol.used
-                            && !matches!(global.linkage, ir::Linkage::External)
+                            && (!global.definition
+                                || !matches!(global.linkage, ir::Linkage::External))
                     })
                     .map(|global| global.variable.id)
                     .chain(tables.stdio.stream_globals.keys().copied())
@@ -120,7 +174,10 @@ impl ModuleLowerer<'_> {
     }
 
     pub(super) fn unreachable_stdio_helpers(&self) -> HashSet<BindingId> {
-        if self.tables.stdio.file_records.is_empty() || !self.module.asm.is_empty() {
+        let stdio = &self.tables.stdio;
+        if (stdio.file_records.is_empty() && stdio.functions.is_empty())
+            || !self.module.asm.is_empty()
+        {
             return HashSet::new();
         }
         let candidates = self.unreachable_candidates();
@@ -189,24 +246,31 @@ impl Tables<'_> {
                     ..
                 })
             ),
+            Arg::IntPointer => matches!(
+                self.resolve_type(ty),
+                ir::Type::Pointer { pointee, is_const: false, .. }
+                    if self.matches_arg(pointee, Arg::Int)
+            ),
         }
     }
 
-    fn matches_binding(&self, function: &slate_parser::ast::Span<ir::Function>) -> bool {
-        let Some(binding) = BINDINGS.iter().find(|known| known.name == function.name) else {
-            return false;
-        };
+    fn matching_binding(
+        &self,
+        function: &slate_parser::ast::Span<ir::Function>,
+    ) -> Option<&'static Binding> {
+        let binding = BINDINGS.iter().find(|known| known.name == function.name)?;
         let ir::Parameters::Prototype { fixed, variadic } = &function.parameters else {
-            return false;
+            return None;
         };
         let symbol = function.symbol.asm_name.as_deref();
         let plain_symbol = symbol.is_none_or(|symbol| {
             symbol == function.name || symbol.strip_prefix('_') == Some(function.name.as_str())
         });
         let may_replace_body = function.body.is_none()
+            || binding.replaces_body
             || function.name == "__sputc"
             || matches!(self.target.os, TargetOs::Windows);
-        function.provenance.system_header.is_some()
+        (function.provenance.system_header.is_some()
             && plain_symbol
             && may_replace_body
             && *variadic == binding.variadic
@@ -218,7 +282,16 @@ impl Tables<'_> {
             && function
                 .return_type
                 .as_ref()
-                .is_some_and(|ret| self.matches_arg(ret, binding.ret))
+                .is_some_and(|ret| self.matches_arg(ret, binding.ret)))
+        .then_some(binding)
+    }
+
+    fn system_function(&self, module: &ir::Module, name: &str) -> Option<BindingId> {
+        module
+            .functions
+            .iter()
+            .find(|function| function.name == name && function.provenance.system_header.is_some())
+            .map(|function| function.value.id)
     }
 
     pub(super) fn bind_stdio(&mut self, module: &ir::Module) {
@@ -261,18 +334,32 @@ impl Tables<'_> {
         }
         self.stdio.stream_globals = stream_globals;
         self.stdio.android_streams = android_streams;
-        let functions: HashSet<BindingId> = module
+        let matched: Vec<(BindingId, &'static Binding)> = module
             .functions
             .iter()
-            .filter(|function| self.matches_binding(function))
-            .map(|function| function.value.id)
+            .filter_map(|function| Some((function.value.id, self.matching_binding(function)?)))
             .collect();
-        for id in &functions {
+        for (id, binding) in &matched {
             if let Some(name) = self.names.get_mut(id) {
                 name.is_unsafe = true;
+                if binding.replaces_body {
+                    name.identity = ctype_identity(binding.support);
+                }
             }
         }
-        self.stdio.functions = functions;
+        self.stdio.functions = matched
+            .into_iter()
+            .map(|(id, binding)| (id, binding.support))
+            .collect();
+        if matches!(self.target.os, TargetOs::Linux)
+            && matches!(self.target.endian, Endian::Little)
+            && !self.target.triple.contains("musl")
+        {
+            self.stdio.glibc_ctype_table = self.system_function(module, "__ctype_b_loc");
+        }
+        if matches!(self.target.os, TargetOs::FreeBsd) {
+            self.stdio.freebsd_ctype_test = self.system_function(module, "__sbistype");
+        }
     }
 }
 

@@ -18,6 +18,7 @@ mod comment_text;
 mod comments;
 mod complex;
 mod control_flow;
+mod ctype;
 mod errors;
 mod f80;
 mod float_fold;
@@ -766,7 +767,7 @@ impl<'m> ModuleLowerer<'m> {
         }
         for function in &module.functions {
             if function.body.is_some()
-                || self.tables.stdio.functions.contains(&function.value.id)
+                || self.tables.stdio.functions.contains_key(&function.value.id)
                 || self.tables.stdio.unreachable.contains(&function.value.id)
                 || self.tables.intrinsics.contains_key(&function.value.id)
                 || self.tables.passes_long_double(function)
@@ -821,7 +822,7 @@ impl<'m> ModuleLowerer<'m> {
             let Some(body) = &function.body else {
                 continue;
             };
-            if self.tables.stdio.functions.contains(&function.value.id)
+            if self.tables.stdio.functions.contains_key(&function.value.id)
                 || self.tables.stdio.unreachable.contains(&function.value.id)
             {
                 continue;

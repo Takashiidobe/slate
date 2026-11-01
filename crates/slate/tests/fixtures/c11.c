@@ -301,7 +301,6 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn cimag([[ARG_0:arg[0-9]+]]: num_complex::Complex<f64>) -> f64;
 // CHECK-NEXT:     fn creal([[ARG_0]]: num_complex::Complex<f64>) -> f64;
-// CHECK-NEXT:     fn __errno_location() -> *mut i32;
 // CHECK-NEXT:     fn remove([[ARG_0]]: *const i8) -> i32;
 // CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT:     fn aligned_alloc([[ARG_0]]: u64, [[ARG_1:arg[0-9]+]]: u64) -> *mut ();
@@ -618,7 +617,7 @@ int main(void) {
 // CHECK-NEXT:         c11_thread_local_value = 29;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__errno_location() = 34;
+// CHECK-NEXT:         *slate_support::errno_location() = 34;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = increment;
@@ -629,7 +628,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (unsafe { c11_thread_local_value })
-// CHECK-NEXT:         + (((unsafe { *__errno_location() }) == 34) as i32)
+// CHECK-NEXT:         + (((unsafe { *slate_support::errno_location() }) == 34) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.c11_quick_handler")]
 // CHECK-NEXT: extern "C-unwind" fn c11_quick_handler() {
@@ -750,7 +749,7 @@ int main(void) {
 // CHECK-NEXT:         c11_thread_local_value = 17;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__errno_location() = 0;
+// CHECK-NEXT:         *slate_support::errno_location() = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     thread_created = unsafe {
 // CHECK-NEXT:         thrd_create(
@@ -773,7 +772,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     thread_total = ((thread_created == 0) as i32) + ((thread_joined == 0) as i32)
 // CHECK-NEXT:         + thread_result + unsafe { c11_thread_local_value }
-// CHECK-NEXT:         + (((unsafe { *__errno_location() }) == 0) as i32);
+// CHECK-NEXT:         + (((unsafe { *slate_support::errno_location() }) == 0) as i32);
 // CHECK-NEXT:     if (unsafe { mtx_init(std::ptr::addr_of_mut!(mutex), 0i32) }) == 0 {
 // CHECK-NEXT:         concurrency_total += 1;
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = ((unsafe { mtx_lock(std::ptr::addr_of_mut!(mutex)) }) == 0)

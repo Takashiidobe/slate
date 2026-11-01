@@ -6,6 +6,11 @@ pub use libc::*;
 unsafe extern "C" {
     pub fn putc(c: c_int, stream: *mut FILE) -> c_int;
     pub fn getc(stream: *mut FILE) -> c_int;
+    #[cfg_attr(target_os = "linux", link_name = "__errno_location")]
+    #[cfg_attr(any(target_os = "macos", target_os = "freebsd"), link_name = "__error")]
+    #[cfg_attr(target_os = "android", link_name = "__errno")]
+    #[cfg_attr(windows, link_name = "_errno")]
+    pub fn errno_location() -> *mut c_int;
 }
 
 #[inline]

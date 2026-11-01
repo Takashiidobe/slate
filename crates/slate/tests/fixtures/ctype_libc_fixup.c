@@ -24,10 +24,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn tolower([[ARG_0:arg[0-9]+]]: i32) -> i32;
-// CHECK-NEXT:     fn toupper([[ARG_0]]: i32) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: fn next_lower() -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe { c };
 // CHECK-NEXT:     unsafe {
@@ -43,15 +39,18 @@ int main(void) {
 // CHECK-NEXT:     let punct: i32 = 33;
 // CHECK-NEXT:     let eof: i32 = -1;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {}", unsafe { toupper(lower) }, unsafe { toupper(digit) }, unsafe {
-// CHECK-NEXT:         toupper(punct) }, unsafe { toupper(upper) }, unsafe { toupper(eof) }
+// CHECK-NEXT:         "{} {} {} {} {}", unsafe { slate_support::toupper(lower) }, unsafe {
+// CHECK-NEXT:         slate_support::toupper(digit) }, unsafe { slate_support::toupper(punct) }, unsafe
+// CHECK-NEXT:         { slate_support::toupper(upper) }, unsafe { slate_support::toupper(eof) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {}", unsafe { tolower(upper) }, unsafe { tolower(digit) }, unsafe {
-// CHECK-NEXT:         tolower(punct) }, unsafe { tolower(lower) }, unsafe { tolower(eof) }
+// CHECK-NEXT:         "{} {} {} {} {}", unsafe { slate_support::tolower(upper) }, unsafe {
+// CHECK-NEXT:         slate_support::tolower(digit) }, unsafe { slate_support::tolower(punct) }, unsafe
+// CHECK-NEXT:         { slate_support::tolower(lower) }, unsafe { slate_support::tolower(eof) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", unsafe { toupper(next_lower()) }, unsafe { tolower(next_lower()) }
+// CHECK-NEXT:         "{} {}", unsafe { slate_support::toupper(next_lower()) }, unsafe {
+// CHECK-NEXT:         slate_support::tolower(next_lower()) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -15,12 +15,8 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn __ctype_b_loc() -> *mut *const u16;
-// CHECK-NEXT: }
 // CHECK-NEXT: fn classify(c: i8) -> i32 {
-// CHECK-NEXT:     (((unsafe { *unsafe { *__ctype_b_loc() }.offset((c as i32) as isize) }) as u32)
-// CHECK-NEXT:         as i32) & 1024
+// CHECK-NEXT:     unsafe { slate_support::isalpha(c as i32) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     if classify(65i8) != 0 {

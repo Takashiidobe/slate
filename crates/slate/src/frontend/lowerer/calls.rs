@@ -43,9 +43,8 @@ impl FunctionLowerer<'_, '_> {
     ) -> Result<Expr> {
         let names = &self.tables.names;
         let func = match callee {
-            ir::Callee::Direct(id) if self.tables.stdio.functions.contains(id) => {
-                let name = names.get(id).ok_or(Invariant::UnknownCallee(*id))?;
-                stdio::support_path(&name.rust)
+            ir::Callee::Direct(id) if self.tables.stdio.functions.contains_key(id) => {
+                stdio::support_path(self.tables.stdio.functions[id])
             }
             ir::Callee::Direct(id) => {
                 let name = names.get(id).ok_or(Invariant::UnknownCallee(*id))?;
