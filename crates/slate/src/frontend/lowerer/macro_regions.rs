@@ -284,6 +284,12 @@ impl FunctionLowerer<'_, '_> {
                 name: definition.name.to_string(),
                 params: params.unwrap_or_default(),
                 foldable,
+                mentions: definition
+                    .replacement
+                    .split(|c: char| !c.is_alphanumeric() && c != '_')
+                    .filter(|word| !word.is_empty())
+                    .map(str::to_string)
+                    .collect(),
             })),
         }])
     }

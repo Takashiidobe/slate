@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-use super::rules::walk::{child_exprs_mut, stmt_exprs_mut};
+use super::rules::walk::{child_exprs, child_exprs_mut, stmt_exprs, stmt_exprs_mut};
 use super::shadow::visit_names;
 use crate::backend::codegen::is_rust_keyword;
 use crate::backend::format::MACRO_LIST_HOLE;
@@ -426,11 +426,181 @@ fn for_each_body(items: &mut [Item], visit: &mut impl FnMut(&mut Vec<Stmt>, Hash
     }
 }
 
+fn binders(stmts: &mut [Stmt]) -> Vec<Ident> {
+    let mut names = Vec::new();
+    for stmt in stmts {
+        visit_names(stmt, |name, binds| {
+            if binds && !names.contains(name) {
+                names.push(*name);
+            }
+        });
+    }
+    names
+}
+
+fn hole_index(expr: &Expr, params: &[MacroParam]) -> Option<usize> {
+    let Expr::Var(name) = expr else {
+        return None;
+    };
+    let name = name.as_str().strip_prefix('$')?;
+    params.iter().position(|param| param.name == name)
+}
+
+fn bind_holes(pattern: &Expr, found: &Expr, params: &[MacroParam], slots: &mut [Option<Expr>]) {
+    if let Some(index) = hole_index(pattern, params) {
+        slots[index].get_or_insert_with(|| found.clone());
+        return;
+    }
+    for (pattern, found) in child_exprs(pattern).into_iter().zip(child_exprs(found)) {
+        bind_holes(pattern, found, params, slots);
+    }
+}
+
+fn fill_holes(expr: &mut Expr, params: &[MacroParam], args: &[Expr]) {
+    if let Some(index) = hole_index(expr, params) {
+        *expr = args[index].clone();
+        return;
+    }
+    for child in child_exprs_mut(expr) {
+        fill_holes(child, params, args);
+    }
+}
+
+fn normalized(mut stmts: Vec<Stmt>) -> Vec<Stmt> {
+    let bound = bound_names(&mut stmts);
+    normalize_generated(&mut stmts, &bound);
+    stmts
+}
+
+struct NestedCall<'a> {
+    name: &'a str,
+    callee: &'a Template,
+    enclosing_bound: &'a HashSet<Ident>,
+}
+
+impl NestedCall<'_> {
+    fn args_for(&self, window: &[Stmt], following: &[Stmt]) -> Option<Vec<Expr>> {
+        let params = &self.callee.params;
+        let mut found = window.to_vec();
+        let mut pattern = self.callee.body.clone();
+        let found_binders = binders(&mut found);
+        let pattern_binders = binders(&mut pattern);
+        if found_binders.len() != pattern_binders.len() {
+            return None;
+        }
+        let renamed: HashMap<Ident, Ident> = pattern_binders
+            .into_iter()
+            .zip(found_binders.iter().copied())
+            .collect();
+        for stmt in &mut pattern {
+            visit_names(stmt, |name, _| {
+                if let Some(target) = renamed.get(name) {
+                    *name = *target;
+                }
+            });
+        }
+        let mut slots = vec![None; params.len()];
+        for (pattern, found) in pattern.iter().zip(&found) {
+            let (mut wanted, mut actual) = (Vec::new(), Vec::new());
+            stmt_exprs(pattern, &mut wanted);
+            stmt_exprs(found, &mut actual);
+            for (wanted, actual) in wanted.into_iter().zip(actual) {
+                bind_holes(wanted, actual, params, &mut slots);
+            }
+        }
+        let args: Vec<Expr> = slots.into_iter().collect::<Option<_>>()?;
+        let local: HashSet<Ident> = found_binders.into_iter().collect();
+        let mut arg_stmts: Vec<Stmt> = args.iter().cloned().map(Stmt::Expr).collect();
+        if reads_any(&mut arg_stmts, &local) || reads_any(&mut following.to_vec(), &local) {
+            return None;
+        }
+        let shadowing: HashSet<Ident> = self.enclosing_bound.difference(&local).copied().collect();
+        if reads_any(&mut pattern, &shadowing) {
+            return None;
+        }
+        for stmt in &mut pattern {
+            let mut exprs = Vec::new();
+            stmt_exprs_mut(stmt, &mut exprs);
+            for expr in exprs {
+                fill_holes(expr, params, &args);
+            }
+        }
+        (normalized(pattern) == normalized(found)).then_some(args)
+    }
+
+    fn replace_in(&self, body: &mut Vec<Stmt>) {
+        for stmt in body.iter_mut() {
+            for child in stmt.child_bodies_mut() {
+                self.replace_in(child);
+            }
+        }
+        let length = self.callee.body.len();
+        let mut at = 0;
+        while at + length <= body.len() {
+            let shapes_agree = self
+                .callee
+                .body
+                .iter()
+                .zip(&body[at..at + length])
+                .all(|(a, b)| std::mem::discriminant(a) == std::mem::discriminant(b));
+            let args = shapes_agree
+                .then(|| self.args_for(&body[at..at + length], &body[at + length..]))
+                .flatten();
+            if let Some(args) = args {
+                body.splice(
+                    at..at + length,
+                    [Stmt::Expr(Expr::Macro {
+                        name: self.name.to_string(),
+                        args,
+                    })],
+                );
+            }
+            at += 1;
+        }
+    }
+}
+
+fn nest_macro_calls(
+    chosen: &mut [(String, Template, usize)],
+    mentions: &HashMap<String, Vec<String>>,
+) {
+    let raw: Vec<(String, Template)> = chosen
+        .iter()
+        .map(|(name, template, _)| (name.clone(), template.clone()))
+        .collect();
+    for (name, template, _) in chosen {
+        let enclosing_bound = bound_names(&mut template.body);
+        for (callee_name, callee) in &raw {
+            let callable = callee_name != name
+                && mentions
+                    .get(name)
+                    .is_some_and(|words| words.contains(callee_name))
+                && callee
+                    .params
+                    .iter()
+                    .all(|param| param.shape == MacroParamShape::Expr);
+            if callable {
+                NestedCall {
+                    name: callee_name,
+                    callee,
+                    enclosing_bound: &enclosing_bound,
+                }
+                .replace_in(&mut template.body);
+            }
+        }
+        template.body = normalized(std::mem::take(&mut template.body));
+    }
+}
+
 pub(super) fn fold(program: &mut Program) {
     let mut seen: Vec<(String, Template, usize)> = Vec::new();
+    let mut mentions: HashMap<String, Vec<String>> = HashMap::new();
     for_each_body(&mut program.items, &mut |body, locals| {
         visit_regions(body, &mut |region, stmts| {
             if let Some(found) = candidate(region, stmts, &locals) {
+                mentions
+                    .entry(region.name.clone())
+                    .or_insert_with(|| region.mentions.clone());
                 match seen
                     .iter_mut()
                     .find(|(name, template, _)| *name == region.name && *template == found.template)
@@ -470,6 +640,7 @@ pub(super) fn fold(program: &mut Program) {
                 })
         });
     });
+    nest_macro_calls(&mut chosen, &mentions);
     let at = program
         .items
         .iter()

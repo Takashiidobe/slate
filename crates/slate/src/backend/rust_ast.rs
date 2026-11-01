@@ -124,6 +124,7 @@ pub struct MacroRegion {
     pub name: String,
     pub params: Vec<MacroParam>,
     pub foldable: bool,
+    pub mentions: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
