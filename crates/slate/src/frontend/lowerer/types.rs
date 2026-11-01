@@ -1056,23 +1056,47 @@ fn slate_support_definition(name: &str, target: &TargetInfo) -> Option<Prim> {
     let wide = target.pointer_width == 64;
     let windows = matches!(target.os, TargetOs::Windows);
     let musl = target.triple.contains("musl");
+    let darwin = matches!(target.os, TargetOs::Darwin);
+    let freebsd = matches!(target.os, TargetOs::FreeBsd);
+    let x86_64 = matches!(target.family, TargetFamily::X86_64);
+    let narrow_glibc_or_bionic =
+        !wide && !musl && matches!(target.os, TargetOs::Linux | TargetOs::Android);
     Some(match name {
+        "intmax_t" | "off64_t" => Prim::I64,
+        "uintmax_t" => Prim::U64,
+        "pid_t" => Prim::I32,
+        "uid_t" | "gid_t" => Prim::U32,
+        "socklen_t" if windows => Prim::I32,
+        "socklen_t" => Prim::U32,
+        "wint_t" if windows => Prim::U16,
+        "wint_t" if darwin || freebsd => Prim::I32,
+        "wint_t" => Prim::U32,
+        "time_t" if narrow_glibc_or_bionic => Prim::I32,
+        "time_t" => Prim::I64,
+        "clock_t" if darwin => Prim::U64,
+        "clock_t" if windows || freebsd || !wide => Prim::I32,
+        "clock_t" => Prim::I64,
+        "mode_t" if darwin || freebsd => Prim::U16,
+        "mode_t" => Prim::U32,
+        "dev_t" if darwin => Prim::I32,
+        "dev_t" if windows => Prim::U32,
+        "dev_t" if !wide && matches!(target.os, TargetOs::Android) => Prim::U32,
+        "dev_t" => Prim::U64,
+        "ino_t" if windows => Prim::U16,
+        "ino_t" if narrow_glibc_or_bionic || (darwin && x86_64) => Prim::U32,
+        "ino_t" => Prim::U64,
+        "nlink_t" if darwin => Prim::U16,
+        "nlink_t" if freebsd || (x86_64 && matches!(target.os, TargetOs::Linux)) => Prim::U64,
+        "nlink_t" => Prim::U32,
         "size_t" | "uintptr_t" if wide => Prim::U64,
         "size_t" | "uintptr_t" => Prim::U32,
         "ssize_t" | "ptrdiff_t" | "intptr_t" if wide => Prim::I64,
         "ssize_t" | "ptrdiff_t" | "intptr_t" => Prim::I32,
         "off_t" if windows => Prim::I32,
-        "off_t" if !wide && !musl && matches!(target.os, TargetOs::Linux | TargetOs::Android) => {
-            Prim::I32
-        }
+        "off_t" if narrow_glibc_or_bionic => Prim::I32,
         "off_t" => Prim::I64,
         "wchar_t" if windows => Prim::U16,
-        "wchar_t"
-            if matches!(target.family, TargetFamily::X86_64 | TargetFamily::X86)
-                || matches!(target.os, TargetOs::Darwin) =>
-        {
-            Prim::I32
-        }
+        "wchar_t" if x86_64 || matches!(target.family, TargetFamily::X86) || darwin => Prim::I32,
         "wchar_t" => Prim::U32,
         _ => return None,
     })

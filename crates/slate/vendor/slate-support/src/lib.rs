@@ -183,3 +183,101 @@ pub type wchar_t = i32;
     not(any(target_arch = "x86_64", target_arch = "x86", target_os = "macos"))
 ))]
 pub type wchar_t = u32;
+
+pub type intmax_t = i64;
+pub type uintmax_t = u64;
+pub type off64_t = i64;
+pub type pid_t = i32;
+pub type uid_t = u32;
+pub type gid_t = u32;
+
+#[cfg(windows)]
+pub type socklen_t = i32;
+#[cfg(not(windows))]
+pub type socklen_t = u32;
+
+#[cfg(windows)]
+pub type wint_t = u16;
+#[cfg(any(target_os = "macos", target_os = "freebsd"))]
+pub type wint_t = i32;
+#[cfg(not(any(windows, target_os = "macos", target_os = "freebsd")))]
+pub type wint_t = u32;
+
+#[cfg(all(
+    target_pointer_width = "32",
+    any(target_env = "gnu", target_os = "android")
+))]
+pub type time_t = i32;
+#[cfg(not(all(
+    target_pointer_width = "32",
+    any(target_env = "gnu", target_os = "android")
+)))]
+pub type time_t = i64;
+
+#[cfg(target_os = "macos")]
+pub type clock_t = u64;
+#[cfg(all(
+    not(target_os = "macos"),
+    any(windows, target_os = "freebsd", target_pointer_width = "32")
+))]
+pub type clock_t = i32;
+#[cfg(not(any(
+    target_os = "macos",
+    windows,
+    target_os = "freebsd",
+    target_pointer_width = "32"
+)))]
+pub type clock_t = i64;
+
+#[cfg(any(target_os = "macos", target_os = "freebsd"))]
+pub type mode_t = u16;
+#[cfg(not(any(target_os = "macos", target_os = "freebsd")))]
+pub type mode_t = u32;
+
+#[cfg(target_os = "macos")]
+pub type dev_t = i32;
+#[cfg(any(windows, all(target_os = "android", target_pointer_width = "32")))]
+pub type dev_t = u32;
+#[cfg(not(any(
+    target_os = "macos",
+    windows,
+    all(target_os = "android", target_pointer_width = "32")
+)))]
+pub type dev_t = u64;
+
+#[cfg(windows)]
+pub type ino_t = u16;
+#[cfg(all(
+    not(windows),
+    any(
+        all(target_os = "macos", target_arch = "x86_64"),
+        all(
+            target_pointer_width = "32",
+            any(target_env = "gnu", target_os = "android")
+        )
+    )
+))]
+pub type ino_t = u32;
+#[cfg(not(any(
+    windows,
+    all(target_os = "macos", target_arch = "x86_64"),
+    all(
+        target_pointer_width = "32",
+        any(target_env = "gnu", target_os = "android")
+    )
+)))]
+pub type ino_t = u64;
+
+#[cfg(target_os = "macos")]
+pub type nlink_t = u16;
+#[cfg(any(
+    target_os = "freebsd",
+    all(target_os = "linux", target_arch = "x86_64")
+))]
+pub type nlink_t = u64;
+#[cfg(not(any(
+    target_os = "macos",
+    target_os = "freebsd",
+    all(target_os = "linux", target_arch = "x86_64")
+)))]
+pub type nlink_t = u32;
