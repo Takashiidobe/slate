@@ -412,6 +412,10 @@ impossible.
   On aarch64 the same constraint takes the 16 condition names (`eq ne cs cc hs lo mi pl vs vc
   hi ls ge lt gt le`) and lowers to `out(reg)` into a `u32` with `cset {N:w}, <cond>` appended
   (`asm_aarch64_flag_outputs.c`, all 16).
+  Clang-only on aarch64: the flags operand is NZCV itself. `+@cc<cond>` loads the place into
+  NZCV before the template (`msr nzcv, {N:x}` from a hidden `in(reg)`), and `%w0` prints
+  `nzcv` (no modifier is rejected by clang). gcc rejects `+@cc` on aarch64
+  (`clang_asm_aarch64_flag_readwrite.c`).
   clang-only `+@cc<cond>` lowers the same way: clang ignores the tied input (the output is the
   flags), so the input is dropped (`clang_asm_flag_output_readwrite.c`). A template reference to
   a flags operand stays a barrier: clang prints an unspecified register for it.

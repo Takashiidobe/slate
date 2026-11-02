@@ -733,6 +733,9 @@ fn asm_template(
                             template.push_str(&symbol.offset.to_string());
                         }
                     }
+                    Some(ir::AsmOperandClass::Flags(_)) if !x86 && *modifier == Some('w') => {
+                        template.push_str("nzcv");
+                    }
                     _ => {
                         return Err(unsupported_asm(format!(
                             "template operand {index}, modifier {modifier:?}: {:?}",
@@ -1495,9 +1498,17 @@ impl FunctionLowerer<'_, '_> {
             .iter()
             .any(|operand| operand.constraint.alternatives.is_empty());
         let mut options = asm_options(asm)?;
+        if asm
+            .operands
+            .iter()
+            .any(|operand| matches!(operand.selected, Some(ir::AsmOperandClass::Flags(_))))
+        {
+            options.retain(|option| *option != rust::AsmOption::PreservesFlags);
+        }
         let mut operands = Vec::new();
         let mut explicit = Vec::new();
         let mut slots = Vec::new();
+        let mut flags_inputs = Vec::new();
         let mut saved_rbx = None;
         let mut reserved_operands: Vec<(&str, usize, bool, bool)> = Vec::new();
         let mut taken = asm
@@ -1637,6 +1648,16 @@ impl FunctionLowerer<'_, '_> {
                         late: operand.direction() == ir::AsmDirection::LateOut,
                         value: output,
                     });
+                    if !x86 && matches!(operand.kind, ir::AsmOperandKind::InOut { .. }) {
+                        let value = self.asm_read(statement, place)?;
+                        let value =
+                            self.asm_encode(value, &place.ty, &rust::Type::Prim(Prim::U64))?;
+                        flags_inputs.push(operands.len());
+                        operands.push(rust::AsmOperand::In {
+                            reg: rust::AsmReg::Class("reg".into()),
+                            value,
+                        });
+                    }
                     continue;
                 }
                 Some(ir::AsmOperandClass::Pair { low, high }) => {
@@ -2073,6 +2094,9 @@ impl FunctionLowerer<'_, '_> {
                     *option = rust::AsmOption::ReadOnly;
                 }
             }
+        }
+        for slot in flags_inputs.into_iter().rev() {
+            template = format!("msr nzcv, {{{slot}:x}}\n{template}");
         }
         if let Some((slot, swap)) = saved_rbx {
             let (save, restore) = match (asm.dialect, swap) {
