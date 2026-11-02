@@ -477,6 +477,36 @@ impl TypeResolver {
         resolver
     }
 
+    pub(super) fn merge_overload_redeclaration(
+        &mut self,
+        node: crate::ast::NodeId,
+        id: BindingId,
+        earlier: BindingId,
+    ) {
+        fn replace(list: &mut Vec<BindingId>, id: BindingId, earlier: BindingId) {
+            for binding in list.iter_mut() {
+                if *binding == id {
+                    *binding = earlier;
+                }
+            }
+            let mut seen = HashSet::new();
+            list.retain(|binding| seen.insert(*binding));
+        }
+        self.declarations.insert(node, earlier);
+        for binding in self.references.values_mut() {
+            if *binding == id {
+                *binding = earlier;
+            }
+        }
+        self.overload_sets.remove(&id);
+        for list in self.overload_sets.values_mut() {
+            replace(list, id, earlier);
+        }
+        for list in self.overload_candidates.values_mut() {
+            replace(list, id, earlier);
+        }
+    }
+
     pub(super) fn warn<T>(&mut self, warning: Warning, message: &str, node: &Span<T>) {
         let diagnostics = DiagnosticContext {
             options: &self.dialect.options().diagnostics,

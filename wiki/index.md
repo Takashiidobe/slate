@@ -47,6 +47,7 @@ rewrite and fixture records, with the source revision for the former frontend.
 - [Attribute pipeline](concepts/attributes.md)
 - [Comment placement](concepts/comment-placement.md)
 - [C type layer](concepts/c-type-layer.md)
+- [Itanium mangling (TODO)](concepts/itanium-mangling.md)
 - [Declared-entity model](concepts/entity-model.md)
 - [Compiler flags](concepts/compiler-flags.md)
 - [Compiler argument rules](concepts/compiler-arg-rules.md)

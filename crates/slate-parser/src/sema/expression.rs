@@ -1460,7 +1460,7 @@ impl Lowerer {
     }
 
     pub fn declaration_id(&self, node: NodeId, name: &str) -> Result<BindingId, ResolveError> {
-        if let Some(id) = self.names.declarations.get(&node) {
+        if let Some(id) = self.types.declarations.get(&node) {
             return Ok(*id);
         }
         self.names

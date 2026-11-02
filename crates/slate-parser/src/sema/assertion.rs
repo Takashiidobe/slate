@@ -15,7 +15,7 @@ use num_bigint::{BigInt, Sign};
 
 use super::attributes::Subject;
 use super::ctype::convert::ConversionContext;
-use super::ctype::{Extent, QualType};
+use super::ctype::{Extent, QualType, itanium_function_symbol};
 use super::entity::ObjectRequest;
 use super::function::{builtin_deallocator, deallocator_argument};
 use super::initializer::{ElementError, InitializerSource};
@@ -196,26 +196,24 @@ impl Checker<'_> {
         linkage: Option<Linkage>,
         register: bool,
     ) -> Result<(), ResolveError> {
-        let Some(&id) = self.types.declarations.get(&node) else {
+        let Some(&declared) = self.types.declarations.get(&node) else {
             return Ok(());
         };
+        let mut id = declared;
         if let Some(overloads) = self.types.overload_sets.get(&id).cloned() {
             let passes_object_size = self.types.passes_object_size.contains(&id);
-            let redeclares = overloads.iter().filter(|&&other| other != id).any(|other| {
-                self.types.passes_object_size.contains(other) == passes_object_size
+            let earlier = overloads.iter().copied().find(|&other| {
+                other != id
+                    && self.types.passes_object_size.contains(&other) == passes_object_size
                     && self
                         .types
                         .entities
-                        .ty(other)
+                        .ty(&other)
                         .is_some_and(|earlier| self.types.ctypes.compatible(earlier, ty))
             });
-            if redeclares {
-                let error =
-                    ResolveError::Unimplemented("redeclaration of an overloadable function");
-                self.types
-                    .unsupported_declarations
-                    .insert(node, error.clone());
-                return Err(error);
+            if let Some(earlier) = earlier {
+                self.types.merge_overload_redeclaration(node, id, earlier);
+                id = earlier;
             }
             if matches!(linkage, Some(Linkage::External)) {
                 self.types.external_overloads.insert(id);
@@ -251,6 +249,47 @@ impl Checker<'_> {
             },
         );
         merged
+    }
+
+    fn mangle_external_overload(
+        &mut self,
+        node: NodeId,
+        name: Option<&str>,
+        ty: QualType,
+        definition: bool,
+    ) {
+        let (Some(&id), Some(name)) = (self.types.declarations.get(&node), name) else {
+            return;
+        };
+        if !self.types.external_overloads.contains(&id) {
+            return;
+        }
+        if self.types.dialect().target().environment == TargetEnvironment::Msvc {
+            if definition {
+                self.types.unsupported_declarations.insert(
+                    node,
+                    ResolveError::Unimplemented("definition of an extern overloadable function"),
+                );
+            }
+            return;
+        }
+        let Some((_, params, variadic, _)) = self.types.ctypes.function_parts(ty) else {
+            return;
+        };
+        let params = params.to_vec();
+        let mangled = itanium_function_symbol(
+            &mut self.types.ctypes,
+            &self.types.definitions,
+            name,
+            &params,
+            variadic,
+        );
+        if mangled.is_none() {
+            self.types.unsupported_declarations.insert(
+                node,
+                ResolveError::Unimplemented("Itanium mangling of an extern overloadable signature"),
+            );
+        }
     }
 
     fn extern_inline_only(
@@ -307,14 +346,7 @@ impl Checker<'_> {
             {
                 self.types.external_overloads.remove(&id);
             }
-            if let Some(id) = self.types.declarations.get(&node)
-                && self.types.external_overloads.contains(id)
-            {
-                self.types.unsupported_declarations.insert(
-                    node,
-                    ResolveError::Unimplemented("definition of an extern overloadable function"),
-                );
-            }
+            self.mangle_external_overload(node, function.declarator.name(), ty, true);
             names = function
                 .declarator
                 .name()
@@ -619,6 +651,12 @@ impl Checker<'_> {
                     register,
                 );
                 self.report(declarator, declared);
+                self.mangle_external_overload(
+                    declarator.id,
+                    declarator.declarator.name(),
+                    completed,
+                    false,
+                );
                 if !self.types.ctypes.is_function(completed) && !self.variable_array(completed) {
                     initialized = Some(completed);
                 }

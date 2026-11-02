@@ -324,6 +324,7 @@ impl Lowerer {
                 target: state.target.clone(),
                 sme: state.sme.clone(),
             };
+            super::module::mangle_external_overload(&mut self.types, &mut function.value);
             // a naked function has no epilogue: clang ends its body in `unreachable`.
             if (state.noreturn || state.naked) && function.body.is_some() {
                 function.value.fallthrough = Some(Fallthrough::Undefined);

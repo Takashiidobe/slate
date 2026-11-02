@@ -16,6 +16,7 @@ use crate::compiler_args::CompilerFlavor;
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
 use crate::diagnostics::Warning;
 use crate::ir::{ConversionReason, NumericType, Type, TypeDefinitionKind, VaConvention};
+use crate::target_info::TargetEnvironment;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) struct Typed {
@@ -1153,9 +1154,14 @@ impl TypeResolver {
             None => Some(ResolveError::Rejected(
                 "call to overloaded function is ambiguous",
             )),
-            Some((chosen, _)) if self.external_overloads.contains(chosen) => Some(
-                ResolveError::Unimplemented("call to an extern overloadable function"),
-            ),
+            Some((chosen, _))
+                if self.external_overloads.contains(chosen)
+                    && self.dialect().target().environment == TargetEnvironment::Msvc =>
+            {
+                Some(ResolveError::Unimplemented(
+                    "call to an extern overloadable function",
+                ))
+            }
             Some(_) => None,
         };
         if let Some(error) = error {

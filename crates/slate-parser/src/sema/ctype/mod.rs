@@ -2,6 +2,7 @@ pub(super) mod arith;
 pub(super) mod compat;
 pub(super) mod convert;
 mod layout;
+mod mangle;
 mod render;
 
 use std::collections::{HashMap, HashSet};
@@ -10,6 +11,7 @@ pub(super) use layout::rank_width;
 
 use crate::ir::{BindingId, CallConv, PointerSpace, TypeId};
 
+pub use mangle::itanium_function_symbol;
 pub use render::CTypeMetadata;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

@@ -1,5 +1,5 @@
 use super::attributes::{Subject, Use};
-use super::ctype::QualType;
+use super::ctype::{QualType, itanium_function_symbol};
 use super::expression::Lowerer;
 use super::initializer::InitializerSource;
 use super::macro_structure::MacroStructure;
@@ -2620,4 +2620,29 @@ impl Lowerer {
         result.push(lowered);
         Ok(())
     }
+}
+
+pub(super) fn mangle_external_overload(types: &mut TypeResolver, function: &mut Function) {
+    if !function.semantics.overloadable
+        || function.semantics.inline_only
+        || !matches!(function.linkage, Linkage::External)
+        || function.symbol.asm_name.is_some()
+        || types.dialect().target().environment == TargetEnvironment::Msvc
+    {
+        return;
+    }
+    let Some(ty) = types.entities.ty(&function.id) else {
+        return;
+    };
+    let Some((_, params, variadic, _)) = types.ctypes.function_parts(ty) else {
+        return;
+    };
+    let params = params.to_vec();
+    function.symbol.asm_name = itanium_function_symbol(
+        &mut types.ctypes,
+        &types.definitions,
+        &function.name,
+        &params,
+        variadic,
+    );
 }
