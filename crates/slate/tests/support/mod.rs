@@ -1098,12 +1098,14 @@ pub fn link_c_with_archive(
     archive: &Path,
     out: &Path,
     include_dir: Option<&Path>,
+    extra_args: &[String],
 ) -> Result<(), String> {
     let output = Command::new(cc())
         .args(["-O0", "-std=c23", "-o"])
         .arg(out)
         .args(srcs)
         .args(include_dir.map(|dir| format!("-I{}", dir.display())))
+        .args(extra_args)
         .arg(archive)
         .args(["-lm", "-lpthread", "-ldl"])
         .output()

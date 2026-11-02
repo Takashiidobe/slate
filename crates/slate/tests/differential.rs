@@ -440,13 +440,14 @@ fn c_sources_in(dir: &Path) -> Vec<PathBuf> {
     sources
 }
 
-#[test]
-fn library_differential() {
-    let work = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/library");
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.library");
+fn library_projects(bucket: &str) -> Vec<(String, PathBuf)> {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests")
+        .join(bucket);
     let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
     let mut projects: Vec<(String, PathBuf)> = std::fs::read_dir(&root)
-        .expect("read library fixtures")
+        .into_iter()
+        .flatten()
         .filter_map(|entry| {
             let path = entry.ok()?.path();
             let name = path.file_name()?.to_string_lossy().into_owned();
@@ -455,50 +456,84 @@ fn library_differential() {
         })
         .collect();
     projects.sort();
+    projects
+}
+
+fn run_library_project(work: &Path, name: &str, project: &Path) -> Result<(), String> {
+    let src = project.join("src");
+    let sources = c_sources_in(&src);
+    let options = support::fixture_dg_options(&sources[0]);
+    let crate_dir = work.join(name);
+    translate_fixture_project(
+        &sources,
+        &crate_dir,
+        options.clone(),
+        &["--crate-type", "staticlib"],
+    )?;
+    let archive = support::build_project_staticlib(&crate_dir)?;
+    for driver in c_sources_in(&project.join("tests")) {
+        let stem = driver.file_stem().unwrap().to_string_lossy().into_owned();
+        let c_bin = work.join(format!("{name}_{stem}_c"));
+        let rs_bin = work.join(format!("{name}_{stem}_rs"));
+        let mut native = sources.clone();
+        native.push(driver.clone());
+        support::compile_c_multi_with_std_include_and_args(
+            &native,
+            &c_bin,
+            "c23",
+            Some(&src),
+            &options,
+        )?;
+        support::link_c_with_archive(
+            std::slice::from_ref(&driver),
+            &archive,
+            &rs_bin,
+            Some(&src),
+            &options,
+        )?;
+        let config = support::RunConfig::default();
+        let c = support::run_with_config(&c_bin, &config, work)?;
+        let r = support::run_with_config(&rs_bin, &config, work)?;
+        support::compare_runs(&c, &r, false).map_err(|e| format!("{stem}: {e}"))?;
+    }
+    Ok(())
+}
+
+#[test]
+fn library_differential() {
+    let work = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/library");
+    let projects = library_projects("fixtures.library");
     let failures: Vec<_> = support::parallel_map(&projects, |(name, project)| {
-        let src = project.join("src");
-        let sources = c_sources_in(&src);
-        let crate_dir = work.join(name);
-        let result = (|| {
-            translate_fixture_project(
-                &sources,
-                &crate_dir,
-                Vec::new(),
-                &["--crate-type", "staticlib"],
-            )?;
-            let archive = support::build_project_staticlib(&crate_dir)?;
-            for driver in c_sources_in(&project.join("tests")) {
-                let stem = driver.file_stem().unwrap().to_string_lossy().into_owned();
-                let c_bin = work.join(format!("{name}_{stem}_c"));
-                let rs_bin = work.join(format!("{name}_{stem}_rs"));
-                let mut native = sources.clone();
-                native.push(driver.clone());
-                support::compile_c_multi_with_std_include_and_args(
-                    &native,
-                    &c_bin,
-                    "c23",
-                    Some(&src),
-                    &[],
-                )?;
-                support::link_c_with_archive(
-                    std::slice::from_ref(&driver),
-                    &archive,
-                    &rs_bin,
-                    Some(&src),
-                )?;
-                let config = support::RunConfig::default();
-                let c = support::run_with_config(&c_bin, &config, &work)?;
-                let r = support::run_with_config(&rs_bin, &config, &work)?;
-                support::compare_runs(&c, &r, false).map_err(|e| format!("{stem}: {e}"))?;
-            }
-            Ok::<(), String>(())
-        })();
-        result.err().map(|error| format!("[{name}] {error}"))
+        run_library_project(&work, name, project)
+            .err()
+            .map(|error| format!("[{name}] {error}"))
     })
     .into_iter()
     .flatten()
     .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}
+
+#[test]
+fn library_unsupported_tests_still_fail() {
+    let work =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/library-unsupported");
+    let projects = library_projects("fixtures.library.unsupported");
+    let promotions: Vec<_> = support::parallel_map(&projects, |(name, project)| {
+        run_library_project(&work, name, project).is_ok().then(|| {
+            format!(
+                "{name} passes:\n  git mv crates/slate/tests/fixtures.library.unsupported/{name} crates/slate/tests/fixtures.library/{name}"
+            )
+        })
+    })
+    .into_iter()
+    .flatten()
+    .collect();
+    assert!(
+        promotions.is_empty(),
+        "library fixture(s) now pass end-to-end -- promote them:\n{}",
+        promotions.join("\n")
+    );
 }
 
 type FixtureResults = Vec<(Fixture, Result<(), String>)>;

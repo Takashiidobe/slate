@@ -53,7 +53,11 @@ one-unit project, a directory of `.c` files is a multi-unit project. A unit's
 generated file; `update_filecheck.py` accepts these paths too.
 `tests/fixtures.library/<name>/src/` projects have no `main`: `library_differential`
 translates them as a `staticlib`, links each `tests/*.c` driver against the
-archive, and compares it with an all-native build.
+archive, and compares it with an all-native build. The first `src/*.c` file's
+`dg-options` apply to translation, the native build and the driver link.
+`tests/fixtures.library.unsupported/` holds library fixtures that must still
+fail; `library_unsupported_tests_still_fail` prints the `git mv` for one that
+passes.
 `tests/fixtures.dylink/<name>/` fixtures (`dylink`) split a prebuilt dependency
 (`lib/*.c`, always built natively as a `.so` or `.dll`) from the host
 (`host/*.c`) that loads it with `dlopen` or `LoadLibraryA` through

@@ -84,6 +84,9 @@ the oracle compile when `dg-options` has `-fblocks`.
 `tests/fixtures/block_basic.c`, `block_more.c`, `block_globals.c` and the
 two-unit `tests/fixtures.release/block_units`. Fixtures declare
 `_Block_copy`/`_Block_release` themselves instead of including `<Block.h>`.
+`tests/fixtures.library.unsupported/block_capture_retain` has a native C driver
+pass a stack block to a translated library that captures it in a copied block,
+and it crashes until captured blocks are retained.
 
 ## Not yet lowered
 
