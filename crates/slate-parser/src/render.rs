@@ -218,6 +218,7 @@ fn strip_declarator_comments(declarator: &mut Declarator) {
         Declarator::Grouped(inner)
         | Declarator::Attributed { inner, .. }
         | Declarator::Pointer { inner, .. }
+        | Declarator::BlockPointer { inner, .. }
         | Declarator::Array { inner, .. } => strip_declarator_comments(inner),
         Declarator::Abstract | Declarator::Name(_) => {}
     }

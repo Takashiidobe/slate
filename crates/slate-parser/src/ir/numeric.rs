@@ -22,6 +22,9 @@ pub enum Type {
         access: super::Access,
         space: PointerSpace,
     },
+    BlockPointer {
+        function: Box<Type>,
+    },
     Array {
         element: Box<Type>,
         length: Option<u64>,
@@ -93,6 +96,7 @@ impl fmt::Display for Type {
                 access.prefix(),
                 space.suffix()
             ),
+            Self::BlockPointer { function } => write!(f, "block<{function}>"),
             Self::Array { element, length } => match length {
                 Some(length) => write!(f, "array<{element}, {length}>"),
                 None => write!(f, "array<{element}, incomplete>"),

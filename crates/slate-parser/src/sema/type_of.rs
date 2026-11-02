@@ -119,6 +119,7 @@ impl Lowerer {
             Declarator::Grouped(inner)
             | Declarator::Attributed { inner, .. }
             | Declarator::Pointer { inner, .. }
+            | Declarator::BlockPointer { inner, .. }
             | Declarator::Array { inner, .. } => self.prepare_declarator(inner),
             Declarator::Function { inner, parameters } => {
                 for parameter in parameters.parameters() {
@@ -328,6 +329,10 @@ impl TypeResolver {
             Declarator::Pointer { inner, .. } => {
                 let outer = self.pattern_base(inner, target)?;
                 self.ctypes.pointee(outer).ok_or(mismatch)
+            }
+            Declarator::BlockPointer { inner, .. } => {
+                let outer = self.pattern_base(inner, target)?;
+                self.ctypes.block_pointee(outer).ok_or(mismatch)
             }
             Declarator::Array { inner, .. } => {
                 let outer = self.pattern_base(inner, target)?;

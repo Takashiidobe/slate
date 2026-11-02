@@ -464,6 +464,9 @@ pub fn walk_declarator<V: Visitor + ?Sized>(
         Declarator::Attributed { inner, attributes }
         | Declarator::Pointer {
             inner, attributes, ..
+        }
+        | Declarator::BlockPointer {
+            inner, attributes, ..
         } => {
             visitor.visit_declarator(inner)?;
             walk_attributes(visitor, attributes)

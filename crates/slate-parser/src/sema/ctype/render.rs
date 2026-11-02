@@ -154,6 +154,23 @@ impl Printer<'_> {
                     declarator,
                 )
             }
+            CTypeKind::BlockPointer(pointee) => {
+                let words = words(q.quals);
+                let mut text = format!("^{}", words.join(" "));
+                if !declarator.text.is_empty() {
+                    if !words.is_empty() && !declarator.suffix {
+                        text.push(' ');
+                    }
+                    text.push_str(&declarator.text);
+                }
+                self.print(
+                    *pointee,
+                    Declarator {
+                        text,
+                        suffix: false,
+                    },
+                )
+            }
             CTypeKind::Pointer(pointee, space) => {
                 let words = space_words(*space)
                     .iter()
@@ -260,6 +277,7 @@ impl Printer<'_> {
             }
             CTypeKind::Enum(id) => tag_name("enum", self.tag(*id)),
             CTypeKind::Pointer(..)
+            | CTypeKind::BlockPointer(_)
             | CTypeKind::Array { .. }
             | CTypeKind::Function { .. }
             | CTypeKind::Typedef { .. }

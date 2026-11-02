@@ -611,6 +611,9 @@ impl<'a> Reachability<'a> {
             }
             Declarator::Pointer {
                 inner, attributes, ..
+            }
+            | Declarator::BlockPointer {
+                inner, attributes, ..
             } => {
                 self.mark_attributes(attributes);
                 self.mark_declarator(inner);
@@ -661,6 +664,9 @@ impl<'a> Reachability<'a> {
             }
             Declarator::Attributed { inner, attributes }
             | Declarator::Pointer {
+                inner, attributes, ..
+            }
+            | Declarator::BlockPointer {
                 inner, attributes, ..
             } => {
                 self.attributes_retain(attributes) || self.declarator_has_retention_attribute(inner)

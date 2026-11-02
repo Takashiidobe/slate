@@ -1695,6 +1695,12 @@ pub enum Declarator {
         attributes: Vec<Span<Attribute>>,
         inner: Box<Declarator>,
     },
+    BlockPointer {
+        qualifiers: Qualifiers,
+        #[debug(skip_if = Vec::is_empty)]
+        attributes: Vec<Span<Attribute>>,
+        inner: Box<Declarator>,
+    },
     Array {
         inner: Box<Declarator>,
         size: ArraySize,
@@ -1781,6 +1787,7 @@ impl Declarator {
             Self::Grouped(inner)
             | Self::Attributed { inner, .. }
             | Self::Pointer { inner, .. }
+            | Self::BlockPointer { inner, .. }
             | Self::Array { inner, .. }
             | Self::Function { inner, .. } => inner.name(),
         }
@@ -1828,7 +1835,9 @@ impl Declarator {
 
     pub fn pointer_qualifiers_mut(&mut self) -> Option<&mut Qualifiers> {
         match self.outermost_layer_mut()? {
-            Self::Pointer { qualifiers, .. } => Some(qualifiers),
+            Self::Pointer { qualifiers, .. } | Self::BlockPointer { qualifiers, .. } => {
+                Some(qualifiers)
+            }
             _ => None,
         }
     }
@@ -1841,6 +1850,7 @@ impl Declarator {
                 Self::Grouped(inner)
                 | Self::Attributed { inner, .. }
                 | Self::Pointer { inner, .. }
+                | Self::BlockPointer { inner, .. }
                 | Self::Array { inner, .. }
                 | Self::Function { inner, .. } => &mut **inner,
                 Self::Name(_) | Self::Abstract => return None,
@@ -1888,6 +1898,7 @@ impl Declarator {
             Self::Grouped(inner)
             | Self::Attributed { inner, .. }
             | Self::Pointer { inner, .. }
+            | Self::BlockPointer { inner, .. }
             | Self::Array { inner, .. }
             | Self::Function { inner, .. } => Some(inner),
         }
@@ -1910,10 +1921,12 @@ impl Declarator {
             Self::Name(_) | Self::Abstract => None,
             Self::Attributed { inner, .. } => deeper(inner, false),
             Self::Grouped(inner) => deeper(inner, true),
-            Self::Pointer { inner, .. } => match deeper(inner, false) {
-                Some(derivation) if derivation.grouped => Some(derivation),
-                _ => Some(this(false)),
-            },
+            Self::Pointer { inner, .. } | Self::BlockPointer { inner, .. } => {
+                match deeper(inner, false) {
+                    Some(derivation) if derivation.grouped => Some(derivation),
+                    _ => Some(this(false)),
+                }
+            }
             Self::Array { inner, .. } | Self::Function { inner, .. } => {
                 match deeper(inner, false) {
                     Some(derivation) if derivation.grouped || derivation.suffix => Some(derivation),

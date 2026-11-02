@@ -1779,6 +1779,7 @@ impl Lowerer {
             Declarator::Grouped(inner)
             | Declarator::Attributed { inner, .. }
             | Declarator::Pointer { inner, .. }
+            | Declarator::BlockPointer { inner, .. }
             | Declarator::Function { inner, .. } => self.extents(inner, out),
             Declarator::Array { inner, size, .. } => {
                 self.extents(inner, out)?;

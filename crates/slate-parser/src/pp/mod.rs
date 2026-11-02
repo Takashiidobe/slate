@@ -840,6 +840,9 @@ impl<'a> Preprocessor<'a> {
                 );
             }
         }
+        if self.dialect.features().blocks {
+            defines.push("__BLOCKS__=1".to_owned());
+        }
         if flavor.is_msvc() && options.layout.char_signed == Some(false) {
             defines.push("_CHAR_UNSIGNED=1".to_owned());
         }

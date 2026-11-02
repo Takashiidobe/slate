@@ -219,6 +219,7 @@ pub enum CTypeKind {
     },
     Enum(TypeId),
     Pointer(QualType, PointerSpace),
+    BlockPointer(QualType),
     Array {
         element: QualType,
         extent: Extent,
@@ -481,6 +482,17 @@ impl CTypes {
 
     pub fn pointer(&mut self, pointee: QualType) -> QualType {
         self.qual(CTypeKind::Pointer(pointee, PointerSpace::Default))
+    }
+
+    pub fn block_pointer(&mut self, pointee: QualType) -> QualType {
+        self.qual(CTypeKind::BlockPointer(pointee))
+    }
+
+    pub fn block_pointee(&self, q: QualType) -> Option<QualType> {
+        match self.kind(self.desugar(q).ty) {
+            CTypeKind::BlockPointer(pointee) => Some(*pointee),
+            _ => None,
+        }
     }
 
     pub fn pointer_in(&mut self, q: QualType, space: PointerSpace) -> Option<QualType> {

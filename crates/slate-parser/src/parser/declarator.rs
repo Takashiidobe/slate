@@ -499,8 +499,14 @@ impl<'a> DeclaratorParser<'a> {
         allow_abstract: bool,
     ) -> Result<Declarator, DeclaratorError> {
         let mut pointers = Vec::new();
-        while self.matches(Token::Star) {
-            pointers.push(self.parse_pointer_qualifiers()?);
+        loop {
+            let is_block = self.context.features().blocks && self.peek() == Some(&Token::Caret);
+            if !is_block && self.peek() != Some(&Token::Star) {
+                break;
+            }
+            self.pos += 1;
+            let (qualifiers, attributes) = self.parse_pointer_qualifiers()?;
+            pointers.push((qualifiers, attributes, is_block));
         }
         let mut declarator = match self.peek().cloned() {
             Some(Token::Ident(name)) => {
@@ -540,11 +546,19 @@ impl<'a> DeclaratorParser<'a> {
             declarator = self.wrap_c23_attributes(declarator)?;
         }
 
-        for (qualifiers, attributes) in pointers.into_iter().rev() {
-            declarator = Declarator::Pointer {
-                qualifiers,
-                attributes,
-                inner: Box::new(declarator),
+        for (qualifiers, attributes, is_block) in pointers.into_iter().rev() {
+            declarator = if is_block {
+                Declarator::BlockPointer {
+                    qualifiers,
+                    attributes,
+                    inner: Box::new(declarator),
+                }
+            } else {
+                Declarator::Pointer {
+                    qualifiers,
+                    attributes,
+                    inner: Box::new(declarator),
+                }
             };
         }
 

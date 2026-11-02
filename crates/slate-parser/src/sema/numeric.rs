@@ -1811,6 +1811,7 @@ fn numeric_type(ty: &Type) -> Result<NumericType, ResolveError> {
         | Type::FixedPoint(_)
         | Type::Vector { .. }
         | Type::Pointer { .. }
+        | Type::BlockPointer { .. }
         | Type::VaList
         | Type::Sizeless(_)
         | Type::Array { .. }

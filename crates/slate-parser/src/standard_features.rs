@@ -78,6 +78,7 @@ pub struct StandardFeatures {
     pub whitespace_line_splice: bool,
     pub digraphs: bool,
     pub dollars_in_identifiers: bool,
+    pub blocks: bool,
     pub scope_token: bool,
     pub elifdef_directives: bool,
     pub gnu_inline_asm: bool,
@@ -171,6 +172,7 @@ impl StandardFeatures {
             whitespace_line_splice: true,
             digraphs: !matches!(standard, LanguageStandard::C89),
             dollars_in_identifiers: true,
+            blocks: false,
             scope_token: true,
             elifdef_directives: c23 || standard.is_gnu(),
             gnu_inline_asm: true,
@@ -190,6 +192,7 @@ impl StandardFeatures {
             .unwrap_or(features.trigraphs && !flavor.is_msvc());
         features.digraphs = graphs.digraphs.unwrap_or(features.digraphs);
         features.dollars_in_identifiers = graphs.dollars.unwrap_or(true);
+        features.blocks = flavor.is_clang() && graphs.blocks.unwrap_or(false);
         features.scope_token = !flavor.is_gcc() || standard.is_gnu() || standard.at_least_c23();
         features.elifdef_directives = match flavor {
             CompilerFlavor::Gcc => features.elifdef_directives,

@@ -598,6 +598,9 @@ impl Resolver {
             Declarator::Attributed { inner, attributes }
             | Declarator::Pointer {
                 inner, attributes, ..
+            }
+            | Declarator::BlockPointer {
+                inner, attributes, ..
             } => {
                 self.declarator_layers(inner, definition)?;
                 self.attributes(attributes)

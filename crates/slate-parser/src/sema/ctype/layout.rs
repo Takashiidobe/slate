@@ -45,6 +45,9 @@ impl CTypes {
                     space: *space,
                 }
             }
+            CTypeKind::BlockPointer(function) => Type::BlockPointer {
+                function: Box::new(self.ir_type(*function, target)),
+            },
             CTypeKind::Array { element, extent } => {
                 let element = Box::new(self.ir_type(*element, target));
                 match extent {
@@ -136,6 +139,7 @@ impl CTypes {
             | CTypeKind::Record { .. }
             | CTypeKind::Enum(_)
             | CTypeKind::Pointer(..)
+            | CTypeKind::BlockPointer(_)
             | CTypeKind::Array { .. }
             | CTypeKind::Function { .. }
             | CTypeKind::Typedef { .. }

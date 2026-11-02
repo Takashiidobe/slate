@@ -2130,7 +2130,8 @@ impl Checker<'_> {
         match declarator {
             Declarator::Grouped(inner)
             | Declarator::Attributed { inner, .. }
-            | Declarator::Pointer { inner, .. } => self.declarator(inner),
+            | Declarator::Pointer { inner, .. }
+            | Declarator::BlockPointer { inner, .. } => self.declarator(inner),
             Declarator::Array { inner, size, .. } => {
                 self.declarator(inner);
                 if let ArraySize::Expression(size) = size {

@@ -1149,6 +1149,7 @@ fn declarator_spelling(base: String, declarator: &Declarator) -> String {
             declarator_spelling(base, inner)
         }
         Declarator::Pointer { inner, .. } => declarator_spelling(format!("{base} *"), inner),
+        Declarator::BlockPointer { inner, .. } => declarator_spelling(format!("{base} ^"), inner),
         Declarator::Array { inner, size, .. } => {
             let (base, core) = pointer_prefix_spelling(base, inner);
             declarator_spelling(format!("{base}[{}]", array_size(size)), core)
@@ -1243,6 +1244,7 @@ fn declarator_identifier(declarator: &Declarator) -> String {
         Declarator::Grouped(inner)
         | Declarator::Attributed { inner, .. }
         | Declarator::Pointer { inner, .. }
+        | Declarator::BlockPointer { inner, .. }
         | Declarator::Array { inner, .. }
         | Declarator::Function { inner, .. } => declarator_identifier(inner),
     }

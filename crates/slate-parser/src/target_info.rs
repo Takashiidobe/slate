@@ -711,6 +711,9 @@ impl TargetInfo {
                 ScalarKey::Float(format)
             }
             Type::Pointer { space, .. } => return Ok(self.pointer_storage(space)),
+            Type::BlockPointer { .. } => {
+                return Ok(self.pointer_storage(crate::ir::PointerSpace::Default));
+            }
             Type::VaList => return Ok(self.va_list_storage()),
             Type::Complex(_)
             | Type::Vector { .. }

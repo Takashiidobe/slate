@@ -310,7 +310,9 @@ fn declarator_indirects(declarator: &Declarator) -> bool {
         Declarator::Grouped(inner)
         | Declarator::Attributed { inner, .. }
         | Declarator::Array { inner, .. } => declarator_indirects(inner),
-        Declarator::Pointer { .. } | Declarator::Function { .. } => true,
+        Declarator::Pointer { .. }
+        | Declarator::BlockPointer { .. }
+        | Declarator::Function { .. } => true,
         Declarator::Abstract | Declarator::Name(_) => false,
     }
 }
@@ -419,6 +421,9 @@ fn check_declarator(
             check_declarator(inner, context, provenance, loc, errors);
         }
         Declarator::Pointer {
+            inner, attributes, ..
+        }
+        | Declarator::BlockPointer {
             inner, attributes, ..
         } => {
             check_attributes(attributes, errors);
@@ -1472,7 +1477,7 @@ fn is_register_variable_type(
         declarator = inner;
     }
     match declarator {
-        Declarator::Pointer { .. } => true,
+        Declarator::Pointer { .. } | Declarator::BlockPointer { .. } => true,
         Declarator::Array { .. } | Declarator::Function { .. } => false,
         Declarator::Name(_) | Declarator::Abstract => is_register_scalar_type(&specifiers.ty, unit),
         Declarator::Grouped(_) | Declarator::Attributed { .. } => unreachable!(),

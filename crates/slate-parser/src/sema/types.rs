@@ -2681,6 +2681,16 @@ impl TypeResolver {
                 let q = self.qualify(pointer, qualifiers)?;
                 self.derive(inner, q, innermost)
             }
+            Declarator::BlockPointer {
+                inner,
+                qualifiers,
+                attributes,
+            } => {
+                let q = self.apply_convention(q, attributes);
+                let pointer = self.ctypes.block_pointer(q);
+                let q = self.qualify(pointer, qualifiers)?;
+                self.derive(inner, q, innermost)
+            }
             Declarator::Array { .. } => {
                 let mut extents = Vec::new();
                 let mut core = declarator;
@@ -2834,14 +2844,26 @@ impl TypeResolver {
         mut core: &'d Declarator,
         mut q: QualType,
     ) -> Result<(&'d Declarator, QualType), ResolveError> {
-        while let Declarator::Pointer {
-            inner,
-            qualifiers,
-            attributes,
-        } = core
-        {
+        loop {
+            let (inner, qualifiers, attributes, is_block) = match core {
+                Declarator::Pointer {
+                    inner,
+                    qualifiers,
+                    attributes,
+                } => (inner, qualifiers, attributes, false),
+                Declarator::BlockPointer {
+                    inner,
+                    qualifiers,
+                    attributes,
+                } => (inner, qualifiers, attributes, true),
+                _ => break,
+            };
             q = self.apply_convention(q, attributes);
-            let pointer = self.ctypes.pointer(q);
+            let pointer = if is_block {
+                self.ctypes.block_pointer(q)
+            } else {
+                self.ctypes.pointer(q)
+            };
             q = self.qualify(pointer, qualifiers)?;
             core = inner;
         }
@@ -3839,6 +3861,9 @@ impl TypeResolver {
             Type::Pointer { space, .. } => {
                 Ok(promote(self.dialect.target().pointer_storage(space)))
             }
+            Type::BlockPointer { .. } => Ok(promote(
+                self.dialect.target().pointer_storage(PointerSpace::Default),
+            )),
             Type::Array {
                 element,
                 length: Some(length),
@@ -4604,6 +4629,7 @@ fn has_function_declarator(declarator: &Declarator) -> bool {
         Declarator::Grouped(inner)
         | Declarator::Attributed { inner, .. }
         | Declarator::Pointer { inner, .. }
+        | Declarator::BlockPointer { inner, .. }
         | Declarator::Array { inner, .. } => has_function_declarator(inner),
     }
 }

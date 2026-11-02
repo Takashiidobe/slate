@@ -812,6 +812,7 @@ impl<'a> AbiClassifier<'a> {
             | Type::Imaginary(_)
             | Type::FixedPoint(_)
             | Type::Pointer { .. }
+            | Type::BlockPointer { .. }
             | Type::VaList
             | Type::Sizeless(_) => Ok(AbiPass::Scalar),
             Type::Complex(component) => self.complex_pass(*component, result, convention),

@@ -150,6 +150,7 @@ pub struct SourceGraphs {
     pub trigraphs: Option<bool>,
     pub digraphs: Option<bool>,
     pub dollars: Option<bool>,
+    pub blocks: Option<bool>,
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
