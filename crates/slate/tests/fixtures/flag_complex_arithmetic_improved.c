@@ -291,7 +291,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: #[repr(C, align(16))]
-// I686-UNKNOWN-LINUX-GNU-NEXT: #[repr(C, align(16))]
+// I686-UNKNOWN-LINUX-GNU-NEXT: #[repr(C, align(4))]
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: #[derive(Clone, Copy)]
 // I686-UNKNOWN-LINUX-GNU-NEXT: #[derive(Clone, Copy)]
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: struct LongDouble([u8; 10]);

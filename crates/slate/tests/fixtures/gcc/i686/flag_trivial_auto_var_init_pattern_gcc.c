@@ -115,7 +115,7 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[repr(C, align(16))]
+// CHECK-NEXT: #[repr(C, align(4))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct LongDouble([u8; 10]);
 // CHECK-EMPTY:

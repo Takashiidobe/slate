@@ -7,11 +7,10 @@ use crate::function_identity::{CallBinding, FunctionIdentity};
 
 pub(crate) const LONG_DOUBLE_TY: &str = "LongDouble";
 
-// x86-64 SysV long double is the 10-byte x87 payload in a 16-byte slot.
-pub(crate) fn long_double_prelude(vis: Visibility) -> Vec<Item> {
+pub(crate) fn long_double_prelude(vis: Visibility, align: u32) -> Vec<Item> {
     let mut items = vec![Item::Struct(StructDef {
         attrs: vec![
-            RustAttr::Repr(vec![Repr::C, Repr::Align(16)]),
+            RustAttr::Repr(vec![Repr::C, Repr::Align(align)]),
             RustAttr::Derive(vec![Derive::Clone, Derive::Copy]),
         ],
         vis,

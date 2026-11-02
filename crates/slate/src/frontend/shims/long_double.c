@@ -7,7 +7,7 @@
 
 typedef struct {
   unsigned char bytes[10];
-} __attribute__((aligned(16))) __slate_f80;
+} __attribute__((aligned(__alignof__(long double)))) __slate_f80;
 
 static long double __slate_f80_load(__slate_f80 value) {
   long double out = 0.0L;
@@ -24,7 +24,7 @@ static __slate_f80 __slate_f80_store(long double value) {
 typedef struct {
   __slate_f80 re;
   __slate_f80 im;
-} __attribute__((aligned(16))) __slate_cf80;
+} __attribute__((aligned(__alignof__(long double)))) __slate_cf80;
 
 static long double _Complex __slate_cf80_load(__slate_cf80 value) {
   return CMPLXL(__slate_f80_load(value.re), __slate_f80_load(value.im));

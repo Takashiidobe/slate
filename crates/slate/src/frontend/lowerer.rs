@@ -1010,7 +1010,15 @@ impl<'m> ModuleLowerer<'m> {
         if dependencies.long_double {
             items.splice(
                 0..0,
-                long_double::long_double_prelude(rust::Visibility::Private),
+                long_double::long_double_prelude(
+                    rust::Visibility::Private,
+                    tables
+                        .target
+                        .storage_of(ir::Type::Numeric(ir::NumericType::Float(
+                            ir::FloatType::F80,
+                        )))
+                        .map_or(16, |layout| layout.alignment_bytes),
+                ),
             );
             externs.extend(
                 long_double::f80_shim_decls()

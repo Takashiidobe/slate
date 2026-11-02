@@ -141,7 +141,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // I686-UNKNOWN-LINUX-GNU-NEXT: }
 // I686-UNKNOWN-LINUX-GNU-EMPTY:
-// I686-UNKNOWN-LINUX-GNU-NEXT: #[repr(C, align(16))]
+// I686-UNKNOWN-LINUX-GNU-NEXT: #[repr(C, align(4))]
 // I686-UNKNOWN-LINUX-GNU-NEXT: #[derive(Clone, Copy)]
 // I686-UNKNOWN-LINUX-GNU-NEXT: struct LongDouble([u8; 10]);
 // I686-UNKNOWN-LINUX-GNU-EMPTY:
