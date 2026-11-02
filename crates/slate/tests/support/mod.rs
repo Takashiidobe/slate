@@ -293,6 +293,18 @@ fn support_crate_path(name: &str, project: &Path) -> Result<PathBuf, String> {
         write_if_changed(dest.join("build.rs"), &contents)
             .map_err(|e| format!("write {name} build script: {e}"))?;
     }
+    let c_dir = source.join("c");
+    if c_dir.is_dir() {
+        for entry in
+            std::fs::read_dir(&c_dir).map_err(|e| format!("read {}: {e}", c_dir.display()))?
+        {
+            let path = entry.map_err(|e| format!("read {name} c dir: {e}"))?.path();
+            let contents =
+                std::fs::read(&path).map_err(|e| format!("read {}: {e}", path.display()))?;
+            write_if_changed(dest.join("c").join(path.file_name().unwrap()), &contents)
+                .map_err(|e| format!("write {name} c source: {e}"))?;
+        }
+    }
     Ok(dest)
 }
 
@@ -315,6 +327,7 @@ aligned = {{ path = "{}" }}
 bitint = {{ path = "{}" }}
 num-complex = {{ path = "{}", default-features = false }}
 bitfields = {{ path = "{}" }}
+slate-blocks = {{ path = "{}" }}
 
 [build-dependencies]
 cc = "1"
@@ -332,7 +345,8 @@ codegen-units = 256
         support_crate_path("aligned", project)?.display(),
         support_crate_path("bitint", project)?.display(),
         support_crate_path("num-complex", project)?.display(),
-        bitfields_path().display()
+        bitfields_path().display(),
+        support_crate_path("slate-blocks", project)?.display()
     ))
 }
 
@@ -444,19 +458,41 @@ pub fn compile_c_with_args_for_target(
             .map(Path::new)
             .filter(|argument| argument.is_file()),
     );
+    let blocks = extra_args
+        .iter()
+        .any(|argument| argument == "-fblocks")
+        .then(blocks_runtime_sources)
+        .unwrap_or_default();
+    inputs.extend(blocks.iter().map(PathBuf::as_path));
     compile_c_cached(&inputs, out, &cache_key, "C compile failed", |temporary| {
-        Command::new(&cc_bin)
+        let mut command = Command::new(&cc_bin);
+        if !blocks.is_empty() {
+            command.arg(format!("-I{}", blocks_runtime_dir().display()));
+        }
+        command
             .args(["-O0", "-std=c23"])
             .args(&cc_extra_args)
             .args(extra_args)
             .arg("-o")
             .arg(temporary)
             .arg(src)
+            .args(&blocks)
             .arg("-lm")
             .arg("-latomic")
             .output()
             .map_err(|e| format!("spawn {cc_bin}: {e}"))
     })
+}
+
+fn blocks_runtime_dir() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/slate-blocks/c")
+}
+
+fn blocks_runtime_sources() -> Vec<PathBuf> {
+    ["runtime.c", "data.c"]
+        .into_iter()
+        .map(|name| blocks_runtime_dir().join(name))
+        .collect()
 }
 
 pub fn msvc_wine_root() -> Option<PathBuf> {
