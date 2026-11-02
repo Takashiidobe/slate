@@ -24,6 +24,7 @@ pub struct Module {
     pub macros: MacroInvocations,
     pub macro_rejections: HashMap<MacroExpansionId, &'static str>,
     pub macro_hidden_arguments: HashMap<MacroExpansionId, Vec<BindingId>>,
+    pub zero_init_padding_bits: crate::compiler_options::ZeroInitPaddingBits,
 }
 
 #[derive(Debug, Clone)]
@@ -378,6 +379,7 @@ impl Module {
             macros: MacroInvocations::default(),
             macro_rejections: HashMap::new(),
             macro_hidden_arguments: HashMap::new(),
+            zero_init_padding_bits: crate::compiler_options::ZeroInitPaddingBits::Standard,
         }
     }
 

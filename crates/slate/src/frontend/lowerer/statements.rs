@@ -125,7 +125,7 @@ impl FunctionLowerer<'_, '_> {
                                 value: ValueKind::Aggregate { members, .. },
                                 ..
                             },
-                    }) if self.zeroes_padding(variable)
+                    }) if self.zeroes_variable_padding(variable)
                         && !matches!(self.tables.resolve_type(ty), ir::Type::Vector { .. }) =>
                     {
                         Some(members)
@@ -213,7 +213,7 @@ impl FunctionLowerer<'_, '_> {
                     self.after_declaration = Some(self.lower_assignment(&place, value)?);
                 } else if let Some(fill) = in_place_fill {
                     self.after_declaration = Some(fill);
-                } else if self.zeroes_padding(variable)
+                } else if self.zeroes_variable_padding(variable)
                     && let Some(clear) =
                         self.clear_padding_at(self.local_bytes(variable.id), &variable.ty)
                 {

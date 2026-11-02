@@ -628,6 +628,39 @@ impl FunctionLowerer<'_, '_> {
             format!("__slate_compound_{index}")
         };
         let ty = self.lower_type(&initializer.ty)?;
+        if !matches!(storage, ir::StorageDuration::Static)
+            && let ValueKind::Aggregate { members, .. } = &initializer.node.value
+            && self.zeroes_padding(&initializer.ty)
+            && !matches!(
+                self.tables.resolve_type(&initializer.ty),
+                ir::Type::Vector { .. }
+            )
+        {
+            self.hoisted.push(Stmt::Let {
+                name: name.clone(),
+                mutable: true,
+                ty: Some(ty),
+                init: Some(zeroed()),
+            });
+            let place = Expr::Var(name.as_str().into());
+            let mut stmts = Vec::new();
+            self.fill_aggregate(&initializer.ty, members, &place, true, &mut stmts)?;
+            if let Some(clear) =
+                self.clear_padding_at(super::auto_init::bytes_of(place.clone()), &initializer.ty)
+            {
+                stmts.push(Stmt::Expr(clear));
+            }
+            return Ok(Expr::Unary {
+                op: rust::UnaryOp::Deref,
+                expr: Box::new(Expr::Block(Box::new(rust::Block {
+                    stmts,
+                    tail: Some(Box::new(Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(place),
+                    })),
+                }))),
+            });
+        }
         let init = self.lower_value(initializer)?;
         if matches!(storage, ir::StorageDuration::Static) {
             let emitted =

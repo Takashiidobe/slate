@@ -83,6 +83,7 @@ struct Tables<'m> {
     over_aligned: HashMap<BindingId, AlignWrapper>,
     flexible_globals: HashMap<BindingId, String>,
     target: &'m TargetInfo,
+    zero_init_padding_bits: slate_parser::compiler_options::ZeroInitPaddingBits,
     rust_layout: TargetInfo,
     metadata: &'m ir::Metadata,
     comments: &'m ir::Comments,
@@ -649,6 +650,7 @@ impl<'m> ModuleLowerer<'m> {
             over_aligned: HashMap::new(),
             flexible_globals: HashMap::new(),
             target: &module.target,
+            zero_init_padding_bits: module.zero_init_padding_bits,
             rust_layout: TargetInfo::for_triple(&module.target.triple)
                 .unwrap_or_else(|_| module.target.clone()),
             metadata: &module.metadata,

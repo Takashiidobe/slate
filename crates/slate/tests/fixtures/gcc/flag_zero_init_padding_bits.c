@@ -42,6 +42,12 @@ static void inspect(void) {
   for (unsigned i = 0; i < sizeof ap; i++)
     printf("%02x", abytes[i]);
   printf("\n");
+  struct nested *lit = &(struct nested){1, {.c = 4}, {{5, 6}, {7, 8}}};
+  unsigned char lbytes[sizeof *lit];
+  memcpy(lbytes, lit, sizeof *lit);
+  for (unsigned i = 0; i < sizeof *lit; i++)
+    printf("%02x", lbytes[i]);
+  printf("\n");
   struct nested n = {1, {.c = 4}, {{5, 6}, {7, 8}}};
   unsigned char nbytes[sizeof n];
   memcpy(nbytes, &n, sizeof n);
@@ -110,6 +116,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn inspect() {
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: nested = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut u: small_first = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     {
 // CHECK-NEXT:         u.c = 1i8;
@@ -190,6 +197,44 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
+// CHECK-NEXT:     let lit: *mut nested = unsafe {
+// CHECK-NEXT:         std::ptr::addr_of_mut!(*{
+// CHECK-NEXT:             [[SLATE_COMPOUND_0]].tag = 1i8;
+// CHECK-NEXT:             [[SLATE_COMPOUND_0]].u.c = 4i8;
+// CHECK-NEXT:             [[SLATE_COMPOUND_0]].rows[0].c = 5i8;
+// CHECK-NEXT:             [[SLATE_COMPOUND_0]].rows[0].i = 6i32;
+// CHECK-NEXT:             [[SLATE_COMPOUND_0]].rows[1].c = 7i8;
+// CHECK-NEXT:             [[SLATE_COMPOUND_0]].rows[1].i = 8i32;
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_3:__t[0-9]+]]: *mut u8 =
+// CHECK-NEXT:                     (std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]]) as *mut _) as *mut u8;
+// CHECK-NEXT:                 [[T_3]].add(1usize).write_bytes(0u8, 7usize);
+// CHECK-NEXT:                 [[T_3]].add(17usize).write_bytes(0u8, 3usize);
+// CHECK-NEXT:                 [[T_3]].add(25usize).write_bytes(0u8, 3usize);
+// CHECK-NEXT:             };
+// CHECK-NEXT:             std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:         })
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut lbytes: __SlateAlign16<[u8; 32]> = __SlateAlign16([0u8; 32]);
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:             lit as *const u8,
+// CHECK-NEXT:             lbytes.0.as_mut_ptr() as *mut u8,
+// CHECK-NEXT:             std::mem::size_of::<nested>(),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut i: u32 = 0;
+// CHECK-NEXT:         while (i as u64) < (std::mem::size_of::<nested>() as u64) {
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 slate_support::printf(c"%02x".as_ptr(), (lbytes.0[i as usize] as u32) as i32)
+// CHECK-NEXT:             };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             i = i.wrapping_add(1);
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     println!("");
 // CHECK-NEXT:     let mut n: nested = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     {
 // CHECK-NEXT:         n.tag = 1i8;
@@ -199,10 +244,10 @@ int main(void) {
 // CHECK-NEXT:         n.rows[1].c = 7i8;
 // CHECK-NEXT:         n.rows[1].i = 8i32;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             let [[T_3:__t[0-9]+]]: *mut u8 = (std::ptr::addr_of_mut!(n) as *mut _) as *mut u8;
-// CHECK-NEXT:             [[T_3]].add(1usize).write_bytes(0u8, 7usize);
-// CHECK-NEXT:             [[T_3]].add(17usize).write_bytes(0u8, 3usize);
-// CHECK-NEXT:             [[T_3]].add(25usize).write_bytes(0u8, 3usize);
+// CHECK-NEXT:             let [[T_4:__t[0-9]+]]: *mut u8 = (std::ptr::addr_of_mut!(n) as *mut _) as *mut u8;
+// CHECK-NEXT:             [[T_4]].add(1usize).write_bytes(0u8, 7usize);
+// CHECK-NEXT:             [[T_4]].add(17usize).write_bytes(0u8, 3usize);
+// CHECK-NEXT:             [[T_4]].add(25usize).write_bytes(0u8, 3usize);
 // CHECK-NEXT:         };
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut nbytes: __SlateAlign16<[u8; 32]> = __SlateAlign16([0u8; 32]);

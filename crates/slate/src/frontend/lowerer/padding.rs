@@ -71,12 +71,18 @@ impl FunctionLowerer<'_, '_> {
             .ok_or_else(|| unsupported_value(value))
     }
 
-    pub(super) fn zeroes_padding(&self, variable: &ir::Variable) -> bool {
-        match variable.zero_padding {
+    pub(super) fn zeroes_variable_padding(&self, variable: &ir::Variable) -> bool {
+        variable.storage == ir::StorageDuration::Automatic
+            && variable.initializer.is_some()
+            && self.zeroes_padding(&variable.ty)
+    }
+
+    pub(super) fn zeroes_padding(&self, ty: &ir::Type) -> bool {
+        match self.tables.zero_init_padding_bits {
             ZeroInitPaddingBits::Standard => false,
-            ZeroInitPaddingBits::Unions => self.tables.is_union(&variable.ty),
+            ZeroInitPaddingBits::Unions => self.tables.is_union(ty),
             ZeroInitPaddingBits::All => matches!(
-                self.tables.resolve_type(&variable.ty),
+                self.tables.resolve_type(ty),
                 ir::Type::Defined(_) | ir::Type::Array { .. }
             ),
         }

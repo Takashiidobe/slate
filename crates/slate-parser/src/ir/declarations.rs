@@ -144,7 +144,6 @@ pub struct Variable {
     pub register: Option<super::AsmRegister>,
     pub initializer: Option<Value>,
     pub auto_init: Option<AutoInit>,
-    pub zero_padding: crate::compiler_options::ZeroInitPaddingBits,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -608,11 +608,17 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn local_bytes(&self, id: BindingId) -> Expr {
+        bytes_of(self.lower_binding(id))
+    }
+}
+
+pub(super) fn bytes_of(place: Expr) -> Expr {
+    {
         Expr::Cast {
             expr: Box::new(Expr::Cast {
                 expr: Box::new(Expr::AddrOf {
                     mutable: true,
-                    expr: Box::new(self.lower_binding(id)),
+                    expr: Box::new(place),
                 }),
                 ty: rust::Type::Custom("*mut _".into()),
             }),
