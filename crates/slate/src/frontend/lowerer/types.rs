@@ -900,10 +900,10 @@ impl FunctionLowerer<'_, '_> {
         let definition = self.tables.types.get(&id)?;
         definition.provenance.system_header?;
         let name = definition.value.name.as_deref()?;
-        SUPPORT_RECORDS
+        rust::CLIB_RECORD_TYPES
             .iter()
-            .find(|(c_name, _)| *c_name == name)
-            .map(|(_, path)| *path)
+            .find(|clib| clib.c_name() == name)
+            .map(|clib| clib.path())
     }
 
     fn named_prim(&mut self, c: QualType, resolved: Prim) -> Prim {
@@ -1187,8 +1187,6 @@ const NAMED_TYPEDEFS: &[&str] = &[
     "nlink_t",
     "socklen_t",
 ];
-
-const SUPPORT_RECORDS: &[(&str, &str)] = &[("pthread_attr_t", "slate_support::pthread_attr_t")];
 
 fn known_c_name(types: &CTypes, mut c: QualType) -> Option<&'static str> {
     loop {

@@ -310,7 +310,7 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_0]]: *mut __SlateRecord_thread_shared_types_h_112,
 // CHECK-NEXT:         [[ARG_1]]: Option<unsafe extern "C-unwind" fn()>,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     fn timespec_get([[ARG_0]]: *mut timespec, [[ARG_1]]: i32) -> i32;
+// CHECK-NEXT:     fn timespec_get([[ARG_0]]: *mut slate_support::timespec, [[ARG_1]]: i32) -> i32;
 // CHECK-NEXT:     fn thrd_create(
 // CHECK-NEXT:         [[ARG_0]]: *mut u64,
 // CHECK-NEXT:         [[ARG_1]]: Option<unsafe extern "C-unwind" fn(*mut ()) -> i32>,
@@ -541,12 +541,6 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct timespec {
-// CHECK-NEXT:     tv_sec: i64,
-// CHECK-NEXT:     tv_nsec: i64,
-// CHECK-NEXT: }
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_threads_h_66 {
 // CHECK-NEXT:     __size: [i8; 40],
 // CHECK-NEXT:     __align: i64,
@@ -685,7 +679,10 @@ int main(void) {
 // CHECK-NEXT:     let mut converted32: u32 = 0;
 // CHECK-NEXT:     let mut multibyte16: __SlateAlign16<[i8; 16]> = __SlateAlign16([0i8; 16]);
 // CHECK-NEXT:     let mut multibyte32: __SlateAlign16<[i8; 16]> = __SlateAlign16([0i8; 16]);
-// CHECK-NEXT:     let mut current_time: timespec = timespec { tv_sec: 0, tv_nsec: 0 };
+// CHECK-NEXT:     let mut current_time: slate_support::timespec = slate_support::timespec {
+// CHECK-NEXT:         tv_sec: 0,
+// CHECK-NEXT:         tv_nsec: 0,
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut thread: u64 = 0;
 // CHECK-NEXT:     let mut mutex: __SlateRecord_threads_h_66 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut condition: __SlateRecord_threads_h_72 = unsafe { std::mem::zeroed() };

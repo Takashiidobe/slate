@@ -14,8 +14,8 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut value: timespec = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: timespec = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut value: slate_support::timespec = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: slate_support::timespec = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].tv_sec = 0i64;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };

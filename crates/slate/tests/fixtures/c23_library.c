@@ -177,7 +177,7 @@ int main(void) {
 // CHECK-NEXT:     fn gmtime_r([[ARG_0]]: *const i64, [[ARG_1]]: *mut tm) -> *mut tm;
 // CHECK-NEXT:     fn localtime_r([[ARG_0]]: *const i64, [[ARG_1]]: *mut tm) -> *mut tm;
 // CHECK-NEXT:     fn timegm([[ARG_0]]: *mut tm) -> i64;
-// CHECK-NEXT:     fn timespec_getres([[ARG_0]]: *mut timespec, [[ARG_1]]: i32) -> i32;
+// CHECK-NEXT:     fn timespec_getres([[ARG_0]]: *mut slate_support::timespec, [[ARG_1]]: i32) -> i32;
 // CHECK-NEXT:     fn mbrtoc8(
 // CHECK-NEXT:         [[ARG_0]]: *mut u8,
 // CHECK-NEXT:         [[ARG_1]]: *const i8,
@@ -392,12 +392,6 @@ int main(void) {
 // CHECK-NEXT:     tm_isdst: i32,
 // CHECK-NEXT:     __tm_gmtoff: i64,
 // CHECK-NEXT:     __tm_zone: *const i8,
-// CHECK-NEXT: }
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct timespec {
-// CHECK-NEXT:     tv_sec: i64,
-// CHECK-NEXT:     tv_nsec: i64,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
@@ -656,8 +650,8 @@ int main(void) {
 // CHECK-NEXT:         let mut [[T_1]]: tm = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut resolution: timespec = {
-// CHECK-NEXT:         let mut [[T_2]]: timespec = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut resolution: slate_support::timespec = {
+// CHECK-NEXT:         let mut [[T_2]]: slate_support::timespec = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut month: __SlateAlign16<[i8; 32]> = __SlateAlign16({
