@@ -367,6 +367,7 @@ struct ParsedCompilerArgs {
     undef_predefines: bool,
     gnuc_version: Option<[u32; 3]>,
     long_double: Option<LongDoubleFormat>,
+    x87_long_double_bytes: Option<u64>,
     asm_dialect: Option<AsmDialect>,
     optimization: Option<Optimization>,
     isa: IsaRequest,
@@ -636,6 +637,7 @@ enum Opt {
     MsCompatibility,
     AsmBlocks,
     LongDouble,
+    X87LongDoubleBytes,
     AsmDialect,
     IsaFeature,
     Arch,
@@ -793,6 +795,7 @@ impl std::fmt::Display for Opt {
             Self::MsCompatibility => "ms-compatibility",
             Self::AsmBlocks => "asm-blocks",
             Self::LongDouble => "long-double",
+            Self::X87LongDoubleBytes => "m<96|128>bit-long-double",
             Self::AsmDialect => "masm",
             Self::IsaFeature => "m<feature>",
             Self::Arch => "march",
@@ -961,6 +964,7 @@ impl Opt {
             | Self::PermittedFltEvalMethods
             | Self::StackProtectorExplicit
             | Self::FpRetIn387
+            | Self::X87LongDoubleBytes
             | Self::Permissive => &[Gcc],
             Self::StackAlignment
             | Self::ClangX87
@@ -1599,6 +1603,7 @@ impl CompilerArgParser {
         let codegen = codegen_options(&raw, &target);
         let layout = LayoutOptions {
             long_double: raw.long_double,
+            x87_long_double_bytes: raw.x87_long_double_bytes,
             preferred_stack_alignment: raw
                 .preferred_stack_boundary
                 .map(|exponent| 1u32 << exponent)
@@ -2513,6 +2518,9 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 _ => return Err(invalid(argument, "unknown optimization level")),
             });
             parsed.set_fast_optimization(level == "fast");
+        } else if let Some(bytes) = x87_long_double_bytes_flag(argument) {
+            parsed.saw(Opt::X87LongDoubleBytes, argument);
+            parsed.x87_long_double_bytes = Some(bytes);
         } else if let Some(format) = long_double_flag(argument) {
             parsed.saw(Opt::LongDouble, argument);
             parsed.long_double = Some(format);
@@ -2715,6 +2723,14 @@ fn thumb_flag(argument: &str) -> Option<bool> {
     match argument {
         "-mthumb" | "--mthumb" => Some(true),
         "-marm" | "--marm" => Some(false),
+        _ => None,
+    }
+}
+
+fn x87_long_double_bytes_flag(argument: &str) -> Option<u64> {
+    match argument {
+        "-m96bit-long-double" => Some(12),
+        "-m128bit-long-double" => Some(16),
         _ => None,
     }
 }
@@ -3111,7 +3127,7 @@ fn long_double_target_rule<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompile
     Rule::validate(
         "target long double options",
         move |args: &ParsedCompilerArgs| {
-            if args.long_double.is_some()
+            if (args.long_double.is_some() || args.x87_long_double_bytes.is_some())
                 && matches!(target.family, TargetFamily::AArch64 | TargetFamily::Arm32)
             {
                 Err(format!(

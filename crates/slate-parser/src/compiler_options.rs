@@ -493,6 +493,7 @@ impl MathOptions {
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub struct LayoutOptions {
     pub long_double: Option<LongDoubleFormat>,
+    pub x87_long_double_bytes: Option<u64>,
     pub preferred_stack_alignment: Option<u32>,
     pub char_signed: Option<bool>,
     pub short_wchar: Option<bool>,
@@ -596,6 +597,9 @@ impl CompilerOptions {
     pub fn effective_target(&self, mut target: TargetInfo) -> TargetInfo {
         if let Some(format) = self.layout.long_double {
             target = target.with_long_double(format);
+        }
+        if let Some(bytes) = self.layout.x87_long_double_bytes {
+            target = target.with_x87_long_double_bytes(bytes);
         }
         if self.layout.align_double {
             target = target.with_align_double(self.layout.align_long_double);

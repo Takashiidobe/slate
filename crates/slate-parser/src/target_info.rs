@@ -734,6 +734,15 @@ impl TargetInfo {
         self
     }
 
+    pub fn with_x87_long_double_bytes(mut self, bytes: u64) -> Self {
+        if self.long_double == LongDoubleFormat::X87 {
+            let alignment = if bytes == 16 { 16 } else { 4 };
+            self.scalars
+                .set(ScalarKey::Float(FloatType::F80), bytes, alignment);
+        }
+        self
+    }
+
     pub fn with_align_double(mut self, long_double: bool) -> Self {
         let mut keys = vec![
             ScalarKey::Integer {
