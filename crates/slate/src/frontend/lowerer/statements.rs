@@ -117,10 +117,27 @@ impl FunctionLowerer<'_, '_> {
                 if alignment.is_some() {
                     self.aligned_locals.insert(variable.id);
                 }
+                let in_place_members = match variable.initializer.as_ref() {
+                    Some(ir::Value {
+                        ty,
+                        node:
+                            Span {
+                                value: ValueKind::Aggregate { members, .. },
+                                ..
+                            },
+                    }) if alignment.is_none()
+                        && self.zeroes_padding(variable)
+                        && !matches!(self.tables.resolve_type(ty), ir::Type::Vector { .. }) =>
+                    {
+                        Some(members)
+                    }
+                    _ => None,
+                };
                 let outer = self.declaring.replace(Some((variable.id, false)));
                 let init = variable
                     .initializer
                     .as_ref()
+                    .filter(|_| in_place_members.is_none())
                     .map(|value| self.lower_value(value))
                     .transpose();
                 let self_referential = matches!(self.declaring.replace(outer), Some((_, true)));
@@ -171,6 +188,23 @@ impl FunctionLowerer<'_, '_> {
                     ),
                     None => (ty, init),
                 };
+                let in_place_fill = match in_place_members {
+                    Some(members) => {
+                        let base = self.lower_binding(variable.id);
+                        let mut stmts = Vec::new();
+                        self.fill_aggregate(&variable.ty, members, &base, true, &mut stmts)?;
+                        if let Some(clear) =
+                            self.clear_padding_at(self.local_bytes(variable.id), &variable.ty)
+                        {
+                            stmts.push(Stmt::Expr(clear));
+                        }
+                        Some(Stmt::Expr(Expr::Block(Box::new(rust::Block {
+                            stmts,
+                            tail: None,
+                        }))))
+                    }
+                    None => None,
+                };
                 if let Some(value) = self_initializer {
                     let place = ir::Place {
                         ty: variable.ty.clone(),
@@ -178,12 +212,11 @@ impl FunctionLowerer<'_, '_> {
                         access: variable.access,
                     };
                     self.after_declaration = Some(self.lower_assignment(&place, value)?);
+                } else if let Some(fill) = in_place_fill {
+                    self.after_declaration = Some(fill);
                 } else if self.zeroes_padding(variable)
-                    && let Some(clear) = self.clear_padding_at(
-                        self.local_bytes(variable.id),
-                        &variable.ty,
-                        initialized_union_member(variable),
-                    )
+                    && let Some(clear) =
+                        self.clear_padding_at(self.local_bytes(variable.id), &variable.ty)
                 {
                     self.after_declaration = Some(Stmt::Expr(clear));
                 } else if let Some(auto) = auto_init {
@@ -581,20 +614,5 @@ fn is_trivial_operand(value: &Expr) -> bool {
         Expr::Value(_) | Expr::Var(_) => true,
         Expr::Cast { expr, .. } | Expr::Unary { expr, .. } => is_trivial_operand(expr),
         _ => false,
-    }
-}
-
-fn initialized_union_member(variable: &ir::Variable) -> Option<usize> {
-    let ValueKind::Aggregate { members, .. } = &variable.initializer.as_ref()?.node.value else {
-        return None;
-    };
-    match members.as_slice() {
-        [
-            ir::AggregateMember {
-                target: ir::AggregateTarget::Field(index),
-                ..
-            },
-        ] => Some(*index),
-        _ => None,
     }
 }

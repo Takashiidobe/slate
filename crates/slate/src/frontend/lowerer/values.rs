@@ -1938,6 +1938,162 @@ impl FunctionLowerer<'_, '_> {
         })
     }
 
+    pub(super) fn fill_aggregate(
+        &mut self,
+        ty: &ir::Type,
+        members: &[ir::AggregateMember],
+        base: &Expr,
+        in_place: bool,
+        stmts: &mut Vec<Stmt>,
+    ) -> Result<()> {
+        let unsupported = || {
+            Failure::from(Construct::Value {
+                kind: "Aggregate".into(),
+                ir: ty.to_string(),
+            })
+        };
+        let fields = self.tables.record_fields(ty);
+        let resolved = self.tables.resolve_type(ty);
+        let field_name = |index: usize| {
+            fields
+                .and_then(|fields| fields.get(index))
+                .map(|field| field_name(field, index))
+                .ok_or_else(unsupported)
+        };
+        let erased: BTreeSet<usize> = match resolved {
+            ir::Type::Defined(id) => self
+                .dependencies
+                .erased_fields
+                .range((id.0, 0)..=(id.0, usize::MAX))
+                .map(|&(_, index)| index)
+                .collect(),
+            _ => BTreeSet::new(),
+        };
+        for member in members {
+            if let ir::AggregateTarget::Field(index) = member.target
+                && let Some(unit) = self.tables.bit_unit_of(ty, index)
+            {
+                let setter = Stmt::Expr(Expr::MethodCall {
+                    recv: Box::new(Expr::Field {
+                        base: Box::new(base.clone()),
+                        field: bit_unit_name(unit),
+                    }),
+                    method: format!("__set_{}", field_name(index)?),
+                    args: vec![self.lower_value(&member.value)?],
+                });
+                stmts.push(if self.tables.is_union(ty) {
+                    Stmt::Unsafe {
+                        body: rust::Block {
+                            stmts: vec![setter],
+                            tail: None,
+                        },
+                    }
+                } else {
+                    setter
+                });
+                continue;
+            }
+            if let ir::AggregateTarget::Field(index) = member.target
+                && erased.contains(&index)
+            {
+                let member_ty = self.lower_type(&member.value.ty)?;
+                stmts.push(Stmt::Unsafe {
+                    body: rust::Block {
+                        stmts: vec![Stmt::Expr(Expr::MethodCall {
+                            recv: Box::new(Expr::Cast {
+                                expr: Box::new(Expr::AddrOf {
+                                    mutable: true,
+                                    expr: Box::new(Expr::Field {
+                                        base: Box::new(base.clone()),
+                                        field: field_name(index)?,
+                                    }),
+                                }),
+                                ty: rust::Type::Ptr {
+                                    mutable: true,
+                                    inner: Box::new(member_ty),
+                                },
+                            }),
+                            method: "write_unaligned".into(),
+                            args: vec![self.lower_value(&member.value)?],
+                        })],
+                        tail: None,
+                    },
+                });
+                continue;
+            }
+            let place = match member.target {
+                ir::AggregateTarget::Field(index) => Expr::Field {
+                    base: Box::new(base.clone()),
+                    field: field_name(index)?,
+                },
+                ir::AggregateTarget::Index(index) => Expr::Index {
+                    base: Box::new(base.clone()),
+                    index: Box::new(Expr::Value(rust::RustValue::U128(index.into()))),
+                },
+                ir::AggregateTarget::Range { start, end } => {
+                    let element = self.next_temp();
+                    let index = self.next_temp();
+                    let position = || Expr::Var(index.as_str().into());
+                    stmts.extend([
+                        Stmt::Let {
+                            name: element.clone(),
+                            mutable: false,
+                            ty: None,
+                            init: Some(self.lower_value(&member.value)?),
+                        },
+                        Stmt::Let {
+                            name: index.clone(),
+                            mutable: true,
+                            ty: Some(rust::Type::Prim(Prim::Usize)),
+                            init: Some(Expr::Value(rust::RustValue::U128(start.into()))),
+                        },
+                        Stmt::While {
+                            label: None,
+                            cond: Expr::Binary {
+                                op: BinOp::Le,
+                                lhs: Box::new(position()),
+                                rhs: Box::new(Expr::Value(rust::RustValue::U128(end.into()))),
+                            },
+                            body: rust::Block {
+                                stmts: vec![
+                                    Stmt::Assign {
+                                        target: Expr::Index {
+                                            base: Box::new(base.clone()),
+                                            index: Box::new(position()),
+                                        },
+                                        value: Expr::Var(element.as_str().into()),
+                                    },
+                                    Stmt::CompoundAssign {
+                                        target: position(),
+                                        op: BinOp::Add,
+                                        value: Expr::Value(rust::RustValue::U128(1)),
+                                    },
+                                ],
+                                tail: None,
+                            },
+                        },
+                    ]);
+                    continue;
+                }
+            };
+            if in_place
+                && let ValueKind::Aggregate { members: inner, .. } = &member.value.node.value
+                && !matches!(
+                    self.tables.resolve_type(&member.value.ty),
+                    ir::Type::Vector { .. }
+                )
+            {
+                self.fill_aggregate(&member.value.ty, inner, &place, true, stmts)?;
+                continue;
+            }
+            stmts.push(Stmt::Assign {
+                target: place,
+                value: self.lower_value(&member.value)?,
+            });
+        }
+        Ok(())
+    }
+
     pub(super) fn lower_aggregate(
         &mut self,
         ty: &ir::Type,
@@ -2043,118 +2199,13 @@ impl FunctionLowerer<'_, '_> {
             ty: Some(lowered_ty),
             init: Some(zeroed()),
         }];
-        for member in members {
-            if let ir::AggregateTarget::Field(index) = member.target
-                && let Some(unit) = self.tables.bit_unit_of(ty, index)
-            {
-                let setter = Stmt::Expr(Expr::MethodCall {
-                    recv: Box::new(Expr::Field {
-                        base: Box::new(Expr::Var(target.as_str().into())),
-                        field: bit_unit_name(unit),
-                    }),
-                    method: format!("__set_{}", field_name(index)?),
-                    args: vec![self.lower_value(&member.value)?],
-                });
-                stmts.push(if self.tables.is_union(ty) {
-                    Stmt::Unsafe {
-                        body: rust::Block {
-                            stmts: vec![setter],
-                            tail: None,
-                        },
-                    }
-                } else {
-                    setter
-                });
-                continue;
-            }
-            if let ir::AggregateTarget::Field(index) = member.target
-                && erased.contains(&index)
-            {
-                let member_ty = self.lower_type(&member.value.ty)?;
-                stmts.push(Stmt::Unsafe {
-                    body: rust::Block {
-                        stmts: vec![Stmt::Expr(Expr::MethodCall {
-                            recv: Box::new(Expr::Cast {
-                                expr: Box::new(Expr::AddrOf {
-                                    mutable: true,
-                                    expr: Box::new(Expr::Field {
-                                        base: Box::new(Expr::Var(target.as_str().into())),
-                                        field: field_name(index)?,
-                                    }),
-                                }),
-                                ty: rust::Type::Ptr {
-                                    mutable: true,
-                                    inner: Box::new(member_ty),
-                                },
-                            }),
-                            method: "write_unaligned".into(),
-                            args: vec![self.lower_value(&member.value)?],
-                        })],
-                        tail: None,
-                    },
-                });
-                continue;
-            }
-            let place = match member.target {
-                ir::AggregateTarget::Field(index) => Expr::Field {
-                    base: Box::new(Expr::Var(target.as_str().into())),
-                    field: field_name(index)?,
-                },
-                ir::AggregateTarget::Index(index) => Expr::Index {
-                    base: Box::new(Expr::Var(target.as_str().into())),
-                    index: Box::new(Expr::Value(rust::RustValue::U128(index.into()))),
-                },
-                ir::AggregateTarget::Range { start, end } => {
-                    let element = self.next_temp();
-                    let index = self.next_temp();
-                    let position = || Expr::Var(index.as_str().into());
-                    stmts.extend([
-                        Stmt::Let {
-                            name: element.clone(),
-                            mutable: false,
-                            ty: None,
-                            init: Some(self.lower_value(&member.value)?),
-                        },
-                        Stmt::Let {
-                            name: index.clone(),
-                            mutable: true,
-                            ty: Some(rust::Type::Prim(Prim::Usize)),
-                            init: Some(Expr::Value(rust::RustValue::U128(start.into()))),
-                        },
-                        Stmt::While {
-                            label: None,
-                            cond: Expr::Binary {
-                                op: BinOp::Le,
-                                lhs: Box::new(position()),
-                                rhs: Box::new(Expr::Value(rust::RustValue::U128(end.into()))),
-                            },
-                            body: rust::Block {
-                                stmts: vec![
-                                    Stmt::Assign {
-                                        target: Expr::Index {
-                                            base: Box::new(Expr::Var(target.as_str().into())),
-                                            index: Box::new(position()),
-                                        },
-                                        value: Expr::Var(element.as_str().into()),
-                                    },
-                                    Stmt::CompoundAssign {
-                                        target: position(),
-                                        op: BinOp::Add,
-                                        value: Expr::Value(rust::RustValue::U128(1)),
-                                    },
-                                ],
-                                tail: None,
-                            },
-                        },
-                    ]);
-                    continue;
-                }
-            };
-            stmts.push(Stmt::Assign {
-                target: place,
-                value: self.lower_value(&member.value)?,
-            });
-        }
+        self.fill_aggregate(
+            ty,
+            members,
+            &Expr::Var(target.as_str().into()),
+            false,
+            &mut stmts,
+        )?;
         Ok(Expr::Block(Box::new(rust::Block {
             stmts,
             tail: Some(Box::new(Expr::Var(target.as_str().into()))),
