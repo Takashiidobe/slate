@@ -288,6 +288,7 @@ impl FunctionLowerer<'_, '_> {
         let tables = self.tables;
         let variable = &global.variable;
         let symbol = ir::SymbolAttributes {
+            asm_name: None,
             visibility: None,
             used: false,
             ..global.symbol.clone()

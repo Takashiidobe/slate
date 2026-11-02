@@ -724,9 +724,15 @@ impl<'m> ModuleLowerer<'m> {
                     .then_some(Attr::ThreadLocal)
                     .into_iter()
                     .collect();
+            let asm_name = global.symbol.asm_name.clone();
+            let linked: Vec<Attr> = thread_local
+                .iter()
+                .cloned()
+                .chain(asm_name.clone().map(Attr::LinkName))
+                .collect();
             match self.lowerer().lower_static(global) {
                 Ok((ty, Some(_))) if imported => self.externs.push(rust::ExternDecl::Static {
-                    attrs: thread_local,
+                    attrs: linked,
                     mutable: true,
                     name,
                     ty,
@@ -737,7 +743,10 @@ impl<'m> ModuleLowerer<'m> {
                         comments,
                         attrs: thread_local
                             .into_iter()
-                            .chain(exported.then_some(Attr::NoMangle))
+                            .chain(exported.then_some(match asm_name {
+                                Some(name) => Attr::ExportName(name),
+                                None => Attr::NoMangle,
+                            }))
                             .chain(
                                 global
                                     .symbol
@@ -753,7 +762,7 @@ impl<'m> ModuleLowerer<'m> {
                     });
                 }
                 Ok((ty, None)) => self.externs.push(rust::ExternDecl::Static {
-                    attrs: thread_local,
+                    attrs: linked,
                     mutable: true,
                     name,
                     ty,
