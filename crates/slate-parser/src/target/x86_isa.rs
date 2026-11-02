@@ -301,7 +301,6 @@ impl X86IsaRequest {
                     self.included(later, rules) && self.flags[later] == (feature, false)
                 });
             let replaced = !on
-                && rules == Rules::Clang
                 && (index + 1..self.flags.len()).any(|later| self.flags[later] == (feature, true));
             if cancelled || replaced {
                 continue;
