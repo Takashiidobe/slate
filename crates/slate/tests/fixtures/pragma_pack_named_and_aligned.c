@@ -71,11 +71,20 @@ int main(void) {
 // CHECK-NEXT:     a: i8,
 // CHECK-NEXT:     b: i32,
 // CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C, align(16))]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct PackedButAligned {
+// CHECK-NEXT:     a: std::mem::MaybeUninit<[u8; 1]>,
+// CHECK-NEXT:     b: std::mem::MaybeUninit<[u8; 4]>,
+// CHECK-NEXT:     c: std::mem::MaybeUninit<[u8; 1]>,
+// CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {} {}", std::mem::size_of::< IgnoredBadAlign > () as i32,
 // CHECK-NEXT:         std::mem::size_of::< NamedPushed > () as i32, std::mem::size_of::< AfterNamedPop
-// CHECK-NEXT:         > () as i32, std::mem::size_of::< AfterExtraPop > () as i32, 16i32, 16i32, 1i32
+// CHECK-NEXT:         > () as i32, std::mem::size_of::< AfterExtraPop > () as i32, std::mem::size_of::<
+// CHECK-NEXT:         PackedButAligned > () as i32, std::mem::align_of::< PackedButAligned > () as i32,
+// CHECK-NEXT:         1i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

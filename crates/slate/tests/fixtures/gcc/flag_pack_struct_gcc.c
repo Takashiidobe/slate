@@ -66,6 +66,13 @@ int main(void) {
 // CHECK-NEXT:     d: f64,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, align(16))]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct al16 {
+// CHECK-NEXT:     c: std::mem::MaybeUninit<[u8; 1]>,
+// CHECK-NEXT:     i: std::mem::MaybeUninit<[u8; 4]>,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union u {
@@ -106,8 +113,8 @@ int main(void) {
 // CHECK-NEXT:             std::mem::align_of::<p8>() as u64,
 // CHECK-NEXT:             std::mem::size_of::<popped>() as u64,
 // CHECK-NEXT:             std::mem::align_of::<popped>() as u64,
-// CHECK-NEXT:             16u64,
-// CHECK-NEXT:             16u64,
+// CHECK-NEXT:             std::mem::size_of::<al16>() as u64,
+// CHECK-NEXT:             std::mem::align_of::<al16>() as u64,
 // CHECK-NEXT:             std::mem::size_of::<u>() as u64,
 // CHECK-NEXT:             std::mem::align_of::<u>() as u64,
 // CHECK-NEXT:             std::mem::size_of::<bf>() as u64,

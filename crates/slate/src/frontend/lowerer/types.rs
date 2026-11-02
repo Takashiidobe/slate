@@ -389,6 +389,18 @@ impl FunctionLowerer<'_, '_> {
             };
         };
         let pack = self.record_pack(fields, layout);
+        let byte_layout = pack.is_some_and(|pack| {
+            fields
+                .iter()
+                .enumerate()
+                .filter(|(_, field)| field.bit_width.is_none())
+                .any(|(index, field)| {
+                    self.tables.storage_of(&field.ty).is_some_and(|(_, align)| {
+                        !layout.offsets[index].is_multiple_of(align.min(pack))
+                    })
+                })
+        });
+        let pack = pack.filter(|_| !byte_layout);
         let mut lowered = Vec::new();
         let owner = self.tables.types[&id].id;
         let mut pending = Vec::new();
@@ -427,8 +439,14 @@ impl FunctionLowerer<'_, '_> {
                 let ty = self
                     .lower_c_type(&field.ty, self.tables.c_types.nodes.get(&field.id).copied())
                     .map_err(|error| error.at(Site::of(field)))?;
-                let field_align = pack.map_or(field_align, |pack| field_align.min(pack));
-                let (ty, field_align) = if pack.is_some() && self.contains_raised_align(&field.ty) {
+                let field_align = if byte_layout {
+                    1
+                } else {
+                    pack.map_or(field_align, |pack| field_align.min(pack))
+                };
+                let (ty, field_align) = if byte_layout
+                    || (pack.is_some() && self.contains_raised_align(&field.ty))
+                {
                     self.dependencies.erased_fields.insert((id.0, index));
                     let (storage, storage_align) = self.tables.erased_storage(size, field_align);
                     (
