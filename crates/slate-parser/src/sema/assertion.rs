@@ -6,7 +6,7 @@ use crate::const_expr::{AssignOp, BinaryOp, UnaryOp};
 use crate::diagnostics::Warning;
 use crate::ir::{
     BindingId, BindingKind, FloatType, Linkage, NameResolution, Number, NumericType,
-    SymbolAttributes, Type, Value, ValueKind,
+    StorageDuration, SymbolAttributes, Type, Value, ValueKind,
 };
 use crate::target_info::TargetEnvironment;
 use crate::visit::{self, Visitor};
@@ -51,6 +51,7 @@ pub(super) fn validate(
         item: None,
         unpromoted_division: None,
         unpromoted_divisions: 0,
+        block_ranges: Vec::new(),
     };
     for (declaration, item) in unit.decls.iter().zip(items) {
         checker.item = Some(declaration.id);
@@ -129,6 +130,7 @@ struct Checker<'a> {
     item: Option<NodeId>,
     unpromoted_division: Option<(NodeId, Span<()>)>,
     unpromoted_divisions: usize,
+    block_ranges: Vec<std::ops::Range<u32>>,
 }
 
 #[derive(Default)]
@@ -176,6 +178,7 @@ enum Returns {
     Unknown,
     Void,
     Value(QualType),
+    Deduce(Option<QualType>),
 }
 
 impl Checker<'_> {
@@ -284,46 +287,7 @@ impl Checker<'_> {
             function.declarator.function_parameters(),
             Some(ParameterList::IdentifierList { .. })
         );
-        for parameter in function
-            .declarator
-            .function_parameters()
-            .map_or(&[][..], ParameterList::parameters)
-        {
-            self.parameter_rules(parameter);
-            self.specifier(&parameter.specifiers.ty);
-            self.declarator(&parameter.declarator);
-            let owner = self.types.owner.replace(parameter.derive(()));
-            let provisional = std::mem::replace(&mut self.types.provisional_extents, true);
-            self.tag(&parameter.specifiers.ty);
-            let resolved = self
-                .types
-                .resolve_parameter(&parameter.specifiers, &parameter.declarator);
-            self.types.provisional_extents = provisional;
-            self.types.owner = owner;
-            self.resolution(parameter, &resolved);
-            if let Ok(resolved) = resolved
-                && !self.types.ctypes.is_void(resolved)
-            {
-                let declared_array = parameter.declarator.array_parameter().unwrap_or_default();
-                let adjusted = self
-                    .types
-                    .adjusted_parameter(resolved, declared_array.qualifiers.into());
-                if self.types.is_incomplete_record(adjusted) {
-                    self.reject(parameter, "variable has incomplete type");
-                }
-                let register = parameter.specifiers.storage == StorageClass::Register;
-                let declared =
-                    self.declare_object(parameter, parameter.id, adjusted, None, None, register);
-                self.report(parameter, declared);
-                if identifier_list
-                    && let Err(rejection) = self
-                        .types
-                        .record_promoted_parameter(parameter, resolved, adjusted)
-                {
-                    self.reject_with(parameter, rejection);
-                }
-            }
-        }
+        self.declare_parameters(function.declarator.function_parameters(), identifier_list);
         let mut names = None;
         let mut returns = Returns::Unknown;
         let owner = std::mem::replace(&mut self.types.owner, owner);
@@ -381,6 +345,127 @@ impl Checker<'_> {
         self.in_function = enclosing_scope;
     }
 
+    fn captured_write(&mut self, target: &Expr) {
+        let mut named = target;
+        while let ExprKind::Paren(inner) = &named.value {
+            named = inner;
+        }
+        if !matches!(named.value, ExprKind::Identifier(_)) {
+            return;
+        }
+        let (Some(range), Some(&id)) = (
+            self.block_ranges.last(),
+            self.types.references.get(&named.id),
+        ) else {
+            return;
+        };
+        let local = self
+            .names
+            .bindings
+            .get(id.0 as usize)
+            .is_some_and(|binding| {
+                matches!(binding.kind, BindingKind::Object | BindingKind::Parameter)
+            })
+            && self.types.entities.linkage(id).is_none()
+            && !matches!(
+                self.types.entities.storage(id),
+                Some(StorageDuration::Static | StorageDuration::Thread)
+            );
+        if id.0 < range.start && local && !self.types.block_variables.contains(&id) {
+            self.reject(
+                target,
+                "variable is not assignable (missing __block type specifier)",
+            );
+        }
+    }
+
+    fn block_literal(&mut self, expr: &Expr, block: &BlockLiteral) {
+        let at = expr.derive(());
+        let enclosing_scope = std::mem::replace(&mut self.in_function, true);
+        self.declare_parameters(block.signature.declarator.function_parameters(), false);
+        let resolved = self
+            .types
+            .resolve(&block.signature.specifiers, &block.signature.declarator);
+        self.resolution(&at, &resolved);
+        let mut returns = Returns::Unknown;
+        let mut declared = None;
+        if let Ok(ty) = resolved
+            && let Some((returned, ..)) = self.types.ctypes.function_parts(ty)
+        {
+            declared = Some(ty);
+            returns = if block.deduced_return {
+                Returns::Deduce(None)
+            } else if self.types.ctypes.is_void(returned) {
+                Returns::Void
+            } else {
+                Returns::Value(returned)
+            };
+        }
+        let enclosing_context = std::mem::replace(
+            &mut self.context,
+            StatementContext {
+                returns,
+                label_scopes: label_scopes(&block.body),
+                ..StatementContext::default()
+            },
+        );
+        let range = self.names.block_ranges.get(&expr.id).cloned();
+        self.block_ranges.extend(range.clone());
+        self.compound(&block.body);
+        if range.is_some() {
+            self.block_ranges.pop();
+        }
+        let returns = std::mem::replace(&mut self.context, enclosing_context).returns;
+        self.in_function = enclosing_scope;
+        let Some(ty) = declared else {
+            return;
+        };
+        let signature = match returns {
+            Returns::Deduce(deduced) => self.types.deduced_block_signature(ty, deduced),
+            _ => ty,
+        };
+        self.types.block_signatures.insert(expr.id, signature);
+    }
+
+    fn declare_parameters(&mut self, parameters: Option<&ParameterList>, identifier_list: bool) {
+        for parameter in parameters.map_or(&[][..], ParameterList::parameters) {
+            self.parameter_rules(parameter);
+            self.specifier(&parameter.specifiers.ty);
+            self.declarator(&parameter.declarator);
+            let owner = self.types.owner.replace(parameter.derive(()));
+            let provisional = std::mem::replace(&mut self.types.provisional_extents, true);
+            self.tag(&parameter.specifiers.ty);
+            let resolved = self
+                .types
+                .resolve_parameter(&parameter.specifiers, &parameter.declarator);
+            self.types.provisional_extents = provisional;
+            self.types.owner = owner;
+            self.resolution(parameter, &resolved);
+            if let Ok(resolved) = resolved
+                && !self.types.ctypes.is_void(resolved)
+            {
+                let declared_array = parameter.declarator.array_parameter().unwrap_or_default();
+                let adjusted = self
+                    .types
+                    .adjusted_parameter(resolved, declared_array.qualifiers.into());
+                if self.types.is_incomplete_record(adjusted) {
+                    self.reject(parameter, "variable has incomplete type");
+                }
+                let register = parameter.specifiers.storage == StorageClass::Register;
+                let declared =
+                    self.declare_object(parameter, parameter.id, adjusted, None, None, register);
+                self.report(parameter, declared);
+                if identifier_list
+                    && let Err(rejection) = self
+                        .types
+                        .record_promoted_parameter(parameter, resolved, adjusted)
+                {
+                    self.reject_with(parameter, rejection);
+                }
+            }
+        }
+    }
+
     fn declaration(&mut self, at: &Span<()>, declaration: &Declaration, global: bool) {
         if declaration.declarators.is_empty() {
             if !self.types.declare_forward_tag(&declaration.specifiers) {
@@ -410,6 +495,11 @@ impl Checker<'_> {
         let mut deduced = None;
         for declarator in &declaration.declarators {
             self.declarator(&declarator.declarator);
+            if declaration.specifiers.is_block
+                && let Some(&id) = self.names.declarations.get(&declarator.id)
+            {
+                self.types.block_variables.insert(id);
+            }
             let Some(name) = declarator.declarator.name() else {
                 continue;
             };
@@ -1014,6 +1104,7 @@ impl Checker<'_> {
             qualifiers: Qualifiers::default(),
             storage: StorageClass::None,
             is_thread_local: false,
+            is_block: false,
             is_inline: false,
             is_noreturn: false,
             is_constexpr: false,
@@ -1268,6 +1359,13 @@ impl Checker<'_> {
                             self.reject(stmt, "value return from void function");
                         }
                     }
+                    Returns::Deduce(None) => {
+                        if let Ok(ty) = self.types.operand_type(expr) {
+                            self.context.returns = Returns::Deduce(Some(ty));
+                            self.convert(expr, ty, ConversionContext::Return);
+                        }
+                    }
+                    Returns::Deduce(Some(to)) => self.convert(expr, to, ConversionContext::Return),
                     Returns::Unknown => {}
                 }
             }
@@ -1815,6 +1913,7 @@ impl Checker<'_> {
     fn subexpressions(&mut self, expr: &Expr) {
         match &expr.value {
             ExprKind::StatementExpression(body) => self.compound(body),
+            ExprKind::Block(block) => self.block_literal(expr, block),
             ExprKind::Cast { ty, value } => {
                 self.type_name(ty);
                 self.expression(value);
@@ -1841,15 +1940,23 @@ impl Checker<'_> {
                 self.type_name(left_ty);
                 self.type_name(right_ty);
             }
+            ExprKind::Unary {
+                op: UnaryOp::PreIncrement | UnaryOp::PreDecrement,
+                operand,
+            }
+            | ExprKind::Postfix { operand, .. } => {
+                self.captured_write(operand);
+                self.expression(operand);
+            }
             ExprKind::Paren(expr)
             | ExprKind::Unary { operand: expr, .. }
-            | ExprKind::Postfix { operand: expr, .. }
             | ExprKind::SizeOfExpr(expr)
             | ExprKind::AlignOfExpr(expr, _)
             | ExprKind::CountOfExpr(expr)
             | ExprKind::Member { base: expr, .. } => self.expression(expr),
             ExprKind::Assign { op, target, value } => {
                 let target_expr = target;
+                self.captured_write(target);
                 self.expression(target);
                 self.expression(value);
                 if *op == AssignOp::DivAssign {

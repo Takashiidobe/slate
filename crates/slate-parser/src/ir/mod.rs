@@ -67,6 +67,18 @@ pub enum Callee {
 }
 
 #[derive(Debug, Clone)]
+pub struct BlockLiteral {
+    pub function: Function,
+    pub captures: Vec<BlockCapture>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct BlockCapture {
+    pub id: BindingId,
+    pub by_reference: bool,
+}
+
+#[derive(Debug, Clone)]
 pub enum ValueKind {
     Constant(Number),
     LayoutQuery {
@@ -157,6 +169,7 @@ pub enum ValueKind {
         passing: VaPassing,
     },
     StatementExpression(Box<Evaluation>),
+    Block(Box<BlockLiteral>),
     MacroExpansion {
         expansion: crate::ast::MacroExpansionId,
         evaluation: Box<Evaluation>,
@@ -611,6 +624,25 @@ impl Value {
                     .display_metadata(show_spans, metadata)
                     .with_compact(compact)
             ),
+            ValueKind::Block(block) => {
+                write!(f, "block_literal<{}, captures=[", self.ty)?;
+                for (index, capture) in block.captures.iter().enumerate() {
+                    if index > 0 {
+                        f.write_str(", ")?;
+                    }
+                    write!(
+                        f,
+                        "%{}{}",
+                        capture.id.0,
+                        if capture.by_reference { " byref" } else { "" }
+                    )?;
+                }
+                write!(
+                    f,
+                    "], statements={}>",
+                    block.function.body.as_ref().map_or(0, Vec::len)
+                )
+            }
             ValueKind::Capture { id, extent, value } => write!(
                 f,
                 "capture<%{}>({}, {})",

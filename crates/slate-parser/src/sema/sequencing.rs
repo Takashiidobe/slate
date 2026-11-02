@@ -221,6 +221,7 @@ fn walk_value(value: &Value, found: &mut Touches) {
             walk_place(source, false, found);
         }
         ValueKind::StatementExpression(_)
+        | ValueKind::Block(_)
         | ValueKind::Fence { .. }
         | ValueKind::OldValue
         | ValueKind::Constant(_)

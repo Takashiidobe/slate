@@ -1106,7 +1106,7 @@ impl Lowerer {
         Ok(())
     }
 
-    fn parameters(
+    pub(super) fn parameters(
         &mut self,
         params: &ParameterList,
         mut prologue: Option<&mut Vec<Span<Statement>>>,

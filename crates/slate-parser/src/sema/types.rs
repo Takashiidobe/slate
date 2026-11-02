@@ -88,6 +88,8 @@ pub struct TypeResolver {
     pub(super) openmp_step_types: HashMap<crate::ast::NodeId, QualType>,
     pub(super) computation_types: HashMap<crate::ast::NodeId, QualType>,
     pub(super) choices: HashMap<crate::ast::NodeId, super::typer::Choice>,
+    pub(super) block_signatures: HashMap<crate::ast::NodeId, QualType>,
+    pub(super) block_variables: HashSet<BindingId>,
     pub(super) promoted_parameters: HashMap<crate::ast::NodeId, QualType>,
     pub(super) derived_signatures: HashMap<crate::ast::NodeId, QualType>,
     pub(super) declared_types: HashMap<crate::ast::NodeId, QualType>,
@@ -127,6 +129,26 @@ pub struct TypeResolver {
 }
 
 impl TypeResolver {
+    pub(super) fn deduced_block_signature(
+        &mut self,
+        declared: QualType,
+        deduced: Option<QualType>,
+    ) -> QualType {
+        let Some((_, params, variadic, prototyped)) = self.ctypes.function_parts(declared) else {
+            return declared;
+        };
+        let params = params.to_vec();
+        let convention = self.ctypes.function_convention(declared);
+        let ret = deduced.unwrap_or_else(|| self.ctypes.qual(CTypeKind::Void));
+        self.ctypes.qual(CTypeKind::Function {
+            ret,
+            params,
+            variadic,
+            prototyped,
+            convention,
+        })
+    }
+
     pub(super) fn target_info(&self) -> &TargetInfo {
         self.dialect.target()
     }
@@ -201,6 +223,8 @@ impl TypeResolver {
             openmp_step_types: HashMap::new(),
             computation_types: HashMap::new(),
             choices: HashMap::new(),
+            block_signatures: HashMap::new(),
+            block_variables: HashSet::new(),
             promoted_parameters: HashMap::new(),
             derived_signatures: HashMap::new(),
             declared_types: HashMap::new(),

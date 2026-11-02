@@ -752,6 +752,13 @@ impl TypeResolver {
                     ));
                 }
             }
+            ExprKind::Block(_) => {
+                let signature = *self
+                    .block_signatures
+                    .get(&e.id)
+                    .ok_or(ResolveError::Internal("block literal was not checked"))?;
+                Typed::rvalue(self.ctypes.block_pointer(signature))
+            }
             ExprKind::Call { callee, arguments } => self.call_type(e, callee, arguments)?,
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty, .. } => {
                 let resolved = self.type_name(ty)?;
@@ -1103,6 +1110,7 @@ impl TypeResolver {
         let pointer = self.operand_type(callee)?;
         self.ctypes
             .pointee(pointer)
+            .or_else(|| self.ctypes.block_pointee(pointer))
             .filter(|&signature| self.ctypes.is_function(signature))
             .ok_or(NON_FUNCTION_CALLEE)
     }
@@ -1611,7 +1619,7 @@ impl TypeResolver {
         context: ConversionContext,
     ) -> Result<(), ResolveError> {
         let to = self.ctypes.unqualified(to);
-        let null = (self.ctypes.is_pointer(to) || self.ctypes.is_nullptr(to))
+        let null = (self.ctypes.is_pointer_like(to) || self.ctypes.is_nullptr(to))
             && self.null_pointer_constant(e);
         let conversion = self.ctypes.classify_conversion(from, to, context, null)?;
         if conversion.kind == CastKind::Vector
@@ -1779,11 +1787,11 @@ impl TypeResolver {
         (left_expr, left): (&Expr, QualType),
         (right_expr, right): (&Expr, QualType),
     ) -> Result<(), ResolveError> {
-        let lp = self.ctypes.is_pointer(left) || self.ctypes.is_nullptr(left);
+        let lp = self.ctypes.is_pointer_like(left) || self.ctypes.is_nullptr(left);
         let to = if matches!(op, BinaryOp::Equal | BinaryOp::NotEqual) {
-            if self.ctypes.is_pointer(left) {
+            if self.ctypes.is_pointer_like(left) {
                 left
-            } else if self.ctypes.is_pointer(right) || !lp {
+            } else if self.ctypes.is_pointer_like(right) || !lp {
                 right
             } else {
                 left
@@ -2242,6 +2250,10 @@ impl TypeResolver {
     ) -> Result<(QualType, Option<BinaryFacts>), ResolveError> {
         let lp = self.ctypes.is_pointer(left) || self.ctypes.is_nullptr(left);
         let rp = self.ctypes.is_pointer(right) || self.ctypes.is_nullptr(right);
+        let (lb, rb) = (
+            self.ctypes.is_block_pointer(left),
+            self.ctypes.is_block_pointer(right),
+        );
         match op {
             BinaryOp::And | BinaryOp::Or => {
                 if !self.ctypes.is_scalar(left) || !self.ctypes.is_scalar(right) {
@@ -2249,7 +2261,7 @@ impl TypeResolver {
                 }
                 return Ok((self.ctypes.int(), None));
             }
-            BinaryOp::Equal | BinaryOp::NotEqual if lp || rp => {
+            BinaryOp::Equal | BinaryOp::NotEqual if lp || rp || lb || rb => {
                 return Ok((self.ctypes.int(), None));
             }
             BinaryOp::Less | BinaryOp::LessEqual | BinaryOp::Greater | BinaryOp::GreaterEqual
@@ -2285,7 +2297,9 @@ impl TypeResolver {
                 let amount = vec![self.promotion(left)];
                 return Ok((right, Some(BinaryFacts::new(amount, Vec::new(), right))));
             }
-            _ if lp || rp => return Err(ResolveError::Rejected("non-arithmetic operand")),
+            _ if lp || rp || lb || rb => {
+                return Err(ResolveError::Rejected("non-arithmetic operand"));
+            }
             _ => {}
         }
         let operator = <&'static str>::from(op);

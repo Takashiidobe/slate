@@ -465,6 +465,11 @@ impl<V: MacroStructureVisitor> Walker<'_, V> {
             | ValueKind::FloatClass { operand, .. }
             | ValueKind::Convert { operand, .. } => self.value(operand),
             ValueKind::StatementExpression(evaluation) => self.evaluation(evaluation),
+            ValueKind::Block(block) => {
+                if let Some(body) = &mut block.function.body {
+                    self.statements(body);
+                }
+            }
             ValueKind::Fence { ordering, .. } => self.atomicity(ordering),
             ValueKind::OldValue
             | ValueKind::Constant(_)

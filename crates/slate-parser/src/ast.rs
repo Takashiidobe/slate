@@ -211,6 +211,7 @@ pub enum ExprKind {
     },
     LabelAddress(Span<String>),
     StatementExpression(Vec<Stmt>),
+    Block(Box<BlockLiteral>),
     BoolLiteral(bool),
     NullPtrLiteral,
     StaticAssert(Box<StaticAssert>),
@@ -304,6 +305,7 @@ impl std::fmt::Display for ExprKind {
             }
             Self::LabelAddress(label) => write!(formatter, "&&{label}"),
             Self::StatementExpression(_) => formatter.write_str("({ ... })"),
+            Self::Block(_) => formatter.write_str("^{ ... }"),
             Self::BoolLiteral(true) => formatter.write_str("true"),
             Self::BoolLiteral(false) => formatter.write_str("false"),
             Self::NullPtrLiteral => formatter.write_str("nullptr"),
@@ -1460,6 +1462,15 @@ pub enum Attribute {
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
+pub struct BlockLiteral {
+    pub signature: TypeName,
+    #[debug(skip_if = is_false)]
+    pub deduced_return: bool,
+    #[debug(skip_if = Vec::is_empty)]
+    pub body: Vec<Stmt>,
+}
+
+#[derive(CustomDebug, Clone, PartialEq)]
 pub struct FunctionDefinition {
     pub specifiers: DeclarationSpecifiers,
     pub declarator: Declarator,
@@ -1986,6 +1997,8 @@ pub struct DeclarationSpecifiers {
     #[debug(skip_if = is_false)]
     pub is_thread_local: bool,
     #[debug(skip_if = is_false)]
+    pub is_block: bool,
+    #[debug(skip_if = is_false)]
     pub is_inline: bool,
     #[debug(skip_if = is_false)]
     pub is_noreturn: bool,
@@ -1997,7 +2010,10 @@ pub struct DeclarationSpecifiers {
 
 impl DeclarationSpecifiers {
     pub(crate) fn has_storage_class(&self) -> bool {
-        self.storage != StorageClass::None || self.is_constexpr || self.is_thread_local
+        self.storage != StorageClass::None
+            || self.is_constexpr
+            || self.is_thread_local
+            || self.is_block
     }
 }
 

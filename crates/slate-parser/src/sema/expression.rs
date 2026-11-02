@@ -1566,7 +1566,7 @@ impl Lowerer {
                     },
                 )
             }
-            ty if self.pointee(ty).is_ok() => {
+            ty if self.pointee(ty).is_ok() || matches!(ty, Type::BlockPointer { .. }) => {
                 let zero = self.value(&value.node, ty.clone(), ValueKind::Null);
                 let node = value.node.clone();
                 self.value(
@@ -2186,6 +2186,7 @@ impl Lowerer {
             .types
             .ctypes
             .pointee(value.c)
+            .or_else(|| self.types.ctypes.block_pointee(value.c))
             .ok_or(ResolveError::Internal("non-function callee"))?;
         if !self.types.ctypes.is_function(signature) {
             return Err(ResolveError::Internal("non-function callee"));
@@ -2676,7 +2677,11 @@ impl Lowerer {
             BinaryOp::GreaterEqual => Some(CompareOp::Ge),
             _ => None,
         }
-        .filter(|_| self.pointee(&left.ty).is_ok() || self.pointee(&right.ty).is_ok());
+        .filter(|_| {
+            [&left.ty, &right.ty]
+                .into_iter()
+                .any(|ty| self.pointee(ty).is_ok() || matches!(ty, Type::BlockPointer { .. }))
+        });
         let left = self.converted(e, Slot::Left, left)?;
         let right = self.converted(e, Slot::Right, right)?;
         if let Some(op) = compare {
@@ -2720,6 +2725,7 @@ impl Lowerer {
             }
         }
         match &e.value {
+            ExprKind::Block(block) => self.block_literal(e, block),
             ExprKind::Paren(inner) => self.expr(inner),
             ExprKind::Identifier(_) if self.binding_kind(e) == Some(BindingKind::Enumerator) => {
                 let value = self

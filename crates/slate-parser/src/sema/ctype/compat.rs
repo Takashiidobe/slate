@@ -24,6 +24,7 @@ impl CTypes {
             (CTypeKind::Pointer(a, a_space), CTypeKind::Pointer(b, b_space)) => {
                 self.same_pointer_space(*a_space, *b_space) && self.compatible(*a, *b)
             }
+            (CTypeKind::BlockPointer(a), CTypeKind::BlockPointer(b)) => self.compatible(*a, *b),
             (
                 CTypeKind::Array {
                     element: a,
@@ -68,6 +69,9 @@ impl CTypes {
         match (self.kind(a.ty), self.kind(b.ty)) {
             (CTypeKind::Pointer(a, a_space), CTypeKind::Pointer(b, b_space)) => {
                 self.same_pointer_space(*a_space, *b_space) && self.same_or_enum_underlying(*a, *b)
+            }
+            (CTypeKind::BlockPointer(a), CTypeKind::BlockPointer(b)) => {
+                self.same_or_enum_underlying(*a, *b)
             }
             (
                 CTypeKind::Array {

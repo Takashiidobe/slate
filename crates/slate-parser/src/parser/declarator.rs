@@ -735,6 +735,10 @@ impl<'a> DeclaratorParser<'a> {
                 specifiers.is_thread_local = true;
                 continue;
             }
+            if self.matches(Token::Keyword(Keyword::Block)) {
+                specifiers.is_block = true;
+                continue;
+            }
             let Some(Token::Keyword(keyword)) = self.peek() else {
                 return Ok(());
             };
@@ -912,7 +916,7 @@ impl<'a> DeclaratorParser<'a> {
         }
     }
 
-    pub(super) fn parse_parameters(&mut self) -> Result<ParameterList, DeclaratorError> {
+    pub(crate) fn parse_parameters(&mut self) -> Result<ParameterList, DeclaratorError> {
         let _scope = self.context.parser().map(Parser::enter_scope);
         let open = self.pos;
         self.expect(

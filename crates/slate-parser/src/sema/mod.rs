@@ -3,6 +3,7 @@ mod asm;
 mod assertion;
 mod atomic;
 mod attributes;
+mod block;
 mod builtins;
 pub(crate) use builtins::{
     gcc_aarch64_tuple_declarations, is_gcc_aarch64_tuple_name, is_gcc_target_type_name,

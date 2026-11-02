@@ -885,6 +885,12 @@ impl Hoister {
             ValueKind::FunctionDecay { place } => ValueKind::FunctionDecay {
                 place: self.place(place, out)?,
             },
+            ValueKind::Block(mut block) => {
+                if let Some(body) = block.function.body.take() {
+                    block.function.body = Some(self.statements(body)?);
+                }
+                ValueKind::Block(block)
+            }
             leaf @ (ValueKind::Constant(_)
             | ValueKind::LayoutQuery { .. }
             | ValueKind::Null
@@ -1019,6 +1025,7 @@ impl Hoister {
             | ValueKind::ArrayDecay { place, .. }
             | ValueKind::FunctionDecay { place } => self.place_effects(place),
             ValueKind::OldValue
+            | ValueKind::Block(_)
             | ValueKind::Constant(_)
             | ValueKind::LayoutQuery { .. }
             | ValueKind::Null

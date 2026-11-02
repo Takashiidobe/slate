@@ -603,6 +603,14 @@ impl CTypes {
         matches!(self.canonical_kind(q), CTypeKind::Pointer(..))
     }
 
+    pub fn is_block_pointer(&self, q: QualType) -> bool {
+        matches!(self.canonical_kind(q), CTypeKind::BlockPointer(..))
+    }
+
+    pub fn is_pointer_like(&self, q: QualType) -> bool {
+        self.is_pointer(q) || self.is_block_pointer(q)
+    }
+
     pub fn is_variably_modified(&self, q: QualType) -> bool {
         self.any_variable_extent(q, &|_| true)
     }

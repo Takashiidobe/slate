@@ -324,6 +324,7 @@ Declarator =
     | Abstract                                    // type names, unnamed parameters
     | Grouped(Box<Declarator>)                    // parentheses
     | Pointer { qualifiers, attributes, inner }
+    | BlockPointer { qualifiers, attributes, inner }   // `int (^b)(int)`, clang `-fblocks`
     | Array { inner, size: ArraySize, qualifiers, is_static }   // `int a[static const 3]`
     | Function { inner, parameters: ParameterList }
     | Attributed { inner, attributes }
@@ -624,7 +625,14 @@ Taxonomy and rationale: [comment-placement](comment-placement.md).
 | `ConvertVector { ty: TypeName, value }`                                                        | `__builtin_convertvector`                                                               |
 | `LabelAddress(Span<String>)`                                                                   | GNU `&&label`                                                                           |
 | `StatementExpression(CompoundStatement)`                                                       | GNU `({ ... })`                                                                         |
+| `Block(BlockLiteral)`                                                                          | clang `^ret(params){ ... }`, under `-fblocks`; see below                                |
 | `StaticAssert(Box<StaticAssert>)`                                                              | C2y `static_assert` expression; `void`                                                  |
+
+`BlockLiteral { signature: TypeName, deduced_return: bool, body }`:
+`signature` is always a function type name. `^{...}` and `^(int x){...}` get a
+placeholder `void` return with `deduced_return`, and sema replaces it with the
+type of the first `return value;` (`void` if none). `^int{...}` gets `(void)`
+parameters. `__block` sets `DeclarationSpecifiers.is_block`.
 
 ```
 GenericControl = Expr(Expr) | Type(TypeName)

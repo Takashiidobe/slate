@@ -78,6 +78,7 @@ pub enum Keyword {
     Int64,
     Noreturn,
     ThreadLocal,
+    Block,
     BitInt,
     Accum,
     Fract,
@@ -114,6 +115,7 @@ impl Keyword {
                 | Keyword::Auto
                 | Keyword::Register
                 | Keyword::ThreadLocal
+                | Keyword::Block
                 | Keyword::Inline
                 | Keyword::ForceInline
                 | Keyword::Noreturn
@@ -180,6 +182,7 @@ impl From<Keyword> for &'static str {
             Keyword::Int64 => "__int64",
             Keyword::Noreturn => "_Noreturn",
             Keyword::ThreadLocal => "_Thread_local",
+            Keyword::Block => "__block",
             Keyword::BitInt => "_BitInt",
             Keyword::Accum => "_Accum",
             Keyword::Fract => "_Fract",
@@ -1370,6 +1373,7 @@ pub fn keyword_token(word: &str, features: &StandardFeatures) -> Option<Token> {
         "__int32" | "_int32" if features.microsoft_extensions => Token::Keyword(Keyword::Int),
         "__int64" | "_int64" if features.microsoft_extensions => Token::Keyword(Keyword::Int64),
         "_Noreturn" => Token::Keyword(Keyword::Noreturn),
+        "__block" if features.blocks => Token::Keyword(Keyword::Block),
         "_Thread_local" | "__thread" => Token::Keyword(Keyword::ThreadLocal),
         "thread_local" if features.keyword_thread_local.is_accepted() => {
             Token::Keyword(Keyword::ThreadLocal)

@@ -648,6 +648,7 @@ pub(super) fn specifiers_with_type(ty: TypeSpecifier) -> DeclarationSpecifiers {
         qualifiers: Qualifiers::default(),
         storage: StorageClass::None,
         is_thread_local: false,
+        is_block: false,
         is_inline: false,
         is_noreturn: false,
         is_constexpr: false,

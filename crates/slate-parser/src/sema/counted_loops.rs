@@ -355,6 +355,11 @@ impl Uses {
             | ValueKind::Convert { operand, .. } => self.value(operand),
             ValueKind::StatementExpression(evaluation)
             | ValueKind::MacroExpansion { evaluation, .. } => self.evaluation(evaluation),
+            ValueKind::Block(block) => {
+                if let Some(body) = &block.function.body {
+                    self.statements(body);
+                }
+            }
             ValueKind::Fence { .. }
             | ValueKind::OldValue
             | ValueKind::Constant(_)

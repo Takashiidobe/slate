@@ -124,7 +124,7 @@ impl CTypes {
             ));
         }
         if self.is_nullptr(from) {
-            if self.is_pointer(to) {
+            if self.is_pointer_like(to) {
                 return Ok(Conversion::plain(if is_null_pointer_constant {
                     CastKind::NullPointer
                 } else {
@@ -154,7 +154,7 @@ impl CTypes {
             ));
         }
         if let Some(underlying) = self.enum_underlying(from) {
-            if is_null_pointer_constant && self.is_pointer(to) {
+            if is_null_pointer_constant && self.is_pointer_like(to) {
                 return Ok(Conversion::plain(CastKind::NullPointer));
             }
             let tail = self.classify_conversion(underlying, to, context, false)?;
@@ -178,10 +178,10 @@ impl CTypes {
         if self.enum_underlying(to).is_some() {
             return Ok(Conversion::plain(CastKind::IntToEnum));
         }
-        if self.is_pointer(to) {
+        if self.is_pointer_like(to) {
             return self.convert_to_pointer(from, to, context, is_null_pointer_constant);
         }
-        if self.is_pointer(from) {
+        if self.is_pointer_like(from) {
             if self.is_floating(to) {
                 return Err(ResolveError::Rejected(
                     "conversion between pointer and floating type",
@@ -220,7 +220,7 @@ impl CTypes {
         if is_null_pointer_constant {
             return Ok(Conversion::plain(CastKind::NullPointer));
         }
-        if !self.is_pointer(from) {
+        if !self.is_pointer_like(from) {
             if self.is_floating(from) {
                 return Err(ResolveError::Rejected(
                     "conversion between pointer and floating type",
@@ -240,6 +240,9 @@ impl CTypes {
         }
         if !context.is_assignment() {
             return Ok(Conversion::plain(CastKind::Pointer));
+        }
+        if self.is_block_pointer(from) || self.is_block_pointer(to) {
+            return self.convert_block_pointer(from, to);
         }
         let from_pointee = self
             .pointee(from)
@@ -295,6 +298,32 @@ impl CTypes {
             Warning::IncompatiblePointerTypes,
             "incompatible pointer types",
         ))
+    }
+
+    fn convert_block_pointer(
+        &mut self,
+        from: QualType,
+        to: QualType,
+    ) -> Result<Conversion, ResolveError> {
+        let (from_block, to_block) = (self.is_block_pointer(from), self.is_block_pointer(to));
+        if from_block && to_block {
+            let (Some(from_function), Some(to_function)) =
+                (self.block_pointee(from), self.block_pointee(to))
+            else {
+                return Err(ResolveError::Internal("block pointer without a pointee"));
+            };
+            if self.compatible_unqualified(from_function, to_function) {
+                return Ok(Conversion::plain(CastKind::Pointer));
+            }
+            return Err(ResolveError::Rejected("incompatible block pointer types"));
+        }
+        let other = if from_block { to } else { from };
+        match self.pointee(other) {
+            Some(pointee) if self.is_void(pointee) => Ok(Conversion::plain(CastKind::Pointer)),
+            _ => Err(ResolveError::Rejected(
+                "incompatible block pointer and pointer types",
+            )),
+        }
     }
 
     fn compatible_ignoring_qualifiers(&self, a: QualType, b: QualType) -> bool {
@@ -379,7 +408,7 @@ impl CTypes {
     }
 
     pub fn is_scalar(&self, q: QualType) -> bool {
-        self.is_arithmetic(q) || self.is_pointer(q) || self.is_nullptr(q)
+        self.is_arithmetic(q) || self.is_pointer_like(q) || self.is_nullptr(q)
     }
 }
 

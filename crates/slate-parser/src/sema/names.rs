@@ -513,8 +513,50 @@ impl Resolver {
             }
             ExprKind::LabelAddress(label) => self.reference_label(label),
             ExprKind::StatementExpression(body) => self.scoped_statements(body),
+            ExprKind::Block(block) => self.block_literal(expr.id, block, expr),
             _ => crate::visit::walk_expr(self, expr),
         }
+    }
+
+    fn block_literal<T>(
+        &mut self,
+        node: crate::ast::NodeId,
+        block: &crate::ast::BlockLiteral,
+        span: &Span<T>,
+    ) -> Result<(), ResolveError> {
+        if self.collecting_labels {
+            return Ok(());
+        }
+        let signature = &block.signature;
+        self.type_specifier(&signature.specifiers.ty, span)?;
+        let first_binding = self.next_id;
+        let parameters = signature.declarator.function_parameters();
+        self.declarator_layers(&signature.declarator, parameters)?;
+        let outer_labels = std::mem::take(&mut self.labels);
+        let outer_local_labels = std::mem::replace(&mut self.local_labels, vec![HashMap::new()]);
+        let outer_ms_asm_labels = std::mem::take(&mut self.ms_asm_labels);
+        self.collect_labels(&block.body)?;
+        self.push_scope();
+        if let Some(parameters) = parameters {
+            for parameter in parameters.parameters() {
+                self.type_specifier(&parameter.specifiers.ty, parameter)?;
+                self.visit_declarator(&parameter.declarator)?;
+                if let Some(name) = parameter.declarator.name() {
+                    self.bind_ordinary(name, BindingKind::Parameter, false, parameter)?;
+                }
+            }
+        }
+        for statement in &block.body {
+            self.visit_stmt(statement)?;
+        }
+        self.pop_scope();
+        self.labels = outer_labels;
+        self.local_labels = outer_local_labels;
+        self.ms_asm_labels = outer_ms_asm_labels;
+        self.resolution
+            .block_ranges
+            .insert(node, first_binding..self.next_id);
+        Ok(())
     }
 
     fn offsetof_member(&mut self, member: &Expr) -> Result<(), ResolveError> {

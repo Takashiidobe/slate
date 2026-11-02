@@ -1268,6 +1268,7 @@ impl<'a> Parser<'a> {
             ExprKind::StatementExpression(_) => {
                 Err(ConstExprError::NotConstant("statement expression"))
             }
+            ExprKind::Block(_) => Err(ConstExprError::NotConstant("block literal")),
             ExprKind::BoolLiteral(value) => Ok(i64::from(*value)),
             ExprKind::NullPtrLiteral => Err(ConstExprError::NotConstant("nullptr")),
             ExprKind::StaticAssert(_) => Err(ConstExprError::NotConstant("static assertion")),
@@ -2028,6 +2029,9 @@ impl<'a> Parser<'a> {
         if self.peek() == Some(&Token::LParen) && self.peek_at(1) == Some(&Token::LBrace) {
             return self.parse_statement_expression();
         }
+        if self.peek() == Some(&Token::Caret) && self.features().blocks {
+            return self.parse_block_literal();
+        }
         if self.take() == Some(Token::LParen) {
             let expression = self.parse_directive_operand()?;
             self.expect(Token::RParen)?;
@@ -2160,6 +2164,58 @@ impl<'a> Parser<'a> {
         self.position = close + 1;
         self.expect(Token::RParen)?;
         Ok(self.node(ExprKind::StatementExpression(body), start))
+    }
+
+    fn parse_block_literal(&mut self) -> Result<Expr, ConstExprError> {
+        let start = self.position;
+        self.expect(Token::Caret)?;
+        let context = self
+            .context
+            .parser()
+            .ok_or(ConstExprError::NotConstant("block literal"))?;
+        let open = (self.position..self.tokens.len())
+            .find(|&index| self.tokens[index].value == Token::LBrace)
+            .ok_or(ConstExprError::ExpectedIntegerExpression)?;
+        let close = crate::parser::matching_brace(self.tokens, open)
+            .ok_or(ConstExprError::ExpectedIntegerExpression)?;
+        let header = &self.tokens[self.position..open];
+        let anchor = &self.tokens[start];
+        let synthetic = |token: Token| anchor.clone().with_value(token);
+        let mut tokens = Vec::new();
+        let deduced_return = header.is_empty() || header[0].value == Token::LParen;
+        if deduced_return {
+            tokens.push(synthetic(Token::Keyword(Keyword::Void)));
+        }
+        tokens.extend(header.iter().cloned());
+        if header
+            .last()
+            .is_none_or(|token| token.value != Token::RParen)
+        {
+            tokens.extend([
+                synthetic(Token::LParen),
+                synthetic(Token::Keyword(Keyword::Void)),
+                synthetic(Token::RParen),
+            ]);
+        }
+        let mut declarator_parser = DeclaratorParser::new(&tokens, 0, self.context);
+        let signature = declarator_parser
+            .parse_type_name()
+            .map_err(|_| ConstExprError::ExpectedIntegerExpression)?;
+        if declarator_parser.position() != tokens.len() {
+            return Err(ConstExprError::ExpectedIntegerExpression);
+        }
+        let body = context
+            .parse_statement_expression_body(&self.tokens[open + 1..close])
+            .map_err(|error| ConstExprError::StatementExpression(error.to_string()))?;
+        self.position = close + 1;
+        Ok(self.node(
+            ExprKind::Block(Box::new(crate::ast::BlockLiteral {
+                signature,
+                deduced_return,
+                body,
+            })),
+            start,
+        ))
     }
 
     fn parse_static_assert(&mut self, start: usize) -> Result<Expr, ConstExprError> {

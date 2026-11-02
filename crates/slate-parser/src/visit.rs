@@ -359,6 +359,10 @@ pub fn walk_expr<V: Visitor + ?Sized>(visitor: &mut V, expr: &Expr) -> Result<()
             visitor.visit_type_name(right_ty)
         }
         ExprKind::StatementExpression(body) => walk_stmts(visitor, body),
+        ExprKind::Block(block) => {
+            visitor.visit_type_name(&block.signature)?;
+            walk_stmts(visitor, &block.body)
+        }
         ExprKind::StaticAssert(assertion) => visitor.visit_expr(&assertion.condition),
         ExprKind::Identifier(_)
         | ExprKind::IntegerLiteral(_)

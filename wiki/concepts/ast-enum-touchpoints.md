@@ -104,6 +104,13 @@ Shape notes:
   `ConvertVector`, `VaArg`) join the existing or-patterns in `visit.rs`,
   `reachability.rs`, `sema/names.rs`, `sema/assertion.rs`, and parse the
   type with `try_parse_type_name` like `parse_va_arg`.
+- `^{ ... }` block literals: `const_expr::Parser::parse_block_literal`
+  synthesizes a function type name from the tokens before `{`.
+  `sema/names.rs` binds parameters in a scope and records the block's binding-id
+  range (`NameResolution.block_ranges`, used for capture analysis);
+  `sema/assertion.rs::block_literal` checks the body and records the signature
+  (`TypeResolver.block_signatures`) that `typer.rs` types the expression with;
+  `sema/block.rs` lowers it.
 - `({ ... })`: `const_expr::Parser::parse_statement_expression` calls back
   into `parser::Parser::parse_statement_expression_body` through the
   `statements: Option<&parser::Parser>` field of `const_expr::Parser` and

@@ -148,6 +148,7 @@ DeclarationSpecifiers = DeclarationSpecifiers {
                           qualifiers?: Qualifiers,
                           storage?: StorageClass,
                           is_thread_local?: true,
+                          is_block?: true,
                           is_inline?: true,
                           is_noreturn?: true,
                           is_constexpr?: true,
@@ -230,6 +231,8 @@ Declarator = "Abstract"
            | Attributed { inner: Declarator, attributes: vec<span<Attribute>> }
            | Pointer { qualifiers: Qualifiers, attributes?: vec<span<Attribute>>,
                        inner: Declarator }
+           | BlockPointer { qualifiers: Qualifiers, attributes?: vec<span<Attribute>>,
+                            inner: Declarator }
            | Array { inner: Declarator, size: ArraySize,
                      qualifiers?: Qualifiers, is_static?: true }
            | Function { inner: Declarator, parameters: ParameterList } ;
@@ -382,7 +385,11 @@ ExprKind = "Identifier(" string ")"
          | ConvertVector { ty: TypeName, value: expr }
          | "LabelAddress(" span<string> ")"
          | "StatementExpression(" vec<stmt> ")"
+         | "Block(" BlockLiteral ")"
          | "StaticAssert(" StaticAssert ")" ;
+
+BlockLiteral = BlockLiteral { signature: TypeName, deduced_return?: true,
+                              body?: vec<stmt> } ;
 
 GenericControl     = "Expr(" expr ")" | Type { ty: TypeName } ;
 GenericAssociation = Type { ty: TypeName, value: expr } | "Default(" expr ")" ;

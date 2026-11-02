@@ -10,6 +10,7 @@
   - [Materialized function ends](#materialized-function-ends)
 - [Side-effect hoisting](#side-effect-hoisting)
   - [Statement expressions](#statement-expressions)
+  - [Block literals](#block-literals)
 - [Unsequenced effects follow clang](#unsequenced-effects-follow-clang)
 - [Resolved away before the IR](#resolved-away-before-the-ir)
 - [Pragmas](#pragmas)
@@ -240,6 +241,20 @@ always effectful and always removed by hoisting:
 The block keeps its scope; `return`, `break`, and `goto` inside it act on
 the enclosing function and loops, as in gcc. Under `&&`/`||`/`?:` it goes
 through the same `if` lowering (`ir_statement_expressions.c`).
+
+### Block literals
+
+`^ret(params){ ... }` (clang `-fblocks`) lowers to
+`ValueKind::Block(BlockLiteral { function, captures })` with type
+`block<fn(...) -> ret>`. `function` is a hoisted-in-place `Function` (own
+parameters, body and fallthrough, linkage internal) whose `return` statements
+act on the block, not the enclosing function. `captures` lists the enclosing
+locals the body references, in first-use order; `by_reference` marks `__block`
+variables, which the backend must keep in shared storage. Everything else is
+captured by value at block creation. Assigning a captured non-`__block`
+variable is rejected by the checker. A call through a block pointer is a
+`Call` with an indirect callee whose value has the block pointer type.
+Fixture: `block_literals.c`.
 
 ## Unsequenced effects follow clang
 
