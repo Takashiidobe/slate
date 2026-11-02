@@ -232,8 +232,9 @@ const int k = 2`, `table[1]`, `s.field`, string elements, `*ptr` to a
   lowers to `#[target_feature(enable = "sve")]`
   (`aarch64/asm_aarch64_sve_clobbers.c`, `gcc/aarch64/asm_aarch64_sve_ffr_clobber.c`).
 - AArch64 Slate barriers: a second operand on the same reserved register,
-  `sp` clobbers, clobbers of SME `za`/`zt0`, `vg` and `fpmr` (no Rust
-  equivalent), and memory modifiers. ARM32 is not lowered yet.
+  `sp` clobbers, a `vg` clobber in a function that enables sve/sve2/sme,
+  and memory modifiers. `za`/`zt0`/`fpmr` clobbers and a `vg` clobber elsewhere are dropped
+  (no Rust equivalent; clang rejects `vg`, so `gcc/aarch64/asm_aarch64_vg_clobber.c`). ARM32 is not lowered yet.
 - A tied input keeps its own width at its reference sites on x86 (gcc
   prints `"=r"(char) : "0"(int)` as `%dil` and `%edi`); clang rejects the
   mismatch (`ir_asm_widths.c`).

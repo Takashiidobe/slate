@@ -2057,6 +2057,16 @@ impl FunctionLowerer<'_, '_> {
                 if !x86 && matches!(canonical, "za" | "zt0" | "fpmr") {
                     continue;
                 }
+                if !x86 && canonical == "vg" {
+                    if self
+                        .target_features
+                        .iter()
+                        .any(|feature| feature.starts_with("sve") || feature.starts_with("sme"))
+                    {
+                        return Err(unsupported_asm("vg clobber in an SVE function"));
+                    }
+                    continue;
+                }
                 if !x86 && !canonical.starts_with(['x', 'v']) && !predicate && canonical != "ffr" {
                     return Err(unsupported_asm(format!("clobber {canonical}")));
                 }
