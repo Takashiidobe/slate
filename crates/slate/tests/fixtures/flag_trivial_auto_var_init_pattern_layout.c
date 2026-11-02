@@ -727,9 +727,13 @@ int main(void) {
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"tail".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(tail) as *const (),
-// CHECK-NEXT:         32u32,
+// CHECK-NEXT:         std::mem::size_of::<tail>() as u32,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     dump(c"tails".as_ptr(), tails.as_mut_ptr() as *const (), 64u32);
+// CHECK-NEXT:     dump(
+// CHECK-NEXT:         c"tails".as_ptr(),
+// CHECK-NEXT:         tails.as_mut_ptr() as *const (),
+// CHECK-NEXT:         std::mem::size_of::<[tail; 2]>() as u32,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"complex long double".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(cld) as *const (),

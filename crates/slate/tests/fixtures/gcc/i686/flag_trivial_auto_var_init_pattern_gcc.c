@@ -262,17 +262,17 @@ int main(void) {
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"long double".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(ld) as *const (),
-// CHECK-NEXT:         12u32,
+// CHECK-NEXT:         std::mem::size_of::<LongDouble>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"long double[]".as_ptr(),
 // CHECK-NEXT:         lds.as_mut_ptr() as *const (),
-// CHECK-NEXT:         24u32,
+// CHECK-NEXT:         std::mem::size_of::<[LongDouble; 2]>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"tail".as_ptr(),
 // CHECK-NEXT:         std::ptr::addr_of_mut!(tail) as *const (),
-// CHECK-NEXT:         16u32,
+// CHECK-NEXT:         std::mem::size_of::<tail>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

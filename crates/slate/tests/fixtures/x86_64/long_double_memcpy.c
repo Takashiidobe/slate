@@ -215,7 +215,7 @@ int main(void) {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(src) as *mut ()) as *mut u8,
 // CHECK-NEXT:             0u8,
-// CHECK-NEXT:             16 as usize,
+// CHECK-NEXT:             std::mem::size_of::<ld_union>(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     while i < 10 {
@@ -228,7 +228,7 @@ int main(void) {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(src) as *const ()) as *const u8,
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(dst) as *mut ()) as *mut u8,
-// CHECK-NEXT:             16 as usize,
+// CHECK-NEXT:             std::mem::size_of::<ld_union>(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     i = 0;

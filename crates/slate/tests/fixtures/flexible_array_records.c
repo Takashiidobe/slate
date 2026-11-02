@@ -252,7 +252,14 @@ int main(void) {
 // CHECK-NEXT:         malloc(8u64.wrapping_add(5u64.wrapping_mul(std::mem::size_of::<Entry>() as u64)))
 // CHECK-NEXT:     }) as *mut List;
 // CHECK-NEXT:     let bytes: *mut Bytes = (unsafe { malloc(25u64) }) as *mut Bytes;
-// CHECK-NEXT:     let wide: *mut Wide = (unsafe { malloc(64u64) }) as *mut Wide;
+// CHECK-NEXT:     let wide: *mut Wide = (unsafe {
+// CHECK-NEXT:         malloc(
+// CHECK-NEXT:             16u64
+// CHECK-NEXT:                 .wrapping_add(
+// CHECK-NEXT:                     3u64.wrapping_mul(std::mem::size_of::<LongDouble>() as u64),
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     }) as *mut Wide;
 // CHECK-NEXT:     if list.is_null() || bytes.is_null() || wide.is_null() {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }

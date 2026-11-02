@@ -844,7 +844,9 @@ int main(void) {
 // CHECK-NEXT:         + (((std::mem::size_of::<f32>() as u64) == (std::mem::size_of::<f32>() as u64))
 // CHECK-NEXT:             as i32)
 // CHECK-NEXT:         + (((std::mem::size_of::<f64>() as u64) == (std::mem::size_of::<f64>() as u64))
-// CHECK-NEXT:             as i32) + (true as i32);
+// CHECK-NEXT:             as i32)
+// CHECK-NEXT:         + (((std::mem::size_of::<LongDouble>() as u64)
+// CHECK-NEXT:             == (std::mem::size_of::<LongDouble>() as u64)) as i32);
 // CHECK-NEXT:     let header_versions: i32 = (true as i32) + (true as i32) + (true as i32)
 // CHECK-NEXT:         + (true as i32) + (true as i32) + (true as i32) + (true as i32);
 // CHECK-NEXT:     integer_widths + floating_limits + header_versions

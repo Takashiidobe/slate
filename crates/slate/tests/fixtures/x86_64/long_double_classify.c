@@ -390,7 +390,9 @@ int main(void) {
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
 // CHECK-NEXT:         LongDouble([7, 0, 0, 0, 0, 0, 0, 192, 255, 255]),
 // CHECK-NEXT:     ];
-// CHECK-NEXT:     for i in 0..14u64 {
+// CHECK-NEXT:     for i in 0..((std::mem::size_of::<[LongDouble; 14]>() as u64)
+// CHECK-NEXT:         / (std::mem::size_of::<LongDouble>() as u64))
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(c"%zu %#x\n".as_ptr(), i, classify(values[i as usize]))
@@ -446,7 +448,9 @@ int main(void) {
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 255]),
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     let mut accepted: i32 = 0;
-// CHECK-NEXT:     for i in 0..5u64 {
+// CHECK-NEXT:     for i in 0..((std::mem::size_of::<[LongDouble; 5]>() as u64)
+// CHECK-NEXT:         / (std::mem::size_of::<LongDouble>() as u64))
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = arOpAccumulate(
 // CHECK-NEXT:             unsafe { &mut (*std::ptr::addr_of_mut!(acc)) },
 // CHECK-NEXT:             addends[i as usize],

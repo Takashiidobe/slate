@@ -211,7 +211,14 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].value = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]);
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 16u32, 32u32, 16u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%zu %zu %zu\n".as_ptr(),
+// CHECK-NEXT:             16u32,
+// CHECK-NEXT:             std::mem::size_of::<holder>() as u32,
+// CHECK-NEXT:             std::mem::offset_of!(holder, value) as u32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { printf(c"%d %g\n".as_ptr(), h.c as i32, __slate_f80_to_f64(h.value)) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

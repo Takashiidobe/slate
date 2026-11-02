@@ -201,7 +201,13 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut two: [holder; 2] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 16u32, 4u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%zu %zu\n".as_ptr(),
+// CHECK-NEXT:             std::mem::size_of::<holder>() as u32,
+// CHECK-NEXT:             std::mem::align_of::<holder>() as u32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d\n".as_ptr(),

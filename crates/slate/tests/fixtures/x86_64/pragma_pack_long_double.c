@@ -253,8 +253,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %u %u\n".as_ptr(),
-// CHECK-NEXT:             32u64,
-// CHECK-NEXT:             8u64,
+// CHECK-NEXT:             std::mem::size_of::<extended>() as u64,
+// CHECK-NEXT:             std::mem::align_of::<extended>() as u64,
 // CHECK-NEXT:             offset(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(e) as *const (),
 // CHECK-NEXT:                 (std::ptr::addr_of_mut!(e.x) as *mut LongDouble) as *const (),

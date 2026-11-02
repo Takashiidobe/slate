@@ -316,7 +316,7 @@ int main(void) {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(q) as *mut ()) as *mut u8,
 // CHECK-NEXT:             0u8,
-// CHECK-NEXT:             33 as usize,
+// CHECK-NEXT:             std::mem::size_of::<Q>(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     q.c = 113;
@@ -353,7 +353,7 @@ int main(void) {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             ((std::ptr::addr_of_mut!(p.l) as *mut LongDouble) as *const ()) as *const u8,
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(copy) as *mut ()) as *mut u8,
-// CHECK-NEXT:             16 as usize,
+// CHECK-NEXT:             std::mem::size_of::<LongDouble>(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let same: P = p;
@@ -361,8 +361,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
-// CHECK-NEXT:             21u64,
-// CHECK-NEXT:             33u64,
+// CHECK-NEXT:             std::mem::size_of::<P>() as u64,
+// CHECK-NEXT:             std::mem::size_of::<Q>() as u64,
 // CHECK-NEXT:             std::mem::size_of::<Empty>() as u64,
 // CHECK-NEXT:             1u64,
 // CHECK-NEXT:         )

@@ -196,6 +196,14 @@ impl Tables<'_> {
                 space: ir::PointerSpace::Default,
                 ..
             } => true,
+            ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F80)) => self
+                .target
+                .storage_of(ir::Type::Numeric(ir::NumericType::Float(
+                    ir::FloatType::F80,
+                )))
+                .is_ok_and(|layout| {
+                    layout.size_bytes == 10u64.next_multiple_of(layout.alignment_bytes.into())
+                }),
             ir::Type::Array {
                 element,
                 length: Some(_),

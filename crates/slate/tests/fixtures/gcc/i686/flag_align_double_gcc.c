@@ -310,7 +310,14 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 40u32, 4u32, 4u32, 16u32) };
-// CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu\n".as_ptr(), 8u32, 8u32, 4u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%zu %zu %zu\n".as_ptr(),
+// CHECK-NEXT:             8u32,
+// CHECK-NEXT:             8u32,
+// CHECK-NEXT:             std::mem::align_of::<LongDouble>() as u32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %g %lld %d %g %g %g\n".as_ptr(),
