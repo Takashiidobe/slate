@@ -1190,6 +1190,13 @@ impl<'m> ModuleLowerer<'m> {
         }) {
             features.push(rust::CrateAttr::Feature(rust::Feature::RtmTargetFeature));
         }
+        if items.iter().any(|item| {
+            matches!(item, Item::Fn(definition) if definition.attrs.iter().any(|attr| {
+                matches!(attr, Attr::TargetFeature(enabled) if enabled.split(',').any(|feature| matches!(feature, "sme" | "sme2" | "fp8")))
+            }))
+        }) {
+            features.push(rust::CrateAttr::Feature(rust::Feature::Aarch64UnstableTargetFeature));
+        }
         if dependencies.simd {
             features.extend([
                 rust::CrateAttr::Feature(rust::Feature::PortableSimd),

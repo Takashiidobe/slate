@@ -2054,6 +2054,9 @@ impl FunctionLowerer<'_, '_> {
                 let predicate = canonical
                     .strip_prefix('p')
                     .is_some_and(|number| number.parse::<u8>().is_ok_and(|number| number <= 15));
+                if !x86 && matches!(canonical, "za" | "zt0" | "fpmr") {
+                    continue;
+                }
                 if !x86 && !canonical.starts_with(['x', 'v']) && !predicate && canonical != "ffr" {
                     return Err(unsupported_asm(format!("clobber {canonical}")));
                 }

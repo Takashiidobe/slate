@@ -422,6 +422,10 @@ impossible.
   `+@cc` adds a hidden `in(reg)` holding the place truncated to `u32`, `=@cc` a scratch
   `out(reg) _` with unspecified contents. The hidden operand exists only when the template
   names the operand (`clang_asm_flag_reference.c`).
+- aarch64 `za`, `zt0` and `fpmr` clobbers are dropped: the generated Rust never keeps a value in
+  SME or FP8 state, and rustc cannot name them. `sme`, `sme2` and `fp8` target features map to
+  rustc's and turn on `#![feature(aarch64_unstable_target_feature)]`
+  (`asm_aarch64_sme_state_clobbers.c`).
 - x87 operands spill through temporaries passed `in(reg)`. Inputs sit where both compilers put
   them: `t` at st(0), `u` at st(1), `f` inputs below in operand order, loaded deepest first with
   `flds`/`fldl`/`fldt`. After the template, outputs (`=t`, then `=u`) are popped with

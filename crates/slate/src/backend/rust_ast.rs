@@ -281,6 +281,7 @@ impl Lint {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Feature {
+    Aarch64UnstableTargetFeature,
     AbiVectorcall,
     AbiX86Interrupt,
     AtomicVolatile,
@@ -304,6 +305,7 @@ pub enum Feature {
 impl Feature {
     pub fn spelling(self) -> &'static str {
         match self {
+            Feature::Aarch64UnstableTargetFeature => "aarch64_unstable_target_feature",
             Feature::AbiVectorcall => "abi_vectorcall",
             Feature::AbiX86Interrupt => "abi_x86_interrupt",
             Feature::AtomicVolatile => "atomic_volatile",
