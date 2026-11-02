@@ -822,7 +822,10 @@ impl FunctionLowerer<'_, '_> {
                         method: getter,
                         args: Vec::new(),
                     },
-                    None => places::volatile_read(self.lower_address(place, false)?),
+                    None => {
+                        self.reject_unaligned_volatile(place)?;
+                        places::volatile_read(self.lower_address(place, false)?)
+                    }
                 };
                 Expr::Unsafe(Box::new(rust::Block {
                     stmts: Vec::new(),

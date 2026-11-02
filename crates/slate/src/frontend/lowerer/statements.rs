@@ -14,6 +14,7 @@ impl FunctionLowerer<'_, '_> {
             if let Some(write) = self.volatile_bit_field_write(place, value.clone())? {
                 return Ok(write);
             }
+            self.reject_unaligned_volatile(place)?;
             return Ok(Stmt::Expr(Expr::Unsafe(Box::new(rust::Block {
                 stmts: Vec::new(),
                 tail: Some(Box::new(Expr::Call {

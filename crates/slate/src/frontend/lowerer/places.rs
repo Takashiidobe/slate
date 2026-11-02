@@ -123,6 +123,20 @@ impl FunctionLowerer<'_, '_> {
         ) || self.place_in_packed(base)
     }
 
+    pub(super) fn reject_unaligned_volatile(&mut self, place: &ir::Place) -> Result<()> {
+        let needs_alignment = self
+            .tables
+            .storage_of(&place.ty)
+            .is_some_and(|(_, align)| align > 1);
+        if needs_alignment && (self.reduced_place(place) || self.place_in_packed(place)) {
+            return Err(Construct::Place {
+                ir: place.to_string(),
+            }
+            .into());
+        }
+        Ok(())
+    }
+
     fn reduced_alignment_access(&mut self, place: &ir::Place) -> bool {
         self.reduced_place(place)
             && !place.access.atomic

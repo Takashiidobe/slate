@@ -1,3 +1,4 @@
+/* SLATE: volatile access to a misaligned packed field needs one unaligned load or store, which Rust's volatile API cannot express; Slate reports a barrier instead of emitting UB (slate-yar4.7). */
 /* Mis-aligned packed structures.  */
 
 void abort(void);
