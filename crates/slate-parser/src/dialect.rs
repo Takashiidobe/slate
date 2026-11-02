@@ -55,6 +55,7 @@ impl Dialect {
             }
         }
         features.gnu_inline_asm = options.gnu_inline_asm;
+        features.empty_parens_are_prototype |= !options.knr_functions;
         Self {
             flavor,
             standard,

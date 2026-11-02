@@ -29,6 +29,7 @@ pub struct CompilerOptions {
     pub graphs: SourceGraphs,
     pub gnu_keywords: Option<bool>,
     pub gnu_inline_asm: bool,
+    pub knr_functions: bool,
     pub undef_predefines: bool,
     pub gnuc_version: Option<[u32; 3]>,
 }
@@ -538,6 +539,7 @@ impl Default for CompilerOptions {
             graphs: SourceGraphs::default(),
             gnu_keywords: None,
             gnu_inline_asm: true,
+            knr_functions: true,
             undef_predefines: false,
             gnuc_version: None,
         }

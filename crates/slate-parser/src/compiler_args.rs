@@ -363,6 +363,7 @@ struct ParsedCompilerArgs {
     asm_blocks: Option<bool>,
     gnu_keywords: Option<bool>,
     gnu_inline_asm: Option<bool>,
+    knr_functions: Option<bool>,
     undef_predefines: bool,
     gnuc_version: Option<[u32; 3]>,
     long_double: Option<LongDoubleFormat>,
@@ -548,6 +549,7 @@ enum Opt {
     GnucVersion,
     Asm,
     GnuInlineAsm,
+    KnrFunctions,
     ForceInclude,
     Imacros,
     Standard,
@@ -704,6 +706,7 @@ impl std::fmt::Display for Opt {
             Self::GnucVersion => "fgnuc-version=",
             Self::Asm => "fasm",
             Self::GnuInlineAsm => "fgnu-inline-asm",
+            Self::KnrFunctions => "fknr-functions",
             Self::ForceInclude => "include",
             Self::Imacros => "imacros",
             Self::Standard => "std",
@@ -973,6 +976,7 @@ impl Opt {
             | Self::FpModel
             | Self::GnucVersion
             | Self::GnuInlineAsm
+            | Self::KnrFunctions
             | Self::Mllvm => &[Clang],
             Self::ConformingPreprocessor
             | Self::MsvcUnsignedChar
@@ -1054,6 +1058,7 @@ impl Opt {
             Self::AsmBlocks => "-fasm-blocks",
             Self::Asm => "-fasm",
             Self::GnuInlineAsm => "-fgnu-inline-asm",
+            Self::KnrFunctions => "-fknr-functions",
             Self::Freestanding => "-ffreestanding",
             Self::Hosted => "-fhosted",
             Self::Builtin => "-fbuiltin",
@@ -1478,10 +1483,11 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 58] = [
+const SWITCH_OPTS: [Opt; 59] = [
     Opt::FloatStore,
     Opt::Asm,
     Opt::GnuInlineAsm,
+    Opt::KnrFunctions,
     Opt::OpenMp,
     Opt::OpenMpSimd,
     Opt::ClangTrigraphs,
@@ -1700,6 +1706,7 @@ impl CompilerArgParser {
         options.fixed_registers = raw.fixed_registers;
         options.gnu_keywords = raw.gnu_keywords;
         options.gnu_inline_asm = raw.gnu_inline_asm.unwrap_or(true);
+        options.knr_functions = raw.knr_functions.unwrap_or(true);
         options.undef_predefines = raw.undef_predefines;
         options.gnuc_version = raw.gnuc_version;
         Ok(CompilerArgs {
@@ -1839,6 +1846,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::AsmBlocks => parsed.asm_blocks = Some(value),
                 Opt::Asm => parsed.gnu_keywords = Some(value),
                 Opt::GnuInlineAsm => parsed.gnu_inline_asm = Some(value),
+                Opt::KnrFunctions => parsed.knr_functions = Some(value),
                 Opt::Builtin => parsed.builtin = Some(value),
                 Opt::UnsignedChar => parsed.char_signed = Some(!value),
                 Opt::SignedChar => parsed.char_signed = Some(value),
