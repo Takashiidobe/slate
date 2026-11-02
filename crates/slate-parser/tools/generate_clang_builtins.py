@@ -157,6 +157,8 @@ class Parser:
     def base(self):
         if self.peek() in VECTORS:
             ty, quals = self.vector(VECTORS[self.consume()])
+            while self.peek() in QUALIFIERS:
+                quals.add(self.consume())
             return ty, quals, False
         words = []
         quals = set()

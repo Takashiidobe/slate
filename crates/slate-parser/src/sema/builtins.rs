@@ -633,7 +633,9 @@ pub(super) fn clang_builtin(name: &str, dialect: &Dialect) -> Option<&'static Cl
     match dialect.flavor() {
         CompilerFlavor::Gcc => match clang {
             Some(builtin) if !builtin.names_header_type() => Some(builtin),
-            clang => gcc_builtin(name, dialect).or(clang),
+            clang => gcc_builtin(name, dialect)
+                .or(clang)
+                .or_else(|| gcc_target_builtin(name, dialect.target().family)),
         },
         CompilerFlavor::Clang => clang.or_else(|| target_builtin(name, dialect.target().family)),
         CompilerFlavor::Msvc => clang,
@@ -676,6 +678,15 @@ fn gcc_library_enabled(language: Option<BuiltinLanguage>, standard: LanguageStan
         || standard
             .stdc_version()
             .is_some_and(|version| version >= since)
+}
+
+fn gcc_target_builtin(name: &str, family: TargetFamily) -> Option<&'static ClangBuiltin> {
+    match family {
+        TargetFamily::X86 => registered_builtin(GCC_X86_BUILTINS, name),
+        TargetFamily::X86_64 => registered_builtin(GCC_X86_BUILTINS, name)
+            .or_else(|| registered_builtin(GCC_X86_64_BUILTINS, name)),
+        TargetFamily::AArch64 | TargetFamily::Arm32 => None,
+    }
 }
 
 fn target_builtin(name: &str, family: TargetFamily) -> Option<&'static ClangBuiltin> {
@@ -1068,6 +1079,7 @@ fn fixed_rank(bits: u32, target: &TargetInfo) -> Option<IntRank> {
 include!("clang_builtins.rs");
 include!("clang_aarch64_builtins.rs");
 include!("gcc_builtins.rs");
+include!("gcc_x86_builtins.rs");
 
 const FOLDABLE_BUILTINS: &[&str] = &[
     "__addressof",
