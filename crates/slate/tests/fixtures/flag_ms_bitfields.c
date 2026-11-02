@@ -38,10 +38,12 @@ int main(void) {
 // CHECK-NEXT:     c: i8,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[repr(C)]
+// X86_64-UNKNOWN-LINUX-GNU-NEXT: #[repr(C)]
+// I686-UNKNOWN-LINUX-GNU-NEXT: #[repr(C, align(8))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct widening {
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits1U0,
+// I686-UNKNOWN-LINUX-GNU-NEXT:     __slate_pad_1: [u8; 4],
 // CHECK-NEXT:     __slate_bits_1: __slate_bits::__SlateBits1U1,
 // CHECK-NEXT:     __slate_bits_2: __slate_bits::__SlateBits1U2,
 // CHECK-NEXT: }
@@ -155,7 +157,7 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<mixed_units>() as u64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<widening>() as u64,
 // I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<mixed_units>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             24u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<widening>() as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {

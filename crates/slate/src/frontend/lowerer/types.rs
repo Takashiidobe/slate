@@ -211,32 +211,15 @@ impl Tables<'_> {
             ir::Type::Defined(id) => match self.types.get(id).map(|definition| &definition.kind) {
                 Some(ir::TypeDefinitionKind::Record {
                     fields: Some(fields),
-                    layout: Some(layout),
+                    layout: Some(_),
                     ..
-                }) => {
-                    fields
-                        .iter()
-                        .all(|field| !field.access.atomic && self.rust_layout_matches_c(&field.ty))
-                        && layout
-                            .bit_units
-                            .iter()
-                            .all(|unit| self.bit_unit_keeps_its_alignment(unit.size))
-                }
+                }) => fields
+                    .iter()
+                    .all(|field| !field.access.atomic && self.rust_layout_matches_c(&field.ty)),
                 _ => false,
             },
             _ => false,
         }
-    }
-
-    fn bit_unit_keeps_its_alignment(&self, size: u64) -> bool {
-        !matches!(size, 1 | 2 | 4 | 8 | 16)
-            || self
-                .rust_layout
-                .storage_of(ir::Type::Numeric(ir::NumericType::integer(
-                    size as u32 * 8,
-                    false,
-                )))
-                .is_ok_and(|layout| u64::from(layout.alignment_bytes) == size)
     }
 }
 
@@ -592,7 +575,15 @@ impl FunctionLowerer<'_, '_> {
                     8 => Prim::U64,
                     _ => Prim::U128,
                 };
-                (rust::Type::Prim(prim), storage.size)
+                let provided = self
+                    .tables
+                    .rust_layout
+                    .storage_of(ir::Type::Numeric(ir::NumericType::integer(
+                        storage.size as u32 * 8,
+                        false,
+                    )))
+                    .map_or(storage.size, |layout| u64::from(layout.alignment_bytes));
+                (rust::Type::Prim(prim), storage.size.min(provided))
             }
             size => (byte_array(size), 1),
         };
