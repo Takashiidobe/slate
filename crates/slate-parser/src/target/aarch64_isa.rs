@@ -310,6 +310,9 @@ pub struct ArmMarch {
     pub version: ArmVersion,
     clang: Selection,
     gcc: Selection,
+    fp: Option<bool>,
+    simd: Option<bool>,
+    other_modifiers: bool,
 }
 
 impl ArmMarch {
@@ -318,6 +321,9 @@ impl ArmMarch {
             version,
             clang: Selection::default(),
             gcc: Selection::default(),
+            fp: None,
+            simd: None,
+            other_modifiers: false,
         }
     }
 
@@ -326,12 +332,13 @@ impl ArmMarch {
         for &feature in features {
             march.clang.set(march.version, feature, true, Rules::Clang);
             march.gcc.set(march.version, feature, true, Rules::Gcc);
+            march.other_modifiers = true;
         }
         march
     }
 
-    pub fn has_modifiers(self) -> bool {
-        self.clang != Selection::default() || self.gcc != Selection::default()
+    pub fn arm32_fp_simd(self) -> Option<(Option<bool>, Option<bool>)> {
+        (!self.other_modifiers).then_some((self.fp, self.simd))
     }
 
     fn selection(self, rules: Rules) -> Selection {
@@ -362,6 +369,11 @@ impl FromStr for ArmMarch {
                 .clang
                 .set(march.version, feature, enabled, Rules::Clang);
             march.gcc.set(march.version, feature, enabled, Rules::Gcc);
+            match feature {
+                AArch64Feature::Fp => march.fp = Some(enabled),
+                AArch64Feature::Simd => march.simd = Some(enabled),
+                _ => march.other_modifiers = true,
+            }
         }
         Ok(march)
     }

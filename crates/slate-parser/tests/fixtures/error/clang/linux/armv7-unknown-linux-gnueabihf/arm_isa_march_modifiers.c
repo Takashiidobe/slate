@@ -5,5 +5,5 @@
 int value;
 
 // SLATE-FILECHECK-BEGIN ERROR
-// ERROR: Error:   × all rules failed: target ISA options: expected armv7-a or armv8-a without
+// ERROR: Error:   × all rules failed: target ISA options: expected armv7-a or armv8-a with
 // SLATE-FILECHECK-END ERROR

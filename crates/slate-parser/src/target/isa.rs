@@ -115,23 +115,31 @@ impl TargetIsa {
                 {
                     return Err("Windows on Arm requires the hard float ABI".into());
                 }
-                let version = match request.march {
-                    None => None,
+                let (version, fp_simd) = match request.march {
+                    None => (None, (None, None)),
                     Some(March::Arm(march))
-                        if !march.has_modifiers()
-                            && [ArmVersion::V7, ArmVersion::V8].contains(&march.version) =>
+                        if [ArmVersion::V7, ArmVersion::V8].contains(&march.version) =>
                     {
-                        Some(march.version)
+                        match march.arm32_fp_simd() {
+                            Some((Some(false), Some(true))) => {
+                                return Err("+nofp with +simd is unsupported for 32-bit Arm".into());
+                            }
+                            Some(fp_simd) => (Some(march.version), fp_simd),
+                            None => {
+                                return Err(
+                                    "expected armv7-a or armv8-a with only +fp and +simd extensions".into()
+                                );
+                            }
+                        }
                     }
                     Some(_) => {
-                        return Err(
-                            "expected armv7-a or armv8-a without extension modifiers".into()
-                        );
+                        return Err("expected armv7-a or armv8-a".into());
                     }
                 };
                 Ok(Self::Arm(ArmIsa::resolve(
                     environment,
                     version,
+                    fp_simd,
                     request.fpu,
                     request.float_abi,
                     request.thumb,

@@ -26,7 +26,9 @@ impl FromStr for ArmFloatAbi {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ArmFpu {
     None,
+    Vfpv2,
     Vfpv3,
+    Vfpv3Fp16,
     Vfpv3D16,
     Vfpv4,
     Vfpv4D16,
@@ -44,7 +46,9 @@ impl FromStr for ArmFpu {
     fn from_str(value: &str) -> Result<Self, Self::Err> {
         match value {
             "none" => Ok(Self::None),
+            "vfp" | "vfpv2" => Ok(Self::Vfpv2),
             "vfpv3" => Ok(Self::Vfpv3),
+            "vfpv3-fp16" => Ok(Self::Vfpv3Fp16),
             "vfpv3-d16" => Ok(Self::Vfpv3D16),
             "vfpv4" => Ok(Self::Vfpv4),
             "vfpv4-d16" => Ok(Self::Vfpv4D16),
@@ -63,7 +67,8 @@ impl ArmFpu {
     fn vfp_version(self) -> u8 {
         match self {
             Self::None => 0,
-            Self::Vfpv3 | Self::Vfpv3D16 | Self::Neon | Self::NeonFp16 => 3,
+            Self::Vfpv2 => 2,
+            Self::Vfpv3 | Self::Vfpv3Fp16 | Self::Vfpv3D16 | Self::Neon | Self::NeonFp16 => 3,
             Self::Vfpv4 | Self::Vfpv4D16 | Self::NeonVfpv4 => 4,
             Self::FpArmv8 | Self::NeonFpArmv8 | Self::CryptoNeonFpArmv8 => 5,
         }
@@ -80,8 +85,18 @@ impl ArmFpu {
         )
     }
 
+    fn without_neon(self) -> Self {
+        match self {
+            Self::Neon => Self::Vfpv3,
+            Self::NeonFp16 => Self::Vfpv3Fp16,
+            Self::NeonVfpv4 => Self::Vfpv4,
+            Self::NeonFpArmv8 | Self::CryptoNeonFpArmv8 => Self::FpArmv8,
+            other => other,
+        }
+    }
+
     fn half_precision(self) -> bool {
-        self == Self::NeonFp16 || self.vfp_version() >= 4
+        matches!(self, Self::NeonFp16 | Self::Vfpv3Fp16) || self.vfp_version() >= 4
     }
 }
 
@@ -96,12 +111,13 @@ pub struct ArmIsa {
 
 impl ArmIsa {
     pub fn baseline(environment: TargetEnvironment) -> Self {
-        Self::resolve(environment, None, None, None, None, false)
+        Self::resolve(environment, None, (None, None), None, None, None, false)
     }
 
     pub fn resolve(
         environment: TargetEnvironment,
         version: Option<ArmVersion>,
+        (fp, simd): (Option<bool>, Option<bool>),
         fpu: Option<ArmFpu>,
         float_abi: Option<ArmFloatAbi>,
         thumb: Option<bool>,
@@ -119,9 +135,16 @@ impl ArmIsa {
         } else {
             ArmFloatAbi::SoftFp
         };
+        let explicit_fpu = fpu.is_some();
+        let fpu = fpu.unwrap_or(default_fpu);
+        let fpu = match (fp, simd) {
+            (Some(false), _) if !explicit_fpu => ArmFpu::None,
+            (_, Some(false)) => fpu.without_neon(),
+            _ => fpu,
+        };
         Self {
             version,
-            fpu: fpu.unwrap_or(default_fpu),
+            fpu,
             float_abi: float_abi.unwrap_or(default_float_abi),
             thumb: windows || thumb.unwrap_or(false),
             general_regs_only,
@@ -179,7 +202,7 @@ impl ArmIsa {
             define(name, (v8 || gcc) && fpu == ArmFpu::CryptoNeonFpArmv8);
         }
         define("__ARM_FEATURE_FMA", vfp >= 4);
-        define("__ARM_VFPV2__", vfp >= 3 && !gcc);
+        define("__ARM_VFPV2__", vfp >= 2 && !gcc);
         define("__ARM_VFPV3__", vfp >= 3 && !gcc);
         define("__ARM_VFPV4__", vfp >= 4 && !gcc);
         define("__ARM_FPV5__", vfp >= 5 && !gcc);
@@ -196,7 +219,7 @@ impl ArmIsa {
         }
         define("__ARM_ASM_SYNTAX_UNIFIED__", gcc && self.thumb);
         define("__ARM_PCS", gcc && self.float_abi != ArmFloatAbi::Hard);
-        if vfp >= 3 {
+        if vfp >= 2 {
             defines.push(format!(
                 "__ARM_FP={}",
                 number(if fpu.half_precision() { 0xe } else { 0xc })
