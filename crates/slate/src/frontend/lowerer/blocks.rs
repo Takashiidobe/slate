@@ -387,6 +387,18 @@ impl FunctionLowerer<'_, '_> {
                 ty: self.lower_type(&param.ty)?,
             });
         }
+        let variadic = matches!(
+            function.parameters,
+            ir::Parameters::Prototype { variadic: true, .. }
+        );
+        if variadic {
+            params.push(FnParam {
+                comments: Vec::new(),
+                name: calls::VA_ARGS.into(),
+                mutable: true,
+                ty: rust::Type::Variadic,
+            });
+        }
         let ret = function
             .return_type
             .as_ref()
@@ -429,7 +441,7 @@ impl FunctionLowerer<'_, '_> {
         }
         Ok(Item::Fn(FnDef {
             comments: Vec::new(),
-            unsafe_: false,
+            unsafe_: variadic,
             attrs: Vec::new(),
             vis: rust::Visibility::Private,
             abi: Some(rust::Abi::CUnwind),
@@ -449,7 +461,7 @@ impl FunctionLowerer<'_, '_> {
         let ir::Type::Function {
             parameters,
             return_type,
-            variadic: false,
+            variadic,
             ..
         } = self.tables.resolve_type(signature)
         else {
@@ -460,13 +472,16 @@ impl FunctionLowerer<'_, '_> {
         for parameter in parameters {
             params.push(self.lower_type(parameter)?);
         }
+        if *variadic {
+            params.push(rust::Type::Variadic);
+        }
         let ret = match return_type {
             Some(ret) => self.lower_type(ret)?,
             None => rust::Type::Unit,
         };
         let mut args = vec![Expr::Var(temp.as_str().into())];
-        for argument in arguments {
-            args.push(self.lower_value(argument)?);
+        for (index, argument) in arguments.iter().enumerate() {
+            args.push(self.lower_call_argument(argument, index >= parameters.len())?);
         }
         let callee = self.lower_value(block)?;
         Ok(Expr::Unsafe(Box::new(rust::Block {

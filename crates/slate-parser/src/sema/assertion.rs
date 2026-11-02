@@ -411,7 +411,10 @@ impl Checker<'_> {
         );
         let range = self.names.block_ranges.get(&expr.id).cloned();
         self.block_ranges.extend(range.clone());
+        let names = declared.map(|ty| self.types.block_function_names(ty));
+        let enclosing_names = std::mem::replace(&mut self.types.function_names, names);
         self.compound(&block.body);
+        self.types.function_names = enclosing_names;
         if range.is_some() {
             self.block_ranges.pop();
         }

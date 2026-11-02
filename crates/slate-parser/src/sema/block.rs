@@ -61,6 +61,8 @@ impl Lowerer {
             std::mem::take(&mut self.switches),
             std::mem::take(&mut self.seh_leave_targets),
         );
+        let names = Some(self.types.block_function_names(signature));
+        let enclosing_names = std::mem::replace(&mut self.types.function_names, names);
         let mut prologue = Vec::new();
         let lowered = self
             .parameters(params, Some(&mut prologue))
@@ -76,6 +78,7 @@ impl Lowerer {
             self.switches,
             self.seh_leave_targets,
         ) = enclosing;
+        self.types.function_names = enclosing_names;
         let (parameters, body) = lowered?;
         let captures = self.block_captures(e.id, block)?;
         let id = self.fresh();

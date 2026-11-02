@@ -130,23 +130,10 @@ impl FunctionLowerer<'_, '_> {
                 .iter()
                 .enumerate()
                 .map(|(index, argument)| {
-                    let lowered = self.lower_value(argument)?;
-                    let ty = self.lower_type(&argument.ty)?;
-                    let variadic = variadic_start.is_some_and(|start| index >= start);
-                    Ok(match ty {
-                        rust::Type::FnPtr { .. } if variadic => {
-                            convert_function_pointer(ty, byte_pointer_type(), Box::new(lowered))
-                        }
-                        rust::Type::Prim(Prim::I8 | Prim::I16) if variadic => Expr::Cast {
-                            expr: Box::new(lowered),
-                            ty: rust::Type::Prim(Prim::I32),
-                        },
-                        rust::Type::Prim(Prim::U8 | Prim::U16) if variadic => Expr::Cast {
-                            expr: Box::new(lowered),
-                            ty: rust::Type::Prim(Prim::U32),
-                        },
-                        _ => lowered,
-                    })
+                    self.lower_call_argument(
+                        argument,
+                        variadic_start.is_some_and(|start| index >= start),
+                    )
                 })
                 .collect::<Result<Vec<_>>>()?,
             binding: match callee {
@@ -170,6 +157,32 @@ impl FunctionLowerer<'_, '_> {
             }))
         } else {
             call
+        })
+    }
+
+    pub(super) fn lower_call_argument(
+        &mut self,
+        argument: &ir::Value,
+        variadic: bool,
+    ) -> Result<Expr> {
+        let lowered = self.lower_value(argument)?;
+        if !variadic {
+            return Ok(lowered);
+        }
+        let ty = self.lower_type(&argument.ty)?;
+        Ok(match ty {
+            rust::Type::FnPtr { .. } => {
+                convert_function_pointer(ty, byte_pointer_type(), Box::new(lowered))
+            }
+            rust::Type::Prim(Prim::I8 | Prim::I16) => Expr::Cast {
+                expr: Box::new(lowered),
+                ty: rust::Type::Prim(Prim::I32),
+            },
+            rust::Type::Prim(Prim::U8 | Prim::U16) => Expr::Cast {
+                expr: Box::new(lowered),
+                ty: rust::Type::Prim(Prim::U32),
+            },
+            _ => lowered,
         })
     }
 

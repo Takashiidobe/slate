@@ -380,6 +380,23 @@ impl TypeResolver {
         }
     }
 
+    pub(super) fn block_function_names(&self, signature: QualType) -> FunctionNames {
+        let enclosing = self.function_names.as_ref();
+        FunctionNames {
+            plain: enclosing
+                .map(|names| names.plain.clone())
+                .unwrap_or_default(),
+            pretty: enclosing
+                .map(|names| names.pretty.clone())
+                .unwrap_or_default(),
+            convention: self.ctypes.function_convention(signature),
+            variadic: self
+                .ctypes
+                .function_parts(signature)
+                .is_some_and(|(_, _, variadic, _)| variadic),
+        }
+    }
+
     pub(super) fn predefined_name(&self, name: &str) -> &str {
         let Some(names) = self.function_names.as_ref() else {
             return if name == "__PRETTY_FUNCTION__" {

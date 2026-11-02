@@ -188,6 +188,7 @@ impl ModuleLowerer<'_> {
             .items
             .iter()
             .chain(&self.dependencies.compound_literals)
+            .chain(&self.dependencies.block_items)
             .chain(self.dependencies.macro_templates.values())
         {
             let references = referenced_names(item);

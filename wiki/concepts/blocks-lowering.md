@@ -68,7 +68,12 @@ captures becomes a global block (below), as clang emits it.
 A call whose indirect callee has block pointer type evaluates the block once
 into a temp, transmutes `__slate_blocks::invoke(temp)` to an
 `extern "C-unwind" fn(*mut c_void, params..) -> ret`, and calls it with the
-block as the first argument. Variadic block types are not lowered.
+block as the first argument. A variadic block type adds `...` to that
+pointer type and promotes the variadic arguments like any variadic call
+(`lower_call_argument`); a variadic literal's function is an
+`unsafe extern "C-unwind" fn(__block, fixed.., mut __va_args: ...)`. The
+parser checks `va_start` against the block's own signature, not the
+enclosing function's.
 
 ## __block variables
 
@@ -126,10 +131,13 @@ that re-declares a copied variable) and the two-unit
 `_Block_copy`/`_Block_release` themselves instead of including `<Block.h>`.
 `tests/fixtures.library/block_capture_retain` has a native C driver pass a
 stack block to a translated library that captures it in a copied block; it
-crashed before captured blocks were retained.
+crashed before captured blocks were retained. `block_variadic.c` and
+`tests/fixtures.library/block_variadic` cover variadic blocks, the latter
+calling translated variadic blocks from native C and native ones from
+translated code.
 
 ## Not yet lowered
 
 - Referencing a `__block` variable inside its own initializer.
-- Variadic blocks, `__block` on MSVC targets, blocks in aggregates inside
+- `__block` on MSVC targets, blocks in aggregates inside
   non-constant global initializers.
