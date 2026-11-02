@@ -7,6 +7,10 @@
 // SLATE-FILECHECK-DEFINES EARLIER-SSE
 // SLATE-FILECHECK-PREFIX-ARGS EARLIER-SSE -msse -msse2 -mgeneral-regs-only
 
+// SLATE-FILECHECK-DEFINES REGS-ONLY-SSE
+// SLATE-FILECHECK-PREFIX-ARGS REGS-ONLY-SSE -mgeneral-regs-only -msse
+// SLATE-FILECHECK-DEFINES NO-SSE-SSE
+// SLATE-FILECHECK-PREFIX-ARGS NO-SSE-SSE -mno-sse -msse
 // SLATE-FILECHECK-DEFINES AVX-AFTER
 // SLATE-FILECHECK-PREFIX-ARGS AVX-AFTER -mgeneral-regs-only -mavx
 // SLATE-FILECHECK-DEFINES AVX-BEFORE
@@ -150,6 +154,67 @@ int has_flt16;
 // EARLIER-SSE-NEXT:     }
 // EARLIER-SSE-NEXT: }
 // SLATE-FILECHECK-END EARLIER-SSE
+// SLATE-FILECHECK-BEGIN REGS-ONLY-SSE
+// REGS-ONLY-SSE: module {
+// REGS-ONLY-SSE-NEXT:     target "x86_64-unknown-linux-gnu" {
+// REGS-ONLY-SSE-NEXT:         endian = little;
+// REGS-ONLY-SSE-NEXT:         pointer [size=8, align=8];
+// REGS-ONLY-SSE-NEXT:         stack_alignment = 16;
+// REGS-ONLY-SSE-NEXT:         long_double = f80;
+// REGS-ONLY-SSE-NEXT:         storage bool [size=1, align=1];
+// REGS-ONLY-SSE-NEXT:         storage i8, u8 [size=1, align=1];
+// REGS-ONLY-SSE-NEXT:         storage i16, u16 [size=2, align=2];
+// REGS-ONLY-SSE-NEXT:         storage i32, u32 [size=4, align=4];
+// REGS-ONLY-SSE-NEXT:         storage i64, u64 [size=8, align=8];
+// REGS-ONLY-SSE-NEXT:         storage i128, u128 [size=16, align=16];
+// REGS-ONLY-SSE-NEXT:         storage bf16 [size=2, align=2];
+// REGS-ONLY-SSE-NEXT:         storage f16 [size=2, align=2];
+// REGS-ONLY-SSE-NEXT:         storage f32 [size=4, align=4];
+// REGS-ONLY-SSE-NEXT:         storage f64 [size=8, align=8];
+// REGS-ONLY-SSE-NEXT:         storage f80 [size=16, align=16];
+// REGS-ONLY-SSE-NEXT:         storage f128 [size=16, align=16];
+// REGS-ONLY-SSE-NEXT:         storage d32 [size=4, align=4];
+// REGS-ONLY-SSE-NEXT:         storage d64 [size=8, align=8];
+// REGS-ONLY-SSE-NEXT:         storage d128 [size=16, align=16];
+// REGS-ONLY-SSE-NEXT:     }
+// REGS-ONLY-SSE-NEXT:     global %[[VALUE_has_sse:[0-9]+]] has_sse: i32 [storage=static] [linkage=external];
+// REGS-ONLY-SSE-NEXT:     global %[[VALUE_has_sse2:[0-9]+]] has_sse2: i32 [storage=static] [linkage=external];
+// REGS-ONLY-SSE-NEXT:     global %[[VALUE_has_sse_math:[0-9]+]] has_sse_math: i32 [storage=static] [linkage=external];
+// REGS-ONLY-SSE-NEXT:     global %[[VALUE_has_sse2_math:[0-9]+]] has_sse2_math: i32 [storage=static] [linkage=external];
+// REGS-ONLY-SSE-NEXT:     global %[[VALUE_has_flt16:[0-9]+]] has_flt16: i32 [storage=static] [linkage=external];
+// REGS-ONLY-SSE-NEXT: }
+// SLATE-FILECHECK-END REGS-ONLY-SSE
+// SLATE-FILECHECK-BEGIN NO-SSE-SSE
+// NO-SSE-SSE: module {
+// NO-SSE-SSE-NEXT:     target "x86_64-unknown-linux-gnu" {
+// NO-SSE-SSE-NEXT:         endian = little;
+// NO-SSE-SSE-NEXT:         pointer [size=8, align=8];
+// NO-SSE-SSE-NEXT:         stack_alignment = 16;
+// NO-SSE-SSE-NEXT:         long_double = f80;
+// NO-SSE-SSE-NEXT:         storage bool [size=1, align=1];
+// NO-SSE-SSE-NEXT:         storage i8, u8 [size=1, align=1];
+// NO-SSE-SSE-NEXT:         storage i16, u16 [size=2, align=2];
+// NO-SSE-SSE-NEXT:         storage i32, u32 [size=4, align=4];
+// NO-SSE-SSE-NEXT:         storage i64, u64 [size=8, align=8];
+// NO-SSE-SSE-NEXT:         storage i128, u128 [size=16, align=16];
+// NO-SSE-SSE-NEXT:         storage bf16 [size=2, align=2];
+// NO-SSE-SSE-NEXT:         storage f16 [size=2, align=2];
+// NO-SSE-SSE-NEXT:         storage f32 [size=4, align=4];
+// NO-SSE-SSE-NEXT:         storage f64 [size=8, align=8];
+// NO-SSE-SSE-NEXT:         storage f80 [size=16, align=16];
+// NO-SSE-SSE-NEXT:         storage f128 [size=16, align=16];
+// NO-SSE-SSE-NEXT:         storage d32 [size=4, align=4];
+// NO-SSE-SSE-NEXT:         storage d64 [size=8, align=8];
+// NO-SSE-SSE-NEXT:         storage d128 [size=16, align=16];
+// NO-SSE-SSE-NEXT:     }
+// NO-SSE-SSE-NEXT:     global %[[VALUE_has_mmx:[0-9]+]] has_mmx: i32 [storage=static] [linkage=external];
+// NO-SSE-SSE-NEXT:     global %[[VALUE_has_sse:[0-9]+]] has_sse: i32 [storage=static] [linkage=external];
+// NO-SSE-SSE-NEXT:     global %[[VALUE_has_sse2:[0-9]+]] has_sse2: i32 [storage=static] [linkage=external];
+// NO-SSE-SSE-NEXT:     global %[[VALUE_has_sse_math:[0-9]+]] has_sse_math: i32 [storage=static] [linkage=external];
+// NO-SSE-SSE-NEXT:     global %[[VALUE_has_sse2_math:[0-9]+]] has_sse2_math: i32 [storage=static] [linkage=external];
+// NO-SSE-SSE-NEXT:     global %[[VALUE_has_flt16:[0-9]+]] has_flt16: i32 [storage=static] [linkage=external];
+// NO-SSE-SSE-NEXT: }
+// SLATE-FILECHECK-END NO-SSE-SSE
 // SLATE-FILECHECK-BEGIN AVX-AFTER
 // AVX-AFTER: module {
 // AVX-AFTER-NEXT:     target "x86_64-unknown-linux-gnu" {

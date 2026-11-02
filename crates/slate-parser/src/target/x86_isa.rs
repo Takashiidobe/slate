@@ -282,7 +282,12 @@ impl X86IsaRequest {
         let mut disabled = X86Features::default();
         for index in 0..=self.flags.len() {
             for _ in self.general_regs_only.iter().filter(|&&at| at == index) {
-                (enabled, disabled) = drop_vector_registers(rules, enabled, disabled);
+                let reenabled = |feature: X86Feature| {
+                    rules == Rules::Clang
+                        && (index..self.flags.len())
+                            .any(|later| self.flags[later] == (feature, true))
+                };
+                (enabled, disabled) = drop_vector_registers(rules, enabled, disabled, reenabled);
             }
             let Some(&(feature, on)) = self
                 .flags
@@ -295,7 +300,10 @@ impl X86IsaRequest {
                 && (index + 1..self.flags.len()).any(|later| {
                     self.included(later, rules) && self.flags[later] == (feature, false)
                 });
-            if cancelled {
+            let replaced = !on
+                && rules == Rules::Clang
+                && (index + 1..self.flags.len()).any(|later| self.flags[later] == (feature, true));
+            if cancelled || replaced {
                 continue;
             }
             if on {
@@ -316,6 +324,7 @@ fn drop_vector_registers(
     rules: Rules,
     mut enabled: X86Features,
     mut disabled: X86Features,
+    reenabled: impl Fn(X86Feature) -> bool,
 ) -> (X86Features, X86Features) {
     let kept = if rules == Rules::Gcc && enabled.contains(X86Feature::Sse42) {
         X86Features::of(&[X86Feature::Popcnt, X86Feature::Crc32]).without(disabled)
@@ -323,6 +332,9 @@ fn drop_vector_registers(
         X86Features::default()
     };
     for feature in [X86Feature::Sse, X86Feature::Mmx, X86Feature::X87] {
+        if reenabled(feature) {
+            continue;
+        }
         let removed = feature.disables(rules);
         disabled = disabled.union(removed);
         enabled = enabled.without(removed);
