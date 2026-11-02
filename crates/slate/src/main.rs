@@ -984,6 +984,10 @@ fn translate_slate_project(
 
 const SHARED_MACROS_MODULE: &str = "__slate_macros";
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "each argument is a distinct project artifact"
+)]
 fn write_project_crate(
     crate_dir: &Path,
     programs: Vec<(String, rust_ast::Program)>,

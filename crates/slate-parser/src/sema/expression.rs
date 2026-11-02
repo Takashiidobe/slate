@@ -2561,6 +2561,7 @@ impl Lowerer {
         let open = self.open_macros.len();
         self.open_macros
             .extend_from_slice(self.macro_structure.value_expansions(e.id));
+        #[expect(clippy::unnecessary_to_owned, reason = "loop body mutates open_macros")]
         for expansion in self.open_macros[open..].to_vec() {
             self.resolve_macro_type_arguments(expansion);
         }
