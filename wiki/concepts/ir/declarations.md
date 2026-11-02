@@ -135,7 +135,7 @@ on it.
 linkage and merged across redeclarations (first value wins, flags OR):
 `asm_name` (from `asm("sym")`), `visibility`, `weak`, `alias`, `section`,
 `used`, `retain`, `tls_model`, `dllimport`/`dllexport`, `weakref`,
-`ifunc`, `selectany`.
+`ifunc`, `selectany`, `fallback`.
 
 - An unknown `visibility("x")` argument is ignored on clang (it warns) and
   rejected on gcc. Fixtures: `ir_visibility_bogus.c`.
@@ -160,6 +160,13 @@ linkage and merged across redeclarations (first value wins, flags OR):
   ifunc is exported hidden as `__slate_ifunc_<name>`. Not checked (both oracles reject): an undefined resolver,
   a body on the same function, `weak` (gcc).
 - `selectany` (clang: `weak_odr` + COMDAT) needs external linkage.
+- `fallback("t")` comes from MSVC `#pragma comment(linker,
+  "/alternatename:a=t")` (msvc flavor only; on 32-bit x86 one leading `_` is
+  stripped from both names). Slate links an undefined `a` to `t`: a
+  bodiless `a` whose `t` is defined in the module resolves to that function,
+  otherwise it gets `#[link_name = "t"]`. A defined `a` ignores the pragma.
+  Fixtures: `msvc/windows/x86_64/pragma_alternatename.c`,
+  `crates/slate/tests/fixtures/msvc/{x86_64,i686}/pragma_alternatename.c`.
 
 ## Object properties
 

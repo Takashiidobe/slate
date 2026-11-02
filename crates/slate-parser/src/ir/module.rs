@@ -90,6 +90,7 @@ pub struct SymbolAttributes {
     pub tls_model: Option<TlsModel>,
     pub dll_storage: Option<DllStorage>,
     pub selectany: bool,
+    pub fallback: Option<String>,
 }
 
 impl SymbolAttributes {
@@ -106,6 +107,7 @@ impl SymbolAttributes {
         self.tls_model = self.tls_model.or(later.tls_model);
         self.dll_storage = self.dll_storage.or(later.dll_storage);
         self.selectany |= later.selectany;
+        self.fallback = self.fallback.take().or(later.fallback);
     }
 }
 

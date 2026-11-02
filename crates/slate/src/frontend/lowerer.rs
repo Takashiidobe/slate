@@ -56,6 +56,7 @@ use values::*;
 
 type Result<T> = std::result::Result<T, Failure>;
 
+#[derive(Clone)]
 struct FunctionName {
     rust: String,
     builtin: Option<String>,
@@ -77,6 +78,7 @@ struct Tables<'m> {
     statics: HashSet<BindingId>,
     constexprs: HashMap<BindingId, &'m ir::Value>,
     asm_names: HashMap<String, BindingId>,
+    fallbacks: HashMap<BindingId, BindingId>,
     register_globals: HashMap<BindingId, &'static str>,
     over_aligned: HashMap<BindingId, AlignWrapper>,
     flexible_globals: HashMap<BindingId, String>,
@@ -264,6 +266,24 @@ fn asm_names(
     }
     names.retain(|name, _| !ambiguous.contains(name));
     names
+}
+
+fn fallback_redirects(module: &ir::Module) -> HashMap<BindingId, BindingId> {
+    let defined: HashMap<&str, BindingId> = module
+        .functions
+        .iter()
+        .filter(|function| function.body.is_some())
+        .map(|function| (function.name.as_str(), function.value.id))
+        .collect();
+    module
+        .functions
+        .iter()
+        .filter(|function| function.body.is_none())
+        .filter_map(|function| {
+            let target = function.symbol.fallback.as_deref()?;
+            Some((function.value.id, *defined.get(target)?))
+        })
+        .collect()
 }
 
 fn exports_symbol(options: &LowerOptions, function: &ir::Function) -> bool {
@@ -518,7 +538,7 @@ impl<'m> ModuleLowerer<'m> {
                 None => statics.push(&global.value),
             }
         }
-        let names: HashMap<_, _> = module
+        let mut names: HashMap<_, _> = module
             .functions
             .iter()
             .map(|function| {
@@ -573,6 +593,12 @@ impl<'m> ModuleLowerer<'m> {
                 )
             })
             .collect();
+        let fallbacks = fallback_redirects(module);
+        for (from, to) in &fallbacks {
+            if let Some(target) = names.get(to).cloned() {
+                names.insert(*from, target);
+            }
+        }
         let mut bindings =
             global_names(module, files, names.values().map(|name| name.rust.as_str()));
         let static_names: HashSet<_> = statics
@@ -618,6 +644,7 @@ impl<'m> ModuleLowerer<'m> {
                 })
                 .collect(),
             asm_names: asm_names(module, options, &statics),
+            fallbacks,
             register_globals,
             over_aligned: HashMap::new(),
             flexible_globals: HashMap::new(),
@@ -779,6 +806,7 @@ impl<'m> ModuleLowerer<'m> {
         }
         for function in &module.functions {
             if function.body.is_some()
+                || self.tables.fallbacks.contains_key(&function.value.id)
                 || self.tables.stdio.functions.contains_key(&function.value.id)
                 || self.tables.stdio.unreachable.contains(&function.value.id)
                 || self.tables.intrinsics.contains_key(&function.value.id)

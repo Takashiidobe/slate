@@ -10,6 +10,7 @@ use crate::compiler_options::ComplexMethod;
 use crate::ir::{
     Contraction, Exceptions, FloatingSemantics, Rounding, SymbolAttributes, Visibility,
 };
+use crate::target_info::TargetFamily;
 use crate::visit::{self, Visitor};
 use std::collections::{HashMap, HashSet};
 use std::convert::Infallible;
@@ -21,6 +22,7 @@ pub struct Pragmas {
     visibility: HashMap<String, Visibility>,
     weak: HashMap<String, Option<String>>,
     renamed: HashMap<String, String>,
+    fallback: HashMap<String, String>,
     decimal64_literals: HashSet<NodeId>,
 }
 
@@ -49,6 +51,9 @@ impl Pragmas {
         }
         if let (None, Some(target)) = (&symbol.asm_name, self.renamed.get(name)) {
             symbol.asm_name = Some(target.clone());
+        }
+        if let Some(target) = self.fallback.get(name) {
+            symbol.fallback = Some(target.clone());
         }
     }
 }
@@ -427,6 +432,25 @@ impl Walk<'_> {
                 self.pragmas.weak.insert(name.clone(), alias.clone());
             }
             PragmaKind::Opaque(text) => {
+                if self.unit.dialect.flavor() == CompilerFlavor::Msvc {
+                    for option in linker_comment(text) {
+                        if let Some((from, to)) = option
+                            .strip_prefix("/alternatename:")
+                            .and_then(|pair| pair.split_once('='))
+                        {
+                            let undecorated = |symbol: &str| {
+                                if self.unit.dialect.target().family == TargetFamily::X86 {
+                                    symbol.strip_prefix('_').unwrap_or(symbol).to_string()
+                                } else {
+                                    symbol.to_string()
+                                }
+                            };
+                            self.pragmas
+                                .fallback
+                                .insert(undecorated(from), undecorated(to));
+                        }
+                    }
+                }
                 if let ["redefine_extname", from, to] =
                     text.split_whitespace().collect::<Vec<_>>()[..]
                 {
@@ -621,4 +645,24 @@ impl Visitor for TagCollector<'_, '_> {
         }
         visit::walk_type_specifier(self, ty)
     }
+}
+
+fn linker_comment(text: &str) -> Vec<&str> {
+    let Some(rest) = text
+        .strip_prefix("comment")
+        .map(str::trim_start)
+        .and_then(|rest| rest.strip_prefix('('))
+        .map(str::trim_start)
+        .and_then(|rest| rest.strip_prefix("linker"))
+        .map(str::trim_start)
+        .and_then(|rest| rest.strip_prefix(','))
+        .map(str::trim)
+    else {
+        return Vec::new();
+    };
+    rest.trim_end_matches(')')
+        .trim()
+        .trim_matches('"')
+        .split_whitespace()
+        .collect()
 }

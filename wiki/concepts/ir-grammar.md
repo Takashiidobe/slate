@@ -175,7 +175,7 @@ symbol_attrs = [ "[asm_name=" string "]" ] [ "[visibility=" visibility "]" ]
                [ "[ifunc=" string "]" ]
                [ "[section=" string "]" ] [ "[used]" ] [ "[retain]" ]
                [ "[tls_model=" tls_model "]" ] [ "[dllimport]" | "[dllexport]" ]
-               [ "[selectany]" ] ;
+               [ "[selectany]" ] [ "[fallback=" string "]" ] ;
 visibility   = "default" | "hidden" | "protected" | "internal" ;
 tls_model    = "global-dynamic" | "local-dynamic" | "initial-exec" | "local-exec" ;
 ```

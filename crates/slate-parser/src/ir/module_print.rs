@@ -139,6 +139,9 @@ impl fmt::Display for SymbolAttributes {
         if self.selectany {
             f.write_str(" [selectany]")?;
         }
+        if let Some(target) = &self.fallback {
+            write!(f, " [fallback={target:?}]")?;
+        }
         Ok(())
     }
 }
