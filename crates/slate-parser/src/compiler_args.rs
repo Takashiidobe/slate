@@ -355,6 +355,7 @@ struct ParsedCompilerArgs {
     fp_contract: Option<(FpContract, usize)>,
     iso_flt_eval_method: bool,
     float_store: Option<bool>,
+    single_precision_constant: Option<bool>,
     gnu89_inline: Option<bool>,
     common: Option<bool>,
     trigraphs: Option<bool>,
@@ -629,6 +630,7 @@ enum Opt {
     ExcessPrecision,
     PermittedFltEvalMethods,
     FloatStore,
+    SinglePrecisionConstant,
     Gnu89Inline,
     Common,
     Trigraphs,
@@ -788,6 +790,7 @@ impl std::fmt::Display for Opt {
             Self::ExcessPrecision => "fexcess-precision",
             Self::PermittedFltEvalMethods => "fpermitted-flt-eval-methods",
             Self::FloatStore => "ffloat-store",
+            Self::SinglePrecisionConstant => "fsingle-precision-constant",
             Self::Gnu89Inline => "gnu89-inline",
             Self::Common => "common",
             Self::Trigraphs => "trigraphs",
@@ -969,6 +972,7 @@ impl Opt {
             | Self::FpRetIn387
             | Self::X87LongDoubleBytes
             | Self::ZeroInitPaddingBits
+            | Self::SinglePrecisionConstant
             | Self::Permissive => &[Gcc],
             Self::StackAlignment
             | Self::ClangX87
@@ -1059,6 +1063,7 @@ impl Opt {
             Self::Gnu89Inline => "-fgnu89-inline",
             Self::Common => "-fcommon",
             Self::FloatStore => "-ffloat-store",
+            Self::SinglePrecisionConstant => "-fsingle-precision-constant",
             Self::ClangTrigraphs => "-ftrigraphs",
             Self::ClangDigraphs => "-fdigraphs",
             Self::MsExtensions => "-fms-extensions",
@@ -1491,8 +1496,9 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 59] = [
+const SWITCH_OPTS: [Opt; 60] = [
     Opt::FloatStore,
+    Opt::SinglePrecisionConstant,
     Opt::Asm,
     Opt::GnuInlineAsm,
     Opt::KnrFunctions,
@@ -1636,6 +1642,7 @@ impl CompilerArgParser {
         );
         options.iso_flt_eval_method = raw.iso_flt_eval_method;
         options.float_store = raw.float_store == Some(true);
+        options.single_precision_constant = raw.single_precision_constant == Some(true);
         options.inline_semantics = raw.gnu89_inline.map(|enabled| {
             use crate::compiler_options::InlineSemantics;
             if enabled {
@@ -1840,6 +1847,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::Gnu89Inline => parsed.gnu89_inline = Some(value),
                 Opt::Common => parsed.common = Some(value),
                 Opt::FloatStore => parsed.float_store = Some(value),
+                Opt::SinglePrecisionConstant => parsed.single_precision_constant = Some(value),
                 Opt::ClangTrigraphs => parsed.trigraphs = Some(value),
                 Opt::ClangDigraphs => parsed.digraphs = Some(value),
                 Opt::MsExtensions => {

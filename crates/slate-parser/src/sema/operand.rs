@@ -111,22 +111,29 @@ impl TypeResolver {
         }
     }
 
-    fn decimal64_literal(&self, e: &Expr) -> Option<Expr> {
+    fn adjusted_literal(&self, e: &Expr) -> Option<Expr> {
         let ExprKind::FloatLiteral(literal) = &e.value else {
             return None;
         };
-        if !self.pragmas.is_decimal64_literal(e.id) {
+        let suffix = if self.pragmas.is_decimal64_literal(e.id) {
+            FloatSuffix::DecimalF64
+        } else if self.dialect().options().single_precision_constant
+            && literal.suffix == FloatSuffix::None
+            && literal.fixed_suffix.is_none()
+        {
+            FloatSuffix::F
+        } else {
             return None;
-        }
+        };
         let literal = FloatLiteral {
-            suffix: FloatSuffix::DecimalF64,
+            suffix,
             ..literal.clone()
         };
         Some(Box::new(e.derive(ExprKind::FloatLiteral(literal))))
     }
 
     pub(super) fn literal(&mut self, context: &Context, e: &Expr) -> Result<Operand, ResolveError> {
-        if let Some(decimal) = self.decimal64_literal(e) {
+        if let Some(decimal) = self.adjusted_literal(e) {
             return self.literal(context, &decimal);
         }
         let c = self.literal_type(&context.target, context.features, e)?;
@@ -160,7 +167,7 @@ impl TypeResolver {
         features: StandardFeatures,
         e: &Expr,
     ) -> Result<QualType, ResolveError> {
-        if let Some(decimal) = self.decimal64_literal(e) {
+        if let Some(decimal) = self.adjusted_literal(e) {
             return self.literal_type(target, features, &decimal);
         }
         let kind = match &e.value {
