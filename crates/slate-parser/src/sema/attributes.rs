@@ -173,6 +173,7 @@ fn general_use(attribute: &Attribute) -> Use {
         | Attribute::WeakImport
         | Attribute::CallingConvention(_)
         | Attribute::NoMips16
+        | Attribute::Sme(_)
         | Attribute::Availability(_)
         | Attribute::Format(_)
         | Attribute::FormatArg(_)

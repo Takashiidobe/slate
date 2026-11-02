@@ -586,6 +586,7 @@ pub fn walk_attribute<V: Visitor + ?Sized>(
         | Attribute::MsStruct
         | Attribute::CallingConvention(_)
         | Attribute::NoMips16
+        | Attribute::Sme(_)
         | Attribute::Availability(_)
         | Attribute::ScalarStorageOrder(_)
         | Attribute::TransparentUnion

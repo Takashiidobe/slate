@@ -243,4 +243,11 @@ control-flow facts:
 - `target("...")` becomes `[target=...]` (grammar in
   [ir-grammar](../ir-grammar.md#functions)); `target_clones`, `cpu_dispatch`,
   and `cpu_specific` multiversioning are not lowered.
+- The SME keyword attributes (`__arm_streaming`, `__arm_streaming_compatible`,
+  `__arm_locally_streaming`, `__arm_new("za")`, `__arm_in`/`out`/`inout`/`preserves`) become
+  `[sme=...]` entries on AArch64. gcc spells them as `[[arm::...]]` macros, so the C23
+  group accepts `arm::` names and a leading `__extension__`. A bad state string is an
+  invalid attribute. They are recorded on declarations and definitions; on function
+  pointer and typedef declarators they parse and are dropped. slate refuses any function
+  carrying one ("SME function state"). Fixtures: `sme_keyword_attributes.c`.
 - Fixtures: `ir_inline*.c`, `ir_function_specifiers.c`, `ir_target_attribute.c`.

@@ -195,6 +195,7 @@ function    = "fn" binding "@" c_identifier "(" [ params ] ")" "->" type
               [ "[naked]" ] [ "[constructor=" int "]" ] [ "[destructor=" int "]" ]
               [ "[interrupt]" ] [ "[overloadable]" ]
               [ "[target=" target_feature { "," target_feature } "]" ]
+              { "[sme=" sme_kind [ "(" ( "za" | "zt0" ) { "," ( "za" | "zt0" ) } ")" ] "]" }
               [ "[memory=" ( "none" | "read" ) "]" ]
               { "[deallocator=%" int ", argument=" int "]" }
               [ "[abi=" ( abi_signature | "incomplete" ) "]" ]
@@ -242,6 +243,9 @@ target_feature = ( "+" | "-" ) feature_name | "arch=" cpu_name | "tune=" cpu_nam
 - `[target=...]` is `__attribute__((target("...")))` split as clang does:
   comma-separated and trimmed, empty entries dropped, `no-x` is `-x`. The last
   `target` attribute across declarations wins. Feature names are not validated.
+- `[sme=...]` is an SME keyword attribute on an AArch64 function, in source order:
+  `streaming`, `streaming_compatible`, `locally_streaming`, `new`, `in`, `out`,
+  `inout` or `preserves`; the last five carry their `za`/`zt0` states.
 - `memory=none` (GNU `const`) reads and writes no memory beyond the arguments;
   `memory=read` (`pure`) may read but not write. Absent means unrestricted.
 

@@ -109,6 +109,22 @@ impl Tables<'_> {
         Ok((!enabled.is_empty()).then(|| Attr::TargetFeature(enabled.join(","))))
     }
 
+    pub(super) fn reject_sme_state(&self, function: &ir::Function) -> Result<()> {
+        let Some(sme) = function.semantics.sme.first() else {
+            return Ok(());
+        };
+        let states = if sme.states.is_empty() {
+            String::new()
+        } else {
+            format!("({})", sme.states.join(","))
+        };
+        Err(Construct::Function {
+            name: function.name.clone(),
+            detail: format!("SME function state `{:?}{states}`", sme.kind),
+        }
+        .into())
+    }
+
     pub(super) fn enabled_target_features(
         &self,
         function: &ir::Function,
@@ -120,6 +136,7 @@ impl Tables<'_> {
             }
             .into()
         };
+        self.reject_sme_state(function)?;
         let mut enabled = Vec::new();
         for feature in &function.semantics.target {
             match feature {

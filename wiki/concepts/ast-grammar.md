@@ -586,6 +586,7 @@ Attribute = (* no arguments *)
           | "Hot" | "Leaf" | "NoIpa" | "NoClone" | "Naked" | "Interrupt"
           | "NoSplitStack" | "ReturnsTwice" | "DllImport" | "DllExport"
           | "WeakImport" | "MsStruct" | "NoMips16" | "TransparentUnion"
+          | "Sme(" SmeKind [ ", " vec<string> ] ")"
           | "GccStruct" | "Common" | "NoCommon" | "Pure" | "Const"
           | "MayAlias" | "MaybeUnused" | "Fallthrough" | "Uninitialized"
             (* expression arguments *)

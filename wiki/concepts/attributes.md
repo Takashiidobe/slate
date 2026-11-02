@@ -38,6 +38,7 @@ How an attribute gets from source to the IR. AST shape:
 | `__declspec(a b(x) ...)`                                                            | `align` → `aligned`, `allocate` → `section`; unregistered → `IgnoredDeclspec`                                                                             |
 | `_Alignas(...)` / `alignas(...)`                                                    | `AlignAs(Type \| Expr)`; a type name is tried first                                                                                                       |
 | `__attribute__((...))` / `__attribute((...))`                                       | unregistered → `Unknown`                                                                                                                                  |
+| `__arm_streaming`, `__arm_streaming_compatible`, `__arm_locally_streaming`, `__arm_new("za")`, `__arm_in`/`out`/`inout`/`preserves` | AArch64 only: `Sme(SmeAttribute)`; gcc's `[[arm::...]]` expansion maps to the same |
 | `[[name]]`, `[[scope::name]]`                                                       | `c23_attribute_name` maps standard names, `gnu::` / `clang::` names, `msvc::noinline`, `msvc::forceinline` (→ `always_inline`); anything else → `Unknown` |
 
 - `parse_attribute_value` matches the unwrapped name (`__name__` → `name`)

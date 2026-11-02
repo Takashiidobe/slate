@@ -275,6 +275,7 @@ impl FunctionLowerer<'_, '_> {
             ir::Parameters::Prototype { fixed, variadic } => (fixed.as_slice(), variadic),
             ir::Parameters::Unprototyped => (&[][..], &true),
         };
+        self.tables.reject_sme_state(function)?;
         let abi = self.tables.function_abi(function)?;
         self.dependencies.vectorcall |= abi == rust::Abi::VectorcallUnwind;
         if self.tables.function_has_vector(function) {

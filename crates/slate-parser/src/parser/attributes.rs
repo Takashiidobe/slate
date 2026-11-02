@@ -3,6 +3,7 @@ use crate::ast::*;
 use crate::attribute_support;
 use crate::const_expr;
 use crate::lexer::{Token, TokenSpanExt};
+use crate::target_info::TargetFamily;
 
 impl Parser {
     pub(super) fn parse_attribute_groups(
@@ -186,6 +187,17 @@ pub(super) fn parse_attribute_groups(
                 cursor.expect(Token::RParen, "expected `))` after attributes")?;
                 break;
             }
+        } else if let Some(kind) = sme_keyword(cursor.peek(), context) {
+            let start = cursor.pos;
+            cursor.pos += 1;
+            let arguments = cursor.parse_parenthesized_arguments("expected `)` after SME state")?;
+            let end = cursor.pos;
+            attributes.push(locate_attribute(
+                tokens,
+                start,
+                end,
+                sme_attribute(kind, arguments),
+            ));
         } else if cursor.at_c23_group() {
             parse_c23_group(&mut cursor, &mut attributes, biggest_alignment, context)?;
         } else {
@@ -225,6 +237,7 @@ fn parse_c23_group(
         if cursor.consume(&Token::Comma) {
             continue;
         }
+        cursor.consume(&Token::Ident("__extension__".into()));
         let start = cursor.pos;
         let mut name = cursor.expect_ident("expected C23 attribute name")?;
         let scoped = if cursor.consume(&Token::Colon) {
@@ -241,11 +254,23 @@ fn parse_c23_group(
         let end = cursor.pos;
         let arguments =
             cursor.parse_parenthesized_arguments("expected `)` after attribute arguments")?;
-        let attribute = match c23_attribute_name(&name).filter(|_| c23_registered(&name, context)) {
-            Some(canonical) => {
-                parse_attribute_spelling(&name, canonical, arguments, biggest_alignment, context)?
+        let sme = name
+            .strip_prefix("arm::")
+            .and_then(sme_kind)
+            .filter(|_| context.dialect().target().family == TargetFamily::AArch64);
+        let attribute = if let Some(kind) = sme {
+            sme_attribute(kind, arguments)
+        } else {
+            match c23_attribute_name(&name).filter(|_| c23_registered(&name, context)) {
+                Some(canonical) => parse_attribute_spelling(
+                    &name,
+                    canonical,
+                    arguments,
+                    biggest_alignment,
+                    context,
+                )?,
+                None => unknown_attribute(&name, arguments),
             }
-            None => unknown_attribute(&name, arguments),
         };
         attributes.push(locate_attribute(tokens, start, end, attribute));
         if cursor.consume(&Token::Comma) {
@@ -626,6 +651,68 @@ fn parse_attribute_expression(
     context: ParseContext<'_>,
 ) -> Result<Expr, String> {
     const_expr::Parser::parse_expression(arguments, context).map_err(|error| error.to_string())
+}
+
+fn sme_keyword(token: Option<&Token>, context: ParseContext<'_>) -> Option<SmeKind> {
+    if context.dialect().target().family != TargetFamily::AArch64 {
+        return None;
+    }
+    let Token::Ident(name) = token? else {
+        return None;
+    };
+    sme_kind(name.strip_prefix("__arm_")?)
+}
+
+fn sme_kind(name: &str) -> Option<SmeKind> {
+    Some(match name {
+        "streaming" => SmeKind::Streaming,
+        "streaming_compatible" => SmeKind::StreamingCompatible,
+        "locally_streaming" => SmeKind::LocallyStreaming,
+        "new" => SmeKind::New,
+        "in" => SmeKind::In,
+        "out" => SmeKind::Out,
+        "inout" => SmeKind::InOut,
+        "preserves" => SmeKind::Preserves,
+        _ => return None,
+    })
+}
+
+fn sme_attribute(kind: SmeKind, arguments: &[Span<Token>]) -> Attribute {
+    let takes_states = matches!(
+        kind,
+        SmeKind::New | SmeKind::In | SmeKind::Out | SmeKind::InOut | SmeKind::Preserves
+    );
+    let states: Option<Vec<String>> = arguments
+        .split(|token| token.value == Token::Comma)
+        .filter(|group| !group.is_empty())
+        .map(|group| {
+            let pieces: Option<Vec<&str>> = group
+                .iter()
+                .map(|piece| string_literal_content(&piece.value))
+                .collect();
+            pieces
+                .map(|pieces| pieces.concat())
+                .filter(|state| matches!(state.as_str(), "za" | "zt0"))
+        })
+        .collect();
+    match states {
+        Some(states) if takes_states != states.is_empty() => {
+            Attribute::Sme(SmeAttribute { kind, states })
+        }
+        _ => invalid_attribute(
+            match kind {
+                SmeKind::Streaming => "__arm_streaming",
+                SmeKind::StreamingCompatible => "__arm_streaming_compatible",
+                SmeKind::LocallyStreaming => "__arm_locally_streaming",
+                SmeKind::New => "__arm_new",
+                SmeKind::In => "__arm_in",
+                SmeKind::Out => "__arm_out",
+                SmeKind::InOut => "__arm_inout",
+                SmeKind::Preserves => "__arm_preserves",
+            },
+            arguments,
+        ),
+    }
 }
 
 fn keyword_calling_convention(token: Option<&Token>) -> Option<CallingConvention> {

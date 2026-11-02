@@ -1315,6 +1315,24 @@ pub enum AlignAsOperand {
     Expr(Expr),
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SmeAttribute {
+    pub kind: SmeKind,
+    pub states: Vec<String>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SmeKind {
+    Streaming,
+    StreamingCompatible,
+    LocallyStreaming,
+    New,
+    In,
+    Out,
+    InOut,
+    Preserves,
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum CallingConvention {
     Cdecl,
@@ -1409,6 +1427,7 @@ pub enum Attribute {
     MsStruct,
     CallingConvention(CallingConvention),
     NoMips16,
+    Sme(SmeAttribute),
     Availability(Vec<String>),
     ExtVectorType(Expr),
     ScalarStorageOrder(String),

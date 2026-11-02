@@ -6,7 +6,7 @@ use super::{
     Visibility,
 };
 use crate::{
-    ast::{CommentAttach, Loc, MacroInvocations, NodeId, Span},
+    ast::{CommentAttach, Loc, MacroInvocations, NodeId, SmeKind, Span},
     ir::Fallthrough,
 };
 use std::fmt;
@@ -1308,6 +1308,23 @@ impl fmt::Display for DisplayModule<'_> {
                             write!(f, "branch-protection={kind}")?
                         }
                     }
+                }
+                f.write_str("]")?;
+            }
+            for sme in &function.semantics.sme {
+                let kind = match sme.kind {
+                    SmeKind::Streaming => "streaming",
+                    SmeKind::StreamingCompatible => "streaming_compatible",
+                    SmeKind::LocallyStreaming => "locally_streaming",
+                    SmeKind::New => "new",
+                    SmeKind::In => "in",
+                    SmeKind::Out => "out",
+                    SmeKind::InOut => "inout",
+                    SmeKind::Preserves => "preserves",
+                };
+                write!(f, " [sme={kind}")?;
+                if !sme.states.is_empty() {
+                    write!(f, "({})", sme.states.join(","))?;
                 }
                 f.write_str("]")?;
             }

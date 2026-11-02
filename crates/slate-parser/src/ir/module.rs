@@ -2,7 +2,9 @@ use super::{
     AbiSignature, Atomicity, BindingId, CTypeTable, Comments, CompareOp, FenceScope, Global,
     InlineAsm, Parameters, Place, Type, TypeDefinition, Value, Variable,
 };
-use crate::ast::{CommentAttach, CommentGroup, MacroExpansionId, MacroInvocations, NodeId, Span};
+use crate::ast::{
+    CommentAttach, CommentGroup, MacroExpansionId, MacroInvocations, NodeId, SmeAttribute, Span,
+};
 pub use crate::ast::{OmpScheduleKind, OmpScheduleModifier};
 use crate::target_info::TargetInfo;
 use std::collections::HashMap;
@@ -135,6 +137,7 @@ pub struct FunctionSemantics {
     pub memory: Option<MemoryEffects>,
     pub deallocators: Vec<Deallocator>,
     pub target: Vec<TargetFeature>,
+    pub sme: Vec<SmeAttribute>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

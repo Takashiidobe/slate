@@ -4,7 +4,9 @@ use super::ctype::QualType;
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
 use super::types::TypeResolver;
-use crate::ast::{Attribute, DeclarationSpecifiers, Expr, ExprKind, Span, StorageClass};
+use crate::ast::{
+    Attribute, DeclarationSpecifiers, Expr, ExprKind, SmeAttribute, Span, StorageClass,
+};
 use crate::compiler_options::InlineSemantics;
 use crate::ir::{
     BindingId, Deallocator, DllStorage, Fallthrough, FunctionSemantics, Inlining, Linkage,
@@ -28,6 +30,7 @@ pub(super) struct FunctionDeclarations {
     memory: Option<MemoryEffects>,
     deallocators: Vec<Deallocator>,
     target: Vec<TargetFeature>,
+    sme: Vec<SmeAttribute>,
     attributes: Vec<Attribute>,
 }
 
@@ -213,6 +216,7 @@ impl Lowerer {
                     state.destructor = Some(init_priority(*priority))
                 }
                 Attribute::Target(spec) => state.target = target_features(spec),
+                Attribute::Sme(sme) if !state.sme.contains(sme) => state.sme.push(sme.clone()),
                 Attribute::Const => state.restrict_memory(MemoryEffects::None),
                 Attribute::Pure => state.restrict_memory(MemoryEffects::Read),
                 _ => {}
@@ -318,6 +322,7 @@ impl Lowerer {
                     Vec::new()
                 },
                 target: state.target.clone(),
+                sme: state.sme.clone(),
             };
             // a naked function has no epilogue: clang ends its body in `unreachable`.
             if (state.noreturn || state.naked) && function.body.is_some() {
