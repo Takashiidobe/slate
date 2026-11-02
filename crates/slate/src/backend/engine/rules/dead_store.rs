@@ -74,7 +74,7 @@ impl NodeRule for DeadStore {
             return false;
         };
 
-        if !is_inert_init(init) && expr_effects(init).is_side_effect() {
+        if !is_inert_init(init) && expr_effects(init).is_effectful() {
             let Some(NodeKind::Let {
                 init: Some(init), ..
             }) = arena.get_mut(id)

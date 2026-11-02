@@ -133,7 +133,7 @@ impl Effects {
             || self.memory_write
     }
 
-    fn is_effectful(self) -> bool {
+    pub(super) fn is_effectful(self) -> bool {
         self.is_side_effect() || self.volatile_read
     }
 
