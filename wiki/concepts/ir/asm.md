@@ -409,6 +409,9 @@ impossible.
   to the template, decoded into the C place like other outputs (`_Bool` tests against zero,
   integers zero-extend). gcc drops the setcc for `=&@cc`, so the differential fixture avoids
   early clobbers (`gnu_asm_flag_outputs.c`).
+  clang-only `+@cc<cond>` lowers the same way: clang ignores the tied input (the output is the
+  flags), so the input is dropped (`clang_asm_flag_output_readwrite.c`). A template reference to
+  a flags operand stays a barrier: clang prints an unspecified register for it.
 - x87 operands spill through temporaries passed `in(reg)`. Inputs sit where both compilers put
   them: `t` at st(0), `u` at st(1), `f` inputs below in operand order, loaded deepest first with
   `flds`/`fldl`/`fldt`. After the template, outputs (`=t`, then `=u`) are popped with

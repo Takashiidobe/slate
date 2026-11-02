@@ -1612,8 +1612,10 @@ impl FunctionLowerer<'_, '_> {
                     continue;
                 }
                 Some(ir::AsmOperandClass::Flags(_)) => {
-                    let ir::AsmOperandKind::Out { place, .. } = &operand.kind else {
-                        return Err(unsupported_asm("read-write flag output"));
+                    let (ir::AsmOperandKind::Out { place, .. }
+                    | ir::AsmOperandKind::InOut { place, .. }) = &operand.kind
+                    else {
+                        return Err(unsupported_asm("flag output without a place"));
                     };
                     let temp = self.next_temp();
                     prefix.push(Stmt::Let {
