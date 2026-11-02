@@ -219,6 +219,7 @@ pub(super) enum BuiltinType {
     WcharT,
     VaList,
     VaListRef,
+    Sizeless(&'static str),
     Opaque(&'static str),
 }
 
@@ -1085,6 +1086,7 @@ impl TypeResolver {
                 signed: target.wchar_signed,
             },
             BuiltinType::VaList => return Some(self.ctypes.va_list_type(target)),
+            BuiltinType::Sizeless(name) => CTypeKind::Sizeless(name),
             BuiltinType::Opaque(name @ ("msuint32_t" | "msint32_t")) => CTypeKind::Int {
                 rank: if super::ctype::rank_width(IntRank::Long, target) == 32 {
                     IntRank::Long

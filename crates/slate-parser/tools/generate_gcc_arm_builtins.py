@@ -23,6 +23,9 @@ def load(names):
     for name in names:
         for line in (DUMPS / f"{name}.tsv").read_text().splitlines():
             kind, symbol, spelling, attributes, sizeless = line.split("\t")
+            if sizeless == "1" and kind == "type":
+                clang.SIZELESS[symbol] = symbol[2:].lower() if symbol.startswith("__SV") else symbol
+                continue
             if sizeless == "1":
                 continue
             if kind == "tuple":
@@ -71,7 +74,12 @@ def main():
             )
         lines.extend(["];", ""])
         lines.append(f"pub(super) static GCC_{family}_TYPES: &[(&str, BuiltinParam)] = &[")
-        for name, (spelling, _) in sorted(types.items()):
+        entries = {name: spelling for name, (spelling, _) in types.items()}
+        if family == "AARCH64":
+            for name, canonical in clang.SIZELESS.items():
+                entries[name] = name
+                entries[canonical] = name
+        for name, spelling in sorted(entries.items()):
             ret, _, _ = clang.parse_prototype(f"{spelling}()")
             lines.append(f"    ({json.dumps(name)}, {ret}),")
         lines.extend(["];", ""])

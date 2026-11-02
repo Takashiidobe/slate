@@ -1812,6 +1812,7 @@ fn numeric_type(ty: &Type) -> Result<NumericType, ResolveError> {
         | Type::Vector { .. }
         | Type::Pointer { .. }
         | Type::VaList
+        | Type::Sizeless(_)
         | Type::Array { .. }
         | Type::VariableArray { .. }
         | Type::Function { .. }

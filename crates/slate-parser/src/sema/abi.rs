@@ -812,7 +812,8 @@ impl<'a> AbiClassifier<'a> {
             | Type::Imaginary(_)
             | Type::FixedPoint(_)
             | Type::Pointer { .. }
-            | Type::VaList => Ok(AbiPass::Scalar),
+            | Type::VaList
+            | Type::Sizeless(_) => Ok(AbiPass::Scalar),
             Type::Complex(component) => self.complex_pass(*component, result, convention),
             Type::Vector { .. } => self.vector_abi(operand, result, convention),
             Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {

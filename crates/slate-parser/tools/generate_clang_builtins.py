@@ -91,7 +91,12 @@ def param_expr(ty, quals, constant):
     )
 
 
+SIZELESS = {}
+
+
 def base_expr(spelling):
+    if spelling in SIZELESS:
+        return f"&BuiltinType::Sizeless({json.dumps(SIZELESS[spelling])})"
     if spelling in SIMPLE:
         return f"&BuiltinType::{SIMPLE[spelling]}"
     if spelling in INTEGERS:

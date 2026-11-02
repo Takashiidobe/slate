@@ -28,6 +28,7 @@ impl CTypes {
                 lanes: *lanes,
             },
             CTypeKind::VaList => Type::VaList,
+            CTypeKind::Sizeless(name) => Type::Sizeless((*name).into()),
             CTypeKind::NullPtr => Type::Pointer {
                 pointee: Box::new(Type::Void),
                 is_const: false,
@@ -131,6 +132,7 @@ impl CTypes {
             | CTypeKind::Vector { .. }
             | CTypeKind::VaList
             | CTypeKind::NullPtr
+            | CTypeKind::Sizeless(_)
             | CTypeKind::Record { .. }
             | CTypeKind::Enum(_)
             | CTypeKind::Pointer(..)

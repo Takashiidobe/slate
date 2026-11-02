@@ -11,8 +11,8 @@ HERE = Path(__file__).resolve().parent
 CONFIGS = {
     "aarch64": {
         "compiler": "aarch64-linux-gnu-gcc",
-        "flags": ["-march=armv9-a"],
-        "headers": ["arm_neon.h", "arm_acle.h", "arm_fp16.h", "arm_bf16.h"],
+        "flags": ["-march=armv9-a+sve2"],
+        "headers": ["arm_neon.h", "arm_acle.h", "arm_fp16.h", "arm_bf16.h", "arm_sve.h"],
     },
     "arm": {
         "compiler": "arm-none-eabi-gcc",
@@ -27,7 +27,7 @@ CONFIGS = {
 }
 
 TYPE_NAME = re.compile(
-    r"\b__(?:builtin_(?:aarch64_simd|neon)_[a-z0-9]+|simd[0-9]+_[a-z0-9_]+|[A-Z][A-Za-z0-9]*_t|mfp8|fp16|bf16)\b|\b[a-z0-9]+x[0-9]+x[2-4]_t\b"
+    r"\b__(?:builtin_(?:aarch64_simd|neon)_[a-z0-9]+|simd[0-9]+_[a-z0-9_]+|[A-Z][A-Za-z0-9]*_t|mfp8|fp16|bf16)\b|\b[a-z0-9]+x[0-9]+x[2-4]_t\b|\bsv[a-z0-9]+_t\b|\bsv(?:pattern|prfop)\b"
 )
 
 

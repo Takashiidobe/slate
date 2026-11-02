@@ -14,6 +14,7 @@ pub enum Type {
         lanes: u32,
     },
     VaList,
+    Sizeless(String),
     Defined(super::TypeId),
     Pointer {
         pointee: Box<Type>,
@@ -74,6 +75,7 @@ impl fmt::Display for Type {
             Self::Defined(id) => write!(f, "@type{}", id.0),
             Self::Bool => f.write_str("bool"),
             Self::VaList => f.write_str("va_list"),
+            Self::Sizeless(name) => write!(f, "sizeless<{name}>"),
             Self::Numeric(ty) => write!(f, "{ty}"),
             Self::Complex(ty) => write!(f, "complex<{ty}>"),
             Self::Imaginary(ty) => write!(f, "imaginary<{ty}>"),

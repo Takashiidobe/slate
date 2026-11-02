@@ -212,6 +212,7 @@ pub enum CTypeKind {
     },
     VaList,
     NullPtr,
+    Sizeless(&'static str),
     Record {
         id: TypeId,
         union: bool,

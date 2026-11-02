@@ -714,6 +714,7 @@ impl TargetInfo {
             Type::VaList => return Ok(self.va_list_storage()),
             Type::Complex(_)
             | Type::Vector { .. }
+            | Type::Sizeless(_)
             | Type::FixedPoint(_)
             | Type::Defined(_)
             | Type::Array { .. }

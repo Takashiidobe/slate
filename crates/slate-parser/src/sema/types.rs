@@ -2710,6 +2710,11 @@ impl TypeResolver {
                     if self.ctypes.is_void(q) {
                         return Err(ResolveError::Rejected("void array element"));
                     }
+                    if matches!(self.ctypes.canonical_kind(q), CTypeKind::Sizeless(_)) {
+                        return Err(ResolveError::Rejected(
+                            "array elements cannot have a sizeless type",
+                        ));
+                    }
                     if self.ctypes.typedef_alignment(q).is_some()
                         && let Ok(natural) = self.storage(self.ir_type(q))
                     {
@@ -3849,6 +3854,9 @@ impl TypeResolver {
             Type::Array { length: None, .. } | Type::Function { .. } => {
                 Err(ResolveError::Rejected("incomplete field type"))
             }
+            Type::Sizeless(_) => Err(ResolveError::Rejected(
+                "sizeless type does not have a fixed size",
+            )),
             _ => Ok(promote(self.dialect.target().storage_of(ty)?)),
         }
     }

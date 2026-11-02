@@ -1,4 +1,5 @@
 #include <string>
+#include <set>
 #include "gcc-plugin.h"
 #include "config.h"
 #include "system.h"
@@ -12,6 +13,7 @@
 int plugin_is_GPL_compatible;
 
 static bool sizeless;
+static std::set<std::string> sizeless_names;
 
 static std::string spelling (tree type);
 
@@ -38,6 +40,16 @@ static std::string spelling (tree type)
   tree main = TYPE_MAIN_VARIANT (type);
   std::string name = named (main);
   bool is_unsigned = TYPE_UNSIGNED (main);
+  if (TREE_CODE (main) == VECTOR_TYPE ? !TYPE_VECTOR_SUBPARTS (main).is_constant ()
+      : (TREE_CODE (main) == RECORD_TYPE && TYPE_SIZE (main)
+	 && TREE_CODE (TYPE_SIZE (main)) != INTEGER_CST))
+    {
+      sizeless = true;
+      if (name.empty ())
+	name = named (TREE_TYPE (main));
+      sizeless_names.insert (name);
+      return qualified (type, name);
+    }
   switch (TREE_CODE (main))
     {
     case VOID_TYPE:
@@ -78,7 +90,11 @@ static std::string spelling (tree type)
     case RECORD_TYPE:
     case UNION_TYPE:
       if (name.empty () || !TYPE_SIZE (main))
-	sizeless = true;
+	{
+	  sizeless = true;
+	  if (!name.empty ())
+	    sizeless_names.insert (name);
+	}
       return qualified (type, name);
     default:
       sizeless = true;
@@ -162,6 +178,8 @@ static void marker (void *data, void *)
 static void dump_all (void *, void *)
 {
   dump_functions ();
+  for (const std::string &name : sizeless_names)
+    fprintf (stdout, "type\t%s\t%s\t\t1\n", name.c_str (), name.c_str ());
 }
 
 int plugin_init (struct plugin_name_args *info, struct plugin_gcc_version *)
