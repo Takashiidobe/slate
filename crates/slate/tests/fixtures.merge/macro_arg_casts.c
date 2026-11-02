@@ -81,94 +81,19 @@ int main(void) {
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! MIXED {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let __v: i32 = unsafe { flips };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             flips = __v + ($a) * 2;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: u16 = unsafe { buffer };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = (((([[V_0]] as u32) as i32) ^ (((($a) as u16) as u32) as i32)) as i16) as u16;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! PUT {
-// CHECK-NEXT:     ($value:expr, $room:expr) => {
-// CHECK-NEXT:         if $room {
-// CHECK-NEXT:             let val: i32 = ($value) as i32;
-// CHECK-NEXT:             let __v: u16 = unsafe { buffer };
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = ((((__v as u32) as i32) | ((((val as i16) as u16) as u32) as i32) << 1i32)
-// CHECK-NEXT:                     as i16) as u16;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 flips = flips + val;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: u16 = unsafe { buffer };
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = (((([[V_1]] as u32) as i32) | (((($value) as u16) as u32) as i32) << 1i32)
-// CHECK-NEXT:                     as i16) as u16;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! STORE_BYTE {
-// CHECK-NEXT:     ($c:expr) => {
-// CHECK-NEXT:         let __v: i32 = unsafe { used };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             used = __v + 1;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             bytes[__v as usize] = ($c) as u8;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SUM_TWICE {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let __v: i32 = unsafe { flips };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             flips = __v + (((($a) as u32) as i32) + ((($a) as u32) as i32));
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SUM_TWICE__2 {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let __v: i32 = unsafe { flips };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             flips = __v + (($a) + $a);
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! UNHYGIENIC {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let __v: i32 = unsafe { flips };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             flips = __v + ((($a) as u32) as i32) * ((($a) as u32) as i32);
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: use core::ffi::c_char;
-// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut buffer: u16 = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: static mut bytes: [u8; 8] = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: static mut used: i32 = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: static mut flips: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let lc: u32 = 70000;
@@ -247,8 +172,8 @@ int main(void) {
 // CHECK-NEXT:     STORE_BYTE!(small);
 // CHECK-NEXT:     STORE_BYTE!(code);
 // CHECK-NEXT:     STORE_BYTE!(lc >> 3i32);
-// CHECK-NEXT:     SUM_TWICE__2!(wide);
-// CHECK-NEXT:     SUM_TWICE!(code);
+// CHECK-NEXT:     SUM_TWICE!(wide);
+// CHECK-NEXT:     SUM_TWICE__2!(code);
 // CHECK-NEXT:     MIXED!(wide);
 // CHECK-NEXT:     MIXED!(((small as u32) as i32) + 1);
 // CHECK-NEXT:     unsafe {
@@ -285,13 +210,88 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: unsafe extern "C-unwind" fn main(
-// CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
-// CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: macro_rules! MIXED {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         let __v: i32 = unsafe { flips };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             flips = __v + ($a) * 2;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: u16 = unsafe { buffer };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             buffer = (((([[V_0]] as u32) as i32) ^ (((($a) as u16) as u32) as i32)) as i16) as u16;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! PUT {
+// CHECK-NEXT:     ($value:expr, $room:expr) => {
+// CHECK-NEXT:         if $room {
+// CHECK-NEXT:             let val: i32 = ($value) as i32;
+// CHECK-NEXT:             let __v: u16 = unsafe { buffer };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 buffer = ((((__v as u32) as i32) | ((((val as i16) as u16) as u32) as i32) << 1i32)
+// CHECK-NEXT:                     as i16) as u16;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 flips = flips + val;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: u16 = unsafe { buffer };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 buffer = (((([[V_1]] as u32) as i32) | (((($value) as u16) as u32) as i32) << 1i32)
+// CHECK-NEXT:                     as i16) as u16;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! STORE_BYTE {
+// CHECK-NEXT:     ($c:expr) => {
+// CHECK-NEXT:         let __v: i32 = unsafe { used };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             used = __v + 1;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             bytes[__v as usize] = ($c) as u8;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SUM_TWICE {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         let __v: i32 = unsafe { flips };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             flips = __v + (($a) + $a);
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SUM_TWICE__2 {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         let __v: i32 = unsafe { flips };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             flips = __v + (((($a) as u32) as i32) + ((($a) as u32) as i32));
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! UNHYGIENIC {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         let __v: i32 = unsafe { flips };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             flips = __v + ((($a) as u32) as i32) * ((($a) as u32) as i32);
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut buffer: u16 = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut bytes: [u8; 8] = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut flips: i32 = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut used: i32 = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

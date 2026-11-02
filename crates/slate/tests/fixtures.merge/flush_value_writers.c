@@ -27,22 +27,14 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: //! merge-extra-targets: freebsd-x86_64 x86_64-unknown-freebsd clang
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc"),
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "freebsd")
-// CHECK-NEXT: )))]
-// CHECK-NEXT: compile_error!("this crate was not translated for this target");
+// CHECK-NEXT: #[cfg(target_env = "gnu")]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn putc_unlocked([[ARG_0:arg[0-9]+]]: i32, [[ARG_1:arg[0-9]+]]: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_os = "freebsd")]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut __isthreaded: i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(target_env = "gnu")]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn putc_unlocked([[ARG_0:arg[0-9]+]]: i32, [[ARG_1:arg[0-9]+]]: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -50,11 +42,22 @@ int main(void) {
 // CHECK-NEXT:     fn putc_unlocked(...) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use core::ffi::c_char;
+// CHECK-NEXT: //! merge-extra-targets: freebsd-x86_64 x86_64-unknown-freebsd clang
+// CHECK-NEXT: #[cfg(not(any(
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
+// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc"),
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "freebsd")
+// CHECK-NEXT: )))]
+// CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     #[cfg(windows)]
@@ -116,13 +119,10 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: unsafe extern "C-unwind" fn main(
-// CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
-// CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

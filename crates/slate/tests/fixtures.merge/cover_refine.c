@@ -78,18 +78,10 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: //! merge-features: alpha beta gamma delta epsilon
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
-// CHECK-NEXT: compile_error!("this crate was not translated for this target");
-// CHECK-EMPTY:
-// CHECK-NEXT: use core::ffi::c_char;
-// CHECK-NEXT: #[cfg(any(feature = "alpha", feature = "beta"))]
-// CHECK-NEXT: use core::ffi::c_long;
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: use core::ffi::c_ulong;
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -99,37 +91,6 @@ int main(void) {
 // CHECK-NEXT:     a: c_long,
 // CHECK-NEXT:     #[cfg(feature = "beta")]
 // CHECK-NEXT:     b: c_long,
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn state_size() -> i32 {
-// CHECK-NEXT:     std::mem::size_of::<state>() as i32
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn nested() -> i32 {
-// CHECK-NEXT:     #[cfg(feature = "gamma")]
-// CHECK-NEXT:     let mut value: i32 = 0;
-// CHECK-NEXT:     #[cfg(feature = "gamma")]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         value += 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(all(feature = "gamma", feature = "delta"))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         value += 2;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(all(feature = "gamma", feature = "epsilon"))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         value += 4;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(not(feature = "gamma"))]
-// CHECK-NEXT:     let value: i32 = 0;
-// CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -153,6 +114,27 @@ int main(void) {
 // CHECK-NEXT:         all(not(feature = "alpha"), not(feature = "beta"), not(feature = "delta")),
 // CHECK-NEXT:         all(not(feature = "beta"), not(feature = "gamma"), not(feature = "delta"))
 // CHECK-NEXT:     ))]
+// CHECK-NEXT:     let value: i32 = 0;
+// CHECK-NEXT:     value
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: extern "C-unwind" fn nested() -> i32 {
+// CHECK-NEXT:     #[cfg(feature = "gamma")]
+// CHECK-NEXT:     let mut value: i32 = 0;
+// CHECK-NEXT:     #[cfg(feature = "gamma")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         value += 1;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(feature = "gamma", feature = "delta"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         value += 2;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(all(feature = "gamma", feature = "epsilon"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         value += 4;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(feature = "gamma"))]
 // CHECK-NEXT:     let value: i32 = 0;
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
@@ -187,6 +169,27 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: extern "C-unwind" fn state_size() -> i32 {
+// CHECK-NEXT:     std::mem::size_of::<state>() as i32
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: //! merge-features: alpha beta gamma delta epsilon
+// CHECK-NEXT: #[cfg(not(any(
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
+// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
+// CHECK-NEXT: )))]
+// CHECK-NEXT: compile_error!("this crate was not translated for this target");
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -216,13 +219,10 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: unsafe extern "C-unwind" fn main(
-// CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
-// CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     unsafe { __slate_main() }
-// CHECK-NEXT: }
+// CHECK-NEXT: use core::ffi::c_char;
+// CHECK-NEXT: #[cfg(any(feature = "alpha", feature = "beta"))]
+// CHECK-NEXT: use core::ffi::c_long;
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: use core::ffi::c_ulong;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

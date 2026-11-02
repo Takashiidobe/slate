@@ -171,9 +171,10 @@ int main(void) {
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
-// CHECK-NEXT: use core::ffi::c_char;
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: use core::ffi::c_ulong;
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -182,11 +183,6 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(feature = "alpha")]
 // CHECK-NEXT:     extra: i32,
 // CHECK-NEXT:     tail: i32,
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -203,18 +199,53 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn repeated_text(mut value: i32) -> i32 {
-// CHECK-NEXT:     #[cfg(feature = "beta")]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         value += 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     value *= 2;
+// CHECK-NEXT: extern "C-unwind" fn different_tail(mut value: i32) -> i32 {
 // CHECK-NEXT:     value += 1;
-// CHECK-NEXT:     value *= 2;
+// CHECK-NEXT:     value *= 3;
+// CHECK-NEXT:     #[cfg(not(feature = "alpha"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         value - 2
+// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(feature = "alpha")]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         value += 1;
+// CHECK-NEXT:         value + 2
 // CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: extern "C-unwind" fn field_use() -> i32 {
+// CHECK-NEXT:     let mut s: state = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     s.head = 1;
+// CHECK-NEXT:     s.tail = 2;
+// CHECK-NEXT:     #[cfg(feature = "alpha")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         s.extra = 4;
+// CHECK-NEXT:         s.tail += s.extra;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     s.head + s.tail + (std::mem::size_of::<state>() as i32)
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: extern "C-unwind" fn gamma_value() -> i32 {
+// CHECK-NEXT:     let mut value: i32 = 1;
+// CHECK-NEXT:     #[cfg(feature = "gamma")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         value += 3;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     value += 1;
+// CHECK-NEXT:     value
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: extern "C-unwind" fn gated_local(mut value: i32) -> i32 {
+// CHECK-NEXT:     value += 3;
+// CHECK-NEXT:     #[cfg(feature = "beta")]
+// CHECK-NEXT:     let doubled: i32 = value * 2;
+// CHECK-NEXT:     #[cfg(feature = "beta")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         value = doubled + 1;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     value -= 1;
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -239,30 +270,19 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn gated_local(mut value: i32) -> i32 {
-// CHECK-NEXT:     value += 3;
-// CHECK-NEXT:     #[cfg(feature = "beta")]
-// CHECK-NEXT:     let doubled: i32 = value * 2;
+// CHECK-NEXT: extern "C-unwind" fn repeated_text(mut value: i32) -> i32 {
 // CHECK-NEXT:     #[cfg(feature = "beta")]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         value = doubled + 1;
+// CHECK-NEXT:         value += 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     value -= 1;
-// CHECK-NEXT:     value
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn different_tail(mut value: i32) -> i32 {
+// CHECK-NEXT:     value *= 2;
 // CHECK-NEXT:     value += 1;
-// CHECK-NEXT:     value *= 3;
-// CHECK-NEXT:     #[cfg(not(feature = "alpha"))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         value - 2
-// CHECK-NEXT:     }
+// CHECK-NEXT:     value *= 2;
 // CHECK-NEXT:     #[cfg(feature = "alpha")]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         value + 2
+// CHECK-NEXT:         value += 1;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -350,27 +370,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn gamma_value() -> i32 {
-// CHECK-NEXT:     let mut value: i32 = 1;
-// CHECK-NEXT:     #[cfg(feature = "gamma")]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         value += 3;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     value += 1;
-// CHECK-NEXT:     value
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn field_use() -> i32 {
-// CHECK-NEXT:     let mut s: state = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     s.head = 1;
-// CHECK-NEXT:     s.tail = 2;
-// CHECK-NEXT:     #[cfg(feature = "alpha")]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         s.extra = 4;
-// CHECK-NEXT:         s.tail += s.extra;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     s.head + s.tail + (std::mem::size_of::<state>() as i32)
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -451,13 +456,8 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: unsafe extern "C-unwind" fn main(
-// CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
-// CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     unsafe { __slate_main() }
-// CHECK-NEXT: }
+// CHECK-NEXT: use core::ffi::c_char;
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: use core::ffi::c_ulong;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

@@ -110,12 +110,16 @@ fn rmw_method(op: AtomicRmwOp) -> &'static str {
 /// Writes Rust source for backend AST nodes.
 pub struct Codegen<W: Write> {
     out: W,
+    macro_params: Vec<String>,
 }
 
 impl<W: Write> Codegen<W> {
     /// Creates a code generator that writes to `out`.
     pub fn new(out: W) -> Self {
-        Self { out }
+        Self {
+            out,
+            macro_params: Vec::new(),
+        }
     }
 
     /// Returns the underlying writer after code generation is complete.
@@ -124,6 +128,15 @@ impl<W: Write> Codegen<W> {
     }
 
     fn ident(&mut self, name: &str) -> fmt::Result {
+        let is_hole = name.strip_prefix('$').is_some_and(|rest| {
+            let rest = rest.strip_prefix('*').unwrap_or(rest);
+            self.macro_params.iter().any(|param| param == rest)
+        });
+        if name.contains('$') && !is_hole {
+            return self
+                .out
+                .write_str(&escape_ident(&name.replace('$', "_dollar_")));
+        }
         self.out.write_str(&escape_ident(name))
     }
 
@@ -277,6 +290,7 @@ impl<W: Write> Codegen<W> {
                 returns,
             } => {
                 writeln!(self.out, "macro_rules! {name} {{")?;
+                self.macro_params = params.iter().map(|param| param.name.to_string()).collect();
                 let matcher = params
                     .iter()
                     .map(|param| match param.shape {
@@ -305,6 +319,7 @@ impl<W: Write> Codegen<W> {
                     }
                     _ => self.stmts(body)?,
                 }
+                self.macro_params.clear();
                 self.out.write_str("};\n}\n")?;
             }
             Item::MacroUseMod { name } => {

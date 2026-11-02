@@ -901,13 +901,18 @@ impl Lexer {
             self.pos = self.past_literal(literal_close);
             self.emit(Token::StringLit(value.into()));
         } else if c.is_ascii_alphabetic()
-            || matches!(c, '_' | '$')
+            || c == '_'
+            || (c == '$' && self.features.dollars_in_identifiers)
             || self.identifier_utf8(c)
             || self.identifier_ucn_end(i).is_some()
         {
             let mut word = String::new();
             while let Some(&c) = self.chars.get(self.pos) {
-                if c.is_ascii_alphanumeric() || matches!(c, '_' | '$') || self.identifier_utf8(c) {
+                if c.is_ascii_alphanumeric()
+                    || c == '_'
+                    || (c == '$' && self.features.dollars_in_identifiers)
+                    || self.identifier_utf8(c)
+                {
                     word.push(c);
                     self.pos += 1;
                 } else if let Some(end) = self.identifier_ucn_end(self.pos) {

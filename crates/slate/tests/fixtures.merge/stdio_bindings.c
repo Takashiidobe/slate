@@ -51,18 +51,10 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: //! merge-sources: units/stdio_bindings_layout.c
-// CHECK-NEXT: //!
-// CHECK-NEXT: //! merge-extra-targets: android-x86_64 x86_64-linux-android clang
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc"),
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "android")
-// CHECK-NEXT: )))]
-// CHECK-NEXT: compile_error!("this crate was not translated for this target");
-// CHECK-EMPTY:
-// CHECK-NEXT: #[path = "stdio_bindings_layout.rs"]
-// CHECK-NEXT: mod __slate_unit_stdio_bindings_layout;
+// CHECK-NEXT: #[cfg(target_env = "gnu")]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     static mut stderr: *mut slate_support::FILE;
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! LOG {
@@ -82,21 +74,27 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(target_env = "gnu")]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     static mut stderr: *mut slate_support::FILE;
+// CHECK-NEXT: #[path = "stdio_bindings_layout.rs"]
+// CHECK-NEXT: mod __slate_unit_stdio_bindings_layout;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush([[ARG_0:arg[0-9]+]]: *mut slate_support::FILE) -> i32;
-// CHECK-NEXT:     fn stream_layout() -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: use core::ffi::c_char;
-// CHECK-EMPTY:
-// CHECK-NEXT: fn report(stream: *mut slate_support::FILE, value: i32) {
-// CHECK-NEXT:     LOG!(stream, c"value %d\n".as_ptr() as *mut c_char, value);
-// CHECK-NEXT: }
+// CHECK-NEXT: //! merge-sources: units/stdio_bindings_layout.c
+// CHECK-NEXT: //!
+// CHECK-NEXT: //! merge-extra-targets: android-x86_64 x86_64-linux-android clang
+// CHECK-NEXT: #[cfg(not(any(
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
+// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc"),
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "android")
+// CHECK-NEXT: )))]
+// CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let saved: *mut slate_support::FILE = slate_support::stdout();
@@ -170,53 +168,17 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: unsafe extern "C-unwind" fn main(
-// CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
-// CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: fn report(stream: *mut slate_support::FILE, value: i32) {
+// CHECK-NEXT:     LOG!(stream, c"value %d\n".as_ptr() as *mut c_char, value);
 // CHECK-NEXT: }
-// CHECK-NEXT: file stdio_bindings_layout.rs
-// CHECK-NEXT: #[cfg(target_os = "android")]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     static mut __sF: [__sFILE; 0];
-// CHECK-NEXT:     fn fputc([[ARG_0]]: i32, [[ARG_1:arg[0-9]+]]: *mut __sFILE) -> i32;
+// CHECK-NEXT:     fn fflush([[ARG_0:arg[0-9]+]]: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT:     fn stream_layout() -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn __acrt_iob_func([[ARG_0]]: u32) -> *mut _iobuf;
-// CHECK-NEXT:     fn fputc([[ARG_0]]: i32, [[ARG_1]]: *mut _iobuf) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(target_env = "gnu")]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     static mut stdout: *mut _IO_FILE;
-// CHECK-NEXT:     fn fputc([[ARG_0]]: i32, [[ARG_1]]: *mut _IO_FILE) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _iobuf {
-// CHECK-NEXT:     _Placeholder: *mut (),
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: use core::ffi::c_char;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(target_os = "android")]
-// CHECK-NEXT: #[repr(C, align(8))]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct __sFILE {
-// CHECK-NEXT:     __private: [c_char; 152],
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(target_env = "gnu")]
-// CHECK-NEXT: use core::ffi::c_long;
-// CHECK-EMPTY:
+// CHECK-NEXT: file stdio_bindings_layout.rs
 // CHECK-NEXT: #[cfg(target_env = "gnu")]
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -258,12 +220,12 @@ int main(void) {
 // CHECK-NEXT: #[cfg(target_env = "gnu")]
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_marker {}
+// CHECK-NEXT: struct _IO_codecvt {}
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_env = "gnu")]
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct _IO_codecvt {}
+// CHECK-NEXT: struct _IO_marker {}
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_env = "gnu")]
 // CHECK-NEXT: #[repr(C)]
@@ -277,6 +239,44 @@ int main(void) {
 // CHECK-NEXT:         #[bits(24)]
 // CHECK-NEXT:         pub _flags2: i32,
 // CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(target_env = "gnu")]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     static mut stdout: *mut _IO_FILE;
+// CHECK-NEXT:     fn fputc([[ARG_0]]: i32, [[ARG_1:arg[0-9]+]]: *mut _IO_FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(target_env = "gnu")]
+// CHECK-NEXT: use core::ffi::c_long;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(target_os = "android")]
+// CHECK-NEXT: #[repr(C, align(8))]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct __sFILE {
+// CHECK-NEXT:     __private: [c_char; 152],
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(target_os = "android")]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     static mut __sF: [__sFILE; 0];
+// CHECK-NEXT:     fn fputc([[ARG_0]]: i32, [[ARG_1]]: *mut __sFILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: use core::ffi::c_char;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct _iobuf {
+// CHECK-NEXT:     _Placeholder: *mut (),
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn __acrt_iob_func([[ARG_0]]: u32) -> *mut _iobuf;
+// CHECK-NEXT:     fn fputc([[ARG_0]]: i32, [[ARG_1]]: *mut _iobuf) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

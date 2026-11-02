@@ -272,9 +272,12 @@ fn merge_fixture(source: &Path, worker: usize) -> Result<(), String> {
     if code != expected_code {
         failures.push(format!("merge exited {code}: {stderr}"));
     }
-    if let Err(error) =
-        filecheck::check_generated_rust(&text, &output, TRIPLE, &dir.join("filecheck").join(&stem))
-    {
+    if let Err(error) = filecheck::check_generated_rust(
+        &text,
+        &sort_items(&output),
+        TRIPLE,
+        &dir.join("filecheck").join(&stem),
+    ) {
         failures.push(error);
     }
     if code == 0 {
@@ -449,4 +452,45 @@ fn zlib_projection_sample() {
         "{stdout}{}",
         String::from_utf8_lossy(&output.stderr)
     );
+}
+
+fn sort_items(output: &str) -> String {
+    fn flush(out: &mut String, chunks: &mut Vec<Vec<&str>>) {
+        chunks.sort();
+        for (index, chunk) in chunks.drain(..).enumerate() {
+            if index > 0 {
+                out.push('\n');
+            }
+            for line in chunk {
+                out.push_str(line);
+                out.push('\n');
+            }
+        }
+    }
+    let mut out = String::new();
+    let mut chunks: Vec<Vec<&str>> = Vec::new();
+    let mut open = false;
+    let mut in_file = false;
+    for line in output.lines() {
+        if line.starts_with("file ") {
+            flush(&mut out, &mut chunks);
+            open = false;
+            in_file = true;
+            out.push_str(line);
+            out.push('\n');
+        } else if !in_file {
+            out.push_str(line);
+            out.push('\n');
+        } else if line.trim().is_empty() {
+            open = false;
+        } else {
+            if !open {
+                chunks.push(Vec::new());
+                open = true;
+            }
+            chunks.last_mut().unwrap().push(line);
+        }
+    }
+    flush(&mut out, &mut chunks);
+    out
 }

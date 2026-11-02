@@ -88,25 +88,8 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: //! merge-sources: units/named_types_helper.c
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
-// CHECK-NEXT: compile_error!("this crate was not translated for this target");
-// CHECK-EMPTY:
 // CHECK-NEXT: #[path = "named_types_helper.rs"]
 // CHECK-NEXT: mod __slate_unit_named_types_helper;
-// CHECK-EMPTY:
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn tally_sum([[ARG_0:arg[0-9]+]]: *const tally) -> c_long;
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: use core::ffi::c_char;
-// CHECK-NEXT: use core::ffi::c_long;
-// CHECK-NEXT: use core::ffi::c_ulong;
-// CHECK-NEXT: use slate_support::size_t;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -128,18 +111,6 @@ int main(void) {
 // CHECK-NEXT:     tag: c_char,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut shared: counters = {
-// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: counters = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]].total = (1 as c_ulong);
-// CHECK-NEXT:     [[T_0]].delta = -(2 as c_long);
-// CHECK-NEXT:     [[T_0]].bytes = (3 as size_t);
-// CHECK-NEXT:     [[T_0]].wide = 4u64;
-// CHECK-NEXT:     [[T_0]].tag = (120 as c_char);
-// CHECK-NEXT:     [[T_0]].name = (b"shared\0".as_ptr() as *mut c_char) as *const c_char;
-// CHECK-NEXT:     [[T_0]].label = [97i8, 98i8, 99i8, 0i8];
-// CHECK-NEXT:     [[T_0]]
-// CHECK-NEXT: };
-// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: #[cfg_attr(
 // CHECK-NEXT:     unix,
@@ -147,25 +118,6 @@ int main(void) {
 // CHECK-NEXT: )]
 // CHECK-NEXT: extern "C-unwind" fn add_total(left: c_ulong, right: c_ulong) -> c_ulong {
 // CHECK-NEXT:     left.wrapping_add(right)
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn negate(value: c_long) -> c_long {
-// CHECK-NEXT:     -value
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn measure(text: *const c_char, limit: size_t) -> size_t {
-// CHECK-NEXT:     let mut length: size_t = 0;
-// CHECK-NEXT:     while length < limit && (unsafe { *text.add(length as usize) }) != 0 {
-// CHECK-NEXT:         length = length.wrapping_add(1);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     length
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn widen(value: u32) -> u64 {
-// CHECK-NEXT:     (value as u64) << 32i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -188,13 +140,48 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: extern "C-unwind" fn measure(text: *const c_char, limit: size_t) -> size_t {
+// CHECK-NEXT:     let mut length: size_t = 0;
+// CHECK-NEXT:     while length < limit && (unsafe { *text.add(length as usize) }) != 0 {
+// CHECK-NEXT:         length = length.wrapping_add(1);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     length
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: extern "C-unwind" fn negate(value: c_long) -> c_long {
+// CHECK-NEXT:     -value
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: extern "C-unwind" fn widen(value: u32) -> u64 {
+// CHECK-NEXT:     (value as u64) << 32i32
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn width_of_long() -> size_t {
 // CHECK-NEXT:     std::mem::size_of::<c_long>() as size_t
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: //! merge-sources: units/named_types_helper.c
+// CHECK-NEXT: #[cfg(not(any(
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
+// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
+// CHECK-NEXT: )))]
+// CHECK-NEXT: compile_error!("this crate was not translated for this target");
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut tally: tally = {
-// CHECK-NEXT:         let mut [[T_0]]: tally = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: tally = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].count = (5 as c_long);
 // CHECK-NEXT:         [[T_0]].bytes = (6 as size_t);
 // CHECK-NEXT:         [[T_0]].tag = (97 as c_char);
@@ -300,27 +287,28 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: unsafe extern "C-unwind" fn main(
-// CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
-// CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: static mut shared: counters = {
+// CHECK-NEXT:     let mut [[T_0]]: counters = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     [[T_0]].total = (1 as c_ulong);
+// CHECK-NEXT:     [[T_0]].delta = -(2 as c_long);
+// CHECK-NEXT:     [[T_0]].bytes = (3 as size_t);
+// CHECK-NEXT:     [[T_0]].wide = 4u64;
+// CHECK-NEXT:     [[T_0]].tag = (120 as c_char);
+// CHECK-NEXT:     [[T_0]].name = (b"shared\0".as_ptr() as *mut c_char) as *const c_char;
+// CHECK-NEXT:     [[T_0]].label = [97i8, 98i8, 99i8, 0i8];
+// CHECK-NEXT:     [[T_0]]
+// CHECK-NEXT: };
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn tally_sum([[ARG_0:arg[0-9]+]]: *const tally) -> c_long;
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: file named_types_helper.rs
+// CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: use core::ffi::c_long;
+// CHECK-NEXT: use core::ffi::c_ulong;
 // CHECK-NEXT: use slate_support::size_t;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct tally {
-// CHECK-NEXT:     count: c_long,
-// CHECK-NEXT:     bytes: size_t,
-// CHECK-NEXT:     tag: c_char,
-// CHECK-NEXT: }
-// CHECK-EMPTY:
+// CHECK-NEXT: file named_types_helper.rs
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn tally_sum(tally: *const tally) -> c_long {
@@ -336,5 +324,17 @@ int main(void) {
 // CHECK-NEXT:         + (((unsafe { (*tally).bytes }) as u32) as c_long)
 // CHECK-NEXT:         + ((unsafe { (*tally).tag }) as c_long)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct tally {
+// CHECK-NEXT:     count: c_long,
+// CHECK-NEXT:     bytes: size_t,
+// CHECK-NEXT:     tag: c_char,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: use core::ffi::c_char;
+// CHECK-NEXT: use core::ffi::c_long;
+// CHECK-NEXT: use slate_support::size_t;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

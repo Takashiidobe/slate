@@ -115,6 +115,119 @@ int main(void) {
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct code {
+// CHECK-NEXT:     code: u16,
+// CHECK-NEXT:     len: u16,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, align(16))]
+// CHECK-NEXT: struct __SlateAlignLargeArray<T>(T);
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     direct(4i32);
+// CHECK-NEXT:     nested(unsafe { std::ptr::addr_of!(tree) as *const code }, 0i32);
+// CHECK-NEXT:     nested(unsafe { std::ptr::addr_of!(tree) as *const code }, 1i32);
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(c"%d %d %d\n".as_ptr(), (buffer as u32) as i32, used, total)
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         println!(
+// CHECK-NEXT:             "{} {} {}",
+// CHECK-NEXT:             ((unsafe { buffer }) as u32) as i32,
+// CHECK-NEXT:             unsafe { used },
+// CHECK-NEXT:             unsafe { total }
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while i < unsafe { used } {
+// CHECK-NEXT:         #[cfg(windows)]
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         #[cfg(windows)]
+// CHECK-NEXT:         {
+// CHECK-NEXT:             unsafe { slate_support::printf(c"%d\n".as_ptr(), (bytes.0[i as usize] as u32) as i32) };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         }
+// CHECK-NEXT:         #[cfg(unix)]
+// CHECK-NEXT:         {
+// CHECK-NEXT:             println!("{}", ((unsafe { bytes.0[i as usize] }) as u32) as i32);
+// CHECK-NEXT:         }
+// CHECK-NEXT:         i += 1;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn direct(value: i32) {
+// CHECK-NEXT:     PUT_BYTE!(value);
+// CHECK-NEXT:     PUT_SHORT__2!(value + 1);
+// CHECK-NEXT:     SEND!(value, value + 5);
+// CHECK-NEXT:     ADD!(value);
+// CHECK-NEXT:     SAME_BODY!(value + 1);
+// CHECK-NEXT:     ADD_READS__2!(value);
+// CHECK-NEXT:     TEMP!(value);
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn nested(mut tree__0: *const code, index: i32) {
+// CHECK-NEXT:     SEND_CODE!(index, tree__0);
+// CHECK-NEXT:     SEND_CODE!(index + 1, tree__0);
+// CHECK-NEXT:     SEND!(index, 9i32);
+// CHECK-NEXT:     let width: i32 = 3;
+// CHECK-NEXT:     if width > 8 {
+// CHECK-NEXT:         let val: i32 = index + 2;
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             buffer = ((((buffer as u32) as i32) | ((((val as i16) as u16) as u32) as i32)) as i16)
+// CHECK-NEXT:                 as u16;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         PUT_SHORT!(unsafe { buffer });
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             total = total + width;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             buffer = ((((buffer as u32) as i32) | (((((index + 2) as i16) as u16) as u32) as i32))
+// CHECK-NEXT:                 as i16) as u16;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             total = total + width;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     LOCAL_READS!(index);
+// CHECK-NEXT:     USES_LEAK!(index);
+// CHECK-NEXT:     ARG_NAMES_TEMP!(index);
+// CHECK-NEXT:     CALLS_ONLY_NESTED!(index);
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! ADD {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         let __v: i32 = unsafe { total };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             total = __v + $a;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ADD_READS {
 // CHECK-NEXT:     ($a:expr, $reads__1:expr) => {
 // CHECK-NEXT:         let __v: i32 = unsafe { total };
@@ -129,15 +242,6 @@ int main(void) {
 // CHECK-NEXT:         let __v: i32 = unsafe { total };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             total = __v + (($a) + reads);
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! ADD {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let __v: i32 = unsafe { total };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + $a;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -217,14 +321,6 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SEND_CODE {
-// CHECK-NEXT:     ($c:expr, $tree:expr) => {
-// CHECK-NEXT:         SEND__2!(unsafe { (*$tree.offset(($c) as isize)).code }, unsafe {
-// CHECK-NEXT:             (*$tree.offset(($c) as isize)).len
-// CHECK-NEXT:         });
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SEND {
 // CHECK-NEXT:     ($value:expr, $length:expr) => {
 // CHECK-NEXT:         let width: i32 = $length;
@@ -249,6 +345,14 @@ int main(void) {
 // CHECK-NEXT:                 total = total + width;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SEND_CODE {
+// CHECK-NEXT:     ($c:expr, $tree:expr) => {
+// CHECK-NEXT:         SEND__2!(unsafe { (*$tree.offset(($c) as isize)).code }, unsafe {
+// CHECK-NEXT:             (*$tree.offset(($c) as isize)).len
+// CHECK-NEXT:         });
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -302,113 +406,14 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use core::ffi::c_char;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: static mut buffer: u16 = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: #[repr(C, align(16))]
-// CHECK-NEXT: struct __SlateAlignLargeArray<T>(T);
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut bytes: __SlateAlignLargeArray<[u8; 32]> =
 // CHECK-NEXT:     __SlateAlignLargeArray(unsafe { std::mem::zeroed() });
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut used: i32 = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: static mut total: i32 = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
 // CHECK-NEXT: static mut reads: i32 = 2;
 // CHECK-EMPTY:
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct code {
-// CHECK-NEXT:     code: u16,
-// CHECK-NEXT:     len: u16,
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: fn direct(value: i32) {
-// CHECK-NEXT:     PUT_BYTE!(value);
-// CHECK-NEXT:     PUT_SHORT__2!(value + 1);
-// CHECK-NEXT:     SEND!(value, value + 5);
-// CHECK-NEXT:     ADD!(value);
-// CHECK-NEXT:     SAME_BODY!(value + 1);
-// CHECK-NEXT:     ADD_READS__2!(value);
-// CHECK-NEXT:     TEMP!(value);
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: fn nested(mut tree__0: *const code, index: i32) {
-// CHECK-NEXT:     SEND_CODE!(index, tree__0);
-// CHECK-NEXT:     SEND_CODE!(index + 1, tree__0);
-// CHECK-NEXT:     SEND!(index, 9i32);
-// CHECK-NEXT:     let width: i32 = 3;
-// CHECK-NEXT:     if width > 8 {
-// CHECK-NEXT:         let val: i32 = index + 2;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = ((((buffer as u32) as i32) | ((((val as i16) as u16) as u32) as i32)) as i16)
-// CHECK-NEXT:                 as u16;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         PUT_SHORT!(unsafe { buffer });
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = total + width;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = ((((buffer as u32) as i32) | (((((index + 2) as i16) as u16) as u32) as i32))
-// CHECK-NEXT:                 as i16) as u16;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = total + width;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     LOCAL_READS!(index);
-// CHECK-NEXT:     USES_LEAK!(index);
-// CHECK-NEXT:     ARG_NAMES_TEMP!(index);
-// CHECK-NEXT:     CALLS_ONLY_NESTED!(index);
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     direct(4i32);
-// CHECK-NEXT:     nested(unsafe { std::ptr::addr_of!(tree) as *const code }, 0i32);
-// CHECK-NEXT:     nested(unsafe { std::ptr::addr_of!(tree) as *const code }, 1i32);
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(c"%d %d %d\n".as_ptr(), (buffer as u32) as i32, used, total)
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{} {} {}",
-// CHECK-NEXT:             ((unsafe { buffer }) as u32) as i32,
-// CHECK-NEXT:             unsafe { used },
-// CHECK-NEXT:             unsafe { total }
-// CHECK-NEXT:         );
-// CHECK-NEXT:     }
-// CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < unsafe { used } {
-// CHECK-NEXT:         #[cfg(windows)]
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         #[cfg(windows)]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             unsafe { slate_support::printf(c"%d\n".as_ptr(), (bytes.0[i as usize] as u32) as i32) };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         }
-// CHECK-NEXT:         #[cfg(unix)]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             println!("{}", ((unsafe { bytes.0[i as usize] }) as u32) as i32);
-// CHECK-NEXT:         }
-// CHECK-NEXT:         i += 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     0
-// CHECK-NEXT: }
+// CHECK-NEXT: static mut total: i32 = unsafe { std::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut tree: [code; 3] = [
 // CHECK-NEXT:     code {
@@ -425,13 +430,8 @@ int main(void) {
 // CHECK-NEXT:     },
 // CHECK-NEXT: ];
 // CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: unsafe extern "C-unwind" fn main(
-// CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
-// CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     unsafe { __slate_main() }
-// CHECK-NEXT: }
+// CHECK-NEXT: static mut used: i32 = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

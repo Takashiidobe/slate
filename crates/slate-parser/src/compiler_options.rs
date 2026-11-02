@@ -149,6 +149,7 @@ pub enum StackProtector {
 pub struct SourceGraphs {
     pub trigraphs: Option<bool>,
     pub digraphs: Option<bool>,
+    pub dollars: Option<bool>,
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]

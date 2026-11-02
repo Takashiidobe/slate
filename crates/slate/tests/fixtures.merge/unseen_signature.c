@@ -36,6 +36,33 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(all(feature = "alpha", feature = "beta", not(feature = "gamma")))]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn widen([[ARG_0:arg[0-9]+]]: c_long) -> c_long;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(any(not(feature = "alpha"), not(feature = "beta"), feature = "gamma"))]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn widen([[ARG_0]]: i32) -> i32;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[path = "unseen_signature_helper.rs"]
+// CHECK-NEXT: mod __slate_unit_unseen_signature_helper;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: //! merge-sources: units/unseen_signature_helper.c
 // CHECK-NEXT: //!
 // CHECK-NEXT: //! merge-expect-exit: 1
@@ -46,28 +73,6 @@ int main(void) {
 // CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
-// CHECK-EMPTY:
-// CHECK-NEXT: #[path = "unseen_signature_helper.rs"]
-// CHECK-NEXT: mod __slate_unit_unseen_signature_helper;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(any(not(feature = "alpha"), not(feature = "beta"), feature = "gamma"))]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn widen([[ARG_0:arg[0-9]+]]: i32) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(feature = "alpha", feature = "beta", not(feature = "gamma")))]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn widen([[ARG_0]]: c_long) -> c_long;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: use core::ffi::c_char;
-// CHECK-NEXT: #[cfg(all(feature = "alpha", feature = "beta", not(feature = "gamma")))]
-// CHECK-NEXT: use core::ffi::c_long;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     #[cfg(windows)]
@@ -101,14 +106,9 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: unsafe extern "C-unwind" fn main(
-// CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
-// CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     unsafe { __slate_main() }
-// CHECK-NEXT: }
+// CHECK-NEXT: use core::ffi::c_char;
+// CHECK-NEXT: #[cfg(all(feature = "alpha", feature = "beta", not(feature = "gamma")))]
+// CHECK-NEXT: use core::ffi::c_long;
 // CHECK-NEXT: file unseen_signature_helper.rs
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn widen(x: i32) -> i32 {

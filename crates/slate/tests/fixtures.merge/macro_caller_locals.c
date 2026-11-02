@@ -112,6 +112,116 @@ int main(void) {
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct pair {
+// CHECK-NEXT:     left: i32,
+// CHECK-NEXT:     right: i32,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, align(16))]
+// CHECK-NEXT: struct __SlateAlignLargeArray<T>(T);
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%u\n".as_ptr(), read_bits(61680u32, 12u32)) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%u\n".as_ptr(), read_bits(61680u32, 12u32)) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%u\n".as_ptr(), drop_and_read(9i32)) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%u\n".as_ptr(), drop_and_read(9i32)) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%f\n".as_ptr(), read_double()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%f\n".as_ptr(), read_double()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn drop_and_read(limit: i32) -> u32 {
+// CHECK-NEXT:     let mut hold: u32 = 43981;
+// CHECK-NEXT:     let mut bits: u32 = 16;
+// CHECK-NEXT:     let mut total: i32 = 0;
+// CHECK-NEXT:     let n: i32 = 5;
+// CHECK-NEXT:     let r#type: i32 = 3;
+// CHECK-NEXT:     let mut table: __SlateAlignLargeArray<[i32; 4]> =
+// CHECK-NEXT:         __SlateAlignLargeArray([1i32, 2i32, 3i32, 4i32]);
+// CHECK-NEXT:     let mut cursor: *mut i32 = unsafe { (table.0.as_mut_ptr() as *mut i32).add(1) };
+// CHECK-NEXT:     let mut pair: pair = pair { left: 1, right: 2 };
+// CHECK-NEXT:     let scale: i32 = 2;
+// CHECK-NEXT:     DROP!(4i32, hold, bits);
+// CHECK-NEXT:     CHECK_DROP!(3i32, bits, hold);
+// CHECK-NEXT:     SHIFT_THEN_READ!(1i32, hold, bits, total);
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = total;
+// CHECK-NEXT:     total = ([[V_0]] as u32).wrapping_add(COLLIDE!(n, hold)) as i32;
+// CHECK-NEXT:     BODY_LOCAL!(n + 1, total, scale);
+// CHECK-NEXT:     FIELD_WRITE!(pair.left + 7, pair);
+// CHECK-NEXT:     INDEX_WRITE!(2i32, 30i32, table.0);
+// CHECK-NEXT:     DEREF_WRITE!(20i32, cursor);
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = total;
+// CHECK-NEXT:     total = [[V_1]] + (DECAY_FIRST!(table.0) + table.0[1] + table.0[2] + pair.right);
+// CHECK-NEXT:     let address: *mut u32 = ADDRESS_OF!(hold);
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: u32 = unsafe { *address };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *address = [[V_2]].wrapping_add(1);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = total;
+// CHECK-NEXT:     total = [[V_3]] + KEYWORD_NAME!(4i32, r#type);
+// CHECK-NEXT:     TEMP_ARG!(total, total);
+// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = total;
+// CHECK-NEXT:     total = [[V_4]] + PARAMETER_READ!(limit);
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let hold: u32 = 7;
+// CHECK-NEXT:         total = (total as u32).wrapping_add(hold.wrapping_add(1)) as i32;
+// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = total;
+// CHECK-NEXT:         total = ([[V_5]] as u32).wrapping_add(BITS!(1i32, hold)) as i32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     INIT!(hold, bits);
+// CHECK-NEXT:     hold.wrapping_add(bits).wrapping_add(total as u32)
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn read_bits(mut hold: u32, mut bits: u32) -> u32 {
+// CHECK-NEXT:     let first: u32 = hold.wrapping_add(1);
+// CHECK-NEXT:     let second: u32 = BITS!(3i32, hold);
+// CHECK-NEXT:     DROP!(2i32, hold, bits);
+// CHECK-NEXT:     first
+// CHECK-NEXT:         .wrapping_add(second)
+// CHECK-NEXT:         .wrapping_add(hold)
+// CHECK-NEXT:         .wrapping_add(bits)
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn read_double() -> f64 {
+// CHECK-NEXT:     let hold: f64 = 1.5f64;
+// CHECK-NEXT:     hold + (1i32 as f64)
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ADDRESS_OF {
 // CHECK-NEXT:     ($hold:expr) => {
 // CHECK-NEXT:         std::ptr::addr_of_mut!($hold)
@@ -168,8 +278,8 @@ int main(void) {
 // CHECK-NEXT:                 *$cursor = $v;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             let __v: *mut i32 = $cursor;
-// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { __v.add(1) };
-// CHECK-NEXT:             $cursor = [[V_0]];
+// CHECK-NEXT:             let [[V_6:__v[0-9]+]]: *mut i32 = unsafe { __v.add(1) };
+// CHECK-NEXT:             $cursor = [[V_6]];
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -181,11 +291,11 @@ int main(void) {
 // CHECK-NEXT:     ($n:expr, $hold:expr, $bits:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let __v: u32 = $hold;
-// CHECK-NEXT:             let [[V_0]]: u32 = __v >> $n;
-// CHECK-NEXT:             $hold = [[V_0]];
-// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: u32 = $bits;
-// CHECK-NEXT:             let [[V_2:__v[0-9]+]]: u32 = [[V_1]].wrapping_sub(($n) as u32);
-// CHECK-NEXT:             $bits = [[V_2]];
+// CHECK-NEXT:             let [[V_6]]: u32 = __v >> $n;
+// CHECK-NEXT:             $hold = [[V_6]];
+// CHECK-NEXT:             let [[V_7:__v[0-9]+]]: u32 = $bits;
+// CHECK-NEXT:             let [[V_8:__v[0-9]+]]: u32 = [[V_7]].wrapping_sub(($n) as u32);
+// CHECK-NEXT:             $bits = [[V_8]];
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -243,8 +353,8 @@ int main(void) {
 // CHECK-NEXT:     ($v:expr, $total:expr, $scale:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let __v: i32 = $total;
-// CHECK-NEXT:             let [[V_0]]: i32 = __v + (($v) + $scale);
-// CHECK-NEXT:             $total = [[V_0]];
+// CHECK-NEXT:             let [[V_6]]: i32 = __v + (($v) + $scale);
+// CHECK-NEXT:             $total = [[V_6]];
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -257,8 +367,8 @@ int main(void) {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             DROP!($n, $hold, $bits);
 // CHECK-NEXT:             let __v: i32 = $total;
-// CHECK-NEXT:             let [[V_0]]: i32 = (__v as u32).wrapping_add(BITS!(2i32, $hold)) as i32;
-// CHECK-NEXT:             $total = [[V_0]];
+// CHECK-NEXT:             let [[V_6]]: i32 = (__v as u32).wrapping_add(BITS!(2i32, $hold)) as i32;
+// CHECK-NEXT:             $total = [[V_6]];
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -271,8 +381,8 @@ int main(void) {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let temp: i32 = 1;
 // CHECK-NEXT:             let __v: i32 = $total;
-// CHECK-NEXT:             let [[V_0]]: i32 = __v + (temp + $a);
-// CHECK-NEXT:             $total = [[V_0]];
+// CHECK-NEXT:             let [[V_6]]: i32 = __v + (temp + $a);
+// CHECK-NEXT:             $total = [[V_6]];
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -280,120 +390,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use core::ffi::c_char;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct pair {
-// CHECK-NEXT:     left: i32,
-// CHECK-NEXT:     right: i32,
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[repr(C, align(16))]
-// CHECK-NEXT: struct __SlateAlignLargeArray<T>(T);
-// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn read_bits(mut hold: u32, mut bits: u32) -> u32 {
-// CHECK-NEXT:     let first: u32 = hold.wrapping_add(1);
-// CHECK-NEXT:     let second: u32 = BITS!(3i32, hold);
-// CHECK-NEXT:     DROP!(2i32, hold, bits);
-// CHECK-NEXT:     first
-// CHECK-NEXT:         .wrapping_add(second)
-// CHECK-NEXT:         .wrapping_add(hold)
-// CHECK-NEXT:         .wrapping_add(bits)
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: fn drop_and_read(limit: i32) -> u32 {
-// CHECK-NEXT:     let mut hold: u32 = 43981;
-// CHECK-NEXT:     let mut bits: u32 = 16;
-// CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let n: i32 = 5;
-// CHECK-NEXT:     let r#type: i32 = 3;
-// CHECK-NEXT:     let mut table: __SlateAlignLargeArray<[i32; 4]> =
-// CHECK-NEXT:         __SlateAlignLargeArray([1i32, 2i32, 3i32, 4i32]);
-// CHECK-NEXT:     let mut cursor: *mut i32 = unsafe { (table.0.as_mut_ptr() as *mut i32).add(1) };
-// CHECK-NEXT:     let mut pair: pair = pair { left: 1, right: 2 };
-// CHECK-NEXT:     let scale: i32 = 2;
-// CHECK-NEXT:     DROP!(4i32, hold, bits);
-// CHECK-NEXT:     CHECK_DROP!(3i32, bits, hold);
-// CHECK-NEXT:     SHIFT_THEN_READ!(1i32, hold, bits, total);
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = ([[V_3]] as u32).wrapping_add(COLLIDE!(n, hold)) as i32;
-// CHECK-NEXT:     BODY_LOCAL!(n + 1, total, scale);
-// CHECK-NEXT:     FIELD_WRITE!(pair.left + 7, pair);
-// CHECK-NEXT:     INDEX_WRITE!(2i32, 30i32, table.0);
-// CHECK-NEXT:     DEREF_WRITE!(20i32, cursor);
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_4]] + (DECAY_FIRST!(table.0) + table.0[1] + table.0[2] + pair.right);
-// CHECK-NEXT:     let address: *mut u32 = ADDRESS_OF!(hold);
-// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: u32 = unsafe { *address };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *address = [[V_5]].wrapping_add(1);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_6]] + KEYWORD_NAME!(4i32, r#type);
-// CHECK-NEXT:     TEMP_ARG!(total, total);
-// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_7]] + PARAMETER_READ!(limit);
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let hold: u32 = 7;
-// CHECK-NEXT:         total = (total as u32).wrapping_add(hold.wrapping_add(1)) as i32;
-// CHECK-NEXT:         let [[V_8:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:         total = ([[V_8]] as u32).wrapping_add(BITS!(1i32, hold)) as i32;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     INIT!(hold, bits);
-// CHECK-NEXT:     hold.wrapping_add(bits).wrapping_add(total as u32)
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: fn read_double() -> f64 {
-// CHECK-NEXT:     let hold: f64 = 1.5f64;
-// CHECK-NEXT:     hold + (1i32 as f64)
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%u\n".as_ptr(), read_bits(61680u32, 12u32)) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%u\n".as_ptr(), read_bits(61680u32, 12u32)) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%u\n".as_ptr(), drop_and_read(9i32)) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%u\n".as_ptr(), drop_and_read(9i32)) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%f\n".as_ptr(), read_double()) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%f\n".as_ptr(), read_double()) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     0
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: unsafe extern "C-unwind" fn main(
-// CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
-// CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     unsafe { __slate_main() }
-// CHECK-NEXT: }
+// CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

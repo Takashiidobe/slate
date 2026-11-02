@@ -47,6 +47,64 @@ int main(void) { return 0; }
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: static mut f_gid: gid_t = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: static mut f_mode: mode_t = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: static mut f_nlink: nlink_t = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: static mut f_off64: off64_t = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: static mut f_pid: pid_t = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: static mut f_socklen: socklen_t = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: static mut f_uid: uid_t = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: static mut f_clock: clock_t = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: static mut f_dev: dev_t = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: static mut f_ino: ino_t = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: static mut f_intmax: intmax_t = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: static mut f_time: time_t = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: static mut f_uintmax: uintmax_t = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: static mut f_wint: wint_t = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: //! merge-extra-targets: android-x86_64 x86_64-linux-android clang
 // CHECK-NEXT: #[cfg(not(any(
 // CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
@@ -54,6 +112,10 @@ int main(void) { return 0; }
 // CHECK-NEXT:     all(target_arch = "x86_64", target_os = "android")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
+// CHECK-EMPTY:
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::clock_t;
 // CHECK-NEXT: use slate_support::dev_t;
@@ -76,67 +138,5 @@ int main(void) { return 0; }
 // CHECK-NEXT: use slate_support::uid_t;
 // CHECK-NEXT: use slate_support::uintmax_t;
 // CHECK-NEXT: use slate_support::wint_t;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut f_intmax: intmax_t = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut f_uintmax: uintmax_t = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut f_wint: wint_t = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut f_time: time_t = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut f_clock: clock_t = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut f_dev: dev_t = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut f_ino: ino_t = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut f_off64: off64_t = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut f_pid: pid_t = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut f_uid: uid_t = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut f_gid: gid_t = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut f_mode: mode_t = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut f_nlink: nlink_t = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut f_socklen: socklen_t = unsafe { std::mem::zeroed() };
-// CHECK-EMPTY:
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     0
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: unsafe extern "C-unwind" fn main(
-// CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
-// CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     unsafe { __slate_main() }
-// CHECK-NEXT: }
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

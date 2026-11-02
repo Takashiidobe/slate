@@ -353,11 +353,45 @@ def directive(prefix, suffix, pattern):
     return f"// {prefix}{suffix}: {pattern}".rstrip() if pattern else f"// {prefix}{suffix}:"
 
 
-def update_source(source, outputs):
+def sort_items(lines):
+    out = []
+    chunks = []
+    in_file = False
+
+    def flush():
+        for index, chunk in enumerate(sorted(chunks)):
+            if index:
+                out.append("")
+            out.extend(chunk)
+        chunks.clear()
+
+    opened = False
+    for line in lines:
+        if line.startswith("file "):
+            flush()
+            opened = False
+            in_file = True
+            out.append(line)
+        elif not in_file:
+            out.append(line)
+        elif not line.strip():
+            opened = False
+        else:
+            if not opened:
+                chunks.append([])
+                opened = True
+            chunks[-1].append(line)
+    flush()
+    return out
+
+
+def update_source(source, outputs, sort=False):
     names = checked_functions(source)
     stripped = BLOCK_PATTERN.sub("", source).rstrip("\n")
     identifiers = c_identifiers(stripped)
     lines_by_target = {target: rust.rstrip("\n").splitlines() for target, rust in outputs.items()}
+    if sort:
+        lines_by_target = {target: sort_items(lines) for target, lines in lines_by_target.items()}
     if names:
         checks = [
             check
@@ -521,7 +555,7 @@ def main(argv):
         else:
             try:
                 source = path.read_text(errors="surrogateescape")
-                updated = update_source(source, outputs)
+                updated = update_source(source, outputs, path.resolve().parent == MERGE)
             except FixtureError as error:
                 print(f"error: {name}: {error}", file=sys.stderr)
                 failures += 1

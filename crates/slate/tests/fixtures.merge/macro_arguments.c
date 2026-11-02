@@ -126,155 +126,15 @@ int main(void) {
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! APPLY {
-// CHECK-NEXT:     ($f:expr, $x:expr) => {
-// CHECK-NEXT:         unsafe { $f.unwrap()($x) }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! APPLY__2 {
-// CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         twice($x)
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! ARGS_OF {
-// CHECK-NEXT:     ($args__0:expr, $args__1:expr) => {
-// CHECK-NEXT:         add($args__0, $args__1)
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! CALL2 {
-// CHECK-NEXT:     ($a:expr, $b:expr) => {
-// CHECK-NEXT:         add($a, $b)
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! CAST_TO {
-// CHECK-NEXT:     ($T:ty, $x:expr) => {
-// CHECK-NEXT:         ($x) as $T
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! FIELD__2 {
-// CHECK-NEXT:     ($p:expr, $name:ident) => {
-// CHECK-NEXT:         unsafe { (*$p).[[SLATE_ANON_0:__slate_anon_[0-9]+]].$name }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! FIELD {
-// CHECK-NEXT:     ($p:expr, $name:ident) => {
-// CHECK-NEXT:         unsafe { (*$p).$name }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! FIELD__3 {
-// CHECK-NEXT:     ($p:expr) => {
-// CHECK-NEXT:         (unsafe { (*$p).__slate_bits_0.__get_flag() }) as i32
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! MEMBER_NAME {
-// CHECK-NEXT:     ($name:ident) => {
-// CHECK-NEXT:         (unsafe { holder.$name }) + 1
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! NESTED_CAST {
-// CHECK-NEXT:     ($T:ty, $x:expr) => {
-// CHECK-NEXT:         CAST_TO!($T, $x) + (1i32 as $T)
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! NESTED_FIELD {
-// CHECK-NEXT:     ($p:expr, $name:ident) => {
-// CHECK-NEXT:         FIELD!($p, $name) + 1
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SET_FIELD__2 {
-// CHECK-NEXT:     ($p:expr, $name:ident, $v:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*$p).[[SLATE_ANON_0]].$name = $v;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SET_FIELD {
-// CHECK-NEXT:     ($p:expr, $name:ident, $v:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*$p).$name = $v;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: macro_rules! SIZE_PLUS__2 {
-// CHECK-NEXT:     ($T:ty, $n:expr) => {
-// CHECK-NEXT:         (std::mem::size_of::<$T>() as u64).wrapping_add((($n) as i64) as u64)
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! SIZE_PLUS {
+// CHECK-NEXT: macro_rules! SIZE_PLUS__2 {
 // CHECK-NEXT:     ($T:ty, $n:expr) => {
 // CHECK-NEXT:         (std::mem::size_of::<$T>() as c_ulong).wrapping_add(($n) as c_ulong)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SWAP {
-// CHECK-NEXT:     ($T:ty, $a:expr, $b:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let tmp: $T = $a;
-// CHECK-NEXT:             $a = $b;
-// CHECK-NEXT:             $b = tmp;
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! TRACE {
-// CHECK-NEXT:     ($x__0:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char) };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: macro_rules! TRACE {
-// CHECK-NEXT:     ($x__0:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char) };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! TRACE__2 {
 // CHECK-NEXT:     ($x__0:expr, $x__1:expr, $x__2:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -287,54 +147,18 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! TRACE__2 {
-// CHECK-NEXT:     ($x__0:expr, $x__1:expr, $x__2:expr) => {
+// CHECK-NEXT:     ($x__0:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $x__1, $x__2) };
+// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char) };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: use core::ffi::c_char;
-// CHECK-NEXT: use core::ffi::c_long;
-// CHECK-NEXT: use core::ffi::c_ulong;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct pair {
-// CHECK-NEXT:     left: i32,
-// CHECK-NEXT:     right: i32,
-// CHECK-NEXT:     wide: c_long,
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct only_cast {
-// CHECK-NEXT:     value: i32,
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct odd_fields {
-// CHECK-NEXT:     r#type: i32,
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits2U0,
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits10U0,
-// CHECK-NEXT:     count: i32,
-// CHECK-NEXT:     [[SLATE_ANON_0]]: __SlateRecord_macro_arguments_c_32,
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: union __SlateRecord_macro_arguments_c_32 {
-// CHECK-NEXT:     inner_value: i32,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
@@ -359,6 +183,41 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: macro_rules! SIZE_PLUS {
+// CHECK-NEXT:     ($T:ty, $n:expr) => {
+// CHECK-NEXT:         (std::mem::size_of::<$T>() as u64).wrapping_add((($n) as i64) as u64)
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: macro_rules! TRACE {
+// CHECK-NEXT:     ($x__0:expr, $x__1:expr, $x__2:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $x__1, $x__2) };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: macro_rules! TRACE__2 {
+// CHECK-NEXT:     ($x__0:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char) };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: mod __slate_bits {
 // CHECK-NEXT:     #[bitfields::bitfield(
 // CHECK-NEXT:         u32,
@@ -379,8 +238,44 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: #[cfg_attr(
+// CHECK-NEXT:     unix,
+// CHECK-NEXT:     unsafe(link_section = ".text.slate_distinct.macro_arguments.thrice")
+// CHECK-NEXT: )]
+// CHECK-NEXT: extern "C-unwind" fn thrice(x: i32) -> i32 {
+// CHECK-NEXT:     x * 3
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct odd_fields {
+// CHECK-NEXT:     r#type: i32,
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits2U0,
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits10U0,
+// CHECK-NEXT:     count: i32,
+// CHECK-NEXT:     [[SLATE_ANON_0:__slate_anon_[0-9]+]]: __SlateRecord_macro_arguments_c_32,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct only_cast {
+// CHECK-NEXT:     value: i32,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct pair {
+// CHECK-NEXT:     left: i32,
+// CHECK-NEXT:     right: i32,
+// CHECK-NEXT:     wide: c_long,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: union __SlateRecord_macro_arguments_c_32 {
+// CHECK-NEXT:     inner_value: i32,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -390,20 +285,13 @@ int main(void) {
 // CHECK-NEXT:     wide: (3 as c_long),
 // CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: fn twice(x: i32) -> i32 {
-// CHECK-NEXT:     x * 2
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: fn add(a: i32, b: i32) -> i32 {
-// CHECK-NEXT:     a + b
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg_attr(
-// CHECK-NEXT:     unix,
-// CHECK-NEXT:     unsafe(link_section = ".text.slate_distinct.macro_arguments.thrice")
-// CHECK-NEXT: )]
-// CHECK-NEXT: extern "C-unwind" fn thrice(x: i32) -> i32 {
-// CHECK-NEXT:     x * 3
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -440,11 +328,11 @@ int main(void) {
 // CHECK-NEXT:     let d: i32 = CAST_TO!(i32, m);
 // CHECK-NEXT:     let c2: c_long = NESTED_CAST!(c_long, i);
 // CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let z: c_ulong = SIZE_PLUS__2!(i32, 1i32) as c_ulong;
+// CHECK-NEXT:     let z: c_ulong = SIZE_PLUS!(i32, 1i32) as c_ulong;
 // CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     let z: c_ulong = SIZE_PLUS!(i32, 1i32);
-// CHECK-NEXT:     let e: i32 = APPLY__2!(i);
-// CHECK-NEXT:     let e2: i32 = APPLY!(r#fn, i);
+// CHECK-NEXT:     let z: c_ulong = SIZE_PLUS__2!(i32, 1i32);
+// CHECK-NEXT:     let e: i32 = APPLY!(i);
+// CHECK-NEXT:     let e2: i32 = APPLY__2!(r#fn, i);
 // CHECK-NEXT:     let g: i32 = CALL2!(i, j);
 // CHECK-NEXT:     let h: i32 = ARGS_OF!(i, j);
 // CHECK-NEXT:     let q: i32 = 9;
@@ -479,9 +367,9 @@ int main(void) {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d %d %d %d\n".as_ptr(),
 // CHECK-NEXT:                 FIELD!(op, r#type),
-// CHECK-NEXT:                 FIELD__3!(op),
+// CHECK-NEXT:                 FIELD__2!(op),
 // CHECK-NEXT:                 FIELD!(op, count),
-// CHECK-NEXT:                 FIELD__2!(op, inner_value),
+// CHECK-NEXT:                 FIELD__3!(op, inner_value),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -491,13 +379,13 @@ int main(void) {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {} {} {}",
 // CHECK-NEXT:             FIELD!(op, r#type),
-// CHECK-NEXT:             FIELD__3!(op),
+// CHECK-NEXT:             FIELD__2!(op),
 // CHECK-NEXT:             FIELD!(op, count),
-// CHECK-NEXT:             FIELD__2!(op, inner_value)
+// CHECK-NEXT:             FIELD__3!(op, inner_value)
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
-// CHECK-NEXT:     TRACE!(c"plain\n".as_ptr() as *mut c_char);
-// CHECK-NEXT:     TRACE__2!(c"%d %d\n".as_ptr() as *mut c_char, i, j);
+// CHECK-NEXT:     TRACE__2!(c"plain\n".as_ptr() as *mut c_char);
+// CHECK-NEXT:     TRACE!(c"%d %d\n".as_ptr() as *mut c_char, i, j);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
@@ -567,13 +455,125 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: unsafe extern "C-unwind" fn main(
-// CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
-// CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: fn add(a: i32, b: i32) -> i32 {
+// CHECK-NEXT:     a + b
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn twice(x: i32) -> i32 {
+// CHECK-NEXT:     x * 2
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! APPLY {
+// CHECK-NEXT:     ($x:expr) => {
+// CHECK-NEXT:         twice($x)
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! APPLY__2 {
+// CHECK-NEXT:     ($f:expr, $x:expr) => {
+// CHECK-NEXT:         unsafe { $f.unwrap()($x) }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! ARGS_OF {
+// CHECK-NEXT:     ($args__0:expr, $args__1:expr) => {
+// CHECK-NEXT:         add($args__0, $args__1)
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! CALL2 {
+// CHECK-NEXT:     ($a:expr, $b:expr) => {
+// CHECK-NEXT:         add($a, $b)
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! CAST_TO {
+// CHECK-NEXT:     ($T:ty, $x:expr) => {
+// CHECK-NEXT:         ($x) as $T
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! FIELD {
+// CHECK-NEXT:     ($p:expr, $name:ident) => {
+// CHECK-NEXT:         unsafe { (*$p).$name }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! FIELD__2 {
+// CHECK-NEXT:     ($p:expr) => {
+// CHECK-NEXT:         (unsafe { (*$p).__slate_bits_0.__get_flag() }) as i32
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! FIELD__3 {
+// CHECK-NEXT:     ($p:expr, $name:ident) => {
+// CHECK-NEXT:         unsafe { (*$p).[[SLATE_ANON_0]].$name }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! MEMBER_NAME {
+// CHECK-NEXT:     ($name:ident) => {
+// CHECK-NEXT:         (unsafe { holder.$name }) + 1
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! NESTED_CAST {
+// CHECK-NEXT:     ($T:ty, $x:expr) => {
+// CHECK-NEXT:         CAST_TO!($T, $x) + (1i32 as $T)
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! NESTED_FIELD {
+// CHECK-NEXT:     ($p:expr, $name:ident) => {
+// CHECK-NEXT:         FIELD!($p, $name) + 1
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SET_FIELD {
+// CHECK-NEXT:     ($p:expr, $name:ident, $v:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*$p).$name = $v;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SET_FIELD__2 {
+// CHECK-NEXT:     ($p:expr, $name:ident, $v:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*$p).[[SLATE_ANON_0]].$name = $v;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SWAP {
+// CHECK-NEXT:     ($T:ty, $a:expr, $b:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let tmp: $T = $a;
+// CHECK-NEXT:             $a = $b;
+// CHECK-NEXT:             $b = tmp;
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: use core::ffi::c_char;
+// CHECK-NEXT: use core::ffi::c_long;
+// CHECK-NEXT: use core::ffi::c_ulong;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END
