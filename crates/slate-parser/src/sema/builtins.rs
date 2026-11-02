@@ -700,12 +700,19 @@ fn gcc_target_types(family: TargetFamily) -> &'static [(&'static str, BuiltinPar
 }
 
 pub(crate) fn gcc_aarch64_tuple_declarations() -> String {
-    GCC_AARCH64_TUPLES
-        .iter()
-        .map(|(name, element, count)| {
-            format!("typedef struct {name} {{ {element} val[{count}]; }} {name};\n")
-        })
-        .collect()
+    let tuples = GCC_AARCH64_TUPLES.iter().map(|(name, element, count)| {
+        format!("typedef struct {name} {{ {element} val[{count}]; }} {name};\n")
+    });
+    let enums = ["svpattern", "svprfop"].map(|tag| {
+        let members = GCC_AARCH64_ENUMERATORS
+            .iter()
+            .filter(|(_, member_tag, _)| *member_tag == tag)
+            .map(|(name, _, value)| format!("{name} = {value}"))
+            .collect::<Vec<_>>()
+            .join(", ");
+        format!("enum {tag} {{ {members} }};\n")
+    });
+    tuples.chain(enums).collect()
 }
 
 pub(crate) fn is_gcc_aarch64_tuple_name(name: &str) -> bool {

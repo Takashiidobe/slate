@@ -129,9 +129,16 @@ static void dump_functions ()
 	out += first ? "..." : ", ...";
       out += ")";
       const char *attrs = TREE_READONLY (decl) ? "const" : DECL_PURE_P (decl) ? "pure" : "";
+      if (!DECL_ATTRIBUTES (decl) && !strncmp (IDENTIFIER_POINTER (DECL_NAME (decl)), "sv", 2))
+	attrs = "overload";
       fprintf (stdout, "fn\t%s\t%s\t%s\t%d\n", IDENTIFIER_POINTER (DECL_NAME (decl)), out.c_str (),
 	       attrs, sizeless ? 1 : 0);
     }
+}
+
+static std::string print_hex_string (tree value)
+{
+  return std::to_string (tree_to_shwi (value));
 }
 
 static const char *type_names;
@@ -148,7 +155,15 @@ static void dump_types ()
     {
       std::string name = buffer;
       tree decl = identifier_global_value (get_identifier (name.c_str ()));
-      if (!decl || TREE_CODE (decl) != TYPE_DECL)
+      if (!decl)
+	continue;
+      if (TREE_CODE (decl) == CONST_DECL)
+	{
+	  fprintf (stdout, "enum\t%s\t%s\t\t0\n", name.c_str (),
+		   print_hex_string (DECL_INITIAL (decl)).c_str ());
+	  continue;
+	}
+      if (TREE_CODE (decl) != TYPE_DECL)
 	continue;
       tree record = TYPE_MAIN_VARIANT (TREE_TYPE (decl));
       if (TREE_CODE (record) == RECORD_TYPE && TYPE_FIELDS (record)

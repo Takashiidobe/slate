@@ -8,11 +8,17 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 
+SVE_ENUMERATORS = [
+    "SV_POW2", *[f"SV_VL{n}" for n in (1, 2, 3, 4, 5, 6, 7, 8, 16, 32, 64, 128, 256)],
+    "SV_MUL4", "SV_MUL3", "SV_ALL",
+    *[f"SV_P{kind}L{level}{hint}" for kind in ("LD", "ST") for level in "123" for hint in ("KEEP", "STRM")],
+]
+
 CONFIGS = {
     "aarch64": {
         "compiler": "aarch64-linux-gnu-gcc",
-        "flags": ["-march=armv9-a+sve2"],
-        "headers": ["arm_neon.h", "arm_acle.h", "arm_fp16.h", "arm_bf16.h", "arm_sve.h"],
+        "flags": ["-march=armv9-a+sve2+sme2"],
+        "headers": ["arm_neon.h", "arm_acle.h", "arm_fp16.h", "arm_bf16.h", "arm_sve.h", "arm_sme.h"],
     },
     "arm": {
         "compiler": "arm-none-eabi-gcc",
@@ -52,6 +58,8 @@ def dump(name, config, work):
         path = include_dir / header
         if path.exists():
             names.update(TYPE_NAME.findall(path.read_text()))
+    if name == "aarch64":
+        names.update(SVE_ENUMERATORS)
     names_file = work / f"{name}-types.txt"
     names_file.write_text("\n".join(sorted(names)) + "\n")
     stubs = work / f"{name}-stubs"
@@ -69,7 +77,7 @@ def dump(name, config, work):
         ],
         capture_output=True,
     )
-    return sorted(set(line for line in result.stdout.splitlines() if line.startswith(("fn\t", "type\t", "tuple\t"))))
+    return sorted(set(line for line in result.stdout.splitlines() if line.startswith(("fn\t", "type\t", "tuple\t", "enum\t"))))
 
 
 def main():
