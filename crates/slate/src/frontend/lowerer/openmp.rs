@@ -82,14 +82,14 @@ impl FunctionLowerer<'_, '_> {
                 });
             }
         }
-        let enclosing = self.omp_shared.clone();
-        self.omp_shared.extend(shared);
+        let enclosing = self.shared_pointers.clone();
+        self.shared_pointers.extend(shared);
         let lowered = if control_flow::needs_dispatch(&region.body) {
             self.lower_dispatch(&region.body)
         } else {
             self.lower_statement_list(&region.body)
         };
-        self.omp_shared = enclosing;
+        self.shared_pointers = enclosing;
         body.extend(lowered?);
         outer.push(Stmt::Expr(Expr::Call {
             func: Box::new(Expr::Var("__slate_libgomp::parallel".into())),

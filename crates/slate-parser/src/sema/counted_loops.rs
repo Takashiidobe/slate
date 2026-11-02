@@ -60,6 +60,13 @@ impl Uses {
             | Statement::Return(Some(value))
             | Statement::ComputedGoto(value) => self.value(value),
             Statement::Block(body) => self.statements(body),
+            Statement::NestedFunction(nested) => {
+                self.escapes
+                    .extend(nested.captures.iter().map(|capture| capture.id));
+                if let Some(body) = &nested.function.body {
+                    self.statements(body);
+                }
+            }
             Statement::If {
                 condition,
                 then_body,

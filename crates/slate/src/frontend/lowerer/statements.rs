@@ -578,6 +578,11 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         statement: &slate_parser::ast::Span<ir::Statement>,
     ) -> Result<Vec<Stmt>> {
+        if let ir::Statement::NestedFunction(nested) = &statement.value {
+            self.lower_nested_function(statement, nested)
+                .map_err(|error| error.used_at(Site::of(statement)))?;
+            return Ok(Vec::new());
+        }
         let outer = std::mem::take(&mut self.pending);
         let lowered = self.lower_statement_node(statement);
         let before = std::mem::replace(&mut self.pending, outer);

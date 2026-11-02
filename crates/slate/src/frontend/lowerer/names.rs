@@ -50,7 +50,7 @@ fn source_line(files: &Files, loc: slate_parser::ast::Loc) -> usize {
         .map_or(0, |(line, _)| line + 1)
 }
 
-fn unique_name(name: String, taken: &mut HashSet<String>) -> String {
+pub(super) fn unique_name(name: String, taken: &mut HashSet<String>) -> String {
     let mut candidate = name.clone();
     let mut suffix = 1;
     while !taken.insert(candidate.clone()) {
@@ -149,6 +149,21 @@ pub(super) fn collect_statement_names(
             | ir::Statement::Case { body, .. }
             | ir::Statement::Default { body, .. } => {
                 collect_statement_names(body, bindings, reserved, next)
+            }
+            ir::Statement::NestedFunction(nested) => {
+                if let ir::Parameters::Prototype { fixed, .. } = &nested.function.parameters {
+                    for parameter in fixed {
+                        if let Some(name) = parameter.value.name.as_deref() {
+                            bindings.insert(
+                                parameter.value.id,
+                                local_binding_name(name, next, reserved),
+                            );
+                        }
+                    }
+                }
+                if let Some(body) = &nested.function.body {
+                    collect_statement_names(body, bindings, reserved, next);
+                }
             }
             ir::Statement::OmpParallel(region) => {
                 for private in &region.private {

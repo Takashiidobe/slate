@@ -596,9 +596,14 @@ impl Checker<'_> {
                     }
                 };
                 let storage = declaration.specifiers.storage;
-                let linkage = if global
-                    || storage == StorageClass::Extern
-                    || self.types.ctypes.is_function(completed)
+                let nested_forward = !global
+                    && storage == StorageClass::Auto
+                    && self.types.flavor().is_gcc()
+                    && self.types.ctypes.is_function(completed);
+                let linkage = if !nested_forward
+                    && (global
+                        || storage == StorageClass::Extern
+                        || self.types.ctypes.is_function(completed))
                 {
                     linkage(storage)
                 } else {
@@ -1001,7 +1006,12 @@ impl Checker<'_> {
                 self.deallocator(function, argument.as_ref());
             }
         }
-        self.report(at, declared_linkage(specifiers.storage).map(drop));
+        let nested_forward = specifiers.storage == StorageClass::Auto
+            && self.types.flavor().is_gcc()
+            && self.in_function;
+        if !nested_forward {
+            self.report(at, declared_linkage(specifiers.storage).map(drop));
+        }
         let Some(&id) = self.types.declarations.get(&node) else {
             return;
         };

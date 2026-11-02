@@ -47,6 +47,7 @@ pub struct NameResolution {
         std::collections::HashMap<crate::ast::NodeId, Vec<Span<BindingId>>>,
     pub openmp_iteration_copies: std::collections::HashMap<BindingId, BindingId>,
     pub block_ranges: std::collections::HashMap<crate::ast::NodeId, std::ops::Range<u32>>,
+    pub nested_function_ranges: std::collections::HashMap<crate::ast::NodeId, std::ops::Range<u32>>,
 }
 
 impl fmt::Display for NameResolution {

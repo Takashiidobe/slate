@@ -23,6 +23,7 @@ mod ms_asm;
 mod ms_asm_effects;
 mod ms_asm_return;
 pub mod names;
+mod nested;
 pub mod numeric;
 mod object_size;
 mod openmp;

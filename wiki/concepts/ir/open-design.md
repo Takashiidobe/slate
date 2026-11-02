@@ -100,8 +100,8 @@ never silently dropped. Today functions keep unresolved attributes as
 - Old-style (K&R) definitions: keep promoted incoming types separate from
   the local binding types and convert at entry. An unprototyped declaration
   is neither zero parameters nor variadic.
-- GNU nested functions: captures and static chains
-  (`slate-parser-dyd.56`).
+- GNU nested functions whose address escapes while they capture enclosing
+  locals: static chain or trampoline shape (`slate-parser-dyd.56.2`).
 - Nonlocal exits: `returns_twice`, `setjmp`/`longjmp`, and unwinding need a
   shape; no default `nothrow` flag.
 - A `musttail` requirement belongs on the call.

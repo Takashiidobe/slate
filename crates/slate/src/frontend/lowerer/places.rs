@@ -484,7 +484,7 @@ impl FunctionLowerer<'_, '_> {
         if self.byref.contains(&id) {
             return super::blocks::byref_value(self.byref_pointer(id));
         }
-        if let Some(pointer) = self.omp_shared.get(&id) {
+        if let Some(pointer) = self.shared_pointers.get(&id) {
             return Expr::Unary {
                 op: rust::UnaryOp::Deref,
                 expr: Box::new(Expr::Var(pointer.as_str().into())),

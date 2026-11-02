@@ -55,7 +55,8 @@ impl<'a, 'm> FunctionLowerer<'a, 'm> {
             uses_alloca: false,
             in_static_initializer: false,
             target_features: Vec::new(),
-            omp_shared: HashMap::new(),
+            shared_pointers: HashMap::new(),
+            captured: HashSet::new(),
             byref: HashSet::new(),
             byref_slots: HashSet::new(),
             pending: Vec::new(),
@@ -132,14 +133,14 @@ impl FunctionLowerer<'_, '_> {
     }
 
     fn rooted_in_byref(&self, place: &ir::Place) -> bool {
-        if self.byref.is_empty() {
+        if self.byref.is_empty() && self.captured.is_empty() {
             return false;
         }
         if let Some((array, _)) = self.tables.array_subscript(place) {
             return self.rooted_in_byref(array);
         }
         match &without_macro_holes(place).kind {
-            PlaceKind::Binding(id) => self.byref.contains(id),
+            PlaceKind::Binding(id) => self.byref.contains(id) || self.captured.contains(id),
             PlaceKind::Field { base, .. }
             | PlaceKind::Lane { base, .. }
             | PlaceKind::ComplexPart { base, .. } => self.rooted_in_byref(base),

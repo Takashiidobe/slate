@@ -280,6 +280,19 @@ pub enum Statement {
         expansion: MacroExpansionId,
         body: Vec<Span<Statement>>,
     },
+    NestedFunction(Box<NestedFunction>),
+}
+
+#[derive(Debug, Clone)]
+pub struct NestedFunction {
+    pub function: Function,
+    pub captures: Vec<NestedCapture>,
+}
+
+#[derive(Debug, Clone)]
+pub struct NestedCapture {
+    pub id: BindingId,
+    pub ty: Type,
 }
 
 #[derive(Debug, Clone)]

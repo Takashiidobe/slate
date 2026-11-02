@@ -57,6 +57,12 @@ impl Hoister {
             let span = statement.clone().with_value(());
             let statement = match statement.value {
                 Statement::Comment(text) => Statement::Comment(text),
+                Statement::NestedFunction(mut nested) => {
+                    if let Some(body) = nested.function.body.take() {
+                        nested.function.body = Some(self.statements(body)?);
+                    }
+                    Statement::NestedFunction(nested)
+                }
                 Statement::MacroExpansion { expansion, body } => Statement::MacroExpansion {
                     expansion,
                     body: self.statements(body)?,

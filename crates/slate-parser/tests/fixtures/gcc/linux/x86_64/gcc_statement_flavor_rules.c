@@ -5,7 +5,6 @@
 // SLATE-FILECHECK-DEFINES FALLTHROUGH FALLTHROUGH
 // SLATE-FILECHECK-DEFINES NESTED NESTED
 // SLATE-FILECHECK-IR-ERROR C99_RETURN
-// SLATE-FILECHECK-IR-ERROR NESTED
 // SLATE-FILECHECK-STD VALID gnu89
 // SLATE-FILECHECK-STD RETURN gnu89
 // SLATE-FILECHECK-STD FALLTHROUGH gnu23
@@ -67,17 +66,6 @@ int outer(int x) {
 // C99_RETURN:  23 │   return g(x);
 // C99_RETURN:     ╰────
 // SLATE-FILECHECK-END C99_RETURN
-// SLATE-FILECHECK-BEGIN NESTED
-// NESTED: Error:   × semantic analysis failed
-// NESTED: Error:
-// NESTED:   × not implemented: GNU nested function
-// NESTED:     ╭─[tests/fixtures/gcc/linux/x86_64/gcc_statement_flavor_rules.c:41:3]
-// NESTED:  40 │ int outer(int x) {
-// NESTED:  41 │   int inner(int y) { return y + x; }
-// NESTED:     ·   ──────────────────────────────────
-// NESTED:  42 │   return inner(x);
-// NESTED:     ╰────
-// SLATE-FILECHECK-END NESTED
 // SLATE-FILECHECK-BEGIN VALID
 // VALID: module {
 // VALID-NEXT:     target "x86_64-unknown-linux-gnu" {
@@ -224,3 +212,52 @@ int outer(int x) {
 // FALLTHROUGH-NEXT:     }
 // FALLTHROUGH-NEXT: }
 // SLATE-FILECHECK-END FALLTHROUGH
+// SLATE-FILECHECK-BEGIN NESTED
+// NESTED: module {
+// NESTED-NEXT:     target "x86_64-unknown-linux-gnu" {
+// NESTED-NEXT:         endian = little;
+// NESTED-NEXT:         pointer [size=8, align=8];
+// NESTED-NEXT:         stack_alignment = 16;
+// NESTED-NEXT:         long_double = f80;
+// NESTED-NEXT:         storage bool [size=1, align=1];
+// NESTED-NEXT:         storage i8, u8 [size=1, align=1];
+// NESTED-NEXT:         storage i16, u16 [size=2, align=2];
+// NESTED-NEXT:         storage i32, u32 [size=4, align=4];
+// NESTED-NEXT:         storage i64, u64 [size=8, align=8];
+// NESTED-NEXT:         storage i128, u128 [size=16, align=16];
+// NESTED-NEXT:         storage bf16 [size=2, align=2];
+// NESTED-NEXT:         storage f16 [size=2, align=2];
+// NESTED-NEXT:         storage f32 [size=4, align=4];
+// NESTED-NEXT:         storage f64 [size=8, align=8];
+// NESTED-NEXT:         storage f80 [size=16, align=16];
+// NESTED-NEXT:         storage f128 [size=16, align=16];
+// NESTED-NEXT:         storage d32 [size=4, align=4];
+// NESTED-NEXT:         storage d64 [size=8, align=8];
+// NESTED-NEXT:         storage d128 [size=16, align=16];
+// NESTED-NEXT:     }
+// NESTED-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// NESTED-NEXT:     fn %[[VALUE_attributed:[0-9]+]] @attributed(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// NESTED-NEXT:         switch %[[VALUE1:[0-9]+]] read<i32>(%[[VALUE_x]])
+// NESTED-NEXT:             {
+// NESTED-NEXT:                 case %[[VALUE1]] const<i32>(1):
+// NESTED-NEXT:                     let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// NESTED-NEXT:                     let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// NESTED-NEXT:                     write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE3]]));
+// NESTED-NEXT:                 ;
+// NESTED-NEXT:                 default %[[VALUE1]]:
+// NESTED-NEXT:                     break %[[VALUE1]];
+// NESTED-NEXT:             }
+// NESTED-NEXT:         label %[[VALUE_done:[0-9]+]] done:
+// NESTED-NEXT:             ;
+// NESTED-NEXT:         if ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0))
+// NESTED-NEXT:             goto %[[VALUE_done]];
+// NESTED-NEXT:         return read<i32>(%[[VALUE_x]]);
+// NESTED-NEXT:     }
+// NESTED-NEXT:     fn %[[VALUE_outer:[0-9]+]] @outer(%[[VALUE_x_2:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// NESTED-NEXT:         nested_fn %[[VALUE_inner:[0-9]+]] @inner(%[[VALUE_y:[0-9]+]] y: i32) -> i32 [captures=%[[VALUE_x_2]]: i32] {
+// NESTED-NEXT:             return add<i32, overflow=ub>(read<i32>(%[[VALUE_y]]), read<i32>(%[[VALUE_x_2]]));
+// NESTED-NEXT:         }
+// NESTED-NEXT:         return call<i32, signature=fn(i32) -> i32>(%[[VALUE_inner]], read<i32>(%[[VALUE_x_2]]));
+// NESTED-NEXT:     }
+// NESTED-NEXT: }
+// SLATE-FILECHECK-END NESTED

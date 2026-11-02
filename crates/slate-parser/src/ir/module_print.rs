@@ -986,12 +986,76 @@ impl Printer<'_> {
                     writeln!(f, "{:indent$}}}", "")?;
                     continue;
                 }
+                Statement::NestedFunction(nested) => {
+                    let function = &nested.function;
+                    write!(f, "nested_fn %{} @{}(", function.id.0, function.name)?;
+                    parameter_list(f, &function.parameters, self.table())?;
+                    f.write_str(") -> ")?;
+                    match &function.return_type {
+                        Some(ty) => write!(f, "{ty}")?,
+                        None => f.write_str("void")?,
+                    }
+                    f.write_str(" [captures=")?;
+                    for (index, capture) in nested.captures.iter().enumerate() {
+                        if index > 0 {
+                            f.write_str(", ")?;
+                        }
+                        write!(f, "%{}: {}", capture.id.0, capture.ty)?;
+                    }
+                    f.write_str("] {")?;
+                    self.statement_annotations(f, statement)?;
+                    writeln!(f)?;
+                    self.statements(f, function.body.as_deref().unwrap_or_default(), indent + 4)?;
+                    writeln!(f, "{:indent$}}}", "")?;
+                    continue;
+                }
             }
             self.statement_annotations(f, statement)?;
             writeln!(f, ";")?;
         }
         Ok(())
     }
+}
+
+fn parameter_list(
+    f: &mut fmt::Formatter<'_>,
+    parameters: &Parameters,
+    table: Annotations<'_>,
+) -> fmt::Result {
+    match parameters {
+        Parameters::Unprototyped => f.write_str("unprototyped")?,
+        Parameters::Prototype { fixed, variadic } => {
+            for (index, parameter) in fixed.iter().enumerate() {
+                if index != 0 {
+                    f.write_str(", ")?;
+                }
+                write!(
+                    f,
+                    "%{} {}: {}{}",
+                    parameter.value.id.0,
+                    parameter.name.as_deref().unwrap_or("<unnamed>"),
+                    parameter.access.prefix(),
+                    parameter.ty
+                )?;
+                if parameter.restrict {
+                    f.write_str(" [restrict]")?;
+                }
+                if parameter.value.is_const {
+                    f.write_str(" [const]")?;
+                }
+                if let Some(array) = parameter.value.array
+                    && (array.guaranteed || array.extent != ArrayExtent::Unspecified)
+                {
+                    write!(f, " {array}")?;
+                }
+                metadata(f, table, parameter.id)?;
+            }
+            if *variadic {
+                write!(f, "{}...", if fixed.is_empty() { "" } else { ", " })?;
+            }
+        }
+    }
+    Ok(())
 }
 
 impl fmt::Display for Comment {
@@ -1218,39 +1282,7 @@ impl fmt::Display for DisplayModule<'_> {
                 }
             }
             write!(f, "    fn %{} @{}(", function.value.id.0, function.name)?;
-            match &function.parameters {
-                Parameters::Unprototyped => f.write_str("unprototyped")?,
-                Parameters::Prototype { fixed, variadic } => {
-                    for (index, parameter) in fixed.iter().enumerate() {
-                        if index != 0 {
-                            f.write_str(", ")?;
-                        }
-                        write!(
-                            f,
-                            "%{} {}: {}{}",
-                            parameter.value.id.0,
-                            parameter.name.as_deref().unwrap_or("<unnamed>"),
-                            parameter.access.prefix(),
-                            parameter.ty
-                        )?;
-                        if parameter.restrict {
-                            f.write_str(" [restrict]")?;
-                        }
-                        if parameter.value.is_const {
-                            f.write_str(" [const]")?;
-                        }
-                        if let Some(array) = parameter.value.array
-                            && (array.guaranteed || array.extent != ArrayExtent::Unspecified)
-                        {
-                            write!(f, " {array}")?;
-                        }
-                        metadata(f, printer.table(), parameter.id)?;
-                    }
-                    if *variadic {
-                        write!(f, "{}...", if fixed.is_empty() { "" } else { ", " })?;
-                    }
-                }
-            }
+            parameter_list(f, &function.parameters, printer.table())?;
             f.write_str(") -> ")?;
             match &function.return_type {
                 Some(ty) => write!(f, "{ty}")?,

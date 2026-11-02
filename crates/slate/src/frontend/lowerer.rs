@@ -29,6 +29,7 @@ mod intrinsics;
 mod intrinsics_table;
 mod macro_sites;
 mod names;
+mod nested;
 mod openmp;
 mod padding;
 mod places;
@@ -97,6 +98,7 @@ struct Tables<'m> {
     types: HashMap<TypeId, &'m Span<ir::TypeDefinition>>,
     record_names: HashMap<TypeId, String>,
     stdio: stdio::StdioBindings,
+    nested: HashMap<BindingId, &'m ir::NestedFunction>,
 }
 
 #[derive(Default)]
@@ -105,6 +107,7 @@ struct Dependencies {
     blocks: bool,
     block_items: Vec<Item>,
     block_serial: u32,
+    nested_functions: Vec<Item>,
     cleanup: bool,
     rounding: bool,
     x86_interrupt: bool,
@@ -179,7 +182,8 @@ struct FunctionLowerer<'a, 'm> {
     uses_alloca: bool,
     in_static_initializer: bool,
     target_features: Vec<&'static str>,
-    omp_shared: HashMap<BindingId, String>,
+    shared_pointers: HashMap<BindingId, String>,
+    captured: HashSet<BindingId>,
     byref: HashSet<BindingId>,
     byref_slots: HashSet<BindingId>,
     pending: Vec<Stmt>,
@@ -608,6 +612,41 @@ impl<'m> ModuleLowerer<'m> {
                 names.insert(*from, target);
             }
         }
+        let mut nested = HashMap::new();
+        let mut taken: HashSet<String> = names.values().map(|name| name.rust.clone()).collect();
+        for function in &module.functions {
+            let Some(body) = &function.value.body else {
+                continue;
+            };
+            let mut found = Vec::new();
+            nested::collect_nested_functions(body, &mut found);
+            for inner in found {
+                let variadic = matches!(
+                    inner.function.parameters,
+                    ir::Parameters::Prototype { variadic: true, .. }
+                );
+                let rust = unique_name(
+                    format!("{}__{}", owner_name(&function.name), inner.function.name),
+                    &mut taken,
+                );
+                names.insert(
+                    inner.function.id,
+                    FunctionName {
+                        rust,
+                        builtin: None,
+                        library: None,
+                        codegen_builtin: false,
+                        is_extern: false,
+                        weak_extern: false,
+                        is_unsafe: variadic,
+                        is_variadic: variadic,
+                        exported: false,
+                        identity: FunctionIdentity::Unknown,
+                    },
+                );
+                nested.insert(inner.function.id, inner);
+            }
+        }
         let mut bindings =
             global_names(module, files, names.values().map(|name| name.rust.as_str()));
         let static_names: HashSet<_> = statics
@@ -676,6 +715,7 @@ impl<'m> ModuleLowerer<'m> {
                 .collect(),
             record_names: record_names(module, files),
             stdio: Default::default(),
+            nested,
         };
         tables.over_aligned = statics
             .iter()
@@ -888,8 +928,10 @@ impl<'m> ModuleLowerer<'m> {
                 }
                 lowered => lowered,
             };
+            let nested = std::mem::take(&mut self.dependencies.nested_functions);
             let lowered = lowered.and_then(|item| {
                 self.items.push(item);
+                self.items.extend(nested);
                 self.lower_init_hooks(function)
             });
             match lowered {

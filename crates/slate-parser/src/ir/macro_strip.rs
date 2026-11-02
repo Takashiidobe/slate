@@ -113,6 +113,11 @@ impl<V: MacroStructureVisitor> Walker<'_, V> {
                 self.visitor.leave_expansion(*expansion);
             }
             Statement::Block(body) => self.statements(body),
+            Statement::NestedFunction(nested) => {
+                if let Some(body) = &mut nested.function.body {
+                    self.statements(body);
+                }
+            }
             Statement::Temporary { initializer, .. } => {
                 if let Some(value) = initializer {
                     self.value(value);

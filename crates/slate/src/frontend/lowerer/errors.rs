@@ -110,6 +110,8 @@ fn return_label(returns: Option<&str>) -> String {
 pub enum Invariant {
     #[error("block literal without a body")]
     BlockWithoutBody,
+    #[error("nested function without a body")]
+    NestedFunctionWithoutBody,
     #[error("unknown callee %{}", .0.0)]
     UnknownCallee(BindingId),
     #[error("unresolved type @type{}", .0.0)]

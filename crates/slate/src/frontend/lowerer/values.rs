@@ -185,6 +185,15 @@ impl FunctionLowerer<'_, '_> {
         if self.tables.intrinsics.contains_key(&id) {
             return Err(unsupported_value(value));
         }
+        if let Some(nested) = self.tables.nested.get(&id)
+            && !nested.captures.is_empty()
+        {
+            return Err(Construct::Function {
+                name: nested.function.name.clone(),
+                detail: "address of a nested function that captures enclosing locals".into(),
+            }
+            .into());
+        }
         if self
             .tables
             .names

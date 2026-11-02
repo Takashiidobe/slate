@@ -137,7 +137,7 @@ impl Lowerer {
             .collect()
     }
 
-    fn is_local_object(&self, id: BindingId) -> bool {
+    pub(super) fn is_local_object(&self, id: BindingId) -> bool {
         let object = self
             .names
             .bindings

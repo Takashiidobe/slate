@@ -138,7 +138,22 @@ impl Resolver {
                         .specifiers
                         .attributes_with(&function.declarator, &function.attributes),
                 );
-                let entry = self.bind_function(name, true, overloadable, declaration)?;
+                let file_scope = self.ordinary.len() == 1;
+                let forward = self
+                    .ordinary
+                    .last()
+                    .and_then(|scope| scope.get(name))
+                    .filter(|existing| !file_scope && existing.kind == BindingKind::Function)
+                    .cloned();
+                let entry = match forward {
+                    Some(existing) => {
+                        self.resolution
+                            .declarations
+                            .insert(declaration.id, existing.id);
+                        existing
+                    }
+                    None => self.bind_function(name, file_scope, overloadable, declaration)?,
+                };
                 if passes_object_size(&function.declarator) {
                     self.resolution.passes_object_size.insert(entry.id);
                 }
@@ -421,7 +436,12 @@ impl Resolver {
                 let fake = statement
                     .clone()
                     .with_value(DeclKind::Function((**function).clone()));
-                self.declaration_node(&fake)
+                let first_binding = self.next_id;
+                self.declaration_node(&fake)?;
+                self.resolution
+                    .nested_function_ranges
+                    .insert(statement.id, first_binding..self.next_id);
+                Ok(())
             }
         }
     }

@@ -292,6 +292,9 @@ statement  = simple { metadata } ";"
            | "case" binding value [ "..." value ] ":" { metadata } body
            | "default" binding ":" { metadata } body
            | "label" binding c_identifier ":" { metadata } body
+           | "nested_fn" binding "@" c_identifier "(" [ parameters ] ")"
+               "->" type "[captures=" [ binding ":" type { "," binding ":" type } ] "]"
+               "{" { statement } "}"
            | "seh_try" binding { metadata }
                "body:" body
                ( "except" evaluation ":" body | "finally:" body )

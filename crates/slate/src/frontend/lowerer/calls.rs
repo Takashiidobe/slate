@@ -124,18 +124,20 @@ impl FunctionLowerer<'_, '_> {
             } => Some(parameters.len()),
             _ => None,
         };
+        let mut args = match callee {
+            ir::Callee::Direct(id) => self.nested_capture_arguments(*id)?,
+            ir::Callee::Indirect(_) => Vec::new(),
+        };
+        for (index, argument) in arguments.iter().enumerate() {
+            args.push(self.lower_call_argument(
+                argument,
+                variadic_start.is_some_and(|start| index >= start),
+            )?);
+        }
+        let names = &self.tables.names;
         let call = Expr::Call {
             func: Box::new(func),
-            args: arguments
-                .iter()
-                .enumerate()
-                .map(|(index, argument)| {
-                    self.lower_call_argument(
-                        argument,
-                        variadic_start.is_some_and(|start| index >= start),
-                    )
-                })
-                .collect::<Result<Vec<_>>>()?,
+            args,
             binding: match callee {
                 ir::Callee::Direct(id) => CallBinding::Direct {
                     identity: names[id].identity,

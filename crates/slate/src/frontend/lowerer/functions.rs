@@ -359,7 +359,9 @@ impl FunctionLowerer<'_, '_> {
         function: &slate_parser::ast::Span<ir::Function>,
         body: &[slate_parser::ast::Span<ir::Statement>],
     ) -> Result<Item> {
-        self.owner = owner_name(&function.name);
+        if self.owner.is_empty() {
+            self.owner = owner_name(&function.name);
+        }
         let fixed = types::fixed_parameters(&function.parameters);
         let variadic = matches!(
             function.parameters,

@@ -96,6 +96,7 @@ fn resolve_module(
         reserved_extents: HashMap::new(),
         bare_weakrefs: HashSet::new(),
         register_variables: HashMap::new(),
+        nested_functions: Vec::new(),
         context,
     };
     let mut poisoned = HashSet::new();
@@ -569,123 +570,145 @@ fn lower_item(
             lower.declaration(item, true)?;
         }
         DeclKind::Function(function) => {
-            let attributes = function
-                .specifiers
-                .attributes_with(&function.declarator, &function.attributes)
-                .collect::<Vec<_>>();
-            lower
-                .types
-                .check_attributes(attributes.iter().copied(), Subject::Function)
-                .map_err(ResolveError::checked)?;
-            let mut symbol = function_symbol(
-                attributes.iter().copied(),
-                None,
-                lower.types.flavor().is_clang(),
-            )
-            .map_err(ResolveError::checked)?;
-            let name = function
-                .declarator
-                .name()
-                .ok_or(ResolveError::Internal("unnamed function"))?;
-            lower.types.pragmas.apply(name, &mut symbol);
-            let id = lower.declaration_id(declaration.id, name)?;
-            lower
-                .record_function(id, &function.specifiers, &attributes, true, true)
-                .map_err(ResolveError::checked)?;
-            let owner = lower.types.owner.replace(declaration.derive(()));
-            let resolved = lower.resolve_type(&function.specifiers, &function.declarator)?;
-            let resolved = lower.types.apply_convention(resolved, &function.attributes);
-            let resolved = lower.types.inherit_convention(id, resolved);
-            let (return_c, ..) = lower
-                .types
-                .ctypes
-                .function_parts(resolved)
-                .ok_or(ResolveError::Internal("function definition declarator"))?;
-            let c_return = lower.types.render(return_c).spelling;
-            lower.types.owner = owner;
-            let ty = lower.types.object_type(resolved, "void function type")?;
-            let Type::Function { return_type, .. } = &ty else {
-                return Err(ResolveError::Internal("function definition declarator"));
-            };
-            let return_type = return_type.as_ref().map(|ty| (**ty).clone());
-            let target = lower.declared_target(id);
-            let abi = Some(lower.c_abi_signature(resolved, &ty, None, &target)?);
-            lower.redeclared(declaration.id, id)?;
-            let mut metadata = vec![
-                (
-                    "c_storage".into(),
-                    function.specifiers.storage.as_str().into(),
-                ),
-                ("c_return".into(), c_return),
-            ];
-            metadata.extend(lower.types.render(resolved).entries());
-            let params = function
-                .declarator
-                .function_parameters()
-                .ok_or(ResolveError::Internal("missing function parameters"))?;
-            if matches!(params, ParameterList::IdentifierList { .. }) {
-                lower.warn(
-                    Warning::DeprecatedNonPrototype,
-                    "a function definition without a prototype is deprecated in all versions of C and is not supported in C23",
-                    declaration,
-                );
-            }
-            let mut prologue = Vec::new();
-            lower.in_function = true;
-            lower.function_target = target;
-            lower.in_naked_function = lower.is_naked(id);
-            lower.types.function_names = Some(lower.types.function_names(resolved, name));
-            lower.return_type = return_type.as_ref().map(|_| return_c);
-            let body = lower
-                .parameters(params, Some(&mut prologue))
-                .and_then(|parameters| {
-                    let body = lower.compound(|lower| {
-                        lower.statements(&function.body, return_type.as_ref().map(|_| return_c))
-                    })?;
-                    prologue.extend(body);
-                    Ok((parameters, prologue))
-                });
-            lower.in_function = false;
-            lower.function_target = Vec::new();
-            lower.in_naked_function = false;
-            lower.types.function_names = None;
-            lower.return_type = None;
-            let (parameters, mut body) = body?;
-            let asm_return = lower.finish_ms_asm_return(
+            let lowered = lower.function_definition(
+                declaration.id,
                 &declaration.derive(()),
-                return_type.as_ref(),
-                &mut body,
+                function,
+                features.main_implicit_return_zero,
+                false,
             )?;
-            let fallthrough = if let Some(value) = asm_return {
-                Fallthrough::Return(Box::new(value))
-            } else if name == "main"
-                && return_type == Some(lower.context.int_type())
-                && features.main_implicit_return_zero
-            {
-                Fallthrough::ReturnZero
-            } else if return_type.is_none() {
-                Fallthrough::ReturnVoid
-            } else {
-                Fallthrough::UndefinedIfUsed
-            };
-            let lowered = declaration.derive(Function {
-                id,
-                name: name.into(),
-                parameters,
-                return_type,
-                abi,
-                linkage: linkage(function.specifiers.storage).map_err(ResolveError::checked)?,
-                symbol,
-                semantics: Default::default(),
-                body: Some(body),
-                fallthrough: Some(fallthrough),
-            });
-            lower.module.annotate(&lowered, metadata);
-            lower.types.record_c_type(&lowered, resolved);
             lower.declare_function(lowered)?;
         }
     }
     Ok(())
+}
+
+impl Lowerer {
+    pub(super) fn function_definition(
+        &mut self,
+        node: ast::NodeId,
+        declaration: &Span<()>,
+        function: &ast::FunctionDefinition,
+        main_returns_zero: bool,
+        nested: bool,
+    ) -> Result<Span<Function>, ResolveError> {
+        if !nested && self.types.flavor().is_gcc() {
+            self.analyze_nested_functions(&function.body)?;
+        }
+        let attributes = function
+            .specifiers
+            .attributes_with(&function.declarator, &function.attributes)
+            .collect::<Vec<_>>();
+        self.types
+            .check_attributes(attributes.iter().copied(), Subject::Function)
+            .map_err(ResolveError::checked)?;
+        let mut symbol = function_symbol(
+            attributes.iter().copied(),
+            None,
+            self.types.flavor().is_clang(),
+        )
+        .map_err(ResolveError::checked)?;
+        let name = function
+            .declarator
+            .name()
+            .ok_or(ResolveError::Internal("unnamed function"))?;
+        self.types.pragmas.apply(name, &mut symbol);
+        let id = self.declaration_id(node, name)?;
+        self.record_function(id, &function.specifiers, &attributes, true, true)
+            .map_err(ResolveError::checked)?;
+        let owner = self.types.owner.replace(declaration.derive(()));
+        let resolved = self.resolve_type(&function.specifiers, &function.declarator)?;
+        let resolved = self.types.apply_convention(resolved, &function.attributes);
+        let resolved = self.types.inherit_convention(id, resolved);
+        let (return_c, ..) = self
+            .types
+            .ctypes
+            .function_parts(resolved)
+            .ok_or(ResolveError::Internal("function definition declarator"))?;
+        let c_return = self.types.render(return_c).spelling;
+        self.types.owner = owner;
+        let ty = self.types.object_type(resolved, "void function type")?;
+        let Type::Function { return_type, .. } = &ty else {
+            return Err(ResolveError::Internal("function definition declarator"));
+        };
+        let return_type = return_type.as_ref().map(|ty| (**ty).clone());
+        let target = self.declared_target(id);
+        let abi = Some(self.c_abi_signature(resolved, &ty, None, &target)?);
+        self.redeclared(node, id)?;
+        let mut metadata = vec![
+            (
+                "c_storage".into(),
+                function.specifiers.storage.as_str().into(),
+            ),
+            ("c_return".into(), c_return),
+        ];
+        metadata.extend(self.types.render(resolved).entries());
+        let params = function
+            .declarator
+            .function_parameters()
+            .ok_or(ResolveError::Internal("missing function parameters"))?;
+        if matches!(params, ParameterList::IdentifierList { .. }) {
+            self.warn(
+            Warning::DeprecatedNonPrototype,
+            "a function definition without a prototype is deprecated in all versions of C and is not supported in C23",
+            declaration,
+        );
+        }
+        let mut prologue = Vec::new();
+        self.in_function = true;
+        self.function_target = target;
+        self.in_naked_function = self.is_naked(id);
+        self.types.function_names = Some(self.types.function_names(resolved, name));
+        self.return_type = return_type.as_ref().map(|_| return_c);
+        let body = self
+            .parameters(params, Some(&mut prologue))
+            .and_then(|parameters| {
+                let body = self.compound(|lower| {
+                    lower.statements(&function.body, return_type.as_ref().map(|_| return_c))
+                })?;
+                prologue.extend(body);
+                Ok((parameters, prologue))
+            });
+        self.in_function = false;
+        self.function_target = Vec::new();
+        self.in_naked_function = false;
+        self.types.function_names = None;
+        self.return_type = None;
+        let (parameters, mut body) = body?;
+        let asm_return =
+            self.finish_ms_asm_return(&declaration.derive(()), return_type.as_ref(), &mut body)?;
+        let fallthrough = if let Some(value) = asm_return {
+            Fallthrough::Return(Box::new(value))
+        } else if name == "main"
+            && return_type == Some(self.context.int_type())
+            && main_returns_zero
+        {
+            Fallthrough::ReturnZero
+        } else if return_type.is_none() {
+            Fallthrough::ReturnVoid
+        } else {
+            Fallthrough::UndefinedIfUsed
+        };
+        let lowered = declaration.derive(Function {
+            id,
+            name: name.into(),
+            parameters,
+            return_type,
+            abi,
+            linkage: if nested {
+                Linkage::Internal
+            } else {
+                linkage(function.specifiers.storage).map_err(ResolveError::checked)?
+            },
+            symbol,
+            semantics: Default::default(),
+            body: Some(body),
+            fallthrough: Some(fallthrough),
+        });
+        self.module.annotate(&lowered, metadata);
+        self.types.record_c_type(&lowered, resolved);
+        Ok(lowered)
+    }
 }
 
 pub(super) fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {
@@ -1439,6 +1462,10 @@ impl Lowerer {
                 }
                 if !global && storage_class == StorageClass::Static {
                     return Err(ResolveError::Internal("block scope static function"));
+                }
+                if !global && storage_class == StorageClass::Auto && self.types.flavor().is_gcc() {
+                    self.redeclared(declarator.id, id)?;
+                    continue;
                 }
                 let attributes = item
                     .specifiers
@@ -2579,12 +2606,13 @@ impl Lowerer {
                 result.extend(self.statements(std::slice::from_ref(body), return_type)?);
                 return Ok(());
             }
-            StmtKind::NestedFunction(_) => {
-                return Err(if self.types.flavor().is_gcc() {
-                    ResolveError::Unimplemented("GNU nested function")
-                } else {
-                    ResolveError::Internal("function definition is not allowed here")
-                });
+            StmtKind::NestedFunction(function) => {
+                if !self.types.flavor().is_gcc() {
+                    return Err(ResolveError::Internal(
+                        "function definition is not allowed here",
+                    ));
+                }
+                Statement::NestedFunction(Box::new(self.nested_function(statement, function)?))
             }
         };
         let lowered = statement.derive(kind);

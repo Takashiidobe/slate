@@ -7,6 +7,7 @@
   - [Structured exception handling](#structured-exception-handling)
   - [OpenMP regions](#openmp-regions)
   - [Statement attributes](#statement-attributes)
+  - [Nested functions](#nested-functions)
   - [Materialized function ends](#materialized-function-ends)
 - [Side-effect hoisting](#side-effect-hoisting)
   - [Statement expressions](#statement-expressions)
@@ -186,8 +187,33 @@ Fixture: `crates/slate/tests/fixtures/for_range_counted.c`.
 - `[[x]] stmt` lowers to `stmt`, dropping the attributes (clang and gcc only
   warn). `fallthrough` on a non-empty statement is an error except under
   gcc, which ignores it.
-- A nested function definition is an error under clang and MSVC and
-  `Unimplemented` under gcc (`slate-parser-dyd.56`).
+- A nested function definition is an error under clang and MSVC; under
+  gcc it lowers to `Statement::NestedFunction` (see
+  [Nested functions](#nested-functions)).
+
+### Nested functions
+
+GNU nested functions (gcc only) lower to `Statement::NestedFunction` at
+their definition point: an internal-linkage `Function` plus `captures`, the
+enclosing locals it uses, each with its object type. Captures are always by
+reference.
+
+- Captures are transitive: a nested function that calls a sibling or an
+  inner nested function also captures that callee's captures, unless they
+  are declared inside the caller itself. Mutual recursion reaches a fixed
+  point.
+- Only automatic locals and parameters of enclosing functions are captured;
+  statics and globals are referenced directly.
+- A nested definition gets its own binding even when it shares a name with
+  a global or an outer nested function. `auto int f(int);` in block scope
+  forward-declares a nested function; it has no linkage and is not emitted
+  as a module function.
+- Taking the address of a nested function that captures locals needs a
+  static chain or trampoline and is a slate barrier
+  (`slate-parser-dyd.56.2`). A capture-free nested function is an ordinary
+  internal function and may be address-taken.
+- Non-local `goto` to a label of an enclosing function is not supported
+  (`slate-parser-cxg.17`).
 
 ### Materialized function ends
 
