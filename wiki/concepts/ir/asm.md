@@ -411,7 +411,7 @@ impossible.
   early clobbers (`gnu_asm_flag_outputs.c`).
   On aarch64 the same constraint takes the 16 condition names (`eq ne cs cc hs lo mi pl vs vc
   hi ls ge lt gt le`) and lowers to `out(reg)` into a `u32` with `cset {N:w}, <cond>` appended
-  (`asm_aarch64_flag_outputs.c`).
+  (`asm_aarch64_flag_outputs.c`, all 16).
   clang-only `+@cc<cond>` lowers the same way: clang ignores the tied input (the output is the
   flags), so the input is dropped (`clang_asm_flag_output_readwrite.c`). A template reference to
   a flags operand stays a barrier: clang prints an unspecified register for it.
