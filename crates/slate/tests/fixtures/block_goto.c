@@ -16,7 +16,19 @@ again:;
   return total + n;
 }
 
+static int self_referential(int rounds) {
+  int total = 0;
+again:;
+  __block int (^depth)(int) =
+      _Block_copy(^(int n) { return n ? depth(n - 1) + 1 : 0; });
+  total += depth(rounds);
+  _Block_release(depth);
+  if (--rounds > 0) goto again;
+  return total;
+}
+
 int main(void) {
+  printf("self %d\n", self_referential(5));
   __block int n = 0;
   int (^inc)(void) = _Block_copy(^{ return ++n; });
 again:
@@ -72,18 +84,19 @@ again:
 // CHECK-NEXT:         value: T,
 // CHECK-NEXT:     }
 // CHECK-EMPTY:
-// CHECK-NEXT:     pub unsafe fn byref<T>(slot: *mut MaybeUninit<Byref<T>>, value: T) -> *mut Byref<T> {
+// CHECK-NEXT:     pub unsafe fn byref<T>(slot: *mut MaybeUninit<Byref<T>>) -> *mut Byref<T> {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             let byref = slot.cast::<Byref<T>>();
-// CHECK-NEXT:             byref.write(Byref {
-// CHECK-NEXT:                 isa: std::ptr::null(),
-// CHECK-NEXT:                 forwarding: byref,
-// CHECK-NEXT:                 flags: 0,
-// CHECK-NEXT:                 size: size_of::<Byref<T>>() as i32,
-// CHECK-NEXT:                 value,
-// CHECK-NEXT:             });
+// CHECK-NEXT:             (&raw mut (*byref).isa).write(std::ptr::null());
+// CHECK-NEXT:             (&raw mut (*byref).forwarding).write(byref);
+// CHECK-NEXT:             (&raw mut (*byref).flags).write(0);
+// CHECK-NEXT:             (&raw mut (*byref).size).write(size_of::<Byref<T>>() as i32);
 // CHECK-NEXT:             byref
 // CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub unsafe fn store<T>(byref: *mut Byref<T>, initial: T) {
+// CHECK-NEXT:         unsafe { value(byref).write(initial) }
 // CHECK-NEXT:     }
 // CHECK-EMPTY:
 // CHECK-NEXT:     pub unsafe fn value<T>(byref: *mut Byref<T>) -> *mut T {
@@ -108,13 +121,13 @@ again:
 // CHECK-NEXT:         unsafe { (&raw mut (*slot).byref).cast() }
 // CHECK-NEXT:     }
 // CHECK-EMPTY:
-// CHECK-NEXT:     pub unsafe fn init<T>(slot: *mut ByrefSlot<T>, value: T) {
+// CHECK-NEXT:     pub unsafe fn init<T>(slot: *mut ByrefSlot<T>) -> *mut Byref<T> {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             if (*slot).live {
 // CHECK-NEXT:                 _Block_object_dispose(self::slot(slot) as *const c_void, FIELD_IS_BYREF);
 // CHECK-NEXT:             }
-// CHECK-NEXT:             byref(&raw mut (*slot).byref, value);
 // CHECK-NEXT:             (*slot).live = true;
+// CHECK-NEXT:             byref(&raw mut (*slot).byref)
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-EMPTY:
@@ -282,7 +295,7 @@ again:
 // CHECK-NEXT:         round = 0;
 // CHECK-NEXT:         total = 0;
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             __slate_blocks::init(std::ptr::addr_of_mut!(n), round);
+// CHECK-NEXT:             __slate_blocks::store(__slate_blocks::init(std::ptr::addr_of_mut!(n)), round);
 // CHECK-NEXT:             let inc: *mut std::ffi::c_void = _Block_copy(__slate_blocks::stack(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(__slate_block_0_slot),
 // CHECK-NEXT:                 __slate_block_0 as *const std::ffi::c_void,
@@ -312,11 +325,57 @@ again:
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: fn self_referential(mut rounds: i32) -> i32 {
+// CHECK-NEXT:     let mut __slate_block_1_slot: std::mem::MaybeUninit<
+// CHECK-NEXT:         __slate_blocks::Block<__slate_block_1_captures>,
+// CHECK-NEXT:     > = std::mem::MaybeUninit::uninit();
+// CHECK-NEXT:     let mut depth: __slate_blocks::ByrefSlot<*mut std::ffi::c_void> =
+// CHECK-NEXT:         __slate_blocks::ByrefSlot::new();
+// CHECK-NEXT:     let mut total: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         total = 0;
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             __slate_blocks::store(
+// CHECK-NEXT:                 __slate_blocks::init(std::ptr::addr_of_mut!(depth)),
+// CHECK-NEXT:                 _Block_copy(__slate_blocks::stack(
+// CHECK-NEXT:                     std::ptr::addr_of_mut!(__slate_block_1_slot),
+// CHECK-NEXT:                     __slate_block_1 as *const std::ffi::c_void,
+// CHECK-NEXT:                     &__slate_block_1_descriptor,
+// CHECK-NEXT:                     __slate_block_1_captures {
+// CHECK-NEXT:                         c0: __slate_blocks::slot(std::ptr::addr_of_mut!(depth)),
+// CHECK-NEXT:                     },
+// CHECK-NEXT:                 ) as *const ()) as *mut std::ffi::c_void,
+// CHECK-NEXT:             );
+// CHECK-NEXT:             total += {
+// CHECK-NEXT:                 let [[T_0]] =
+// CHECK-NEXT:                     *__slate_blocks::value(__slate_blocks::slot(std::ptr::addr_of_mut!(depth)));
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     std::mem::transmute::<
+// CHECK-NEXT:                         *const std::ffi::c_void,
+// CHECK-NEXT:                         Option<unsafe extern "C-unwind" fn(*mut std::ffi::c_void, i32) -> i32>,
+// CHECK-NEXT:                     >(__slate_blocks::invoke([[T_0]]))
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 .unwrap()([[T_0]], rounds)
+// CHECK-NEXT:             };
+// CHECK-NEXT:             _Block_release(
+// CHECK-NEXT:                 *__slate_blocks::value(__slate_blocks::slot(std::ptr::addr_of_mut!(depth)))
+// CHECK-NEXT:                     as *const (),
+// CHECK-NEXT:             );
+// CHECK-NEXT:             let [[V_0]]: i32 = rounds - 1;
+// CHECK-NEXT:             rounds = [[V_0]];
+// CHECK-NEXT:             if [[V_0]] <= 0 {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:         return total;
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: mallinfo2 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: mallinfo2 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut __slate_block_1_slot: std::mem::MaybeUninit<
-// CHECK-NEXT:         __slate_blocks::Block<__slate_block_1_captures>,
+// CHECK-NEXT:     let mut __slate_block_2_slot: std::mem::MaybeUninit<
+// CHECK-NEXT:         __slate_blocks::Block<__slate_block_2_captures>,
 // CHECK-NEXT:     > = std::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let mut i: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut sum: i64 = unsafe { std::mem::zeroed() };
@@ -324,12 +383,13 @@ again:
 // CHECK-NEXT:     let mut inc: *mut std::ffi::c_void = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut n: __slate_blocks::ByrefSlot<i32> = __slate_blocks::ByrefSlot::new();
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         __slate_blocks::init(std::ptr::addr_of_mut!(n), 0i32);
+// CHECK-NEXT:         println!("self {}", self_referential(5i32));
+// CHECK-NEXT:         __slate_blocks::store(__slate_blocks::init(std::ptr::addr_of_mut!(n)), 0i32);
 // CHECK-NEXT:         inc = _Block_copy(__slate_blocks::stack(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(__slate_block_1_slot),
-// CHECK-NEXT:             __slate_block_1 as *const std::ffi::c_void,
-// CHECK-NEXT:             &__slate_block_1_descriptor,
-// CHECK-NEXT:             __slate_block_1_captures {
+// CHECK-NEXT:             std::ptr::addr_of_mut!(__slate_block_2_slot),
+// CHECK-NEXT:             __slate_block_2 as *const std::ffi::c_void,
+// CHECK-NEXT:             &__slate_block_2_descriptor,
+// CHECK-NEXT:             __slate_block_2_captures {
 // CHECK-NEXT:                 c0: __slate_blocks::slot(std::ptr::addr_of_mut!(n)),
 // CHECK-NEXT:             },
 // CHECK-NEXT:         ) as *const ()) as *mut std::ffi::c_void;
@@ -403,24 +463,56 @@ again:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __slate_block_1_captures {
-// CHECK-NEXT:     c0: *mut __slate_blocks::Byref<i32>,
+// CHECK-NEXT:     c0: *mut __slate_blocks::Byref<*mut std::ffi::c_void>,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: extern "C-unwind" fn __slate_block_1(__block: *mut std::ffi::c_void) -> i32 {
+// CHECK-NEXT: extern "C-unwind" fn __slate_block_1(__block: *mut std::ffi::c_void, [[V_4:__v[0-9]+]]: i32) -> i32 {
 // CHECK-NEXT:     let __captures: __slate_block_1_captures =
 // CHECK-NEXT:         unsafe { __slate_blocks::captures::<__slate_block_1_captures>(__block) };
-// CHECK-NEXT:     let n: *mut __slate_blocks::Byref<i32> = __captures.c0;
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = unsafe { *__slate_blocks::value(n) };
-// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = [[V_4]] + 1;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__slate_blocks::value(n) = [[V_5]];
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let depth: *mut __slate_blocks::Byref<*mut std::ffi::c_void> = __captures.c0;
+// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = if [[V_4]] != 0 {
+// CHECK-NEXT:         (unsafe {
+// CHECK-NEXT:             let [[T_0]] = *__slate_blocks::value(depth);
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 std::mem::transmute::<
+// CHECK-NEXT:                     *const std::ffi::c_void,
+// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*mut std::ffi::c_void, i32) -> i32>,
+// CHECK-NEXT:                 >(__slate_blocks::invoke([[T_0]]))
+// CHECK-NEXT:             }
+// CHECK-NEXT:             .unwrap()([[T_0]], [[V_4]] - 1)
+// CHECK-NEXT:         }) + 1
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     };
 // CHECK-NEXT:     [[V_5]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static __slate_block_1_descriptor: __slate_blocks::Descriptor =
 // CHECK-NEXT:     __slate_blocks::descriptor::<__slate_block_1_captures>(&[__slate_blocks::byref_field(
 // CHECK-NEXT:         std::mem::offset_of!(__slate_block_1_captures, c0),
+// CHECK-NEXT:     )]);
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct __slate_block_2_captures {
+// CHECK-NEXT:     c0: *mut __slate_blocks::Byref<i32>,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: extern "C-unwind" fn __slate_block_2(__block: *mut std::ffi::c_void) -> i32 {
+// CHECK-NEXT:     let __captures: __slate_block_2_captures =
+// CHECK-NEXT:         unsafe { __slate_blocks::captures::<__slate_block_2_captures>(__block) };
+// CHECK-NEXT:     let n: *mut __slate_blocks::Byref<i32> = __captures.c0;
+// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = unsafe { *__slate_blocks::value(n) };
+// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = [[V_6]] + 1;
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *__slate_blocks::value(n) = [[V_7]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     [[V_7]]
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: static __slate_block_2_descriptor: __slate_blocks::Descriptor =
+// CHECK-NEXT:     __slate_blocks::descriptor::<__slate_block_2_captures>(&[__slate_blocks::byref_field(
+// CHECK-NEXT:         std::mem::offset_of!(__slate_block_2_captures, c0),
 // CHECK-NEXT:     )]);
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

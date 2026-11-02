@@ -34,18 +34,19 @@ mod __slate_blocks {
         value: T,
     }
 
-    pub unsafe fn byref<T>(slot: *mut MaybeUninit<Byref<T>>, value: T) -> *mut Byref<T> {
+    pub unsafe fn byref<T>(slot: *mut MaybeUninit<Byref<T>>) -> *mut Byref<T> {
         unsafe {
             let byref = slot.cast::<Byref<T>>();
-            byref.write(Byref {
-                isa: std::ptr::null(),
-                forwarding: byref,
-                flags: 0,
-                size: size_of::<Byref<T>>() as i32,
-                value,
-            });
+            (&raw mut (*byref).isa).write(std::ptr::null());
+            (&raw mut (*byref).forwarding).write(byref);
+            (&raw mut (*byref).flags).write(0);
+            (&raw mut (*byref).size).write(size_of::<Byref<T>>() as i32);
             byref
         }
+    }
+
+    pub unsafe fn store<T>(byref: *mut Byref<T>, initial: T) {
+        unsafe { value(byref).write(initial) }
     }
 
     pub unsafe fn value<T>(byref: *mut Byref<T>) -> *mut T {
@@ -70,13 +71,13 @@ mod __slate_blocks {
         unsafe { (&raw mut (*slot).byref).cast() }
     }
 
-    pub unsafe fn init<T>(slot: *mut ByrefSlot<T>, value: T) {
+    pub unsafe fn init<T>(slot: *mut ByrefSlot<T>) -> *mut Byref<T> {
         unsafe {
             if (*slot).live {
                 _Block_object_dispose(self::slot(slot) as *const c_void, FIELD_IS_BYREF);
             }
-            byref(&raw mut (*slot).byref, value);
             (*slot).live = true;
+            byref(&raw mut (*slot).byref)
         }
     }
 

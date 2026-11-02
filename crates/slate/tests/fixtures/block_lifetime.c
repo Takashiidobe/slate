@@ -83,18 +83,19 @@ int main(void) {
 // CHECK-NEXT:         value: T,
 // CHECK-NEXT:     }
 // CHECK-EMPTY:
-// CHECK-NEXT:     pub unsafe fn byref<T>(slot: *mut MaybeUninit<Byref<T>>, value: T) -> *mut Byref<T> {
+// CHECK-NEXT:     pub unsafe fn byref<T>(slot: *mut MaybeUninit<Byref<T>>) -> *mut Byref<T> {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             let byref = slot.cast::<Byref<T>>();
-// CHECK-NEXT:             byref.write(Byref {
-// CHECK-NEXT:                 isa: std::ptr::null(),
-// CHECK-NEXT:                 forwarding: byref,
-// CHECK-NEXT:                 flags: 0,
-// CHECK-NEXT:                 size: size_of::<Byref<T>>() as i32,
-// CHECK-NEXT:                 value,
-// CHECK-NEXT:             });
+// CHECK-NEXT:             (&raw mut (*byref).isa).write(std::ptr::null());
+// CHECK-NEXT:             (&raw mut (*byref).forwarding).write(byref);
+// CHECK-NEXT:             (&raw mut (*byref).flags).write(0);
+// CHECK-NEXT:             (&raw mut (*byref).size).write(size_of::<Byref<T>>() as i32);
 // CHECK-NEXT:             byref
 // CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub unsafe fn store<T>(byref: *mut Byref<T>, initial: T) {
+// CHECK-NEXT:         unsafe { value(byref).write(initial) }
 // CHECK-NEXT:     }
 // CHECK-EMPTY:
 // CHECK-NEXT:     pub unsafe fn value<T>(byref: *mut Byref<T>) -> *mut T {
@@ -119,13 +120,13 @@ int main(void) {
 // CHECK-NEXT:         unsafe { (&raw mut (*slot).byref).cast() }
 // CHECK-NEXT:     }
 // CHECK-EMPTY:
-// CHECK-NEXT:     pub unsafe fn init<T>(slot: *mut ByrefSlot<T>, value: T) {
+// CHECK-NEXT:     pub unsafe fn init<T>(slot: *mut ByrefSlot<T>) -> *mut Byref<T> {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             if (*slot).live {
 // CHECK-NEXT:                 _Block_object_dispose(self::slot(slot) as *const c_void, FIELD_IS_BYREF);
 // CHECK-NEXT:             }
-// CHECK-NEXT:             byref(&raw mut (*slot).byref, value);
 // CHECK-NEXT:             (*slot).live = true;
+// CHECK-NEXT:             byref(&raw mut (*slot).byref)
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-EMPTY:

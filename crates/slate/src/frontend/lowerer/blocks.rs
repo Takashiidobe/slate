@@ -110,22 +110,24 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn init_byref_slot(&mut self, variable: &ir::Variable) -> Result<Stmt> {
-        let init = match &variable.initializer {
+        let header = support_call(
+            "init",
+            vec![Expr::AddrOf {
+                mutable: true,
+                expr: Box::new(Expr::Var(self.binding_name(variable.id).as_str().into())),
+            }],
+        );
+        self.store_byref(header, variable)
+    }
+
+    fn store_byref(&mut self, byref: Expr, variable: &ir::Variable) -> Result<Stmt> {
+        let initial = match &variable.initializer {
             Some(value) => self.lower_value(value)?,
             None => zeroed(),
         };
         Ok(Stmt::Expr(Expr::Unsafe(Box::new(rust::Block {
             stmts: Vec::new(),
-            tail: Some(Box::new(support_call(
-                "init",
-                vec![
-                    Expr::AddrOf {
-                        mutable: true,
-                        expr: Box::new(Expr::Var(self.binding_name(variable.id).as_str().into())),
-                    },
-                    init,
-                ],
-            ))),
+            tail: Some(Box::new(support_call("store", vec![byref, initial]))),
         }))))
     }
 
@@ -147,10 +149,6 @@ impl FunctionLowerer<'_, '_> {
 
     pub(super) fn lower_byref_let(&mut self, variable: &ir::Variable) -> Result<Stmt> {
         let ty = byref_type(self.lower_binding_type(&variable.ty, variable.id)?);
-        let init = match &variable.initializer {
-            Some(value) => self.lower_value(value)?,
-            None => zeroed(),
-        };
         self.byref.insert(variable.id);
         let name = self.binding_name(variable.id);
         let slot = format!("{name}_byref");
@@ -169,8 +167,8 @@ impl FunctionLowerer<'_, '_> {
             ty: None,
             init: Some(support_call("scope", vec![Expr::Var(name.as_str().into())])),
         });
-        Ok(Stmt::Let {
-            name,
+        self.pending.push(Stmt::Let {
+            name: name.clone(),
             mutable: false,
             ty: Some(rust::Type::Ptr {
                 mutable: true,
@@ -180,16 +178,14 @@ impl FunctionLowerer<'_, '_> {
                 stmts: Vec::new(),
                 tail: Some(Box::new(support_call(
                     "byref",
-                    vec![
-                        Expr::AddrOf {
-                            mutable: true,
-                            expr: Box::new(Expr::Var(slot.as_str().into())),
-                        },
-                        init,
-                    ],
+                    vec![Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(Expr::Var(slot.as_str().into())),
+                    }],
                 ))),
             }))),
-        })
+        });
+        self.store_byref(Expr::Var(name.as_str().into()), variable)
     }
 
     pub(super) fn lower_block_literal(&mut self, block: &ir::BlockLiteral) -> Result<Expr> {

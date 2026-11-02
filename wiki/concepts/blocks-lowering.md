@@ -88,15 +88,22 @@ C never needs byref keep/destroy helpers (the runtime ignores
 `&x` changes after a copy exactly as in C. `FunctionLowerer::place_is_unsafe`
 treats places rooted in such a binding as unsafe.
 
+As in clang, the header exists before the initializer runs and the value is
+stored afterwards through `forwarding` (`store(x, init)`), so an initializer
+can capture the variable itself (`__block intfn fib = ^(int n) { ..fib(n -
+1).. }`) and may even `Block_copy` it, which moves the variable to the heap
+before its value is written.
+
 - Structured functions: `lower_byref_let` emits
-  `let mut x_byref: MaybeUninit<Byref<T>>` (pending, before the statement),
-  `let x: *mut Byref<T> = byref(&raw mut x_byref, init)`, then
-  `let x_scope = scope(x)`, whose `Drop` calls
+  `let mut x_byref: MaybeUninit<Byref<T>>` and
+  `let x: *mut Byref<T> = byref(&raw mut x_byref)` (both pending, before the
+  statement), then `store(x, init)` and `let x_scope = scope(x)`, whose
+  `Drop` calls
   `_Block_object_dispose(x, BLOCK_FIELD_IS_BYREF)` at the end of the C scope.
   `dead_store` keeps `__slate_blocks::scope` lets like other drop guards.
 - Goto-dispatch functions: `x` is a `ByrefSlot<T>` at the function top (the
   storage plus a `live` flag) and is reached through `slot(&raw mut x)`. The
-  declaration becomes `init(&raw mut x, value)`, which releases the previous
+  declaration becomes `store(init(&raw mut x), value)`; `init` releases the previous
   incarnation first when a backward goto re-runs it; the slot's `Drop`
   releases at function exit. Leaving the scope forward without returning
   releases at function exit instead of scope exit, which only delays freeing
@@ -129,9 +136,10 @@ slate skips building one.
 `tests/fixtures/block_basic.c`, `block_more.c`, `block_globals.c`,
 `block_lifetime.c` (copy identity, a captured block outliving its release,
 no heap growth for non-escaping literals), `block_byref.c` (forwarding,
-shared and escaping `__block` variables, per-iteration variables, no heap
-growth), `block_goto.c` (`__block` under goto, including a backward goto
-that re-declares a copied variable) and the two-unit
+shared and escaping `__block` variables, per-iteration variables,
+self-referential initializers, no heap growth), `block_goto.c` (`__block`
+under goto, including a backward goto that re-declares a copied variable
+and a self-referential copied initializer) and the two-unit
 `tests/fixtures.release/block_units`. Fixtures declare
 `_Block_copy`/`_Block_release` themselves instead of including `<Block.h>`.
 `tests/fixtures.library/block_capture_retain` has a native C driver pass a
@@ -143,5 +151,4 @@ translated code.
 
 ## Not yet lowered
 
-- Referencing a `__block` variable inside its own initializer.
 - Blocks in aggregates inside non-constant global initializers.
