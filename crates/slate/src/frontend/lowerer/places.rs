@@ -482,10 +482,7 @@ impl FunctionLowerer<'_, '_> {
             self.declaring.set(Some((id, true)));
         }
         if self.byref.contains(&id) {
-            return Expr::Unary {
-                op: rust::UnaryOp::Deref,
-                expr: Box::new(Expr::Var(self.binding_name(id).as_str().into())),
-            };
+            return super::blocks::byref_value(self.byref_pointer(id));
         }
         if let Some(pointer) = self.omp_shared.get(&id) {
             return Expr::Unary {

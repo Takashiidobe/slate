@@ -43,17 +43,20 @@ itself.
 `lowerer/blocks.rs`. Each `ValueKind::Block` becomes:
 
 - a `#[repr(C)] struct __slate_block_N_captures` with one field per capture
-  (the pointer to the shared cell for `by_reference`, the value otherwise);
+  (a `*mut Byref<T>` for `by_reference`, the value otherwise);
 - an `extern "C-unwind" fn __slate_block_N(__block, params..)` item lowered
   by a child `FunctionLowerer` (it inherits the parent's binding numbering so
   captured names agree). Its prologue reads the capture struct into locals
   named like the originals;
 - a `static __slate_block_N_descriptor` from `__slate_blocks::descriptor`,
-  listing each by-value capture of block pointer type with `block_field`;
-- a `let mut __slate_block_N_slot: MaybeUninit<Block<..>>` hoisted to the
-  top of the enclosing function (or block function). Its lifetime is the
-  whole function, a superset of the C scope; a literal in a loop reuses the
-  slot each iteration, as clang does;
+  listing each by-value capture of block pointer type with `block_field` and
+  each `by_reference` capture with `byref_field`;
+- a `let mut __slate_block_N_slot: MaybeUninit<Block<..>>` declared right
+  before the statement that contains the literal (`FunctionLowerer::pending`,
+  emitted by `lower_statement`; nested statements save and restore it), so
+  it lives until the end of the enclosing C block. In a goto-dispatch
+  function there are no lexical scopes, so the slot is hoisted to the
+  function top instead;
 - an expression `__slate_blocks::stack(&raw mut slot, __slate_block_N as
   *const c_void, &descriptor, __slate_block_N_captures { .. })`.
 
@@ -70,13 +73,29 @@ block as the first argument. Variadic block types are not lowered.
 ## __block variables
 
 `ir::Variable::byref` (printed `[byref]`) marks an automatic `__block`
-variable. The backend declares it as `*mut T` from `__slate_blocks::cell`
-(leaked `Box`) and `lower_binding` dereferences it everywhere, so blocks,
-nested blocks and the declaring function share one cell, including after the
-declaring frame returns. `FunctionLowerer::place_is_unsafe` treats places
-rooted in such a binding as unsafe. Blocks capture the cell pointer as plain
-bits and the copy helper does not touch it, so cells leak, and `&x` never
-moves on `Block_copy` the way C's byref forwarding does.
+variable. It is a runtime `Block_byref`: `Byref<T>` is the header (`isa`
+null, `forwarding`, `flags` 0, `size`) followed by the value, and every
+access is `*__slate_blocks::value(x)`, which goes through `forwarding`.
+C never needs byref keep/destroy helpers (the runtime ignores
+`BLOCK_BYREF_CALLER` block fields), so the runtime copies the value as bits.
+`Block_copy` of a block that captures `x` moves it to the heap with refcount
+2 (the copy and the declaring scope) and patches the stack `forwarding`, so
+`&x` changes after a copy exactly as in C. `FunctionLowerer::place_is_unsafe`
+treats places rooted in such a binding as unsafe.
+
+- Structured functions: `lower_byref_let` emits
+  `let mut x_byref: MaybeUninit<Byref<T>>` (pending, before the statement),
+  `let x: *mut Byref<T> = byref(&raw mut x_byref, init)`, then
+  `let x_scope = scope(x)`, whose `Drop` calls
+  `_Block_object_dispose(x, BLOCK_FIELD_IS_BYREF)` at the end of the C scope.
+  `dead_store` keeps `__slate_blocks::scope` lets like other drop guards.
+- Goto-dispatch functions: `x` is a `ByrefSlot<T>` at the function top (the
+  storage plus a `live` flag) and is reached through `slot(&raw mut x)`. The
+  declaration becomes `init(&raw mut x, value)`, which releases the previous
+  incarnation first when a backward goto re-runs it; the slot's `Drop`
+  releases at function exit. Leaving the scope forward without returning
+  releases at function exit instead of scope exit, which only delays freeing
+  the heap copy. Jumping past a `__block` declaration is a clang error.
 
 ## Global blocks
 
@@ -99,7 +118,10 @@ the oracle compile when `dg-options` has `-fblocks`.
 
 `tests/fixtures/block_basic.c`, `block_more.c`, `block_globals.c`,
 `block_lifetime.c` (copy identity, a captured block outliving its release,
-no heap growth for non-escaping literals) and the two-unit
+no heap growth for non-escaping literals), `block_byref.c` (forwarding,
+shared and escaping `__block` variables, per-iteration variables, no heap
+growth), `block_goto.c` (`__block` under goto, including a backward goto
+that re-declares a copied variable) and the two-unit
 `tests/fixtures.release/block_units`. Fixtures declare
 `_Block_copy`/`_Block_release` themselves instead of including `<Block.h>`.
 `tests/fixtures.library/block_capture_retain` has a native C driver pass a
@@ -108,8 +130,6 @@ crashed before captured blocks were retained.
 
 ## Not yet lowered
 
-- `__block` variables as runtime `Block_byref` structs (forwarding, refcount,
-  stack until copied, `BLOCK_FIELD_IS_BYREF` in `fields`).
 - Referencing a `__block` variable inside its own initializer.
 - Variadic blocks, `__block` on MSVC targets, blocks in aggregates inside
   non-constant global initializers.

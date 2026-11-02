@@ -10,6 +10,20 @@ fn void_pointer(mutable: bool) -> rust::Type {
     }
 }
 
+fn byref_type(value: rust::Type) -> rust::Type {
+    rust::Type::Generic {
+        name: format!("{SUPPORT}::Byref"),
+        args: vec![value],
+    }
+}
+
+pub(super) fn byref_value(binding: Expr) -> Expr {
+    Expr::Unary {
+        op: rust::UnaryOp::Deref,
+        expr: Box::new(support_call("value", vec![binding])),
+    }
+}
+
 fn support_call(function: &str, args: Vec<Expr>) -> Expr {
     Expr::Call {
         func: Box::new(Expr::Var(format!("{SUPPORT}::{function}").into())),
@@ -43,6 +57,9 @@ impl<'a, 'm> FunctionLowerer<'a, 'm> {
             target_features: Vec::new(),
             omp_shared: HashMap::new(),
             byref: HashSet::new(),
+            byref_slots: HashSet::new(),
+            pending: Vec::new(),
+            dispatching: false,
         }
     }
 }
@@ -50,6 +67,66 @@ impl<'a, 'm> FunctionLowerer<'a, 'm> {
 impl FunctionLowerer<'_, '_> {
     pub(super) fn place_is_unsafe(&self, place: &ir::Place) -> bool {
         self.tables.place_is_unsafe(place) || self.rooted_in_byref(place)
+    }
+
+    fn reserve(&mut self, storage: Stmt) {
+        if self.dispatching {
+            self.hoisted.push(storage);
+        } else {
+            self.pending.push(storage);
+        }
+    }
+
+    pub(super) fn byref_pointer(&self, id: BindingId) -> Expr {
+        let name = Expr::Var(self.binding_name(id).as_str().into());
+        if self.byref_slots.contains(&id) {
+            support_call(
+                "slot",
+                vec![Expr::AddrOf {
+                    mutable: true,
+                    expr: Box::new(name),
+                }],
+            )
+        } else {
+            name
+        }
+    }
+
+    pub(super) fn declare_byref_slot(&mut self, id: BindingId, ty: &ir::Type) -> Result<Stmt> {
+        let value = self.lower_binding_type(ty, id)?;
+        self.byref.insert(id);
+        self.byref_slots.insert(id);
+        Ok(Stmt::Let {
+            name: self.binding_name(id),
+            mutable: true,
+            ty: Some(rust::Type::Generic {
+                name: format!("{SUPPORT}::ByrefSlot"),
+                args: vec![value],
+            }),
+            init: Some(Expr::Var(
+                format!("{SUPPORT}::ByrefSlot::new()").as_str().into(),
+            )),
+        })
+    }
+
+    pub(super) fn init_byref_slot(&mut self, variable: &ir::Variable) -> Result<Stmt> {
+        let init = match &variable.initializer {
+            Some(value) => self.lower_value(value)?,
+            None => zeroed(),
+        };
+        Ok(Stmt::Expr(Expr::Unsafe(Box::new(rust::Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(support_call(
+                "init",
+                vec![
+                    Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(Expr::Var(self.binding_name(variable.id).as_str().into())),
+                    },
+                    init,
+                ],
+            ))),
+        }))))
     }
 
     fn rooted_in_byref(&self, place: &ir::Place) -> bool {
@@ -69,20 +146,49 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_byref_let(&mut self, variable: &ir::Variable) -> Result<Stmt> {
-        let ty = self.lower_binding_type(&variable.ty, variable.id)?;
+        let ty = byref_type(self.lower_binding_type(&variable.ty, variable.id)?);
         let init = match &variable.initializer {
             Some(value) => self.lower_value(value)?,
             None => zeroed(),
         };
         self.byref.insert(variable.id);
+        let name = self.binding_name(variable.id);
+        let slot = format!("{name}_byref");
+        self.reserve(Stmt::Let {
+            name: slot.as_str().into(),
+            mutable: true,
+            ty: Some(rust::Type::Generic {
+                name: "std::mem::MaybeUninit".into(),
+                args: vec![ty.clone()],
+            }),
+            init: Some(Expr::Var("std::mem::MaybeUninit::uninit()".into())),
+        });
+        self.after_declaration = Some(Stmt::Let {
+            name: format!("{name}_scope").as_str().into(),
+            mutable: false,
+            ty: None,
+            init: Some(support_call("scope", vec![Expr::Var(name.as_str().into())])),
+        });
         Ok(Stmt::Let {
-            name: self.binding_name(variable.id),
+            name,
             mutable: false,
             ty: Some(rust::Type::Ptr {
                 mutable: true,
                 inner: Box::new(ty),
             }),
-            init: Some(support_call("cell", vec![init])),
+            init: Some(Expr::Unsafe(Box::new(rust::Block {
+                stmts: Vec::new(),
+                tail: Some(Box::new(support_call(
+                    "byref",
+                    vec![
+                        Expr::AddrOf {
+                            mutable: true,
+                            expr: Box::new(Expr::Var(slot.as_str().into())),
+                        },
+                        init,
+                    ],
+                ))),
+            }))),
         })
     }
 
@@ -98,14 +204,19 @@ impl FunctionLowerer<'_, '_> {
         let mut retained = Vec::new();
         for (index, capture) in block.captures.iter().enumerate() {
             let field = format!("c{index}");
-            if !capture.by_reference
-                && matches!(
-                    self.tables.resolve_type(&capture.ty),
-                    ir::Type::BlockPointer { .. }
-                )
-            {
+            let kind = if capture.by_reference {
+                Some("byref_field")
+            } else if matches!(
+                self.tables.resolve_type(&capture.ty),
+                ir::Type::BlockPointer { .. }
+            ) {
+                Some("block_field")
+            } else {
+                None
+            };
+            if let Some(kind) = kind {
                 retained.push(support_call(
-                    "block_field",
+                    kind,
                     vec![Expr::Macro {
                         name: "std::mem::offset_of".into(),
                         args: vec![
@@ -120,9 +231,9 @@ impl FunctionLowerer<'_, '_> {
                 (
                     rust::Type::Ptr {
                         mutable: true,
-                        inner: Box::new(value_ty),
+                        inner: Box::new(byref_type(value_ty)),
                     },
-                    Expr::Var(self.binding_name(capture.id).as_str().into()),
+                    self.byref_pointer(capture.id),
                 )
             } else {
                 (value_ty, self.lower_binding(capture.id))
@@ -219,7 +330,7 @@ impl FunctionLowerer<'_, '_> {
             },
         });
         let slot = format!("{function_name}_slot");
-        self.hoisted.push(Stmt::Let {
+        self.reserve(Stmt::Let {
             name: slot.as_str().into(),
             mutable: true,
             ty: Some(rust::Type::Custom(format!(

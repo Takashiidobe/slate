@@ -64,9 +64,91 @@ int main(void) {
 // CHECK-NEXT:     const HAS_COPY_DISPOSE: i32 = 1 << 25;
 // CHECK-NEXT:     const IS_GLOBAL: i32 = 1 << 28;
 // CHECK-NEXT:     const FIELD_IS_BLOCK: i32 = 7;
+// CHECK-NEXT:     const FIELD_IS_BYREF: i32 = 8;
 // CHECK-EMPTY:
 // CHECK-NEXT:     pub const fn block_field(offset: usize) -> (usize, i32) {
 // CHECK-NEXT:         (offset, FIELD_IS_BLOCK)
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub const fn byref_field(offset: usize) -> (usize, i32) {
+// CHECK-NEXT:         (offset, FIELD_IS_BYREF)
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     #[repr(C)]
+// CHECK-NEXT:     pub struct Byref<T> {
+// CHECK-NEXT:         isa: *const c_void,
+// CHECK-NEXT:         forwarding: *mut Byref<T>,
+// CHECK-NEXT:         flags: i32,
+// CHECK-NEXT:         size: i32,
+// CHECK-NEXT:         value: T,
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub unsafe fn byref<T>(slot: *mut MaybeUninit<Byref<T>>, value: T) -> *mut Byref<T> {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             let byref = slot.cast::<Byref<T>>();
+// CHECK-NEXT:             byref.write(Byref {
+// CHECK-NEXT:                 isa: std::ptr::null(),
+// CHECK-NEXT:                 forwarding: byref,
+// CHECK-NEXT:                 flags: 0,
+// CHECK-NEXT:                 size: size_of::<Byref<T>>() as i32,
+// CHECK-NEXT:                 value,
+// CHECK-NEXT:             });
+// CHECK-NEXT:             byref
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub unsafe fn value<T>(byref: *mut Byref<T>) -> *mut T {
+// CHECK-NEXT:         unsafe { &raw mut (*(*byref).forwarding).value }
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub struct ByrefSlot<T> {
+// CHECK-NEXT:         byref: MaybeUninit<Byref<T>>,
+// CHECK-NEXT:         live: bool,
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     impl<T> ByrefSlot<T> {
+// CHECK-NEXT:         pub const fn new() -> Self {
+// CHECK-NEXT:             ByrefSlot {
+// CHECK-NEXT:                 byref: MaybeUninit::uninit(),
+// CHECK-NEXT:                 live: false,
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub unsafe fn slot<T>(slot: *mut ByrefSlot<T>) -> *mut Byref<T> {
+// CHECK-NEXT:         unsafe { (&raw mut (*slot).byref).cast() }
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub unsafe fn init<T>(slot: *mut ByrefSlot<T>, value: T) {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             if (*slot).live {
+// CHECK-NEXT:                 _Block_object_dispose(self::slot(slot) as *const c_void, FIELD_IS_BYREF);
+// CHECK-NEXT:             }
+// CHECK-NEXT:             byref(&raw mut (*slot).byref, value);
+// CHECK-NEXT:             (*slot).live = true;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     impl<T> Drop for ByrefSlot<T> {
+// CHECK-NEXT:         fn drop(&mut self) {
+// CHECK-NEXT:             if self.live {
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     _Block_object_dispose(self.byref.as_ptr() as *const c_void, FIELD_IS_BYREF)
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub struct Scope<T>(*mut Byref<T>);
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub fn scope<T>(byref: *mut Byref<T>) -> Scope<T> {
+// CHECK-NEXT:         Scope(byref)
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     impl<T> Drop for Scope<T> {
+// CHECK-NEXT:         fn drop(&mut self) {
+// CHECK-NEXT:             unsafe { _Block_object_dispose(self.0 as *const c_void, FIELD_IS_BYREF) }
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-EMPTY:
 // CHECK-NEXT:     #[repr(C)]
@@ -166,10 +248,6 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-EMPTY:
-// CHECK-NEXT:     pub fn cell<T>(value: T) -> *mut T {
-// CHECK-NEXT:         Box::into_raw(Box::new(value))
-// CHECK-NEXT:     }
-// CHECK-EMPTY:
 // CHECK-NEXT:     pub unsafe fn invoke(block: *mut c_void) -> *const c_void {
 // CHECK-NEXT:         unsafe { (*(block as *const Block<()>)).invoke }
 // CHECK-NEXT:     }
@@ -236,18 +314,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: mallinfo2 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: mallinfo2 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let base: i32 = 5;
 // CHECK-NEXT:     let mut __slate_block_1_slot: std::mem::MaybeUninit<
 // CHECK-NEXT:         __slate_blocks::Block<__slate_block_1_captures>,
 // CHECK-NEXT:     > = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let mut __slate_block_3_slot: std::mem::MaybeUninit<
-// CHECK-NEXT:         __slate_blocks::Block<__slate_block_3_captures>,
-// CHECK-NEXT:     > = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: mallinfo2 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut __slate_block_4_slot: std::mem::MaybeUninit<
-// CHECK-NEXT:         __slate_blocks::Block<__slate_block_4_captures>,
-// CHECK-NEXT:     > = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: mallinfo2 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let base: i32 = 5;
 // CHECK-NEXT:     let literal: *mut std::ffi::c_void = unsafe {
 // CHECK-NEXT:         __slate_blocks::stack(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(__slate_block_1_slot),
@@ -273,6 +345,9 @@ int main(void) {
 // CHECK-NEXT:         "captureless copy is same: {}",
 // CHECK-NEXT:         ((unsafe { _Block_copy(plain as *const ()) }) == (plain as *mut ())) as i32
 // CHECK-NEXT:     );
+// CHECK-NEXT:     let mut __slate_block_3_slot: std::mem::MaybeUninit<
+// CHECK-NEXT:         __slate_blocks::Block<__slate_block_3_captures>,
+// CHECK-NEXT:     > = std::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let b: *mut std::ffi::c_void = (unsafe {
 // CHECK-NEXT:         _Block_copy(__slate_blocks::stack(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(__slate_block_3_slot),
@@ -304,6 +379,9 @@ int main(void) {
 // CHECK-NEXT:     let mut sum: i64 = 0;
 // CHECK-NEXT:     for i in 0i32..100000i32 {
 // CHECK-NEXT:         let k: i32 = i & 7;
+// CHECK-NEXT:         let mut __slate_block_4_slot: std::mem::MaybeUninit<
+// CHECK-NEXT:             __slate_blocks::Block<__slate_block_4_captures>,
+// CHECK-NEXT:         > = std::mem::MaybeUninit::uninit();
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe {
 // CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(apply_ptr)).unwrap()(
 // CHECK-NEXT:                 __slate_blocks::stack(

@@ -85,6 +85,7 @@ struct Graph<'a> {
     cases: HashMap<BindingId, Vec<Case<'a>>>,
     defaults: HashMap<BindingId, usize>,
     locals: Vec<(BindingId, &'a ir::Type, Option<u64>)>,
+    byref: HashSet<BindingId>,
     targets: Vec<BindingId>,
 }
 
@@ -429,6 +430,9 @@ impl<'a> Graph<'a> {
                 self.push(Node::Statement(statement, Some(next)))
             }
             ir::Statement::Let(variable) => {
+                if variable.byref {
+                    self.byref.insert(variable.id);
+                }
                 self.locals
                     .push((variable.id, &variable.ty, variable.alignment));
                 self.push(Node::Statement(statement, Some(next)))
@@ -494,7 +498,11 @@ impl FunctionLowerer<'_, '_> {
         let end = graph.push(Node::End);
         let entry = graph.list(statements, end);
         let (entry, blocks) = graph.blocks(entry);
+        self.dispatching = true;
         for (id, ty, _) in &graph.locals {
+            if graph.byref.contains(id) {
+                continue;
+            }
             if self.tables.variably_modified(ty) {
                 self.dispatch_vlas.insert(*id);
             } else {
@@ -504,6 +512,11 @@ impl FunctionLowerer<'_, '_> {
         let mut lowered = Vec::new();
         let mut storage_positions = HashMap::new();
         for (id, ir_ty, alignment) in graph.locals {
+            if graph.byref.contains(&id) {
+                storage_positions.insert(id, lowered.len());
+                lowered.push(self.declare_byref_slot(id, ir_ty)?);
+                continue;
+            }
             if self.tables.variably_modified(ir_ty) {
                 storage_positions.insert(id, lowered.len());
                 lowered.push(Stmt::Let {
@@ -608,6 +621,12 @@ impl FunctionLowerer<'_, '_> {
                     Node::Jump(next) => jump(next),
                     Node::Statement(statement, next) => {
                         let mut body = match declared_local(&statement.value) {
+                            Some(_)
+                                if let ir::Statement::Let(variable) = &statement.value
+                                    && variable.byref =>
+                            {
+                                vec![self.init_byref_slot(variable)?]
+                            }
                             Some(_)
                                 if let ir::Statement::Let(variable) = &statement.value
                                     && self.tables.variably_modified(&variable.ty) =>

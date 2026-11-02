@@ -32,9 +32,91 @@ int main(void) {
 // CHECK-NEXT:     const HAS_COPY_DISPOSE: i32 = 1 << 25;
 // CHECK-NEXT:     const IS_GLOBAL: i32 = 1 << 28;
 // CHECK-NEXT:     const FIELD_IS_BLOCK: i32 = 7;
+// CHECK-NEXT:     const FIELD_IS_BYREF: i32 = 8;
 // CHECK-EMPTY:
 // CHECK-NEXT:     pub const fn block_field(offset: usize) -> (usize, i32) {
 // CHECK-NEXT:         (offset, FIELD_IS_BLOCK)
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub const fn byref_field(offset: usize) -> (usize, i32) {
+// CHECK-NEXT:         (offset, FIELD_IS_BYREF)
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     #[repr(C)]
+// CHECK-NEXT:     pub struct Byref<T> {
+// CHECK-NEXT:         isa: *const c_void,
+// CHECK-NEXT:         forwarding: *mut Byref<T>,
+// CHECK-NEXT:         flags: i32,
+// CHECK-NEXT:         size: i32,
+// CHECK-NEXT:         value: T,
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub unsafe fn byref<T>(slot: *mut MaybeUninit<Byref<T>>, value: T) -> *mut Byref<T> {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             let byref = slot.cast::<Byref<T>>();
+// CHECK-NEXT:             byref.write(Byref {
+// CHECK-NEXT:                 isa: std::ptr::null(),
+// CHECK-NEXT:                 forwarding: byref,
+// CHECK-NEXT:                 flags: 0,
+// CHECK-NEXT:                 size: size_of::<Byref<T>>() as i32,
+// CHECK-NEXT:                 value,
+// CHECK-NEXT:             });
+// CHECK-NEXT:             byref
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub unsafe fn value<T>(byref: *mut Byref<T>) -> *mut T {
+// CHECK-NEXT:         unsafe { &raw mut (*(*byref).forwarding).value }
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub struct ByrefSlot<T> {
+// CHECK-NEXT:         byref: MaybeUninit<Byref<T>>,
+// CHECK-NEXT:         live: bool,
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     impl<T> ByrefSlot<T> {
+// CHECK-NEXT:         pub const fn new() -> Self {
+// CHECK-NEXT:             ByrefSlot {
+// CHECK-NEXT:                 byref: MaybeUninit::uninit(),
+// CHECK-NEXT:                 live: false,
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub unsafe fn slot<T>(slot: *mut ByrefSlot<T>) -> *mut Byref<T> {
+// CHECK-NEXT:         unsafe { (&raw mut (*slot).byref).cast() }
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub unsafe fn init<T>(slot: *mut ByrefSlot<T>, value: T) {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             if (*slot).live {
+// CHECK-NEXT:                 _Block_object_dispose(self::slot(slot) as *const c_void, FIELD_IS_BYREF);
+// CHECK-NEXT:             }
+// CHECK-NEXT:             byref(&raw mut (*slot).byref, value);
+// CHECK-NEXT:             (*slot).live = true;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     impl<T> Drop for ByrefSlot<T> {
+// CHECK-NEXT:         fn drop(&mut self) {
+// CHECK-NEXT:             if self.live {
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     _Block_object_dispose(self.byref.as_ptr() as *const c_void, FIELD_IS_BYREF)
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub struct Scope<T>(*mut Byref<T>);
+// CHECK-EMPTY:
+// CHECK-NEXT:     pub fn scope<T>(byref: *mut Byref<T>) -> Scope<T> {
+// CHECK-NEXT:         Scope(byref)
+// CHECK-NEXT:     }
+// CHECK-EMPTY:
+// CHECK-NEXT:     impl<T> Drop for Scope<T> {
+// CHECK-NEXT:         fn drop(&mut self) {
+// CHECK-NEXT:             unsafe { _Block_object_dispose(self.0 as *const c_void, FIELD_IS_BYREF) }
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-EMPTY:
 // CHECK-NEXT:     #[repr(C)]
@@ -132,10 +214,6 @@ int main(void) {
 // CHECK-NEXT:             descriptor: &GLOBAL_DESCRIPTOR,
 // CHECK-NEXT:             captures: (),
 // CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-EMPTY:
-// CHECK-NEXT:     pub fn cell<T>(value: T) -> *mut T {
-// CHECK-NEXT:         Box::into_raw(Box::new(value))
 // CHECK-NEXT:     }
 // CHECK-EMPTY:
 // CHECK-NEXT:     pub unsafe fn invoke(block: *mut c_void) -> *const c_void {

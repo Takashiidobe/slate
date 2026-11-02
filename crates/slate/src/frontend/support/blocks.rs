@@ -15,9 +15,89 @@ mod __slate_blocks {
     const HAS_COPY_DISPOSE: i32 = 1 << 25;
     const IS_GLOBAL: i32 = 1 << 28;
     const FIELD_IS_BLOCK: i32 = 7;
+    const FIELD_IS_BYREF: i32 = 8;
 
     pub const fn block_field(offset: usize) -> (usize, i32) {
         (offset, FIELD_IS_BLOCK)
+    }
+
+    pub const fn byref_field(offset: usize) -> (usize, i32) {
+        (offset, FIELD_IS_BYREF)
+    }
+
+    #[repr(C)]
+    pub struct Byref<T> {
+        isa: *const c_void,
+        forwarding: *mut Byref<T>,
+        flags: i32,
+        size: i32,
+        value: T,
+    }
+
+    pub unsafe fn byref<T>(slot: *mut MaybeUninit<Byref<T>>, value: T) -> *mut Byref<T> {
+        unsafe {
+            let byref = slot.cast::<Byref<T>>();
+            byref.write(Byref {
+                isa: std::ptr::null(),
+                forwarding: byref,
+                flags: 0,
+                size: size_of::<Byref<T>>() as i32,
+                value,
+            });
+            byref
+        }
+    }
+
+    pub unsafe fn value<T>(byref: *mut Byref<T>) -> *mut T {
+        unsafe { &raw mut (*(*byref).forwarding).value }
+    }
+
+    pub struct ByrefSlot<T> {
+        byref: MaybeUninit<Byref<T>>,
+        live: bool,
+    }
+
+    impl<T> ByrefSlot<T> {
+        pub const fn new() -> Self {
+            ByrefSlot {
+                byref: MaybeUninit::uninit(),
+                live: false,
+            }
+        }
+    }
+
+    pub unsafe fn slot<T>(slot: *mut ByrefSlot<T>) -> *mut Byref<T> {
+        unsafe { (&raw mut (*slot).byref).cast() }
+    }
+
+    pub unsafe fn init<T>(slot: *mut ByrefSlot<T>, value: T) {
+        unsafe {
+            if (*slot).live {
+                _Block_object_dispose(self::slot(slot) as *const c_void, FIELD_IS_BYREF);
+            }
+            byref(&raw mut (*slot).byref, value);
+            (*slot).live = true;
+        }
+    }
+
+    impl<T> Drop for ByrefSlot<T> {
+        fn drop(&mut self) {
+            if self.live {
+                unsafe { _Block_object_dispose(self.byref.as_ptr() as *const c_void, FIELD_IS_BYREF) }
+            }
+        }
+    }
+
+    pub struct Scope<T>(*mut Byref<T>);
+
+    pub fn scope<T>(byref: *mut Byref<T>) -> Scope<T> {
+        Scope(byref)
+    }
+
+    impl<T> Drop for Scope<T> {
+        fn drop(&mut self) {
+            unsafe { _Block_object_dispose(self.0 as *const c_void, FIELD_IS_BYREF) }
+        }
     }
 
     #[repr(C)]
@@ -115,10 +195,6 @@ mod __slate_blocks {
             descriptor: &GLOBAL_DESCRIPTOR,
             captures: (),
         }
-    }
-
-    pub fn cell<T>(value: T) -> *mut T {
-        Box::into_raw(Box::new(value))
     }
 
     pub unsafe fn invoke(block: *mut c_void) -> *const c_void {

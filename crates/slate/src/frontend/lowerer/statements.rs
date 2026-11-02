@@ -578,10 +578,13 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         statement: &slate_parser::ast::Span<ir::Statement>,
     ) -> Result<Vec<Stmt>> {
-        let lowered = self
-            .lower_statement_node(statement)
-            .map_err(|error| error.used_at(Site::of(statement)))?;
-        Ok(std::iter::once(lowered)
+        let outer = std::mem::take(&mut self.pending);
+        let lowered = self.lower_statement_node(statement);
+        let before = std::mem::replace(&mut self.pending, outer);
+        let lowered = lowered.map_err(|error| error.used_at(Site::of(statement)))?;
+        Ok(before
+            .into_iter()
+            .chain(std::iter::once(lowered))
             .chain(self.after_declaration.take())
             .collect())
     }

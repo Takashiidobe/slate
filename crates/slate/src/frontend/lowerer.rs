@@ -181,6 +181,9 @@ struct FunctionLowerer<'a, 'm> {
     target_features: Vec<&'static str>,
     omp_shared: HashMap<BindingId, String>,
     byref: HashSet<BindingId>,
+    byref_slots: HashSet<BindingId>,
+    pending: Vec<Stmt>,
+    dispatching: bool,
 }
 
 impl FunctionLowerer<'_, '_> {
