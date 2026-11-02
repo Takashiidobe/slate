@@ -162,6 +162,7 @@ fn intel_size(operand: &ir::AsmOperand) -> Result<&'static str> {
 #[derive(Clone, Copy)]
 enum Slot {
     Positional(usize),
+    Flags(usize, Option<usize>),
     Register(&'static str),
     PairLow(&'static str),
     Spill(SpillRegister),
@@ -601,7 +602,16 @@ fn asm_template(
                     .get(*index)
                     .ok_or(Invariant::AsmOperandIndex(*index))?;
                 let slot = match slots[*index] {
-                    Slot::Positional(slot) => slot,
+                    Slot::Positional(slot) | Slot::Flags(slot, None) => slot,
+                    Slot::Flags(_, Some(reference)) => {
+                        if modifier.is_some() || view.is_some() {
+                            return Err(unsupported_asm(format!(
+                                "flags operand modifier {modifier:?}"
+                            )));
+                        }
+                        template.push_str(&format!("{{{reference}:e}}"));
+                        continue;
+                    }
                     Slot::Register(canonical) if !x86 => {
                         let prefix = aarch64_register_modifier(operand, *modifier, *view)?;
                         template.push(prefix);
@@ -786,7 +796,7 @@ fn asm_template(
         template.push_str(&format!("\n{comment} {{{slot}}}"));
     }
     for (index, used) in used.into_iter().enumerate() {
-        if let (false, Slot::Positional(slot)) = (used, slots[index]) {
+        if let (false, Slot::Positional(slot) | Slot::Flags(slot, _)) = (used, slots[index]) {
             let operand = &asm.operands[index];
             if let Some(ir::AsmOperandClass::Flags(condition)) = operand.selected {
                 template.push_str(&if x86 {
@@ -1642,12 +1652,38 @@ impl FunctionLowerer<'_, '_> {
                     let output = Expr::Var(temp.as_str().into());
                     let decoded = self.asm_decode(output.clone(), &place.ty)?;
                     writebacks.push(self.lower_assignment(place, decoded)?);
-                    slots.push(Slot::Positional(operands.len()));
+                    let set = operands.len();
                     operands.push(rust::AsmOperand::Out {
                         reg: rust::AsmReg::Class(if x86 { "reg_byte" } else { "reg" }.into()),
                         late: operand.direction() == ir::AsmDirection::LateOut,
                         value: output,
                     });
+                    let mut reference = None;
+                    if x86
+                        && asm.pieces.iter().any(|piece| {
+                            matches!(piece, ir::AsmPiece::Operand { index: used, .. } if *used == index)
+                        })
+                    {
+                        reference = Some(operands.len());
+                        operands.push(if matches!(operand.kind, ir::AsmOperandKind::InOut { .. }) {
+                            let value = self.asm_read(statement, place)?;
+                            rust::AsmOperand::In {
+                                reg: rust::AsmReg::Class("reg".into()),
+                                value: self.asm_encode(
+                                    value,
+                                    &place.ty,
+                                    &rust::Type::Prim(Prim::U32),
+                                )?,
+                            }
+                        } else {
+                            rust::AsmOperand::Out {
+                                reg: rust::AsmReg::Class("reg".into()),
+                                late: false,
+                                value: Expr::Var("_".into()),
+                            }
+                        });
+                    }
+                    slots.push(Slot::Flags(set, reference));
                     if !x86 && matches!(operand.kind, ir::AsmOperandKind::InOut { .. }) {
                         let value = self.asm_read(statement, place)?;
                         let value =

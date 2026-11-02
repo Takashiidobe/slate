@@ -418,7 +418,10 @@ impossible.
   (`clang_asm_aarch64_flag_readwrite.c`).
   clang-only `+@cc<cond>` lowers the same way: clang ignores the tied input (the output is the
   flags), so the input is dropped (`clang_asm_flag_output_readwrite.c`). A template reference to
-  a flags operand stays a barrier: clang prints an unspecified register for it.
+  a flags operand prints a 32-bit register whatever the place type (`{N:e}`, no modifiers):
+  `+@cc` adds a hidden `in(reg)` holding the place truncated to `u32`, `=@cc` a scratch
+  `out(reg) _` with unspecified contents. The hidden operand exists only when the template
+  names the operand (`clang_asm_flag_reference.c`).
 - x87 operands spill through temporaries passed `in(reg)`. Inputs sit where both compilers put
   them: `t` at st(0), `u` at st(1), `f` inputs below in operand order, loaded deepest first with
   `flds`/`fldl`/`fldt`. After the template, outputs (`=t`, then `=u`) are popped with
