@@ -9,7 +9,7 @@ use crate::ast::{
 use crate::error::ParseError;
 use crate::lexer::{Keyword, Lexer, Token};
 use crate::target::decode_register;
-use crate::target::x86::flag_condition;
+use crate::target::flag_condition;
 use crate::target_info::TargetFamily;
 
 pub(super) fn is_asm_keyword(token: Option<&Token>, plain_asm: bool) -> bool {
@@ -318,7 +318,7 @@ impl Parser {
                 && (direction == "input"
                     || constraint.alternatives.len() > 1
                     || constraint.alternatives.iter().any(|alternative| {
-                        !matches!(&alternative.location, AsmConstraintLocation::Letters(letters) if flag_condition(letters).is_some())
+                        !matches!(&alternative.location, AsmConstraintLocation::Letters(letters) if flag_condition(family, letters).is_some())
                     }))
             {
                 return Err(invalid_constraint(operand, direction));

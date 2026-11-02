@@ -786,7 +786,11 @@ fn asm_template(
         if let (false, Slot::Positional(slot)) = (used, slots[index]) {
             let operand = &asm.operands[index];
             if let Some(ir::AsmOperandClass::Flags(condition)) = operand.selected {
-                template.push_str(&format!("\nset{condition} {{{slot}}}"));
+                template.push_str(&if x86 {
+                    format!("\nset{condition} {{{slot}}}")
+                } else {
+                    format!("\ncset {{{slot}:w}}, {condition}")
+                });
                 continue;
             }
             let reference = match operand.selected {
@@ -1621,7 +1625,7 @@ impl FunctionLowerer<'_, '_> {
                     prefix.push(Stmt::Let {
                         name: temp.clone(),
                         mutable: false,
-                        ty: Some(rust::Type::Prim(Prim::U8)),
+                        ty: Some(rust::Type::Prim(if x86 { Prim::U8 } else { Prim::U32 })),
                         init: None,
                     });
                     let output = Expr::Var(temp.as_str().into());
@@ -1629,7 +1633,7 @@ impl FunctionLowerer<'_, '_> {
                     writebacks.push(self.lower_assignment(place, decoded)?);
                     slots.push(Slot::Positional(operands.len()));
                     operands.push(rust::AsmOperand::Out {
-                        reg: rust::AsmReg::Class("reg_byte".into()),
+                        reg: rust::AsmReg::Class(if x86 { "reg_byte" } else { "reg" }.into()),
                         late: operand.direction() == ir::AsmDirection::LateOut,
                         value: output,
                     });

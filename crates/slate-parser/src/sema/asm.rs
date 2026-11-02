@@ -7,7 +7,7 @@ use super::types::TypeResolver;
 use crate::ast;
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::*;
-use crate::target::x86::flag_condition;
+use crate::target::flag_condition;
 use crate::target_info::TargetFamily;
 use num_bigint::BigInt;
 
@@ -886,7 +886,7 @@ fn constraint(constraint: &ast::AsmConstraint, family: TargetFamily) -> AsmConst
 
 fn classes(letters: &str, family: TargetFamily) -> Vec<AsmOperandClass> {
     let x86 = family.is_x86();
-    if x86 && let Some(condition) = flag_condition(letters) {
+    if let Some(condition) = flag_condition(family, letters) {
         return vec![AsmOperandClass::Flags(condition)];
     }
     let mut classes = Vec::new();

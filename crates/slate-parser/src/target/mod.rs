@@ -9,6 +9,14 @@ mod x86_isa_tables;
 
 use crate::{ast::Register, target_info::TargetFamily};
 
+pub fn flag_condition(family: TargetFamily, letters: &str) -> Option<&'static str> {
+    match family {
+        TargetFamily::X86 | TargetFamily::X86_64 => x86::flag_condition(letters),
+        TargetFamily::AArch64 => aarch64::flag_condition(letters),
+        _ => None,
+    }
+}
+
 pub fn decode_register(family: TargetFamily, name: &str) -> Register {
     match family {
         TargetFamily::X86 | TargetFamily::X86_64 => x86::decode_register(name),

@@ -303,3 +303,15 @@ fn canonical_width(number: usize) -> Option<AArch64RegisterWidth> {
         _ => None,
     }
 }
+
+pub const FLAG_CONDITIONS: &[&str] = &[
+    "eq", "ne", "cs", "cc", "hs", "lo", "mi", "pl", "vs", "vc", "hi", "ls", "ge", "lt", "gt", "le",
+];
+
+pub fn flag_condition(letters: &str) -> Option<&'static str> {
+    let condition = letters.strip_prefix("@cc")?;
+    FLAG_CONDITIONS
+        .iter()
+        .copied()
+        .find(|known| *known == condition)
+}
