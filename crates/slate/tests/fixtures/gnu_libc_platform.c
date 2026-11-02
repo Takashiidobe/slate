@@ -252,8 +252,8 @@ int main(void) {
 // CHECK-NEXT:     fn getentropy([[ARG_0]]: *mut (), [[ARG_1]]: u64) -> i32;
 // CHECK-NEXT:     fn get_nprocs() -> i32;
 // CHECK-NEXT:     fn get_phys_pages() -> i64;
-// CHECK-NEXT:     fn timegm([[ARG_0]]: *mut tm) -> i64;
-// CHECK-NEXT:     fn timelocal([[ARG_0]]: *mut tm) -> i64;
+// CHECK-NEXT:     fn timegm([[ARG_0]]: *mut slate_support::tm) -> i64;
+// CHECK-NEXT:     fn timelocal([[ARG_0]]: *mut slate_support::tm) -> i64;
 // CHECK-NEXT:     fn getcwd([[ARG_0]]: *mut i8, [[ARG_1]]: u64) -> *mut i8;
 // CHECK-NEXT:     fn get_current_dir_name() -> *mut i8;
 // CHECK-NEXT:     fn sysconf([[ARG_0]]: i32) -> i64;
@@ -310,21 +310,6 @@ int main(void) {
 // CHECK-NEXT:     num_regs: u32,
 // CHECK-NEXT:     start: *mut i32,
 // CHECK-NEXT:     end: *mut i32,
-// CHECK-NEXT: }
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct tm {
-// CHECK-NEXT:     tm_sec: i32,
-// CHECK-NEXT:     tm_min: i32,
-// CHECK-NEXT:     tm_hour: i32,
-// CHECK-NEXT:     tm_mday: i32,
-// CHECK-NEXT:     tm_mon: i32,
-// CHECK-NEXT:     tm_year: i32,
-// CHECK-NEXT:     tm_wday: i32,
-// CHECK-NEXT:     tm_yday: i32,
-// CHECK-NEXT:     tm_isdst: i32,
-// CHECK-NEXT:     tm_gmtoff: i64,
-// CHECK-NEXT:     tm_zone: *const i8,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
@@ -439,12 +424,12 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_time_extensions() -> i32 {
-// CHECK-NEXT:     let mut epoch: tm = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: tm = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut epoch: slate_support::tm = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: slate_support::tm = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut local: tm = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: tm = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut local: slate_support::tm = {
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: slate_support::tm = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut timestamp: i64 = 0;

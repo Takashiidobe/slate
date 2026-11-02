@@ -18,32 +18,23 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn gmtime_r([[ARG_0:arg[0-9]+]]: *const i64, [[ARG_1:arg[0-9]+]]: *mut tm) -> *mut tm;
-// CHECK-NEXT:     fn localtime_r([[ARG_0]]: *const i64, [[ARG_1]]: *mut tm) -> *mut tm;
-// CHECK-NEXT: }
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct tm {
-// CHECK-NEXT:     tm_sec: i32,
-// CHECK-NEXT:     tm_min: i32,
-// CHECK-NEXT:     tm_hour: i32,
-// CHECK-NEXT:     tm_mday: i32,
-// CHECK-NEXT:     tm_mon: i32,
-// CHECK-NEXT:     tm_year: i32,
-// CHECK-NEXT:     tm_wday: i32,
-// CHECK-NEXT:     tm_yday: i32,
-// CHECK-NEXT:     tm_isdst: i32,
-// CHECK-NEXT:     tm_gmtoff: i64,
-// CHECK-NEXT:     tm_zone: *const i8,
+// CHECK-NEXT:     fn gmtime_r(
+// CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: *const i64,
+// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: *mut slate_support::tm,
+// CHECK-NEXT:     ) -> *mut slate_support::tm;
+// CHECK-NEXT:     fn localtime_r(
+// CHECK-NEXT:         [[ARG_0]]: *const i64,
+// CHECK-NEXT:         [[ARG_1]]: *mut slate_support::tm,
+// CHECK-NEXT:     ) -> *mut slate_support::tm;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut timestamp: i64 = 0;
-// CHECK-NEXT:     let mut utc: tm = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: tm = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut utc: slate_support::tm = {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: slate_support::tm = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut local: tm = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: tm = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut local: slate_support::tm = {
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: slate_support::tm = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let utc_result: i32 = ((unsafe {

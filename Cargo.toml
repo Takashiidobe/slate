@@ -4,6 +4,7 @@ members = [
   "crates/slate-parser",
   "crates/slate-sysroots",
   "crates/slate-intrinsic-gen",
+  "crates/slate-libc-gen",
 ]
 resolver = "3"
 

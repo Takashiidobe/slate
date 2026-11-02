@@ -1821,6 +1821,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "slate-libc-gen"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "object 0.37.3",
+ "rayon",
+ "serde_json",
+ "tempfile",
+]
+
+[[package]]
 name = "slate-parser"
 version = "0.6.0"
 dependencies = [

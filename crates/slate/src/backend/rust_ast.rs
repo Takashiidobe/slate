@@ -1405,6 +1405,12 @@ pub struct CLibType {
 impl CLibType {
     pub const VOID: Self = Self::new("void", "core::ffi::c_void", 1, CLibInitializer::ScalarZero);
     pub const CHAR: Self = Self::new("char", "core::ffi::c_char", 1, CLibInitializer::ScalarZero);
+    pub const FILE: Self = Self::new(
+        "FILE",
+        "slate_support::FILE",
+        8,
+        CLibInitializer::ScalarZero,
+    );
 
     pub const fn new(
         c_name: &'static str,
@@ -1437,26 +1443,7 @@ impl CLibType {
     }
 }
 
-pub const CLIB_RECORD_TYPES: &[CLibType] = &[
-    CLibType::new(
-        "FILE",
-        "slate_support::FILE",
-        1,
-        CLibInitializer::ScalarZero,
-    ),
-    CLibType::new(
-        "pthread_attr_t",
-        "slate_support::pthread_attr_t",
-        1,
-        CLibInitializer::ScalarZero,
-    ),
-    CLibType::new(
-        "timespec",
-        "slate_support::timespec",
-        8,
-        CLibInitializer::Fields(&["tv_sec", "tv_nsec"]),
-    ),
-];
+include!("clib_records_table.rs");
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Prim {

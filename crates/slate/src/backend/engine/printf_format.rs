@@ -1,8 +1,8 @@
 use std::collections::HashSet;
 
 use crate::backend::rust_ast::{
-    Block, CLIB_RECORD_TYPES, Expr, ExternDecl, ExternFnDecl, FnParam, Ident, ImplItem, Item, Path,
-    Program, RustValue, Stmt, Type,
+    Block, CLibType, Expr, ExternDecl, ExternFnDecl, FnParam, Ident, ImplItem, Item, Path, Program,
+    RustValue, Stmt, Type,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 
@@ -243,7 +243,7 @@ fn stdout_flush_stmt() -> Stmt {
 fn file_ptr_type() -> Type {
     Type::Ptr {
         mutable: true,
-        inner: Box::new(Type::CLib(CLIB_RECORD_TYPES[0])),
+        inner: Box::new(Type::CLib(CLibType::FILE)),
     }
 }
 

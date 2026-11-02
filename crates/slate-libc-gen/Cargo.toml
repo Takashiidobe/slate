@@ -1,0 +1,13 @@
+[package]
+name = "slate-libc-gen"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+anyhow.workspace = true
+clap = { workspace = true, features = ["derive"] }
+object = { version = "0.37", default-features = false, features = ["read"] }
+rayon.workspace = true
+serde_json.workspace = true
+tempfile.workspace = true

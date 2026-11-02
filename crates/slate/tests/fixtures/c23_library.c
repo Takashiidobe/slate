@@ -173,10 +173,21 @@ int main(void) {
 // CHECK-NEXT:     fn strndup([[ARG_0]]: *const i8, [[ARG_1]]: u64) -> *mut i8;
 // CHECK-NEXT:     fn strchr([[ARG_0]]: *const i8, [[ARG_1]]: i32) -> *mut i8;
 // CHECK-NEXT:     fn strstr([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> *mut i8;
-// CHECK-NEXT:     fn strftime([[ARG_0]]: *mut i8, [[ARG_1]]: u64, [[ARG_2]]: *const i8, [[ARG_3]]: *const tm) -> u64;
-// CHECK-NEXT:     fn gmtime_r([[ARG_0]]: *const i64, [[ARG_1]]: *mut tm) -> *mut tm;
-// CHECK-NEXT:     fn localtime_r([[ARG_0]]: *const i64, [[ARG_1]]: *mut tm) -> *mut tm;
-// CHECK-NEXT:     fn timegm([[ARG_0]]: *mut tm) -> i64;
+// CHECK-NEXT:     fn strftime(
+// CHECK-NEXT:         [[ARG_0]]: *mut i8,
+// CHECK-NEXT:         [[ARG_1]]: u64,
+// CHECK-NEXT:         [[ARG_2]]: *const i8,
+// CHECK-NEXT:         [[ARG_3]]: *const slate_support::tm,
+// CHECK-NEXT:     ) -> u64;
+// CHECK-NEXT:     fn gmtime_r(
+// CHECK-NEXT:         [[ARG_0]]: *const i64,
+// CHECK-NEXT:         [[ARG_1]]: *mut slate_support::tm,
+// CHECK-NEXT:     ) -> *mut slate_support::tm;
+// CHECK-NEXT:     fn localtime_r(
+// CHECK-NEXT:         [[ARG_0]]: *const i64,
+// CHECK-NEXT:         [[ARG_1]]: *mut slate_support::tm,
+// CHECK-NEXT:     ) -> *mut slate_support::tm;
+// CHECK-NEXT:     fn timegm([[ARG_0]]: *mut slate_support::tm) -> i64;
 // CHECK-NEXT:     fn timespec_getres([[ARG_0]]: *mut slate_support::timespec, [[ARG_1]]: i32) -> i32;
 // CHECK-NEXT:     fn mbrtoc8(
 // CHECK-NEXT:         [[ARG_0]]: *mut u8,
@@ -192,7 +203,12 @@ int main(void) {
 // CHECK-NEXT:     fn wcscmp([[ARG_0]]: *const i32, [[ARG_1]]: *const i32) -> i32;
 // CHECK-NEXT:     fn wcschr([[ARG_0]]: *const i32, [[ARG_1]]: i32) -> *mut i32;
 // CHECK-NEXT:     fn wcsstr([[ARG_0]]: *const i32, [[ARG_1]]: *const i32) -> *mut i32;
-// CHECK-NEXT:     fn wcsftime([[ARG_0]]: *mut i32, [[ARG_1]]: u64, [[ARG_2]]: *const i32, [[ARG_3]]: *const tm) -> u64;
+// CHECK-NEXT:     fn wcsftime(
+// CHECK-NEXT:         [[ARG_0]]: *mut i32,
+// CHECK-NEXT:         [[ARG_1]]: u64,
+// CHECK-NEXT:         [[ARG_2]]: *const i32,
+// CHECK-NEXT:         [[ARG_3]]: *const slate_support::tm,
+// CHECK-NEXT:     ) -> u64;
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -377,21 +393,6 @@ int main(void) {
 // CHECK-NEXT: union __SlateRecord___mbstate_t_h_21_2 {
 // CHECK-NEXT:     __wch: u32,
 // CHECK-NEXT:     __wchb: [i8; 4],
-// CHECK-NEXT: }
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct tm {
-// CHECK-NEXT:     tm_sec: i32,
-// CHECK-NEXT:     tm_min: i32,
-// CHECK-NEXT:     tm_hour: i32,
-// CHECK-NEXT:     tm_mday: i32,
-// CHECK-NEXT:     tm_mon: i32,
-// CHECK-NEXT:     tm_year: i32,
-// CHECK-NEXT:     tm_wday: i32,
-// CHECK-NEXT:     tm_yday: i32,
-// CHECK-NEXT:     tm_isdst: i32,
-// CHECK-NEXT:     __tm_gmtoff: i64,
-// CHECK-NEXT:     __tm_zone: *const i8,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
@@ -642,12 +643,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c23_time() -> i32 {
 // CHECK-NEXT:     let mut timestamp: i64 = 0;
-// CHECK-NEXT:     let mut utc: tm = {
-// CHECK-NEXT:         let mut [[T_0]]: tm = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut utc: slate_support::tm = {
+// CHECK-NEXT:         let mut [[T_0]]: slate_support::tm = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut local: tm = {
-// CHECK-NEXT:         let mut [[T_1]]: tm = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut local: slate_support::tm = {
+// CHECK-NEXT:         let mut [[T_1]]: slate_support::tm = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut resolution: slate_support::timespec = {
@@ -687,7 +688,7 @@ int main(void) {
 // CHECK-NEXT:             month.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             std::mem::size_of::<[i8; 32]>() as u64,
 // CHECK-NEXT:             c"%OB".as_ptr(),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(utc) as *const tm,
+// CHECK-NEXT:             std::ptr::addr_of_mut!(utc) as *const slate_support::tm,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 7) as i32;
 // CHECK-NEXT:     total += [[V_10]];
@@ -700,7 +701,7 @@ int main(void) {
 // CHECK-NEXT:             wide_month.0.as_mut_ptr() as *mut i32,
 // CHECK-NEXT:             32u64,
 // CHECK-NEXT:             (std::ptr::addr_of_mut!(__slate_str281) as *mut i32) as *const i32,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(utc) as *const tm,
+// CHECK-NEXT:             std::ptr::addr_of_mut!(utc) as *const slate_support::tm,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 7) as i32;
 // CHECK-NEXT:     total += [[V_11]];
