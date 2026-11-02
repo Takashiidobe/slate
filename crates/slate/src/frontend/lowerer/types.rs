@@ -896,6 +896,16 @@ impl FunctionLowerer<'_, '_> {
         }
     }
 
+    fn support_record_path(&self, id: TypeId) -> Option<&'static str> {
+        let definition = self.tables.types.get(&id)?;
+        definition.provenance.system_header?;
+        let name = definition.value.name.as_deref()?;
+        SUPPORT_RECORDS
+            .iter()
+            .find(|(c_name, _)| *c_name == name)
+            .map(|(_, path)| *path)
+    }
+
     fn named_prim(&mut self, c: QualType, resolved: Prim) -> Prim {
         let Some(name) = known_c_name(&self.tables.c_types.types, c).filter(|name| {
             !self
@@ -942,6 +952,11 @@ impl FunctionLowerer<'_, '_> {
                     {
                         self.dependencies.stdio_layout_used = true;
                         Ok(stdio::file_type())
+                    }
+                    Some(ir::TypeDefinitionKind::Record { .. })
+                        if let Some(path) = self.support_record_path(*id) =>
+                    {
+                        Ok(rust::Type::Custom(path.into()))
                     }
                     Some(ir::TypeDefinitionKind::Record { .. }) => {
                         Ok(rust::Type::Custom(self.lower_record(*id)?))
@@ -1172,6 +1187,8 @@ const NAMED_TYPEDEFS: &[&str] = &[
     "nlink_t",
     "socklen_t",
 ];
+
+const SUPPORT_RECORDS: &[(&str, &str)] = &[("pthread_attr_t", "slate_support::pthread_attr_t")];
 
 fn known_c_name(types: &CTypes, mut c: QualType) -> Option<&'static str> {
     loop {

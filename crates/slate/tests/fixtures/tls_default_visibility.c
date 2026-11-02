@@ -50,7 +50,7 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn pthread_create(
 // CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: *mut u64,
-// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: *const pthread_attr_t,
+// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: *const slate_support::pthread_attr_t,
 // CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: Option<unsafe extern "C-unwind" fn(*mut ()) -> *mut ()>,
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut (),
 // CHECK-NEXT:     ) -> i32;
@@ -59,12 +59,6 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: union pthread_attr_t {
-// CHECK-NEXT:     __size: [i8; 56],
-// CHECK-NEXT:     __align: i64,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
@@ -121,7 +115,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         pthread_create(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(thread),
-// CHECK-NEXT:             std::ptr::null::<pthread_attr_t>(),
+// CHECK-NEXT:             std::ptr::null::<slate_support::pthread_attr_t>(),
 // CHECK-NEXT:             Some(worker),
 // CHECK-NEXT:             seen.0.as_mut_ptr() as *mut (),
 // CHECK-NEXT:         )
