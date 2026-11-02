@@ -12,6 +12,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     #[link_name = "__isoc23_sscanf"]
 // CHECK-NEXT:     fn sscanf([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;

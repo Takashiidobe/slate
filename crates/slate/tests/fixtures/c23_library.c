@@ -160,6 +160,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn snprintf([[ARG_0:arg[0-9]+]]: *mut i8, [[ARG_1:arg[0-9]+]]: u64, [[ARG_2:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     #[link_name = "__isoc23_sscanf"]
 // CHECK-NEXT:     fn sscanf([[ARG_0]]: *const i8, [[ARG_1]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     fn strfromd([[ARG_0]]: *mut i8, [[ARG_1]]: u64, [[ARG_2]]: *const i8, [[ARG_3:arg[0-9]+]]: f64) -> i32;
 // CHECK-NEXT:     fn strfromf([[ARG_0]]: *mut i8, [[ARG_1]]: u64, [[ARG_2]]: *const i8, [[ARG_3]]: f32) -> i32;

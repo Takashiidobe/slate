@@ -291,6 +291,7 @@ impl FunctionLowerer<'_, '_> {
             .builtin_library(function.value.id)
             .map(str::to_owned)
             .or_else(|| ifunc_symbol(function))
+            .or_else(|| function.symbol.asm_name.clone())
             .or_else(|| {
                 (function_rust_name(function) != function.name).then(|| function.name.clone())
             })
