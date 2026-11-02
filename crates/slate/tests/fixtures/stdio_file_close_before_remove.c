@@ -16,9 +16,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn remove([[ARG_0:arg[0-9]+]]: *const i8) -> i32;
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::remove;
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
@@ -39,7 +37,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::fputs(c"owned\n".as_ptr(), f) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { slate_support::fclose(f) };
-// CHECK-NEXT:     unsafe { remove(c"slate_stdio_close_before_remove.tmp".as_ptr()) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         remove(
+// CHECK-NEXT:             c"slate_stdio_close_before_remove.tmp".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::puts(c"done".as_ptr()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

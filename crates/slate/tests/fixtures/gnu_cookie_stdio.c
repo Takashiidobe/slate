@@ -58,11 +58,11 @@ int main(void) {
 // CHECK-NEXT: ) -> i64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             buffer as *const u8,
-// CHECK-NEXT:             (((*(state as *mut GNUCookie)).bytes.as_mut_ptr() as *mut i8)
+// CHECK-NEXT:             ((buffer as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((((*(state as *mut GNUCookie)).bytes.as_mut_ptr() as *mut i8)
 // CHECK-NEXT:                 .offset((*(state as *mut GNUCookie)).length as isize) as *mut ())
-// CHECK-NEXT:                 as *mut u8,
-// CHECK-NEXT:             size as usize,
+// CHECK-NEXT:                 as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (size as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u64 = unsafe { (*(state as *mut GNUCookie)).length };
@@ -111,10 +111,10 @@ int main(void) {
 // CHECK-NEXT:     total = [[V_3]]
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             memcmp(
-// CHECK-NEXT:                 cookie.bytes.as_mut_ptr() as *const (),
-// CHECK-NEXT:                 b"cookie:7\0".as_ptr() as *const (),
-// CHECK-NEXT:                 8u64,
-// CHECK-NEXT:             )
+// CHECK-NEXT:                 (cookie.bytes.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:                 (b"cookie:7\0".as_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:                 8u64 as usize,
+// CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         }) == 0) as i32);
 // CHECK-NEXT:     total
 // CHECK: {{^}}}

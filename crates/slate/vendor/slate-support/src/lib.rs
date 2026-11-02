@@ -159,22 +159,7 @@ pub type intptr_t = i64;
 #[cfg(target_pointer_width = "32")]
 pub type intptr_t = i32;
 
-#[cfg(any(
-    windows,
-    all(
-        target_pointer_width = "32",
-        any(target_env = "gnu", target_os = "android")
-    )
-))]
-pub type off_t = i32;
-#[cfg(not(any(
-    windows,
-    all(
-        target_pointer_width = "32",
-        any(target_env = "gnu", target_os = "android")
-    )
-)))]
-pub type off_t = i64;
+pub use libc::off_t;
 
 #[cfg(windows)]
 pub type wchar_t = u16;
@@ -208,16 +193,7 @@ pub type wint_t = i32;
 #[cfg(not(any(windows, target_os = "macos", target_os = "freebsd")))]
 pub type wint_t = u32;
 
-#[cfg(all(
-    target_pointer_width = "32",
-    any(target_env = "gnu", target_os = "android")
-))]
-pub type time_t = i32;
-#[cfg(not(all(
-    target_pointer_width = "32",
-    any(target_env = "gnu", target_os = "android")
-)))]
-pub type time_t = i64;
+pub use libc::time_t;
 
 #[cfg(target_os = "macos")]
 pub type clock_t = u64;

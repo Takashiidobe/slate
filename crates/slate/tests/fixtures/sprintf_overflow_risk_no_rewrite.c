@@ -12,7 +12,13 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut buf: [i8; 4] = [0i8; 4];
-// CHECK-NEXT:     unsafe { sprintf(buf.as_mut_ptr() as *mut i8, c"%d".as_ptr(), 7i32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         sprintf(
+// CHECK-NEXT:             (buf.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             c"%d".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             7i32,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::puts(buf.as_mut_ptr() as *const i8) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

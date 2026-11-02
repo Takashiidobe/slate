@@ -19,14 +19,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn wcslen([[ARG_0:arg[0-9]+]]: *const i32) -> u64;
-// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C, align(16))]
+// CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: #[repr(C, align(16))]
-// CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut __slate_str19: [i32; 12] = [
 // CHECK-NEXT:     104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 0,
 // CHECK-NEXT: ];
@@ -46,7 +43,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %d %d\n".as_ptr(),
-// CHECK-NEXT:             wcslen(greeting),
+// CHECK-NEXT:             wcslen(greeting as *const i32) as u64,
 // CHECK-NEXT:             *unsafe { greeting }.add(5),
 // CHECK-NEXT:             *unsafe { greeting }.add(10),
 // CHECK-NEXT:         )
@@ -82,6 +79,7 @@ int main(void) {
 // CHECK-NEXT: static mut __slate_str20: [u16; 4] = [233, 116, 233, 0];
 // CHECK-NEXT: static mut __slate_str21: [u32; 3] = [128512, 33, 0];
 // CHECK-NEXT: static mut __slate_str26: [i32; 3] = [97, 98, 0];
+// CHECK-NEXT: use slate_support::wcslen;
 // CHECK-NEXT: static mut __slate_str27: [i32; 4] = [120, 121, 122, 0];
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(

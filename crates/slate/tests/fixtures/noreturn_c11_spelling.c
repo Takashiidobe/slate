@@ -17,12 +17,10 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn exit([[ARG_0:arg[0-9]+]]: i32);
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::exit;
 // CHECK-NEXT: fn die(code: i32) {
 // CHECK-NEXT:     println!("dying with {}", code);
-// CHECK-NEXT:     unsafe { std::process::exit(code) };
+// CHECK-NEXT:     unsafe { std::process::exit(code as i32) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     if false {

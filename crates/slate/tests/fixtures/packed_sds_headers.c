@@ -207,16 +207,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![allow(arithmetic_overflow, unconditional_panic)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
-// CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct sdshdr8 {
@@ -240,6 +230,9 @@ int main(void) {
 // CHECK-NEXT:     alloc: u64,
 // CHECK-NEXT:     flags: u8,
 // CHECK-NEXT:     buf: [i8; 0],
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sdslen(s: *mut i8) -> u64 {
 // CHECK-NEXT:     match ((unsafe { *s.offset(-1 as isize) }) as i32) & 7 {
@@ -277,10 +270,11 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sdsnew(init: *const i8, r#type: i32) -> *mut i8 {
-// CHECK-NEXT:     let len: u64 = unsafe { strlen(init) };
+// CHECK-NEXT:     let len: u64 = unsafe { strlen(init as *const core::ffi::c_char) as u64 };
 // CHECK-NEXT:     let header: u64 = if r#type == 1 { 3 } else { if r#type == 2 { 5 } else { 17 } };
-// CHECK-NEXT:     let memory: *mut i8 = (unsafe { malloc(header.wrapping_add(len).wrapping_add(16)) })
-// CHECK-NEXT:         as *mut i8;
+// CHECK-NEXT:     let memory: *mut i8 = (unsafe {
+// CHECK-NEXT:         malloc(header.wrapping_add(len).wrapping_add(16) as usize) as *mut ()
+// CHECK-NEXT:     }) as *mut i8;
 // CHECK-NEXT:     let s: *mut i8 = unsafe { memory.add(header as usize) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *s.offset(-1 as isize) = r#type as i8;
@@ -317,9 +311,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             init as *const u8,
-// CHECK-NEXT:             s as *mut u8,
-// CHECK-NEXT:             len.wrapping_add(1) as usize,
+// CHECK-NEXT:             ((init as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((s as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (len.wrapping_add(1) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     s
@@ -358,6 +352,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
+// CHECK-NEXT: use slate_support::memcpy;
+// CHECK-NEXT: use slate_support::memset;
+// CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union epoll_data {
@@ -443,23 +442,23 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             free(
-// CHECK-NEXT:                 s
+// CHECK-NEXT:                 (s
 // CHECK-NEXT:                     .offset(
 // CHECK-NEXT:                         -((if types[i as usize] == 1 {
 // CHECK-NEXT:                             3u64
 // CHECK-NEXT:                         } else {
 // CHECK-NEXT:                             if types[i as usize] == 2 { 5u64 } else { 17u64 }
 // CHECK-NEXT:                         }) as isize),
-// CHECK-NEXT:                     ) as *mut (),
+// CHECK-NEXT:                     ) as *mut ()) as *mut core::ffi::c_void,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[u8; 64]> = __SlateAlign16([0u8; 64]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:             0u8,
-// CHECK-NEXT:             std::mem::size_of::<[u8; 64]>(),
+// CHECK-NEXT:             ((buffer.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (0i32 as i32) as u8,
+// CHECK-NEXT:             ((std::mem::size_of::<[u8; 64]>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut used: u64 = 0;
@@ -494,10 +493,11 @@ int main(void) {
 // CHECK-NEXT:             let mut header: payloadHeader = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:                     ((buffer.0.as_mut_ptr() as *mut u8).add(offset as usize)
-// CHECK-NEXT:                         as *const ()) as *const u8,
-// CHECK-NEXT:                     (std::ptr::addr_of_mut!(header) as *mut ()) as *mut u8,
-// CHECK-NEXT:                     std::mem::size_of::<payloadHeader>(),
+// CHECK-NEXT:                     (((buffer.0.as_mut_ptr() as *mut u8).add(offset as usize)
+// CHECK-NEXT:                         as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:                     ((std::ptr::addr_of_mut!(header) as *mut ())
+// CHECK-NEXT:                         as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:                     ((std::mem::size_of::<payloadHeader>() as u64) as usize) as usize,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -520,9 +520,10 @@ int main(void) {
 // CHECK-NEXT:     let mut holder: holder = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(holder) as *mut ()) as *mut u8,
-// CHECK-NEXT:             0u8,
-// CHECK-NEXT:             std::mem::size_of::<holder>(),
+// CHECK-NEXT:             ((std::ptr::addr_of_mut!(holder) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
+// CHECK-NEXT:             (0i32 as i32) as u8,
+// CHECK-NEXT:             ((std::mem::size_of::<holder>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     holder.tag = 104;

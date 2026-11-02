@@ -27,16 +27,19 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn remove([[ARG_0:arg[0-9]+]]: *const i8) -> i32;
-// CHECK-NEXT:     fn fread([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: u64, [[ARG_2:arg[0-9]+]]: u64, [[ARG_3:arg[0-9]+]]: *mut slate_support::FILE) -> u64;
+// CHECK-NEXT:     fn fread([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: u64, [[ARG_2:arg[0-9]+]]: u64, [[ARG_3:arg[0-9]+]]: *mut slate_support::FILE) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: use slate_support::remove;
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe { remove(c"slate_stdio_fread_multi_byte.tmp".as_ptr()) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         remove(c"slate_stdio_fread_multi_byte.tmp".as_ptr() as *const core::ffi::c_char)
+// CHECK-NEXT:             as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let f: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         slate_support::fopen(c"slate_stdio_fread_multi_byte.tmp".as_ptr(), c"w".as_ptr())
 // CHECK-NEXT:     };
@@ -71,7 +74,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { slate_support::fclose(g) };
-// CHECK-NEXT:     unsafe { remove(c"slate_stdio_fread_multi_byte.tmp".as_ptr()) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         remove(c"slate_stdio_fread_multi_byte.tmp".as_ptr() as *const core::ffi::c_char)
+// CHECK-NEXT:             as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

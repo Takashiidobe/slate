@@ -44,8 +44,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -238,6 +236,8 @@ int main(void) {
 // CHECK-NEXT:     tag: i8,
 // CHECK-NEXT:     values: [LongDouble; 0],
 // CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let header: List = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: List = unsafe { std::mem::zeroed() };
@@ -249,16 +249,19 @@ int main(void) {
 // CHECK-NEXT:         return 7;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let list: *mut List = (unsafe {
-// CHECK-NEXT:         malloc(8u64.wrapping_add(5u64.wrapping_mul(std::mem::size_of::<Entry>() as u64)))
+// CHECK-NEXT:         malloc(
+// CHECK-NEXT:             8u64.wrapping_add(5u64.wrapping_mul(std::mem::size_of::<Entry>() as u64))
+// CHECK-NEXT:                 as usize,
+// CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     }) as *mut List;
-// CHECK-NEXT:     let bytes: *mut Bytes = (unsafe { malloc(25u64) }) as *mut Bytes;
+// CHECK-NEXT:     let bytes: *mut Bytes = (unsafe { malloc(25u64 as usize) as *mut () }) as *mut Bytes;
 // CHECK-NEXT:     let wide: *mut Wide = (unsafe {
 // CHECK-NEXT:         malloc(
 // CHECK-NEXT:             16u64
 // CHECK-NEXT:                 .wrapping_add(
 // CHECK-NEXT:                     3u64.wrapping_mul(std::mem::size_of::<LongDouble>() as u64),
-// CHECK-NEXT:                 ),
-// CHECK-NEXT:         )
+// CHECK-NEXT:                 ) as usize,
+// CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     }) as *mut Wide;
 // CHECK-NEXT:     if list.is_null() || bytes.is_null() || wide.is_null() {
 // CHECK-NEXT:         return 1;
@@ -353,9 +356,9 @@ int main(void) {
 // CHECK-NEXT:             *(std::ptr::addr_of_mut!((* wide).values) as *mut LongDouble).add(2)
 // CHECK-NEXT:         }) != LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64])
 // CHECK-NEXT:         || ((unsafe { (*wide).tag }) as i32) != 4) as i32;
-// CHECK-NEXT:     unsafe { free(wide as *mut ()) };
-// CHECK-NEXT:     unsafe { free(bytes as *mut ()) };
-// CHECK-NEXT:     unsafe { free(list as *mut ()) };
+// CHECK-NEXT:     unsafe { free((wide as *mut ()) as *mut core::ffi::c_void) };
+// CHECK-NEXT:     unsafe { free((bytes as *mut ()) as *mut core::ffi::c_void) };
+// CHECK-NEXT:     unsafe { free((list as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

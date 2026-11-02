@@ -27,7 +27,9 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe { remove(c"slate_stdio_file_write.tmp".as_ptr()) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         remove(c"slate_stdio_file_write.tmp".as_ptr() as *const core::ffi::c_char) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let f: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         slate_support::fopen(c"slate_stdio_file_write.tmp".as_ptr(), c"w".as_ptr())
 // CHECK-NEXT:     };
@@ -64,7 +66,9 @@ int main(void) {
 // CHECK-NEXT:         slate_support::fputs(buf.0.as_mut_ptr() as *const i8, slate_support::stdout())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     unsafe { remove(c"slate_stdio_file_write.tmp".as_ptr()) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         remove(c"slate_stdio_file_write.tmp".as_ptr() as *const core::ffi::c_char) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

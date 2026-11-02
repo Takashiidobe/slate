@@ -48,14 +48,6 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-fzero-init-padding-bits=all" }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn memcpy([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union small_first {
@@ -80,6 +72,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut gp: padded = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: padded = unsafe { std::mem::zeroed() };
@@ -150,9 +146,9 @@ int main(void) {
 // CHECK-NEXT:     let mut bytes: __SlateAlign16<[u8; 64]> = __SlateAlign16([0u8; 64]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             p as *const u8,
-// CHECK-NEXT:             bytes.0.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:             (n as u64) as usize,
+// CHECK-NEXT:             (p as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((bytes.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             ((n as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0..n {
@@ -162,6 +158,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: use slate_support::memcpy;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     dump(

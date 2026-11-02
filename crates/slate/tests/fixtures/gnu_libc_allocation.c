@@ -61,27 +61,21 @@ int main(void) {
 // CHECK-NEXT: #![allow(arithmetic_overflow, unconditional_panic)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn reallocarray([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: u64, [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT:     fn memalign([[ARG_0]]: u64, [[ARG_1]]: u64) -> *mut ();
+// CHECK-NEXT:     fn memalign([[ARG_0:arg[0-9]+]]: u64, [[ARG_1:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     fn valloc([[ARG_0]]: u64) -> *mut ();
 // CHECK-NEXT:     fn pvalloc([[ARG_0]]: u64) -> *mut ();
 // CHECK-NEXT:     fn mallopt([[ARG_0]]: i32, [[ARG_1]]: i32) -> i32;
 // CHECK-NEXT:     fn malloc_usable_size([[ARG_0]]: *mut ()) -> u64;
-// CHECK-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1]]: *const (), [[ARG_2]]: u64) -> *mut ();
-// CHECK-NEXT:     fn strcmp([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> i32;
 // CHECK-NEXT:     fn index([[ARG_0]]: *const i8, [[ARG_1]]: i32) -> *mut i8;
 // CHECK-NEXT:     fn _obstack_newchunk([[ARG_0]]: *mut obstack, [[ARG_1]]: i32);
 // CHECK-NEXT:     fn _obstack_begin(
 // CHECK-NEXT:         [[ARG_0]]: *mut obstack,
 // CHECK-NEXT:         [[ARG_1]]: i32,
-// CHECK-NEXT:         [[ARG_2]]: i32,
+// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: i32,
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: Option<unsafe extern "C-unwind" fn(i64) -> *mut ()>,
 // CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: Option<unsafe extern "C-unwind" fn(*mut ())>,
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT:     fn obstack_free([[ARG_0]]: *mut obstack, [[ARG_1]]: *mut ());
-// CHECK-NEXT:     fn sysconf([[ARG_0]]: i32) -> i64;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -134,14 +128,24 @@ int main(void) {
 // CHECK-NEXT:         pub __slate_pad_3: u8,
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::reallocarray;
+// CHECK-NEXT: use slate_support::free;
+// CHECK-NEXT: use slate_support::memcpy;
+// CHECK-NEXT: use slate_support::strcmp;
+// CHECK-NEXT: use slate_support::sysconf;
 // CHECK-NEXT: fn gnu_allocation_extensions() -> i32 {
 // CHECK-NEXT:     let values: *mut i32 = (unsafe {
-// CHECK-NEXT:         reallocarray(std::ptr::null_mut::<()>(), 4u64, std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:         reallocarray(
+// CHECK-NEXT:             std::ptr::null_mut::<()>() as *mut core::ffi::c_void,
+// CHECK-NEXT:             4u64 as usize,
+// CHECK-NEXT:             (std::mem::size_of::<i32>() as u64) as usize,
+// CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     let aligned: *mut () = unsafe { memalign(64u64, 80u64) };
 // CHECK-NEXT:     let page: *mut () = unsafe { valloc(1u64) };
 // CHECK-NEXT:     let rounded: *mut () = unsafe { pvalloc(1u64) };
-// CHECK-NEXT:     let page_size: i64 = unsafe { sysconf(30i32) };
+// CHECK-NEXT:     let page_size: i64 = unsafe { sysconf(30i32 as i32) as i64 };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for index in 0i32..4i32 {
 // CHECK-NEXT:         unsafe {
@@ -166,10 +170,10 @@ int main(void) {
 // CHECK-NEXT:     total += [[V_4]];
 // CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = ((unsafe { mallopt(-5i32, 1i32) }) != 0) as i32;
 // CHECK-NEXT:     total += [[V_5]];
-// CHECK-NEXT:     unsafe { free(values as *mut ()) };
-// CHECK-NEXT:     unsafe { free(aligned) };
-// CHECK-NEXT:     unsafe { free(page) };
-// CHECK-NEXT:     unsafe { free(rounded) };
+// CHECK-NEXT:     unsafe { free((values as *mut ()) as *mut core::ffi::c_void) };
+// CHECK-NEXT:     unsafe { free(aligned as *mut core::ffi::c_void) };
+// CHECK-NEXT:     unsafe { free(page as *mut core::ffi::c_void) };
+// CHECK-NEXT:     unsafe { free(rounded as *mut core::ffi::c_void) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_obstack_extensions() -> i32 {
@@ -211,9 +215,10 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:                 c"gnu".as_ptr() as *const u8,
-// CHECK-NEXT:                 ((*__o).next_free as *mut ()) as *mut u8,
-// CHECK-NEXT:                 ((__len as i64) as u64) as usize,
+// CHECK-NEXT:                 ((b"gnu\0".as_ptr() as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                     as *const u8,
+// CHECK-NEXT:                 (((*__o).next_free as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:                 (((__len as i64) as u64) as usize) as usize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let [[V_7:__v[0-9]+]]: *mut i8 = unsafe { (*__o).next_free };
@@ -287,9 +292,10 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:                 c"libc".as_ptr() as *const u8,
-// CHECK-NEXT:                 ((*__o).next_free as *mut ()) as *mut u8,
-// CHECK-NEXT:                 ((__len as i64) as u64) as usize,
+// CHECK-NEXT:                 ((b"libc\0".as_ptr() as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                     as *const u8,
+// CHECK-NEXT:                 (((*__o).next_free as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:                 (((__len as i64) as u64) as usize) as usize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let [[V_3]]: *mut i8 = unsafe { (*__o).next_free };
@@ -352,10 +358,20 @@ int main(void) {
 // CHECK-NEXT:     let second: *mut i8 = [[V_2]] as *mut i8;
 // CHECK-NEXT:     let [[V_11:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_11]]
-// CHECK-NEXT:         + (((unsafe { strcmp(first as *const i8, c"gnu".as_ptr()) }) == 0) as i32);
+// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:             strcmp(
+// CHECK-NEXT:                 (first as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"gnu".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:         }) == 0) as i32);
 // CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_12]]
-// CHECK-NEXT:         + (((unsafe { strcmp(second as *const i8, c"libc".as_ptr()) }) == 0) as i32);
+// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:             strcmp(
+// CHECK-NEXT:                 (second as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"libc".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:         }) == 0) as i32);
 // CHECK-NEXT:     let mut [[V_13:__v[0-9]+]]: u32;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let __o: *const obstack = std::ptr::addr_of_mut!(storage) as *const obstack;

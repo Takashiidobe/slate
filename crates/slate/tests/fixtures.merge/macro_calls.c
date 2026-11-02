@@ -100,8 +100,8 @@ int main(void) {
 // CHECK-NEXT:   macro_calls.c: [] 1 compiled
 // CHECK-NEXT:   units/macro_calls_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit macro_calls: 41 items, 18 gated, 0 duplicated functions
-// CHECK-NEXT:   hoisted fn:make_buffer: 2 variants
+// CHECK-NEXT: unit macro_calls: 41 items, 20 gated, 0 duplicated functions
+// CHECK-NEXT:   spliced fn:make_buffer: 2 variants
 // CHECK-NEXT:   spliced fn:twice: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: unit macro_calls_helper: 8 items, 3 gated, 0 duplicated functions
@@ -176,11 +176,11 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! CALL_BUFFER {
+// CHECK-NEXT: macro_rules! CALL_BUFFER__2 {
 // CHECK-NEXT:     ($n:expr) => {
 // CHECK-NEXT:         let made: *mut i32 = make_buffer($n);
 // CHECK-NEXT:         println!("{}", unsafe { *made.offset((($n) - 1) as isize) });
-// CHECK-NEXT:         unsafe { free(made as *mut ()) };
+// CHECK-NEXT:         unsafe { free((made as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -221,7 +221,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: type __SlateHoist_make_buffer = c_ulong;
+// CHECK-NEXT: use slate_support::free;
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: use slate_support::malloc;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! CALL_BUFFER {
@@ -281,10 +283,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: type __SlateHoist_make_buffer = u64;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn free([[ARG_0:arg[0-9]+]]: *mut ());
+// CHECK-NEXT:     fn malloc([[ARG_0]]: size_t) -> *mut ();
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -345,14 +346,15 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         CALL_BUFFER!(4i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     let __slate_printf_arg0 = sum(numbers.as_mut_ptr() as *const i32, 2i32);
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("{}", __slate_printf_arg0);
+// CHECK-NEXT:         CALL_BUFFER__2!(4i32);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     CALL_BUFFER!(4i32);
 // CHECK-NEXT:     let direct_buffer: *mut i32 = make_buffer(2i32);
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -360,12 +362,13 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), *direct_buffer.add(1)) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { free(direct_buffer as *mut ()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("{}", unsafe { *direct_buffer.add(1) });
+// CHECK-NEXT:         unsafe { free((direct_buffer as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { free(direct_buffer as *mut ()) };
 // CHECK-NEXT:     CALL_SAME!(value);
 // CHECK-NEXT:     CALL_ONLY!(value);
 // CHECK-NEXT:     CALL_EXPORTED!(std::ptr::addr_of_mut!(value));
@@ -418,11 +421,16 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn make_buffer(count: i32) -> *mut i32 {
+// CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     let buffer: *mut i32 = (unsafe {
 // CHECK-NEXT:         malloc(
-// CHECK-NEXT:             (count as size_t).wrapping_mul(std::mem::size_of::<i32>() as size_t)
-// CHECK-NEXT:                 as __SlateHoist_make_buffer,
-// CHECK-NEXT:         )
+// CHECK-NEXT:             ((count as size_t).wrapping_mul(std::mem::size_of::<i32>() as size_t) as c_ulong)
+// CHECK-NEXT:                 as usize,
+// CHECK-NEXT:         ) as *mut ()
+// CHECK-NEXT:     }) as *mut i32;
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let buffer: *mut i32 = (unsafe {
+// CHECK-NEXT:         malloc((count as size_t).wrapping_mul(std::mem::size_of::<i32>() as size_t) as u64)
 // CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         unsafe {
@@ -484,8 +492,6 @@ int main(void) {
 // CHECK-NEXT: static mut local_counter: i32 = unsafe { std::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: size_t) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT:     fn exported_bump([[ARG_0]]: *mut i32) -> i32;
 // CHECK-NEXT:     fn exported_length([[ARG_0]]: *const c_char) -> i32;
 // CHECK-NEXT:     fn helper_run() -> i32;

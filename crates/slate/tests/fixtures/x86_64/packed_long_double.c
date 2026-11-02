@@ -50,8 +50,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn memcpy([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -295,6 +293,8 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_j(9u32);
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-NEXT: use slate_support::memcpy;
+// CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: fn half(p: &LongDouble) -> LongDouble {
 // CHECK-NEXT:     (unsafe { *(p as *const LongDouble) }) / __slate_f80_from_i32(2i32)
 // CHECK-NEXT: }
@@ -314,9 +314,10 @@ int main(void) {
 // CHECK-NEXT:     let mut q: Q = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(q) as *mut ()) as *mut u8,
-// CHECK-NEXT:             0u8,
-// CHECK-NEXT:             std::mem::size_of::<Q>(),
+// CHECK-NEXT:             ((std::ptr::addr_of_mut!(q) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
+// CHECK-NEXT:             (0i32 as i32) as u8,
+// CHECK-NEXT:             ((std::mem::size_of::<Q>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     q.c = 113;
@@ -351,9 +352,11 @@ int main(void) {
 // CHECK-NEXT:     let mut copy: LongDouble = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((std::ptr::addr_of_mut!(p.l) as *mut LongDouble) as *const ()) as *const u8,
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(copy) as *mut ()) as *mut u8,
-// CHECK-NEXT:             std::mem::size_of::<LongDouble>(),
+// CHECK-NEXT:             (((std::ptr::addr_of_mut!(p.l) as *mut LongDouble) as *const ())
+// CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((std::ptr::addr_of_mut!(copy) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
+// CHECK-NEXT:             ((std::mem::size_of::<LongDouble>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let same: P = p;

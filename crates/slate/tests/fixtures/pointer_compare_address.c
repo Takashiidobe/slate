@@ -17,16 +17,8 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn gmtime_r(
-// CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: *const i64,
-// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: *mut slate_support::tm,
-// CHECK-NEXT:     ) -> *mut slate_support::tm;
-// CHECK-NEXT:     fn localtime_r(
-// CHECK-NEXT:         [[ARG_0]]: *const i64,
-// CHECK-NEXT:         [[ARG_1]]: *mut slate_support::tm,
-// CHECK-NEXT:     ) -> *mut slate_support::tm;
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::gmtime_r;
+// CHECK-NEXT: use slate_support::localtime_r;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut timestamp: i64 = 0;
 // CHECK-NEXT:     let mut utc: slate_support::tm = {
@@ -39,15 +31,15 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let utc_result: i32 = ((unsafe {
 // CHECK-NEXT:         gmtime_r(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(timestamp) as *const i64,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(utc),
-// CHECK-NEXT:         )
+// CHECK-NEXT:             (std::ptr::addr_of_mut!(timestamp) as *const i64) as *const i64,
+// CHECK-NEXT:             std::ptr::addr_of_mut!(utc) as *mut slate_support::tm,
+// CHECK-NEXT:         ) as *mut slate_support::tm
 // CHECK-NEXT:     }) == std::ptr::addr_of_mut!(utc)) as i32;
 // CHECK-NEXT:     let local_result: i32 = ((unsafe {
 // CHECK-NEXT:         localtime_r(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(timestamp) as *const i64,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(local),
-// CHECK-NEXT:         )
+// CHECK-NEXT:             (std::ptr::addr_of_mut!(timestamp) as *const i64) as *const i64,
+// CHECK-NEXT:             std::ptr::addr_of_mut!(local) as *mut slate_support::tm,
+// CHECK-NEXT:         ) as *mut slate_support::tm
 // CHECK-NEXT:     }) == std::ptr::addr_of_mut!(local)) as i32;
 // CHECK-NEXT:     println!("{} {}", utc_result, local_result);
 // CHECK-NEXT:     0

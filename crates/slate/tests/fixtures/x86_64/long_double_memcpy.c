@@ -29,8 +29,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn memcpy([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -207,15 +205,18 @@ int main(void) {
 // CHECK-NEXT:     ld: LongDouble,
 // CHECK-NEXT:     bytes: [u8; 16],
 // CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::memcpy;
+// CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut src: ld_union = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut dst: ld_union = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(src) as *mut ()) as *mut u8,
-// CHECK-NEXT:             0u8,
-// CHECK-NEXT:             std::mem::size_of::<ld_union>(),
+// CHECK-NEXT:             ((std::ptr::addr_of_mut!(src) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
+// CHECK-NEXT:             (0i32 as i32) as u8,
+// CHECK-NEXT:             ((std::mem::size_of::<ld_union>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     while i < 10 {
@@ -226,9 +227,11 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(src) as *const ()) as *const u8,
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(dst) as *mut ()) as *mut u8,
-// CHECK-NEXT:             std::mem::size_of::<ld_union>(),
+// CHECK-NEXT:             ((std::ptr::addr_of_mut!(src) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                 as *const u8,
+// CHECK-NEXT:             ((std::ptr::addr_of_mut!(dst) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
+// CHECK-NEXT:             ((std::mem::size_of::<ld_union>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     i = 0;

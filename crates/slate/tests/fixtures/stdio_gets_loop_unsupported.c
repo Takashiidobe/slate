@@ -32,7 +32,11 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe { remove(c"slate_stdio_gets_loop_unsupported.tmp".as_ptr()) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         remove(
+// CHECK-NEXT:             c"slate_stdio_gets_loop_unsupported.tmp".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let f: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         slate_support::fopen(
 // CHECK-NEXT:             c"slate_stdio_gets_loop_unsupported.tmp".as_ptr(),
@@ -73,11 +77,18 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = count;
 // CHECK-NEXT:         count = [[V_0]]
-// CHECK-NEXT:             + (((unsafe { strlen(line.0.as_mut_ptr() as *const i8) }) as u32) as i32);
+// CHECK-NEXT:             + (((unsafe {
+// CHECK-NEXT:                 strlen((line.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char)
+// CHECK-NEXT:                     as u64
+// CHECK-NEXT:             }) as u32) as i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { slate_support::fclose(g) };
 // CHECK-NEXT:     println!("{}", count);
-// CHECK-NEXT:     unsafe { remove(c"slate_stdio_gets_loop_unsupported.tmp".as_ptr()) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         remove(
+// CHECK-NEXT:             c"slate_stdio_gets_loop_unsupported.tmp".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

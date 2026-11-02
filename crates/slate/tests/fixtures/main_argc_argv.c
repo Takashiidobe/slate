@@ -13,9 +13,7 @@ int main(int argc, char **argv) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn strlen([[ARG_0:arg[0-9]+]]: *const i8) -> u64;
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
@@ -24,7 +22,9 @@ int main(int argc, char **argv) {
 // CHECK-NEXT:         "{} {} {}", argc, ! unsafe { * argv.add(0) } .is_null() as i32, unsafe { * argv
 // CHECK-NEXT:         .offset(argc as isize) } .is_null() as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let length: u64 = unsafe { strlen(*argv.add(0) as *const i8) };
+// CHECK-NEXT:     let length: u64 = unsafe {
+// CHECK-NEXT:         strlen((*argv.add(0) as *const i8) as *const core::ffi::c_char) as u64
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{}", (length > 0) as i32);
 // CHECK-NEXT:     for i in 1..argc {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());

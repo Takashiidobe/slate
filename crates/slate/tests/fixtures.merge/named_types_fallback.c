@@ -43,9 +43,8 @@ int main(void) {
 // CHECK-NEXT: type c_char = u8;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const c_char, ...) -> i32;
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::printf;
+// CHECK-NEXT: use slate_support::size_t;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -87,10 +86,10 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             printf(
-// CHECK-NEXT:                 c"%d %zu\n".as_ptr() as *const c_char,
+// CHECK-NEXT:                 (c"%d %zu\n".as_ptr() as *const c_char) as *const core::ffi::c_char,
 // CHECK-NEXT:                 (shift((97 as c_char)) as u32) as i32,
 // CHECK-NEXT:                 count(c"abc".as_ptr() as *const c_char),
-// CHECK-NEXT:             )
+// CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
@@ -110,7 +109,5 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::size_t;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

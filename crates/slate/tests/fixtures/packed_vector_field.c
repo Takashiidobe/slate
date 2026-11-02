@@ -31,19 +31,17 @@ int main(void) {
 // CHECK-NEXT: #![feature(portable_simd)]
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn calloc([[ARG_0:arg[0-9]+]]: u64, [[ARG_1:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct T {
 // CHECK-NEXT:     c: i8,
 // CHECK-NEXT:     v: std::simd::Simd<i64, 2>,
 // CHECK-NEXT:     words: [i32; 3],
+// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::calloc;
+// CHECK-NEXT: use slate_support::free;
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn bump(t: *mut T) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = 1;
@@ -68,7 +66,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let t: *mut T = (unsafe { calloc(2u64, 29u64) }) as *mut T;
+// CHECK-NEXT:     let t: *mut T = (unsafe { calloc(2u64 as usize, 29u64 as usize) as *mut () })
+// CHECK-NEXT:         as *mut T;
 // CHECK-NEXT:     let seed: std::simd::Simd<i64, 2> = std::simd::Simd::from_array([3i64, 4i64]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*t).v = seed;
@@ -90,7 +89,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     unsafe { free(t as *mut ()) };
+// CHECK-NEXT:     unsafe { free((t as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

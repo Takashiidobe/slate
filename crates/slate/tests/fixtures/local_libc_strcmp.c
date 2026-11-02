@@ -24,9 +24,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn strcmp([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: *const i8) -> i32;
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::strcmp;
 // CHECK-NEXT: fn cmp_texts(a: &str, b: &str) -> i32 {
 // CHECK-NEXT:     let mut sa: i32 = 0;
 // CHECK-NEXT:     let mut sb: i32 = 0;
@@ -40,8 +38,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let order: i32 = unsafe { a.cmp(b) as i32 };
 // CHECK-NEXT:     let sign: i32 = ((order > 0) as i32) - ((order < 0) as i32);
-// CHECK-NEXT:     let eq: i32 = ((unsafe { strcmp(a.as_ptr() as *const i8, b.as_ptr() as *const i8) })
-// CHECK-NEXT:         == 0) as i32;
+// CHECK-NEXT:     let eq: i32 = ((unsafe {
+// CHECK-NEXT:         strcmp(
+// CHECK-NEXT:             (a.as_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:             (b.as_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     sign * 1000 + eq * 100 + (sa - sb)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

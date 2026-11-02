@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %ld %lu %ld %ld %lu %.1f\n".as_ptr(),
-// CHECK-NEXT:             atoi(whole.as_mut_ptr() as *const i8),
+// CHECK-NEXT:             atoi((whole.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as i32,
 // CHECK-NEXT:             strtol(
 // CHECK-NEXT:                 whole_long.as_mut_ptr() as *const i8,
 // CHECK-NEXT:                 std::ptr::null_mut::<*mut i8>(),
@@ -54,7 +54,7 @@ int main(void) {
 // CHECK-NEXT:                 std::ptr::null_mut::<*mut i8>(),
 // CHECK-NEXT:                 10i32,
 // CHECK-NEXT:             ),
-// CHECK-NEXT:             atol(leading.as_mut_ptr() as *const i8),
+// CHECK-NEXT:             atol((leading.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as i64,
 // CHECK-NEXT:             strtol(
 // CHECK-NEXT:                 large.0.as_mut_ptr() as *const i8,
 // CHECK-NEXT:                 std::ptr::null_mut::<*mut i8>(),
@@ -65,7 +65,10 @@ int main(void) {
 // CHECK-NEXT:                 std::ptr::null_mut::<*mut i8>(),
 // CHECK-NEXT:                 10i32,
 // CHECK-NEXT:             ),
-// CHECK-NEXT:             strtod(flt.as_mut_ptr() as *const i8, std::ptr::null_mut::<*mut i8>()),
+// CHECK-NEXT:             strtod(
+// CHECK-NEXT:                 (flt.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 std::ptr::null_mut::<*mut i8>() as *mut *mut core::ffi::c_char,
+// CHECK-NEXT:             ) as f64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

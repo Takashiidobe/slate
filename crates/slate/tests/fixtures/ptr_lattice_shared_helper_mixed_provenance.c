@@ -32,7 +32,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let v: i32 = unsafe { *q };
 // CHECK-NEXT:     if do_free != 0 {
-// CHECK-NEXT:         unsafe { free(q as *mut ()) };
+// CHECK-NEXT:         unsafe { free((q as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
 // CHECK: {{^}}}

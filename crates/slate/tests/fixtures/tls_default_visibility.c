@@ -54,8 +54,6 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: Option<unsafe extern "C-unwind" fn(*mut ()) -> *mut ()>,
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut (),
 // CHECK-NEXT:     ) -> i32;
-// CHECK-NEXT:     fn pthread_join([[ARG_0]]: u64, [[ARG_1]]: *mut *mut ()) -> i32;
-// CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
@@ -74,13 +72,16 @@ int main(void) {
 // CHECK-NEXT: fn detect() -> i32 {
 // CHECK-NEXT:     if (unsafe { supported }) == -1 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             supported = (strlen(malloc_conf) as u32) as i32;
+// CHECK-NEXT:             supported = ((strlen(malloc_conf as *const core::ffi::c_char) as u64) as u32)
+// CHECK-NEXT:                 as i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { supported }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[thread_local]
 // CHECK-NEXT: static mut supported: i32 = -1;
+// CHECK-NEXT: use slate_support::pthread_join;
+// CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: extern "C-unwind" fn worker(argument: *mut ()) -> *mut () {
 // CHECK-NEXT:     let out: *mut i64 = argument as *mut i64;
 // CHECK-NEXT:     unsafe {
@@ -120,7 +121,12 @@ int main(void) {
 // CHECK-NEXT:             seen.0.as_mut_ptr() as *mut (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { pthread_join(thread, std::ptr::null_mut::<*mut ()>()) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         pthread_join(
+// CHECK-NEXT:             thread as u64,
+// CHECK-NEXT:             std::ptr::null_mut::<*mut ()>() as *mut *mut core::ffi::c_void,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

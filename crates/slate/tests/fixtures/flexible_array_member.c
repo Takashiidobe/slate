@@ -34,22 +34,23 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct FlexibleArray {
 // CHECK-NEXT:     count: u64,
 // CHECK-NEXT:     values: [i32; 0],
 // CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     if 8 != (std::mem::size_of::<u64>() as u64) {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let flexible: *mut FlexibleArray = (unsafe {
-// CHECK-NEXT:         malloc(8u64.wrapping_add(3u64.wrapping_mul(std::mem::size_of::<i32>() as u64)))
+// CHECK-NEXT:         malloc(
+// CHECK-NEXT:             8u64.wrapping_add(3u64.wrapping_mul(std::mem::size_of::<i32>() as u64))
+// CHECK-NEXT:                 as usize,
+// CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     }) as *mut FlexibleArray;
 // CHECK-NEXT:     if flexible.is_null() {
 // CHECK-NEXT:         return 2;
@@ -78,7 +79,7 @@ int main(void) {
 // CHECK-NEXT:         total = [[V_0]];
 // CHECK-NEXT:         index = index.wrapping_add(1);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { free(flexible as *mut ()) };
+// CHECK-NEXT:     unsafe { free((flexible as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     if total == 6 { 0 } else { 3 }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

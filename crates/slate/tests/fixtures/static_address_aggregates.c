@@ -37,9 +37,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn abs([[ARG_0:arg[0-9]+]]: i32) -> i32;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16([
@@ -173,6 +170,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     !unsafe { group.nested[1].value }.is_null() as i32
 // CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::abs;
 // CHECK-NEXT: static mut flag: i32 = 7;
 // CHECK-NEXT: static mut addresses: __SlateAlign16<[*mut (); 2]> = __SlateAlign16([
 // CHECK-NEXT:     (unsafe { std::ptr::addr_of_mut!(flag) }) as *mut (),

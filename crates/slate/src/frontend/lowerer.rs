@@ -27,6 +27,7 @@ mod functions;
 mod globals;
 mod intrinsics;
 mod intrinsics_table;
+mod libc_symbols;
 mod macro_sites;
 mod names;
 mod nested;
@@ -74,6 +75,8 @@ struct FunctionName {
 
 struct Tables<'m> {
     names: HashMap<BindingId, FunctionName>,
+    support_functions: HashMap<BindingId, libc_symbols::SupportFunction>,
+    support_globals: HashMap<BindingId, &'static crate::libc_catalog::Symbol>,
     intrinsics: HashMap<BindingId, &'static intrinsics_table::IntrinsicSignature>,
     bindings: HashMap<BindingId, String>,
     strings: HashMap<BindingId, Vec<u8>>,
@@ -670,6 +673,8 @@ impl<'m> ModuleLowerer<'m> {
             }
         }
         let mut tables = Tables {
+            support_functions: HashMap::new(),
+            support_globals: HashMap::new(),
             names,
             intrinsics: module
                 .functions
@@ -740,6 +745,7 @@ impl<'m> ModuleLowerer<'m> {
         if stdio_bindings {
             tables.bind_stdio(module);
         }
+        tables.bind_libc_symbols(module);
         Ok(Self {
             module,
             options,
@@ -764,6 +770,9 @@ impl<'m> ModuleLowerer<'m> {
                 || self.tables.stdio.android_streams == Some(global.variable.id)
                 || self.tables.stdio.unreachable.contains(&global.variable.id)
             {
+                continue;
+            }
+            if self.declare_support_global(global.variable.id) {
                 continue;
             }
             let name = binding_name(global.variable.id, &self.tables.bindings);
@@ -848,6 +857,9 @@ impl<'m> ModuleLowerer<'m> {
                     .builtin_name(function.value.id)
                     .is_some_and(values::open_coded_builtin)
             {
+                continue;
+            }
+            if self.declare_support_function(function.value.id) {
                 continue;
             }
             match self.lowerer().lower_extern(function) {

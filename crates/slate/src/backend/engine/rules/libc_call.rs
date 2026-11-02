@@ -847,7 +847,14 @@ impl NodeRule for LibcCall {
         let Some(slot) = call_slot_mut(kind) else {
             return false;
         };
-        *peel_call_head_mut(slot) = replacement;
+        if discards_result {
+            *slot = Expr::Unsafe(Box::new(Block {
+                stmts: Vec::new(),
+                tail: Some(Box::new(replacement)),
+            }));
+        } else {
+            *peel_call_head_mut(slot) = replacement;
+        }
         if let NodeKind::Let {
             init: Some(init), ..
         } = kind

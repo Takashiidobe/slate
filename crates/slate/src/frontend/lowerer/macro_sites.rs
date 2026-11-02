@@ -100,6 +100,12 @@ impl FunctionLowerer<'_, '_> {
         expansion: MacroExpansionId,
         evaluation: &ir::Evaluation,
     ) -> Result<Expr> {
+        if evaluation.statements.is_empty()
+            && let Some(constant) = self.support_constant(expansion, &evaluation.value)
+        {
+            self.dependencies.macro_expansions_seen.insert(expansion);
+            return constant;
+        }
         if self.macro_template_check {
             let stmts = self.lower_statement_list(&evaluation.statements)?;
             let value = self.lower_value(&evaluation.value)?;

@@ -87,14 +87,14 @@ int main(void) {
 // CHECK-NEXT:         "{} {} {} {} {} {}", unsafe { * q.add(3) }, unsafe { * r.add(7) }, ! m.is_null()
 // CHECK-NEXT:         as i32, ! a.is_null() as i32, read_first(raw), unsafe { * raw2.add(1) }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe { free(q as *mut ()) };
-// CHECK-NEXT:     unsafe { free(r as *mut ()) };
+// CHECK-NEXT:     unsafe { free((q as *mut ()) as *mut core::ffi::c_void) };
+// CHECK-NEXT:     unsafe { free((r as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     if !m.is_null() {
-// CHECK-NEXT:         unsafe { free(m as *mut ()) };
+// CHECK-NEXT:         unsafe { free((m as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { free(a as *mut ()) };
-// CHECK-NEXT:     unsafe { free(raw as *mut ()) };
-// CHECK-NEXT:     unsafe { free(raw2 as *mut ()) };
+// CHECK-NEXT:     unsafe { free((a as *mut ()) as *mut core::ffi::c_void) };
+// CHECK-NEXT:     unsafe { free((raw as *mut ()) as *mut core::ffi::c_void) };
+// CHECK-NEXT:     unsafe { free((raw2 as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     let free: Option<unsafe extern "C-unwind" fn(*mut ())> = Some(custom_free);
 // CHECK-NEXT:     let shadow: *mut i32 = make_shadow(1i32);
 // CHECK-NEXT:     unsafe { free.unwrap()(shadow as *mut ()) };

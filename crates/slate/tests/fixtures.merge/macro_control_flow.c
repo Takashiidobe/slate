@@ -128,7 +128,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_control_flow.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_control_flow: 32 items, 1 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_control_flow: 34 items, 6 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:bails: 2 variants
 // CHECK-NEXT:   spliced fn:guarded_buffer: 2 variants
 // CHECK-NEXT:   spliced fn:hidden_buffer_return: 2 variants
@@ -158,6 +158,17 @@ int main(void) {
 // CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: use slate_support::free;
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn free([[ARG_0:arg[0-9]+]]: *mut ());
+// CHECK-NEXT:     fn malloc([[ARG_0]]: size_t) -> *mut ();
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
@@ -278,21 +289,8 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { free(fresh as *mut ()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{} {}",
-// CHECK-NEXT:             unsafe { *hidden_null_return(std::ptr::addr_of_mut!(cell), 2i32) },
-// CHECK-NEXT:             hidden_null_return(std::ptr::addr_of_mut!(cell), -1i32).is_null() as i32
-// CHECK-NEXT:         );
-// CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{} {}",
-// CHECK-NEXT:             unsafe { *fresh.add(0) },
-// CHECK-NEXT:             hidden_buffer_return(-1i32).is_null() as i32
-// CHECK-NEXT:         );
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { free(fresh as *mut ()) };
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
@@ -333,9 +331,21 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d\n".as_ptr(), with_goto(1i32), with_goto(-1i32)) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { free(buffer as *mut ()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
+// CHECK-NEXT:         println!(
+// CHECK-NEXT:             "{} {}",
+// CHECK-NEXT:             unsafe { *hidden_null_return(std::ptr::addr_of_mut!(cell), 2i32) },
+// CHECK-NEXT:             hidden_null_return(std::ptr::addr_of_mut!(cell), -1i32).is_null() as i32
+// CHECK-NEXT:         );
+// CHECK-NEXT:         println!(
+// CHECK-NEXT:             "{} {}",
+// CHECK-NEXT:             unsafe { *fresh.add(0) },
+// CHECK-NEXT:             hidden_buffer_return(-1i32).is_null() as i32
+// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe { free((fresh as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:         println!("{} {}", value_position(-1i32), value_position(2i32));
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {} {}",
@@ -345,8 +355,8 @@ int main(void) {
 // CHECK-NEXT:         );
 // CHECK-NEXT:         println!("{} {}", in_loop(6i32), unsafe { trace });
 // CHECK-NEXT:         println!("{} {}", with_goto(1i32), with_goto(-1i32));
+// CHECK-NEXT:         unsafe { free((buffer as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { free(buffer as *mut ()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -387,7 +397,10 @@ int main(void) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut () = if n < 0 {
 // CHECK-NEXT:         std::ptr::null_mut::<()>()
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         unsafe { malloc((4 as c_ulong).wrapping_mul(std::mem::size_of::<i32>() as c_ulong)) }
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             malloc((4 as c_ulong).wrapping_mul(std::mem::size_of::<i32>() as c_ulong) as usize)
+// CHECK-NEXT:                 as *mut ()
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let [[V_0]]: *mut () = if n < 0 {
@@ -411,9 +424,10 @@ int main(void) {
 // CHECK-NEXT: fn hidden_buffer_return(n: i32) -> *mut i32 {
 // CHECK-NEXT:     NEG_NULL!(n);
 // CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     let p: *mut i32 =
-// CHECK-NEXT:         (unsafe { malloc((n as c_ulong).wrapping_mul(std::mem::size_of::<i32>() as c_ulong)) })
-// CHECK-NEXT:             as *mut i32;
+// CHECK-NEXT:     let p: *mut i32 = (unsafe {
+// CHECK-NEXT:         malloc((n as c_ulong).wrapping_mul(std::mem::size_of::<i32>() as c_ulong) as usize)
+// CHECK-NEXT:             as *mut ()
+// CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let p: *mut i32 =
 // CHECK-NEXT:         (unsafe { malloc(((n as i64) as u64).wrapping_mul(std::mem::size_of::<i32>() as u64)) })
@@ -605,14 +619,13 @@ int main(void) {
 // CHECK-NEXT: static mut trace: i32 = unsafe { std::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: size_t) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: use core::ffi::c_ulong;
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: use slate_support::size_t;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

@@ -64,15 +64,13 @@ int count_vowels(const char *text) {
 // CHECK-NEXT: use crate::__slate_types::registry;
 // CHECK-NEXT: use crate::__slate_types::registry_stats;
 // CHECK-NEXT: use crate::__slate_types::shape;
-// CHECK-EMPTY:
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::free;
+// CHECK-NEXT: use slate_support::malloc;
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn registry_new() -> *mut registry {
 // CHECK-NEXT:     let registry: *mut registry =
-// CHECK-NEXT:         (unsafe { malloc(std::mem::size_of::<registry>() as u64) }) as *mut registry;
+// CHECK-NEXT:         (unsafe { malloc((std::mem::size_of::<registry>() as u64) as usize) as *mut () })
+// CHECK-NEXT:             as *mut registry;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*registry).head = std::ptr::null_mut::<shape>();
 // CHECK-NEXT:     }
@@ -105,7 +103,7 @@ int count_vowels(const char *text) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn registry_free(registry: *mut registry) {
-// CHECK-NEXT:     unsafe { free(registry as *mut ()) };
+// CHECK-NEXT:     unsafe { free((registry as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn shape_move(shape: *mut shape, dx: i32, dy: i32) {

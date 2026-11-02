@@ -26,12 +26,12 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn consume_bin(buf: *mut i8, len: i32) -> i32 {
-// CHECK-NEXT:     unsafe { strlen(buf as *const i8) };
+// CHECK-NEXT:     unsafe { strlen((buf as *const i8) as *const core::ffi::c_char) as u64 };
 // CHECK-NEXT:     let mut score: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
 // CHECK-NEXT:         score += (((unsafe { *buf.offset(i as isize) }) as u8) as u32) as i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { free(buf as *mut ()) };
+// CHECK-NEXT:     unsafe { free((buf as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     score
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

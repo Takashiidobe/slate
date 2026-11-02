@@ -1806,6 +1806,7 @@ dependencies = [
  "slate-sysroots",
  "stacker",
  "syn 3.0.6",
+ "tempfile",
  "thiserror",
 ]
 
@@ -1829,6 +1830,8 @@ dependencies = [
  "object 0.37.3",
  "rayon",
  "serde_json",
+ "slate-c2rust",
+ "slate-parser",
  "tempfile",
 ]
 

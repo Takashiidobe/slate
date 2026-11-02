@@ -14,13 +14,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let p: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc((std::mem::size_of::<i32>() as u64).wrapping_mul(3))
+// CHECK-NEXT:         malloc((std::mem::size_of::<i32>() as u64).wrapping_mul(3) as usize) as *mut ()
 // CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p.add(0) = 1;
@@ -34,7 +32,7 @@ int main(void) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", (unsafe { * p.add(0) }) + unsafe { * p.add(1) } + unsafe { * p.add(2) }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe { free(p as *mut ()) };
+// CHECK-NEXT:     unsafe { free((p as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

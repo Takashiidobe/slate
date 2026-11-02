@@ -18,12 +18,10 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn atof([[ARG_0:arg[0-9]+]]: *const i8) -> f64;
-// CHECK-NEXT:     fn atoi([[ARG_0]]: *const i8) -> i32;
-// CHECK-NEXT:     fn atol([[ARG_0]]: *const i8) -> i64;
-// CHECK-NEXT:     fn atoll([[ARG_0]]: *const i8) -> i64;
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::atof;
+// CHECK-NEXT: use slate_support::atoi;
+// CHECK-NEXT: use slate_support::atol;
+// CHECK-NEXT: use slate_support::atoll;
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
@@ -38,13 +36,18 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), -9000000000000i64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%.2f\n".as_ptr(), 3.14) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%.2f\n".as_ptr(), 3.14 as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%.1f\n".as_ptr(), 2.0) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%.1f\n".as_ptr(), 2.0 as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%.2f\n".as_ptr(), atof(c"6.5garbage".as_ptr())) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%.2f\n".as_ptr(),
+// CHECK-NEXT:             atof(c"6.5garbage".as_ptr() as *const core::ffi::c_char) as f64,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

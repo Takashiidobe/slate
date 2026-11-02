@@ -77,7 +77,7 @@ int main(void) {
 // CHECK-NEXT:   duplicated fn:hand_written: 3 variants
 // CHECK-NEXT:   spliced fn:classify: 4 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit libc_spellings_address: 35 items, 33 gated, 2 duplicated functions
+// CHECK-NEXT: unit libc_spellings_address: 36 items, 34 gated, 2 duplicated functions
 // CHECK-NEXT:   duplicated fn:isdigit: 2 variants
 // CHECK-NEXT:   duplicated fn:isgraph: 2 variants
 // CHECK-NEXT:   spliced fn:count_digits: 6 variants
@@ -87,26 +87,11 @@ int main(void) {
 // CHECK-NEXT: exit: 0
 // CHECK-NEXT: file libc_spellings_address.rs
 // CHECK-NEXT: #[cfg(any(target_os = "macos", target_os = "freebsd"))]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn __error() -> *mut i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(any(target_os = "macos", target_os = "freebsd"))]
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: #[cfg(any(target_os = "macos", target_os = "freebsd"))]
 // CHECK-NEXT: use core::ffi::c_long;
 // CHECK-NEXT: #[cfg(any(target_os = "macos", target_os = "freebsd"))]
 // CHECK-NEXT: use core::ffi::c_ulong;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(any(windows, target_env = "musl"))]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn isgraph([[ARG_0:arg[0-9]+]]: i32) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(target_os = "android", target_os = "macos")))]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn isdigit([[ARG_0]]: i32) -> i32;
-// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_env = "gnu")]
 // CHECK-NEXT: unsafe extern "C" {
@@ -130,9 +115,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_os = "android")]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn __errno() -> *mut i32;
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::__errno;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_os = "freebsd")]
 // CHECK-NEXT: #[repr(C)]
@@ -204,10 +187,15 @@ int main(void) {
 // CHECK-NEXT:     static mut _ThreadRuneLocale: *const __SlateRecord_runetype_h_82;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(target_os = "freebsd")]
+// CHECK-NEXT: use slate_support::__error;
+// CHECK-NEXT: #[cfg(not(any(target_os = "android", target_os = "macos")))]
+// CHECK-NEXT: use slate_support::isdigit;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_os = "linux")]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn __errno_location() -> *mut i32;
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::__errno_location;
+// CHECK-NEXT: #[cfg(any(windows, target_env = "musl"))]
+// CHECK-NEXT: use slate_support::isgraph;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_os = "macos")]
 // CHECK-NEXT: #[repr(C)]
@@ -295,7 +283,8 @@ int main(void) {
 // CHECK-NEXT: #[cfg(target_os = "macos")]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut _DefaultRuneLocale: __SlateRecord_runetype_h_109;
-// CHECK-NEXT:     fn __maskrune([[ARG_0]]: i32, [[ARG_1:arg[0-9]+]]: c_ulong) -> i32;
+// CHECK-NEXT:     fn __maskrune([[ARG_0:arg[0-9]+]]: i32, [[ARG_1:arg[0-9]+]]: c_ulong) -> i32;
+// CHECK-NEXT:     fn __error() -> *mut i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -308,7 +297,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         #[cfg(target_os = "linux")]
 // CHECK-NEXT:         {
-// CHECK-NEXT:             *__errno_location() = 0;
+// CHECK-NEXT:             *(__errno_location() as *mut i32) = 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         #[cfg(windows)]
 // CHECK-NEXT:         {
@@ -316,11 +305,15 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         #[cfg(target_os = "android")]
 // CHECK-NEXT:         {
-// CHECK-NEXT:             *__errno() = 0;
+// CHECK-NEXT:             *(__errno() as *mut i32) = 0;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         #[cfg(any(target_os = "macos", target_os = "freebsd"))]
+// CHECK-NEXT:         #[cfg(target_os = "macos")]
 // CHECK-NEXT:         {
 // CHECK-NEXT:             *__error() = 0;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         #[cfg(target_os = "freebsd")]
+// CHECK-NEXT:         {
+// CHECK-NEXT:             *(__error() as *mut i32) = 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
@@ -329,7 +322,7 @@ int main(void) {
 // CHECK-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // CHECK-NEXT:                 isdigit as *const (),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }) + unsafe { *__errno_location() }
+// CHECK-NEXT:         }) + unsafe { *(__errno_location() as *mut i32) }
 // CHECK-NEXT:             + if (((unsafe { *unsafe { *__ctype_b_loc() }.add(97) }) as u32) as i32) & 32768i32 != 0
 // CHECK-NEXT:             {
 // CHECK-NEXT:                 1
@@ -344,7 +337,7 @@ int main(void) {
 // CHECK-NEXT:                 isdigit as *const (),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) + unsafe { *_errno() }
-// CHECK-NEXT:             + if (unsafe { isgraph(97i32) }) != 0 {
+// CHECK-NEXT:             + if (unsafe { isgraph(97i32 as i32) as i32 }) != 0 {
 // CHECK-NEXT:                 1
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
@@ -356,9 +349,9 @@ int main(void) {
 // CHECK-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // CHECK-NEXT:                 isdigit as *const (),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }) + unsafe { *__errno_location() }
+// CHECK-NEXT:         }) + unsafe { *(__errno_location() as *mut i32) }
 // CHECK-NEXT:             + if (if false {
-// CHECK-NEXT:                 unsafe { isgraph(97i32) }
+// CHECK-NEXT:                 unsafe { isgraph(97i32 as i32) as i32 }
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 (64u32 < 94) as i32
 // CHECK-NEXT:             }) != 0
@@ -370,7 +363,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_os = "android")]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         count(Some(isdigit)) + unsafe { *__errno() } + if isgraph(97i32) != 0 { 1 } else { 0 }
+// CHECK-NEXT:         count(Some(isdigit))
+// CHECK-NEXT:             + unsafe { *(__errno() as *mut i32) }
+// CHECK-NEXT:             + if isgraph(97i32) != 0 { 1 } else { 0 }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_os = "macos")]
 // CHECK-NEXT:     {
@@ -382,7 +377,7 @@ int main(void) {
 // CHECK-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // CHECK-NEXT:                 isdigit as *const (),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }) + unsafe { *__error() }
+// CHECK-NEXT:         }) + unsafe { *(__error() as *mut i32) }
 // CHECK-NEXT:             + if __sbistype(97i32, (2048 as c_ulong)) != 0 {
 // CHECK-NEXT:                 1
 // CHECK-NEXT:             } else {

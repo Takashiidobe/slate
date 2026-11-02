@@ -91,19 +91,17 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![allow(arithmetic_overflow, unconditional_panic)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn snprintf([[ARG_0:arg[0-9]+]]: *mut i8, [[ARG_1:arg[0-9]+]]: u64, [[ARG_2:arg[0-9]+]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
-// CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_vla_locals_c_7 {
 // CHECK-NEXT:     kind: i32,
 // CHECK-NEXT:     payload: i64,
+// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::snprintf;
+// CHECK-NEXT: use slate_support::memset;
+// CHECK-NEXT: use slate_support::strlen;
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn wrap_objects(argc: i32) -> i64 {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u64 = (argc as i64) as u64;
@@ -163,7 +161,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn format_port(port: i32) -> i32 {
 // CHECK-NEXT:     let length: i32 = unsafe {
-// CHECK-NEXT:         snprintf(std::ptr::null_mut::<i8>(), 0u64, c"%d".as_ptr(), port)
+// CHECK-NEXT:         snprintf(
+// CHECK-NEXT:             std::ptr::null_mut::<i8>() as *mut core::ffi::c_char,
+// CHECK-NEXT:             0u64 as usize,
+// CHECK-NEXT:             c"%d".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             port,
+// CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut [[V_0]]: u64 = ((length + 1) as i64) as u64;
 // CHECK-NEXT:     let mut buf: Vec<i8> = {
@@ -174,9 +177,16 @@ int main(void) {
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         snprintf(buf.as_mut_ptr() as *mut i8, [[V_0]].wrapping_mul(1), c"%d".as_ptr(), port)
+// CHECK-NEXT:         snprintf(
+// CHECK-NEXT:             (buf.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             [[V_0]].wrapping_mul(1) as usize,
+// CHECK-NEXT:             c"%d".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             port,
+// CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     };
-// CHECK-NEXT:     (((unsafe { strlen(buf.as_mut_ptr() as *const i8) }) as u32) as i32) * 1000
+// CHECK-NEXT:     (((unsafe {
+// CHECK-NEXT:         strlen((buf.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as u64
+// CHECK-NEXT:     }) as u32) as i32) * 1000
 // CHECK-NEXT:         + ((unsafe { *(buf.as_mut_ptr() as *mut i8).add(0) }) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn const_bound() -> i32 {
@@ -191,15 +201,17 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             buf.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:             120u8,
-// CHECK-NEXT:             [[V_0]].wrapping_mul(1).wrapping_sub(1) as usize,
+// CHECK-NEXT:             ((buf.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (120i32 as i32) as u8,
+// CHECK-NEXT:             ([[V_0]].wrapping_mul(1).wrapping_sub(1) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(buf.as_mut_ptr() as *mut i8).offset((bufflen - 1) as isize) = 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     ((unsafe { strlen(buf.as_mut_ptr() as *const i8) }) as u32) as i32
+// CHECK-NEXT:     ((unsafe {
+// CHECK-NEXT:         strlen((buf.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as u64
+// CHECK-NEXT:     }) as u32) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn matrix(rows: i32, cols: i32) -> i32 {
 // CHECK-NEXT:     let mut [[V_0]]: u64 = (rows as i64) as u64;

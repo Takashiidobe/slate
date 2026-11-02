@@ -1,37 +1,51 @@
 # slate-libc-gen
 
-Workspace tooling for the checked-in
-[`clib_records_table.rs`](../slate/src/backend/clib_records_table.rs), the
-`CLIB_RECORD_TYPES` table that maps system-header records to
-`slate_support` (the vendored libc) paths.
+Generate the checked-in libc catalogs used to canonicalize system declarations
+as `slate_support` paths for each translation target.
 
-Run from the workspace root, after building `slate-parser` and installing the
-sysroots for every target:
+Run from the workspace root after installing the target sysroots:
 
-```bash
+```sh
 cargo build --release -p slate-parser
-cargo run -p slate-libc-gen
+cargo run --release -p slate-libc-gen
 ```
 
-- Defaults: `--parser target/test-cache/release/slate-parser`,
-  `--libc crates/slate/vendor/libc`, `--out` the checked-in table,
-  `--report target/libc-gen-report.md`. Repeat `--target` to restrict the
-  matrix; the default is Linux (glibc x86_64/i686/aarch64/armv7, musl
-  x86_64/aarch64), Apple, FreeBSD and Android on their x86_64 and aarch64
-  triples. `--work <dir>` keeps the probe crates for inspection.
-- C side: `slate-parser ir -include <header>` per target and header keeps every
-  record in that header. Size, alignment and field offsets come from the IR;
-  typedef names are resolved to their record, so macOS `pthread_attr_t` and its
-  `_opaque_pthread_attr_t` record both map.
-- Rust side: a probe crate per target takes `size_of`, `align_of` and
-  `offset_of!` of each `libc::<name>` as `u32` statics, builds with
-  `--emit=obj`, and reads the values from the object file. Names or fields libc
-  lacks or hides are removed from the probe and treated as missing.
-- A name enters the table only if, on every target where C defines it, libc
-  defines it with the same size and alignment, and every non-reserved field
-  matches by name and offset. Reserved (`_`-prefixed) fields are ignored unless
-  they are aggregates reached through header macros (`sigaction`, `siginfo_t`).
-  Types with no common non-reserved field are opaque.
-- The report lists every exclusion with the target and reason. Layout and field
-  disagreements between a header and libc are candidates for upstream libc
-  reports; check them against a native compiler first.
+- `--target <triple>`: restrict the matrix; repeat for multiple targets. The
+  default covers the supported Linux, Android, macOS, FreeBSD and MSVC Windows targets.
+- `--libc <dir>`: libc source to probe; defaults to `crates/slate/vendor/libc`.
+- `--out <file>`: record catalog; defaults to
+  `crates/slate/src/backend/clib_records_table.rs`.
+- `--symbols-out <file>`: function, global, scalar typedef and integer constant
+  catalog; defaults to `crates/slate/src/libc_symbols_table.rs`.
+- `--report <file>`: accepted mappings and exclusions with reasons; defaults to
+  `target/libc-gen-report.md`.
+- `--work <dir>`: retain the probe crates and object files for inspection.
+
+Use alternate output files for a partial matrix to avoid replacing the full
+checked-in catalogs. Regenerate both catalogs after updating libc or sysroots.
+
+Mappings use the C translation target, independently of the machine running
+Slate. Identical mappings share a target group; a mismatch excludes only the
+affected target. Unprobed targets retain their local declarations.
+
+Records must match size, alignment and public field offsets. Reserved fields
+are ignored unless header macros reach through an aggregate. Scalar typedefs
+must match width, alignment and signedness. Function and global probes must
+compile with the C declaration's type and refer to the same linker symbol.
+Integer constants must match by name and value. Lowering requires system-header
+macro references preserved by sema, rather than provenance on expanded literals.
+The checked-in catalogs contain names, canonical destinations
+and target eligibility; compatibility details stay in the generator report.
+
+The vendored libc defaults to FreeBSD 15 and to 64-bit file offsets and time on
+32-bit glibc. Header probes use `_FILE_OFFSET_BITS=64` and `_TIME_BITS=64` on
+those glibc targets. Workspace builds select the same libc settings. Explicit
+libc version and time-width overrides take precedence.
+
+Translation honors each project's compiler flags. A source declaration using
+another ABI must select compatible libc settings before using these mappings.
+
+The report identifies missing bindings, unverified signature types, ABI
+attributes, differing linker names, and incompatible layouts or values. Keep
+local declarations for these cases; check suspected libc bugs against the
+platform compiler before reporting upstream.

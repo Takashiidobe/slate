@@ -147,7 +147,6 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: Option<unsafe extern "C-unwind" fn(*mut ()) -> *mut ()>,
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut (),
 // CHECK-NEXT:     ) -> i32;
-// CHECK-NEXT:     fn pthread_join([[ARG_0]]: u64, [[ARG_1]]: *mut *mut ()) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
@@ -176,6 +175,7 @@ int main(void) {
 // CHECK-NEXT: static mut entries: __SlateAlign16<[used_memory_entry; 4]> = __SlateAlign16(unsafe {
 // CHECK-NEXT:     std::mem::zeroed()
 // CHECK-NEXT: });
+// CHECK-NEXT: use slate_support::pthread_join;
 // CHECK-NEXT: extern "C-unwind" fn worker(arg: *mut ()) -> *mut () {
 // CHECK-NEXT:     let set: *mut vset = arg as *mut vset;
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..10000i32 {
@@ -308,7 +308,12 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..4i32 {
-// CHECK-NEXT:         unsafe { pthread_join(threads.0[i as usize], std::ptr::null_mut::<*mut ()>()) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             pthread_join(
+// CHECK-NEXT:                 threads.0[i as usize] as u64,
+// CHECK-NEXT:                 std::ptr::null_mut::<*mut ()>() as *mut *mut core::ffi::c_void,
+// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

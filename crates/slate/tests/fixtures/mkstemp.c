@@ -16,18 +16,20 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn mkstemp([[ARG_0:arg[0-9]+]]: *mut i8) -> i32;
-// CHECK-NEXT:     fn close([[ARG_0]]: i32) -> i32;
-// CHECK-NEXT:     fn unlink([[ARG_0]]: *const i8) -> i32;
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::mkstemp;
+// CHECK-NEXT: use slate_support::close;
+// CHECK-NEXT: use slate_support::unlink;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut path: [i8; 13] = [115, 108, 97, 116, 101, 45, 88, 88, 88, 88, 88, 88, 0];
-// CHECK-NEXT:     let fd: i32 = unsafe { mkstemp(path.as_mut_ptr() as *mut i8) };
+// CHECK-NEXT:     let fd: i32 = unsafe {
+// CHECK-NEXT:         mkstemp((path.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{}", (fd >= 0) as i32);
 // CHECK-NEXT:     if fd >= 0 {
-// CHECK-NEXT:         unsafe { close(fd) };
-// CHECK-NEXT:         unsafe { unlink(path.as_mut_ptr() as *const i8) };
+// CHECK-NEXT:         unsafe { close(fd as i32) as i32 };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             unlink((path.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as i32
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

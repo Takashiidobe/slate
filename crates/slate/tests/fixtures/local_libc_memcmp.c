@@ -25,9 +25,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn memcmp([[ARG_0:arg[0-9]+]]: *const (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> i32;
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::memcmp;
 // CHECK-NEXT: fn cmp_bytes(a: &[u8], b: &[u8]) -> i32 {
 // CHECK-NEXT:     let mut sa: i32 = 0;
 // CHECK-NEXT:     let mut sb: i32 = 0;
@@ -37,7 +35,10 @@ int main(void) {
 // CHECK-NEXT:     for i in 0..b.len() as i32 {
 // CHECK-NEXT:         sb += ((unsafe { b[i as usize] }) as u32) as i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let order: i32 = unsafe { a[0usize..3 as usize].cmp(&b[0usize..3 as usize]) as i32 };
+// CHECK-NEXT:     let order: i32 = unsafe {
+// CHECK-NEXT:         a[0usize..(3u64 as usize) as usize].cmp(&b[0usize..(3u64 as usize) as usize])
+// CHECK-NEXT:             as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let sign: i32 = ((order > 0) as i32) - ((order < 0) as i32);
 // CHECK-NEXT:     sign * 1000 + (sa - sb)
 // CHECK-NEXT: }

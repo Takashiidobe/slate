@@ -14,3 +14,5 @@ pub mod project_merge;
 pub mod project_plan;
 pub mod project_splice;
 pub mod target;
+
+pub mod libc_catalog;

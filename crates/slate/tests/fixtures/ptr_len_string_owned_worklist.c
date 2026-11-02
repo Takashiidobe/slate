@@ -27,14 +27,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
+// CHECK-NEXT: use slate_support::memcpy;
+// CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: fn consume_text(mut text: String) -> i32 {
-// CHECK-NEXT:     unsafe { strlen(text.as_mut_ptr() as *const i8) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         strlen((text.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as u64
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut score: i32 = 0;
 // CHECK-NEXT:     for i in 0..text.len() as i32 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = score;
@@ -50,13 +50,15 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let len: i32 = 4;
 // CHECK-NEXT:     let text: *mut i8 = (unsafe {
-// CHECK-NEXT:         malloc(((len as i64) as u64).wrapping_mul(std::mem::size_of::<i8>() as u64))
+// CHECK-NEXT:         malloc(
+// CHECK-NEXT:             ((len as i64) as u64).wrapping_mul(std::mem::size_of::<i8>() as u64) as usize,
+// CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     }) as *mut i8;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             c"abc".as_ptr() as *const u8,
-// CHECK-NEXT:             text as *mut u8,
-// CHECK-NEXT:             ((len as i64) as u64) as usize,
+// CHECK-NEXT:             ((b"abc\0".as_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((text as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (((len as i64) as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let score: i32 = forward_text_owner(unsafe {

@@ -38,14 +38,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn memcpy([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C, align(16))]
+// CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: #[repr(C, align(16))]
-// CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut quiet_f: f32 = f32::from_bits(0x7fc00000);
 // CHECK-NEXT: static mut quiet_payload_f: f32 = f32::from_bits(0x7fc00015);
 // CHECK-NEXT: static mut signaling_f: f32 = f32::from_bits(0x7fa00000);
@@ -58,13 +55,16 @@ int main(void) {
 // CHECK-NEXT:     f64::from_bits(0x7ff0000000000001),
 // CHECK-NEXT:     f64::from_bits(0x7ff8000000000002),
 // CHECK-NEXT: ]);
+// CHECK-NEXT: use slate_support::memcpy;
 // CHECK-NEXT: fn bits_f(mut value: f32) -> u32 {
 // CHECK-NEXT:     let mut bits: u32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(value) as *const ()) as *const u8,
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(bits) as *mut ()) as *mut u8,
-// CHECK-NEXT:             std::mem::size_of::<u32>(),
+// CHECK-NEXT:             ((std::ptr::addr_of_mut!(value) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                 as *const u8,
+// CHECK-NEXT:             ((std::ptr::addr_of_mut!(bits) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
+// CHECK-NEXT:             ((std::mem::size_of::<u32>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     bits
@@ -73,9 +73,11 @@ int main(void) {
 // CHECK-NEXT:     let mut bits: u64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(value) as *const ()) as *const u8,
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(bits) as *mut ()) as *mut u8,
-// CHECK-NEXT:             std::mem::size_of::<u64>(),
+// CHECK-NEXT:             ((std::ptr::addr_of_mut!(value) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                 as *const u8,
+// CHECK-NEXT:             ((std::ptr::addr_of_mut!(bits) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
+// CHECK-NEXT:             ((std::mem::size_of::<u64>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     bits

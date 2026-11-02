@@ -59,7 +59,6 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT: }
 // AARCH64-UNKNOWN-LINUX-GNU-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn memcpy([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
 // I686-UNKNOWN-LINUX-GNU-NEXT:     fn memcpy([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u32) -> *mut ();
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -490,6 +489,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%s %a %a\n".as_ptr(), name, z.re, z.im) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
+// X86_64-UNKNOWN-LINUX-GNU-EMPTY:
+// X86_64-UNKNOWN-LINUX-GNU-NEXT: use slate_support::memcpy;
 // CHECK-EMPTY:
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: fn showf(name: *const i8, z: num_complex::Complex<f32>) {
 // I686-UNKNOWN-LINUX-GNU-NEXT: fn showf(name: *const i8, z: num_complex::Complex<f32>) {
@@ -593,13 +594,15 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         let mut bits: [u64; 2] = [0u64; 2];
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             std::ptr::copy_nonoverlapping(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 parts.0.as_mut_ptr() as *const u8,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 bits.0.as_mut_ptr() as *mut u8,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((parts.0.as_mut_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((bits.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((std::mem::size_of::<[u64; 2]>() as u64) as usize) as usize,
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 parts.as_mut_ptr() as *const u8,
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 bits.as_mut_ptr() as *mut u8,
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 std::mem::size_of::<[u64; 2]>(),
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 parts.as_mut_ptr() as *const u8,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 bits.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:                 std::mem::size_of::<[u64; 2]>(),
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 std::mem::size_of::<[u64; 2]>(),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         hash = hash
@@ -644,9 +647,15 @@ int main(void) {
 // CHECK-NEXT:         let mut bitsf: [u32; 2] = [0u32; 2];
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:                 partsf.as_mut_ptr() as *const u8,
-// CHECK-NEXT:                 bitsf.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:                 std::mem::size_of::<[u32; 2]>(),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((partsf.as_mut_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((bitsf.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((std::mem::size_of::<[u32; 2]>() as u64) as usize) as usize,
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 partsf.as_mut_ptr() as *const u8,
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 bitsf.as_mut_ptr() as *mut u8,
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 std::mem::size_of::<[u32; 2]>(),
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 partsf.as_mut_ptr() as *const u8,
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 bitsf.as_mut_ptr() as *mut u8,
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 std::mem::size_of::<[u32; 2]>(),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         hashf = hashf

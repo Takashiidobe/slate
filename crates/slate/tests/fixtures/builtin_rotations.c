@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     loop {
-// CHECK-NEXT:         let x: u8 = 147u8;
+// CHECK-NEXT:         let x: u8 = 147;
 // CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16([
 // CHECK-NEXT:             0u32, 1u32, 7u32, 8u32, 9u32, 255u32,
 // CHECK-NEXT:         ]);
@@ -66,7 +66,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     loop {
-// CHECK-NEXT:         let x: u16 = 37175u16;
+// CHECK-NEXT:         let x: u16 = 37175;
 // CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16([
 // CHECK-NEXT:             0u32, 1u32, 15u32, 16u32, 17u32, 255u32,
 // CHECK-NEXT:         ]);

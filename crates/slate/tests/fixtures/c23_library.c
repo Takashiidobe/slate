@@ -159,35 +159,11 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn snprintf([[ARG_0:arg[0-9]+]]: *mut i8, [[ARG_1:arg[0-9]+]]: u64, [[ARG_2:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     #[link_name = "__isoc23_sscanf"]
-// CHECK-NEXT:     fn sscanf([[ARG_0]]: *const i8, [[ARG_1]]: *const i8, ...) -> i32;
-// CHECK-NEXT:     fn strfromd([[ARG_0]]: *mut i8, [[ARG_1]]: u64, [[ARG_2]]: *const i8, [[ARG_3:arg[0-9]+]]: f64) -> i32;
+// CHECK-NEXT:     fn sscanf([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: *const i8, ...) -> i32;
+// CHECK-NEXT:     fn strfromd([[ARG_0]]: *mut i8, [[ARG_1]]: u64, [[ARG_2:arg[0-9]+]]: *const i8, [[ARG_3:arg[0-9]+]]: f64) -> i32;
 // CHECK-NEXT:     fn strfromf([[ARG_0]]: *mut i8, [[ARG_1]]: u64, [[ARG_2]]: *const i8, [[ARG_3]]: f32) -> i32;
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT:     fn memccpy([[ARG_0]]: *mut (), [[ARG_1]]: *const (), [[ARG_2]]: i32, [[ARG_3]]: u64) -> *mut ();
 // CHECK-NEXT:     fn memset_explicit([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
-// CHECK-NEXT:     fn memchr([[ARG_0]]: *const (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
-// CHECK-NEXT:     fn strcmp([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> i32;
-// CHECK-NEXT:     fn strdup([[ARG_0]]: *const i8) -> *mut i8;
-// CHECK-NEXT:     fn strndup([[ARG_0]]: *const i8, [[ARG_1]]: u64) -> *mut i8;
-// CHECK-NEXT:     fn strchr([[ARG_0]]: *const i8, [[ARG_1]]: i32) -> *mut i8;
-// CHECK-NEXT:     fn strstr([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> *mut i8;
-// CHECK-NEXT:     fn strftime(
-// CHECK-NEXT:         [[ARG_0]]: *mut i8,
-// CHECK-NEXT:         [[ARG_1]]: u64,
-// CHECK-NEXT:         [[ARG_2]]: *const i8,
-// CHECK-NEXT:         [[ARG_3]]: *const slate_support::tm,
-// CHECK-NEXT:     ) -> u64;
-// CHECK-NEXT:     fn gmtime_r(
-// CHECK-NEXT:         [[ARG_0]]: *const i64,
-// CHECK-NEXT:         [[ARG_1]]: *mut slate_support::tm,
-// CHECK-NEXT:     ) -> *mut slate_support::tm;
-// CHECK-NEXT:     fn localtime_r(
-// CHECK-NEXT:         [[ARG_0]]: *const i64,
-// CHECK-NEXT:         [[ARG_1]]: *mut slate_support::tm,
-// CHECK-NEXT:     ) -> *mut slate_support::tm;
-// CHECK-NEXT:     fn timegm([[ARG_0]]: *mut slate_support::tm) -> i64;
 // CHECK-NEXT:     fn timespec_getres([[ARG_0]]: *mut slate_support::timespec, [[ARG_1]]: i32) -> i32;
 // CHECK-NEXT:     fn mbrtoc8(
 // CHECK-NEXT:         [[ARG_0]]: *mut u8,
@@ -584,11 +560,11 @@ int main(void) {
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     let stop: *mut () = unsafe {
 // CHECK-NEXT:         memccpy(
-// CHECK-NEXT:             destination.as_mut_ptr() as *mut (),
-// CHECK-NEXT:             source.as_mut_ptr() as *const (),
-// CHECK-NEXT:             99i32,
-// CHECK-NEXT:             6u64,
-// CHECK-NEXT:         )
+// CHECK-NEXT:             (destination.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void,
+// CHECK-NEXT:             (source.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:             99i32 as i32,
+// CHECK-NEXT:             6u64 as usize,
+// CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = (stop
 // CHECK-NEXT:         == ((unsafe { (destination.as_mut_ptr() as *mut i8).add(3) }) as *mut ())
@@ -601,46 +577,97 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     total += ((secret[0] as i32) == 0 && (secret[5] as i32) == 0) as i32;
-// CHECK-NEXT:     let first_copy: *mut i8 = unsafe { strdup(c"c23".as_ptr()) };
-// CHECK-NEXT:     let second_copy: *mut i8 = unsafe { strndup(c"library".as_ptr(), 3u64) };
+// CHECK-NEXT:     let first_copy: *mut i8 = unsafe {
+// CHECK-NEXT:         strdup(c"c23".as_ptr() as *const core::ffi::c_char) as *mut i8
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let second_copy: *mut i8 = unsafe {
+// CHECK-NEXT:         strndup(c"library".as_ptr() as *const core::ffi::c_char, 3u64 as usize)
+// CHECK-NEXT:             as *mut i8
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_4]]
 // CHECK-NEXT:         + ((!first_copy.is_null()
-// CHECK-NEXT:             && (unsafe { strcmp(first_copy as *const i8, c"c23".as_ptr()) }) == 0)
-// CHECK-NEXT:             as i32);
+// CHECK-NEXT:             && (unsafe {
+// CHECK-NEXT:                 strcmp(
+// CHECK-NEXT:                     (first_copy as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                     c"c23".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:                 ) as i32
+// CHECK-NEXT:             }) == 0) as i32);
 // CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_5]]
 // CHECK-NEXT:         + ((!second_copy.is_null()
-// CHECK-NEXT:             && (unsafe { strcmp(second_copy as *const i8, c"lib".as_ptr()) }) == 0)
-// CHECK-NEXT:             as i32);
-// CHECK-NEXT:     unsafe { free(first_copy as *mut ()) };
-// CHECK-NEXT:     unsafe { free(second_copy as *mut ()) };
-// CHECK-NEXT:     let const_hit: *const i8 = (unsafe { strchr(phrase, 119i32) }) as *const i8;
+// CHECK-NEXT:             && (unsafe {
+// CHECK-NEXT:                 strcmp(
+// CHECK-NEXT:                     (second_copy as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                     c"lib".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:                 ) as i32
+// CHECK-NEXT:             }) == 0) as i32);
+// CHECK-NEXT:     unsafe { free((first_copy as *mut ()) as *mut core::ffi::c_void) };
+// CHECK-NEXT:     unsafe { free((second_copy as *mut ()) as *mut core::ffi::c_void) };
+// CHECK-NEXT:     let const_hit: *const i8 = (unsafe {
+// CHECK-NEXT:         strchr(phrase as *const core::ffi::c_char, 119i32 as i32) as *mut i8
+// CHECK-NEXT:     }) as *const i8;
 // CHECK-NEXT:     let mut_hit: *mut i8 = unsafe {
-// CHECK-NEXT:         strchr(mutable_phrase.as_mut_ptr() as *const i8, 119i32)
+// CHECK-NEXT:         strchr(
+// CHECK-NEXT:             (mutable_phrase.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:             119i32 as i32,
+// CHECK-NEXT:         ) as *mut i8
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_2]]: i32 = total;
 // CHECK-NEXT:     total = [[V_2]] + ((!const_hit.is_null() && !mut_hit.is_null()) as i32);
 // CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_6]]
-// CHECK-NEXT:         + (!((unsafe { memchr(phrase as *const (), 111i32, 11u64) }) as *const ())
+// CHECK-NEXT:         + (!((unsafe {
+// CHECK-NEXT:             memchr(
+// CHECK-NEXT:                 (phrase as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:                 111i32 as i32,
+// CHECK-NEXT:                 11u64 as usize,
+// CHECK-NEXT:             ) as *mut ()
+// CHECK-NEXT:         }) as *const ())
 // CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_7]]
-// CHECK-NEXT:         + (!unsafe { memchr(mutable_phrase.as_mut_ptr() as *const (), 111i32, 11u64) }
+// CHECK-NEXT:         + (!unsafe {
+// CHECK-NEXT:             memchr(
+// CHECK-NEXT:                 (mutable_phrase.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:                 111i32 as i32,
+// CHECK-NEXT:                 11u64 as usize,
+// CHECK-NEXT:             ) as *mut ()
+// CHECK-NEXT:         }
 // CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_8]]
-// CHECK-NEXT:         + (!((unsafe { strstr(phrase, c"world".as_ptr()) }) as *const i8).is_null()
-// CHECK-NEXT:             as i32);
+// CHECK-NEXT:         + (!((unsafe {
+// CHECK-NEXT:             strstr(
+// CHECK-NEXT:                 phrase as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"world".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as *mut i8
+// CHECK-NEXT:         }) as *const i8)
+// CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_9]]
 // CHECK-NEXT:         + (!unsafe {
-// CHECK-NEXT:             strstr(mutable_phrase.as_mut_ptr() as *const i8, c"world".as_ptr())
+// CHECK-NEXT:             strstr(
+// CHECK-NEXT:                 (mutable_phrase.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"world".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as *mut i8
 // CHECK-NEXT:         }
 // CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::snprintf;
+// CHECK-NEXT: use slate_support::free;
+// CHECK-NEXT: use slate_support::memccpy;
+// CHECK-NEXT: use slate_support::memchr;
+// CHECK-NEXT: use slate_support::strcmp;
+// CHECK-NEXT: use slate_support::strdup;
+// CHECK-NEXT: use slate_support::strndup;
+// CHECK-NEXT: use slate_support::strchr;
+// CHECK-NEXT: use slate_support::strstr;
+// CHECK-NEXT: use slate_support::strftime;
+// CHECK-NEXT: use slate_support::gmtime_r;
+// CHECK-NEXT: use slate_support::localtime_r;
+// CHECK-NEXT: use slate_support::timegm;
 // CHECK-NEXT: fn c23_time() -> i32 {
 // CHECK-NEXT:     let mut timestamp: i64 = 0;
 // CHECK-NEXT:     let mut utc: slate_support::tm = {
@@ -665,15 +692,15 @@ int main(void) {
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut total: i32 = ((unsafe {
 // CHECK-NEXT:         gmtime_r(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(timestamp) as *const i64,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(utc),
-// CHECK-NEXT:         )
+// CHECK-NEXT:             (std::ptr::addr_of_mut!(timestamp) as *const i64) as *const i64,
+// CHECK-NEXT:             std::ptr::addr_of_mut!(utc) as *mut slate_support::tm,
+// CHECK-NEXT:         ) as *mut slate_support::tm
 // CHECK-NEXT:     }) == std::ptr::addr_of_mut!(utc)) as i32;
 // CHECK-NEXT:     let [[V_0]]: i32 = ((unsafe {
 // CHECK-NEXT:         localtime_r(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(timestamp) as *const i64,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(local),
-// CHECK-NEXT:         )
+// CHECK-NEXT:             (std::ptr::addr_of_mut!(timestamp) as *const i64) as *const i64,
+// CHECK-NEXT:             std::ptr::addr_of_mut!(local) as *mut slate_support::tm,
+// CHECK-NEXT:         ) as *mut slate_support::tm
 // CHECK-NEXT:     }) == std::ptr::addr_of_mut!(local)) as i32;
 // CHECK-NEXT:     total += [[V_0]];
 // CHECK-NEXT:     let [[V_1]]: i32 = ((unsafe {
@@ -681,21 +708,28 @@ int main(void) {
 // CHECK-NEXT:     }) == 1) as i32;
 // CHECK-NEXT:     total += [[V_1]];
 // CHECK-NEXT:     total += (resolution.tv_sec > 0 || resolution.tv_nsec > 0) as i32;
-// CHECK-NEXT:     let [[V_6]]: i32 = ((unsafe { timegm(std::ptr::addr_of_mut!(utc)) }) == 0) as i32;
+// CHECK-NEXT:     let [[V_6]]: i32 = ((unsafe {
+// CHECK-NEXT:         timegm(std::ptr::addr_of_mut!(utc) as *mut slate_support::tm) as i64
+// CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_6]];
 // CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         strftime(
-// CHECK-NEXT:             month.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             std::mem::size_of::<[i8; 32]>() as u64,
-// CHECK-NEXT:             c"%OB".as_ptr(),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(utc) as *const slate_support::tm,
-// CHECK-NEXT:         )
+// CHECK-NEXT:             (month.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             (std::mem::size_of::<[i8; 32]>() as u64) as usize,
+// CHECK-NEXT:             c"%OB".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             (std::ptr::addr_of_mut!(utc) as *const slate_support::tm)
+// CHECK-NEXT:                 as *const slate_support::tm,
+// CHECK-NEXT:         ) as u64
 // CHECK-NEXT:     }) == 7) as i32;
 // CHECK-NEXT:     total += [[V_10]];
 // CHECK-NEXT:     let [[V_9]]: i32 = total;
 // CHECK-NEXT:     total = [[V_9]]
-// CHECK-NEXT:         + (((unsafe { strcmp(month.0.as_mut_ptr() as *const i8, c"January".as_ptr()) })
-// CHECK-NEXT:             == 0) as i32);
+// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:             strcmp(
+// CHECK-NEXT:                 (month.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"January".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:         }) == 0) as i32);
 // CHECK-NEXT:     let [[V_11:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         wcsftime(
 // CHECK-NEXT:             wide_month.0.as_mut_ptr() as *mut i32,
@@ -767,13 +801,13 @@ int main(void) {
 // CHECK-NEXT:     let mut fast_value: u64 = 0;
 // CHECK-NEXT:     let written: i32 = unsafe {
 // CHECK-NEXT:         snprintf(
-// CHECK-NEXT:             output.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             std::mem::size_of::<[i8; 64]>() as u64,
-// CHECK-NEXT:             c"%b %w16u %wf16u".as_ptr(),
+// CHECK-NEXT:             (output.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             (std::mem::size_of::<[i8; 64]>() as u64) as usize,
+// CHECK-NEXT:             c"%b %w16u %wf16u".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:             13u32,
 // CHECK-NEXT:             21i32,
 // CHECK-NEXT:             34u64,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let scanned: i32 = unsafe {
 // CHECK-NEXT:         sscanf(
@@ -810,18 +844,31 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:     written
 // CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             strcmp(output.0.as_mut_ptr() as *const i8, c"1101 21 34".as_ptr())
+// CHECK-NEXT:             strcmp(
+// CHECK-NEXT:                 (output.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"1101 21 34".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         }) == 0) as i32) + scanned + ((binary_value == 11) as i32)
 // CHECK-NEXT:         + ((((exact_value as u32) as i32) == 55) as i32) + ((fast_value == 89) as i32)
 // CHECK-NEXT:         + floating_written
 // CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             strcmp(float_output.0.as_mut_ptr() as *const i8, c"1.5".as_ptr())
+// CHECK-NEXT:             strcmp(
+// CHECK-NEXT:                 (float_output.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"1.5".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         }) == 0) as i32)
 // CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             strcmp(double_output.0.as_mut_ptr() as *const i8, c"2.5".as_ptr())
+// CHECK-NEXT:             strcmp(
+// CHECK-NEXT:                 (double_output.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"2.5".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         }) == 0) as i32)
 // CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             strcmp(long_double_output.0.as_mut_ptr() as *const i8, c"3.5".as_ptr())
+// CHECK-NEXT:             strcmp(
+// CHECK-NEXT:                 (long_double_output.0.as_mut_ptr() as *const i8)
+// CHECK-NEXT:                     as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"3.5".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         }) == 0) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c23_limits() -> i32 {

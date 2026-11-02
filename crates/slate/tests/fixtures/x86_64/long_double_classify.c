@@ -77,8 +77,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn memcpy([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -258,6 +256,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: use slate_support::memcpy;
+// CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: fn string2ld(s: *const i8, slen: u64, dp: *mut LongDouble) -> i32 {
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     let mut eptr: *mut i8 = unsafe { std::mem::zeroed() };
@@ -266,9 +266,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             s as *const u8,
-// CHECK-NEXT:             buf.0.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:             slen as usize,
+// CHECK-NEXT:             ((s as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((buf.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (slen as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     buf.0[slen as usize] = 0;
@@ -301,18 +301,20 @@ int main(void) {
 // CHECK-NEXT:         if value > __slate_f80_from_i32(0i32) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:                     c"inf".as_ptr() as *const u8,
-// CHECK-NEXT:                     buf as *mut u8,
-// CHECK-NEXT:                     3 as usize,
+// CHECK-NEXT:                     ((b"inf\0".as_ptr() as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                         as *const u8,
+// CHECK-NEXT:                     ((buf as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:                     (3u64 as usize) as usize,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
 // CHECK-NEXT:             return 3;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:                 c"-inf".as_ptr() as *const u8,
-// CHECK-NEXT:                 buf as *mut u8,
-// CHECK-NEXT:                 4 as usize,
+// CHECK-NEXT:                 ((b"-inf\0".as_ptr() as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                     as *const u8,
+// CHECK-NEXT:                 ((buf as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:                 (4u64 as usize) as usize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         return 4;
@@ -413,7 +415,7 @@ int main(void) {
 // CHECK-NEXT:         let mut d: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]);
 // CHECK-NEXT:         let ok: i32 = string2ld(
 // CHECK-NEXT:             inputs.0[i as usize],
-// CHECK-NEXT:             unsafe { strlen(inputs.0[i as usize]) },
+// CHECK-NEXT:             unsafe { strlen(inputs.0[i as usize] as *const core::ffi::c_char) as u64 },
 // CHECK-NEXT:             std::ptr::addr_of_mut!(d),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         let mut out: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);

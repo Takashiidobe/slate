@@ -35,16 +35,16 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: fn compute(flag: i32) -> i32 {
 // CHECK-NEXT:     let mut p: *mut i32 = std::ptr::null_mut::<i32>();
 // CHECK-NEXT:     let mut q: *mut i32 = std::ptr::null_mut::<i32>();
 // CHECK-NEXT:     if flag != 0 {
-// CHECK-NEXT:         p = (unsafe { malloc(std::mem::size_of::<i32>() as u64) }) as *mut i32;
-// CHECK-NEXT:         q = (unsafe { malloc(std::mem::size_of::<i32>() as u64) }) as *mut i32;
+// CHECK-NEXT:         p = (unsafe { malloc((std::mem::size_of::<i32>() as u64) as usize) as *mut () })
+// CHECK-NEXT:             as *mut i32;
+// CHECK-NEXT:         q = (unsafe { malloc((std::mem::size_of::<i32>() as u64) as usize) as *mut () })
+// CHECK-NEXT:             as *mut i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if p == q {
 // CHECK-NEXT:         println!("same");
@@ -56,14 +56,14 @@ int main(void) {
 // CHECK-NEXT:             *p = 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         println!("{}", unsafe { * p });
-// CHECK-NEXT:         unsafe { free(p as *mut ()) };
+// CHECK-NEXT:         unsafe { free((p as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if !q.is_null() {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *q = 2;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         println!("{}", unsafe { * q });
-// CHECK-NEXT:         unsafe { free(q as *mut ()) };
+// CHECK-NEXT:         unsafe { free((q as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

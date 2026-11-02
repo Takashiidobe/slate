@@ -381,10 +381,14 @@ pub(super) fn kept_expansions(module: &mut Module) -> HashSet<MacroExpansionId> 
             rejections.entry(*id).or_insert(reason);
         }
     }
-    let kept = seen
+    let mut kept: HashSet<_> = seen
         .into_iter()
         .filter(|id| !rejections.contains_key(id))
         .collect();
+    for constant in kept_constants(module) {
+        rejections.remove(&constant);
+        kept.insert(constant);
+    }
     module.macro_rejections = rejections;
     kept
 }
@@ -406,4 +410,30 @@ pub(super) fn definition_unfit(definition: &MacroDefinition) -> Option<&'static 
     } else {
         None
     }
+}
+
+pub(super) fn kept_constants(module: &mut Module) -> HashSet<MacroExpansionId> {
+    module
+        .macros
+        .expansions
+        .iter()
+        .enumerate()
+        .filter_map(|(index, expansion)| {
+            let id = MacroExpansionId(index as u32);
+            let definition = module.macros.definition(id);
+            (definition.parameters.is_none()
+                && definition.provenance.system_header.is_some()
+                && matches!(
+                    expansion.cover,
+                    Some(slate_parser::ast::MacroCover::Expr(_))
+                )
+                && crate::libc_catalog::lookup(
+                    &definition.name,
+                    &module.target.triple,
+                    crate::libc_catalog::Kind::Constant,
+                )
+                .is_some())
+            .then_some(id)
+        })
+        .collect()
 }

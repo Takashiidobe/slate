@@ -33,10 +33,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_pointer_to_function_pointer_field_c_9 {
@@ -44,6 +40,8 @@ int main(void) {
 // CHECK-NEXT:     ntests: i32,
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut last_ran: i32 = -1;
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.test_a")]
 // CHECK-NEXT: extern "C-unwind" fn test_a() {
 // CHECK-NEXT:     unsafe {
@@ -65,8 +63,8 @@ int main(void) {
 // CHECK-NEXT:             2u64
 // CHECK-NEXT:                 .wrapping_mul(
 // CHECK-NEXT:                     std::mem::size_of::<Option<unsafe extern "C-unwind" fn()>>() as u64,
-// CHECK-NEXT:                 ),
-// CHECK-NEXT:         )
+// CHECK-NEXT:                 ) as usize,
+// CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     }) as *mut Option<unsafe extern "C-unwind" fn()>;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *suite.tests.add(0) = Some(test_a);
@@ -81,7 +79,7 @@ int main(void) {
 // CHECK-NEXT:         println!("{}", unsafe { last_ran });
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { free(suite.tests as *mut ()) };
+// CHECK-NEXT:     unsafe { free((suite.tests as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

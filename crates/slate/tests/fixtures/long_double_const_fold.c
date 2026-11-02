@@ -30,7 +30,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn memcpy([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -212,6 +211,7 @@ int main(void) {
 // CHECK-NEXT:     LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 253, 127]),
 // CHECK-NEXT:     LongDouble([110, 219, 182, 109, 219, 182, 109, 219, 254, 191]),
 // CHECK-NEXT: ];
+// CHECK-NEXT: use slate_support::memcpy;
 // CHECK-NEXT: fn dump(mut v: LongDouble) {
 // CHECK-NEXT:     let mut bytes: __SlateAlign16<[u8; 16]> = __SlateAlign16({
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [u8; 16] = unsafe { std::mem::zeroed() };
@@ -220,9 +220,10 @@ int main(void) {
 // CHECK-NEXT:     });
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(v) as *const ()) as *const u8,
-// CHECK-NEXT:             bytes.0.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:             10 as usize,
+// CHECK-NEXT:             ((std::ptr::addr_of_mut!(v) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                 as *const u8,
+// CHECK-NEXT:             ((bytes.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (10u64 as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut i: i32 = 9;

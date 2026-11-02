@@ -23,7 +23,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32; 4]);
 // CHECK-NEXT:     for i in 0i32..4i32 {
-// CHECK-NEXT:         values.0[i as usize] = i + unsafe { getchar() };
+// CHECK-NEXT:         values.0[i as usize] = i + unsafe { getchar() as i32 };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut c: cursor = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     c.ptr = unsafe { (values.0.as_mut_ptr() as *mut i32).add(1) };

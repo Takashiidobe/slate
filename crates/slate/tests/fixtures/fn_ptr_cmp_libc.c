@@ -16,14 +16,12 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct hooks {
 // CHECK-NEXT:     malloc_fn: Option<unsafe extern "C-unwind" fn(u64) -> *mut ()>,
 // CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut h: hooks = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     h.malloc_fn = unsafe {

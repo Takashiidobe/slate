@@ -365,10 +365,12 @@ fn lower_parsed(
     diagnostics: &mut Vec<serde_json::Value>,
     macro_structure: bool,
 ) -> Result<(Module, Files, Vec<DirectiveDiagnostic>), Error> {
-    let mut sema = Sema::new(&unit).with_macro_structure(macro_structure);
-    if macro_structure {
-        sema = sema.with_macro_keep(macro_keep::kept_expansions);
-    }
+    let mut sema = Sema::new(&unit).with_macro_structure(true);
+    sema = sema.with_macro_keep(if macro_structure {
+        macro_keep::kept_expansions
+    } else {
+        macro_keep::kept_constants
+    });
     let warnings = sema.analyze(&files).map_err(|error| {
         crate::diagnostics::collect(&error, diagnostics);
         Error::Analyze {

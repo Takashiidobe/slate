@@ -30,7 +30,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         sum += unsafe { *values.offset(i as isize) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { free(values as *mut ()) };
+// CHECK-NEXT:     unsafe { free((values as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     sum
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

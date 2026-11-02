@@ -301,14 +301,11 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn cimag([[ARG_0:arg[0-9]+]]: num_complex::Complex<f64>) -> f64;
 // CHECK-NEXT:     fn creal([[ARG_0]]: num_complex::Complex<f64>) -> f64;
-// CHECK-NEXT:     fn remove([[ARG_0]]: *const i8) -> i32;
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT:     fn aligned_alloc([[ARG_0]]: u64, [[ARG_1:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     fn at_quick_exit([[ARG_0]]: Option<unsafe extern "C-unwind" fn()>) -> i32;
 // CHECK-NEXT:     fn quick_exit([[ARG_0]]: i32);
 // CHECK-NEXT:     fn call_once(
 // CHECK-NEXT:         [[ARG_0]]: *mut __SlateRecord_thread_shared_types_h_112,
-// CHECK-NEXT:         [[ARG_1]]: Option<unsafe extern "C-unwind" fn()>,
+// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: Option<unsafe extern "C-unwind" fn()>,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     fn timespec_get([[ARG_0]]: *mut slate_support::timespec, [[ARG_1]]: i32) -> i32;
 // CHECK-NEXT:     fn thrd_create(
@@ -611,7 +608,7 @@ int main(void) {
 // CHECK-NEXT:         c11_thread_local_value = 29;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *slate_support::errno_location() = 34;
+// CHECK-NEXT:         *slate_support::errno_location() = slate_support::ERANGE as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = increment;
@@ -622,8 +619,12 @@ int main(void) {
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (unsafe { c11_thread_local_value })
-// CHECK-NEXT:         + (((unsafe { *slate_support::errno_location() }) == 34) as i32)
+// CHECK-NEXT:         + (((unsafe { *slate_support::errno_location() })
+// CHECK-NEXT:             == (slate_support::ERANGE as i32)) as i32)
 // CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::remove;
+// CHECK-NEXT: use slate_support::free;
+// CHECK-NEXT: use slate_support::aligned_alloc;
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.c11_quick_handler")]
 // CHECK-NEXT: extern "C-unwind" fn c11_quick_handler() {
 // CHECK-NEXT:     unsafe {
@@ -834,13 +835,17 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) as u32) as i32) + ((converted16 as u32) as i32) + (converted32 as i32)
 // CHECK-NEXT:         + (multibyte16.0[0] as i32) + (multibyte32.0[0] as i32);
-// CHECK-NEXT:     let aligned_memory: *mut () = unsafe { aligned_alloc(64u64, 64u64) };
+// CHECK-NEXT:     let aligned_memory: *mut () = unsafe {
+// CHECK-NEXT:         aligned_alloc(64u64 as usize, 64u64 as usize) as *mut ()
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = alignment_total;
 // CHECK-NEXT:     alignment_total = [[V_5]]
 // CHECK-NEXT:         + ((!aligned_memory.is_null() && (aligned_memory as u64) % 64 == 0) as i32);
-// CHECK-NEXT:     unsafe { free(aligned_memory) };
+// CHECK-NEXT:     unsafe { free(aligned_memory as *mut core::ffi::c_void) };
 // CHECK-NEXT:     quick_total = ((unsafe { at_quick_exit(Some(c11_quick_handler)) }) == 0) as i32;
-// CHECK-NEXT:     unsafe { remove(c"slate-c11-exclusive.tmp".as_ptr()) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         remove(c"slate-c11-exclusive.tmp".as_ptr() as *const core::ffi::c_char) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let exclusive_first: *mut slate_support::FILE = c11_open_exclusive(
 // CHECK-NEXT:         c"slate-c11-exclusive.tmp".as_ptr(),
 // CHECK-NEXT:     );
@@ -854,7 +859,9 @@ int main(void) {
 // CHECK-NEXT:     if !exclusive_second.is_null() {
 // CHECK-NEXT:         unsafe { slate_support::fclose(exclusive_second) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { remove(c"slate-c11-exclusive.tmp".as_ptr()) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         remove(c"slate-c11-exclusive.tmp".as_ptr() as *const core::ffi::c_char) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     timespec_total = ((unsafe {
 // CHECK-NEXT:         timespec_get(std::ptr::addr_of_mut!(current_time), 1i32)
 // CHECK-NEXT:     }) == 1 && current_time.tv_nsec >= 0 && current_time.tv_nsec < 1000000000) as i32;

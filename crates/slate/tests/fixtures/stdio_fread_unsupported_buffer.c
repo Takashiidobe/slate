@@ -31,16 +31,21 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn remove([[ARG_0:arg[0-9]+]]: *const i8) -> i32;
-// CHECK-NEXT:     fn fread([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: u64, [[ARG_2:arg[0-9]+]]: u64, [[ARG_3:arg[0-9]+]]: *mut slate_support::FILE) -> u64;
-// CHECK-NEXT:     fn malloc([[ARG_0]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
+// CHECK-NEXT:     fn fread([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: u64, [[ARG_2:arg[0-9]+]]: u64, [[ARG_3:arg[0-9]+]]: *mut slate_support::FILE) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::remove;
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe { remove(c"slate_stdio_fread_unsupported_buffer.tmp".as_ptr()) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         remove(
+// CHECK-NEXT:             c"slate_stdio_fread_unsupported_buffer.tmp".as_ptr()
+// CHECK-NEXT:                 as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let f: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         slate_support::fopen(
 // CHECK-NEXT:             c"slate_stdio_fread_unsupported_buffer.tmp".as_ptr(),
@@ -69,7 +74,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let buf: *mut i8 = (unsafe { malloc(16u64) }) as *mut i8;
+// CHECK-NEXT:     let buf: *mut i8 = (unsafe { malloc(16u64 as usize) as *mut () }) as *mut i8;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *buf.add(0) = 0;
 // CHECK-NEXT:     }
@@ -80,9 +85,14 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %s\n".as_ptr(), n, buf) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     unsafe { free(buf as *mut ()) };
+// CHECK-NEXT:     unsafe { free((buf as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     unsafe { slate_support::fclose(g) };
-// CHECK-NEXT:     unsafe { remove(c"slate_stdio_fread_unsupported_buffer.tmp".as_ptr()) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         remove(
+// CHECK-NEXT:             c"slate_stdio_fread_unsupported_buffer.tmp".as_ptr()
+// CHECK-NEXT:                 as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

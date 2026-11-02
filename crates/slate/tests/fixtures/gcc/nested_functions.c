@@ -135,14 +135,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn qsort(
-// CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: *mut (),
-// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: u64,
-// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: u64,
-// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
-// CHECK-NEXT:     );
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct point {
@@ -151,6 +143,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: use slate_support::qsort;
 // CHECK-NEXT: fn counter(mut total: i32) -> i32 {
 // CHECK-NEXT:     counter__bump(unsafe { &mut (*std::ptr::addr_of_mut!(total)) }, 2i32);
 // CHECK-NEXT:     counter__bump(unsafe { &mut (*std::ptr::addr_of_mut!(total)) }, 3i32);
@@ -300,10 +293,20 @@ int main(void) {
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         qsort(
-// CHECK-NEXT:             values.0.as_mut_ptr() as *mut (),
-// CHECK-NEXT:             5u64,
-// CHECK-NEXT:             std::mem::size_of::<i32>() as u64,
-// CHECK-NEXT:             Some(sort_with_nested__ascending),
+// CHECK-NEXT:             (values.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void,
+// CHECK-NEXT:             5u64 as usize,
+// CHECK-NEXT:             (std::mem::size_of::<i32>() as u64) as usize,
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 std::mem::transmute::<
+// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
+// CHECK-NEXT:                     Option<
+// CHECK-NEXT:                         unsafe extern "C" fn(
+// CHECK-NEXT:                             *const core::ffi::c_void,
+// CHECK-NEXT:                             *const core::ffi::c_void,
+// CHECK-NEXT:                         ) -> i32,
+// CHECK-NEXT:                     >,
+// CHECK-NEXT:                 >(Some(sort_with_nested__ascending))
+// CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0i32..5i32 {
@@ -312,10 +315,20 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         qsort(
-// CHECK-NEXT:             values.0.as_mut_ptr() as *mut (),
-// CHECK-NEXT:             5u64,
-// CHECK-NEXT:             std::mem::size_of::<i32>() as u64,
-// CHECK-NEXT:             Some(compare_ints),
+// CHECK-NEXT:             (values.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void,
+// CHECK-NEXT:             5u64 as usize,
+// CHECK-NEXT:             (std::mem::size_of::<i32>() as u64) as usize,
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 std::mem::transmute::<
+// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
+// CHECK-NEXT:                     Option<
+// CHECK-NEXT:                         unsafe extern "C" fn(
+// CHECK-NEXT:                             *const core::ffi::c_void,
+// CHECK-NEXT:                             *const core::ffi::c_void,
+// CHECK-NEXT:                         ) -> i32,
+// CHECK-NEXT:                     >,
+// CHECK-NEXT:                 >(Some(compare_ints))
+// CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0i32..5i32 {

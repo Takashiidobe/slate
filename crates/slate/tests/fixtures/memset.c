@@ -32,26 +32,24 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn memset([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: i32, [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: fn get_count() -> i32 {
 // CHECK-NEXT:     4
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut zero_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// CHECK-NEXT:     unsafe { zero_buf[0usize..8usize].fill(0u8) };
+// CHECK-NEXT:     unsafe { zero_buf[0usize..8usize].fill((0i32 as i32) as u8) };
 // CHECK-NEXT:     let mut value_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// CHECK-NEXT:     unsafe { value_buf[0usize..8usize].fill(65u8) };
+// CHECK-NEXT:     unsafe { value_buf[0usize..8usize].fill((65i32 as i32) as u8) };
 // CHECK-NEXT:     let mut partial_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// CHECK-NEXT:     unsafe { partial_buf[0usize..4usize].fill(9u8) };
+// CHECK-NEXT:     unsafe { partial_buf[0usize..4usize].fill((9i32 as i32) as u8) };
 // CHECK-NEXT:     let mut dynamic_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     let n: i32 = get_count();
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             dynamic_buf.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:             9u8,
-// CHECK-NEXT:             ((n as i64) as u64) as usize,
+// CHECK-NEXT:             ((dynamic_buf.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (9i32 as i32) as u8,
+// CHECK-NEXT:             (((n as i64) as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0i32..8i32 {

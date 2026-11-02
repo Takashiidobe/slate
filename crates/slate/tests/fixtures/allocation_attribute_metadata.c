@@ -33,16 +33,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn calloc([[ARG_0]]: u64, [[ARG_1:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::calloc;
+// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: fn allocate(size: u64, alignment: u64) -> *mut () {
-// CHECK-NEXT:     unsafe { malloc(size) }
+// CHECK-NEXT:     unsafe { malloc(size as usize) as *mut () }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn allocate_array(count: u64, size: u64) -> *mut () {
-// CHECK-NEXT:     unsafe { calloc(count, size) }
+// CHECK-NEXT:     unsafe { calloc(count as usize, size as usize) as *mut () }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn offset_aligned(pointer: *mut ()) -> *mut () {
 // CHECK-NEXT:     (unsafe { (pointer as *mut i8).add(4) }) as *mut ()
@@ -65,8 +63,8 @@ int main(void) {
 // CHECK-NEXT:         "{} {} {}", unsafe { * values.add(0) }, unsafe { * second }, unsafe { * zeroed
 // CHECK-NEXT:         .add(1) }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe { free(zeroed as *mut ()) };
-// CHECK-NEXT:     unsafe { free(values as *mut ()) };
+// CHECK-NEXT:     unsafe { free((zeroed as *mut ()) as *mut core::ffi::c_void) };
+// CHECK-NEXT:     unsafe { free((values as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

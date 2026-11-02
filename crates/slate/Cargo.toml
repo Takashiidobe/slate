@@ -63,3 +63,6 @@ large_enum_variant = "allow"
 allow_attributes = "warn"
 allow_attributes_without_reason = "warn"
 result_large_err = "allow"
+
+[dev-dependencies]
+tempfile.workspace = true

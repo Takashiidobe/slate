@@ -233,7 +233,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn quit(code: i32) {
-// CHECK-NEXT:     unsafe { std::process::exit(code) };
+// CHECK-NEXT:     unsafe { std::process::exit(code as i32) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -278,13 +278,11 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut table: [i32; 3] = [1, 2, 3];
 // CHECK-EMPTY:
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn exit([[ARG_0]]: i32);
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: use core::ffi::c_long;
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: use core::ffi::c_ulong;
+// CHECK-EMPTY:
+// CHECK-NEXT: use slate_support::exit;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

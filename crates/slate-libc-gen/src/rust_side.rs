@@ -19,7 +19,7 @@ const KEYWORDS: &[&str] = &[
     "override", "priv", "typeof", "unsized", "virtual", "yield", "try", "gen",
 ];
 
-fn ident(name: &str) -> String {
+pub fn ident(name: &str) -> String {
     if KEYWORDS.contains(&name) {
         format!("r#{name}")
     } else {
@@ -37,6 +37,18 @@ pub fn prepare_libc(libc: &Path, work: &Path) -> Result<PathBuf> {
         let _ = std::fs::remove_file(&link);
         std::os::unix::fs::symlink(libc.join(entry), link)?;
     }
+    let support = work.join("slate-support");
+    std::fs::create_dir_all(&support)?;
+    let support_source = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../slate/vendor/slate-support")
+        .canonicalize()?;
+    std::fs::copy(
+        support_source.join("Cargo.toml.template"),
+        support.join("Cargo.toml"),
+    )?;
+    let link = support.join("src");
+    let _ = std::fs::remove_file(&link);
+    std::os::unix::fs::symlink(support_source.join("src"), link)?;
     Ok(dir)
 }
 
@@ -256,4 +268,90 @@ fn read_object(
         );
     }
     Ok(result)
+}
+
+pub fn compile_lines(
+    libc: &Path,
+    work: &Path,
+    target: &str,
+    lines: &[String],
+) -> Result<(PathBuf, HashSet<usize>)> {
+    let dir = work.join(format!("symbol-probe-{target}"));
+    std::fs::create_dir_all(&dir)?;
+    std::fs::write(
+        dir.join("Cargo.toml"),
+        format!(
+            "[package]\nname = \"probe\"\nversion = \"0.0.0\"\nedition = \"2024\"\n[lib]\npath = \"lib.rs\"\n[dependencies]\nlibc = {{ path = {:?}, default-features = false }}\nslate_support = {{ package = \"slate-support\", path = \"../slate-support\" }}\n[profile.dev]\ndebug = false\n[workspace]\n",
+            libc.display().to_string()
+        ),
+    )?;
+    let mut active: Vec<usize> = (0..lines.len()).collect();
+    for _ in 0..16 {
+        let mut source = String::from("#![no_std]\n#![allow(deprecated, unused_comparisons)]\n");
+        for index in &active {
+            source.push_str(&lines[*index]);
+            source.push('\n');
+        }
+        std::fs::write(dir.join("lib.rs"), source)?;
+        let output = Command::new("cargo")
+            .args([
+                "rustc",
+                "--lib",
+                "--message-format=json",
+                "--target",
+                target,
+            ])
+            .arg("--manifest-path")
+            .arg(dir.join("Cargo.toml"))
+            .env("CARGO_TARGET_DIR", dir.join("target"))
+            .args(["--", "--emit=obj"])
+            .output()?;
+        let mut bad = HashSet::new();
+        let mut errors = Vec::new();
+        for line in String::from_utf8_lossy(&output.stdout).lines() {
+            let Ok(value) = serde_json::from_str::<serde_json::Value>(line) else {
+                continue;
+            };
+            if value["reason"] != "compiler-message" || value["message"]["level"] != "error" {
+                continue;
+            }
+            let mut mapped = false;
+            for span in value["message"]["spans"].as_array().into_iter().flatten() {
+                if span["is_primary"] == true
+                    && span["file_name"]
+                        .as_str()
+                        .is_some_and(|f| f == "lib.rs" || Path::new(f) == dir.join("lib.rs"))
+                    && let Some(index) = span["line_start"].as_u64().and_then(|n| n.checked_sub(3))
+                    && let Some(index) = active.get(index as usize)
+                {
+                    bad.insert(*index);
+                    mapped = true;
+                }
+            }
+            if !mapped {
+                errors.push(
+                    value["message"]["rendered"]
+                        .as_str()
+                        .unwrap_or("")
+                        .to_string(),
+                );
+            }
+        }
+        if !errors.is_empty() {
+            bail!("{target}: symbol probe failed: {}", errors.join("\n"));
+        }
+        if output.status.success() {
+            let object = newest_object(&dir.join("target").join(target).join("debug"))
+                .context("symbol probe object")?;
+            return Ok((object, active.into_iter().collect()));
+        }
+        if bad.is_empty() {
+            bail!(
+                "{target}: symbol cargo failed: {}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+        }
+        active.retain(|index| !bad.contains(index));
+    }
+    bail!("{target}: symbol probe did not converge")
 }

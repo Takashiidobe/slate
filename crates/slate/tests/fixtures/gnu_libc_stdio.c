@@ -127,11 +127,6 @@ int main(void) {
 // CHECK-NEXT:     fn __freading([[ARG_0]]: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT:     fn __fwriting([[ARG_0]]: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT:     fn __fpending([[ARG_0]]: *mut slate_support::FILE) -> u64;
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1]]: *const (), [[ARG_2]]: u64) -> *mut ();
-// CHECK-NEXT:     fn memcmp([[ARG_0]]: *const (), [[ARG_1]]: *const (), [[ARG_2]]: u64) -> i32;
-// CHECK-NEXT:     fn strcmp([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> i32;
-// CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -150,6 +145,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: use slate_support::free;
+// CHECK-NEXT: use slate_support::memcpy;
+// CHECK-NEXT: use slate_support::memcmp;
+// CHECK-NEXT: use slate_support::strcmp;
+// CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: extern "C-unwind" fn gnu_cookie_write(
 // CHECK-NEXT:     state: *mut (),
 // CHECK-NEXT:     buffer: *const i8,
@@ -157,11 +157,11 @@ int main(void) {
 // CHECK-NEXT: ) -> i64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             buffer as *const u8,
-// CHECK-NEXT:             (((*(state as *mut GNUCookie)).bytes.as_mut_ptr() as *mut i8)
+// CHECK-NEXT:             ((buffer as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((((*(state as *mut GNUCookie)).bytes.as_mut_ptr() as *mut i8)
 // CHECK-NEXT:                 .offset((*(state as *mut GNUCookie)).length as isize) as *mut ())
-// CHECK-NEXT:                 as *mut u8,
-// CHECK-NEXT:             size as usize,
+// CHECK-NEXT:                 as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (size as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u64 = unsafe { (*(state as *mut GNUCookie)).length };
@@ -192,9 +192,13 @@ int main(void) {
 // CHECK-NEXT:     total += [[V_1]];
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_2]]
-// CHECK-NEXT:         + (((unsafe { strcmp(formatted as *const i8, c"gnu:23".as_ptr()) }) == 0)
-// CHECK-NEXT:             as i32);
-// CHECK-NEXT:     unsafe { free(formatted as *mut ()) };
+// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:             strcmp(
+// CHECK-NEXT:                 (formatted as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"gnu:23".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:         }) == 0) as i32);
+// CHECK-NEXT:     unsafe { free((formatted as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     let stream: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         open_memstream(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(stream_data),
@@ -221,11 +225,15 @@ int main(void) {
 // CHECK-NEXT:     total += (stream_size == 8) as i32;
 // CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_8]]
-// CHECK-NEXT:         + (((unsafe { strcmp(stream_data as *const i8, c"slate-24".as_ptr()) }) == 0)
-// CHECK-NEXT:             as i32);
+// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:             strcmp(
+// CHECK-NEXT:                 (stream_data as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"slate-24".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:         }) == 0) as i32);
 // CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = ((unsafe { slate_support::fclose(stream) }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_9]];
-// CHECK-NEXT:     unsafe { free(stream_data as *mut ()) };
+// CHECK-NEXT:     unsafe { free((stream_data as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_memory_stdio() -> i32 {
@@ -235,7 +243,8 @@ int main(void) {
 // CHECK-NEXT:     let stream: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         fmemopen(
 // CHECK-NEXT:             source.as_mut_ptr() as *mut (),
-// CHECK-NEXT:             strlen(source.as_mut_ptr() as *const i8),
+// CHECK-NEXT:             strlen((source.as_mut_ptr() as *const i8) as *const core::ffi::c_char)
+// CHECK-NEXT:                 as u64,
 // CHECK-NEXT:             c"r".as_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -253,21 +262,31 @@ int main(void) {
 // CHECK-NEXT:     total += [[V_10]];
 // CHECK-NEXT:     let [[V_3]]: i32 = total;
 // CHECK-NEXT:     total = [[V_3]]
-// CHECK-NEXT:         + (((unsafe { strcmp(line as *const i8, c"alpha|".as_ptr()) }) == 0) as i32);
+// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:             strcmp(
+// CHECK-NEXT:                 (line as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"alpha|".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:         }) == 0) as i32);
 // CHECK-NEXT:     let [[V_4]]: i32 = ((unsafe {
 // CHECK-NEXT:         getline(std::ptr::addr_of_mut!(line), std::ptr::addr_of_mut!(capacity), stream)
 // CHECK-NEXT:     }) == 5) as i32;
 // CHECK-NEXT:     total += [[V_4]];
 // CHECK-NEXT:     let [[V_5]]: i32 = total;
 // CHECK-NEXT:     total = [[V_5]]
-// CHECK-NEXT:         + (((unsafe { strcmp(line as *const i8, c"beta\n".as_ptr()) }) == 0) as i32);
+// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:             strcmp(
+// CHECK-NEXT:                 (line as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"beta\n".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:         }) == 0) as i32);
 // CHECK-NEXT:     let [[V_11:__v[0-9]+]]: i32 = ((unsafe { __freading(stream) }) != 0) as i32;
 // CHECK-NEXT:     total += [[V_11]];
 // CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = ((unsafe { __fbufsize(stream) }) > 0) as i32;
 // CHECK-NEXT:     total += [[V_12]];
 // CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe { slate_support::fclose(stream) }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_13]];
-// CHECK-NEXT:     unsafe { free(line as *mut ()) };
+// CHECK-NEXT:     unsafe { free((line as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_cookie_stdio() -> i32 {
@@ -304,10 +323,10 @@ int main(void) {
 // CHECK-NEXT:     total = [[V_11]]
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             memcmp(
-// CHECK-NEXT:                 cookie.bytes.as_mut_ptr() as *const (),
-// CHECK-NEXT:                 b"cookie:7\0".as_ptr() as *const (),
-// CHECK-NEXT:                 8u64,
-// CHECK-NEXT:             )
+// CHECK-NEXT:                 (cookie.bytes.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:                 (b"cookie:7\0".as_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:                 8u64 as usize,
+// CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         }) == 0) as i32);
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

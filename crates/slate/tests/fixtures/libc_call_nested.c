@@ -86,22 +86,26 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn long_word() -> i32 {
-// CHECK-NEXT:     if (((unsafe { "lengthy".len() as i32 }) as u32) as i32) > 4 { 1 } else { 0 }
+// CHECK-NEXT:     if (((unsafe { ("lengthy".len() as i32) as u64 }) as u32) as i32) > 4 {
+// CHECK-NEXT:         1
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn spans() -> i32 {
 // CHECK-NEXT:     (((unsafe {
-// CHECK-NEXT:         "  word"
+// CHECK-NEXT:         ("  word"
 // CHECK-NEXT:             .as_bytes()
 // CHECK-NEXT:             .iter()
 // CHECK-NEXT:             .position(|__slate_byte| !" ".as_bytes().contains(__slate_byte))
-// CHECK-NEXT:             .unwrap_or("  word".as_bytes().len()) as i32
+// CHECK-NEXT:             .unwrap_or("  word".as_bytes().len()) as i32) as u64
 // CHECK-NEXT:     }) as u32) as i32)
 // CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             "  word"
+// CHECK-NEXT:             ("  word"
 // CHECK-NEXT:                 .as_bytes()
 // CHECK-NEXT:                 .iter()
 // CHECK-NEXT:                 .position(|__slate_byte| "r".as_bytes().contains(__slate_byte))
-// CHECK-NEXT:                 .unwrap_or("  word".as_bytes().len()) as i32
+// CHECK-NEXT:                 .unwrap_or("  word".as_bytes().len()) as i32) as u64
 // CHECK-NEXT:         }) as u32) as i32)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn parsed() -> i32 {
@@ -109,7 +113,7 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn embedded(n: i32) -> i32 {
 // CHECK-NEXT:     (((unsafe {
-// CHECK-NEXT:         "ab\u{0}cd"
+// CHECK-NEXT:         ("ab\u{0}cd"
 // CHECK-NEXT:             .as_bytes()[0usize.."ab\u{0}cd"
 // CHECK-NEXT:                 .as_bytes()
 // CHECK-NEXT:                 .iter()
@@ -125,7 +129,7 @@ int main(void) {
 // CHECK-NEXT:                         .position(|__slate_byte| *__slate_byte == 0u8)
 // CHECK-NEXT:                         .unwrap_or("ab\u{0}cd".as_bytes().len()) as usize]
 // CHECK-NEXT:                     .len(),
-// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:             ) as i32) as u64
 // CHECK-NEXT:     }) as u32) as i32)
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             "ab\u{0}cd"
@@ -134,16 +138,22 @@ int main(void) {
 // CHECK-NEXT:                     .iter()
 // CHECK-NEXT:                     .position(|__slate_byte| *__slate_byte == 0u8)
 // CHECK-NEXT:                     .unwrap_or("ab\u{0}cd".as_bytes().len())
-// CHECK-NEXT:                     .min(((n as i64) as u64) as usize) as usize]
+// CHECK-NEXT:                     .min((((n as i64) as u64) as usize) as usize) as usize]
 // CHECK-NEXT:                 .cmp(
 // CHECK-NEXT:                     &"abz"
-// CHECK-NEXT:                         .as_bytes()[0usize..(((n as i64) as u64) as usize).min(3usize)
-// CHECK-NEXT:                         as usize],
+// CHECK-NEXT:                         .as_bytes()[0usize..((((n as i64) as u64) as usize) as usize)
+// CHECK-NEXT:                         .min(3usize) as usize],
 // CHECK-NEXT:                 ) as i32
 // CHECK-NEXT:         }) == 0) as i32)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn effectful() -> i32 {
-// CHECK-NEXT:     if (unsafe { strcmp(next_word(), c"beta".as_ptr()) }) == 0 {
+// CHECK-NEXT:     if (unsafe {
+// CHECK-NEXT:         strcmp(
+// CHECK-NEXT:             next_word() as *const core::ffi::c_char,
+// CHECK-NEXT:             c"beta".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     }) == 0
+// CHECK-NEXT:     {
 // CHECK-NEXT:         return 7;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     8

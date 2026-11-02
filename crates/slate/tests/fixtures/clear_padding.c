@@ -57,12 +57,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn memset([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: i32, [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct holes {
@@ -106,6 +100,10 @@ int main(void) {
 // CHECK-NEXT:         pub __slate_pad_3: u8,
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::memset;
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-NEXT: fn dump(name: *const i8, p: *const (), n: u64) {
 // CHECK-NEXT:     let bytes: *const u8 = p as *const u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -127,9 +125,10 @@ int main(void) {
 // CHECK-NEXT:     let mut h: holes = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(h) as *mut ()) as *mut u8,
-// CHECK-NEXT:             171u8,
-// CHECK-NEXT:             std::mem::size_of::<holes>(),
+// CHECK-NEXT:             ((std::ptr::addr_of_mut!(h) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
+// CHECK-NEXT:             (171i32 as i32) as u8,
+// CHECK-NEXT:             ((std::mem::size_of::<holes>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     h.c = 1;
@@ -149,9 +148,10 @@ int main(void) {
 // CHECK-NEXT:     let mut n: nested = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(n) as *mut ()) as *mut u8,
-// CHECK-NEXT:             205u8,
-// CHECK-NEXT:             std::mem::size_of::<nested>(),
+// CHECK-NEXT:             ((std::ptr::addr_of_mut!(n) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
+// CHECK-NEXT:             (205i32 as i32) as u8,
+// CHECK-NEXT:             ((std::mem::size_of::<nested>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     n.tail = 9;
@@ -171,9 +171,10 @@ int main(void) {
 // CHECK-NEXT:     let mut b: bits = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(b) as *mut ()) as *mut u8,
-// CHECK-NEXT:             255u8,
-// CHECK-NEXT:             std::mem::size_of::<bits>(),
+// CHECK-NEXT:             ((std::ptr::addr_of_mut!(b) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
+// CHECK-NEXT:             (255i32 as i32) as u8,
+// CHECK-NEXT:             ((std::mem::size_of::<bits>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     b.__slate_bits_0.__set_a(1i32);

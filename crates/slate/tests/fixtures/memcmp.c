@@ -34,38 +34,38 @@ int main(void) {
 // CHECK-NEXT:     let mut equal_b: [u8; 4] = [1, 2, 3, 4];
 // CHECK-NEXT:     let equal_result: i32 = ((unsafe {
 // CHECK-NEXT:         memcmp(
-// CHECK-NEXT:             equal_a.as_mut_ptr() as *const (),
-// CHECK-NEXT:             equal_b.as_mut_ptr() as *const (),
-// CHECK-NEXT:             4u64,
-// CHECK-NEXT:         )
+// CHECK-NEXT:             (equal_a.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:             (equal_b.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:             4u64 as usize,
+// CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     let mut unequal_a: [u8; 4] = [1, 2, 3, 4];
 // CHECK-NEXT:     let mut unequal_b: [u8; 4] = [1, 2, 3, 9];
 // CHECK-NEXT:     let unequal_result: i32 = ((unsafe {
 // CHECK-NEXT:         memcmp(
-// CHECK-NEXT:             unequal_a.as_mut_ptr() as *const (),
-// CHECK-NEXT:             unequal_b.as_mut_ptr() as *const (),
-// CHECK-NEXT:             4u64,
-// CHECK-NEXT:         )
+// CHECK-NEXT:             (unequal_a.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:             (unequal_b.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:             4u64 as usize,
+// CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     let mut partial_a: [u8; 8] = [1, 2, 3, 4, 9, 9, 9, 9];
 // CHECK-NEXT:     let mut partial_b: [u8; 8] = [1, 2, 3, 4, 0, 0, 0, 0];
 // CHECK-NEXT:     let partial_result: i32 = ((unsafe {
 // CHECK-NEXT:         memcmp(
-// CHECK-NEXT:             partial_a.as_mut_ptr() as *const (),
-// CHECK-NEXT:             partial_b.as_mut_ptr() as *const (),
-// CHECK-NEXT:             4u64,
-// CHECK-NEXT:         )
+// CHECK-NEXT:             (partial_a.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:             (partial_b.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:             4u64 as usize,
+// CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     let mut dyn_a: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     let mut dyn_b: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     let n: i32 = get_count();
 // CHECK-NEXT:     let dyn_result: i32 = ((unsafe {
 // CHECK-NEXT:         memcmp(
-// CHECK-NEXT:             dyn_a.as_mut_ptr() as *const (),
-// CHECK-NEXT:             dyn_b.as_mut_ptr() as *const (),
-// CHECK-NEXT:             (n as i64) as u64,
-// CHECK-NEXT:         )
+// CHECK-NEXT:             (dyn_a.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:             (dyn_b.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:             ((n as i64) as u64) as usize,
+// CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     println!("{} {} {} {}", equal_result, unequal_result, partial_result, dyn_result);
 // CHECK-NEXT:     0

@@ -42,18 +42,15 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn strlen([[ARG_0:arg[0-9]+]]: *const i8) -> u64;
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Tail {
 // CHECK-NEXT:     count: i32,
 // CHECK-NEXT:     tag: i8,
 // CHECK-NEXT:     name: [i8; 0],
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut tail: __SlateStorage_tail = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: __SlateStorage_tail = unsafe { std::mem::zeroed() };
@@ -110,6 +107,7 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]].values = [10i32, 20i32, 30i32];
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu %zu\n".as_ptr(), 8u64, 2u64, 1u64) };
@@ -146,10 +144,10 @@ int main(void) {
 // CHECK-NEXT:             c"%s %zu\n".as_ptr(),
 // CHECK-NEXT:             name_pointer,
 // CHECK-NEXT:             strlen(
-// CHECK-NEXT:                 (std::ptr::addr_of_mut!(
+// CHECK-NEXT:                 ((std::ptr::addr_of_mut!(
 // CHECK-NEXT:                     (* (std::ptr::addr_of_mut!(tail) as * mut Tail)).name
-// CHECK-NEXT:                 ) as *mut i8) as *const i8,
-// CHECK-NEXT:             ),
+// CHECK-NEXT:                 ) as *mut i8) as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

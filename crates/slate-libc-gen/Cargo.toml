@@ -11,3 +11,5 @@ object = { version = "0.37", default-features = false, features = ["read"] }
 rayon.workspace = true
 serde_json.workspace = true
 tempfile.workspace = true
+slate = { package = "slate-c2rust", path = "../slate", default-features = false }
+slate-parser.workspace = true

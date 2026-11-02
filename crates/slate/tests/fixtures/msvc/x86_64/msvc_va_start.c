@@ -69,7 +69,6 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut __crt_locale_pointers,
 // CHECK-NEXT:         [[ARG_5:arg[0-9]+]]: *mut i8,
 // CHECK-NEXT:     ) -> i32;
-// CHECK-NEXT:     fn abort();
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
@@ -99,6 +98,8 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut _OptionsStorage: u64 = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: use slate_support::abort;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn vsnprintf(_Buffer: *mut i8, _BufferCount: u64, _Format: *const i8, _ArgList: *mut i8) -> i32 {
 // CHECK-NEXT:     let _Result: i32 = unsafe {

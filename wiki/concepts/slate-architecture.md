@@ -147,3 +147,18 @@ cargo nextest r --release --profile slate
   validated. See [usage and proof scope](../../tools/alive2/README.md).
 - [Differential fixtures](differential-fixtures.md) defines the supported/unsupported ratchet and triage commands.
 - Prior design records are collected in the [historical index](../historical/index.md).
+
+## System declarations
+
+- `slate-libc-gen` validates C declarations against the vendored libc and emits
+  alias sets mapping to one canonical `slate_support` path. See its
+  [usage](../../crates/slate-libc-gen/README.md).
+- The catalogs contain names, destinations and translation-target eligibility.
+  Layouts, signatures, linker names and values stay in the generator report.
+- Lookup uses the translation target, never the host compiler cfg. Unknown or
+  incompatible targets keep local declarations; canonical paths merge downstream.
+- User definitions and non-system declarations stay local. Sema retains named
+  system constant macro references in the IR; lowering maps the complete reference.
+  Expanded expression fragments and numeric literals are never matched.
+- Vendored libc defaults to FreeBSD 15 and 64-bit file offsets/time on 32-bit
+  glibc. Header probes and workspace libc builds select the matching settings.

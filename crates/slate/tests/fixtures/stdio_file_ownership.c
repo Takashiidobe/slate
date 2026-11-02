@@ -28,21 +28,23 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn remove([[ARG_0:arg[0-9]+]]: *const i8) -> i32;
-// CHECK-NEXT:     fn fgets([[ARG_0]]: *mut i8, [[ARG_1:arg[0-9]+]]: i32, [[ARG_2:arg[0-9]+]]: *mut slate_support::FILE) -> *mut i8;
+// CHECK-NEXT:     fn fgets([[ARG_0:arg[0-9]+]]: *mut i8, [[ARG_1:arg[0-9]+]]: i32, [[ARG_2:arg[0-9]+]]: *mut slate_support::FILE) -> *mut i8;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: use slate_support::remove;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut name: __SlateAlign16<[i8; 31]> = __SlateAlign16([
 // CHECK-NEXT:         115i8, 108i8, 97i8, 116i8, 101i8, 95i8, 115i8, 116i8, 100i8, 105i8, 111i8, 95i8,
 // CHECK-NEXT:         102i8, 105i8, 108i8, 101i8, 95i8, 111i8, 119i8, 110i8, 101i8, 114i8, 115i8,
 // CHECK-NEXT:         104i8, 105i8, 112i8, 46i8, 116i8, 109i8, 112i8, 0i8,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     unsafe { remove(name.0.as_mut_ptr() as *const i8) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         remove((name.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let f: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         slate_support::fopen(name.0.as_mut_ptr() as *const i8, c"w".as_ptr())
 // CHECK-NEXT:     };
@@ -79,7 +81,9 @@ int main(void) {
 // CHECK-NEXT:         slate_support::fputs(buf.0.as_mut_ptr() as *const i8, slate_support::stdout())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     unsafe { remove(name.0.as_mut_ptr() as *const i8) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         remove((name.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

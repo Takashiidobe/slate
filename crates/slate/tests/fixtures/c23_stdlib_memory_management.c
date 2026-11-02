@@ -24,24 +24,27 @@ int main(void) {
 // CHECK-NEXT: #![allow(arithmetic_overflow, unconditional_panic)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn realloc([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT:     fn free_sized([[ARG_0]]: *mut (), [[ARG_1]]: u64);
+// CHECK-NEXT:     fn free_sized([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: u64);
 // CHECK-NEXT:     fn free_aligned_sized([[ARG_0]]: *mut (), [[ARG_1]]: u64, [[ARG_2:arg[0-9]+]]: u64);
-// CHECK-NEXT:     fn aligned_alloc([[ARG_0]]: u64, [[ARG_1]]: u64) -> *mut ();
 // CHECK-NEXT:     fn memalignment([[ARG_0]]: *const ()) -> u64;
 // CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::realloc;
+// CHECK-NEXT: use slate_support::free;
+// CHECK-NEXT: use slate_support::aligned_alloc;
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let p: *mut () = unsafe { malloc(16u64) };
+// CHECK-NEXT:     let p: *mut () = unsafe { malloc(16u64 as usize) as *mut () };
 // CHECK-NEXT:     unsafe { free_sized(p, 16u64) };
-// CHECK-NEXT:     let q: *mut () = unsafe { aligned_alloc(16u64, 32u64) };
+// CHECK-NEXT:     let q: *mut () = unsafe { aligned_alloc(16u64 as usize, 32u64 as usize) as *mut () };
 // CHECK-NEXT:     unsafe { free_aligned_sized(q, 16u64, 32u64) };
-// CHECK-NEXT:     let r: *mut () = unsafe { realloc(std::ptr::null_mut::<()>(), 0u64) };
-// CHECK-NEXT:     unsafe { free(r) };
-// CHECK-NEXT:     let a: *mut () = unsafe { aligned_alloc(64u64, 64u64) };
+// CHECK-NEXT:     let r: *mut () = unsafe {
+// CHECK-NEXT:         realloc(std::ptr::null_mut::<()>() as *mut core::ffi::c_void, 0u64 as usize)
+// CHECK-NEXT:             as *mut ()
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { free(r as *mut core::ffi::c_void) };
+// CHECK-NEXT:     let a: *mut () = unsafe { aligned_alloc(64u64 as usize, 64u64 as usize) as *mut () };
 // CHECK-NEXT:     println!("{}", ((unsafe { memalignment(a as * const ()) }) % 64 == 0) as i32);
-// CHECK-NEXT:     unsafe { free(a) };
+// CHECK-NEXT:     unsafe { free(a as *mut core::ffi::c_void) };
 // CHECK-NEXT:     println!("ok");
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -899,21 +899,19 @@ impl FunctionLowerer<'_, '_> {
     fn support_record_path(&self, id: TypeId) -> Option<&'static str> {
         let definition = self.tables.types.get(&id)?;
         definition.provenance.system_header?;
-        let name = definition.value.name.as_deref()?;
-        rust::CLIB_RECORD_TYPES
-            .iter()
-            .find(|clib| clib.c_name() == name)
-            .map(|clib| clib.path())
+        crate::libc_catalog::record_path(definition, &self.tables.target.triple)
     }
 
     fn named_prim(&mut self, c: QualType, resolved: Prim) -> Prim {
-        let Some(name) = known_c_name(&self.tables.c_types.types, c).filter(|name| {
-            !self
-                .tables
-                .record_names
-                .values()
-                .any(|record| record == name)
-        }) else {
+        let Some(name) = known_c_name(&self.tables.c_types.types, c, &self.tables.target.triple)
+            .filter(|name| {
+                !self
+                    .tables
+                    .record_names
+                    .values()
+                    .any(|record| record == name)
+            })
+        else {
             return resolved;
         };
         let (width, signed) = match resolved {
@@ -1188,7 +1186,7 @@ const NAMED_TYPEDEFS: &[&str] = &[
     "socklen_t",
 ];
 
-fn known_c_name(types: &CTypes, mut c: QualType) -> Option<&'static str> {
+fn known_c_name(types: &CTypes, mut c: QualType, target: &str) -> Option<&'static str> {
     loop {
         c = match types.kind(c.ty) {
             CTypeKind::Typedef {
@@ -1199,6 +1197,11 @@ fn known_c_name(types: &CTypes, mut c: QualType) -> Option<&'static str> {
                 }
                 if let Some(known) = NAMED_TYPEDEFS.iter().find(|known| **known == name) {
                     return Some(known);
+                }
+                if let Some(symbol) =
+                    crate::libc_catalog::lookup(name, target, crate::libc_catalog::Kind::Type)
+                {
+                    return Some(symbol.name);
                 }
                 *underlying
             }
@@ -1250,7 +1253,7 @@ fn slate_support_definition(name: &str, target: &TargetInfo) -> Option<Prim> {
         "wint_t" if windows => Prim::U16,
         "wint_t" if darwin || freebsd => Prim::I32,
         "wint_t" => Prim::U32,
-        "time_t" if narrow_glibc_or_bionic => Prim::I32,
+        "time_t" if !wide && matches!(target.os, TargetOs::Android) => Prim::I32,
         "time_t" => Prim::I64,
         "clock_t" if darwin => Prim::U64,
         "clock_t" if windows || freebsd || !wide => Prim::I32,
@@ -1272,7 +1275,7 @@ fn slate_support_definition(name: &str, target: &TargetInfo) -> Option<Prim> {
         "ssize_t" | "ptrdiff_t" | "intptr_t" if wide => Prim::I64,
         "ssize_t" | "ptrdiff_t" | "intptr_t" => Prim::I32,
         "off_t" if windows => Prim::I32,
-        "off_t" if narrow_glibc_or_bionic => Prim::I32,
+        "off_t" if !wide && matches!(target.os, TargetOs::Android) => Prim::I32,
         "off_t" => Prim::I64,
         "wchar_t" if windows => Prim::U16,
         "wchar_t" if x86_64 || matches!(target.family, TargetFamily::X86) || darwin => Prim::I32,
@@ -1292,7 +1295,10 @@ fn use_item(segments: &[&str]) -> Item {
 pub(super) fn named_prim_item(name: &str, resolved: Prim, target: &TargetInfo) -> Item {
     if core_ffi_definition(name, target) == Some(resolved) {
         use_item(&["core", "ffi", name])
-    } else if slate_support_definition(name, target) == Some(resolved) {
+    } else if crate::libc_catalog::lookup(name, &target.triple, crate::libc_catalog::Kind::Type)
+        .is_some()
+        || slate_support_definition(name, target) == Some(resolved)
+    {
         use_item(&["slate_support", name])
     } else {
         Item::TypeAlias {

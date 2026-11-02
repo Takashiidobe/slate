@@ -23,9 +23,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn strlen([[ARG_0:arg[0-9]+]]: *const i8) -> u64;
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: fn score_text(bytes: &str) -> i32 {
 // CHECK-NEXT:     unsafe { bytes.len() };
 // CHECK-NEXT:     let mut score: i32 = 0;

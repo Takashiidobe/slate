@@ -163,9 +163,6 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_2]]: Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
 // CHECK-NEXT:     ) -> *mut ();
 // CHECK-NEXT:     fn tdestroy([[ARG_0]]: *mut (), [[ARG_1]]: Option<unsafe extern "C-unwind" fn(*mut ())>);
-// CHECK-NEXT:     fn atoi([[ARG_0]]: *const i8) -> i32;
-// CHECK-NEXT:     fn malloc([[ARG_0]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT:     fn qsort_r(
 // CHECK-NEXT:         [[ARG_0]]: *mut (),
 // CHECK-NEXT:         [[ARG_1]]: u64,
@@ -173,7 +170,6 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_3]]: Option<unsafe extern "C-unwind" fn(*const (), *const (), *mut ()) -> i32>,
 // CHECK-NEXT:         [[ARG_4]]: *mut (),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     fn strcmp([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> i32;
 // CHECK-NEXT:     fn index([[ARG_0]]: *const i8, [[ARG_1]]: i32) -> *mut i8;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
@@ -255,6 +251,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: use slate_support::atoi;
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
+// CHECK-NEXT: use slate_support::strcmp;
 // CHECK-NEXT: fn __slate_atoi(s: *const i8) -> i32 {
 // CHECK-NEXT:     let bytes = unsafe { std::ffi::CStr::from_ptr(s) }.to_bytes();
 // CHECK-NEXT:     let n = bytes.len();
@@ -295,7 +295,7 @@ int main(void) {
 // CHECK-NEXT:     ((a > b) as i32) - ((a < b) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: extern "C-unwind" fn gnu_free_entry(entry: *mut ()) {
-// CHECK-NEXT:     unsafe { free(entry) };
+// CHECK-NEXT:     unsafe { free(entry as *mut core::ffi::c_void) };
 // CHECK-NEXT: }
 // CHECK-NEXT: extern "C-unwind" fn gnu_parse_option(
 // CHECK-NEXT:     key: i32,
@@ -305,15 +305,21 @@ int main(void) {
 // CHECK-NEXT:     let arguments: *mut GNUArguments = (unsafe { (*state).input }) as *mut GNUArguments;
 // CHECK-NEXT:     if key == 110 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*arguments).number = __slate_atoi(argument as *const i8);
+// CHECK-NEXT:             (*arguments).number = __slate_atoi(
+// CHECK-NEXT:                 ((argument as *const i8) as *const core::ffi::c_char) as *const i8,
+// CHECK-NEXT:             ) as i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if key == 0 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe { (*arguments).positional };
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = [[V_0]]
-// CHECK-NEXT:             + (((unsafe { strcmp(argument as *const i8, c"item".as_ptr()) }) == 0)
-// CHECK-NEXT:                 as i32);
+// CHECK-NEXT:             + (((unsafe {
+// CHECK-NEXT:                 strcmp(
+// CHECK-NEXT:                     (argument as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                     c"item".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:                 ) as i32
+// CHECK-NEXT:             }) == 0) as i32);
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             (*arguments).positional = [[V_1]];
 // CHECK-NEXT:         }
@@ -400,7 +406,11 @@ int main(void) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if option == 110 {
-// CHECK-NEXT:             number_value = unsafe { __slate_atoi(optarg as *const i8) };
+// CHECK-NEXT:             number_value = unsafe {
+// CHECK-NEXT:                 __slate_atoi(
+// CHECK-NEXT:                     ((optarg as *const i8) as *const core::ffi::c_char) as *const i8,
+// CHECK-NEXT:                 ) as i32
+// CHECK-NEXT:             };
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if option == 102 {
 // CHECK-NEXT:                 flag_value = 1;
@@ -505,12 +515,17 @@ int main(void) {
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_3]]
 // CHECK-NEXT:         + ((!found.is_null()
-// CHECK-NEXT:             && (unsafe { strcmp((*found).data as *const i8, c"24".as_ptr()) }) == 0)
-// CHECK-NEXT:             as i32);
+// CHECK-NEXT:             && (unsafe {
+// CHECK-NEXT:                 strcmp(
+// CHECK-NEXT:                     ((*found).data as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                     c"24".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:                 ) as i32
+// CHECK-NEXT:             }) == 0) as i32);
 // CHECK-NEXT:     unsafe { hdestroy_r(std::ptr::addr_of_mut!(table)) };
 // CHECK-NEXT:     for index in 0u64..4u64 {
-// CHECK-NEXT:         let value: *mut i32 = (unsafe { malloc(std::mem::size_of::<i32>() as u64) })
-// CHECK-NEXT:             as *mut i32;
+// CHECK-NEXT:         let value: *mut i32 = (unsafe {
+// CHECK-NEXT:             malloc((std::mem::size_of::<i32>() as u64) as usize) as *mut ()
+// CHECK-NEXT:         }) as *mut i32;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *value = values.0[index as usize];
 // CHECK-NEXT:         }

@@ -24,29 +24,36 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut environ: *mut *mut i8;
-// CHECK-NEXT:     fn open([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: i32, ...) -> i32;
-// CHECK-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
-// CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
-// CHECK-NEXT:     fn close([[ARG_0]]: i32) -> i32;
-// CHECK-NEXT:     fn read([[ARG_0]]: i32, [[ARG_1]]: *mut (), [[ARG_2]]: u64) -> i64;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: use slate_support::open;
+// CHECK-NEXT: use slate_support::memcpy;
+// CHECK-NEXT: use slate_support::memset;
+// CHECK-NEXT: use slate_support::strlen;
+// CHECK-NEXT: use slate_support::close;
+// CHECK-NEXT: use slate_support::read;
 // CHECK-NEXT: fn __slate_main(argc: i32, argv: *mut *mut i8, envp: *mut *mut i8) -> i32 {
 // CHECK-NEXT:     println!("envp {} argc {}", (envp == unsafe { environ }) as i32, argc);
-// CHECK-NEXT:     let len: u64 = unsafe { strlen(*argv.add(0) as *const i8) };
+// CHECK-NEXT:     let len: u64 = unsafe {
+// CHECK-NEXT:         strlen((*argv.add(0) as *const i8) as *const core::ffi::c_char) as u64
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes((*argv.add(0) as *mut ()) as *mut u8, 0u8, len as usize)
+// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:             ((*argv.add(0) as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (0i32 as i32) as u8,
+// CHECK-NEXT:             (len as usize) as usize,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             c"renamed".as_ptr() as *const u8,
-// CHECK-NEXT:             (*argv.add(0) as *mut ()) as *mut u8,
-// CHECK-NEXT:             (if len < 7 { len } else { 7u64 }) as usize,
+// CHECK-NEXT:             ((b"renamed\0".as_ptr() as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                 as *const u8,
+// CHECK-NEXT:             ((*argv.add(0) as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             ((if len < 7 { len } else { 7u64 }) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 64]> = __SlateAlign16({
@@ -54,15 +61,20 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:         [[T_0]][0] = 0i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
-// CHECK-NEXT:     let fd: i32 = unsafe { open(c"/proc/self/cmdline".as_ptr(), 0i32) };
+// CHECK-NEXT:     let fd: i32 = unsafe {
+// CHECK-NEXT:         open(
+// CHECK-NEXT:             c"/proc/self/cmdline".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             (slate_support::O_RDONLY as i32) as i32,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let n: i64 = unsafe {
 // CHECK-NEXT:         read(
-// CHECK-NEXT:             fd,
-// CHECK-NEXT:             buf.0.as_mut_ptr() as *mut (),
-// CHECK-NEXT:             (std::mem::size_of::<[i8; 64]>() as u64).wrapping_sub(1),
-// CHECK-NEXT:         )
+// CHECK-NEXT:             fd as i32,
+// CHECK-NEXT:             (buf.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void,
+// CHECK-NEXT:             (std::mem::size_of::<[i8; 64]>() as u64).wrapping_sub(1) as usize,
+// CHECK-NEXT:         ) as i64
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { close(fd) };
+// CHECK-NEXT:     unsafe { close(fd as i32) as i32 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

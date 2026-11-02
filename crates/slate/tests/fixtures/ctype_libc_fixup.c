@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:     let lower: i32 = 113;
 // CHECK-NEXT:     let digit: i32 = 53;
 // CHECK-NEXT:     let punct: i32 = 33;
-// CHECK-NEXT:     let eof: i32 = -1;
+// CHECK-NEXT:     let eof: i32 = slate_support::EOF as i32;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {}", unsafe { slate_support::toupper(lower) }, unsafe {
 // CHECK-NEXT:         slate_support::toupper(digit) }, unsafe { slate_support::toupper(punct) }, unsafe

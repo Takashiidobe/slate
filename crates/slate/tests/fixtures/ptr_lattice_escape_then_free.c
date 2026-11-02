@@ -20,10 +20,8 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: fn touch([[V_0:__v[0-9]+]]: *mut i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_0]] = *[[V_0]] + 1;
@@ -32,11 +30,13 @@ int main(void) {
 // CHECK-NEXT: fn use_and_free(y: *mut i32) -> i32 {
 // CHECK-NEXT:     touch(y);
 // CHECK-NEXT:     let v: i32 = unsafe { *y };
-// CHECK-NEXT:     unsafe { free(y as *mut ()) };
+// CHECK-NEXT:     unsafe { free((y as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let y: *mut i32 = (unsafe { malloc(std::mem::size_of::<i32>() as u64) }) as *mut i32;
+// CHECK-NEXT:     let y: *mut i32 = (unsafe {
+// CHECK-NEXT:         malloc((std::mem::size_of::<i32>() as u64) as usize) as *mut ()
+// CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *y = 41;
 // CHECK-NEXT:     }

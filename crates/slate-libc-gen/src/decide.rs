@@ -10,6 +10,7 @@ pub struct TargetData {
     pub rust: BTreeMap<String, RustLayout>,
 }
 
+#[derive(PartialEq, Eq)]
 pub enum Outcome {
     Fields(Vec<String>),
     Opaque,
@@ -18,8 +19,10 @@ pub enum Outcome {
 
 pub struct Entry {
     pub name: String,
+    pub targets: BTreeSet<String>,
     pub outcome: Outcome,
     pub alignment: u64,
+    pub layout_key: u64,
     pub aliases: BTreeSet<String>,
     pub notes: Vec<String>,
 }
@@ -30,17 +33,32 @@ fn reserved(name: &str) -> bool {
 
 pub fn decide(targets: &BTreeMap<String, TargetData>) -> Vec<Entry> {
     let names: BTreeSet<&String> = targets.values().flat_map(|data| data.c.keys()).collect();
-    names
-        .into_iter()
-        .map(|name| decide_one(name, targets))
-        .collect()
+    let mut entries: Vec<Entry> = Vec::new();
+    for name in names {
+        for (target, data) in targets {
+            let Some(c) = data.c.get(name) else {
+                continue;
+            };
+            let entry = decide_one(name, target, c, data.rust.get(name));
+            if let Some(previous) = entries.iter_mut().find(|previous| {
+                previous.name == entry.name
+                    && previous.outcome == entry.outcome
+                    && previous.alignment == entry.alignment
+                    && previous.layout_key == entry.layout_key
+                    && previous.aliases == entry.aliases
+            }) {
+                previous.targets.extend(entry.targets);
+                previous.notes.extend(entry.notes);
+            } else {
+                entries.push(entry);
+            }
+        }
+    }
+    entries
 }
 
-fn decide_one(name: &str, targets: &BTreeMap<String, TargetData>) -> Entry {
-    let present: Vec<(&String, &CType, Option<&RustLayout>)> = targets
-        .iter()
-        .filter_map(|(target, data)| data.c.get(name).map(|c| (target, c, data.rust.get(name))))
-        .collect();
+fn decide_one(name: &str, target: &str, c: &CType, rust: Option<&RustLayout>) -> Entry {
+    let present = [(target, c, rust)];
     let mut notes = Vec::new();
     let mut blocked = false;
     let mut common_fields: Option<Vec<String>> = None;
@@ -83,9 +101,11 @@ fn decide_one(name: &str, targets: &BTreeMap<String, TargetData>) -> Entry {
                     name: field,
                     offset,
                     aggregate,
+                    bitfield,
+                    ..
                 } in fields
                 {
-                    let matches = rust.offsets.get(field) == Some(offset);
+                    let matches = !*bitfield && rust.offsets.get(field) == Some(offset);
                     if field == "<anonymous>" {
                         continue;
                     }
@@ -141,67 +161,106 @@ fn decide_one(name: &str, targets: &BTreeMap<String, TargetData>) -> Entry {
         .collect();
     Entry {
         name: name.to_string(),
+        targets: BTreeSet::from([target.to_string()]),
         outcome,
         alignment,
+        layout_key: {
+            let fields = c
+                .fields
+                .iter()
+                .flatten()
+                .map(|field| {
+                    (
+                        format!(
+                            "{}:{}",
+                            field.name,
+                            slate::libc_catalog::field_type_key(&field.shape)
+                        ),
+                        field.offset,
+                        field.bitfield,
+                    )
+                })
+                .collect::<Vec<_>>();
+            slate::libc_catalog::layout_key(
+                c.size,
+                c.align,
+                fields
+                    .iter()
+                    .map(|(name, offset, bits)| (name.as_str(), *offset, *bits)),
+            )
+        },
         aliases,
         notes,
     }
 }
 
 pub fn table(entries: &[Entry]) -> (String, Vec<String>) {
-    let accepted: BTreeSet<&str> = entries
+    let accepted: BTreeSet<(&str, &str)> = entries
         .iter()
         .filter(|entry| !matches!(entry.outcome, Outcome::Excluded))
-        .map(|entry| entry.name.as_str())
+        .flat_map(|entry| {
+            entry
+                .targets
+                .iter()
+                .map(|target| (target.as_str(), entry.name.as_str()))
+        })
         .collect();
-    let mut rows: BTreeMap<String, (&Entry, String)> = BTreeMap::new();
+    let mut rows: BTreeMap<String, BTreeMap<String, BTreeSet<String>>> = BTreeMap::new();
+    let mut aliases: BTreeMap<(&str, &str), &str> = BTreeMap::new();
     let mut conflicts = Vec::new();
     for entry in entries {
         if matches!(entry.outcome, Outcome::Excluded) {
             continue;
         }
-        rows.insert(entry.name.clone(), (entry, entry.name.clone()));
-    }
-    for entry in entries {
-        if matches!(entry.outcome, Outcome::Excluded) {
-            continue;
-        }
-        if MACRO_REACHED.contains(&entry.name.as_str()) {
-            continue;
-        }
-        for alias in &entry.aliases {
-            if accepted.contains(alias.as_str()) {
-                continue;
-            }
-            match rows.get(alias) {
-                Some((_, target)) if target != &entry.name => conflicts.push(format!(
-                    "alias `{alias}` wanted by both `{target}` and `{}`",
-                    entry.name
-                )),
-                _ => {
-                    rows.insert(alias.clone(), (entry, entry.name.clone()));
+        for target in &entry.targets {
+            let mut names = vec![&entry.name];
+            if !MACRO_REACHED.contains(&entry.name.as_str()) {
+                for alias in &entry.aliases {
+                    if accepted.contains(&(target.as_str(), alias.as_str())) {
+                        continue;
+                    }
+                    match aliases.get(&(target.as_str(), alias.as_str())) {
+                        Some(previous) if *previous != entry.name => {
+                            conflicts.push(format!(
+                                "{target}: alias `{alias}` wanted by both `{previous}` and `{}`",
+                                entry.name
+                            ));
+                            continue;
+                        }
+                        _ => {
+                            aliases.insert((target, alias), &entry.name);
+                        }
+                    }
+                    names.push(alias);
                 }
             }
+            for name in names {
+                rows.entry(entry.name.clone())
+                    .or_default()
+                    .entry(name.clone())
+                    .or_default()
+                    .insert(target.clone());
+            }
         }
     }
-    let mut out = String::from("pub const CLIB_RECORD_TYPES: &[CLibType] = &[\n");
-    for (c_name, (entry, rust_name)) in &rows {
-        let initializer = match &entry.outcome {
-            Outcome::Fields(fields) => format!(
-                "CLibInitializer::Fields(&[{}])",
-                fields
-                    .iter()
-                    .map(|field| format!("{field:?}"))
-                    .collect::<Vec<_>>()
-                    .join(", ")
-            ),
-            _ => "CLibInitializer::ScalarZero".to_string(),
-        };
+    let mut out = String::from("pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[\n");
+    for (rust_name, names) in rows {
         let _ = writeln!(
             out,
-            "    CLibType::new({c_name:?}, \"slate_support::{rust_name}\", {}, {initializer}),",
-            entry.alignment
+            "    CLibRecord {{ rust_path: \"slate_support::{rust_name}\", aliases: &["
         );
+        let mut groups: BTreeMap<BTreeSet<String>, Vec<String>> = BTreeMap::new();
+        for (name, targets) in names {
+            groups.entry(targets).or_default().push(name);
+        }
+        for (targets, names) in groups {
+            let targets = targets.into_iter().collect::<Vec<_>>();
+            let _ = writeln!(
+                out,
+                "        CLibAliases {{ names: &{names:?}, targets: &{targets:?} }},"
+            );
+        }
+        out.push_str("    ] },\n");
     }
     out.push_str("];\n");
     (out, conflicts)
@@ -224,7 +283,7 @@ pub fn report(
         .count();
     let _ = writeln!(
         out,
-        "{} candidate names, {} accepted, {} excluded.\n",
+        "{} target groups, {} accepted, {} excluded.\n",
         entries.len(),
         accepted,
         entries.len() - accepted
@@ -245,7 +304,12 @@ pub fn report(
             Outcome::Fields(fields) => format!("fields {fields:?}"),
             _ => "opaque".to_string(),
         };
-        let _ = writeln!(out, "- `{}`: {kind}", entry.name);
+        let _ = writeln!(
+            out,
+            "- `{}`: {kind} on {}",
+            entry.name,
+            entry.targets.iter().cloned().collect::<Vec<_>>().join(", ")
+        );
         for note in &entry.notes {
             let _ = writeln!(out, "  - {note}");
         }
@@ -255,7 +319,12 @@ pub fn report(
         .iter()
         .filter(|e| matches!(e.outcome, Outcome::Excluded))
     {
-        let _ = writeln!(out, "- `{}`", entry.name);
+        let _ = writeln!(
+            out,
+            "- `{}` on {}",
+            entry.name,
+            entry.targets.iter().cloned().collect::<Vec<_>>().join(", ")
+        );
         for note in &entry.notes {
             let _ = writeln!(out, "  - {note}");
         }

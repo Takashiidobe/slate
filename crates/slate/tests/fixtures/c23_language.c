@@ -218,9 +218,6 @@ int main(void) {
 // CHECK-NEXT: #[deprecated(note = "C23 warning directive probe")]
 // CHECK-NEXT: const __SLATE_WARNING_0: () = {};
 // CHECK-NEXT: const _: () = __SLATE_WARNING_0;
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn exit([[ARG_0:arg[0-9]+]]: i32);
-// CHECK-NEXT: }
 // CHECK-NEXT: static mut c23_embedded: [u8; 3] = [67, 50, 51];
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: struct __SlateAlign32<T>(T);
@@ -236,11 +233,12 @@ int main(void) {
 // CHECK-NEXT:     47
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c23_never_return() {
-// CHECK-NEXT:     unsafe { std::process::exit(99i32) };
+// CHECK-NEXT:     unsafe { std::process::exit(99i32 as i32) };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[thread_local]
 // CHECK-NEXT: static mut c23_thread_value: i32 = 53;
 // CHECK-NEXT: static mut c23_never_flag: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: use slate_support::exit;
 // CHECK-NEXT: static mut c23_file_constant: i32 = 59;
 // CHECK-NEXT: fn c23_unnamed_parameter([[V_0:__v[0-9]+]]: i32, value: i32) -> i32 {
 // CHECK-NEXT:     value

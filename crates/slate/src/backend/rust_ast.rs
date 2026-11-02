@@ -1443,6 +1443,16 @@ impl CLibType {
     }
 }
 
+pub struct CLibRecord {
+    pub rust_path: &'static str,
+    pub aliases: &'static [CLibAliases],
+}
+
+pub struct CLibAliases {
+    pub names: &'static [&'static str],
+    pub targets: &'static [&'static str],
+}
+
 include!("clib_records_table.rs");
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]

@@ -16,11 +16,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn setlocale([[ARG_0:arg[0-9]+]]: i32, [[ARG_1:arg[0-9]+]]: *const i8) -> *mut i8;
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::setlocale;
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe { setlocale(6i32, c"C".as_ptr()) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         setlocale(6i32 as i32, c"C".as_ptr() as *const core::ffi::c_char) as *mut i8
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let c: i8 = 65;
 // CHECK-NEXT:     if (unsafe { slate_support::isalpha(c as i32) }) != 0 {
 // CHECK-NEXT:         println!("yes");

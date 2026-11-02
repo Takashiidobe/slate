@@ -30,23 +30,31 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn strncmp([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: *const i8, [[ARG_2:arg[0-9]+]]: u64) -> i32;
-// CHECK-NEXT:     fn strcspn([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> u64;
-// CHECK-NEXT:     fn strspn([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> u64;
-// CHECK-NEXT:     fn strnlen([[ARG_0]]: *const i8, [[ARG_1]]: u64) -> u64;
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::strncmp;
+// CHECK-NEXT: use slate_support::strcspn;
+// CHECK-NEXT: use slate_support::strspn;
+// CHECK-NEXT: use slate_support::strnlen;
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn bounded_cmp(a: *const i8, b: *const i8, n: u64) -> i32 {
-// CHECK-NEXT:     unsafe { strncmp(a, b, n) }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         strncmp(a as *const core::ffi::c_char, b as *const core::ffi::c_char, n as usize)
+// CHECK-NEXT:             as i32
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn bounded_len(s: *const i8, n: u64) -> u64 {
-// CHECK-NEXT:     unsafe { strnlen(s, n) }
+// CHECK-NEXT:     unsafe { strnlen(s as *const core::ffi::c_char, n as usize) as u64 }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn spans(s: *const i8, set: *const i8) -> u64 {
-// CHECK-NEXT:     unsafe { strspn(s, set) }.wrapping_mul(100).wrapping_add(unsafe { strcspn(s, set) })
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         strspn(s as *const core::ffi::c_char, set as *const core::ffi::c_char) as u64
+// CHECK-NEXT:     }
+// CHECK-NEXT:         .wrapping_mul(100)
+// CHECK-NEXT:         .wrapping_add(unsafe {
+// CHECK-NEXT:             strcspn(s as *const core::ffi::c_char, set as *const core::ffi::c_char)
+// CHECK-NEXT:                 as u64
+// CHECK-NEXT:         })
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut abc: [i8; 4] = [97, 98, 99, 0];

@@ -231,7 +231,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_values.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_values: 51 items, 0 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_values: 51 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:double_it: 2 variants
 // CHECK-NEXT:   spliced fn:show_trace: 2 variants
 // CHECK-NEXT:   spliced fn:plain_values: 2 variants
@@ -283,6 +283,20 @@ int main(void) {
 // CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(unix)]
+// CHECK-NEXT: macro_rules! TEXT_LENGTH {
+// CHECK-NEXT:     ($s:expr) => {
+// CHECK-NEXT:         unsafe { strlen((($s) as *const c_char) as *const core::ffi::c_char) as c_ulong }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: macro_rules! TEXT_LENGTH__2 {
+// CHECK-NEXT:     ($s:expr) => {
+// CHECK-NEXT:         unsafe { strlen((($s) as *const c_char) as *const core::ffi::c_char) as u64 }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg_attr(
 // CHECK-NEXT:     unix,
@@ -730,7 +744,7 @@ int main(void) {
 // CHECK-NEXT:                 c"%.2f %d %d\n".as_ptr(),
 // CHECK-NEXT:                 half,
 // CHECK-NEXT:                 BIT!(a),
-// CHECK-NEXT:                 (TEXT_LENGTH!(c"four".as_ptr() as *mut c_char) as u32) as i32,
+// CHECK-NEXT:                 (TEXT_LENGTH__2!(c"four".as_ptr() as *mut c_char) as u32) as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
@@ -1336,12 +1350,6 @@ int main(void) {
 // CHECK-NEXT:     }};
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! TEXT_LENGTH {
-// CHECK-NEXT:     ($s:expr) => {
-// CHECK-NEXT:         unsafe { strlen(($s) as *const c_char) }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! TWICE {
 // CHECK-NEXT:     ($x:expr) => {
 // CHECK-NEXT:         ($x) + $x
@@ -1381,13 +1389,13 @@ int main(void) {
 // CHECK-NEXT: static mut trace_length: i32 = unsafe { std::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn strlen([[ARG_0:arg[0-9]+]]: *const c_char) -> size_t;
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: use core::ffi::c_long;
 // CHECK-NEXT: use core::ffi::c_ulong;
-// CHECK-NEXT: use slate_support::size_t;
+// CHECK-EMPTY:
+// CHECK-NEXT: use slate_support::strlen;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

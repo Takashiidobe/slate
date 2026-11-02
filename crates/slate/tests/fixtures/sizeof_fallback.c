@@ -101,10 +101,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT:     fn memcpy([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -305,6 +301,10 @@ int main(void) {
 // CHECK-NEXT:     std::mem::zeroed()
 // CHECK-NEXT: });
 // CHECK-NEXT: static mut global_size: u64 = (std::mem::size_of::<Pair>() as u64).wrapping_mul(2u64);
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
+// CHECK-NEXT: use slate_support::memcpy;
+// CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: fn f() -> i32 {
 // CHECK-NEXT:     7
 // CHECK-NEXT: }
@@ -359,7 +359,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn heap_and_memory() -> i32 {
 // CHECK-NEXT:     let items: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc(3u64.wrapping_mul(std::mem::size_of::<i32>() as u64))
+// CHECK-NEXT:         malloc(3u64.wrapping_mul(std::mem::size_of::<i32>() as u64) as usize) as *mut ()
 // CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     let mut a: Pair = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Pair = unsafe { std::mem::zeroed() };
@@ -373,16 +373,18 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             items as *mut u8,
-// CHECK-NEXT:             0u8,
-// CHECK-NEXT:             3u64.wrapping_mul(std::mem::size_of::<i32>() as u64) as usize,
+// CHECK-NEXT:             ((items as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (0i32 as i32) as u8,
+// CHECK-NEXT:             (3u64.wrapping_mul(std::mem::size_of::<i32>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(a) as *const ()) as *const u8,
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(b) as *mut ()) as *mut u8,
-// CHECK-NEXT:             std::mem::size_of::<Pair>(),
+// CHECK-NEXT:             ((std::ptr::addr_of_mut!(a) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                 as *const u8,
+// CHECK-NEXT:             ((std::ptr::addr_of_mut!(b) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
+// CHECK-NEXT:             ((std::mem::size_of::<Pair>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -390,7 +392,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let result: i32 = (unsafe { *items.add(0) }) + unsafe { *items.add(1) }
 // CHECK-NEXT:         + unsafe { *items.add(2) };
-// CHECK-NEXT:     unsafe { free(items as *mut ()) };
+// CHECK-NEXT:     unsafe { free((items as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {

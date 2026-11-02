@@ -28,10 +28,8 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: fn consume_values(mut values: Vec<i32>) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..values.len() as i32 {
@@ -52,7 +50,10 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let len: i32 = 4;
 // CHECK-NEXT:     let values: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc(((len as i64) as u64).wrapping_mul(std::mem::size_of::<i32>() as u64))
+// CHECK-NEXT:         malloc(
+// CHECK-NEXT:             ((len as i64) as u64).wrapping_mul(std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:                 as usize,
+// CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     for i in 0..len {
 // CHECK-NEXT:         unsafe {

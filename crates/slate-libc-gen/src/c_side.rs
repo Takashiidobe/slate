@@ -6,6 +6,14 @@ use std::process::Command;
 
 pub const HEADERS: &[&str] = &[
     "stdio.h",
+    "stdint.h",
+    "errno.h",
+    "getopt.h",
+    "limits.h",
+    "math.h",
+    "ctype.h",
+    "fenv.h",
+    "sys/cpuset.h",
     "stdlib.h",
     "string.h",
     "time.h",
@@ -72,6 +80,8 @@ pub struct Field {
     pub name: String,
     pub offset: u64,
     pub aggregate: bool,
+    pub bitfield: bool,
+    pub shape: String,
 }
 
 #[derive(Clone, Debug)]
@@ -102,7 +112,7 @@ pub fn collect(parser: &Path, target: &str, scratch: &Path) -> Result<CMap> {
             let output = Command::new(parser)
                 .arg("ir")
                 .arg(&source)
-                .arg(format!("-target={target}"))
+                .args(target_args(target))
                 .args(["-include", header])
                 .output()
                 .ok()?;
@@ -189,7 +199,19 @@ fn parse_ir(text: &str) -> CMap {
                     && let Some((_, rest)) = field.split_once(' ')
                     && let Some((field_name, ty)) = rest.split_once(':')
                 {
-                    fields.push((field_name.to_string(), ty.trim_start().starts_with("@type")));
+                    fields.push((
+                        field_name.to_string(),
+                        ty.trim_start().starts_with("@type"),
+                        ty.contains(" : "),
+                        ty.split(" [")
+                            .next()
+                            .unwrap_or(ty)
+                            .split(" : ")
+                            .next()
+                            .unwrap_or(ty)
+                            .trim_end_matches(';')
+                            .to_string(),
+                    ));
                 }
             }
             let size = after(footer, "size=").and_then(leading_number);
@@ -213,10 +235,12 @@ fn parse_ir(text: &str) -> CMap {
                                 fields
                                     .into_iter()
                                     .zip(offsets)
-                                    .map(|((name, aggregate), offset)| Field {
+                                    .map(|((name, aggregate, bitfield, shape), offset)| Field {
                                         name,
                                         offset,
                                         aggregate,
+                                        bitfield,
+                                        shape,
                                     })
                                     .collect()
                             });
@@ -288,4 +312,15 @@ fn parse_ir(text: &str) -> CMap {
         }
     }
     map
+}
+
+pub fn target_args(target: &str) -> Vec<String> {
+    let mut args = vec![format!("-target={target}")];
+    if target.contains("-linux-gnu")
+        && slate_parser::target_info::TargetInfo::for_triple(target)
+            .is_ok_and(|info| info.pointer_width == 32)
+    {
+        args.extend(["-D_FILE_OFFSET_BITS=64".into(), "-D_TIME_BITS=64".into()]);
+    }
+    args
 }

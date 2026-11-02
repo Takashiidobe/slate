@@ -194,8 +194,7 @@ fn main() {
             // The ABI of libc used by std is backward compatible with FreeBSD 12.
             12
         } else {
-            // The ABI of libc from crates.io is backward compatible with FreeBSD 12.
-            12
+            15
         };
         // On CI, we detect the actual FreeBSD version and match its ABI exactly,
         // running tests to ensure that the ABI is correct.
@@ -318,7 +317,7 @@ fn main() {
     }
 
     let gnu32_timebits = match gnu_tb_env.as_deref() {
-        Err(_) => "32", // default to 32
+        Err(_) => "64",
         Ok(tb) if tb == "64" => tb,
         Ok(tb) if tb == "32" => tb,
         Ok(_) => {

@@ -129,10 +129,20 @@ impl FunctionLowerer<'_, '_> {
             ir::Callee::Indirect(_) => Vec::new(),
         };
         for (index, argument) in arguments.iter().enumerate() {
-            args.push(self.lower_call_argument(
-                argument,
-                variadic_start.is_some_and(|start| index >= start),
-            )?);
+            let variadic = variadic_start.is_some_and(|start| index >= start);
+            let mut lowered = self.lower_call_argument(argument, variadic)?;
+            if !variadic
+                && matches!(callee, ir::Callee::Direct(id) if self.tables.support_functions.contains_key(id))
+            {
+                let ir::Callee::Direct(id) = callee else {
+                    unreachable!()
+                };
+                let expected =
+                    crate::libc_catalog::parameters(&self.tables.support_functions[id].shape);
+                let expected = expected[index].to_string();
+                lowered = self.support_argument(argument, lowered, &expected)?;
+            }
+            args.push(lowered);
         }
         let names = &self.tables.names;
         let call = Expr::Call {
@@ -147,6 +157,42 @@ impl FunctionLowerer<'_, '_> {
                 },
                 ir::Callee::Indirect(_) => CallBinding::Indirect,
             },
+        };
+        let call = if matches!(callee, ir::Callee::Direct(id) if self.tables.support_functions.contains_key(id))
+        {
+            if let ir::Type::Function {
+                return_type: Some(ret),
+                ..
+            } = self.tables.resolve_type(signature)
+                && matches!(
+                    self.tables.resolve_type(ret),
+                    ir::Type::Numeric(_) | ir::Type::Pointer { .. }
+                )
+                && !matches!(callee, ir::Callee::Direct(id) if self.tables.support_functions[id].shape.ends_with(" -> !"))
+            {
+                Expr::Cast {
+                    expr: Box::new(call),
+                    ty: {
+                        let c = if let ir::Callee::Direct(id) = callee {
+                            self.tables.c_types.bindings.get(id).and_then(|c| {
+                                match self.tables.c_types.types.canonical_kind(*c) {
+                                    slate_parser::sema::ctype::CTypeKind::Function {
+                                        ret, ..
+                                    } => Some(*ret),
+                                    _ => None,
+                                }
+                            })
+                        } else {
+                            None
+                        };
+                        self.lower_c_type(ret, c)?
+                    },
+                }
+            } else {
+                call
+            }
+        } else {
+            call
         };
         let unsafe_call = match callee {
             ir::Callee::Direct(id) => names.get(id).is_some_and(|name| name.is_unsafe),

@@ -104,7 +104,7 @@ int main(void) {
 // CHECK-NEXT:         sum += unsafe { *values.offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if release != 0 {
-// CHECK-NEXT:         unsafe { free(values as *mut ()) };
+// CHECK-NEXT:         unsafe { free((values as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK: {{^}}}

@@ -40,8 +40,6 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn _setjmp([[ARG_0:arg[0-9]+]]: *mut __jmp_buf_tag) -> i32;
 // CHECK-NEXT:     fn longjmp([[ARG_0]]: *mut __jmp_buf_tag, [[ARG_1:arg[0-9]+]]: i32);
-// CHECK-NEXT:     fn malloc([[ARG_0]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -57,6 +55,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut jb_stack: *mut [__jmp_buf_tag; 1] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: static mut jb_top: i32 = 0;
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: fn inner(fail: i32) {
 // CHECK-NEXT:     if fail != 0 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = (unsafe { jb_top }) - 1;
@@ -92,14 +92,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         jb_stack = malloc(
-// CHECK-NEXT:             (std::mem::size_of::<[__jmp_buf_tag; 1]>() as u64).wrapping_mul(8),
-// CHECK-NEXT:         ) as *mut [__jmp_buf_tag; 1];
+// CHECK-NEXT:         jb_stack = (malloc(
+// CHECK-NEXT:             (std::mem::size_of::<[__jmp_buf_tag; 1]>() as u64).wrapping_mul(8) as usize,
+// CHECK-NEXT:         ) as *mut ()) as *mut [__jmp_buf_tag; 1];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     run_case(0i32, 0i32);
 // CHECK-NEXT:     run_case(1i32, 1i32);
 // CHECK-NEXT:     run_case(2i32, 0i32);
-// CHECK-NEXT:     unsafe { free(jb_stack as *mut ()) };
+// CHECK-NEXT:     unsafe { free((jb_stack as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

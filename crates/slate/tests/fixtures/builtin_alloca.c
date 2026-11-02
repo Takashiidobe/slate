@@ -229,11 +229,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn memcpy([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn memset([[ARG_0]]: *mut (), [[ARG_1]]: i32, [[ARG_2]]: u64) -> *mut ();
-// CHECK-NEXT:     fn strcmp([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> i32;
 // CHECK-NEXT:     #[link_name = "alloca"]
-// CHECK-NEXT:     fn __builtin_alloca([[ARG_0]]: u64) -> *mut ();
+// CHECK-NEXT:     fn __builtin_alloca([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     fn __builtin_alloca_uninitialized([[ARG_0]]: u64) -> *mut ();
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
@@ -247,11 +244,20 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: use slate_support::memcpy;
+// CHECK-NEXT: use slate_support::memset;
+// CHECK-NEXT: use slate_support::strcmp;
 // CHECK-NEXT: fn const_alloca() -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let buf: *mut u8 = (__slate_alloca::alloca(16 as usize, 16usize) as *mut ())
 // CHECK-NEXT:         as *mut u8;
-// CHECK-NEXT:     unsafe { std::ptr::write_bytes(buf as *mut u8, 3u8, 16 as usize) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:             ((buf as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (3i32 as i32) as u8,
+// CHECK-NEXT:             (16u64 as usize) as usize,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     (((unsafe { *buf.add(0) }) as u32) as i32)
 // CHECK-NEXT:         + (((unsafe { *buf.add(15) }) as u32) as i32)
 // CHECK-NEXT: }
@@ -259,7 +265,13 @@ int main(void) {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let buf: *mut u8 = (__slate_alloca::alloca(((n as i64) as u64) as usize, 16usize)
 // CHECK-NEXT:         as *mut ()) as *mut u8;
-// CHECK-NEXT:     unsafe { std::ptr::write_bytes(buf as *mut u8, 7u8, ((n as i64) as u64) as usize) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:             ((buf as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (7i32 as i32) as u8,
+// CHECK-NEXT:             (((n as i64) as u64) as usize) as usize,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     (((unsafe { *buf.add(0) }) as u32) as i32)
 // CHECK-NEXT:         + (((unsafe { *buf.offset((n - 1) as isize) }) as u32) as i32)
 // CHECK-NEXT: }
@@ -267,7 +279,13 @@ int main(void) {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let buf: *mut u8 = (__slate_alloca::alloca(((n as i64) as u64) as usize, 16usize)
 // CHECK-NEXT:         as *mut ()) as *mut u8;
-// CHECK-NEXT:     unsafe { std::ptr::write_bytes(buf as *mut u8, 9u8, ((n as i64) as u64) as usize) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:             ((buf as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (9i32 as i32) as u8,
+// CHECK-NEXT:             (((n as i64) as u64) as usize) as usize,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     (((unsafe { *buf.add(0) }) as u32) as i32)
 // CHECK-NEXT:         + (((unsafe { *buf.offset((n - 1) as isize) }) as u32) as i32)
 // CHECK-NEXT: }
@@ -356,12 +374,18 @@ int main(void) {
 // CHECK-NEXT:     let b: *mut i8 = (__slate_alloca::alloca(4 as usize, 16usize) as *mut ()) as *mut i8;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             c"abc".as_ptr() as *const u8,
-// CHECK-NEXT:             b as *mut u8,
-// CHECK-NEXT:             4 as usize,
+// CHECK-NEXT:             ((b"abc\0".as_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((b as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (4u64 as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     (!a.is_null() && (unsafe { strcmp(b as *const i8, c"abc".as_ptr()) }) == 0) as i32
+// CHECK-NEXT:     (!a.is_null()
+// CHECK-NEXT:         && (unsafe {
+// CHECK-NEXT:             strcmp(
+// CHECK-NEXT:                 (b as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"abc".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:         }) == 0) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn aligned_alloca() -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
@@ -396,8 +420,20 @@ int main(void) {
 // CHECK-NEXT:             as *mut u8;
 // CHECK-NEXT:         let b: *mut u8 = (__slate_alloca::alloca(600000 as usize, 16usize) as *mut ())
 // CHECK-NEXT:             as *mut u8;
-// CHECK-NEXT:         unsafe { std::ptr::write_bytes(a as *mut u8, 1u8, 600000 as usize) };
-// CHECK-NEXT:         unsafe { std::ptr::write_bytes(b as *mut u8, 2u8, 600000 as usize) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             std::ptr::write_bytes(
+// CHECK-NEXT:                 ((a as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:                 (1i32 as i32) as u8,
+// CHECK-NEXT:                 (600000u64 as usize) as usize,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             std::ptr::write_bytes(
+// CHECK-NEXT:                 ((b as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:                 (2i32 as i32) as u8,
+// CHECK-NEXT:                 (600000u64 as usize) as usize,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:         total
 // CHECK-NEXT:             += ((((unsafe { *a.add(599999) }) as u32) as i32)
 // CHECK-NEXT:                 + (((unsafe { *b.add(0) }) as u32) as i32)) as i64;

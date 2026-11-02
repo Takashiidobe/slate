@@ -15,13 +15,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn getchar() -> i32;
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::getchar;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let x: i32 = 42;
 // CHECK-NEXT:     let mut y: i32 = 0;
-// CHECK-NEXT:     let z: i32 = unsafe { getchar() };
+// CHECK-NEXT:     let z: i32 = unsafe { getchar() as i32 };
 // CHECK-NEXT:     y = z + 1;
 // CHECK-NEXT:     println!("{} {} {}", x, y, z);
 // CHECK-NEXT:     0

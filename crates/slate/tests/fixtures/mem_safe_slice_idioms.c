@@ -69,14 +69,15 @@ int main(void) {
 // CHECK-NEXT:     let mut self_c: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     unsafe { self_c.copy_within(0usize..8usize, 0usize) };
 // CHECK-NEXT:     let mut dst_d: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// CHECK-NEXT:     unsafe { dst_d[0usize..5usize].fill(65u8) };
+// CHECK-NEXT:     unsafe { dst_d[0usize..5usize].fill((65i32 as i32) as u8) };
 // CHECK-NEXT:     let mut dst_e: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     let mut src_e: [u8; 8] = [9, 9, 9, 9, 9, 9, 9, 9];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((src_e.as_mut_ptr() as *mut u8).add(2) as *const ()) as *const u8,
-// CHECK-NEXT:             dst_e.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:             4 as usize,
+// CHECK-NEXT:             (((src_e.as_mut_ptr() as *mut u8).add(2) as *const ())
+// CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((dst_e.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (4u64 as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut dst_f: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -84,22 +85,28 @@ int main(void) {
 // CHECK-NEXT:     let n: i32 = get_n();
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             src_f.as_mut_ptr() as *const u8,
-// CHECK-NEXT:             dst_f.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:             ((n as i64) as u64) as usize,
+// CHECK-NEXT:             ((src_f.as_mut_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((dst_f.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (((n as i64) as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut dst_g: [u8; 4] = [0, 0, 0, 0];
-// CHECK-NEXT:     let src_g: *mut u8 = (unsafe { malloc(4u64) }) as *mut u8;
-// CHECK-NEXT:     unsafe { std::ptr::write_bytes(src_g as *mut u8, 5u8, 4 as usize) };
+// CHECK-NEXT:     let src_g: *mut u8 = (unsafe { malloc(4u64 as usize) as *mut () }) as *mut u8;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             src_g as *const u8,
-// CHECK-NEXT:             dst_g.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:             4 as usize,
+// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:             ((src_g as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (5i32 as i32) as u8,
+// CHECK-NEXT:             (4u64 as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { free(src_g as *mut ()) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:             ((src_g as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((dst_g.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (4u64 as usize) as usize,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { free((src_g as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         print!("{} ", (dst_a[i as usize] as u32) as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());

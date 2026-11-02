@@ -50,8 +50,17 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn present_check() -> i32 {
-// CHECK-NEXT:     unsafe { setenv(c"SLATE_GETENV_FIXTURE_PRESENT".as_ptr(), c"1".as_ptr(), 1i32) };
-// CHECK-NEXT:     let value: *mut i8 = unsafe { getenv(c"SLATE_GETENV_FIXTURE_PRESENT".as_ptr()) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         setenv(
+// CHECK-NEXT:             c"SLATE_GETENV_FIXTURE_PRESENT".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             c"1".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             1i32 as i32,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let value: *mut i8 = unsafe {
+// CHECK-NEXT:         getenv(c"SLATE_GETENV_FIXTURE_PRESENT".as_ptr() as *const core::ffi::c_char)
+// CHECK-NEXT:             as *mut i8
+// CHECK-NEXT:     };
 // CHECK-NEXT:     if !value.is_null() {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     } else {
@@ -59,8 +68,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn absent_check() -> i32 {
-// CHECK-NEXT:     unsafe { unsetenv(c"SLATE_GETENV_FIXTURE_ABSENT".as_ptr()) };
-// CHECK-NEXT:     let value: *mut i8 = unsafe { getenv(c"SLATE_GETENV_FIXTURE_ABSENT".as_ptr()) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         unsetenv(c"SLATE_GETENV_FIXTURE_ABSENT".as_ptr() as *const core::ffi::c_char)
+// CHECK-NEXT:             as i32
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let value: *mut i8 = unsafe {
+// CHECK-NEXT:         getenv(c"SLATE_GETENV_FIXTURE_ABSENT".as_ptr() as *const core::ffi::c_char)
+// CHECK-NEXT:             as *mut i8
+// CHECK-NEXT:     };
 // CHECK-NEXT:     if !value.is_null() {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     } else {
@@ -69,11 +84,23 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn rejected_check() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         setenv(c"SLATE_GETENV_FIXTURE_REJECTED".as_ptr(), c"ready".as_ptr(), 1i32)
+// CHECK-NEXT:         setenv(
+// CHECK-NEXT:             c"SLATE_GETENV_FIXTURE_REJECTED".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             c"ready".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             1i32 as i32,
+// CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let value: *mut i8 = unsafe { getenv(c"SLATE_GETENV_FIXTURE_REJECTED".as_ptr()) };
+// CHECK-NEXT:     let value: *mut i8 = unsafe {
+// CHECK-NEXT:         getenv(c"SLATE_GETENV_FIXTURE_REJECTED".as_ptr() as *const core::ffi::c_char)
+// CHECK-NEXT:             as *mut i8
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let found: i32 = if !value.is_null() {
-// CHECK-NEXT:         ((unsafe { strcmp(value as *const i8, c"ready".as_ptr()) }) == 0) as i32
+// CHECK-NEXT:         ((unsafe {
+// CHECK-NEXT:             strcmp(
+// CHECK-NEXT:                 (value as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"ready".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:         }) == 0) as i32
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         0
 // CHECK-NEXT:     };

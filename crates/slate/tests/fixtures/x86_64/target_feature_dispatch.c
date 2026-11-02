@@ -115,15 +115,14 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn memset([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: i32, [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
-// CHECK-NEXT:     fn __builtin_cpu_supports([[ARG_0]]: *const i8) -> bool;
+// CHECK-NEXT:     fn __builtin_cpu_supports([[ARG_0:arg[0-9]+]]: *const i8) -> bool;
 // CHECK-NEXT:     fn __builtin_cpu_init();
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.x86.avx2.pshuf.b"]
 // CHECK-NEXT:     fn __slate_intrinsic_43a5f143669e69c1(
 // CHECK-NEXT:         [[ARG_0]]: std::simd::Simd<u8, 32>,
-// CHECK-NEXT:         [[ARG_1]]: std::simd::Simd<u8, 32>,
+// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: std::simd::Simd<u8, 32>,
 // CHECK-NEXT:     ) -> std::simd::Simd<u8, 32>;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
@@ -151,6 +150,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: #[target_feature(enable = "avx")]
 // CHECK-NEXT: unsafe fn _mm256_loadu_si256(
 // CHECK-NEXT:     __p: *const std::simd::Simd<i64, 4>,
@@ -629,9 +629,9 @@ int main(void) {
 // CHECK-NEXT:     > = select_add();
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             out.0.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:             0u8,
-// CHECK-NEXT:             std::mem::size_of::<[i32; 45]>(),
+// CHECK-NEXT:             ((out.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             (0i32 as i32) as u8,
+// CHECK-NEXT:             ((std::mem::size_of::<[i32; 45]>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {

@@ -19,14 +19,12 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn strlen([[ARG_0:arg[0-9]+]]: *const i8) -> u64;
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: fn first_byte(bytes: *const u8, len: i32) -> i32 {
 // CHECK-NEXT:     let __bytes_view = unsafe {
 // CHECK-NEXT:         std::slice::from_raw_parts(bytes as *const u8, len as usize)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { strlen(bytes as *const i8) };
+// CHECK-NEXT:     unsafe { strlen((bytes as *const i8) as *const core::ffi::c_char) as u64 };
 // CHECK-NEXT:     let mut value: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
 // CHECK-NEXT:         value += ((unsafe { __bytes_view[i as usize] }) as u32) as i32;

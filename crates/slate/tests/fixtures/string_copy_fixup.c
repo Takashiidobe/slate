@@ -20,18 +20,16 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn strcpy([[ARG_0:arg[0-9]+]]: *mut i8, [[ARG_1:arg[0-9]+]]: *const i8) -> *mut i8;
-// CHECK-NEXT:     fn strncpy([[ARG_0]]: *mut i8, [[ARG_1]]: *const i8, [[ARG_2:arg[0-9]+]]: u64) -> *mut i8;
-// CHECK-NEXT:     fn strcat([[ARG_0]]: *mut i8, [[ARG_1]]: *const i8) -> *mut i8;
-// CHECK-NEXT:     fn strncat([[ARG_0]]: *mut i8, [[ARG_1]]: *const i8, [[ARG_2]]: u64) -> *mut i8;
-// CHECK-NEXT:     fn strlen([[ARG_0]]: *const i8) -> u64;
-// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C, align(16))]
+// CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: use slate_support::strcpy;
+// CHECK-NEXT: use slate_support::strncpy;
+// CHECK-NEXT: use slate_support::strcat;
+// CHECK-NEXT: use slate_support::strncat;
+// CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: #[repr(C, align(16))]
-// CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut copy: __SlateAlign16<[i8; 16]> = __SlateAlign16({
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { std::mem::zeroed() };
@@ -51,10 +49,32 @@ int main(void) {
 // CHECK-NEXT:         112i8, 114i8, 101i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
 // CHECK-NEXT:         0i8,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     unsafe { strcpy(copy.0.as_mut_ptr() as *mut i8, c"abc".as_ptr()) };
-// CHECK-NEXT:     unsafe { strcat(append.0.as_mut_ptr() as *mut i8, c"bar".as_ptr()) };
-// CHECK-NEXT:     unsafe { strncpy(trunc_copy.0.as_mut_ptr() as *mut i8, c"abcdef".as_ptr(), 3u64) };
-// CHECK-NEXT:     unsafe { strncat(trunc_append.0.as_mut_ptr() as *mut i8, c"suffix".as_ptr(), 3u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         strcpy(
+// CHECK-NEXT:             (copy.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             c"abc".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as *mut i8
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         strcat(
+// CHECK-NEXT:             (append.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             c"bar".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as *mut i8
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         strncpy(
+// CHECK-NEXT:             (trunc_copy.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             c"abcdef".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             3u64 as usize,
+// CHECK-NEXT:         ) as *mut i8
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         strncat(
+// CHECK-NEXT:             (trunc_append.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             c"suffix".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             3u64 as usize,
+// CHECK-NEXT:         ) as *mut i8
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -63,7 +83,9 @@ int main(void) {
 // CHECK-NEXT:             append.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             trunc_copy.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             trunc_append.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             strlen(trunc_append.0.as_mut_ptr() as *const i8),
+// CHECK-NEXT:             strlen(
+// CHECK-NEXT:                 (trunc_append.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

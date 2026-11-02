@@ -55,8 +55,6 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     fn mcheck([[ARG_0]]: Option<unsafe extern "C-unwind" fn(i32)>) -> i32;
 // CHECK-NEXT:     fn mprobe([[ARG_0]]: *mut ()) -> i32;
-// CHECK-NEXT:     fn malloc([[ARG_0]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT:     fn on_exit(
 // CHECK-NEXT:         [[ARG_0]]: Option<unsafe extern "C-unwind" fn(i32, *mut ())>,
 // CHECK-NEXT:         [[ARG_1]]: *mut (),
@@ -65,6 +63,8 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: extern "C-unwind" fn handle_exit(status: i32, arg: *mut ()) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(arg as *mut i32) = status;
@@ -75,10 +75,10 @@ int main(void) {
 // CHECK-NEXT:     let mut captured: i32 = -1;
 // CHECK-NEXT:     unsafe { on_exit(Some(handle_exit), std::ptr::addr_of_mut!(captured) as *mut ()) };
 // CHECK-NEXT:     let mcheck_enabled: i32 = ((unsafe { mcheck(None) }) == 0) as i32;
-// CHECK-NEXT:     let block: *mut () = unsafe { malloc(16u64) };
+// CHECK-NEXT:     let block: *mut () = unsafe { malloc(16u64 as usize) as *mut () };
 // CHECK-NEXT:     let probe: i32 = unsafe { mprobe(block) };
 // CHECK-NEXT:     println!("mcheck:{} {}", mcheck_enabled, ((probe as i32) == 0) as i32);
-// CHECK-NEXT:     unsafe { free(block) };
+// CHECK-NEXT:     unsafe { free(block as *mut core::ffi::c_void) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         error_one_per_line = 0;
 // CHECK-NEXT:     }

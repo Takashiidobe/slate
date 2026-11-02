@@ -12,14 +12,16 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn remove([[ARG_0:arg[0-9]+]]: *const i8) -> i32;
-// CHECK-NEXT:     fn perror([[ARG_0]]: *const i8);
-// CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::remove;
+// CHECK-NEXT: use slate_support::perror;
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let rc: i32 = unsafe { remove(c"slate_perror_call_guard_missing.tmp".as_ptr()) };
+// CHECK-NEXT:     let rc: i32 = unsafe {
+// CHECK-NEXT:         remove(
+// CHECK-NEXT:             c"slate_perror_call_guard_missing.tmp".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     if rc < 0 {
-// CHECK-NEXT:         unsafe { perror(c"remove failed".as_ptr()) };
+// CHECK-NEXT:         unsafe { perror(c"remove failed".as_ptr() as *const core::ffi::c_char) };
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
