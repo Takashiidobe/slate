@@ -7,6 +7,7 @@ use super::operand::{Lvalue, Operand};
 use super::typer::{Choice, Lanes, Slot, Step, StepKind};
 use super::types::TypeResolver;
 use crate::ast::{Expr, ExprKind, NodeId, Span, StmtKind};
+use crate::compiler_options::ZeroInitPaddingBits;
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
 use crate::diagnostics::Warning;
 use crate::ir::*;
@@ -681,6 +682,7 @@ impl Lowerer {
                 register: None,
                 initializer: Some(initializer),
                 auto_init: None,
+                zero_padding: ZeroInitPaddingBits::Standard,
             },
             linkage: Linkage::Internal,
             symbol: SymbolAttributes::default(),
@@ -726,6 +728,7 @@ impl Lowerer {
                 register: None,
                 initializer: None,
                 auto_init: None,
+                zero_padding: ZeroInitPaddingBits::Standard,
             },
             linkage: Linkage::External,
             symbol: SymbolAttributes::default(),
@@ -836,6 +839,7 @@ impl Lowerer {
                 register: None,
                 initializer: Some(initializer),
                 auto_init: None,
+                zero_padding: ZeroInitPaddingBits::Standard,
             },
             linkage: Linkage::Internal,
             symbol: SymbolAttributes::default(),

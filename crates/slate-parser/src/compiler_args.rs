@@ -3,7 +3,7 @@ use crate::compiler_options::{
     CodegenOptions, CompilerOptions, ComplexMethod, FpModel, LayoutOptions, LibraryBuiltins,
     MathOptions, MathSwitch, MicrosoftFlags, MsvcArch, MsvcArchLevel, MsvcArm64Arch, MsvcFavor,
     MsvcFloatingModel, MsvcFloatingPoint, MsvcRuntimeChecks, MsvcRuntimeLibrary, OperationValues,
-    Optimization, Pic, SourceGraphs, StackProtector, TrivialAutoVarInit,
+    Optimization, Pic, SourceGraphs, StackProtector, TrivialAutoVarInit, ZeroInitPaddingBits,
 };
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::SearchPaths;
@@ -335,6 +335,7 @@ struct ParsedCompilerArgs {
     openmp_date: Option<u32>,
     delete_null_pointer_checks: Option<bool>,
     trivial_auto_var_init: Option<TrivialAutoVarInit>,
+    zero_init_padding_bits: Option<ZeroInitPaddingBits>,
     macro_prefix_map: Vec<(String, String)>,
     fixed_registers: Vec<String>,
     late_parsed_attributes: Option<bool>,
@@ -692,6 +693,7 @@ enum Opt {
     MsvcUndefinePredefined,
     MsvcOpenMp,
     Permissive,
+    ZeroInitPaddingBits,
     DeleteNullPointerChecks,
     TrivialAutoVarInit,
     MacroPrefixMap,
@@ -850,6 +852,7 @@ impl std::fmt::Display for Opt {
             Self::MsvcUndefinePredefined => "u",
             Self::MsvcOpenMp => "openmp",
             Self::Permissive => "fpermissive",
+            Self::ZeroInitPaddingBits => "fzero-init-padding-bits",
             Self::DeleteNullPointerChecks => "fdelete-null-pointer-checks",
             Self::TrivialAutoVarInit => "ftrivial-auto-var-init",
             Self::MacroPrefixMap => "fmacro-prefix-map",
@@ -965,6 +968,7 @@ impl Opt {
             | Self::StackProtectorExplicit
             | Self::FpRetIn387
             | Self::X87LongDoubleBytes
+            | Self::ZeroInitPaddingBits
             | Self::Permissive => &[Gcc],
             Self::StackAlignment
             | Self::ClangX87
@@ -1967,6 +1971,13 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if argument == "-fpermissive" || argument == "-fno-permissive" {
             parsed.saw(Opt::Permissive, argument);
             parsed.diagnostics.permissive = argument == "-fpermissive";
+        } else if let Some(value) = argument.strip_prefix("-fzero-init-padding-bits=") {
+            parsed.saw(Opt::ZeroInitPaddingBits, argument);
+            parsed.zero_init_padding_bits = Some(parse_value(
+                value.to_owned(),
+                argument,
+                "padding initialization",
+            )?);
         } else if let Some(value) = argument.strip_prefix("-fexcess-precision=") {
             parsed.saw(Opt::ExcessPrecision, argument);
             let fast = match value {
@@ -2646,6 +2657,7 @@ fn codegen_options(raw: &ParsedCompilerArgs, target: &TargetInfo) -> CodegenOpti
         three_dnow: raw.three_dnow.unwrap_or(0),
         delete_null_pointer_checks: raw.delete_null_pointer_checks.unwrap_or(true),
         trivial_auto_var_init: raw.trivial_auto_var_init.unwrap_or_default(),
+        zero_init_padding_bits: raw.zero_init_padding_bits.unwrap_or_default(),
         optimization: raw.optimization.unwrap_or_default(),
     }
 }

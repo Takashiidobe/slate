@@ -16,7 +16,7 @@ use crate::ast::{
     TranslationUnit,
 };
 use crate::compiler_args::CompilerFlavor;
-use crate::compiler_options::ComplexMethod;
+use crate::compiler_options::{ComplexMethod, ZeroInitPaddingBits};
 use crate::const_expr::{IntegerLiteral, IntegerSizeSuffix, IntegerSuffix, Radix};
 use crate::diagnostics::Warning;
 use crate::ir::*;
@@ -1217,6 +1217,7 @@ impl Lowerer {
                     register: None,
                     initializer: Some(initializer.value),
                     auto_init: None,
+                    zero_padding: ZeroInitPaddingBits::Standard,
                 }));
                 self.module
                     .annotate(&local, self.types.render(resolved).entries());
@@ -1653,6 +1654,15 @@ impl Lowerer {
                         .any(|attribute| matches!(attribute.value, ast::Attribute::Uninitialized)))
                 .then(|| self.types.auto_init(resolved))
                 .flatten(),
+                zero_padding: if storage == StorageDuration::Automatic && initializer.is_some() {
+                    self.types
+                        .dialect()
+                        .options()
+                        .codegen
+                        .zero_init_padding_bits
+                } else {
+                    ZeroInitPaddingBits::Standard
+                },
                 initializer,
             };
             if storage != StorageDuration::Automatic
@@ -1971,6 +1981,7 @@ impl Lowerer {
             register: None,
             initializer: None,
             auto_init: None,
+            zero_padding: ZeroInitPaddingBits::Standard,
         }
     }
 

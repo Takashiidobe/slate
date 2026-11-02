@@ -42,6 +42,7 @@ pub struct CodegenOptions {
     pub three_dnow: u8,
     pub delete_null_pointer_checks: bool,
     pub trivial_auto_var_init: TrivialAutoVarInit,
+    pub zero_init_padding_bits: ZeroInitPaddingBits,
     pub optimization: Optimization,
 }
 
@@ -73,7 +74,29 @@ impl Default for CodegenOptions {
             three_dnow: 0,
             delete_null_pointer_checks: true,
             trivial_auto_var_init: TrivialAutoVarInit::Uninitialized,
+            zero_init_padding_bits: ZeroInitPaddingBits::Standard,
             optimization: Optimization::None,
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub enum ZeroInitPaddingBits {
+    #[default]
+    Standard,
+    Unions,
+    All,
+}
+
+impl std::str::FromStr for ZeroInitPaddingBits {
+    type Err = String;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "standard" => Ok(Self::Standard),
+            "unions" => Ok(Self::Unions),
+            "all" => Ok(Self::All),
+            _ => Err("expected standard, unions, or all".into()),
         }
     }
 }

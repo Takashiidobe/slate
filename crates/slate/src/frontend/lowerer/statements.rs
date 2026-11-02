@@ -178,6 +178,11 @@ impl FunctionLowerer<'_, '_> {
                         access: variable.access,
                     };
                     self.after_declaration = Some(self.lower_assignment(&place, value)?);
+                } else if self.zeroes_padding(variable)
+                    && let Some(clear) =
+                        self.clear_padding_at(self.local_bytes(variable.id), &variable.ty)
+                {
+                    self.after_declaration = Some(Stmt::Expr(clear));
                 } else if let Some(auto) = auto_init {
                     let writes = self.auto_init_writes(
                         &variable.ty,

@@ -1,4 +1,5 @@
 use super::*;
+use slate_parser::compiler_options::ZeroInitPaddingBits;
 use slate_parser::target_info::Endian;
 
 impl Tables<'_> {
@@ -64,11 +65,25 @@ impl FunctionLowerer<'_, '_> {
         let ir::Type::Pointer { pointee, .. } = self.tables.resolve_type(&pointer.ty) else {
             return Err(unsupported_value(value));
         };
-        let keep = self
-            .tables
-            .padding_keep(pointee)
-            .ok_or_else(|| unsupported_value(value))?;
+        let pointee = pointee.clone();
         let base = self.lower_value(pointer)?;
+        self.clear_padding_at(base, &pointee)
+            .ok_or_else(|| unsupported_value(value))
+    }
+
+    pub(super) fn zeroes_padding(&self, variable: &ir::Variable) -> bool {
+        match variable.zero_padding {
+            ZeroInitPaddingBits::Standard => false,
+            ZeroInitPaddingBits::Unions => self.tables.is_union(&variable.ty),
+            ZeroInitPaddingBits::All => matches!(
+                self.tables.resolve_type(&variable.ty),
+                ir::Type::Defined(_) | ir::Type::Array { .. }
+            ),
+        }
+    }
+
+    pub(super) fn clear_padding_at(&mut self, base: Expr, pointee: &ir::Type) -> Option<Expr> {
+        let keep = self.tables.padding_keep(pointee)?;
         let bytes = self.next_temp();
         let byte_pointer = rust::Type::Ptr {
             mutable: true,
@@ -119,6 +134,6 @@ impl FunctionLowerer<'_, '_> {
             }
             start += length;
         }
-        Ok(Expr::Unsafe(Box::new(rust::Block { stmts, tail: None })))
+        Some(Expr::Unsafe(Box::new(rust::Block { stmts, tail: None })))
     }
 }
