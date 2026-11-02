@@ -95,8 +95,26 @@ impl FunctionLowerer<'_, '_> {
         let mut fields = Vec::new();
         let mut inits = Vec::new();
         let mut loads = Vec::new();
+        let mut retained = Vec::new();
         for (index, capture) in block.captures.iter().enumerate() {
             let field = format!("c{index}");
+            if !capture.by_reference
+                && matches!(
+                    self.tables.resolve_type(&capture.ty),
+                    ir::Type::BlockPointer { .. }
+                )
+            {
+                retained.push(support_call(
+                    "block_field",
+                    vec![Expr::Macro {
+                        name: "std::mem::offset_of".into(),
+                        args: vec![
+                            Expr::Var(captures_name.as_str().into()),
+                            Expr::Var(field.as_str().into()),
+                        ],
+                    }],
+                ));
+            }
             let value_ty = self.lower_binding_type(&capture.ty, capture.id)?;
             let (ty, init) = if capture.by_reference {
                 (
@@ -145,14 +163,6 @@ impl FunctionLowerer<'_, '_> {
                 }));
             rust::Type::Custom(captures_name.clone())
         };
-        let captures_value = if inits.is_empty() {
-            Expr::Var("()".into())
-        } else {
-            Expr::StructLit {
-                name: captures_name,
-                fields: inits,
-            }
-        };
         let item = {
             let mut child = FunctionLowerer::new(self.tables, &mut *self.dependencies);
             child.owner = self.owner.clone();
@@ -162,7 +172,11 @@ impl FunctionLowerer<'_, '_> {
             child.lower_block_function(&block.function, &function_name, &captures_ty, loads)?
         };
         self.dependencies.block_items.push(item);
-        if self.in_static_initializer {
+        let invoke = Expr::Cast {
+            expr: Box::new(Expr::Var(function_name.as_str().into())),
+            ty: void_pointer(false),
+        };
+        if block.captures.is_empty() {
             let literal = format!("{function_name}_literal");
             self.dependencies.block_items.push(Item::Static {
                 comments: Vec::new(),
@@ -171,13 +185,7 @@ impl FunctionLowerer<'_, '_> {
                 mutable: false,
                 name: literal.clone(),
                 ty: rust::Type::Custom(format!("{SUPPORT}::Block<()>")),
-                init: support_call(
-                    "global",
-                    vec![Expr::Cast {
-                        expr: Box::new(Expr::Var(function_name.as_str().into())),
-                        ty: void_pointer(false),
-                    }],
-                ),
+                init: support_call("global", vec![invoke]),
             });
             return Ok(Expr::Cast {
                 expr: Box::new(Expr::Cast {
@@ -190,16 +198,53 @@ impl FunctionLowerer<'_, '_> {
                 ty: void_pointer(true),
             });
         }
+        let descriptor = format!("{function_name}_descriptor");
+        self.dependencies.block_items.push(Item::Static {
+            comments: Vec::new(),
+            attrs: Vec::new(),
+            vis: rust::Visibility::Private,
+            mutable: false,
+            name: descriptor.clone(),
+            ty: rust::Type::Custom(format!("{SUPPORT}::Descriptor")),
+            init: Expr::Call {
+                func: Box::new(Expr::GenericPath {
+                    path: rust::Path::new([SUPPORT, "descriptor"].map(rust::Ident::from)),
+                    type_args: vec![captures_ty.clone()],
+                }),
+                args: vec![Expr::Ref {
+                    mutable: false,
+                    expr: Box::new(Expr::ArrayLit(retained)),
+                }],
+                binding: CallBinding::Generated,
+            },
+        });
+        let slot = format!("{function_name}_slot");
+        self.hoisted.push(Stmt::Let {
+            name: slot.as_str().into(),
+            mutable: true,
+            ty: Some(rust::Type::Custom(format!(
+                "std::mem::MaybeUninit<{SUPPORT}::Block<{captures_name}>>"
+            ))),
+            init: Some(Expr::Var("std::mem::MaybeUninit::uninit()".into())),
+        });
         Ok(Expr::Unsafe(Box::new(rust::Block {
             stmts: Vec::new(),
             tail: Some(Box::new(support_call(
-                "new",
+                "stack",
                 vec![
-                    Expr::Cast {
-                        expr: Box::new(Expr::Var(function_name.as_str().into())),
-                        ty: void_pointer(false),
+                    Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(Expr::Var(slot.as_str().into())),
                     },
-                    captures_value,
+                    invoke,
+                    Expr::Ref {
+                        mutable: false,
+                        expr: Box::new(Expr::Var(descriptor.as_str().into())),
+                    },
+                    Expr::StructLit {
+                        name: captures_name,
+                        fields: inits,
+                    },
                 ],
             ))),
         })))

@@ -24,12 +24,19 @@ itself.
 - `frontend/support/blocks.rs` (module `__slate_blocks`, emitted only when a
   block type appears) defines `Block<C>`, a `#[repr(C)]` header (`isa`,
   `flags`, `reserved`, `invoke`, `descriptor`) followed by a capture struct
-  `C`. `new` mallocs a block with `_NSConcreteMallocBlock`,
-  `BLOCK_NEEDS_FREE` and refcount 1; `invoke` and `captures` read it back.
-- Blocks never get copy/dispose helpers. Captures are plain bits, a heap
-  block is never a stack block, and `Block_copy`/`Block_release` only touch
-  the refcount. Nothing frees the creating reference, so a created block
-  leaks.
+  `C`. `stack` writes a block with `_NSConcreteStackBlock` into a caller
+  slot; `invoke` and `captures` read it back.
+- `Descriptor` is the runtime's `Block_descriptor_1` plus copy/dispose
+  pointers, followed by slate-only fields the runtime never reads:
+  `captures_offset` and `fields`, a list of `(offset, BLOCK_FIELD_IS_*)`
+  pairs. The shared `copy_helper`/`dispose_helper` walk that list through the
+  block's own descriptor and call `_Block_object_assign`/
+  `_Block_object_dispose`, so no helper is generated per literal. `stack`
+  sets `BLOCK_HAS_COPY_DISPOSE` only when the list is non-empty.
+- `Block_copy` of a stack block mallocs a copy and calls the copy helper,
+  which `Block_copy`s every captured block pointer. `Block_release` of the
+  last reference calls the dispose helper, which releases them. Escaping a
+  block without `Block_copy` is undefined behavior, as in C.
 
 ## Block literals
 
@@ -41,10 +48,17 @@ itself.
   by a child `FunctionLowerer` (it inherits the parent's binding numbering so
   captured names agree). Its prologue reads the capture struct into locals
   named like the originals;
-- an expression `__slate_blocks::new(__slate_block_N as *const c_void,
-  __slate_block_N_captures { .. })`.
+- a `static __slate_block_N_descriptor` from `__slate_blocks::descriptor`,
+  listing each by-value capture of block pointer type with `block_field`;
+- a `let mut __slate_block_N_slot: MaybeUninit<Block<..>>` hoisted to the
+  top of the enclosing function (or block function). Its lifetime is the
+  whole function, a superset of the C scope; a literal in a loop reuses the
+  slot each iteration, as clang does;
+- an expression `__slate_blocks::stack(&raw mut slot, __slate_block_N as
+  *const c_void, &descriptor, __slate_block_N_captures { .. })`.
 
-Captures are taken by value at creation, matching C.
+Captures are taken by value at creation, matching C. A literal with no
+captures becomes a global block (below), as clang emits it.
 
 ## Calls
 
@@ -60,12 +74,14 @@ variable. The backend declares it as `*mut T` from `__slate_blocks::cell`
 (leaked `Box`) and `lower_binding` dereferences it everywhere, so blocks,
 nested blocks and the declaring function share one cell, including after the
 declaring frame returns. `FunctionLowerer::place_is_unsafe` treats places
-rooted in such a binding as unsafe.
+rooted in such a binding as unsafe. Blocks capture the cell pointer as plain
+bits and the copy helper does not touch it, so cells leak, and `&x` never
+moves on `Block_copy` the way C's byref forwarding does.
 
 ## Global blocks
 
-A block literal with no captures is a constant initializer. In a static
-initializer it becomes `static __slate_block_N_literal: Block<()> =
+A block literal with no captures, in a function or a static initializer,
+becomes `static __slate_block_N_literal: Block<()> =
 __slate_blocks::global(..)` (isa `_NSConcreteGlobalBlock`, `BLOCK_IS_GLOBAL`)
 and the value is its address.
 
@@ -81,17 +97,19 @@ the oracle compile when `dg-options` has `-fblocks`.
 
 ## Testing
 
-`tests/fixtures/block_basic.c`, `block_more.c`, `block_globals.c` and the
-two-unit `tests/fixtures.release/block_units`. Fixtures declare
+`tests/fixtures/block_basic.c`, `block_more.c`, `block_globals.c`,
+`block_lifetime.c` (copy identity, a captured block outliving its release,
+no heap growth for non-escaping literals) and the two-unit
+`tests/fixtures.release/block_units`. Fixtures declare
 `_Block_copy`/`_Block_release` themselves instead of including `<Block.h>`.
-`tests/fixtures.library.unsupported/block_capture_retain` has a native C driver
-pass a stack block to a translated library that captures it in a copied block,
-and it crashes until captured blocks are retained.
+`tests/fixtures.library/block_capture_retain` has a native C driver pass a
+stack block to a translated library that captures it in a copied block; it
+crashed before captured blocks were retained.
 
 ## Not yet lowered
 
-- Captured blocks are not retained, so a stack block from C captured by an
-  escaping block dangles.
+- `__block` variables as runtime `Block_byref` structs (forwarding, refcount,
+  stack until copied, `BLOCK_FIELD_IS_BYREF` in `fields`).
 - Referencing a `__block` variable inside its own initializer.
 - Variadic blocks, `__block` on MSVC targets, blocks in aggregates inside
   non-constant global initializers.
