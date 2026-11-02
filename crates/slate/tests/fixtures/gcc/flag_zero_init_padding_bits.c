@@ -36,6 +36,12 @@ static void inspect(void) {
   for (unsigned i = 0; i < sizeof p; i++)
     printf("%02x", pbytes[i]);
   printf("\n");
+  struct padded __attribute__((aligned(32))) ap = {9, 10};
+  unsigned char abytes[sizeof ap];
+  memcpy(abytes, &ap, sizeof ap);
+  for (unsigned i = 0; i < sizeof ap; i++)
+    printf("%02x", abytes[i]);
+  printf("\n");
   struct nested n = {1, {.c = 4}, {{5, 6}, {7, 8}}};
   unsigned char nbytes[sizeof n];
   memcpy(nbytes, &n, sizeof n);
@@ -88,6 +94,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, align(32))]
+// CHECK-NEXT: struct __SlateAlign32<T>(T);
 // CHECK-EMPTY:
 // CHECK-NEXT: fn scribble() {
 // CHECK-NEXT:     let mut junk: __SlateAlign16<[u8; 256]> = __SlateAlign16([0u8; 256]);
@@ -154,6 +163,33 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
+// CHECK-NEXT:     let mut ap: __SlateAlign32<padded> = __SlateAlign32(unsafe { std::mem::zeroed() });
+// CHECK-NEXT:     {
+// CHECK-NEXT:         ap.0.c = 9i8;
+// CHECK-NEXT:         ap.0.i = 10i32;
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             let [[T_2:__t[0-9]+]]: *mut u8 = (std::ptr::addr_of_mut!(ap.0) as *mut _) as *mut u8;
+// CHECK-NEXT:             [[T_2]].add(1usize).write_bytes(0u8, 3usize);
+// CHECK-NEXT:         };
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut abytes: [u8; 8] = [0u8; 8];
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:             (std::ptr::addr_of_mut!(ap.0) as *const ()) as *const u8,
+// CHECK-NEXT:             abytes.as_mut_ptr() as *mut u8,
+// CHECK-NEXT:             std::mem::size_of::<padded>(),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut i: u32 = 0;
+// CHECK-NEXT:         while (i as u64) < (std::mem::size_of::<padded>() as u64) {
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe { slate_support::printf(c"%02x".as_ptr(), (abytes[i as usize] as u32) as i32) };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             i = i.wrapping_add(1);
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     println!("");
 // CHECK-NEXT:     let mut n: nested = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     {
 // CHECK-NEXT:         n.tag = 1i8;
@@ -163,10 +199,10 @@ int main(void) {
 // CHECK-NEXT:         n.rows[1].c = 7i8;
 // CHECK-NEXT:         n.rows[1].i = 8i32;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             let [[T_2:__t[0-9]+]]: *mut u8 = (std::ptr::addr_of_mut!(n) as *mut _) as *mut u8;
-// CHECK-NEXT:             [[T_2]].add(1usize).write_bytes(0u8, 7usize);
-// CHECK-NEXT:             [[T_2]].add(17usize).write_bytes(0u8, 3usize);
-// CHECK-NEXT:             [[T_2]].add(25usize).write_bytes(0u8, 3usize);
+// CHECK-NEXT:             let [[T_3:__t[0-9]+]]: *mut u8 = (std::ptr::addr_of_mut!(n) as *mut _) as *mut u8;
+// CHECK-NEXT:             [[T_3]].add(1usize).write_bytes(0u8, 7usize);
+// CHECK-NEXT:             [[T_3]].add(17usize).write_bytes(0u8, 3usize);
+// CHECK-NEXT:             [[T_3]].add(25usize).write_bytes(0u8, 3usize);
 // CHECK-NEXT:         };
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut nbytes: __SlateAlign16<[u8; 32]> = __SlateAlign16([0u8; 32]);

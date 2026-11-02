@@ -125,8 +125,7 @@ impl FunctionLowerer<'_, '_> {
                                 value: ValueKind::Aggregate { members, .. },
                                 ..
                             },
-                    }) if alignment.is_none()
-                        && self.zeroes_padding(variable)
+                    }) if self.zeroes_padding(variable)
                         && !matches!(self.tables.resolve_type(ty), ir::Type::Vector { .. }) =>
                     {
                         Some(members)
