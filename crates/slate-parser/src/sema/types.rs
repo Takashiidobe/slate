@@ -2626,8 +2626,10 @@ impl TypeResolver {
                 let char_type = self.ctypes.qual(CTypeKind::Char);
                 return Ok(self.ctypes.pointer(char_type));
             }
-            TypeSpecifier::TargetBuiltin(_) => {
-                return Err(ResolveError::Unimplemented("target builtin type"));
+            TypeSpecifier::TargetBuiltin(name) => {
+                return self
+                    .gcc_target_type(name)
+                    .ok_or(ResolveError::Rejected("unknown type name"));
             }
         };
         Ok(self.ctypes.qual(kind))

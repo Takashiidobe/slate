@@ -697,6 +697,11 @@ impl<'a> Preprocessor<'a> {
                  typedef struct __NSConstantString_tag __NSConstantString;\n",
             );
         }
+        if self.dialect.flavor() == CompilerFlavor::Gcc
+            && self.dialect.target().family == TargetFamily::AArch64
+        {
+            source.push_str(&crate::sema::gcc_aarch64_tuple_declarations());
+        }
         if self.dialect.features().microsoft_compatibility {
             source.push_str(&self.size_type_declaration());
         }

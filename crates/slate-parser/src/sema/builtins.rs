@@ -685,8 +685,40 @@ fn gcc_target_builtin(name: &str, family: TargetFamily) -> Option<&'static Clang
         TargetFamily::X86 => registered_builtin(GCC_X86_BUILTINS, name),
         TargetFamily::X86_64 => registered_builtin(GCC_X86_BUILTINS, name)
             .or_else(|| registered_builtin(GCC_X86_64_BUILTINS, name)),
-        TargetFamily::AArch64 | TargetFamily::Arm32 => None,
+        TargetFamily::AArch64 => registered_builtin(GCC_AARCH64_BUILTINS, name),
+        TargetFamily::Arm32 => registered_builtin(GCC_ARM_BUILTINS, name),
     }
+}
+
+fn gcc_target_types(family: TargetFamily) -> &'static [(&'static str, BuiltinParam)] {
+    match family {
+        TargetFamily::AArch64 => GCC_AARCH64_TYPES,
+        TargetFamily::Arm32 => GCC_ARM_TYPES,
+        _ => &[],
+    }
+}
+
+pub(crate) fn gcc_aarch64_tuple_declarations() -> String {
+    GCC_AARCH64_TUPLES
+        .iter()
+        .map(|(name, element, count)| {
+            format!("typedef struct {name} {{ {element} val[{count}]; }} {name};\n")
+        })
+        .collect()
+}
+
+pub(crate) fn is_gcc_aarch64_tuple_name(name: &str) -> bool {
+    GCC_AARCH64_TUPLES
+        .binary_search_by_key(&name, |(known, _, _)| known)
+        .is_ok()
+}
+
+pub(crate) fn is_gcc_target_type_name(name: &str) -> bool {
+    [GCC_AARCH64_TYPES, GCC_ARM_TYPES].iter().any(|types| {
+        types
+            .binary_search_by_key(&name, |(known, _)| known)
+            .is_ok()
+    })
 }
 
 fn target_builtin(name: &str, family: TargetFamily) -> Option<&'static ClangBuiltin> {
@@ -989,6 +1021,16 @@ impl TypeResolver {
         }))
     }
 
+    pub(super) fn gcc_target_type(&mut self, name: &str) -> Option<QualType> {
+        let target = self.target_info().clone();
+        if self.dialect().flavor() != CompilerFlavor::Gcc {
+            return None;
+        }
+        let types = gcc_target_types(target.family);
+        let index = types.binary_search_by_key(&name, |(known, _)| known).ok()?;
+        self.builtin_param(&types[index].1, &target)
+    }
+
     pub(super) fn builtin_return_type(&mut self, builtin: &ClangBuiltin) -> Option<QualType> {
         let target = self.target_info().clone();
         self.builtin_param(&builtin.prototype?.ret, &target)
@@ -1080,6 +1122,7 @@ include!("clang_builtins.rs");
 include!("clang_aarch64_builtins.rs");
 include!("gcc_builtins.rs");
 include!("gcc_x86_builtins.rs");
+include!("gcc_arm_builtins.rs");
 
 const FOLDABLE_BUILTINS: &[&str] = &[
     "__addressof",

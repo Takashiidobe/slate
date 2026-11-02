@@ -223,9 +223,12 @@ impl Resolver {
                 } else {
                     let entry = self.bind_ordinary(name, kind, linked, declarator)?;
                     if kind == BindingKind::Typedef
-                        && !self.flavor.is_gcc()
                         && self.ordinary.len() == 1
-                        && BUILTIN_TYPEDEFS.contains(&name)
+                        && if self.flavor.is_gcc() {
+                            crate::sema::is_gcc_aarch64_tuple_name(name)
+                        } else {
+                            BUILTIN_TYPEDEFS.contains(&name)
+                        }
                     {
                         self.resolution
                             .builtin_typedefs

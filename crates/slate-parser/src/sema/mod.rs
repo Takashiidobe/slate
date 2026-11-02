@@ -4,6 +4,9 @@ mod assertion;
 mod atomic;
 mod attributes;
 mod builtins;
+pub(crate) use builtins::{
+    gcc_aarch64_tuple_declarations, is_gcc_aarch64_tuple_name, is_gcc_target_type_name,
+};
 mod counted_loops;
 pub mod ctype;
 mod effects;

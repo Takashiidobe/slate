@@ -1042,6 +1042,7 @@ pub(crate) fn builtin_integer_typedef(name: &str) -> Option<IntegerType> {
 
 pub(crate) fn is_target_builtin_name(name: &str) -> bool {
     matches!(name, "__builtin_va_list" | "__builtin_ms_va_list")
+        || crate::sema::is_gcc_target_type_name(name)
 }
 
 fn tag_reference(
