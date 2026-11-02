@@ -179,8 +179,11 @@ impl FunctionLowerer<'_, '_> {
                     };
                     self.after_declaration = Some(self.lower_assignment(&place, value)?);
                 } else if self.zeroes_padding(variable)
-                    && let Some(clear) =
-                        self.clear_padding_at(self.local_bytes(variable.id), &variable.ty)
+                    && let Some(clear) = self.clear_padding_at(
+                        self.local_bytes(variable.id),
+                        &variable.ty,
+                        initialized_union_member(variable),
+                    )
                 {
                     self.after_declaration = Some(Stmt::Expr(clear));
                 } else if let Some(auto) = auto_init {
@@ -578,5 +581,20 @@ fn is_trivial_operand(value: &Expr) -> bool {
         Expr::Value(_) | Expr::Var(_) => true,
         Expr::Cast { expr, .. } | Expr::Unary { expr, .. } => is_trivial_operand(expr),
         _ => false,
+    }
+}
+
+fn initialized_union_member(variable: &ir::Variable) -> Option<usize> {
+    let ValueKind::Aggregate { members, .. } = &variable.initializer.as_ref()?.node.value else {
+        return None;
+    };
+    match members.as_slice() {
+        [
+            ir::AggregateMember {
+                target: ir::AggregateTarget::Field(index),
+                ..
+            },
+        ] => Some(*index),
+        _ => None,
     }
 }

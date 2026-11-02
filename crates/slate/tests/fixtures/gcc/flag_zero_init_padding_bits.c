@@ -88,6 +88,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: *mut u8 = (std::ptr::addr_of_mut!(u) as *mut _) as *mut u8;
+// CHECK-NEXT:         [[T_1]].add(1usize).write_bytes(0u8, 7usize);
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut p: padded = {
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: padded = unsafe { std::mem::zeroed() };

@@ -3,14 +3,33 @@ use slate_parser::compiler_options::ZeroInitPaddingBits;
 use slate_parser::target_info::Endian;
 
 impl Tables<'_> {
-    pub(super) fn padding_keep(&self, ty: &ir::Type) -> Option<Vec<u8>> {
+    pub(super) fn padding_keep(&self, ty: &ir::Type, member: Option<usize>) -> Option<Vec<u8>> {
         if !matches!(self.target.endian, Endian::Little) {
             return None;
         }
         let (size, _) = self.storage_of(ty)?;
         let mut keep = vec![0u8; usize::try_from(size).ok()?];
-        self.mark_data(ty, 0, &mut keep)?;
+        match member.and_then(|index| self.union_member_type(ty, index)) {
+            Some(member_ty) => self.mark_data(member_ty, 0, &mut keep)?,
+            None => self.mark_data(ty, 0, &mut keep)?,
+        }
         Some(keep)
+    }
+
+    fn union_member_type(&self, ty: &ir::Type, index: usize) -> Option<&ir::Type> {
+        let ir::Type::Defined(id) = self.resolve_type(ty) else {
+            return None;
+        };
+        let ir::TypeDefinitionKind::Record {
+            kind: ir::RecordKind::Union,
+            fields: Some(fields),
+            ..
+        } = &self.types.get(id)?.kind
+        else {
+            return None;
+        };
+        let field = fields.get(index)?;
+        field.bit_width.is_none().then_some(&field.ty)
     }
 
     fn mark_data(&self, ty: &ir::Type, base: u64, keep: &mut [u8]) -> Option<()> {
@@ -67,7 +86,7 @@ impl FunctionLowerer<'_, '_> {
         };
         let pointee = pointee.clone();
         let base = self.lower_value(pointer)?;
-        self.clear_padding_at(base, &pointee)
+        self.clear_padding_at(base, &pointee, None)
             .ok_or_else(|| unsupported_value(value))
     }
 
@@ -82,8 +101,13 @@ impl FunctionLowerer<'_, '_> {
         }
     }
 
-    pub(super) fn clear_padding_at(&mut self, base: Expr, pointee: &ir::Type) -> Option<Expr> {
-        let keep = self.tables.padding_keep(pointee)?;
+    pub(super) fn clear_padding_at(
+        &mut self,
+        base: Expr,
+        pointee: &ir::Type,
+        member: Option<usize>,
+    ) -> Option<Expr> {
+        let keep = self.tables.padding_keep(pointee, member)?;
         let bytes = self.next_temp();
         let byte_pointer = rust::Type::Ptr {
             mutable: true,
