@@ -115,9 +115,14 @@ Non-Apple targets link compiler-rt's BlocksRuntime through the
 `slate-blocks` crate (`crates/slate/vendor/slate-blocks`; `build.rs` compiles
 `runtime.c`/`data.c`). `translate-project` writes the crate and the manifest
 dependency only when a unit emitted `__slate_blocks`; the support module has
-`use slate_blocks as _` so rustc links it. Darwin uses libSystem. MSVC
-targets are skipped. The differential harness adds the same two C files to
-the oracle compile when `dg-options` has `-fblocks`.
+`use slate_blocks as _` so rustc links it. Darwin uses libSystem. The
+differential harness adds the same two C files to the oracle compile when
+`dg-options` has `-fblocks`.
+
+There is no MSVC support and none is planned: cl.exe has no blocks (C2059
+at `^`), and slate rejects `-fblocks` for the msvc flavor. Clang targeting
+`*-windows-msvc` with `-fblocks` would need a Windows BlocksRuntime, and
+slate skips building one.
 
 ## Testing
 
@@ -139,5 +144,4 @@ translated code.
 ## Not yet lowered
 
 - Referencing a `__block` variable inside its own initializer.
-- `__block` on MSVC targets, blocks in aggregates inside
-  non-constant global initializers.
+- Blocks in aggregates inside non-constant global initializers.
