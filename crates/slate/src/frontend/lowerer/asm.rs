@@ -1,4 +1,6 @@
 use super::*;
+use slate_parser::target::aarch64_isa::AArch64Feature;
+use slate_parser::target::isa::TargetIsa;
 use slate_parser::target_info::TargetFamily;
 use std::borrow::Cow;
 
@@ -2058,10 +2060,21 @@ impl FunctionLowerer<'_, '_> {
                     continue;
                 }
                 if !x86 && canonical == "vg" {
-                    if self
-                        .target_features
-                        .iter()
-                        .any(|feature| feature.starts_with("sve") || feature.starts_with("sme"))
+                    let module_sve = matches!(
+                        self.tables.target.isa,
+                        TargetIsa::AArch64(isa) if [
+                            AArch64Feature::Sve,
+                            AArch64Feature::Sve2,
+                            AArch64Feature::Sve2p1,
+                        ]
+                        .into_iter()
+                        .any(|feature| isa.features.contains(feature))
+                    );
+                    if module_sve
+                        || self
+                            .target_features
+                            .iter()
+                            .any(|feature| feature.starts_with("sve") || feature.starts_with("sme"))
                     {
                         return Err(unsupported_asm("vg clobber in an SVE function"));
                     }
