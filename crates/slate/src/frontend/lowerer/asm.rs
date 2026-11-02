@@ -1762,10 +1762,18 @@ impl FunctionLowerer<'_, '_> {
                             unsupported_asm(format!("explicit register {}", register.spelling))
                         })?;
                     match canonical {
-                        "bp" | "sp" => {
-                            return Err(unsupported_asm(format!(
-                                "reserved register operand {canonical}"
-                            )));
+                        "sp" => {
+                            return Err(unsupported_asm("reserved register operand sp"));
+                        }
+                        "bp" => {
+                            if reserved_operands
+                                .iter()
+                                .any(|(register, ..)| *register == canonical)
+                            {
+                                return Err(unsupported_asm("second reserved register operand bp"));
+                            }
+                            reserved = Some(canonical);
+                            rust::AsmReg::Class("reg".into())
                         }
                         "bx" if x86_32 => {
                             return Err(unsupported_asm("ebx operand"));
@@ -1967,7 +1975,9 @@ impl FunctionLowerer<'_, '_> {
                 let canonical = register.canonical.ok_or_else(|| {
                     unsupported_asm(format!("unknown clobber {}", register.spelling))
                 })?;
-                if !x86 && matches!(canonical, "x19" | "x29") {
+                if matches!(canonical, "x19" | "x29" if !x86)
+                    || matches!(canonical, "bp" | "sp" if x86)
+                {
                     if clobbered.insert(canonical) {
                         saved_reserved.push((canonical, operands.len(), None));
                         operands.push(rust::AsmOperand::Out {
@@ -1977,11 +1987,6 @@ impl FunctionLowerer<'_, '_> {
                         });
                     }
                     continue;
-                }
-                if matches!(canonical, "bp" | "sp") {
-                    return Err(unsupported_asm(format!(
-                        "reserved register clobber {canonical}"
-                    )));
                 }
                 let predicate = canonical
                     .strip_prefix('p')
@@ -2085,14 +2090,30 @@ impl FunctionLowerer<'_, '_> {
             template = format!("{save}\n{template}\n{restore}");
         }
         for (register, scratch, operand) in saved_reserved {
-            let mut save = format!("mov {{{scratch}:x}}, {register}");
-            let mut restore = format!("mov {register}, {{{scratch}:x}}");
+            let (name, modifier) = match (x86, x86_32) {
+                (false, _) => (register.to_string(), "x"),
+                (true, false) => (format!("r{register}"), "r"),
+                (true, true) => (format!("e{register}"), "e"),
+            };
+            let intel = !x86 || asm.dialect == Some(ir::AsmDialect::Intel);
+            let sigil = if x86 && !intel { "%" } else { "" };
+            let mov = |to_register: bool, slot: usize| {
+                let (register, slot) = (format!("{sigil}{name}"), format!("{{{slot}:{modifier}}}"));
+                match (to_register, intel) {
+                    (true, true) => format!("mov {register}, {slot}"),
+                    (false, true) => format!("mov {slot}, {register}"),
+                    (true, false) => format!("mov {slot}, {register}"),
+                    (false, false) => format!("mov {register}, {slot}"),
+                }
+            };
+            let mut save = mov(false, scratch);
+            let mut restore = mov(true, scratch);
             if let Some((slot, input, output)) = operand {
                 if input {
-                    save.push_str(&format!("\nmov {register}, {{{slot}:x}}"));
+                    save.push_str(&format!("\n{}", mov(true, slot)));
                 }
                 if output {
-                    restore = format!("mov {{{slot}:x}}, {register}\n{restore}");
+                    restore = format!("{}\n{restore}", mov(false, slot));
                 }
             }
             template = format!("{save}\n{template}\n{restore}");

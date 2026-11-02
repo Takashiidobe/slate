@@ -393,8 +393,9 @@ impossible.
   the compiler can produce that.
 - LLVM reserves rbx: a `b` operand rides in a scratch `reg` swapped into rbx with `xchg` before
   and after the template (inputs become `inout(..) => _`, outputs early), and an rbx clobber is
-  saved and restored with `mov` through an early `out(reg) _`. rbp/rsp operands and clobbers
-  remain barriers.
+  saved and restored with `mov` through an early `out(reg) _`. rbp gets the same treatment as an
+  operand (copied in and out through a scratch pair) and as a clobber; an rsp clobber is saved and
+  restored the same way. An rsp operand remains a barrier.
 - Memory operands pass their address `in(reg)`: `InPlace` as `&raw const`, memory `Out` and
   `InOut` as `&raw mut`, and an unaddressable `In(value)` spills to a temporary first. A
   reference prints `({N:r})` (AT&T) or `<size> ptr [{N:r}]` (Intel, size from the width);
