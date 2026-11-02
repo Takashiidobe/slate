@@ -108,6 +108,8 @@ fn return_label(returns: Option<&str>) -> String {
 
 #[derive(Debug, Clone, Error)]
 pub enum Invariant {
+    #[error("block literal without a body")]
+    BlockWithoutBody,
     #[error("unknown callee %{}", .0.0)]
     UnknownCallee(BindingId),
     #[error("unresolved type @type{}", .0.0)]

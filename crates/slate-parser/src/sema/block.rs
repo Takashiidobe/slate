@@ -77,7 +77,7 @@ impl Lowerer {
             self.seh_leave_targets,
         ) = enclosing;
         let (parameters, body) = lowered?;
-        let captures = self.block_captures(e.id, block);
+        let captures = self.block_captures(e.id, block)?;
         let id = self.fresh();
         let function = Function {
             id,
@@ -103,9 +103,13 @@ impl Lowerer {
         ))
     }
 
-    fn block_captures(&self, node: NodeId, block: &AstBlock) -> Vec<BlockCapture> {
+    fn block_captures(
+        &self,
+        node: NodeId,
+        block: &AstBlock,
+    ) -> Result<Vec<BlockCapture>, ResolveError> {
         let Some(range) = self.names.block_ranges.get(&node) else {
-            return Vec::new();
+            return Ok(Vec::new());
         };
         let mut scan = ReferenceScan {
             references: &self.types.references,
@@ -115,9 +119,17 @@ impl Lowerer {
         scan.found
             .into_iter()
             .filter(|id| id.0 < range.start && self.is_local_object(*id))
-            .map(|id| BlockCapture {
-                id,
-                by_reference: self.types.block_variables.contains(&id),
+            .map(|id| {
+                let c = self
+                    .types
+                    .entities
+                    .ty(&id)
+                    .ok_or(ResolveError::Internal("captured variable has no type"))?;
+                Ok(BlockCapture {
+                    id,
+                    ty: self.types.object_type(c, "captured variable type")?,
+                    by_reference: self.types.block_variables.contains(&id),
+                })
             })
             .collect()
     }

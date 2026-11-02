@@ -144,6 +144,7 @@ pub struct Variable {
     pub register: Option<super::AsmRegister>,
     pub initializer: Option<Value>,
     pub auto_init: Option<AutoInit>,
+    pub byref: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -13,6 +13,7 @@ mod asm;
 mod atomics;
 mod auto_init;
 mod bitint;
+mod blocks;
 mod calls;
 mod comment_text;
 mod comments;
@@ -101,6 +102,9 @@ struct Tables<'m> {
 #[derive(Default)]
 struct Dependencies {
     alloca: bool,
+    blocks: bool,
+    block_items: Vec<Item>,
+    block_serial: u32,
     cleanup: bool,
     rounding: bool,
     x86_interrupt: bool,
@@ -176,6 +180,7 @@ struct FunctionLowerer<'a, 'm> {
     in_static_initializer: bool,
     target_features: Vec<&'static str>,
     omp_shared: HashMap<BindingId, String>,
+    byref: HashSet<BindingId>,
 }
 
 impl FunctionLowerer<'_, '_> {
@@ -705,29 +710,7 @@ impl<'m> ModuleLowerer<'m> {
     }
 
     fn lowerer(&mut self) -> FunctionLowerer<'_, 'm> {
-        FunctionLowerer {
-            tables: &self.tables,
-            dependencies: &mut self.dependencies,
-            temps: 0,
-            locals: Default::default(),
-            owner: String::new(),
-            hoisted: Vec::new(),
-            dispatch_bindings: HashSet::new(),
-            dispatch_vlas: HashSet::new(),
-            aligned_locals: HashSet::new(),
-            register_locals: HashSet::new(),
-            counted_loops: HashSet::new(),
-            non_index_names: HashSet::new(),
-            macro_sites: Vec::new(),
-            macro_template_check: false,
-            old_value: None,
-            declaring: std::cell::Cell::new(None),
-            after_declaration: None,
-            uses_alloca: false,
-            in_static_initializer: false,
-            target_features: Vec::new(),
-            omp_shared: HashMap::new(),
-        }
+        FunctionLowerer::new(&self.tables, &mut self.dependencies)
     }
 
     fn declare(&mut self) -> std::result::Result<(), InvalidIr> {
@@ -1184,6 +1167,17 @@ impl<'m> ModuleLowerer<'m> {
                 Item::SupportModule(rust::SupportModule {
                     name: "__slate_cleanup".into(),
                     source: include_str!("support/cleanup.rs").into(),
+                    exports: Vec::new(),
+                }),
+            );
+        }
+        items.extend(dependencies.block_items);
+        if dependencies.blocks {
+            items.insert(
+                0,
+                Item::SupportModule(rust::SupportModule {
+                    name: "__slate_blocks".into(),
+                    source: include_str!("support/blocks.rs").into(),
                     exports: Vec::new(),
                 }),
             );

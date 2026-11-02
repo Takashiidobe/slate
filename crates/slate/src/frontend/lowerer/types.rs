@@ -1065,6 +1065,13 @@ impl FunctionLowerer<'_, '_> {
                     inner: Box::new(self.lower_type(pointee)?),
                 });
             }
+            ir::Type::BlockPointer { .. } => {
+                self.dependencies.blocks = true;
+                return Ok(rust::Type::Ptr {
+                    mutable: true,
+                    inner: Box::new(rust::Type::Custom("std::ffi::c_void".into())),
+                });
+            }
             ir::Type::Array { element, length } => {
                 return Ok(rust::Type::Array {
                     elem: Box::new(self.lower_type(element)?),

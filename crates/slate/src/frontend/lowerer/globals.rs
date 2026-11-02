@@ -150,6 +150,7 @@ impl Tables<'_> {
             | ValueKind::Null
             | ValueKind::LabelAddress(_)
             | ValueKind::FunctionDecay { .. } => true,
+            ValueKind::Block(block) => block.captures.is_empty(),
             ValueKind::Read {
                 place:
                     ir::Place {

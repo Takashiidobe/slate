@@ -71,7 +71,7 @@ impl FunctionLowerer<'_, '_> {
                 value,
             },
         };
-        Ok(if self.tables.place_is_unsafe(place) {
+        Ok(if self.place_is_unsafe(place) {
             Stmt::Unsafe {
                 body: rust::Block {
                     stmts: vec![assignment],
@@ -106,6 +106,7 @@ impl FunctionLowerer<'_, '_> {
                     .map(|value| self.lower_value(value))
                     .transpose()?,
             },
+            ir::Statement::Let(variable) if variable.byref => self.lower_byref_let(variable)?,
             ir::Statement::Let(variable) if self.tables.variably_modified(&variable.ty) => {
                 self.lower_vla_let(variable)?
             }
@@ -255,7 +256,7 @@ impl FunctionLowerer<'_, '_> {
                     source,
                     convention,
                 } => {
-                    let unsafe_source = self.tables.place_is_unsafe(source);
+                    let unsafe_source = self.place_is_unsafe(source);
                     let source = self.lower_place(source)?;
                     let source = match convention {
                         ir::VaConvention::Target if unsafe_source => {

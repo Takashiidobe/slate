@@ -393,6 +393,9 @@ impl Printer<'_> {
         if variable.constexpr {
             f.write_str(" [constexpr]")?;
         }
+        if variable.byref {
+            f.write_str(" [byref]")?;
+        }
         if let Some(alignment) = variable.alignment {
             write!(f, " [align={alignment}]")?;
         }

@@ -162,7 +162,7 @@ global       = ( "global" | "extern" ) variable linkage symbol_attrs
                [ "[common]" ] { metadata } ";" ;
 variable     = binding name ":" [ access_prefix ] type "[storage=" storage "]"
                [ "[restrict]" ] [ "[const]" ] [ "[constexpr]" ]
-               [ "[align=" int "]" ] [ "[cleanup=%" int "]" ]
+               [ "[byref]" ] [ "[align=" int "]" ] [ "[cleanup=%" int "]" ]
                [ "[register=" string "]" ] [ auto_init ] [ "=" value ] ;
 auto_init    = "[auto_init=zero]"
              | "[auto_init=pattern(typed, integer=" byte ", floating=" byte ")]"

@@ -733,7 +733,7 @@ impl FunctionLowerer<'_, '_> {
                         binding: CallBinding::Generated,
                     }
                 } else {
-                    let recv = if self.tables.place_is_unsafe(list) {
+                    let recv = if self.place_is_unsafe(list) {
                         through_raw_pointer(self.lower_place(list)?)
                     } else {
                         self.lower_place(list)?
@@ -861,7 +861,7 @@ impl FunctionLowerer<'_, '_> {
                     None => self.lower_place(place)?,
                 };
                 let lowered = if matches!(value.ty, ir::Type::VaList) {
-                    clone_va_list(if self.tables.place_is_unsafe(place) {
+                    clone_va_list(if self.place_is_unsafe(place) {
                         through_raw_pointer(lowered)
                     } else {
                         lowered
@@ -869,7 +869,7 @@ impl FunctionLowerer<'_, '_> {
                 } else {
                     lowered
                 };
-                if self.tables.place_is_unsafe(place) {
+                if self.place_is_unsafe(place) {
                     Expr::Unsafe(Box::new(rust::Block {
                         stmts: Vec::new(),
                         tail: Some(Box::new(lowered)),
@@ -921,7 +921,7 @@ impl FunctionLowerer<'_, '_> {
                         ),
                         expr: Box::new(self.lower_place(place)?),
                     };
-                    if self.tables.place_is_unsafe(place) {
+                    if self.place_is_unsafe(place) {
                         Expr::Unsafe(Box::new(rust::Block {
                             stmts: Vec::new(),
                             tail: Some(Box::new(address)),
@@ -1119,7 +1119,7 @@ impl FunctionLowerer<'_, '_> {
                         ),
                         ty: self.lower_value_type(value)?,
                     };
-                    return Ok(if self.tables.place_is_unsafe(place) {
+                    return Ok(if self.place_is_unsafe(place) {
                         Expr::Unsafe(Box::new(rust::Block {
                             stmts: Vec::new(),
                             tail: Some(Box::new(decayed)),
@@ -1486,6 +1486,7 @@ impl FunctionLowerer<'_, '_> {
                 }
             }
             ValueKind::Null => self.lower_null(value)?,
+            ValueKind::Block(block) => self.lower_block_literal(block)?,
             ValueKind::LabelAddress(id) => Expr::Cast {
                 expr: Box::new(Expr::Value(rust::RustValue::Usize(
                     control_flow::label_code(*id),

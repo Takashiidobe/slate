@@ -1219,6 +1219,7 @@ impl Lowerer {
                     register: None,
                     initializer: Some(initializer.value),
                     auto_init: None,
+                    byref: false,
                 }));
                 self.module
                     .annotate(&local, self.types.render(resolved).entries());
@@ -1656,6 +1657,7 @@ impl Lowerer {
                 .then(|| self.types.auto_init(resolved))
                 .flatten(),
                 initializer,
+                byref: item.specifiers.is_block && storage == StorageDuration::Automatic,
             };
             if storage != StorageDuration::Automatic
                 && matches!(variable.ty, Type::VariableArray { .. })
@@ -1974,6 +1976,7 @@ impl Lowerer {
             register: None,
             initializer: None,
             auto_init: None,
+            byref: false,
         }
     }
 

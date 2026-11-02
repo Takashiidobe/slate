@@ -88,7 +88,7 @@ int conversions(binop f, void *p) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_counter:[0-9]+]] @counter() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_base:[0-9]+]] base: i32 [storage=automatic] = const<i32>(10);
-// DEFAULT-NEXT:         let %[[VALUE_total:[0-9]+]] total: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_total:[0-9]+]] total: i32 [storage=automatic] [byref] = const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_add:[0-9]+]] add: block<fn(i32, i32) -> i32> [storage=automatic] = block_literal<block<fn(i32, i32) -> i32>, captures=[%[[VALUE_base]]], statements=1>;
 // DEFAULT-NEXT:         let %[[VALUE_bump:[0-9]+]] bump: block<fn() -> void> [storage=automatic] = block_literal<block<fn() -> void>, captures=[%[[VALUE_total]] byref], statements=3>;
 // DEFAULT-NEXT:         call<void>(read<block<fn() -> void>>(%[[VALUE_bump]]));

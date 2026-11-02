@@ -495,7 +495,12 @@ impl Checker<'_> {
         let mut deduced = None;
         for declarator in &declaration.declarators {
             self.declarator(&declarator.declarator);
-            if declaration.specifiers.is_block
+            if (declaration.specifiers.is_block
+                || declaration.specifiers.is_thread_local
+                || matches!(
+                    declaration.specifiers.storage,
+                    StorageClass::Static | StorageClass::Extern
+                ))
                 && let Some(&id) = self.names.declarations.get(&declarator.id)
             {
                 self.types.block_variables.insert(id);

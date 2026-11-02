@@ -582,11 +582,23 @@ pub fn compile_c_multi_with_std_include_and_args(
     let cache_key = serde_json::to_string(&(3, srcs, cc(), std, include_dir, extra_args))
         .map_err(|e| format!("encode multi-file C cache key: {e}"))?;
     let inputs: Vec<&Path> = srcs.iter().map(PathBuf::as_path).collect();
+    let blocks = extra_args
+        .iter()
+        .any(|argument| argument == "-fblocks")
+        .then(blocks_runtime_sources)
+        .unwrap_or_default();
+    let mut inputs = inputs;
+    inputs.extend(blocks.iter().map(PathBuf::as_path));
     compile_c_cached(&inputs, out, &cache_key, "C compile failed", |temporary| {
-        Command::new(cc())
+        let mut command = Command::new(cc());
+        if !blocks.is_empty() {
+            command.arg(format!("-I{}", blocks_runtime_dir().display()));
+        }
+        command
             .args(["-O0", &format!("-std={std}"), "-fcommon", "-o"])
             .arg(temporary)
             .args(srcs)
+            .args(&blocks)
             .args(include_dir.map(|dir| format!("-I{}", dir.display())))
             .args(extra_args)
             .arg("-lm")

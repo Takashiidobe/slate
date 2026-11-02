@@ -250,7 +250,8 @@ through the same `if` lowering (`ir_statement_expressions.c`).
 parameters, body and fallthrough, linkage internal) whose `return` statements
 act on the block, not the enclosing function. `captures` lists the enclosing
 locals the body references, in first-use order; `by_reference` marks `__block`
-variables, which the backend must keep in shared storage. Everything else is
+variables, which the backend must keep in shared storage (their `Let` carries
+`byref`, printed `[byref]`); `ty` is the captured variable's type. Everything else is
 captured by value at block creation. Assigning a captured non-`__block`
 variable is rejected by the checker. A call through a block pointer is a
 `Call` with an indirect callee whose value has the block pointer type.

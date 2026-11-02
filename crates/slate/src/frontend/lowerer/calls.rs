@@ -41,6 +41,14 @@ impl FunctionLowerer<'_, '_> {
         arguments: &[ir::Value],
         signature: &ir::Type,
     ) -> Result<Expr> {
+        if let ir::Callee::Indirect(pointer) = callee
+            && matches!(
+                self.tables.resolve_type(&pointer.ty),
+                ir::Type::BlockPointer { .. }
+            )
+        {
+            return self.lower_block_call(pointer, arguments, signature);
+        }
         let names = &self.tables.names;
         let func = match callee {
             ir::Callee::Direct(id) if self.tables.stdio.functions.contains_key(id) => {

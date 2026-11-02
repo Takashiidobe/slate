@@ -72,9 +72,10 @@ pub struct BlockLiteral {
     pub captures: Vec<BlockCapture>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub struct BlockCapture {
     pub id: BindingId,
+    pub ty: Type,
     pub by_reference: bool,
 }
 

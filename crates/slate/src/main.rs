@@ -281,6 +281,7 @@ fn crate_manifest(
     package: &str,
     tests: &[String],
     c_shims: bool,
+    blocks: bool,
     cargo_features: &BTreeSet<String>,
     lib_crate_types: Option<&[String]>,
 ) -> String {
@@ -314,6 +315,11 @@ harness = false
             types.join(", ")
         )
     });
+    let blocks_line = if blocks {
+        "slate-blocks = { path = \"slate-blocks\" }\n"
+    } else {
+        ""
+    };
     let bitfields_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/bitfields");
     let features_section: String = if cargo_features.is_empty() {
         String::new()
@@ -339,7 +345,7 @@ aligned = {{ path = "aligned" }}
 bitint = {{ path = "bitint" }}
 num-complex = {{ path = "num-complex", default-features = false }}
 bitfields = {{ path = "{}" }}
-{build_section}
+{blocks_line}{build_section}
 [profile.dev]
 overflow-checks = false
 debug-assertions = false
@@ -354,12 +360,20 @@ fn write_crate_manifest(
     package: &str,
     tests: &[String],
     c_shims: bool,
+    blocks: bool,
     cargo_features: &BTreeSet<String>,
     lib_crate_types: Option<&[String]>,
 ) -> Result<(), String> {
     std::fs::write(
         crate_dir.join("Cargo.toml"),
-        crate_manifest(package, tests, c_shims, cargo_features, lib_crate_types),
+        crate_manifest(
+            package,
+            tests,
+            c_shims,
+            blocks,
+            cargo_features,
+            lib_crate_types,
+        ),
     )
     .map_err(|e| format!("write {}: {e}", crate_dir.join("Cargo.toml").display()))
 }
@@ -374,6 +388,7 @@ fn init_crate(crate_dir: &Path, lib_crate_types: Option<&[String]>) -> Result<()
         crate_dir,
         &package,
         &[],
+        false,
         false,
         &BTreeSet::new(),
         lib_crate_types,
@@ -453,6 +468,52 @@ fn write_slate_support(crate_dir: &Path) -> Result<(), String> {
         &src_dir.join("lib.rs"),
         include_str!("../vendor/slate-support/src/lib.rs"),
     )
+}
+
+fn write_blocks_support(crate_dir: &Path) -> Result<(), String> {
+    let blocks_dir = crate_dir.join("slate-blocks");
+    let c_dir = blocks_dir.join("c");
+    let src_dir = blocks_dir.join("src");
+    for dir in [&c_dir, &src_dir] {
+        std::fs::create_dir_all(dir).map_err(|e| format!("create {}: {e}", dir.display()))?;
+    }
+    for (path, contents) in [
+        (
+            blocks_dir.join("Cargo.toml"),
+            include_str!("../vendor/slate-blocks/Cargo.toml.template"),
+        ),
+        (
+            blocks_dir.join("build.rs"),
+            include_str!("../vendor/slate-blocks/build.rs"),
+        ),
+        (
+            src_dir.join("lib.rs"),
+            include_str!("../vendor/slate-blocks/src/lib.rs"),
+        ),
+        (
+            c_dir.join("runtime.c"),
+            include_str!("../vendor/slate-blocks/c/runtime.c"),
+        ),
+        (
+            c_dir.join("data.c"),
+            include_str!("../vendor/slate-blocks/c/data.c"),
+        ),
+        (
+            c_dir.join("Block_private.h"),
+            include_str!("../vendor/slate-blocks/c/Block_private.h"),
+        ),
+        (
+            c_dir.join("Block.h"),
+            include_str!("../vendor/slate-blocks/c/Block.h"),
+        ),
+        (
+            c_dir.join("config.h"),
+            include_str!("../vendor/slate-blocks/c/config.h"),
+        ),
+    ] {
+        write_file(&path, contents)?;
+    }
+    Ok(())
 }
 
 fn write_bitint_support(crate_dir: &Path) -> Result<(), String> {
@@ -1052,6 +1113,11 @@ fn write_project_crate(
             program,
         ));
     }
+    let uses_blocks = programs.iter().any(|(_, program)| {
+        program.items.iter().any(|item| {
+            matches!(item, rust_ast::Item::SupportModule(module) if module.name.as_str() == "__slate_blocks")
+        })
+    });
     let mut rust_features = BTreeSet::new();
     for (_, program) in &programs {
         for item in &program.items {
@@ -1168,11 +1234,15 @@ fn write_project_crate(
         .map_err(|e| format!("write {}: {e}", shim_path.display()))?;
         written.push(shim_path);
     }
+    if uses_blocks {
+        write_blocks_support(crate_dir)?;
+    }
     write_crate_manifest(
         crate_dir,
         &package_name(crate_dir),
         &[],
         has_shims,
+        uses_blocks,
         &cargo_features,
         lib_crate_types.as_deref(),
     )?;
