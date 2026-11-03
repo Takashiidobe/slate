@@ -18,6 +18,9 @@ cargo run --release -p slate-libc-gen
   `crates/slate/src/backend/clib_records_table.rs`.
 - `--symbols-out <file>`: function, global, scalar typedef and integer constant
   catalog; defaults to `crates/slate/src/libc_symbols_table.rs`.
+- `--support-manifest <file>`: support manifest with generated Windows feature
+  requirements; defaults to
+  `crates/slate/vendor/slate-support/Cargo.toml.template`.
 - `--report <file>`: accepted mappings and exclusions with reasons; defaults to
   `target/libc-gen-report.md`.
 - `--work <dir>`: retain the probe crates and object files for inspection.
@@ -29,6 +32,12 @@ Apple targets also discover public bindings in the vendored `mach2` through
 nightly rustdoc JSON. Module documentation supplies C header candidates;
 definitions supply `slate_support::mach` paths. Ambiguous names stay local.
 Discovery does not bypass the signature, symbol, layout or value checks.
+
+Windows targets discover public `windows-sys` userspace bindings through the
+same rustdoc inventory and probe `windows.h` alongside the C library headers.
+The support manifest enables only the feature modules required by verified
+bindings and their referenced types. Use an alternate `--support-manifest`
+alongside alternate catalogs when probing a partial target matrix.
 
 Mappings use the C translation target, independently of the machine running
 Slate. Identical mappings share a target group; a mismatch excludes only the

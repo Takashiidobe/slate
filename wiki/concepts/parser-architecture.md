@@ -24,6 +24,9 @@ argv → Dialect → preprocess → parse → sema: names → check → lower �
   ([configuration-threading](configuration-threading.md)).
 - slate-parser emits the IR, and Slate (`../slate`) turns it into Rust. We
   own the IR, so we also own that boundary.
+- Binding discovery opts out of header reachability filtering with
+  `Parser::with_all_declarations(true)` or CLI `--all-declarations`. Headers
+  are still preprocessed once; normal translation retains its existing roots.
 
 ## Checker first, lowering trusts
 

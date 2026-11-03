@@ -37,30 +37,69 @@ pub fn prepare_libc(libc: &Path, work: &Path) -> Result<PathBuf> {
         let _ = std::fs::remove_file(&link);
         std::os::unix::fs::symlink(libc.join(entry), link)?;
     }
-    let mach = work.join("mach2");
-    std::fs::create_dir_all(&mach)?;
-    let mach_source = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../slate/vendor/mach2")
-        .canonicalize()?;
-    std::fs::copy(
-        mach_source.join("Cargo.toml.template"),
-        mach.join("Cargo.toml"),
+    for name in ["mach2", "windows-sys", "windows-link", "slate-support"] {
+        let destination = work.join(name);
+        std::fs::create_dir_all(&destination)?;
+        let source = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../slate/vendor")
+            .join(name)
+            .canonicalize()?;
+        for entry in std::fs::read_dir(&source)? {
+            let entry = entry?;
+            let name = entry.file_name();
+            if name == "src" {
+                let link = destination.join("src");
+                let _ = std::fs::remove_file(&link);
+                std::os::unix::fs::symlink(entry.path(), link)?;
+            } else if entry.file_type()?.is_file() {
+                let name = if name == "Cargo.toml.template" {
+                    "Cargo.toml".into()
+                } else {
+                    name
+                };
+                std::fs::copy(entry.path(), destination.join(name))?;
+            }
+        }
+    }
+    let support = work.join("slate-support/Cargo.toml");
+    let manifest = std::fs::read_to_string(&support)?;
+    std::fs::write(&support, format!("{manifest}\n[workspace]\n"))?;
+    let output = Command::new("cargo")
+        .args(["metadata", "--format-version=1", "--manifest-path"])
+        .arg(&support)
+        .output()
+        .context("binding dependency metadata")?;
+    if !output.status.success() {
+        bail!(
+            "binding dependency metadata: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+    let metadata: serde_json::Value = serde_json::from_slice(&output.stdout)?;
+    let package = metadata["packages"]
+        .as_array()
+        .context("binding packages")?
+        .iter()
+        .find(|package| package["name"] == "windows-sys")
+        .context("windows-sys metadata")?;
+    let features = package["features"]
+        .as_object()
+        .context("windows-sys features")?
+        .keys()
+        .filter(|name| name.starts_with("Win32"))
+        .cloned()
+        .collect::<Vec<_>>();
+    std::fs::write(
+        work.join("windows-features.json"),
+        serde_json::to_vec(&features)?,
     )?;
-    let link = mach.join("src");
-    let _ = std::fs::remove_file(&link);
-    std::os::unix::fs::symlink(mach_source.join("src"), link)?;
-    let support = work.join("slate-support");
-    std::fs::create_dir_all(&support)?;
-    let support_source = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../slate/vendor/slate-support")
-        .canonicalize()?;
-    std::fs::copy(
-        support_source.join("Cargo.toml.template"),
-        support.join("Cargo.toml"),
+    std::fs::write(
+        support,
+        format!(
+            "{}\n[workspace]\n",
+            crate::providers::with_windows_features(&manifest, &features)
+        ),
     )?;
-    let link = support.join("src");
-    let _ = std::fs::remove_file(&link);
-    std::os::unix::fs::symlink(support_source.join("src"), link)?;
     Ok(dir)
 }
 

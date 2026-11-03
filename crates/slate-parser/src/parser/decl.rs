@@ -315,17 +315,18 @@ impl Parser {
         for annotation in input.take_remaining() {
             decls.push(self.declaration_annotation(annotation)?);
         }
-        let unit = filter_translation_unit(
-            &TranslationUnit {
-                dialect: self.dialect().clone(),
-                decls,
-                tags: self.tags.take(),
-                macros: MacroInvocations::default(),
-                macro_type_arguments: Vec::new(),
-            },
-            root_file,
-            &self.forced_roots,
-        );
+        let unit = TranslationUnit {
+            dialect: self.dialect().clone(),
+            decls,
+            tags: self.tags.take(),
+            macros: MacroInvocations::default(),
+            macro_type_arguments: Vec::new(),
+        };
+        let unit = if self.all_declarations {
+            unit
+        } else {
+            filter_translation_unit(&unit, root_file, &self.forced_roots)
+        };
         let macro_type_arguments = super::macro_nodes::map_macro_nodes(&input, &unit, &mut macros);
         Ok(TranslationUnit {
             macros,

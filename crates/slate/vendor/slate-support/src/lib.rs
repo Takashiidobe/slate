@@ -6,6 +6,9 @@ pub use libc::*;
 #[cfg(target_vendor = "apple")]
 pub use mach2 as mach;
 
+#[cfg(windows)]
+pub use windows_sys as windows;
+
 unsafe extern "C" {
     pub fn putc(c: c_int, stream: *mut FILE) -> c_int;
     pub fn getc(stream: *mut FILE) -> c_int;

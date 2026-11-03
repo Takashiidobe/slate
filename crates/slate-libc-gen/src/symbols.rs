@@ -101,8 +101,15 @@ pub fn collect(
             }
         }
         let macros: Vec<String> = definitions.into_keys().collect();
-        let Ok((module, _)) = unit.parse_module() else {
-            continue;
+        let parsed = if header == "windows.h" {
+            unit.parse_module_all_declarations()
+        } else {
+            unit.parse_module()
+        };
+        let (module, _) = match parsed {
+            Ok(module) => module,
+            Err(error) if header == "windows.h" => return Err(error.into()),
+            Err(_) => continue,
         };
         let record = |name: &str| {
             let definition = module
@@ -120,7 +127,7 @@ pub fn collect(
                 })
                 .map(|entry| entry.rust_path.clone())
         };
-        let shape = |ty: &ir::Type, c| {
+        let shape = |ty: &ir::Type, c, system| {
             libc_catalog::shape(
                 ty,
                 &module.types,
@@ -128,6 +135,7 @@ pub fn collect(
                 c,
                 &record,
                 module.target.pointer_width,
+                system,
             )
         };
         for function in &module.functions {
@@ -147,6 +155,7 @@ pub fn collect(
             let Some(mut shape) = shape(
                 &ty,
                 module.c_types.bindings.get(&function.value.id).copied(),
+                providers.system_abi(&function.name),
             ) else {
                 rejected.insert(format!(
                     "function `{}`: unverified signature type",
@@ -184,6 +193,7 @@ pub fn collect(
             let Some(shape) = shape(
                 &global.variable.ty,
                 module.c_types.bindings.get(&global.variable.id).copied(),
+                providers.system_abi(&global.variable.name),
             ) else {
                 continue;
             };
@@ -211,7 +221,7 @@ pub fn collect(
             }
             if let TypeDefinitionKind::Alias(ty) = &definition.kind
                 && let Some(name) = &definition.name
-                && let Some(shape) = shape(ty, None)
+                && let Some(shape) = shape(ty, None, false)
                 && matches!(
                     shape.as_str(),
                     "i8" | "u8"
@@ -312,7 +322,9 @@ pub fn collect(
             if candidate.kind == Kind::Type {
                 let support = format!("slate_support::{}", rust_side::ident(&candidate.name));
                 candidate.rust_path = support.clone();
-                if path.starts_with("slate_support::mach::") {
+                if path.starts_with("slate_support::mach::")
+                    || path.starts_with("slate_support::windows::")
+                {
                     let mut alternative = candidate.clone();
                     alternative.rust_path = path;
                     return vec![candidate, alternative];
@@ -372,11 +384,25 @@ pub fn collect(
                 && let Ok(symbol) = object.symbol_by_index(referenced)
                 && let Ok(name) = symbol.name()
             {
-                let name = if object.format() == object::BinaryFormat::MachO
-                    || (object.format() == object::BinaryFormat::Coff
-                        && target.starts_with("i686-"))
-                {
+                let name = if object.format() == object::BinaryFormat::MachO {
                     name.strip_prefix('_').unwrap_or(name)
+                } else {
+                    name
+                };
+                let name = if target.ends_with("-windows-msvc") {
+                    let name = name.strip_prefix("__imp_").unwrap_or(name);
+                    let name = if target.starts_with("i686-") {
+                        name.strip_prefix('_').unwrap_or(name)
+                    } else {
+                        name
+                    };
+                    if target.starts_with("i686-") {
+                        name.rsplit_once('@')
+                            .filter(|(_, suffix)| suffix.parse::<u32>().is_ok())
+                            .map_or(name, |(name, _)| name)
+                    } else {
+                        name
+                    }
                 } else {
                     name
                 };

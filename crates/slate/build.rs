@@ -47,4 +47,6 @@ fn main() {
     );
     write_vendored_crate("libc", "VENDORED_LIBC");
     write_vendored_crate("mach2", "VENDORED_MACH2");
+    write_vendored_crate("windows-sys", "VENDORED_WINDOWS_SYS");
+    write_vendored_crate("windows-link", "VENDORED_WINDOWS_LINK");
 }

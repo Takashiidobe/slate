@@ -279,10 +279,15 @@ fn support_crate_path(name: &str, project: &Path) -> Result<PathBuf, String> {
     let template = source.join("Cargo.toml.template");
     let manifest = std::fs::read_to_string(&template)
         .map_err(|e| format!("read {}: {e}", template.display()))?;
-    let manifest = format!(
-        "{manifest}\n[lib]\npath = {:?}\n",
-        source.join("src/lib.rs").to_string_lossy()
-    );
+    let path = source.join("src/lib.rs");
+    let manifest = if manifest.contains("[lib]") {
+        manifest.replace(
+            "path = \"src/lib.rs\"",
+            &format!("path = {:?}", path.to_string_lossy()),
+        )
+    } else {
+        format!("{manifest}\n[lib]\npath = {:?}\n", path.to_string_lossy())
+    };
     let dest = project.join("vendor").join(name);
     write_if_changed(dest.join("Cargo.toml"), manifest.as_bytes())
         .map_err(|e| format!("write {name} manifest: {e}"))?;
@@ -316,6 +321,8 @@ fn generated_crate_manifest(name: &str, project: &Path) -> Result<String, String
     support_crate_path("num-traits", project)?;
     support_crate_path("libc", project)?;
     support_crate_path("mach2", project)?;
+    support_crate_path("windows-sys", project)?;
+    support_crate_path("windows-link", project)?;
     Ok(format!(
         r#"[package]
 name = "{name}"

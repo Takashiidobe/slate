@@ -327,6 +327,11 @@ impl PreprocessedUnit {
         self.parser.preprocessed_fingerprint(&self.preprocessed)
     }
 
+    pub fn parse_module_all_declarations(mut self) -> Result<(Module, Files), Error> {
+        self.parser = self.parser.with_all_declarations(true);
+        self.parse_module()
+    }
+
     pub fn parse_module(self) -> Result<(Module, Files), Error> {
         let Self {
             mut parser,

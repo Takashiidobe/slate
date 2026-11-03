@@ -41,6 +41,11 @@ struct Args {
     report: PathBuf,
     #[arg(long, default_value = "crates/slate/src/libc_symbols_table.rs")]
     symbols_out: PathBuf,
+    #[arg(
+        long,
+        default_value = "crates/slate/vendor/slate-support/Cargo.toml.template"
+    )]
+    support_manifest: PathBuf,
     #[arg(long)]
     work: Option<PathBuf>,
     #[arg(long = "target")]
@@ -134,6 +139,32 @@ fn main() -> Result<()> {
             Ok((target, result))
         })
         .collect::<Result<_>>()?;
+    if targets
+        .iter()
+        .any(|target| target.ends_with("-windows-msvc"))
+    {
+        let mut features = std::collections::BTreeSet::new();
+        for (target, symbols) in &symbol_data {
+            for symbol in &symbols.accepted {
+                features.extend(data[target].providers.features(&symbol.rust_path));
+            }
+            for entry in &entries {
+                if entry.targets.contains(target)
+                    && !matches!(entry.outcome, decide::Outcome::Excluded)
+                {
+                    features.extend(data[target].providers.features(&entry.rust_path));
+                }
+            }
+        }
+        let manifest = std::fs::read_to_string(
+            PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                .join("../slate/vendor/slate-support/Cargo.toml.template"),
+        )?;
+        std::fs::write(
+            &args.support_manifest,
+            providers::with_windows_features(&manifest, &features.into_iter().collect::<Vec<_>>()),
+        )?;
+    }
     std::fs::write(&args.out, table)?;
     std::fs::write(&args.symbols_out, symbols::table(&symbol_data))?;
     let mut report = decide::report(&entries, &data, &conflicts);

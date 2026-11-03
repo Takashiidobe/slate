@@ -122,6 +122,7 @@ pub struct Parser {
     defines: Vec<String>,
     preprocessor_inputs: PreprocessorInputs,
     forced_roots: Vec<FileId>,
+    all_declarations: bool,
     biggest_alignment: i64,
     dialect: Dialect,
     tags: Rc<RefCell<Vec<Span<TagDefinition>>>>,
@@ -373,6 +374,7 @@ impl Parser {
             defines: Vec::new(),
             preprocessor_inputs: PreprocessorInputs::default(),
             forced_roots: Vec::new(),
+            all_declarations: false,
             biggest_alignment: FALLBACK_BIGGEST_ALIGNMENT,
             dialect,
             tags: Rc::default(),
@@ -388,6 +390,11 @@ impl Parser {
 
     pub fn with_preprocessor_inputs(mut self, inputs: PreprocessorInputs) -> Self {
         self.preprocessor_inputs = inputs;
+        self
+    }
+
+    pub fn with_all_declarations(mut self, enabled: bool) -> Self {
+        self.all_declarations = enabled;
         self
     }
 

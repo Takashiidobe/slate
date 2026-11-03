@@ -31,6 +31,7 @@ pub fn shape(
     c: Option<QualType>,
     record: &impl Fn(&str) -> Option<String>,
     pointer_width: u32,
+    system: bool,
 ) -> Option<String> {
     fn inner(
         ty: &Type,
@@ -38,14 +39,14 @@ pub fn shape(
         ctypes: &ir::CTypeTable,
         mut c: Option<QualType>,
         record: &impl Fn(&str) -> Option<String>,
-        pointer_width: u32,
+        abi: (u32, bool),
         depth: usize,
     ) -> Option<String> {
+        let (pointer_width, system) = abi;
         if depth > 32 {
             return None;
         }
-        let recurse =
-            |ty: &Type, c| inner(ty, definitions, ctypes, c, record, pointer_width, depth + 1);
+        let recurse = |ty: &Type, c| inner(ty, definitions, ctypes, c, record, abi, depth + 1);
         while let Some(qual) = c {
             match ctypes.types.kind(qual.ty) {
                 CTypeKind::Typedef {
@@ -124,8 +125,16 @@ pub fn shape(
                 return_type,
                 variadic,
                 prototyped: true,
-                convention: ir::CallConv::C,
+                convention,
             } => {
+                let abi = match convention {
+                    ir::CallConv::C if system && pointer_width == 64 => "system",
+                    ir::CallConv::C => "C",
+                    ir::CallConv::X86Stdcall if system => "system",
+                    ir::CallConv::X86Stdcall => "stdcall",
+                    ir::CallConv::Win64 if system => "system",
+                    _ => return None,
+                };
                 let (cparams, cret) = c
                     .and_then(|c| match ctypes.types.kind(c.ty) {
                         CTypeKind::Function { params, ret, .. } => Some((params.as_slice(), *ret)),
@@ -144,12 +153,20 @@ pub fn shape(
                     Some(ty) if !matches!(**ty, Type::Void) => recurse(ty, cret)?,
                     _ => "()".into(),
                 };
-                format!("unsafe extern \"C\" fn({}) -> {ret}", params.join(", "))
+                format!("unsafe extern \"{abi}\" fn({}) -> {ret}", params.join(", "))
             }
             _ => return None,
         })
     }
-    inner(ty, definitions, ctypes, c, record, pointer_width, 0)
+    inner(
+        ty,
+        definitions,
+        ctypes,
+        c,
+        record,
+        (pointer_width, system),
+        0,
+    )
 }
 
 pub fn function_type(function: &ir::Function) -> Option<Type> {

@@ -32,13 +32,14 @@ fn run() -> miette::Result<()> {
     let command = args.next();
     if !matches!(command.as_deref(), Some("parse" | "ir" | "pp")) {
         return Err(miette::miette!(
-            "usage: slate-parser <parse|ir|pp> <source.c> [-DNAME] [-UNAME] [-include <file>] [-imacros <file>] [-target=<triple>|-target <triple>] [--flavor=gcc|clang|msvc] [-std=<C standard>] [-I<dir>] [-iquote <dir>] [-isystem <dir>] [-idirafter <dir>] [-nostdlibinc] [-isysroot <dir>|--sysroot=<dir>] [--trace] [--show-comments] [--show-ids] [--parse-only] [--sexpr] [--dump-ir] [--dump-ir-types] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-macros] [--show-metadata] [--compact-ir]"
+            "usage: slate-parser <parse|ir|pp> <source.c> [-DNAME] [-UNAME] [-include <file>] [-imacros <file>] [-target=<triple>|-target <triple>] [--flavor=gcc|clang|msvc] [-std=<C standard>] [-I<dir>] [-iquote <dir>] [-isystem <dir>] [-idirafter <dir>] [-nostdlibinc] [-isysroot <dir>|--sysroot=<dir>] [--trace] [--all-declarations] [--show-comments] [--show-ids] [--parse-only] [--sexpr] [--dump-ir] [--dump-ir-types] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-macros] [--show-metadata] [--compact-ir]"
         ));
     }
     let path = args
         .next()
         .ok_or_else(|| miette::miette!("missing source path"))?;
     let mut parse_only = false;
+    let mut all_declarations = false;
     let mut sexpr = false;
     let mut show_comments = false;
     let mut show_macros = false;
@@ -53,7 +54,10 @@ fn run() -> miette::Result<()> {
     let mut trace = false;
     let remaining: Vec<String> = args
         .filter(|arg| {
-            if arg == "--trace" {
+            if arg == "--all-declarations" {
+                all_declarations = true;
+                false
+            } else if arg == "--trace" {
                 trace = true;
                 false
             } else if arg == "--sexpr" {
@@ -153,8 +157,9 @@ fn run() -> miette::Result<()> {
         compiler_args.options,
     );
     let code_page = dialect.flavor().is_msvc().then(|| dialect.source_charset());
-    let mut parser =
-        Parser::new(search, dialect).with_preprocessor_inputs(compiler_args.preprocessor_inputs);
+    let mut parser = Parser::new(search, dialect)
+        .with_preprocessor_inputs(compiler_args.preprocessor_inputs)
+        .with_all_declarations(all_declarations);
     if trace {
         let traced = parser.preprocess_file_traced(Path::new(&path));
         report_directives(parser.directive_diagnostics())?;
