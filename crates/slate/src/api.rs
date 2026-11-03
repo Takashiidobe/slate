@@ -3,9 +3,10 @@ use crate::frontend::{self, directive_translate, preprocess};
 use std::path::{Path, PathBuf};
 use thiserror::Error as ThisError;
 
-#[derive(Debug, ThisError)]
+#[derive(Debug, ThisError, miette::Diagnostic)]
 pub enum Error {
-    #[error(transparent)]
+    #[error("{0}")]
+    #[diagnostic(transparent)]
     SlateParser(#[from] frontend::Error),
     #[error("read {path}: {source}")]
     Read {

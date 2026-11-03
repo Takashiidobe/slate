@@ -75,7 +75,7 @@ pub enum DirectiveError {
         #[source]
         source: preprocess::PreprocessError,
     },
-    #[error(transparent)]
+    #[error("{0}")]
     Slate(#[from] frontend::Error),
     #[error("format generated Rust: {message}")]
     Format { message: String },

@@ -113,3 +113,29 @@ pub fn directive(
     }
     diagnostic
 }
+
+pub fn render_error(error: &(dyn std::error::Error + 'static)) -> String {
+    let mut current = Some(error);
+    while let Some(cause) = current {
+        if let Some(frontend) = cause.downcast_ref::<crate::frontend::Error>() {
+            match frontend {
+                crate::frontend::Error::Parse { .. }
+                | crate::frontend::Error::Analyze { .. }
+                | crate::frontend::Error::Lower { .. }
+                | crate::frontend::Error::Directives { .. } => {
+                    let mut report = String::new();
+                    if crate::frontend::report_handler()
+                        .without_cause_chain()
+                        .render_report(&mut report, frontend)
+                        .is_ok()
+                    {
+                        return report;
+                    }
+                }
+                _ => {}
+            }
+        }
+        current = cause.source();
+    }
+    error.to_string()
+}

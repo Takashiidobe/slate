@@ -152,8 +152,8 @@ fn run(result: Result<String, String>) -> ExitCode {
     }
 }
 
-fn cli_result<T, E: std::fmt::Display>(result: Result<T, E>) -> Result<T, String> {
-    result.map_err(|error| error.to_string())
+fn cli_result<T, E: std::error::Error + 'static>(result: Result<T, E>) -> Result<T, String> {
+    result.map_err(|error| slate::diagnostics::render_error(&error))
 }
 
 fn emit_slate_ir(path: &Path, compiler_args: &[String]) -> Result<String, String> {
@@ -974,7 +974,7 @@ fn parse_slate_units(
                         module,
                         files,
                     })
-                    .map_err(|error| format!("{}: {error}", command.file.display()))
+                    .map_err(|error| slate::diagnostics::render_error(&error))
             })
             .collect()
     });

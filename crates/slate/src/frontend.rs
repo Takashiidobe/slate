@@ -21,16 +21,40 @@ pub struct LoweredModule {
     pub address_taken: HashSet<BindingId>,
 }
 
-#[derive(Debug, Error)]
+#[derive(Debug, Error, miette::Diagnostic)]
 pub enum Error {
     #[error("invalid slate-parser arguments: {0}")]
+    #[diagnostic(transparent)]
     Arguments(#[from] slate_parser::compiler_args::CompilerArgError),
-    #[error("parse {path}: {message}")]
-    Parse { path: PathBuf, message: String },
+    #[error("parse {path}: {source}")]
+    #[diagnostic(forward(source))]
+    Parse {
+        path: PathBuf,
+        #[source]
+        source: Box<slate_parser::error::FrontendError>,
+    },
+    #[error("analyze {path}: {source}")]
+    #[diagnostic(forward(source))]
+    Analyze {
+        path: PathBuf,
+        #[source]
+        source: Box<slate_parser::sema::SemaErrors>,
+    },
+    #[error("lower {path} to slate-parser IR: {source}")]
+    #[diagnostic(forward(source))]
+    Lower {
+        path: PathBuf,
+        #[source]
+        source: Box<slate_parser::sema::SemaErrors>,
+    },
     #[error("analyze {path}: {message}")]
-    Analyze { path: PathBuf, message: String },
-    #[error("lower {path} to slate-parser IR: {message}")]
-    Lower { path: PathBuf, message: String },
+    #[diagnostic(forward(source))]
+    Directives {
+        path: PathBuf,
+        message: String,
+        #[source]
+        source: Box<slate_parser::pp::DirectiveErrors>,
+    },
     #[error("{report}")]
     Unsupported {
         barrier: Box<lowerer::Barrier>,
@@ -55,7 +79,7 @@ struct SiteDiagnostic {
     help: String,
 }
 
-fn report_handler() -> miette::GraphicalReportHandler {
+pub(crate) fn report_handler() -> miette::GraphicalReportHandler {
     #[cfg(feature = "syntax-highlight")]
     if std::io::IsTerminal::is_terminal(&std::io::stderr()) {
         return miette::GraphicalReportHandler::new_themed(miette::GraphicalTheme::unicode())
@@ -260,7 +284,7 @@ pub fn preprocess_traced(
             .preprocess_for_parse_traced(path)
             .map_err(|error| Error::Parse {
                 path: path.to_path_buf(),
-                message: error.to_string(),
+                source: Box::new(error),
             })?;
     Ok((
         PreprocessedUnit {
@@ -313,7 +337,7 @@ impl PreprocessedUnit {
             .parse_preprocessed(preprocessed)
             .map_err(|error| Error::Parse {
                 path: path.clone(),
-                message: error.to_string(),
+                source: Box::new(error),
             })?;
         let (module, files, diagnostics) =
             lower_parsed(&path, &parser, parsed, &mut Vec::new(), true)?;
@@ -328,7 +352,7 @@ pub fn preprocess_unit(path: &Path, args: CompilerArgs) -> Result<PreprocessedUn
         .preprocess_for_parse(path)
         .map_err(|error| Error::Parse {
             path: path.to_path_buf(),
-            message: error.to_string(),
+            source: Box::new(error),
         })?;
     Ok(PreprocessedUnit {
         parser,
@@ -352,7 +376,7 @@ fn parse_module_from_args(
         crate::diagnostics::collect(&error, diagnostics);
         Error::Parse {
             path: path.to_path_buf(),
-            message: error.to_string(),
+            source: Box::new(error),
         }
     })?;
     lower_parsed(path, &parser, parsed, diagnostics, false)
@@ -375,7 +399,7 @@ fn lower_parsed(
         crate::diagnostics::collect(&error, diagnostics);
         Error::Analyze {
             path: path.to_path_buf(),
-            message: error.to_string(),
+            source: Box::new(error),
         }
     })?;
     for warning in warnings {
@@ -388,7 +412,7 @@ fn lower_parsed(
         crate::diagnostics::collect(&error, diagnostics);
         Error::Lower {
             path: path.to_path_buf(),
-            message: error.to_string(),
+            source: Box::new(error),
         }
     })?;
     for warning in warnings {
@@ -407,14 +431,19 @@ pub fn reject_directive_errors(
     let errors: Vec<_> = diagnostics
         .iter()
         .filter(|diagnostic| diagnostic.severity != miette::Severity::Warning)
-        .map(ToString::to_string)
+        .cloned()
         .collect();
     if errors.is_empty() {
         return Ok(());
     }
-    Err(Error::Analyze {
+    Err(Error::Directives {
         path: path.to_path_buf(),
-        message: errors.join("\n"),
+        message: errors
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<_>>()
+            .join("\n"),
+        source: Box::new(slate_parser::pp::DirectiveErrors { errors }),
     })
 }
 
