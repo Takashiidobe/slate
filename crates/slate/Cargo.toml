@@ -1,6 +1,6 @@
 [package]
 name = "slate-c2rust"
-version = "0.6.0"
+version = "0.7.0"
 edition = "2024"
 default-run = "slate"
 description = "A C to Rust transpiler with a built-in C frontend"
@@ -16,9 +16,13 @@ include = [
   "/vendor/aligned",
   "/vendor/bitint",
   "/vendor/libc",
+  "/vendor/mach2",
   "/vendor/num-complex",
   "/vendor/num-traits",
+  "/vendor/slate-blocks",
   "/vendor/slate-support",
+  "/vendor/windows-link",
+  "/vendor/windows-sys",
 ]
 
 [package.metadata.binstall]

@@ -3,13 +3,13 @@
 Slate is an idiomatic C to Rust transpiler inspired by
 [C2Rust](https://c2rust.com/).
 
-Slate aims to follow the path set by other C to Rust transpilers like C2Rust.
-First, by lowering to unidiomatic Rust, and then run a set of passes on the
-generated Rust in order to refine it to safer Rust with only static analyses and
-rewrites.
+Slate follows the path set by other C to Rust transpilers like C2Rust; First, by
+lowering to Rust, and then running a set of "rewrite" passes on the generated
+Rust in order to produce better Rust with only information known statically.
+This generates better rust than machine translation.
 
-Slate supports modern C (C23 support), cross-compilation, and a simple user
-experience.
+Slate supports all versions of C, from C89 to C2y, as well as non-standard
+features like inline asm, long double, bitsets, nested functions, and many more.
 
 ## Installation
 
@@ -29,17 +29,16 @@ cargo +nightly install slate-parser --locked
 
 To avoid compilation from source, use
 [cargo-binstall](https://github.com/cargo-bins/cargo-binstall) to install
-without compiling. Prebuilt binaries are built for x86_64 Linux, x86_64 and
-aarch64 mac, and x86_64 Windows:
+binaries directly. Prebuilt binaries are available for x86_64 Linux, x86_64 and
+Aarch64 mac, and x86_64 Windows:
 
 ```sh
 cargo binstall slate-c2rust slate-parser
 ```
 
 This installs both `slate` and `slate-parser`; omit either package to install
-just one. The release workflow publishes these archives on
-[GitHub Releases](https://github.com/takashiidobe/slate/releases). See
-[publishing](RELEASING.md) for release setup and tag conventions.
+just one. The release workflow publishes these with github actions and puts them
+in [GitHub Releases](https://github.com/takashiidobe/slate/releases).
 
 To build from source:
 
@@ -62,7 +61,9 @@ its system include directories, so no setup is needed beyond having `clang` on
 
 To translate for another target, or to pin headers for reproducible output,
 install a sysroot. Setting `SLATE_SYSROOTS` makes Slate use installed sysroots
-only, even for the host. Run the command for your target:
+only, even for the host. Some common ones include:
+
+Slate supports Android and Freebsd targets as well.
 
 | Target                        | Command                                          |
 | ----------------------------- | ------------------------------------------------ |
@@ -79,41 +80,6 @@ and SDK configuration.
 
 ## Usage
 
-Slate uses its built-in slate-parser frontend. Use `translate-project` with one
-or more compilation databases to generate a Cargo crate: an executable when one
-unit defines `main`, otherwise a library (`src/lib.rs`) whose `--crate-type` is
-any comma-separated mix of `rlib` (default), `staticlib`, and `cdylib`. Multiple
-configurations of the same translation unit are not yet supported. Project
-output always applies the full rewrite pipeline and uses `rustfmt` to preserve
-source comments while formatting. Install the `rustfmt` component for your Rust
-toolchain; `SLATE_RUSTFMT` can override its executable. Each command is parsed
-as the compiler it names (`gcc` and `*-gcc` as gcc, `cl` as MSVC, anything else
-as clang); `--flavor gcc|clang|msvc` overrides that for every command.
-
-```text
-translate [compiler args...] <file.c>                         C -> Rust
-emit-slate-ir [compiler args...] <file.c>                     typed parser IR
-translate-project [--crate-type <types>] [--flavor <flavor>] --compile-commands <file>... <dir> <crate_dir>
-```
-
-For example, to translate `chibicc`:
-
-```sh
-slate translate-project --compile-commands ~/chibicc/compile_commands.json \
-~/chibicc/ ./chibicc-rs
-```
-
-Since we're passing in `compile_commands.json` and both of these projects are
-`make` driven, use a tool like [bear](https://github.com/rizsotto/bear) to
-generate one first. This can be as simple as running:
-
-```sh
-bear -- make
-```
-
-Which will generate a compile_commands.json with the commands required to
-produce it.
-
 ### Single-File Translation
 
 For simple one file usage, there's also `translate`, which translates one C file
@@ -124,26 +90,72 @@ require shims, like long doubles as f80s for x86_64 linux).
 slate translate add.c # translates add.c, prints to stdout
 ```
 
-### C Feature Support
+You can also use `--flavor=msvc|clang|gcc` to have slate compile your code while
+emulating another compiler. Without a flavor, slate emulates `clang`.
 
-C23 support is a goal. Current end-to-end coverage is defined by the supported C
-differential fixtures and corpus buckets; parser acceptance alone does not
-establish Rust translation support. Remaining cases live in the corresponding
-unsupported buckets and are tracked with beads.
+### Multi-target/feature translation
+
+For now, slate has it's own "compile commands" esque format to handle
+multi-target builds. I plan to add a cli option to allow merging multiple
+compile_commands.json files for multiple targets into one json file to feed to
+slate to build a project that is multitarget.
+
+```sh
+cmake -S ~/zlib -B ~/zlib/build-clang # build the sources
+
+slate translate-project \
+  --matrix tools/corpus/matrices/zlib.json \
+  --merge \
+  --matrix-target linux-x86_64,linux-i686,linux-aarch64 \
+  --crate-type staticlib \
+  ~/zlib ./zlib-rs
+```
+
+`--merge` produces one crate with `#[cfg]`'d code for each target and feature.
+
+The format allows mapping C options to Cargo features. For example, for zlib’s
+FASTEST configuration is added to the Cargo.toml as a `fastest` feature, and any
+code that is multi-target is `#[cfg]`'d away. Keep in mind that each feature
+adds an exponential amount of compiles (2^n, where n is the amount of
+features/targets in total) so be careful if your build adds too many features.
+
+For zlib with 9 features, on a single target my machine can compile to rust in
+3s, but for all 16 targets that slate supports, it's closer to 30s.
+
+Slate supports folding of `cfg` branches and simplification of `cfg` conditions,
+to keep `cfgs` more readable.
+
+### Features
+
+C23 (+ C2y) support is a goal. Slate also supports non-standard features like
+inline asm in all three compiler dialects, attributes like `__attribute__` or
+MSVC's `__declspec`, nested functions, binary constants, vector extensions, and
+many more. Basically, if any of the three major compilers (GCC, Clang, MSVC) can
+compile your C, and Slate can't, it's a bug.
 
 See [feature coverage](crates/slate/docs/src/features.md) and
-[testing](wiki/concepts/differential-fixtures.md) for the runtime contract.
-Target ABI details, runtime bridges and nonlocal jumps require coverage for the
-specific input and target.
+[testing](wiki/concepts/differential-fixtures.md) for how we maintain regression
+testing.
+
+Compared to other tools like c2rust, slate also preserves and attaches comments
+to nodes. This allows comments to travel along with the conversion, and be
+attached to the generated rust, so you don't have to recomment your code after
+translating it.
+
+As well, because slate has its own parser stack, it has macro provenance -- so
+it can find out where definitions come from and replace them with higher level
+rust constructs. This allows us to replace macro constants from libc with
+similar rust.
 
 ## Trophy Case
 
-Projects that we've tested e2e that translate to Rust:
+### Clang/GCC
 
 - [SQLite](https://sqlite.org)
   - [Rust Translation](https://github.com/takashiidobe/slate-sqlite). Passes
     `select1.test` and `main.test` using `testfixture`, plus `mptest` and
-    `threadtest3`.
+    `threadtest3`. Benchmarks for the translated run ~5% faster to 8% slower,
+    depending on run/benchmark for the generated rust.
 - [Redis](https://redis.io)
 - [chibicc](https://github.com/rui314/chibicc)
 - [cJSON](https://github.com/DaveGamble/cJSON)
@@ -159,31 +171,29 @@ Projects that we've tested e2e that translate to Rust:
 - [yyjson](https://github.com/ibireme/yyjson)
 - [PCRE2](https://github.com/PCRE2Project/pcre2)
 - [curl](https://curl.se)
-  - Translates libcurl and the `curl` tool. Passes all 1690 non-flaky
-    `runtests.pl` tests, and benchmarks within 5% of native over file:// and
-    HTTP transfers.
+  - Translates libcurl and the `curl` tool. Passes all 1690 `runtests.pl` tests,
+    and benchmarks within 5% of native over file:// and HTTP transfers.
 
-### MSVC Targets
+### MSVC
 
-Selected for the trophy case; end-to-end validation is pending:
-
-- [x] [MinHook](https://github.com/TsudaKageyu/minhook)
-- [x] [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/)
-- [x] [ReactOS](https://github.com/reactos/reactos) C components
+- [] [MinHook](https://github.com/TsudaKageyu/minhook)
+- [] [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/)
+- [] [ReactOS](https://github.com/reactos/reactos)
 
 ### In Progress
 
-- [ ] Passing the GCC Torture Test Suite
-- [ ] Support for other architectures
-  - Currently only x86_64, no testing done for x86_32, arm32, arm64
-- [ ] Support for other compiler flavors, like gcc and msvc
+- [ ] Passing the GCC Torture Test Suite (Currently ~1400 out of 1697). On every
+      commit, each test is differential tested with a binary compiled by
+      clang/gcc for exit code/stdout/stderr equality.
+- [ ] Cleaning up multi-target translated zlib. Lots of work to do to make cross
+      target code more readable.
 
 ## Acknowledgements
 
 - [C2Rust](https://c2rust.com/) the original C to Rust transpiler
 - [Musl](https://musl.libc.org/) for target libc headers
-- [Glibc](https://ftp.gnu.org/gnu/glibc/) for extra headers that are supported
-  on most linux-likes
+- [Glibc](https://ftp.gnu.org/gnu/glibc/) for headers that are supported on most
+  unix-likes
 - [Aligned](https://crates.io/crates/aligned) for the aligned type to handle
   pointer offsets for types that follow the Sys-V ABI
 - [bit-int](https://crates.io/crates/bit-int) for the basics of how to implement
