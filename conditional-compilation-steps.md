@@ -118,6 +118,11 @@ Stop spelling differences from splitting code:
 
 Give each definition one home:
 
+- `9.5.12.30`: attach C macro definition comments to emitted Rust macros,
+  preserving ownership through cfg variants and header relocation. zlib's
+  `CLEAR_HASH` comment survives above `slide_hash` instead of its macro;
+  `UPDATE_HASH` and `INSERT_STRING` comments drift there too. Keep definition
+  documentation separate from invocation-site comments.
 - `9.13`: one module per C header for types, and path-bound calls in library
   output.
 - `9.14`: header macros in `__slate_macros`, one template per C macro.
