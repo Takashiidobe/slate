@@ -12,14 +12,14 @@ fn vendored_files(dir: &Path, files: &mut Vec<PathBuf>) {
     }
 }
 
-fn write_vendored_libc() {
+fn write_vendored_crate(name: &str, constant: &str) {
     let manifest = PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("manifest dir"));
-    let root = manifest.join("vendor/libc");
+    let root = manifest.join("vendor").join(name);
     println!("cargo:rerun-if-changed={}", root.display());
     let mut files = Vec::new();
     vendored_files(&root, &mut files);
     files.sort();
-    let mut table = String::from("const VENDORED_LIBC: &[(&str, &str)] = &[\n");
+    let mut table = format!("const {constant}: &[(&str, &str)] = &[\n");
     for file in &files {
         let relative = file
             .strip_prefix(&root)
@@ -36,7 +36,7 @@ fn write_vendored_libc() {
     }
     table.push_str("];\n");
     let out = PathBuf::from(std::env::var("OUT_DIR").expect("out dir"));
-    std::fs::write(out.join("vendored_libc.rs"), table).expect("write vendored table");
+    std::fs::write(out.join(format!("vendored_{name}.rs")), table).expect("write vendored table");
 }
 
 fn main() {
@@ -45,5 +45,6 @@ fn main() {
         "cargo:rustc-env=SLATE_BUILD_TARGET={}",
         std::env::var("TARGET").expect("Cargo did not set TARGET")
     );
-    write_vendored_libc();
+    write_vendored_crate("libc", "VENDORED_LIBC");
+    write_vendored_crate("mach2", "VENDORED_MACH2");
 }

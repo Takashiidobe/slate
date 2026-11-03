@@ -11,6 +11,7 @@ pub enum Kind {
 
 pub struct Symbol {
     pub name: &'static str,
+    pub rust_path: &'static str,
     pub targets: &'static [&'static str],
     pub kind: Kind,
 }
@@ -90,9 +91,7 @@ pub fn shape(
                         underlying: Some(ty),
                         ..
                     } => recurse(ty, c)?,
-                    TypeDefinitionKind::Record { .. } => {
-                        format!("libc::{}", record(definition.name.as_deref()?)?)
-                    }
+                    TypeDefinitionKind::Record { .. } => record(definition.name.as_deref()?)?,
                     _ => return None,
                 }
             }

@@ -11,15 +11,14 @@ fn record(name: &str, module: &ir::Module) -> Option<String> {
         .types
         .iter()
         .find(|definition| definition.name.as_deref() == Some(name))?;
-    libc_catalog::record_path(definition, &module.target.triple)
-        .map(|path| path.trim_start_matches("slate_support::").to_string())
+    libc_catalog::record_path(definition, &module.target.triple).map(str::to_string)
 }
 
-fn use_symbol(name: &str, alias: &str) -> Item {
+fn use_symbol(path: &str, alias: &str) -> Item {
     Item::Use {
         vis: rust::Visibility::Private,
-        path: rust::Path::new(["slate_support", name].into_iter().map(rust::Ident::from)),
-        alias: (name != alias).then(|| alias.into()),
+        path: rust::Path::new(path.split("::").map(rust::Ident::from)),
+        alias: (path.rsplit("::").next() != Some(alias)).then(|| alias.into()),
     }
 }
 
@@ -109,8 +108,10 @@ impl ModuleLowerer<'_> {
         let Some(symbol) = self.tables.support_functions.get(&id) else {
             return false;
         };
-        self.items
-            .push(use_symbol(symbol.symbol.name, &self.tables.names[&id].rust));
+        self.items.push(use_symbol(
+            symbol.symbol.rust_path,
+            &self.tables.names[&id].rust,
+        ));
         true
     }
 
@@ -119,7 +120,7 @@ impl ModuleLowerer<'_> {
             return false;
         };
         self.items
-            .push(use_symbol(symbol.name, &self.tables.bindings[&id]));
+            .push(use_symbol(symbol.rust_path, &self.tables.bindings[&id]));
         true
     }
 }
@@ -173,7 +174,9 @@ impl FunctionLowerer<'_, '_> {
             return None;
         }
         Some(self.lower_value_type(value).map(|ty| Expr::Cast {
-            expr: Box::new(stdio::support_path(symbol.name)),
+            expr: Box::new(Expr::Path(rust::Path::new(
+                symbol.rust_path.split("::").map(rust::Ident::from),
+            ))),
             ty,
         }))
     }

@@ -1295,10 +1295,11 @@ fn use_item(segments: &[&str]) -> Item {
 pub(super) fn named_prim_item(name: &str, resolved: Prim, target: &TargetInfo) -> Item {
     if core_ffi_definition(name, target) == Some(resolved) {
         use_item(&["core", "ffi", name])
-    } else if crate::libc_catalog::lookup(name, &target.triple, crate::libc_catalog::Kind::Type)
-        .is_some()
-        || slate_support_definition(name, target) == Some(resolved)
+    } else if let Some(symbol) =
+        crate::libc_catalog::lookup(name, &target.triple, crate::libc_catalog::Kind::Type)
     {
+        use_item(&symbol.rust_path.split("::").collect::<Vec<_>>())
+    } else if slate_support_definition(name, target) == Some(resolved) {
         use_item(&["slate_support", name])
     } else {
         Item::TypeAlias {

@@ -8,6 +8,7 @@ const MACRO_REACHED: &[&str] = &["FILE"];
 pub struct TargetData {
     pub c: CMap,
     pub rust: BTreeMap<String, RustLayout>,
+    pub providers: crate::providers::Inventory,
 }
 
 #[derive(PartialEq, Eq)]
@@ -19,6 +20,7 @@ pub enum Outcome {
 
 pub struct Entry {
     pub name: String,
+    pub rust_path: String,
     pub targets: BTreeSet<String>,
     pub outcome: Outcome,
     pub alignment: u64,
@@ -39,9 +41,10 @@ pub fn decide(targets: &BTreeMap<String, TargetData>) -> Vec<Entry> {
             let Some(c) = data.c.get(name) else {
                 continue;
             };
-            let entry = decide_one(name, target, c, data.rust.get(name));
+            let entry = decide_one(name, target, c, data.rust.get(name), &data.providers);
             if let Some(previous) = entries.iter_mut().find(|previous| {
                 previous.name == entry.name
+                    && previous.rust_path == entry.rust_path
                     && previous.outcome == entry.outcome
                     && previous.alignment == entry.alignment
                     && previous.layout_key == entry.layout_key
@@ -57,7 +60,13 @@ pub fn decide(targets: &BTreeMap<String, TargetData>) -> Vec<Entry> {
     entries
 }
 
-fn decide_one(name: &str, target: &str, c: &CType, rust: Option<&RustLayout>) -> Entry {
+fn decide_one(
+    name: &str,
+    target: &str,
+    c: &CType,
+    rust: Option<&RustLayout>,
+    providers: &crate::providers::Inventory,
+) -> Entry {
     let present = [(target, c, rust)];
     let mut notes = Vec::new();
     let mut blocked = false;
@@ -66,7 +75,9 @@ fn decide_one(name: &str, target: &str, c: &CType, rust: Option<&RustLayout>) ->
 
     for (target, c, rust) in &present {
         let Some(rust) = rust else {
-            notes.push(format!("{target}: absent from libc"));
+            notes.push(format!(
+                "{target}: absent from provider or ambiguous provider paths"
+            ));
             blocked = true;
             continue;
         };
@@ -81,11 +92,11 @@ fn decide_one(name: &str, target: &str, c: &CType, rust: Option<&RustLayout>) ->
         let incomplete_in_libc = rust.size == 0 && reserved_only;
         if incomplete_in_libc {
             notes.push(format!(
-                "{target}: libc models it as an incomplete type; pointer use only"
+                "{target}: provider models it as an incomplete type; pointer use only"
             ));
         } else if rust.size != c.size || rust.align != c.align {
             notes.push(format!(
-                "{target}: layout C size={} align={} vs libc size={} align={}",
+                "{target}: layout C size={} align={} vs provider size={} align={}",
                 c.size, c.align, rust.size, rust.align
             ));
             blocked = true;
@@ -115,8 +126,8 @@ fn decide_one(name: &str, target: &str, c: &CType, rust: Option<&RustLayout>) ->
                         } else {
                             bad_fields.insert(field.clone());
                             let detail = match rust.offsets.get(field) {
-                                Some(libc) => format!("C offset {offset} vs libc {libc}"),
-                                None => "missing or private in libc".to_string(),
+                                Some(libc) => format!("C offset {offset} vs provider {libc}"),
+                                None => "missing or private in provider".to_string(),
                             };
                             notes.push(format!("{target}: field `{field}`: {detail}"));
                         }
@@ -124,12 +135,12 @@ fn decide_one(name: &str, target: &str, c: &CType, rust: Option<&RustLayout>) ->
                         if *aggregate && !opaque_candidate {
                             bad_fields.insert(field.clone());
                             notes.push(format!(
-                                "{target}: reserved aggregate `{field}` not mirrored by libc; \
+                                "{target}: reserved aggregate `{field}` not mirrored by provider; \
                                  header macros reach members through it"
                             ));
                         } else {
                             notes.push(format!(
-                                "{target}: reserved field `{field}` not mirrored by libc (ignored)"
+                                "{target}: reserved field `{field}` not mirrored by provider (ignored)"
                             ));
                         }
                     }
@@ -161,6 +172,10 @@ fn decide_one(name: &str, target: &str, c: &CType, rust: Option<&RustLayout>) ->
         .collect();
     Entry {
         name: name.to_string(),
+        rust_path: providers
+            .path(name)
+            .unwrap_or_default()
+            .replace("libc::", "slate_support::"),
         targets: BTreeSet::from([target.to_string()]),
         outcome,
         alignment,
@@ -235,7 +250,7 @@ pub fn table(entries: &[Entry]) -> (String, Vec<String>) {
                 }
             }
             for name in names {
-                rows.entry(entry.name.clone())
+                rows.entry(entry.rust_path.clone())
                     .or_default()
                     .entry(name.clone())
                     .or_default()
@@ -247,7 +262,7 @@ pub fn table(entries: &[Entry]) -> (String, Vec<String>) {
     for (rust_name, names) in rows {
         let _ = writeln!(
             out,
-            "    CLibRecord {{ rust_path: \"slate_support::{rust_name}\", aliases: &["
+            "    CLibRecord {{ rust_path: \"{rust_name}\", aliases: &["
         );
         let mut groups: BTreeMap<BTreeSet<String>, Vec<String>> = BTreeMap::new();
         for (name, targets) in names {

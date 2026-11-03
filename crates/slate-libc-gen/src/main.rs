@@ -1,5 +1,6 @@
 mod c_side;
 mod decide;
+mod providers;
 mod rust_side;
 mod symbols;
 
@@ -67,22 +68,21 @@ fn main() -> Result<()> {
     let work = std::fs::canonicalize(work)?;
     let libc_dir = rust_side::prepare_libc(&args.libc, &work)?;
 
-    let c_maps: Vec<(String, c_side::CMap)> = targets
+    let c_maps: Vec<(String, c_side::CMap, providers::Inventory)> = targets
         .par_iter()
         .map(|target| {
             let scratch = &work.join(format!("c-{target}"));
             std::fs::create_dir_all(scratch)?;
             eprintln!("c side: {target}");
-            Ok((
-                target.clone(),
-                c_side::collect(&args.parser, target, scratch)?,
-            ))
+            let providers = providers::Inventory::collect(target, &work)?;
+            let c = c_side::collect(&args.parser, target, scratch, &providers)?;
+            Ok((target.clone(), c, providers))
         })
         .collect::<Result<_>>()?;
 
     let data: BTreeMap<String, TargetData> = c_maps
         .into_par_iter()
-        .map(|(target, c)| {
+        .map(|(target, c, providers)| {
             let candidates: Vec<(String, Vec<String>)> = c
                 .iter()
                 .map(|(name, ty)| {
@@ -97,8 +97,8 @@ fn main() -> Result<()> {
                 })
                 .collect();
             eprintln!("rust side: {target} ({} candidates)", candidates.len());
-            let rust = rust_side::collect(&libc_dir, &work, &target, &candidates)?;
-            Ok((target, TargetData { c, rust }))
+            let rust = rust_side::collect(&libc_dir, &work, &target, &candidates, &providers)?;
+            Ok((target, TargetData { c, rust, providers }))
         })
         .collect::<Result<_>>()?;
 
@@ -119,7 +119,13 @@ fn main() -> Result<()> {
                 std::thread::Builder::new()
                     .stack_size(64 << 20)
                     .spawn_scoped(scope, || {
-                        symbols::collect(&target, &work, &libc_dir, entries)
+                        symbols::collect(
+                            &target,
+                            &work,
+                            &libc_dir,
+                            entries,
+                            &data[&target].providers,
+                        )
                     })
                     .expect("symbol worker")
                     .join()

@@ -150,9 +150,12 @@ cargo nextest r --release --profile slate
 
 ## System declarations
 
-- `slate-libc-gen` validates C declarations against the vendored libc and emits
-  alias sets mapping to one canonical `slate_support` path. See its
+- `slate-libc-gen` validates C declarations against vendored binding providers
+  and emits alias sets mapping to one canonical `slate_support` path. See its
   [usage](../../crates/slate-libc-gen/README.md).
+- Apple `mach2` paths and header candidates come from target-specific rustdoc
+  JSON, exposed through `slate_support::mach`. No hand-maintained symbol list;
+  ambiguous names and failed ABI probes retain local declarations.
 - The catalogs contain names, destinations and translation-target eligibility.
   Layouts, signatures, linker names and values stay in the generator report.
 - Lookup uses the translation target, never the host compiler cfg. Unknown or

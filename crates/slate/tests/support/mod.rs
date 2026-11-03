@@ -315,6 +315,7 @@ fn bitfields_path() -> PathBuf {
 fn generated_crate_manifest(name: &str, project: &Path) -> Result<String, String> {
     support_crate_path("num-traits", project)?;
     support_crate_path("libc", project)?;
+    support_crate_path("mach2", project)?;
     Ok(format!(
         r#"[package]
 name = "{name}"

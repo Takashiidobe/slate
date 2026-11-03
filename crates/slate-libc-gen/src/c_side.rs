@@ -103,10 +103,20 @@ enum Def {
     Other,
 }
 
-pub fn collect(parser: &Path, target: &str, scratch: &Path) -> Result<CMap> {
+pub fn collect(
+    parser: &Path,
+    target: &str,
+    scratch: &Path,
+    providers: &crate::providers::Inventory,
+) -> Result<CMap> {
     let source = scratch.join("empty.c");
     std::fs::write(&source, "")?;
-    let dumps: Vec<String> = HEADERS
+    let headers: Vec<&str> = HEADERS
+        .iter()
+        .copied()
+        .chain(providers.headers.iter().map(String::as_str))
+        .collect();
+    let dumps: Vec<String> = headers
         .par_iter()
         .filter_map(|header| {
             let output = Command::new(parser)

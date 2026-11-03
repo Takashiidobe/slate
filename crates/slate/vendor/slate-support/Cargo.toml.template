@@ -5,3 +5,6 @@ edition = "2024"
 
 [dependencies]
 libc = { path = "../libc" }
+
+[target.'cfg(target_vendor = "apple")'.dependencies]
+mach2 = { path = "../mach2" }

@@ -1,5 +1,4 @@
 use crate::{
-    c_side::HEADERS,
     decide::{Entry, Outcome},
     rust_side,
 };
@@ -16,6 +15,7 @@ use std::{
 #[derive(Clone)]
 pub struct Candidate {
     pub name: String,
+    pub rust_path: String,
     pub kind: Kind,
     pub shape: String,
     pub link: String,
@@ -26,12 +26,22 @@ pub struct TargetSymbols {
     pub rejected: Vec<String>,
 }
 
-pub fn collect(target: &str, work: &Path, libc: &Path, entries: &[Entry]) -> Result<TargetSymbols> {
+pub fn collect(
+    target: &str,
+    work: &Path,
+    libc: &Path,
+    entries: &[Entry],
+    providers: &crate::providers::Inventory,
+) -> Result<TargetSymbols> {
     let source = work.join(format!("symbols-{target}.c"));
     std::fs::write(&source, "")?;
     let mut candidates = BTreeMap::new();
     let mut rejected = BTreeSet::new();
-    for header in HEADERS {
+    for header in crate::c_side::HEADERS
+        .iter()
+        .copied()
+        .chain(providers.headers.iter().map(String::as_str))
+    {
         let mut args = crate::c_side::target_args(target);
         args.extend(["-include".into(), header.to_string()]);
         let (unit, trace) =
@@ -108,7 +118,7 @@ pub fn collect(target: &str, work: &Path, libc: &Path, entries: &[Entry]) -> Res
                         && entry.layout_key == key
                         && (entry.name == name || entry.aliases.contains(name))
                 })
-                .map(|entry| entry.name.clone())
+                .map(|entry| entry.rust_path.clone())
         };
         let shape = |ty: &ir::Type, c| {
             libc_catalog::shape(
@@ -152,6 +162,7 @@ pub fn collect(target: &str, work: &Path, libc: &Path, entries: &[Entry]) -> Res
             candidates.insert(
                 (Kind::Function, function.name.clone()),
                 Candidate {
+                    rust_path: String::new(),
                     name: function.name.clone(),
                     kind: Kind::Function,
                     shape,
@@ -179,6 +190,7 @@ pub fn collect(target: &str, work: &Path, libc: &Path, entries: &[Entry]) -> Res
             candidates.insert(
                 (Kind::Global, global.variable.name.clone()),
                 Candidate {
+                    rust_path: String::new(),
                     name: global.variable.name.clone(),
                     kind: Kind::Global,
                     shape: format!(
@@ -218,6 +230,7 @@ pub fn collect(target: &str, work: &Path, libc: &Path, entries: &[Entry]) -> Res
                 candidates.insert(
                     (Kind::Type, name.clone()),
                     Candidate {
+                        rust_path: String::new(),
                         name: name.clone(),
                         kind: Kind::Type,
                         shape,
@@ -235,6 +248,7 @@ pub fn collect(target: &str, work: &Path, libc: &Path, entries: &[Entry]) -> Res
                         candidates.insert(
                             (Kind::Constant, enumerator.name.clone()),
                             Candidate {
+                                rust_path: String::new(),
                                 name: enumerator.name.clone(),
                                 kind: Kind::Constant,
                                 shape: value,
@@ -271,6 +285,7 @@ pub fn collect(target: &str, work: &Path, libc: &Path, entries: &[Entry]) -> Res
                                 candidates.insert(
                                     (Kind::Constant, name.clone()),
                                     Candidate {
+                                        rust_path: String::new(),
                                         name,
                                         kind: Kind::Constant,
                                         shape: value,
@@ -284,23 +299,46 @@ pub fn collect(target: &str, work: &Path, libc: &Path, entries: &[Entry]) -> Res
             }
         }
     }
-    let candidates: Vec<_> = candidates.into_values().collect();
+    let candidates: Vec<_> = candidates
+        .into_values()
+        .flat_map(|mut candidate| {
+            let Some(path) = providers.path(&candidate.name) else {
+                rejected.insert(format!(
+                    "{:?} `{}`: ambiguous provider paths",
+                    candidate.kind, candidate.name
+                ));
+                return Vec::new();
+            };
+            if candidate.kind == Kind::Type {
+                let support = format!("slate_support::{}", rust_side::ident(&candidate.name));
+                candidate.rust_path = support.clone();
+                if path.starts_with("slate_support::mach::") {
+                    let mut alternative = candidate.clone();
+                    alternative.rust_path = path;
+                    return vec![candidate, alternative];
+                }
+                return vec![candidate];
+            }
+            candidate.rust_path = path;
+            vec![candidate]
+        })
+        .collect();
     let lines = candidates.iter().enumerate().map(|(index, candidate)| {
-        let name = rust_side::ident(&candidate.name);
+        let path = &candidate.rust_path;
         match candidate.kind {
-            Kind::Function => format!("#[unsafe(no_mangle)] pub static S{index}: {} = libc::{name};", candidate.shape),
-            Kind::Global => format!("#[unsafe(no_mangle)] pub static mut S{index}: {} = unsafe {{ &raw {} libc::{name} }};", candidate.shape,
+            Kind::Function => format!("#[unsafe(no_mangle)] pub static S{index}: {} = {path};", candidate.shape),
+            Kind::Global => format!("#[unsafe(no_mangle)] pub static mut S{index}: {} = unsafe {{ &raw {} {path} }};", candidate.shape,
                 if candidate.shape.starts_with("*mut") { "mut" } else { "const" }),
             Kind::Type => {
                 let ty = &candidate.shape;
                 let signed = ty.starts_with('i');
                 if ty.starts_with(['f']) {
-                    format!("const _: fn(slate_support::{name}) = |_: {ty}| {{}}; #[unsafe(no_mangle)] pub static S{index}: u8 = 0;")
+                    format!("const _: fn({path}) = |_: {ty}| {{}}; #[unsafe(no_mangle)] pub static S{index}: u8 = 0;")
                 } else {
-                    format!("const _: () = assert!(core::mem::size_of::<slate_support::{name}>() == core::mem::size_of::<{ty}>() && core::mem::align_of::<slate_support::{name}>() == core::mem::align_of::<{ty}>() && (slate_support::{name}::MIN < slate_support::{name}::MAX / 2 * 0) == {signed}); #[unsafe(no_mangle)] pub static S{index}: u8 = 0;")
+                    format!("const _: () = assert!(core::mem::size_of::<{path}>() == core::mem::size_of::<{ty}>() && core::mem::align_of::<{path}>() == core::mem::align_of::<{ty}>() && ({path}::MIN < {path}::MAX / 2 * 0) == {signed}); #[unsafe(no_mangle)] pub static S{index}: u8 = 0;")
                 }
             }
-            Kind::Constant => format!("const _: () = assert!(libc::{name} as i128 == {}i128); #[unsafe(no_mangle)] pub static S{index}: u8 = 0;", candidate.shape),
+            Kind::Constant => format!("const _: () = assert!({path} as i128 == {}i128); #[unsafe(no_mangle)] pub static S{index}: u8 = 0;", candidate.shape),
         }
     }).collect::<Vec<_>>();
     let (object, passed) = rust_side::compile_lines(libc, work, target, &lines)?;
@@ -347,23 +385,24 @@ pub fn collect(target: &str, work: &Path, libc: &Path, entries: &[Entry]) -> Res
         }
     }
     let mut accepted = Vec::new();
+    let mut chosen = BTreeSet::new();
     for (index, candidate) in candidates.into_iter().enumerate() {
         if !passed.contains(&index) {
             rejected.insert(format!(
-                "{:?} `{}`: absent from libc or incompatible Rust type/value",
+                "{:?} `{}`: absent from provider or incompatible Rust type/value",
                 candidate.kind, candidate.name
             ));
         } else if matches!(candidate.kind, Kind::Function | Kind::Global)
             && links.get(&index) != Some(&candidate.link)
         {
             rejected.insert(format!(
-                "{:?} `{}`: C links to `{}` vs libc {:?}",
+                "{:?} `{}`: C links to `{}` vs provider {:?}",
                 candidate.kind,
                 candidate.name,
                 candidate.link,
                 links.get(&index)
             ));
-        } else {
+        } else if chosen.insert((candidate.kind, candidate.name.clone())) {
             accepted.push(candidate);
         }
     }
@@ -382,20 +421,24 @@ pub fn integer(value: &ir::Value) -> Option<String> {
 }
 
 pub fn table(targets: &BTreeMap<String, TargetSymbols>) -> String {
-    let mut rows: BTreeMap<(Kind, &str), BTreeSet<&str>> = BTreeMap::new();
+    let mut rows: BTreeMap<(Kind, &str, String), BTreeSet<&str>> = BTreeMap::new();
     for (target, symbols) in targets {
         for candidate in &symbols.accepted {
-            rows.entry((candidate.kind, &candidate.name))
-                .or_default()
-                .insert(target);
+            rows.entry((
+                candidate.kind,
+                &candidate.name,
+                candidate.rust_path.replace("libc::", "slate_support::"),
+            ))
+            .or_default()
+            .insert(target);
         }
     }
     let mut out = String::from("pub const SYMBOLS: &[Symbol] = &[\n");
-    for ((kind, name), targets) in rows {
+    for ((kind, name, rust_path), targets) in rows {
         let targets = targets.into_iter().collect::<Vec<_>>();
         let _ = writeln!(
             out,
-            "    Symbol {{ name: {name:?}, targets: &{targets:?}, kind: Kind::{kind:?} }},"
+            "    Symbol {{ name: {name:?}, rust_path: {rust_path:?}, targets: &{targets:?}, kind: Kind::{kind:?} }},"
         );
     }
     out.push_str("];\n");

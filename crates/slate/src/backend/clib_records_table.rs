@@ -11,6 +11,30 @@ pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[
     CLibRecord { rust_path: "slate_support::FILE", aliases: &[
         CLibAliases { names: &["FILE"], targets: &["aarch64-linux-android", "aarch64-pc-windows-msvc", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-pc-windows-msvc", "i686-unknown-linux-gnu", "x86_64-linux-android", "x86_64-pc-windows-msvc", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
     ] },
+    CLibRecord { rust_path: "slate_support::__darwin_arm_exception_state64", aliases: &[
+        CLibAliases { names: &["__darwin_arm_exception_state64"], targets: &["aarch64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::__darwin_arm_neon_state64", aliases: &[
+        CLibAliases { names: &["__darwin_arm_neon_state64"], targets: &["aarch64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::__darwin_arm_thread_state64", aliases: &[
+        CLibAliases { names: &["__darwin_arm_thread_state64"], targets: &["aarch64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::__darwin_mmst_reg", aliases: &[
+        CLibAliases { names: &["__darwin_mmst_reg"], targets: &["x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::__darwin_x86_exception_state64", aliases: &[
+        CLibAliases { names: &["__darwin_x86_exception_state64"], targets: &["x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::__darwin_x86_float_state64", aliases: &[
+        CLibAliases { names: &["__darwin_x86_float_state64"], targets: &["x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::__darwin_x86_thread_state64", aliases: &[
+        CLibAliases { names: &["__darwin_x86_thread_state64"], targets: &["x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::__darwin_xmm_reg", aliases: &[
+        CLibAliases { names: &["__darwin_xmm_reg"], targets: &["x86_64-apple-darwin"] },
+    ] },
     CLibRecord { rust_path: "slate_support::_libc_fpreg", aliases: &[
         CLibAliases { names: &["_libc_fpreg"], targets: &["i686-unknown-linux-gnu"] },
     ] },
@@ -90,6 +114,21 @@ pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[
     ] },
     CLibRecord { rust_path: "slate_support::group_source_req", aliases: &[
         CLibAliases { names: &["group_source_req"], targets: &["aarch64-apple-darwin", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-apple-darwin", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::host_cpu_load_info", aliases: &[
+        CLibAliases { names: &["host_cpu_load_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::host_cpu_load_info_data_t", aliases: &[
+        CLibAliases { names: &["host_cpu_load_info_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::host_cpu_load_info_t", aliases: &[
+        CLibAliases { names: &["host_cpu_load_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::host_info64_t", aliases: &[
+        CLibAliases { names: &["host_info64_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::host_info_t", aliases: &[
+        CLibAliases { names: &["host_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
     ] },
     CLibRecord { rust_path: "slate_support::hostent", aliases: &[
         CLibAliases { names: &["hostent"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
@@ -220,8 +259,917 @@ pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[
     CLibRecord { rust_path: "slate_support::linger", aliases: &[
         CLibAliases { names: &["linger"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-musl", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-musl"] },
     ] },
+    CLibRecord { rust_path: "slate_support::load_command", aliases: &[
+        CLibAliases { names: &["load_command"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
     CLibRecord { rust_path: "slate_support::locale_t", aliases: &[
         CLibAliases { names: &["locale_t"], targets: &["aarch64-linux-android", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-linux-android", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::bootstrap::bool_array_t", aliases: &[
+        CLibAliases { names: &["bool_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::bootstrap::bootstrap_property_array_t", aliases: &[
+        CLibAliases { names: &["bootstrap_property_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::bootstrap::bootstrap_status_array_t", aliases: &[
+        CLibAliases { names: &["bootstrap_status_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::bootstrap::name_array_t", aliases: &[
+        CLibAliases { names: &["name_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::clock_types::clock_attr_t", aliases: &[
+        CLibAliases { names: &["clock_attr_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::clock_types::mach_timespec", aliases: &[
+        CLibAliases { names: &["mach_timespec"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::clock_types::mach_timespec_t", aliases: &[
+        CLibAliases { names: &["mach_timespec_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::dyld_kernel::dyld_kernel_image_info", aliases: &[
+        CLibAliases { names: &["dyld_kernel_image_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::dyld_kernel::dyld_kernel_image_info_array_t", aliases: &[
+        CLibAliases { names: &["dyld_kernel_image_info_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::dyld_kernel::dyld_kernel_image_info_t", aliases: &[
+        CLibAliases { names: &["dyld_kernel_image_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::dyld_kernel::dyld_kernel_process_info", aliases: &[
+        CLibAliases { names: &["dyld_kernel_process_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::dyld_kernel::dyld_kernel_process_info_t", aliases: &[
+        CLibAliases { names: &["dyld_kernel_process_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::error::mach_error_fn_t", aliases: &[
+        CLibAliases { names: &["mach_error_fn_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::exc::__Reply__exception_raise_t", aliases: &[
+        CLibAliases { names: &["__Reply__exception_raise_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::exc::__Request__exception_raise_t", aliases: &[
+        CLibAliases { names: &["__Request__exception_raise_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::exception_types::exception_behavior_array_t", aliases: &[
+        CLibAliases { names: &["exception_behavior_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::exception_types::exception_data_t", aliases: &[
+        CLibAliases { names: &["exception_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::exception_types::exception_flavor_array_t", aliases: &[
+        CLibAliases { names: &["exception_flavor_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::exception_types::exception_mask_array_t", aliases: &[
+        CLibAliases { names: &["exception_mask_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::exception_types::exception_port_array_t", aliases: &[
+        CLibAliases { names: &["exception_port_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::exception_types::mach_exception_data_t", aliases: &[
+        CLibAliases { names: &["mach_exception_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::loader::mach_header", aliases: &[
+        CLibAliases { names: &["mach_header"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::ipc_info::exception_handler_info_array_t", aliases: &[
+        CLibAliases { names: &["exception_handler_info_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::ipc_info::exception_port_info_array_t", aliases: &[
+        CLibAliases { names: &["exception_port_info_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::ipc_info::ipc_info_name", aliases: &[
+        CLibAliases { names: &["ipc_info_name"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::ipc_info::ipc_info_name_array_t", aliases: &[
+        CLibAliases { names: &["ipc_info_name_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::ipc_info::ipc_info_name_t", aliases: &[
+        CLibAliases { names: &["ipc_info_name_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::ipc_info::ipc_info_port", aliases: &[
+        CLibAliases { names: &["ipc_info_port"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::ipc_info::ipc_info_port_t", aliases: &[
+        CLibAliases { names: &["ipc_info_port_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::ipc_info::ipc_info_space", aliases: &[
+        CLibAliases { names: &["ipc_info_space"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::ipc_info::ipc_info_space_basic", aliases: &[
+        CLibAliases { names: &["ipc_info_space_basic"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::ipc_info::ipc_info_space_basic_t", aliases: &[
+        CLibAliases { names: &["ipc_info_space_basic_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::ipc_info::ipc_info_space_t", aliases: &[
+        CLibAliases { names: &["ipc_info_space_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::ipc_info::ipc_info_tree_name", aliases: &[
+        CLibAliases { names: &["ipc_info_tree_name"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::ipc_info::ipc_info_tree_name_array_t", aliases: &[
+        CLibAliases { names: &["ipc_info_tree_name_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::ipc_info::ipc_info_tree_name_t", aliases: &[
+        CLibAliases { names: &["ipc_info_tree_name_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::mach_memory_info", aliases: &[
+        CLibAliases { names: &["mach_memory_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::mach_memory_info_array_t", aliases: &[
+        CLibAliases { names: &["mach_memory_info_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::mach_memory_info_t", aliases: &[
+        CLibAliases { names: &["mach_memory_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::mach_zone_info_array_t", aliases: &[
+        CLibAliases { names: &["mach_zone_info_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::mach_zone_info_data", aliases: &[
+        CLibAliases { names: &["mach_zone_info_data"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::mach_zone_info_t", aliases: &[
+        CLibAliases { names: &["mach_zone_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::mach_zone_name", aliases: &[
+        CLibAliases { names: &["mach_zone_name"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::mach_zone_name_array_t", aliases: &[
+        CLibAliases { names: &["mach_zone_name_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::mach_zone_name_t", aliases: &[
+        CLibAliases { names: &["mach_zone_name_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::task_zone_info_array_t", aliases: &[
+        CLibAliases { names: &["task_zone_info_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::task_zone_info_data", aliases: &[
+        CLibAliases { names: &["task_zone_info_data"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::task_zone_info_t", aliases: &[
+        CLibAliases { names: &["task_zone_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::zone_btrecord", aliases: &[
+        CLibAliases { names: &["zone_btrecord"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::zone_btrecord_array_t", aliases: &[
+        CLibAliases { names: &["zone_btrecord_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::zone_btrecord_t", aliases: &[
+        CLibAliases { names: &["zone_btrecord_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::zone_info", aliases: &[
+        CLibAliases { names: &["zone_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::zone_info_array_t", aliases: &[
+        CLibAliases { names: &["zone_info_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::zone_info_t", aliases: &[
+        CLibAliases { names: &["zone_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::zone_name", aliases: &[
+        CLibAliases { names: &["zone_name"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::zone_name_array_t", aliases: &[
+        CLibAliases { names: &["zone_name_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_debug::zone_info::zone_name_t", aliases: &[
+        CLibAliases { names: &["zone_name_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_time::mach_timebase_info", aliases: &[
+        CLibAliases { names: &["mach_timebase_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_time::mach_timebase_info_data_t", aliases: &[
+        CLibAliases { names: &["mach_timebase_info_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_time::mach_timebase_info_t", aliases: &[
+        CLibAliases { names: &["mach_timebase_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::exception_handler_array_t", aliases: &[
+        CLibAliases { names: &["exception_handler_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::exception_port_arrary_t", aliases: &[
+        CLibAliases { names: &["exception_port_arrary_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::fsid", aliases: &[
+        CLibAliases { names: &["fsid"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::fsid_t", aliases: &[
+        CLibAliases { names: &["fsid_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::fsobj_id", aliases: &[
+        CLibAliases { names: &["fsobj_id"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::fsobj_id_t", aliases: &[
+        CLibAliases { names: &["fsobj_id_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::ledger_array_t", aliases: &[
+        CLibAliases { names: &["ledger_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::ledger_port_array_t", aliases: &[
+        CLibAliases { names: &["ledger_port_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::processor_array_t", aliases: &[
+        CLibAliases { names: &["processor_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::processor_port_array_t", aliases: &[
+        CLibAliases { names: &["processor_port_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::processor_set_array_t", aliases: &[
+        CLibAliases { names: &["processor_set_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::processor_set_name_array_t", aliases: &[
+        CLibAliases { names: &["processor_set_name_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::processor_set_name_port_array_t", aliases: &[
+        CLibAliases { names: &["processor_set_name_port_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::task_array_t", aliases: &[
+        CLibAliases { names: &["task_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::task_port_array_t", aliases: &[
+        CLibAliases { names: &["task_port_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::thread_act_array_t", aliases: &[
+        CLibAliases { names: &["thread_act_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::thread_act_port_array_t", aliases: &[
+        CLibAliases { names: &["thread_act_port_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::thread_array_t", aliases: &[
+        CLibAliases { names: &["thread_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_types::thread_port_array_t", aliases: &[
+        CLibAliases { names: &["thread_port_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_voucher_types::mach_voucher_attr_content_t", aliases: &[
+        CLibAliases { names: &["mach_voucher_attr_content_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_voucher_types::mach_voucher_attr_key_array_t", aliases: &[
+        CLibAliases { names: &["mach_voucher_attr_key_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_voucher_types::mach_voucher_attr_raw_recipe_array_t", aliases: &[
+        CLibAliases { names: &["mach_voucher_attr_raw_recipe_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_voucher_types::mach_voucher_attr_raw_recipe_t", aliases: &[
+        CLibAliases { names: &["mach_voucher_attr_raw_recipe_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_voucher_types::mach_voucher_attr_recipe_command_array_t", aliases: &[
+        CLibAliases { names: &["mach_voucher_attr_recipe_command_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_voucher_types::mach_voucher_attr_value_handle_array_t", aliases: &[
+        CLibAliases { names: &["mach_voucher_attr_value_handle_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mach_voucher_types::mach_voucher_name_array_t", aliases: &[
+        CLibAliases { names: &["mach_voucher_name_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::memory_object_types::memory_object_fault_info_t", aliases: &[
+        CLibAliases { names: &["memory_object_fault_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::message::audit_token_t", aliases: &[
+        CLibAliases { names: &["audit_token_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::message::mach_msg_audit_trailer_t", aliases: &[
+        CLibAliases { names: &["mach_msg_audit_trailer_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::message::mach_msg_base_t", aliases: &[
+        CLibAliases { names: &["mach_msg_base_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::message::mach_msg_body_t", aliases: &[
+        CLibAliases { names: &["mach_msg_body_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::message::mach_msg_header_t", aliases: &[
+        CLibAliases { names: &["mach_msg_header_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::message::mach_msg_security_trailer_t", aliases: &[
+        CLibAliases { names: &["mach_msg_security_trailer_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::message::mach_msg_seqno_trailer_t", aliases: &[
+        CLibAliases { names: &["mach_msg_seqno_trailer_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::message::mach_msg_trailer_t", aliases: &[
+        CLibAliases { names: &["mach_msg_trailer_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::message::security_token_t", aliases: &[
+        CLibAliases { names: &["security_token_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mig::mig_impl_routine_t", aliases: &[
+        CLibAliases { names: &["mig_impl_routine_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mig::mig_routine_arg_descriptor_t", aliases: &[
+        CLibAliases { names: &["mig_routine_arg_descriptor_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mig::mig_routine_descriptor", aliases: &[
+        CLibAliases { names: &["mig_routine_descriptor"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mig::mig_routine_descriptor_t", aliases: &[
+        CLibAliases { names: &["mig_routine_descriptor_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mig::mig_routine_t", aliases: &[
+        CLibAliases { names: &["mig_routine_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mig::mig_server_routine_t", aliases: &[
+        CLibAliases { names: &["mig_server_routine_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mig::mig_stub_routine_t", aliases: &[
+        CLibAliases { names: &["mig_stub_routine_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mig::mig_subsystem", aliases: &[
+        CLibAliases { names: &["mig_subsystem"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mig::mig_subsystem_t", aliases: &[
+        CLibAliases { names: &["mig_subsystem_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mig::mig_symtab", aliases: &[
+        CLibAliases { names: &["mig_symtab"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mig::mig_symtab_t", aliases: &[
+        CLibAliases { names: &["mig_symtab_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mig::routine_arg_descriptor_t", aliases: &[
+        CLibAliases { names: &["routine_arg_descriptor_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mig::routine_descriptor", aliases: &[
+        CLibAliases { names: &["routine_descriptor"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::mig::routine_descriptor_t", aliases: &[
+        CLibAliases { names: &["routine_descriptor_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::notify::mach_dead_name_notification_t", aliases: &[
+        CLibAliases { names: &["mach_dead_name_notification_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::notify::mach_no_senders_notification_t", aliases: &[
+        CLibAliases { names: &["mach_no_senders_notification_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::notify::mach_port_deleted_notification_t", aliases: &[
+        CLibAliases { names: &["mach_port_deleted_notification_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::notify::mach_port_destroyed_notification_t", aliases: &[
+        CLibAliases { names: &["mach_port_destroyed_notification_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::notify::mach_send_once_notification_t", aliases: &[
+        CLibAliases { names: &["mach_send_once_notification_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::notify::mach_send_possible_notification_t", aliases: &[
+        CLibAliases { names: &["mach_send_possible_notification_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_base_t", aliases: &[
+        CLibAliases { names: &["policy_base_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_fifo_base", aliases: &[
+        CLibAliases { names: &["policy_fifo_base"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_fifo_base_data_t", aliases: &[
+        CLibAliases { names: &["policy_fifo_base_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_fifo_base_t", aliases: &[
+        CLibAliases { names: &["policy_fifo_base_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_fifo_info", aliases: &[
+        CLibAliases { names: &["policy_fifo_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_fifo_info_data_t", aliases: &[
+        CLibAliases { names: &["policy_fifo_info_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_fifo_info_t", aliases: &[
+        CLibAliases { names: &["policy_fifo_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_fifo_limit", aliases: &[
+        CLibAliases { names: &["policy_fifo_limit"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_fifo_limit_data_t", aliases: &[
+        CLibAliases { names: &["policy_fifo_limit_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_fifo_limit_t", aliases: &[
+        CLibAliases { names: &["policy_fifo_limit_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_info_t", aliases: &[
+        CLibAliases { names: &["policy_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_limit_t", aliases: &[
+        CLibAliases { names: &["policy_limit_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_rr_base", aliases: &[
+        CLibAliases { names: &["policy_rr_base"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_rr_base_data_t", aliases: &[
+        CLibAliases { names: &["policy_rr_base_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_rr_base_t", aliases: &[
+        CLibAliases { names: &["policy_rr_base_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_rr_info", aliases: &[
+        CLibAliases { names: &["policy_rr_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_rr_info_data_t", aliases: &[
+        CLibAliases { names: &["policy_rr_info_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_rr_info_t", aliases: &[
+        CLibAliases { names: &["policy_rr_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_rr_limit", aliases: &[
+        CLibAliases { names: &["policy_rr_limit"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_rr_limit_data_t", aliases: &[
+        CLibAliases { names: &["policy_rr_limit_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_rr_limit_t", aliases: &[
+        CLibAliases { names: &["policy_rr_limit_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_timeshare_base", aliases: &[
+        CLibAliases { names: &["policy_timeshare_base"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_timeshare_base_data_t", aliases: &[
+        CLibAliases { names: &["policy_timeshare_base_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_timeshare_base_t", aliases: &[
+        CLibAliases { names: &["policy_timeshare_base_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_timeshare_info", aliases: &[
+        CLibAliases { names: &["policy_timeshare_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_timeshare_info_data_t", aliases: &[
+        CLibAliases { names: &["policy_timeshare_info_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_timeshare_info_t", aliases: &[
+        CLibAliases { names: &["policy_timeshare_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_timeshare_limit", aliases: &[
+        CLibAliases { names: &["policy_timeshare_limit"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_timeshare_limit_data_t", aliases: &[
+        CLibAliases { names: &["policy_timeshare_limit_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::policy::policy_timeshare_limit_t", aliases: &[
+        CLibAliases { names: &["policy_timeshare_limit_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::port::mach_port_array_t", aliases: &[
+        CLibAliases { names: &["mach_port_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::port::mach_port_info_t", aliases: &[
+        CLibAliases { names: &["mach_port_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::port::mach_port_limits_t", aliases: &[
+        CLibAliases { names: &["mach_port_limits", "mach_port_limits_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::port::mach_port_options_t", aliases: &[
+        CLibAliases { names: &["mach_port_options", "mach_port_options_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__lock_set_create_t", aliases: &[
+        CLibAliases { names: &["__Reply__lock_set_create_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__lock_set_destroy_t", aliases: &[
+        CLibAliases { names: &["__Reply__lock_set_destroy_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__mach_ports_lookup_t", aliases: &[
+        CLibAliases { names: &["__Reply__mach_ports_lookup_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__mach_ports_register_t", aliases: &[
+        CLibAliases { names: &["__Reply__mach_ports_register_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__semaphore_create_t", aliases: &[
+        CLibAliases { names: &["__Reply__semaphore_create_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_assign_default_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_assign_default_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_assign_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_assign_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_create_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_create_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_get_assignment_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_get_assignment_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_get_emulation_vector_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_get_emulation_vector_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_get_exception_ports_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_get_exception_ports_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_get_special_port_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_get_special_port_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_get_state_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_get_state_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_info_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_policy_get_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_policy_get_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_policy_set_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_policy_set_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_policy_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_policy_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_resume_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_resume_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_sample_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_sample_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_set_emulation_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_set_emulation_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_set_emulation_vector_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_set_emulation_vector_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_set_exception_ports_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_set_exception_ports_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_set_info_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_set_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_set_policy_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_set_policy_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_set_ras_pc_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_set_ras_pc_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_set_special_port_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_set_special_port_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_set_state_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_set_state_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_suspend_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_suspend_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_swap_exception_ports_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_swap_exception_ports_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_terminate_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_terminate_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__task_threads_t", aliases: &[
+        CLibAliases { names: &["__Reply__task_threads_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__thread_create_running_t", aliases: &[
+        CLibAliases { names: &["__Reply__thread_create_running_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Reply__thread_create_t", aliases: &[
+        CLibAliases { names: &["__Reply__thread_create_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__lock_set_create_t", aliases: &[
+        CLibAliases { names: &["__Request__lock_set_create_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__lock_set_destroy_t", aliases: &[
+        CLibAliases { names: &["__Request__lock_set_destroy_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__mach_ports_lookup_t", aliases: &[
+        CLibAliases { names: &["__Request__mach_ports_lookup_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__mach_ports_register_t", aliases: &[
+        CLibAliases { names: &["__Request__mach_ports_register_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__semaphore_create_t", aliases: &[
+        CLibAliases { names: &["__Request__semaphore_create_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_assign_default_t", aliases: &[
+        CLibAliases { names: &["__Request__task_assign_default_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_assign_t", aliases: &[
+        CLibAliases { names: &["__Request__task_assign_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_create_t", aliases: &[
+        CLibAliases { names: &["__Request__task_create_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_get_assignment_t", aliases: &[
+        CLibAliases { names: &["__Request__task_get_assignment_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_get_emulation_vector_t", aliases: &[
+        CLibAliases { names: &["__Request__task_get_emulation_vector_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_get_exception_ports_t", aliases: &[
+        CLibAliases { names: &["__Request__task_get_exception_ports_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_get_special_port_t", aliases: &[
+        CLibAliases { names: &["__Request__task_get_special_port_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_get_state_t", aliases: &[
+        CLibAliases { names: &["__Request__task_get_state_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_info_t", aliases: &[
+        CLibAliases { names: &["__Request__task_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_policy_get_t", aliases: &[
+        CLibAliases { names: &["__Request__task_policy_get_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_policy_set_t", aliases: &[
+        CLibAliases { names: &["__Request__task_policy_set_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_policy_t", aliases: &[
+        CLibAliases { names: &["__Request__task_policy_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_resume_t", aliases: &[
+        CLibAliases { names: &["__Request__task_resume_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_sample_t", aliases: &[
+        CLibAliases { names: &["__Request__task_sample_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_set_emulation_t", aliases: &[
+        CLibAliases { names: &["__Request__task_set_emulation_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_set_emulation_vector_t", aliases: &[
+        CLibAliases { names: &["__Request__task_set_emulation_vector_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_set_exception_ports_t", aliases: &[
+        CLibAliases { names: &["__Request__task_set_exception_ports_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_set_info_t", aliases: &[
+        CLibAliases { names: &["__Request__task_set_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_set_policy_t", aliases: &[
+        CLibAliases { names: &["__Request__task_set_policy_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_set_ras_pc_t", aliases: &[
+        CLibAliases { names: &["__Request__task_set_ras_pc_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_set_special_port_t", aliases: &[
+        CLibAliases { names: &["__Request__task_set_special_port_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_set_state_t", aliases: &[
+        CLibAliases { names: &["__Request__task_set_state_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_suspend_t", aliases: &[
+        CLibAliases { names: &["__Request__task_suspend_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_swap_exception_ports_t", aliases: &[
+        CLibAliases { names: &["__Request__task_swap_exception_ports_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_terminate_t", aliases: &[
+        CLibAliases { names: &["__Request__task_terminate_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__task_threads_t", aliases: &[
+        CLibAliases { names: &["__Request__task_threads_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__thread_create_running_t", aliases: &[
+        CLibAliases { names: &["__Request__thread_create_running_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::__Request__thread_create_t", aliases: &[
+        CLibAliases { names: &["__Request__thread_create_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::emulation_vector_t", aliases: &[
+        CLibAliases { names: &["emulation_vector_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task::task_policy_t", aliases: &[
+        CLibAliases { names: &["task_policy_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::gpu_energy_data", aliases: &[
+        CLibAliases { names: &["gpu_energy_data"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::mach_task_basic_info", aliases: &[
+        CLibAliases { names: &["mach_task_basic_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_absolutetime_info", aliases: &[
+        CLibAliases { names: &["task_absolutetime_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_affinity_tag_info", aliases: &[
+        CLibAliases { names: &["task_affinity_tag_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_basic_info", aliases: &[
+        CLibAliases { names: &["task_basic_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_basic_info_32", aliases: &[
+        CLibAliases { names: &["task_basic_info_32"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_basic_info_64", aliases: &[
+        CLibAliases { names: &["task_basic_info_64"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_dyld_info", aliases: &[
+        CLibAliases { names: &["task_dyld_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_events_info", aliases: &[
+        CLibAliases { names: &["task_events_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_extmod_info", aliases: &[
+        CLibAliases { names: &["task_extmod_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_flags_info", aliases: &[
+        CLibAliases { names: &["task_flags_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_info_t", aliases: &[
+        CLibAliases { names: &["task_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_kernelmemory_info", aliases: &[
+        CLibAliases { names: &["task_kernelmemory_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_power_info", aliases: &[
+        CLibAliases { names: &["task_power_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_power_info_v2", aliases: &[
+        CLibAliases { names: &["task_power_info_v2"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_purgable_info_t", aliases: &[
+        CLibAliases { names: &["task_purgable_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_thread_times_info", aliases: &[
+        CLibAliases { names: &["task_thread_times_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_trace_memory_info", aliases: &[
+        CLibAliases { names: &["task_trace_memory_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_vm_info", aliases: &[
+        CLibAliases { names: &["task_vm_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_info::task_wait_state_info", aliases: &[
+        CLibAliases { names: &["task_wait_state_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_inspect::task_inspect_basic_counts", aliases: &[
+        CLibAliases { names: &["task_inspect_basic_counts"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_inspect::task_inspect_basic_counts_data_t", aliases: &[
+        CLibAliases { names: &["task_inspect_basic_counts_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_inspect::task_inspect_basic_counts_t", aliases: &[
+        CLibAliases { names: &["task_inspect_basic_counts_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::task_inspect::task_inspect_info_t", aliases: &[
+        CLibAliases { names: &["task_inspect_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::thread_policy::thread_affinity_policy", aliases: &[
+        CLibAliases { names: &["thread_affinity_policy"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::thread_policy::thread_affinity_policy_data_t", aliases: &[
+        CLibAliases { names: &["thread_affinity_policy_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::thread_policy::thread_background_policy", aliases: &[
+        CLibAliases { names: &["thread_background_policy"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::thread_policy::thread_background_policy_data_t", aliases: &[
+        CLibAliases { names: &["thread_background_policy_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::thread_policy::thread_extended_policy", aliases: &[
+        CLibAliases { names: &["thread_extended_policy"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::thread_policy::thread_extended_policy_data_t", aliases: &[
+        CLibAliases { names: &["thread_extended_policy_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::thread_policy::thread_policy_t", aliases: &[
+        CLibAliases { names: &["thread_policy_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::thread_policy::thread_precedence_policy", aliases: &[
+        CLibAliases { names: &["thread_precedence_policy"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::thread_policy::thread_precedence_policy_data_t", aliases: &[
+        CLibAliases { names: &["thread_precedence_policy_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::thread_policy::thread_standard_policy", aliases: &[
+        CLibAliases { names: &["thread_standard_policy"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::thread_policy::thread_standard_policy_data_t", aliases: &[
+        CLibAliases { names: &["thread_standard_policy_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::thread_policy::thread_time_constraint_policy", aliases: &[
+        CLibAliases { names: &["thread_time_constraint_policy"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::thread_policy::thread_time_constraint_policy_data_t", aliases: &[
+        CLibAliases { names: &["thread_time_constraint_policy_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::thread_status::thread_state_t", aliases: &[
+        CLibAliases { names: &["thread_state_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::time_value::time_value", aliases: &[
+        CLibAliases { names: &["time_value"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::time_value::time_value_t", aliases: &[
+        CLibAliases { names: &["time_value_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::mach_vm_read_entry", aliases: &[
+        CLibAliases { names: &["mach_vm_read_entry"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_page_info_basic", aliases: &[
+        CLibAliases { names: &["vm_page_info_basic"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_page_info_basic_data_t", aliases: &[
+        CLibAliases { names: &["vm_page_info_basic_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_page_info_basic_t", aliases: &[
+        CLibAliases { names: &["vm_page_info_basic_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_page_info_t", aliases: &[
+        CLibAliases { names: &["vm_page_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_basic_info", aliases: &[
+        CLibAliases { names: &["vm_region_basic_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_basic_info_64", aliases: &[
+        CLibAliases { names: &["vm_region_basic_info_64"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_basic_info_64_t", aliases: &[
+        CLibAliases { names: &["vm_region_basic_info_64_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_basic_info_data_64_t", aliases: &[
+        CLibAliases { names: &["vm_region_basic_info_data_64_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_basic_info_data_t", aliases: &[
+        CLibAliases { names: &["vm_region_basic_info_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_basic_info_t", aliases: &[
+        CLibAliases { names: &["vm_region_basic_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_extended_info", aliases: &[
+        CLibAliases { names: &["vm_region_extended_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_extended_info_data_t", aliases: &[
+        CLibAliases { names: &["vm_region_extended_info_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_extended_info_t", aliases: &[
+        CLibAliases { names: &["vm_region_extended_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_info_64_t", aliases: &[
+        CLibAliases { names: &["vm_region_info_64_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_info_t", aliases: &[
+        CLibAliases { names: &["vm_region_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_recurse_info_64_t", aliases: &[
+        CLibAliases { names: &["vm_region_recurse_info_64_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_recurse_info_t", aliases: &[
+        CLibAliases { names: &["vm_region_recurse_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_submap_info", aliases: &[
+        CLibAliases { names: &["vm_region_submap_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_submap_info_64", aliases: &[
+        CLibAliases { names: &["vm_region_submap_info_64"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_submap_info_64_t", aliases: &[
+        CLibAliases { names: &["vm_region_submap_info_64_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_submap_info_data_64_t", aliases: &[
+        CLibAliases { names: &["vm_region_submap_info_data_64_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_submap_info_data_t", aliases: &[
+        CLibAliases { names: &["vm_region_submap_info_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_submap_info_t", aliases: &[
+        CLibAliases { names: &["vm_region_submap_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_submap_short_info_64", aliases: &[
+        CLibAliases { names: &["vm_region_submap_short_info_64"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_submap_short_info_64_t", aliases: &[
+        CLibAliases { names: &["vm_region_submap_short_info_64_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_submap_short_info_data_64_t", aliases: &[
+        CLibAliases { names: &["vm_region_submap_short_info_data_64_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_top_info", aliases: &[
+        CLibAliases { names: &["vm_region_top_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_top_info_data_t", aliases: &[
+        CLibAliases { names: &["vm_region_top_info_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_region::vm_region_top_info_t", aliases: &[
+        CLibAliases { names: &["vm_region_top_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_statistics::vm_extmod_statistics", aliases: &[
+        CLibAliases { names: &["vm_extmod_statistics"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_statistics::vm_extmod_statistics_data_t", aliases: &[
+        CLibAliases { names: &["vm_extmod_statistics_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_statistics::vm_extmod_statistics_t", aliases: &[
+        CLibAliases { names: &["vm_extmod_statistics_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_statistics::vm_purgeable_info", aliases: &[
+        CLibAliases { names: &["vm_purgeable_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_statistics::vm_purgeable_info_t", aliases: &[
+        CLibAliases { names: &["vm_purgeable_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_statistics::vm_purgeable_stat", aliases: &[
+        CLibAliases { names: &["vm_purgeable_stat"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_statistics::vm_purgeable_stat_t", aliases: &[
+        CLibAliases { names: &["vm_purgeable_stat_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_statistics::vm_statistics", aliases: &[
+        CLibAliases { names: &["vm_statistics"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_statistics::vm_statistics64_t", aliases: &[
+        CLibAliases { names: &["vm_statistics64_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_statistics::vm_statistics_data_t", aliases: &[
+        CLibAliases { names: &["vm_statistics_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach::vm_statistics::vm_statistics_t", aliases: &[
+        CLibAliases { names: &["vm_statistics_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach_header_64", aliases: &[
+        CLibAliases { names: &["mach_header_64"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach_task_basic_info_data_t", aliases: &[
+        CLibAliases { names: &["mach_task_basic_info_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::mach_task_basic_info_t", aliases: &[
+        CLibAliases { names: &["mach_task_basic_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
     ] },
     CLibRecord { rust_path: "slate_support::mbstate_t", aliases: &[
         CLibAliases { names: &["mbstate_t"], targets: &["aarch64-unknown-linux-gnu", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-unknown-linux-gnu"] },
@@ -269,6 +1217,9 @@ pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[
     ] },
     CLibRecord { rust_path: "slate_support::posix_spawnattr_t", aliases: &[
         CLibAliases { names: &["posix_spawnattr_t"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::processor_info_array_t", aliases: &[
+        CLibAliases { names: &["processor_info_array_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
     ] },
     CLibRecord { rust_path: "slate_support::protoent", aliases: &[
         CLibAliases { names: &["protoent"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
@@ -355,6 +1306,12 @@ pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[
     CLibRecord { rust_path: "slate_support::sched_param", aliases: &[
         CLibAliases { names: &["sched_param"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
     ] },
+    CLibRecord { rust_path: "slate_support::segment_command", aliases: &[
+        CLibAliases { names: &["segment_command"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::segment_command_64", aliases: &[
+        CLibAliases { names: &["segment_command_64"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
     CLibRecord { rust_path: "slate_support::sem_t", aliases: &[
         CLibAliases { names: &["sem_t"], targets: &["aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
     ] },
@@ -437,6 +1394,12 @@ pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[
     CLibRecord { rust_path: "slate_support::sysinfo", aliases: &[
         CLibAliases { names: &["sysinfo"], targets: &["aarch64-linux-android", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "x86_64-linux-android", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
     ] },
+    CLibRecord { rust_path: "slate_support::task_thread_times_info_data_t", aliases: &[
+        CLibAliases { names: &["task_thread_times_info_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::task_thread_times_info_t", aliases: &[
+        CLibAliases { names: &["task_thread_times_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
     CLibRecord { rust_path: "slate_support::tcp_fastopen", aliases: &[
         CLibAliases { names: &["tcp_fastopen"], targets: &["aarch64-unknown-freebsd", "x86_64-unknown-freebsd"] },
     ] },
@@ -445,6 +1408,33 @@ pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[
     ] },
     CLibRecord { rust_path: "slate_support::termios", aliases: &[
         CLibAliases { names: &["termios"], targets: &["aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::thread_affinity_policy_t", aliases: &[
+        CLibAliases { names: &["thread_affinity_policy_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::thread_background_policy_t", aliases: &[
+        CLibAliases { names: &["thread_background_policy_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::thread_extended_policy_t", aliases: &[
+        CLibAliases { names: &["thread_extended_policy_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::thread_info_t", aliases: &[
+        CLibAliases { names: &["thread_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::thread_latency_qos_policy_t", aliases: &[
+        CLibAliases { names: &["thread_latency_qos_policy_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::thread_precedence_policy_t", aliases: &[
+        CLibAliases { names: &["thread_precedence_policy_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::thread_standard_policy_t", aliases: &[
+        CLibAliases { names: &["thread_standard_policy_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::thread_throughput_qos_policy_t", aliases: &[
+        CLibAliases { names: &["thread_throughput_qos_policy_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
+    ] },
+    CLibRecord { rust_path: "slate_support::thread_time_constraint_policy_t", aliases: &[
+        CLibAliases { names: &["thread_time_constraint_policy_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
     ] },
     CLibRecord { rust_path: "slate_support::timer_t", aliases: &[
         CLibAliases { names: &["timer_t"], targets: &["aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },

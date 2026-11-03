@@ -2,6 +2,7 @@
 
 <!-- toc -->
 - [Suites](#suites)
+  - [Build-only fixtures](#build-only-fixtures)
   - [Targets](#targets)
 - [Supported/unsupported ratchet](#supportedunsupported-ratchet)
 - [Triage](#triage)
@@ -13,6 +14,9 @@
 Fixtures are C programs. Slate compiles and runs the C source with
 `clang` on PATH (the oracle) and the generated Rust, then requires identical
 stdout and exit status. Runtime parity is the only correctness gate.
+
+Build-only platform fixtures check compilation and generated output when
+execution is unavailable; they do not establish runtime parity.
 
 ## Suites
 
@@ -30,6 +34,25 @@ cargo nextest r --release --profile slate
 Run it from the workspace root. `chibicc_suite` uses `translate-project` for
 two-TU fixtures. Additional suite coverage is tracked for restoration in
 `slate-p58o.6.7` through `slate-p58o.6.17`; the fixture directories remain.
+
+### Build-only fixtures
+
+- Put C fixtures in `tests/fixtures.build/<platform>/`; Apple cases go in
+  `apple/`.
+- Declare targets with `// SLATE-BUILD-TARGETS: <triple> ...` and compiler flags
+  with `dg-options`. Target selection is independent of the host.
+- `build_filecheck` compiles C to an object and builds the generated Cargo
+  library, then FileChecks its translated unit. It never executes platform code
+  or requires a platform linker. Use functions and compile-time assertions;
+  these fixtures have no `main`.
+- An optional same-name `.rs` sidecar supplies compile-time assertions in the
+  generated library root; it contains no test functions and is not executed.
+- Every fixture needs a generated `SLATE-FILECHECK` block. Regenerate with
+  `python3 crates/slate/tools/update_filecheck.py <fixture.c>`.
+- Run all cases with
+  `cargo nextest r --release --profile slate --test build_filecheck`.
+  `SLATE_DIFF_FIXTURE=<stem>` selects a fixture name; `SLATE_TEST_TARGETS`
+  optionally restricts its declared targets.
 
 ### Targets
 

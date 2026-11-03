@@ -1,7 +1,7 @@
 # slate-libc-gen
 
-Generate the checked-in libc catalogs used to canonicalize system declarations
-as `slate_support` paths for each translation target.
+Generate the checked-in binding catalogs used to canonicalize system
+declarations as `slate_support` paths for each translation target.
 
 Run from the workspace root after installing the target sysroots:
 
@@ -11,7 +11,8 @@ cargo run --release -p slate-libc-gen
 ```
 
 - `--target <triple>`: restrict the matrix; repeat for multiple targets. The
-  default covers the supported Linux, Android, macOS, FreeBSD and MSVC Windows targets.
+  default covers the supported Linux, Android, macOS, FreeBSD and MSVC Windows
+  targets.
 - `--libc <dir>`: libc source to probe; defaults to `crates/slate/vendor/libc`.
 - `--out <file>`: record catalog; defaults to
   `crates/slate/src/backend/clib_records_table.rs`.
@@ -24,18 +25,23 @@ cargo run --release -p slate-libc-gen
 Use alternate output files for a partial matrix to avoid replacing the full
 checked-in catalogs. Regenerate both catalogs after updating libc or sysroots.
 
+Apple targets also discover public bindings in the vendored `mach2` through
+nightly rustdoc JSON. Module documentation supplies C header candidates;
+definitions supply `slate_support::mach` paths. Ambiguous names stay local.
+Discovery does not bypass the signature, symbol, layout or value checks.
+
 Mappings use the C translation target, independently of the machine running
 Slate. Identical mappings share a target group; a mismatch excludes only the
 affected target. Unprobed targets retain their local declarations.
 
-Records must match size, alignment and public field offsets. Reserved fields
-are ignored unless header macros reach through an aggregate. Scalar typedefs
-must match width, alignment and signedness. Function and global probes must
-compile with the C declaration's type and refer to the same linker symbol.
-Integer constants must match by name and value. Lowering requires system-header
-macro references preserved by sema, rather than provenance on expanded literals.
-The checked-in catalogs contain names, canonical destinations
-and target eligibility; compatibility details stay in the generator report.
+Records must match size, alignment and public field offsets. Reserved fields are
+ignored unless header macros reach through an aggregate. Scalar typedefs must
+match width, alignment and signedness. Function and global probes must compile
+with the C declaration's type and refer to the same linker symbol. Integer
+constants must match by name and value. Lowering requires system-header macro
+references preserved by sema, rather than provenance on expanded literals. The
+checked-in catalogs contain names, canonical destinations and target
+eligibility; compatibility details stay in the generator report.
 
 The vendored libc defaults to FreeBSD 15 and to 64-bit file offsets and time on
 32-bit glibc. Header probes use `_FILE_OFFSET_BITS=64` and `_TIME_BITS=64` on

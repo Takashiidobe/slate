@@ -37,6 +37,18 @@ pub fn prepare_libc(libc: &Path, work: &Path) -> Result<PathBuf> {
         let _ = std::fs::remove_file(&link);
         std::os::unix::fs::symlink(libc.join(entry), link)?;
     }
+    let mach = work.join("mach2");
+    std::fs::create_dir_all(&mach)?;
+    let mach_source = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../slate/vendor/mach2")
+        .canonicalize()?;
+    std::fs::copy(
+        mach_source.join("Cargo.toml.template"),
+        mach.join("Cargo.toml"),
+    )?;
+    let link = mach.join("src");
+    let _ = std::fs::remove_file(&link);
+    std::os::unix::fs::symlink(mach_source.join("src"), link)?;
     let support = work.join("slate-support");
     std::fs::create_dir_all(&support)?;
     let support_source = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -63,6 +75,7 @@ pub fn collect(
     work: &Path,
     target: &str,
     candidates: &[(String, Vec<String>)],
+    providers: &crate::providers::Inventory,
 ) -> Result<BTreeMap<String, RustLayout>> {
     let dir = work.join(target);
     std::fs::create_dir_all(&dir)?;
@@ -71,7 +84,7 @@ pub fn collect(
         format!(
             "[package]\nname = \"probe\"\nversion = \"0.0.0\"\nedition = \"2024\"\n\n\
              [lib]\npath = \"lib.rs\"\n\n\
-             [dependencies]\nlibc = {{ path = {libc:?}, default-features = false }}\n\n\
+             [dependencies]\nlibc = {{ path = {libc:?}, default-features = false }}\nslate_support = {{ package = \"slate-support\", path = \"../slate-support\" }}\n\n\
              [profile.dev]\nopt-level = 0\ndebug = false\n\n[workspace]\n",
             libc = libc_dir.display().to_string()
         ),
@@ -79,7 +92,9 @@ pub fn collect(
 
     let mut probes = Vec::new();
     for (index, (name, fields)) in candidates.iter().enumerate() {
-        let ty = format!("libc::{}", ident(name));
+        let Some(ty) = providers.path(name) else {
+            continue;
+        };
         probes.push(Probe {
             key: format!("L{index}_s"),
             type_index: index,
