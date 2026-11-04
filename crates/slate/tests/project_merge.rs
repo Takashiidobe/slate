@@ -374,7 +374,7 @@ fn target_properties_match_rustc() {
         .map(|target| {
             let triple = target["triple"].as_str().expect("triple");
             let info = TargetInfo::for_triple(triple).expect("known triple");
-            let ours = slate::project_cfg::target_properties(&info)
+            let ours = slate::project::cfg::target_properties(&info)
                 .iter()
                 .map(|atom| atom.render().replace(" = ", "="))
                 .collect();

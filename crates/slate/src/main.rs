@@ -3,8 +3,9 @@ use rayon::prelude::*;
 use slate::backend::{self, codegen, rust_ast};
 use slate::frontend::c_shim;
 use slate::frontend::preprocess;
-use slate::project_merge::{Unit as SlateUnit, collect_all_errors, rust_ident};
-use slate::{api, compile_commands, project_matrix, project_merge, project_plan};
+use slate::project::merge::{Unit as SlateUnit, collect_all_errors, rust_ident};
+use slate::project::{matrix, merge, plan};
+use slate::{api, compile_commands};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
@@ -708,7 +709,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut features: Vec<String> = Vec::new();
     let mut plan_mode = None;
     let mut merge = false;
-    let mut projection = project_merge::Projection::Skip;
+    let mut projection = merge::Projection::Skip;
     let mut projection_triples: Vec<String> = Vec::new();
     let mut build_target = None;
     let current_dir = std::env::current_dir().map_err(|e| format!("current directory: {e}"))?;
@@ -744,8 +745,8 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
                     .get(index)
                     .ok_or_else(|| "--check-projection requires all or a count".to_string())?;
                 projection = match value.as_str() {
-                    "all" => project_merge::Projection::All,
-                    count => project_merge::Projection::Sample(count.parse().map_err(|_| {
+                    "all" => merge::Projection::All,
+                    count => merge::Projection::Sample(count.parse().map_err(|_| {
                         format!("--check-projection requires all or a count, got {count}")
                     })?),
                 };
@@ -757,8 +758,8 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
                     .ok_or_else(|| "--projection-triples requires target triples".to_string())?;
                 projection_triples.extend(triples.split(',').map(str::to_string));
             }
-            "--plan" => plan_mode = Some(project_plan::Mode::Plan),
-            "--plan-exhaustive" => plan_mode = Some(project_plan::Mode::CheckExhaustive),
+            "--plan" => plan_mode = Some(plan::Mode::Plan),
+            "--plan-exhaustive" => plan_mode = Some(plan::Mode::CheckExhaustive),
             "--matrix-target" => {
                 index += 1;
                 matrix_target = Some(
@@ -830,9 +831,9 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             return Err("--plan requires only a project directory".into());
         };
         let project = compile_commands::absolute_path(&current_dir, Path::new(project));
-        let matrix = cli_result(project_matrix::Matrix::read(&matrix_path))?;
+        let matrix = cli_result(matrix::Matrix::read(&matrix_path))?;
         let plan = slate_worker_pool()?
-            .install(|| project_plan::plan(&matrix, &project, matrix_target.as_deref(), mode));
+            .install(|| plan::plan(&matrix, &project, matrix_target.as_deref(), mode));
         let plan = cli_result(plan)?;
         print!("{}", plan.render(matrix.features.len()));
         return match plan.unplanned() {
@@ -855,14 +856,14 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             );
         }
         let project = compile_commands::absolute_path(&current_dir, Path::new(paths[0]));
-        let matrix = cli_result(project_matrix::Matrix::read(&matrix_path))?;
+        let matrix = cli_result(matrix::Matrix::read(&matrix_path))?;
         let targets: Vec<String> = matrix_target
             .iter()
             .flat_map(|names: &String| names.split(','))
             .map(str::to_string)
             .collect();
         let merged = slate_worker_pool()?.install(|| {
-            project_merge::merge(&matrix, &project, &targets, projection, &projection_triples)
+            merge::merge(&matrix, &project, &targets, projection, &projection_triples)
         })?;
         let report = merged.render().to_string();
         print!("{report}");
@@ -891,7 +892,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
         }
         return Ok(written);
     }
-    if projection != project_merge::Projection::Skip {
+    if projection != merge::Projection::Skip {
         return Err("--check-projection requires --merge".into());
     }
     if build_target.is_some() && compile_command_paths.is_empty() {
@@ -906,7 +907,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
         }
         let target = matrix_target.ok_or("--matrix requires --matrix-target")?;
         let project = compile_commands::absolute_path(&current_dir, Path::new(paths[0]));
-        let matrix = cli_result(project_matrix::Matrix::read(&matrix_path))?;
+        let matrix = cli_result(matrix::Matrix::read(&matrix_path))?;
         let commands = cli_result(matrix.commands(&project, &target, &features))?;
         return translate_slate_project(
             Path::new(paths[1]),
@@ -1039,12 +1040,12 @@ fn translate_slate_project(
         _ => return Err(format!("multiple units define main: {}", roots.join(", "))),
     };
     let translated = slate_worker_pool()?.install(|| {
-        project_merge::translate_units(
+        merge::translate_units(
             &units,
-            project_merge::imported_commons(&units),
+            merge::imported_commons(&units),
             explicit_docs_only,
             root.as_deref(),
-            project_merge::Sections::ByProject,
+            merge::Sections::ByProject,
             false,
         )
     })?;

@@ -1,5 +1,5 @@
+use super::matrix::{Matrix, MatrixError};
 use crate::frontend::{self, PreprocessedUnit};
-use crate::project_matrix::{Matrix, MatrixError};
 use rayon::prelude::*;
 use slate_parser::ast::{FileId, Span};
 use slate_parser::files::Files;

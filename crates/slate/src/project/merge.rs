@@ -1,3 +1,6 @@
+use super::cfg::{TargetConditions, holds};
+use super::matrix::Matrix;
+use super::splice::Variants;
 use crate::backend::link::signatures::{self, UnitCompiles};
 use crate::backend::rust_ast::{
     Attr, Cfg, CrateAttr, Expr, ExternDecl, Item, MacroOutcome, Program,
@@ -7,11 +10,6 @@ use crate::compile_commands::CompileCommand;
 use crate::frontend::directive_translate::{factor_cfgs, item_key, target_cfg};
 use crate::frontend::distinct_functions::{self, SectionCandidates};
 use crate::frontend::{self, lowerer};
-use crate::project_cfg::{self, TargetConditions, holds};
-use crate::project_hoist;
-use crate::project_matrix::Matrix;
-use crate::project_plan;
-use crate::project_splice::{self, Variants};
 use rayon::prelude::*;
 use slate_parser::files::Files;
 use slate_parser::ir::{Linkage, Module};
@@ -500,7 +498,7 @@ fn explore_unit(
     project: &Path,
     source: &Path,
     owners: &CommonOwners,
-) -> (project_plan::UnitPlan, Vec<ExploredRow>, Interner) {
+) -> (super::plan::UnitPlan, Vec<ExploredRow>, Interner) {
     let interner = Interner::default();
     let mut seen = BTreeSet::new();
     let mut rows: Vec<ExploredRow> = Vec::new();
@@ -514,7 +512,7 @@ fn explore_unit(
             .then(|| compile_isolated(unit.path().to_path_buf(), unit, owners, &interner));
         rows.push((names, fingerprint, result));
     };
-    let plan = project_plan::relevant_features(matrix, project, target, source, &mut on_run);
+    let plan = super::plan::relevant_features(matrix, project, target, source, &mut on_run);
     (plan, rows, interner)
 }
 
@@ -529,7 +527,7 @@ fn feature_mask(relevant: &[String], names: &[String]) -> u32 {
 }
 
 fn explored_unit(
-    plan: &project_plan::UnitPlan,
+    plan: &super::plan::UnitPlan,
     rows: Vec<ExploredRow>,
     interner: Interner,
 ) -> TargetUnit {
@@ -603,7 +601,7 @@ fn prepare_target(matrix: &Matrix, project: &Path, target: &str) -> Result<Targe
     Ok(TargetBuild {
         name: target.to_string(),
         cfg: target_cfg(&info),
-        properties: project_cfg::target_properties(&info),
+        properties: super::cfg::target_properties(&info),
         owners,
         units: built,
     })
@@ -934,7 +932,7 @@ struct MergedUnit {
     spliced: Vec<(String, usize)>,
 }
 
-fn hoist_values(key: &str, values: &[Value]) -> Option<project_hoist::Hoisted> {
+fn hoist_values(key: &str, values: &[Value]) -> Option<super::hoist::Hoisted> {
     if key.contains('#') {
         return None;
     }
@@ -945,7 +943,7 @@ fn hoist_values(key: &str, values: &[Value]) -> Option<project_hoist::Hoisted> {
             _ => None,
         })
         .collect::<Option<Vec<_>>>()?;
-    project_hoist::hoist(&variants)
+    super::hoist::hoist(&variants)
 }
 
 fn splice_values(
@@ -965,7 +963,7 @@ fn splice_values(
                     _ => None,
                 })
                 .collect::<Option<Vec<_>>>()?;
-            project_splice::splice_function(&variants, gate)
+            super::splice::splice_function(&variants, gate)
                 .map(|spliced| (Item::Fn(spliced.function), spliced.bindings))
         }
         Item::Record(_) => {
@@ -976,7 +974,7 @@ fn splice_values(
                     _ => None,
                 })
                 .collect::<Option<Vec<_>>>()?;
-            project_splice::splice_record(&variants, gate)
+            super::splice::splice_record(&variants, gate)
                 .map(|record| (Item::Record(record), Vec::new()))
         }
         _ => None,
@@ -1406,18 +1404,18 @@ fn same_except_added_section(
     }
     let holds_here = |cfg: &Cfg| holds(cfg, atoms);
     if let (Item::Record(merged), Item::Record(direct)) = (merged, direct) {
-        return project_splice::resolve_record(merged, &holds_here) == *direct;
+        return super::splice::resolve_record(merged, &holds_here) == *direct;
     }
     let (Item::Fn(merged), Item::Fn(direct)) = (merged, direct) else {
         return false;
     };
     let mut expanded = merged.clone();
-    project_hoist::expand(&mut expanded, bindings);
-    let mut resolved = project_splice::resolve_function(&expanded, &holds_here);
+    super::hoist::expand(&mut expanded, bindings);
+    let mut resolved = super::splice::resolve_function(&expanded, &holds_here);
     resolved
         .attrs
         .retain(|attr| !matches!(attr, Attr::LinkSection(_)) || direct.attrs.contains(attr));
-    resolved == project_splice::resolve_function(direct, &holds_here)
+    resolved == super::splice::resolve_function(direct, &holds_here)
 }
 
 fn projects_target(matrix: &Matrix, name: &str, projection_triples: &[String]) -> bool {
@@ -1479,11 +1477,11 @@ pub fn merge(
     } else {
         targets.to_vec()
     };
-    if names.len() > project_cfg::MAX_TARGETS {
+    if names.len() > super::cfg::MAX_TARGETS {
         return Err(format!(
             "cannot merge {} targets, the limit is {}",
             names.len(),
-            project_cfg::MAX_TARGETS
+            super::cfg::MAX_TARGETS
         ));
     }
     if projection == Projection::All {
