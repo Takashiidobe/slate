@@ -1,5 +1,7 @@
 use std::collections::HashSet;
 
+use slate_parser::target_info::{TargetInfo, TargetOs};
+
 use crate::backend::rust_ast::{
     Block, CLibType, Expr, ExternDecl, ExternFnDecl, FnParam, Ident, ImplItem, Item, Path, Program,
     RustValue, Stmt, Type,
@@ -9,6 +11,11 @@ use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 const SUPPORT_WRITERS: &[&str] = &[
     "printf", "fprintf", "puts", "fputs", "fputc", "putc", "__sputc", "putchar",
 ];
+
+struct RewriteState {
+    needs_fflush_extern: bool,
+    println_ok: bool,
+}
 
 struct FormatPlan {
     macro_name: &'static str,
@@ -346,19 +353,22 @@ fn wrap_stdout_writer_preserving_tail(stmt: Stmt) -> Vec<Stmt> {
 fn rewrite_block_stmts(
     stmts: &mut Vec<Stmt>,
     printf_names: &HashSet<String>,
-    needs_fflush_extern: &mut bool,
+    state: &mut RewriteState,
     protect_tail: bool,
 ) {
     let original = std::mem::take(stmts);
     let last_index = original.len().checked_sub(1);
     let mut result = Vec::with_capacity(original.len());
     for (index, mut stmt) in original.into_iter().enumerate() {
-        rewrite_stmt_nested(&mut stmt, printf_names, needs_fflush_extern);
+        rewrite_stmt_nested(&mut stmt, printf_names, state);
         let is_tail = protect_tail && Some(index) == last_index;
-        if !is_tail && let Some(replacement) = try_convert(&stmt) {
+        if !is_tail
+            && state.println_ok
+            && let Some(replacement) = try_convert(&stmt)
+        {
             extend_flushed(&mut result, replacement);
         } else if is_printf_stmt(&stmt, printf_names) || is_writer_value_stmt(&stmt, printf_names) {
-            *needs_fflush_extern = true;
+            state.needs_fflush_extern = true;
             if is_tail && matches!(stmt, Stmt::Expr(_)) {
                 extend_flushed(&mut result, wrap_stdout_writer_preserving_tail(stmt));
             } else {
@@ -392,11 +402,7 @@ fn extend_flushed(result: &mut Vec<Stmt>, stmts: Vec<Stmt>) {
     }
 }
 
-fn rewrite_stmt_nested(
-    stmt: &mut Stmt,
-    printf_names: &HashSet<String>,
-    needs_fflush_extern: &mut bool,
-) {
+fn rewrite_stmt_nested(stmt: &mut Stmt, printf_names: &HashSet<String>, state: &mut RewriteState) {
     match stmt {
         Stmt::If {
             then_body,
@@ -408,47 +414,38 @@ fn rewrite_stmt_nested(
             else_body,
             ..
         } => {
-            rewrite_block_stmts(then_body, printf_names, needs_fflush_extern, false);
-            rewrite_block_stmts(else_body, printf_names, needs_fflush_extern, false);
+            rewrite_block_stmts(then_body, printf_names, state, false);
+            rewrite_block_stmts(else_body, printf_names, state, false);
         }
         Stmt::Loop { body, .. }
         | Stmt::For { body, .. }
         | Stmt::Scope { body, .. }
-        | Stmt::LabeledBlock { body, .. } => {
-            rewrite_block_stmts(body, printf_names, needs_fflush_extern, false)
-        }
+        | Stmt::LabeledBlock { body, .. } => rewrite_block_stmts(body, printf_names, state, false),
         Stmt::While { body, .. } | Stmt::Unsafe { body } => {
-            rewrite_block_stmts(&mut body.stmts, printf_names, needs_fflush_extern, false)
+            rewrite_block_stmts(&mut body.stmts, printf_names, state, false)
         }
-        Stmt::Block(block) => {
-            rewrite_block_stmts(&mut block.stmts, printf_names, needs_fflush_extern, false)
-        }
+        Stmt::Block(block) => rewrite_block_stmts(&mut block.stmts, printf_names, state, false),
         Stmt::Match { arms, .. } => {
             for arm in arms {
-                rewrite_block_stmts(&mut arm.body, printf_names, needs_fflush_extern, false);
+                rewrite_block_stmts(&mut arm.body, printf_names, state, false);
             }
         }
         _ => {}
     }
 }
 
-fn rewrite_item(item: &mut Item, printf_names: &HashSet<String>, needs_fflush_extern: &mut bool) {
+fn rewrite_item(item: &mut Item, printf_names: &HashSet<String>, state: &mut RewriteState) {
     match item {
         Item::MacroRules { body, .. } => {
-            rewrite_block_stmts(body, printf_names, needs_fflush_extern, false);
+            rewrite_block_stmts(body, printf_names, state, false);
         }
         Item::Fn(func) => {
             let protect_tail = func.ret.as_ref().is_some_and(|ty| !ty.is_unit());
-            rewrite_block_stmts(
-                &mut func.body,
-                printf_names,
-                needs_fflush_extern,
-                protect_tail,
-            );
+            rewrite_block_stmts(&mut func.body, printf_names, state, protect_tail);
         }
         Item::InlineMod { items, .. } => {
             for item in items {
-                rewrite_item(item, printf_names, needs_fflush_extern);
+                rewrite_item(item, printf_names, state);
             }
         }
         Item::Impl(impl_block) => {
@@ -456,7 +453,7 @@ fn rewrite_item(item: &mut Item, printf_names: &HashSet<String>, needs_fflush_ex
                 if let ImplItem::Method(method) = impl_item
                     && let Expr::Block(block) = &mut method.body
                 {
-                    rewrite_block_stmts(&mut block.stmts, printf_names, needs_fflush_extern, false);
+                    rewrite_block_stmts(&mut block.stmts, printf_names, state, false);
                 }
             }
         }
@@ -569,7 +566,7 @@ fn item_exposes_writer(item: &Item, writer_names: &HashSet<String>) -> bool {
     }
 }
 
-pub(super) fn rewrite(program: &mut Program) {
+pub(super) fn rewrite(program: &mut Program, target: &TargetInfo) {
     let printf_names = stdout_writer_shim_names(program);
     if program
         .items
@@ -578,11 +575,14 @@ pub(super) fn rewrite(program: &mut Program) {
     {
         return;
     }
-    let mut needs_fflush_extern = false;
+    let mut state = RewriteState {
+        needs_fflush_extern: false,
+        println_ok: !matches!(target.os, TargetOs::Windows),
+    };
     for item in &mut program.items {
-        rewrite_item(item, &printf_names, &mut needs_fflush_extern);
+        rewrite_item(item, &printf_names, &mut state);
     }
-    if needs_fflush_extern && !declares_fflush(program) {
+    if state.needs_fflush_extern && !declares_fflush(program) {
         let pos = insert_pos(&program.items);
         program.items.insert(
             pos,

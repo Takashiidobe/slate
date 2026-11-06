@@ -32,7 +32,6 @@ int main(void) {
 // CHECK-NEXT: total: 6 compiles across 6 targets
 // CHECK-NEXT: unit libc_symbol_paths: 11 items, 4 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:number: 2 variants
-// CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
@@ -83,26 +82,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%ld %d\n".as_ptr(),
-// CHECK-NEXT:                 number(c"41".as_ptr()) + 1,
-// CHECK-NEXT:                 (retry_code() > 0) as i32,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%ld %d\n".as_ptr(),
-// CHECK-NEXT:                 number(c"41".as_ptr()) + 1,
-// CHECK-NEXT:                 (retry_code() > 0) as i32,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%ld %d\n".as_ptr(),
+// CHECK-NEXT:             number(c"41".as_ptr()) + 1,
+// CHECK-NEXT:             (retry_code() > 0) as i32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

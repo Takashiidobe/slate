@@ -43,7 +43,6 @@ int main(void) {
 // CHECK-NEXT: total: 2 compiles across 2 targets
 // CHECK-NEXT: unit spelled_conversions: 16 items, 2 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:keeps_arms: 2 variants
-// CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
@@ -78,84 +77,28 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%lu\n".as_ptr(), modulo((70000 as c_ulong))) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%lu\n".as_ptr(), modulo((70000 as c_ulong))) };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lu\n".as_ptr(), modulo((70000 as c_ulong))) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%lu\n".as_ptr(), from_uint(7u32)) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%lu\n".as_ptr(), from_uint(7u32)) };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lu\n".as_ptr(), from_uint(7u32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%lu\n".as_ptr(), from_uint_cast(8u32)) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%lu\n".as_ptr(), from_uint_cast(8u32)) };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lu\n".as_ptr(), from_uint_cast(8u32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%lu\n".as_ptr(), from_size((9 as size_t))) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%lu\n".as_ptr(), from_size((9 as size_t))) };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lu\n".as_ptr(), from_size((9 as size_t))) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%ld\n".as_ptr(), from_int(-10i32)) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%ld\n".as_ptr(), from_int(-10i32)) };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), from_int(-10i32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%lld\n".as_ptr(), sum_long((11 as c_long), 12i64)) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%lld\n".as_ptr(), sum_long((11 as c_long), 12i64)) };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), sum_long((11 as c_long), 12i64)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%ld\n".as_ptr(), keeps_arms((13 as c_long), 14u32)) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%ld\n".as_ptr(), keeps_arms((13 as c_long), 14u32)) };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), keeps_arms((13 as c_long), 14u32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%u\n".as_ptr(), same_spelling(15u32)) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%u\n".as_ptr(), same_spelling(15u32)) };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), same_spelling(15u32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

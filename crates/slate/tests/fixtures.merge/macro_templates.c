@@ -82,7 +82,7 @@ int main(void) {
 // CHECK-NEXT: total: 4 compiles across 2 targets
 // CHECK-NEXT: unit macro_templates: 40 items, 22 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit macro_templates_helper: 10 items, 6 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_templates_helper: 9 items, 4 gated, 0 duplicated functions
 // CHECK-NEXT: macros: 15 function-like, 15 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   macro AFTER: 4 lifted, inline:
 // CHECK-NEXT:   macro BUMP: 4 lifted, inline:
@@ -126,29 +126,11 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! WIDEN__2 {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%ld\n".as_ptr(), ($a) as c_long) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! ONLY_HERE {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"helper %d\n".as_ptr(), ($a) as i32) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: macro_rules! WIDEN__2 {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%ld\n".as_ptr(), ($a) as c_long) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -160,6 +142,14 @@ int main(void) {
 // CHECK-NEXT:     ONLY_HERE!(a + 1);
 // CHECK-NEXT:     WIDEN__2!(a);
 // CHECK-NEXT:     a * 2
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! WIDEN__2 {
+// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%ld\n".as_ptr(), ($a) as c_long) };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
@@ -422,36 +412,18 @@ int main(void) {
 // CHECK-NEXT:     WRITES!(out);
 // CHECK-NEXT:     READS_LOCAL!(value, local);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%d %d %d %d %ld %d %d\n".as_ptr(),
-// CHECK-NEXT:                 s.count,
-// CHECK-NEXT:                 s.bits[3],
-// CHECK-NEXT:                 out,
-// CHECK-NEXT:                 calls,
-// CHECK-NEXT:                 total,
-// CHECK-NEXT:                 value,
-// CHECK-NEXT:                 helper(local),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%d %d %d %d %ld %d %d\n".as_ptr(),
-// CHECK-NEXT:                 s.count,
-// CHECK-NEXT:                 s.bits[3],
-// CHECK-NEXT:                 out,
-// CHECK-NEXT:                 calls,
-// CHECK-NEXT:                 total,
-// CHECK-NEXT:                 value,
-// CHECK-NEXT:                 helper(local),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%d %d %d %d %ld %d %d\n".as_ptr(),
+// CHECK-NEXT:             s.count,
+// CHECK-NEXT:             s.bits[3],
+// CHECK-NEXT:             out,
+// CHECK-NEXT:             calls,
+// CHECK-NEXT:             total,
+// CHECK-NEXT:             value,
+// CHECK-NEXT:             helper(local),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -347,6 +347,8 @@ impl Tables<'_> {
                 name.is_unsafe = true;
                 if binding.replaces_body {
                     name.identity = ctype_identity(binding.support);
+                } else if let Some(known) = Known::from_symbol(binding.support) {
+                    name.identity = FunctionIdentity::Known(known);
                 }
             }
         }

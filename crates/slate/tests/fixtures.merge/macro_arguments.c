@@ -92,7 +92,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_arguments.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_arguments: 36 items, 8 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_arguments: 34 items, 4 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced record:odd_fields: 2 variants
 // CHECK-NEXT:   spliced fn:thrice: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
@@ -134,34 +134,6 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! TRACE {
-// CHECK-NEXT:     ($x__0:expr, $x__1:expr, $x__2:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $x__1, $x__2) };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! TRACE__2 {
-// CHECK-NEXT:     ($x__0:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char) };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: mod __slate_bits {
 // CHECK-NEXT:     #[bitfields::bitfield(
 // CHECK-NEXT:         u8,
@@ -186,34 +158,6 @@ int main(void) {
 // CHECK-NEXT: macro_rules! SIZE_PLUS {
 // CHECK-NEXT:     ($T:ty, $n:expr) => {
 // CHECK-NEXT:         (std::mem::size_of::<$T>() as u64).wrapping_add((($n) as i64) as u64)
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: macro_rules! TRACE {
-// CHECK-NEXT:     ($x__0:expr, $x__1:expr, $x__2:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $x__1, $x__2) };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: macro_rules! TRACE__2 {
-// CHECK-NEXT:     ($x__0:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char) };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -387,70 +331,35 @@ int main(void) {
 // CHECK-NEXT:     TRACE__2!(c"plain\n".as_ptr() as *mut c_char);
 // CHECK-NEXT:     TRACE!(c"%d %d\n".as_ptr() as *mut c_char, i, j);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%d %d %ld %ld %u %u %d %d %ld %d %d %d %ld %d %ld %lu %d %d %d %d %d %d %d\n"
-// CHECK-NEXT:                     .as_ptr(),
-// CHECK-NEXT:                 i,
-// CHECK-NEXT:                 j,
-// CHECK-NEXT:                 m,
-// CHECK-NEXT:                 n,
-// CHECK-NEXT:                 u1,
-// CHECK-NEXT:                 u2,
-// CHECK-NEXT:                 f1,
-// CHECK-NEXT:                 f2,
-// CHECK-NEXT:                 f3,
-// CHECK-NEXT:                 f4,
-// CHECK-NEXT:                 s.left,
-// CHECK-NEXT:                 s.right,
-// CHECK-NEXT:                 c,
-// CHECK-NEXT:                 d,
-// CHECK-NEXT:                 c2,
-// CHECK-NEXT:                 z,
-// CHECK-NEXT:                 e,
-// CHECK-NEXT:                 e2,
-// CHECK-NEXT:                 g,
-// CHECK-NEXT:                 h,
-// CHECK-NEXT:                 q,
-// CHECK-NEXT:                 r,
-// CHECK-NEXT:                 v,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%d %d %ld %ld %u %u %d %d %ld %d %d %d %ld %d %ld %lu %d %d %d %d %d %d %d\n"
-// CHECK-NEXT:                     .as_ptr(),
-// CHECK-NEXT:                 i,
-// CHECK-NEXT:                 j,
-// CHECK-NEXT:                 m,
-// CHECK-NEXT:                 n,
-// CHECK-NEXT:                 u1,
-// CHECK-NEXT:                 u2,
-// CHECK-NEXT:                 f1,
-// CHECK-NEXT:                 f2,
-// CHECK-NEXT:                 f3,
-// CHECK-NEXT:                 f4,
-// CHECK-NEXT:                 s.left,
-// CHECK-NEXT:                 s.right,
-// CHECK-NEXT:                 c,
-// CHECK-NEXT:                 d,
-// CHECK-NEXT:                 c2,
-// CHECK-NEXT:                 z,
-// CHECK-NEXT:                 e,
-// CHECK-NEXT:                 e2,
-// CHECK-NEXT:                 g,
-// CHECK-NEXT:                 h,
-// CHECK-NEXT:                 q,
-// CHECK-NEXT:                 r,
-// CHECK-NEXT:                 v,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%d %d %ld %ld %u %u %d %d %ld %d %d %d %ld %d %ld %lu %d %d %d %d %d %d %d\n"
+// CHECK-NEXT:                 .as_ptr(),
+// CHECK-NEXT:             i,
+// CHECK-NEXT:             j,
+// CHECK-NEXT:             m,
+// CHECK-NEXT:             n,
+// CHECK-NEXT:             u1,
+// CHECK-NEXT:             u2,
+// CHECK-NEXT:             f1,
+// CHECK-NEXT:             f2,
+// CHECK-NEXT:             f3,
+// CHECK-NEXT:             f4,
+// CHECK-NEXT:             s.left,
+// CHECK-NEXT:             s.right,
+// CHECK-NEXT:             c,
+// CHECK-NEXT:             d,
+// CHECK-NEXT:             c2,
+// CHECK-NEXT:             z,
+// CHECK-NEXT:             e,
+// CHECK-NEXT:             e2,
+// CHECK-NEXT:             g,
+// CHECK-NEXT:             h,
+// CHECK-NEXT:             q,
+// CHECK-NEXT:             r,
+// CHECK-NEXT:             v,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
@@ -561,6 +470,32 @@ int main(void) {
 // CHECK-NEXT:             let tmp: $T = $a;
 // CHECK-NEXT:             $a = $b;
 // CHECK-NEXT:             $b = tmp;
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! TRACE {
+// CHECK-NEXT:     ($x__0:expr, $x__1:expr, $x__2:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $x__1, $x__2) };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! TRACE__2 {
+// CHECK-NEXT:     ($x__0:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char) };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }

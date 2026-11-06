@@ -220,17 +220,6 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%s %s %s\n".as_ptr(),
-// CHECK-NEXT:                 std::ptr::addr_of!(explicit_large.0) as *const c_char,
-// CHECK-NEXT:                 std::ptr::addr_of!(larger.0) as *const c_char,
-// CHECK-NEXT:                 std::ptr::addr_of!(opted_out) as *const c_char,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("{} {}", read_table(3i32), read_local(10i32));
@@ -241,7 +230,7 @@ int main(void) {
 // CHECK-NEXT:             read_crossing()
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", unix))]
+// CHECK-NEXT:     #[cfg(target_arch = "x86_64")]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(

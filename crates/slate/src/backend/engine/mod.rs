@@ -106,7 +106,7 @@ pub(in crate::backend) fn apply_local(
     rules::const_fold::fold_initializers(&mut program.items);
     prelude::inject(program, target);
     let place_parameters = macro_templates::finish_holes(program);
-    printf_format::rewrite(program);
+    printf_format::rewrite(program, target);
     let passes = [RuleRegistry::build(rules::unsafe_registry())];
     for item in &mut program.items {
         apply_item(item, &passes);

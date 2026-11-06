@@ -82,7 +82,6 @@ int main(void) {
 // CHECK-NEXT:   macro_caller_locals.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
 // CHECK-NEXT: unit macro_caller_locals: 25 items, 0 gated, 0 duplicated functions
-// CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 16 function-like, 16 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   macro ADDRESS_OF: 2 lifted, inline:
 // CHECK-NEXT:   macro BITS: 6 lifted, inline:
@@ -133,34 +132,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%u\n".as_ptr(), read_bits(61680u32, 12u32)) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%u\n".as_ptr(), read_bits(61680u32, 12u32)) };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), read_bits(61680u32, 12u32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%u\n".as_ptr(), drop_and_read(9i32)) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%u\n".as_ptr(), drop_and_read(9i32)) };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), drop_and_read(9i32)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%f\n".as_ptr(), read_double()) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%f\n".as_ptr(), read_double()) };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%f\n".as_ptr(), read_double()) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

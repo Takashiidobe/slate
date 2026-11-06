@@ -192,70 +192,37 @@ int main(void) {
 // CHECK-NEXT:     let bytes: size_t =
 // CHECK-NEXT:         measure(unsafe { shared.name }, (16 as size_t)).wrapping_add(unsafe { shared.bytes });
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%lu %ld %zu %llu %c %s\n".as_ptr(),
-// CHECK-NEXT:                 total,
-// CHECK-NEXT:                 delta,
-// CHECK-NEXT:                 bytes,
-// CHECK-NEXT:                 widen(1u32),
-// CHECK-NEXT:                 shared.tag as i32,
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(shared.label) as *mut c_char,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%lu %llu\n".as_ptr(),
-// CHECK-NEXT:                 apply(Some(add_total), total),
-// CHECK-NEXT:                 shared.wide,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%lu %ld %zu %llu %c %s\n".as_ptr(),
-// CHECK-NEXT:                 total,
-// CHECK-NEXT:                 delta,
-// CHECK-NEXT:                 bytes,
-// CHECK-NEXT:                 widen(1u32),
-// CHECK-NEXT:                 shared.tag as i32,
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(shared.label) as *mut c_char,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%lu %ld %zu %llu %c %s\n".as_ptr(),
+// CHECK-NEXT:             total,
+// CHECK-NEXT:             delta,
+// CHECK-NEXT:             bytes,
+// CHECK-NEXT:             widen(1u32),
+// CHECK-NEXT:             shared.tag as i32,
+// CHECK-NEXT:             std::ptr::addr_of_mut!(shared.label) as *mut c_char,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%lu %ld\n".as_ptr(),
-// CHECK-NEXT:                 clamp_base((65530 as c_ulong), 200u8, (3 as size_t)),
-// CHECK-NEXT:                 tally_sum(std::ptr::addr_of_mut!(tally) as *const tally),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%lu %llu\n".as_ptr(),
-// CHECK-NEXT:                 apply(Some(add_total), total),
-// CHECK-NEXT:                 shared.wide,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%lu %llu\n".as_ptr(),
+// CHECK-NEXT:             apply(Some(add_total), total),
+// CHECK-NEXT:             shared.wide,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%lu %ld\n".as_ptr(),
+// CHECK-NEXT:             clamp_base((65530 as c_ulong), 200u8, (3 as size_t)),
+// CHECK-NEXT:             tally_sum(std::ptr::addr_of_mut!(tally) as *const tally),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
@@ -265,18 +232,8 @@ int main(void) {
 // CHECK-NEXT:                 (width_of_long() == (std::mem::size_of::<c_long>() as size_t)) as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%lu %ld\n".as_ptr(),
-// CHECK-NEXT:                 clamp_base((65530 as c_ulong), 200u8, (3 as size_t)),
-// CHECK-NEXT:                 tally_sum(std::ptr::addr_of_mut!(tally) as *const tally),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!(

@@ -712,28 +712,14 @@ int main(void) {
 // CHECK-NEXT:     let wide: c_long = MIN!((5000000000 as c_long), (7000000000 as c_long));
 // CHECK-NEXT:     let small: u8 = 200u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%ld %d %d\n".as_ptr(),
-// CHECK-NEXT:                 wide,
-// CHECK-NEXT:                 MAX__2!(small, 3i32),
-// CHECK-NEXT:                 TWICE__2!(small),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%ld %d %d\n".as_ptr(),
-// CHECK-NEXT:                 wide,
-// CHECK-NEXT:                 MAX__2!(small, 3i32),
-// CHECK-NEXT:                 TWICE__2!(small),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%ld %d %d\n".as_ptr(),
+// CHECK-NEXT:             wide,
+// CHECK-NEXT:             MAX__2!(small, 3i32),
+// CHECK-NEXT:             TWICE__2!(small),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let half: f64 = MIN!(0.5f64, 1.5f64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -1048,14 +1034,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn show_trace(label: *const c_char) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%s:".as_ptr(), label) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%s:".as_ptr(), label) };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%s:".as_ptr(), label) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < unsafe { trace_length } {
