@@ -22,9 +22,15 @@ struct Survey<'a> {
     seen: Vec<MacroExpansionId>,
     unfit: HashMap<MacroExpansionId, &'static str>,
     has_jump: bool,
+    reserves_storage: HashSet<MacroExpansionId>,
 }
 
 impl Survey<'_> {
+    fn reserve_storage(&mut self) {
+        self.reserves_storage
+            .extend(self.open.iter().map(|(id, _)| *id));
+    }
+
     fn reject(&mut self, expansion: MacroExpansionId, reason: &'static str) {
         self.unfit.entry(expansion).or_insert(reason);
     }
@@ -60,6 +66,9 @@ impl MacroStructureVisitor for Survey<'_> {
         match statement {
             Statement::Let(variable) => {
                 self.declare(variable.id);
+                if variable.byref {
+                    self.reserve_storage();
+                }
                 if variable.cleanup.is_some() {
                     self.reject_open("cleanup");
                 }
@@ -81,8 +90,11 @@ impl MacroStructureVisitor for Survey<'_> {
                 self.has_jump = true;
                 self.reject_open("control_transfer");
             }
-            Statement::Asm(_)
-            | Statement::Case { .. }
+            Statement::Asm(asm) => {
+                self.has_jump |= !asm.labels.is_empty();
+                self.reject_open("control_transfer");
+            }
+            Statement::Case { .. }
             | Statement::Default { .. }
             | Statement::SehTry { .. }
             | Statement::SehLeave(_)
@@ -95,6 +107,9 @@ impl MacroStructureVisitor for Survey<'_> {
     fn value_kind(&mut self, kind: &ValueKind) {
         if matches!(kind, ValueKind::LabelAddress(_) | ValueKind::Seh(_)) {
             self.reject_open("control_transfer");
+        }
+        if matches!(kind, ValueKind::Block(_)) {
+            self.reserve_storage();
         }
         if let ValueKind::MacroExpansion {
             expansion,
@@ -361,16 +376,12 @@ pub(super) fn kept_expansions(module: &mut Module) -> HashSet<MacroExpansionId> 
             seen: Vec::new(),
             unfit: HashMap::new(),
             has_jump: false,
+            reserves_storage: HashSet::new(),
         };
         walk_macro_structure(body, &mut survey);
         if survey.has_jump {
-            for expansions in survey.declared.values() {
-                for expansion in expansions {
-                    survey
-                        .unfit
-                        .entry(*expansion)
-                        .or_insert("local_in_dispatch_function");
-                }
+            for expansion in std::mem::take(&mut survey.reserves_storage) {
+                survey.reject(expansion, "storage_in_dispatch_function");
             }
         }
         rejections.extend(survey.unfit);

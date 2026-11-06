@@ -66,9 +66,9 @@ other expansion stays inline, and `macro_keep.rs` records why in the merge repor
 - **Which expansions are kept**: `frontend/macro_keep.rs` decides on the IR,
   before lowering. It rejects `goto` and `case`, a `break` or `continue` leaving the
   body (lowered labels are hygienic, so the template could not name the caller's
-  loop), an argument that reads a local the body declares, locals in functions
-  whose dispatch lowering hoists
-  them, variadic or `#` macros, compound literals and temporary objects (a template's
+  loop), an argument that reads a local the body declares, `__block` locals and
+  capturing block literals in functions with a `goto` (dispatch lowering hoists
+  their storage out of the body), variadic or `#` macros, compound literals and temporary objects (a template's
   block would end their C lifetime early), value expansions of type `void`, and place
   holes that are not plain (bit-fields, volatile, atomic, reduced alignment).
 - **Caller locals**: Rust hygiene hides a caller's locals from a `macro_rules` body,
