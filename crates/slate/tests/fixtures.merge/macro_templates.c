@@ -140,11 +140,11 @@ int main(void) {
 // CHECK-NEXT:     SHOW!(a);
 // CHECK-NEXT:     ONLY_HERE!(a);
 // CHECK-NEXT:     ONLY_HERE!(a + 1);
-// CHECK-NEXT:     WIDEN__2!(a);
+// CHECK-NEXT:     WIDEN!(a);
 // CHECK-NEXT:     a * 2
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! WIDEN__2 {
+// CHECK-NEXT: macro_rules! WIDEN {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%ld\n".as_ptr(), ($a) as c_long) };
@@ -391,9 +391,9 @@ int main(void) {
 // CHECK-NEXT:     SHOW!(local + 1);
 // CHECK-NEXT:     SHOW!(byte);
 // CHECK-NEXT:     SHOW!(wide >> 30i32);
-// CHECK-NEXT:     WIDEN__4!(local);
+// CHECK-NEXT:     WIDEN__3!(local);
 // CHECK-NEXT:     WIDEN!(wide);
-// CHECK-NEXT:     WIDEN__3!(byte);
+// CHECK-NEXT:     WIDEN__2!(byte);
 // CHECK-NEXT:     TWICE!(next());
 // CHECK-NEXT:     AFTER!(unsafe { calls });
 // CHECK-NEXT:     let moved: i32 = unsafe { calls };
@@ -468,7 +468,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! WIDEN__3 {
+// CHECK-NEXT: macro_rules! WIDEN__2 {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let __v: c_long = unsafe { total };
 // CHECK-NEXT:         unsafe {
@@ -477,7 +477,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! WIDEN__4 {
+// CHECK-NEXT: macro_rules! WIDEN__3 {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let __v: c_long = unsafe { total };
 // CHECK-NEXT:         unsafe {

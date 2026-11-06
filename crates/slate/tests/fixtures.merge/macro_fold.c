@@ -182,7 +182,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: file macro_fold_helper.rs
 // CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! DIFFERS__2 {
+// CHECK-NEXT: macro_rules! DIFFERS {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         println!("helper {}", $a);
 // CHECK-NEXT:     };
@@ -196,7 +196,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: macro_rules! DIFFERS__2 {
+// CHECK-NEXT: macro_rules! DIFFERS {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"helper %d\n".as_ptr(), $a) };
@@ -221,7 +221,7 @@ int main(void) {
 // CHECK-NEXT:         value
 // CHECK-NEXT:     );
 // CHECK-NEXT:     ONLY_HERE!(value);
-// CHECK-NEXT:     DIFFERS__2!(value);
+// CHECK-NEXT:     DIFFERS!(value);
 // CHECK-NEXT:     value + 1
 // CHECK-NEXT: }
 // CHECK-EMPTY:

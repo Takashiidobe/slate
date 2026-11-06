@@ -1,9 +1,11 @@
 use super::cfg::{TargetConditions, holds};
 use super::matrix::Matrix;
 use super::splice::Variants;
+use crate::backend::engine::macro_templates::rename_templates;
 use crate::backend::link::signatures::{self, UnitCompiles};
 use crate::backend::rust_ast::{
-    Attr, Cfg, CrateAttr, Expr, ExternDecl, Item, MacroOutcome, Program,
+    Attr, Cfg, CrateAttr, Expr, ExternDecl, Item, MacroOutcome, MacroParam, Program,
+    macro_template_base,
 };
 use crate::backend::{self, Exports};
 use crate::compile_commands::CompileCommand;
@@ -754,6 +756,84 @@ fn place_sections(build: &mut TargetBuild) -> Result<(), String> {
     Ok(())
 }
 
+type Families = HashMap<String, String>;
+
+fn template_families(builds: &[TargetBuild]) -> Families {
+    type Interface<'a> = (&'a [MacroParam], bool);
+    type Compiles = BTreeSet<(usize, usize, usize)>;
+    let mut defined: BTreeMap<&str, (Interface, Compiles)> = BTreeMap::new();
+    for (target, build) in builds.iter().enumerate() {
+        for (unit_index, unit) in build.units.iter().enumerate() {
+            for (compile, compiled) in unit.compiled.iter().enumerate() {
+                for entry in &compiled.entries {
+                    if let Item::MacroRules {
+                        name,
+                        params,
+                        value,
+                        ..
+                    } = &entry.item
+                        && macro_template_base(name).is_some()
+                    {
+                        defined
+                            .entry(name)
+                            .or_insert_with(|| ((params, *value), BTreeSet::new()))
+                            .1
+                            .insert((target, unit_index, compile));
+                    }
+                }
+            }
+        }
+    }
+    let mut by_base: BTreeMap<&str, Vec<_>> = BTreeMap::new();
+    for (name, (interface, compiles)) in &defined {
+        by_base
+            .entry(macro_template_base(name).unwrap_or_default())
+            .or_default()
+            .push((*name, interface, compiles));
+    }
+    let mut families = Families::new();
+    for (_, mut templates) in by_base {
+        templates.sort_by(|a, b| b.2.len().cmp(&a.2.len()).then_with(|| a.0.cmp(b.0)));
+        let mut chosen: Vec<(&str, &Interface, BTreeSet<_>)> = Vec::new();
+        for (name, interface, compiles) in templates {
+            match chosen
+                .iter_mut()
+                .find(|(_, known, occupied)| *known == interface && occupied.is_disjoint(compiles))
+            {
+                Some((leader, _, occupied)) => {
+                    occupied.extend(compiles.iter().copied());
+                    families.insert(name.to_string(), leader.to_string());
+                }
+                None => chosen.push((name, interface, compiles.clone())),
+            }
+        }
+    }
+    families
+}
+
+fn rename_families(build: &mut TargetBuild, families: &Families) {
+    for unit in &mut build.units {
+        let mut done: HashMap<*const Entry, Arc<Entry>> = HashMap::new();
+        for compiled in &mut unit.compiled {
+            for entry in &mut compiled.entries {
+                let renamed = done.entry(Arc::as_ptr(entry)).or_insert_with(|| {
+                    let mut item = entry.item.clone();
+                    rename_templates(std::slice::from_mut(&mut item), families);
+                    if item == entry.item {
+                        return entry.clone();
+                    }
+                    let key = match item {
+                        Item::MacroRules { .. } => item_key(&item),
+                        _ => entry.key.clone(),
+                    };
+                    intern(&unit.interner, Entry { key, item })
+                });
+                *entry = renamed.clone();
+            }
+        }
+    }
+}
+
 #[derive(Clone, Copy)]
 struct Implicant {
     value: u32,
@@ -1331,6 +1411,7 @@ fn check_config(
     project: &Path,
     target: &TargetBuild,
     merged: &[MergedUnit],
+    families: &Families,
     features: &[String],
 ) -> Result<Vec<String>, ()> {
     let commands = matrix
@@ -1341,8 +1422,11 @@ fn check_config(
         units.push(parse(command).map_err(|_| ())?);
     }
     let imported = imported_commons(&units);
-    let translated = translate_units(&units, imported, false, None, Sections::ByProject, true)
+    let mut translated = translate_units(&units, imported, false, None, Sections::ByProject, true)
         .map_err(|_| ())?;
+    for (_, program) in &mut translated.programs {
+        rename_templates(&mut program.items, families);
+    }
     let mut atoms = target.properties.clone();
     atoms.extend(features.iter().map(|name| feature_atom(name)));
     let mut mismatches = Vec::new();
@@ -1431,6 +1515,7 @@ fn check_projection(
     project: &Path,
     targets: &[TargetBuild],
     merged: &[MergedUnit],
+    families: &Families,
     projection: Projection,
     projection_triples: &[String],
 ) -> Result<ProjectionResult, String> {
@@ -1442,7 +1527,7 @@ fn check_projection(
         .collect();
     let results: Vec<_> = jobs
         .par_iter()
-        .map(|(target, config)| check_config(matrix, project, target, merged, config))
+        .map(|(target, config)| check_config(matrix, project, target, merged, families, config))
         .collect();
     let mut outcome = ProjectionResult {
         checked: 0,
@@ -1578,7 +1663,9 @@ pub fn merge(
             )
         }));
     }
+    let families = template_families(&builds);
     for build in &mut builds {
+        rename_families(build, &families);
         place_sections(build)?;
     }
     let merged: Vec<MergedUnit> = stems
@@ -1616,6 +1703,7 @@ pub fn merge(
         project,
         &builds,
         &merged,
+        &families,
         projection,
         projection_triples,
     )?;

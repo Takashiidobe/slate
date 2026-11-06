@@ -127,7 +127,7 @@ int main(void) {
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! SIZE_PLUS__2 {
+// CHECK-NEXT: macro_rules! SIZE_PLUS {
 // CHECK-NEXT:     ($T:ty, $n:expr) => {
 // CHECK-NEXT:         (std::mem::size_of::<$T>() as c_ulong).wrapping_add(($n) as c_ulong)
 // CHECK-NEXT:     };
@@ -274,7 +274,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let z: c_ulong = SIZE_PLUS!(i32, 1i32) as c_ulong;
 // CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     let z: c_ulong = SIZE_PLUS__2!(i32, 1i32);
+// CHECK-NEXT:     let z: c_ulong = SIZE_PLUS!(i32, 1i32);
 // CHECK-NEXT:     let e: i32 = APPLY!(i);
 // CHECK-NEXT:     let e2: i32 = APPLY__2!(r#fn, i);
 // CHECK-NEXT:     let g: i32 = CALL2!(i, j);

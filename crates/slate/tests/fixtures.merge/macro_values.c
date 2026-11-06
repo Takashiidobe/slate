@@ -291,7 +291,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: macro_rules! TEXT_LENGTH__2 {
+// CHECK-NEXT: macro_rules! TEXT_LENGTH {
 // CHECK-NEXT:     ($s:expr) => {
 // CHECK-NEXT:         unsafe { strlen((($s) as *const c_char) as *const core::ffi::c_char) as u64 }
 // CHECK-NEXT:     };
@@ -716,28 +716,14 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let half: f64 = MIN!(0.5f64, 1.5f64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%.2f %d %d\n".as_ptr(),
-// CHECK-NEXT:                 half,
-// CHECK-NEXT:                 BIT!(a),
-// CHECK-NEXT:                 (TEXT_LENGTH__2!(c"four".as_ptr() as *mut c_char) as u32) as i32,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%.2f %d %d\n".as_ptr(),
-// CHECK-NEXT:                 half,
-// CHECK-NEXT:                 BIT!(a),
-// CHECK-NEXT:                 (TEXT_LENGTH!(c"four".as_ptr() as *mut c_char) as u32) as i32,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%.2f %d %d\n".as_ptr(),
+// CHECK-NEXT:             half,
+// CHECK-NEXT:             BIT!(a),
+// CHECK-NEXT:             (TEXT_LENGTH!(c"four".as_ptr() as *mut c_char) as u32) as i32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

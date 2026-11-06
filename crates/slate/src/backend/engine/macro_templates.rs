@@ -697,15 +697,19 @@ pub fn assign_template_names<'a>(programs: impl Iterator<Item = &'a mut Program>
             renamed.insert(name, fresh);
         }
     }
+    for program in &mut programs {
+        rename_templates(&mut program.items, &renamed);
+    }
+}
+
+pub fn rename_templates(items: &mut [Item], renamed: &HashMap<String, String>) {
     let mut apply = |name: &mut String| {
         if let Some(fresh) = renamed.get(name) {
             name.clone_from(fresh);
         }
     };
-    for program in &mut programs {
-        each_rules_name(&mut program.items, &mut apply);
-        each_body(&mut program.items, &mut |body| {
-            each_call_name(body, &mut apply);
-        });
-    }
+    each_rules_name(items, &mut apply);
+    each_body(items, &mut |body| {
+        each_call_name(body, &mut apply);
+    });
 }

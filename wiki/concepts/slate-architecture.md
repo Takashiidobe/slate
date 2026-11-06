@@ -98,6 +98,15 @@ other expansion stays inline, and `macro_keep.rs` records why in the merge repor
   compilation so function merge compares equal across units and targets.
   `assign_template_names` renames them at the end of the merge to `NAME`,
   `NAME__2`, and so on, most used first.
+- **Families**: before the item merge, `template_families` (`project/merge.rs`)
+  gives one name to templates of the same C macro that have the same parameters
+  and kind and are never defined in the same compile, most defined first. Each
+  body stays its own `#[cfg]`-selected definition under that name, so call sites
+  and the functions holding them merge across targets and features. Calls inside
+  bodies are renamed too, so an outer macro whose variants differed only in the
+  inner name becomes one definition. Variants that coexist in a compile, such as
+  `ADD_ONE` on a `u8` and an `int`, keep separate names. The projection check
+  applies the same renaming to its direct translation.
 - **Holes**: an argument is a `$a()` call while the rules run, so that no rule
   moves, merges, or drops its evaluation. `finish_holes` turns it into `$a` before
   printing.
