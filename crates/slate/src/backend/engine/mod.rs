@@ -7,6 +7,7 @@ pub mod shadow;
 
 use arena::{Arena, FunctionOptimizer, NodeId, NodeKindTag};
 pub(crate) use macro_templates::is_valid_macro_name;
+pub(crate) use rules::walk::unlabeled_jump;
 use std::collections::{BTreeSet, HashMap};
 
 use crate::backend::rust_ast::{FnParam, Ident, Item, Program, Stmt};

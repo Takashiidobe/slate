@@ -1,21 +1,43 @@
+use crate::backend::engine::unlabeled_jump;
 use crate::backend::rust_ast::{
-    Attr, Block, Cfg, FnDef, Ident, Item, RecordDef, RecordField, Stmt, Type,
+    Attr, Block, Cfg, FnDef, Ident, Item, Label, RecordDef, RecordField, Stmt, Type,
 };
 use crate::backend::visit_names;
 use std::collections::hash_map::DefaultHasher;
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::hash::{Hash, Hasher};
+use std::rc::Rc;
 
 pub type Variants = BTreeSet<usize>;
 
 struct Node {
     id: u32,
+    origin: usize,
     on: Variants,
     shell: Stmt,
     erased: Stmt,
     hash: u64,
     names: Vec<Ident>,
     bodies: Vec<Vec<Node>>,
+    binds: bool,
+    jumps: bool,
+}
+
+impl Node {
+    fn wrapper(&self) -> bool {
+        matches!(self.shell, Stmt::LabeledBlock { .. })
+    }
+}
+
+fn wrappable(node: &Node) -> bool {
+    !node.binds && !node.jumps
+}
+
+fn is_loop(stmt: &Stmt) -> bool {
+    matches!(
+        stmt,
+        Stmt::Loop { .. } | Stmt::While { .. } | Stmt::For { .. }
+    )
 }
 
 fn generated_prefix(name: &str) -> Option<&str> {
@@ -35,19 +57,142 @@ fn bound_names(stmts: &mut [Stmt]) -> HashSet<Ident> {
     bound
 }
 
+fn loop_label(stmt: &mut Stmt) -> Option<&mut Option<Label>> {
+    match stmt {
+        Stmt::Loop { label, .. } | Stmt::While { label, .. } | Stmt::For { label, .. } => {
+            Some(label)
+        }
+        _ => None,
+    }
+}
+
+fn point_direct_jumps(body: &mut [Stmt], label: &Label) {
+    for stmt in body {
+        match stmt {
+            Stmt::Break(target @ None) | Stmt::Continue(target @ None) => {
+                *target = Some(label.clone())
+            }
+            stmt if !is_loop(stmt) => {
+                for body in stmt.child_bodies_mut() {
+                    point_direct_jumps(body, label);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+fn label_loops(
+    stmts: &mut [Stmt],
+    fresh: &mut impl FnMut() -> Label,
+    unscoped_macro: &dyn Fn(&str) -> bool,
+) {
+    for stmt in stmts {
+        if loop_label(stmt).is_some_and(|label| label.is_none()) {
+            let label = fresh();
+            let mut labeled = stmt.clone();
+            *loop_label(&mut labeled).expect("a loop") = Some(label.clone());
+            let mut escapes = false;
+            for body in labeled.child_bodies_mut() {
+                point_direct_jumps(body, &label);
+                escapes |= body.iter().any(|stmt| unlabeled_jump(stmt, unscoped_macro));
+            }
+            if !escapes {
+                *stmt = labeled;
+            }
+        }
+        for body in stmt.child_bodies_mut() {
+            label_loops(body, fresh, unscoped_macro);
+        }
+    }
+}
+
+fn fresh_loop_labels(taken: HashSet<Ident>) -> impl FnMut() -> Label {
+    let mut next = 0;
+    move || loop {
+        let candidate = Ident::new(format!("__loop_{next}"));
+        next += 1;
+        if !taken.contains(&candidate) {
+            break Label::new(candidate);
+        }
+    }
+}
+
+fn names_in(stmts: &mut [Stmt], out: &mut HashSet<Ident>) {
+    for stmt in stmts {
+        visit_names(stmt, |name, _| {
+            out.insert(*name);
+        });
+    }
+}
+
+fn direct_jumps(body: &mut [Stmt], label: &Label, retarget: bool) -> usize {
+    let mut count = 0;
+    for stmt in body {
+        match stmt {
+            Stmt::Break(target) | Stmt::Continue(target) if target.as_ref() == Some(label) => {
+                count += 1;
+                if retarget {
+                    *target = None;
+                }
+            }
+            Stmt::LabeledBlock { .. } => {}
+            stmt if !is_loop(stmt) => {
+                for body in stmt.child_bodies_mut() {
+                    count += direct_jumps(body, label, retarget);
+                }
+            }
+            _ => {}
+        }
+    }
+    count
+}
+
+fn elide_introduced_labels(stmts: &mut [Stmt], original: &HashSet<Ident>) {
+    for stmt in stmts {
+        for body in stmt.child_bodies_mut() {
+            elide_introduced_labels(body, original);
+        }
+        let Some(Some(label)) = loop_label(stmt).map(|label| label.clone()) else {
+            continue;
+        };
+        if original.contains(&Ident::new(label.as_str())) {
+            continue;
+        }
+        let mut uses = 0;
+        visit_names(stmt, |name, binds| {
+            uses += usize::from(!binds && name.as_str() == label.as_str())
+        });
+        let mut bodies = stmt.child_bodies_mut();
+        let direct: usize = bodies
+            .iter_mut()
+            .map(|body| direct_jumps(body, &label, false))
+            .sum();
+        if direct == uses {
+            for body in bodies {
+                direct_jumps(body, &label, true);
+            }
+            *loop_label(stmt).expect("a loop") = None;
+        }
+    }
+}
+
 struct Builder<'a> {
     variant: usize,
     bound: &'a HashSet<Ident>,
     next_id: &'a mut u32,
+    unscoped_macro: &'a dyn Fn(&str) -> bool,
 }
 
 impl Builder<'_> {
     fn node(&mut self, mut stmt: Stmt) -> Node {
+        let binds = is_binding(&stmt) || matches!(&stmt, Stmt::Block(Block { tail: Some(_), .. }));
         let bodies: Vec<Vec<Stmt>> = stmt
             .child_bodies_mut()
             .into_iter()
             .map(std::mem::take)
             .collect();
+        let jumps = unlabeled_jump(&stmt, self.unscoped_macro);
         let mut erased = stmt.clone();
         let mut names = Vec::new();
         visit_names(&mut erased, |name, _| {
@@ -62,14 +207,20 @@ impl Builder<'_> {
         let mut hasher = DefaultHasher::new();
         erased.hash(&mut hasher);
         *self.next_id += 1;
+        let id = *self.next_id;
+        let bodies: Vec<Vec<Node>> = bodies.into_iter().map(|body| self.nodes(body)).collect();
+        let jumps = jumps || (!is_loop(&stmt) && bodies.iter().flatten().any(|node| node.jumps));
         Node {
-            id: *self.next_id,
+            id,
+            origin: self.variant,
             on: Variants::from([self.variant]),
             shell: stmt,
             hash: hasher.finish(),
             erased,
             names,
-            bodies: bodies.into_iter().map(|body| self.nodes(body)).collect(),
+            bodies,
+            binds,
+            jumps,
         }
     }
 
@@ -78,7 +229,18 @@ impl Builder<'_> {
     }
 }
 
-type Memo = HashMap<(u32, u32), u32>;
+#[derive(Default)]
+struct Memo {
+    scores: HashMap<(u32, u32), u32>,
+    opened: HashMap<(u32, u32, u32), Rc<Vec<u32>>>,
+}
+
+#[derive(Clone, Copy)]
+enum Step {
+    Match(usize, usize),
+    OpenMerged { at: usize, run: (usize, usize) },
+    OpenIncoming { at: usize, run: (usize, usize) },
+}
 
 fn score(left: &Node, right: &Node, memo: &mut Memo) -> u32 {
     if left.hash != right.hash {
@@ -87,7 +249,7 @@ fn score(left: &Node, right: &Node, memo: &mut Memo) -> u32 {
     if left.bodies.is_empty() {
         return 1;
     }
-    if let Some(&known) = memo.get(&(left.id, right.id)) {
+    if let Some(&known) = memo.scores.get(&(left.id, right.id)) {
         return known;
     }
     let total = 1 + left
@@ -96,8 +258,78 @@ fn score(left: &Node, right: &Node, memo: &mut Memo) -> u32 {
         .zip(&right.bodies)
         .map(|(left, right)| table(left, right, memo)[0])
         .sum::<u32>();
-    memo.insert((left.id, right.id), total);
+    memo.scores.insert((left.id, right.id), total);
     total
+}
+
+fn opened_merged(wrapper: &Node, right: &[Node], end: usize, memo: &mut Memo) -> Rc<Vec<u32>> {
+    let key = (wrapper.id, right[0].id, right[end - 1].id);
+    if let Some(known) = memo.opened.get(&key) {
+        return known.clone();
+    }
+    let cells = table(&wrapper.bodies[0], &right[..end], memo);
+    let row = Rc::new(cells[..=end].to_vec());
+    memo.opened.insert(key, row.clone());
+    row
+}
+
+fn opened_incoming(wrapper: &Node, left: &[Node], end: usize, memo: &mut Memo) -> Rc<Vec<u32>> {
+    let key = (wrapper.id, left[0].id, left[end - 1].id);
+    if let Some(known) = memo.opened.get(&key) {
+        return known.clone();
+    }
+    let body = &wrapper.bodies[0];
+    let cells = table(&left[..end], body, memo);
+    let width = body.len() + 1;
+    let column: Rc<Vec<u32>> = Rc::new((0..=end).map(|i| cells[i * width]).collect());
+    memo.opened.insert(key, column.clone());
+    column
+}
+
+fn openings(
+    left: &[Node],
+    right: &[Node],
+    (i, j): (usize, usize),
+    cells: &[u32],
+    memo: &mut Memo,
+) -> Vec<(u32, Step)> {
+    let width = right.len() + 1;
+    let mut out = Vec::new();
+    if left[i].wrapper() {
+        for end in j + 1..=right.len() {
+            if !wrappable(&right[end - 1]) {
+                break;
+            }
+            let inside = opened_merged(&left[i], right, end, memo)[j];
+            if inside > 0 {
+                out.push((
+                    inside + cells[(i + 1) * width + end],
+                    Step::OpenMerged {
+                        at: i,
+                        run: (j, end),
+                    },
+                ));
+            }
+        }
+    }
+    if right[j].wrapper() {
+        for end in i + 1..=left.len() {
+            if !wrappable(&left[end - 1]) {
+                break;
+            }
+            let inside = opened_incoming(&right[j], left, end, memo)[i];
+            if inside > 0 {
+                out.push((
+                    inside + cells[end * width + j + 1],
+                    Step::OpenIncoming {
+                        at: j,
+                        run: (i, end),
+                    },
+                ));
+            }
+        }
+    }
+    out
 }
 
 fn table(left: &[Node], right: &[Node], memo: &mut Memo) -> Vec<u32> {
@@ -107,38 +339,64 @@ fn table(left: &[Node], right: &[Node], memo: &mut Memo) -> Vec<u32> {
         for j in (0..right.len()).rev() {
             let matched = score(&left[i], &right[j], memo);
             let taken = (matched > 0).then(|| matched + cells[(i + 1) * width + j + 1]);
+            let opened = openings(left, right, (i, j), &cells, memo)
+                .into_iter()
+                .map(|(value, _)| value)
+                .max();
             cells[i * width + j] = cells[(i + 1) * width + j]
                 .max(cells[i * width + j + 1])
-                .max(taken.unwrap_or(0));
+                .max(taken.unwrap_or(0))
+                .max(opened.unwrap_or(0));
         }
     }
     cells
 }
 
-fn align(left: &[Node], right: &[Node], memo: &mut Memo) -> Vec<(usize, usize)> {
+fn align(left: &[Node], right: &[Node], memo: &mut Memo) -> Vec<Step> {
     let cells = table(left, right, memo);
     let width = right.len() + 1;
     let (mut i, mut j) = (0, 0);
-    let mut pairs = Vec::new();
+    let mut steps = Vec::new();
     while i < left.len() && j < right.len() {
+        let here = cells[i * width + j];
         let matched = score(&left[i], &right[j], memo);
-        if matched > 0 && cells[i * width + j] == matched + cells[(i + 1) * width + j + 1] {
-            pairs.push((i, j));
+        if matched > 0 && here == matched + cells[(i + 1) * width + j + 1] {
+            steps.push(Step::Match(i, j));
             i += 1;
             j += 1;
-        } else if cells[(i + 1) * width + j] >= cells[i * width + j + 1] {
+        } else if here == cells[(i + 1) * width + j] {
             i += 1;
+        } else if here == cells[i * width + j + 1] {
+            j += 1;
         } else {
-            j += 1;
+            let step = openings(left, right, (i, j), &cells, memo)
+                .into_iter()
+                .find(|(value, _)| *value == here)
+                .expect("the best cell comes from an opening")
+                .1;
+            match step {
+                Step::OpenMerged { run: (_, end), .. } => {
+                    i += 1;
+                    j = end;
+                }
+                Step::OpenIncoming { run: (_, end), .. } => {
+                    i = end;
+                    j += 1;
+                }
+                Step::Match(..) => unreachable!("openings only open wrappers"),
+            }
+            steps.push(step);
         }
     }
-    pairs
+    steps
 }
 
 #[derive(Default)]
 struct Binding {
     to_merged: HashMap<Ident, Ident>,
     to_variant: HashMap<Ident, Ident>,
+    reserved_merged: HashSet<Ident>,
+    reserved_variant: HashSet<Ident>,
 }
 
 impl Binding {
@@ -163,10 +421,31 @@ impl Binding {
                 _ => return false,
             }
         }
+        for (merged, variant) in &pending {
+            if self.reserved_merged.contains(merged) || self.reserved_variant.contains(variant) {
+                return false;
+            }
+        }
         for (merged, variant) in pending {
             self.to_merged.insert(variant, merged);
             self.to_variant.insert(merged, variant);
         }
+        true
+    }
+
+    fn reserve_merged(&mut self, names: &[Ident]) -> bool {
+        if names.iter().any(|name| self.to_variant.contains_key(name)) {
+            return false;
+        }
+        self.reserved_merged.extend(names.iter().copied());
+        true
+    }
+
+    fn reserve_variant(&mut self, names: &[Ident]) -> bool {
+        if names.iter().any(|name| self.to_merged.contains_key(name)) {
+            return false;
+        }
+        self.reserved_variant.extend(names.iter().copied());
         true
     }
 }
@@ -178,27 +457,73 @@ struct Fold {
 }
 
 fn merge_into(merged: &mut Vec<Node>, incoming: Vec<Node>, fold: &mut Fold) {
-    let pairs = align(merged, &incoming, &mut fold.memo);
+    let steps = align(merged, &incoming, &mut fold.memo);
     let mut left = std::mem::take(merged).into_iter().enumerate().peekable();
     let mut right = incoming.into_iter().enumerate().peekable();
-    for (at_left, at_right) in pairs {
+    for step in steps {
+        let (at_left, at_right) = match step {
+            Step::Match(i, j) => (i, j),
+            Step::OpenMerged { at, run } => (at, run.0),
+            Step::OpenIncoming { at, run } => (run.0, at),
+        };
         while left.peek().is_some_and(|(index, _)| *index < at_left) {
             merged.push(left.next().expect("peeked").1);
         }
         while right.peek().is_some_and(|(index, _)| *index < at_right) {
             merged.push(right.next().expect("peeked").1);
         }
-        let (_, mut node) = left.next().expect("aligned index");
-        let (_, other) = right.next().expect("aligned index");
-        if node.erased == other.erased && fold.binding.unify(&node.names, &other.names) {
-            node.on.insert(fold.variant);
-            for (body, other) in node.bodies.iter_mut().zip(other.bodies) {
-                merge_into(body, other, fold);
+        match step {
+            Step::Match(..) => {
+                let (_, mut node) = left.next().expect("aligned index");
+                let (_, other) = right.next().expect("aligned index");
+                if node.erased == other.erased && fold.binding.unify(&node.names, &other.names) {
+                    node.on.insert(fold.variant);
+                    node.jumps |= other.jumps;
+                    for (body, other) in node.bodies.iter_mut().zip(other.bodies) {
+                        merge_into(body, other, fold);
+                    }
+                    merged.push(node);
+                } else {
+                    merged.push(node);
+                    merged.push(other);
+                }
             }
-            merged.push(node);
-        } else {
-            merged.push(node);
-            merged.push(other);
+            Step::OpenMerged { run: (_, end), .. } => {
+                let (_, mut wrapper) = left.next().expect("aligned index");
+                let run: Vec<Node> = std::iter::from_fn(|| {
+                    right
+                        .next_if(|(index, _)| *index < end)
+                        .map(|(_, node)| node)
+                })
+                .collect();
+                if fold.binding.reserve_merged(&wrapper.names) {
+                    wrapper.on.insert(fold.variant);
+                    merge_into(&mut wrapper.bodies[0], run, fold);
+                    merged.push(wrapper);
+                } else {
+                    merged.push(wrapper);
+                    merged.extend(run);
+                }
+            }
+            Step::OpenIncoming { run: (_, end), .. } => {
+                let (_, mut wrapper) = right.next().expect("aligned index");
+                let run: Vec<Node> = std::iter::from_fn(|| {
+                    left.next_if(|(index, _)| *index < end)
+                        .map(|(_, node)| node)
+                })
+                .collect();
+                if fold.binding.reserve_variant(&wrapper.names) {
+                    for node in &run {
+                        wrapper.on.extend(node.on.iter().copied());
+                    }
+                    let body = std::mem::replace(&mut wrapper.bodies[0], run);
+                    merge_into(&mut wrapper.bodies[0], body, fold);
+                    merged.push(wrapper);
+                } else {
+                    merged.extend(run);
+                    merged.push(wrapper);
+                }
+            }
         }
     }
     merged.extend(left.map(|(_, node)| node));
@@ -265,7 +590,7 @@ impl Renamer<'_> {
             if !node.on.contains(&variant) {
                 continue;
             }
-            if node.on.len() == 1 {
+            if node.origin == variant {
                 let bound = self.bound;
                 visit_names(&mut node.shell, |name, _| {
                     if bound.contains(name) {
@@ -446,22 +771,33 @@ fn gate_sections(
 pub fn splice_function(
     variants: &[&FnDef],
     gate: &mut impl FnMut(&Variants, &Variants) -> Option<Cfg>,
+    unscoped_macro: &dyn Fn(&str) -> bool,
 ) -> Option<Spliced> {
     let shape = signature(variants[0]);
     if variants.iter().any(|variant| signature(variant) != shape) {
         return None;
     }
     let mut next_id = 0;
-    let mut prepared: Vec<(usize, Vec<Node>, HashSet<Ident>)> = variants
+    let mut bodies: Vec<Vec<Stmt>> = variants
         .iter()
+        .map(|function| mark_tail(function))
+        .collect();
+    let mut original = HashSet::new();
+    for body in &mut bodies {
+        names_in(body, &mut original);
+    }
+    let mut fresh = fresh_loop_labels(original.clone());
+    let mut prepared: Vec<(usize, Vec<Node>, HashSet<Ident>)> = bodies
+        .into_iter()
         .enumerate()
-        .map(|(variant, function)| {
-            let mut body = mark_tail(function);
+        .map(|(variant, mut body)| {
+            label_loops(&mut body, &mut fresh, unscoped_macro);
             let bound = bound_names(&mut body);
             let incoming = Builder {
                 variant,
                 bound: &bound,
                 next_id: &mut next_id,
+                unscoped_macro,
             }
             .nodes(body);
             (variant, incoming, bound)
@@ -474,7 +810,7 @@ pub fn splice_function(
         collect_names(&merged, &mut taken);
         let mut fold = Fold {
             variant,
-            memo: Memo::new(),
+            memo: Memo::default(),
             binding: Binding::default(),
         };
         merge_into(&mut merged, incoming, &mut fold);
@@ -493,6 +829,7 @@ pub fn splice_function(
     let all: Variants = (0..variants.len()).collect();
     let mut function = variants[0].clone();
     function.body = emit(merged, &all, gate);
+    elide_introduced_labels(&mut function.body, &original);
     unmark_tail(&mut function);
     for variant in variants {
         for (param, other) in function.params.iter_mut().zip(&variant.params) {
@@ -614,8 +951,25 @@ fn resolve_stmts(stmts: Vec<Stmt>, holds: &impl Fn(&Cfg) -> bool, out: &mut Vec<
             let body = std::mem::take(slot);
             resolve_stmts(body, holds, slot);
         }
+        if let Stmt::LabeledBlock { label, body } = &mut stmt
+            && !body.iter().any(is_binding)
+            && !targets(body, label.as_str())
+        {
+            out.append(body);
+            continue;
+        }
         out.push(stmt);
     }
+}
+
+fn targets(body: &mut [Stmt], label: &str) -> bool {
+    let mut found = false;
+    for stmt in body {
+        visit_names(stmt, |name, binds| {
+            found |= !binds && name.as_str() == label
+        });
+    }
+    found
 }
 
 pub fn resolve_function(function: &FnDef, holds: &impl Fn(&Cfg) -> bool) -> FnDef {
@@ -633,6 +987,11 @@ pub fn resolve_function(function: &FnDef, holds: &impl Fn(&Cfg) -> bool) -> FnDe
     for param in &mut resolved.params {
         param.mutable = false;
     }
+    let mut taken = HashSet::new();
+    names_in(&mut resolved.body, &mut taken);
+    label_loops(&mut resolved.body, &mut fresh_loop_labels(taken), &|_| {
+        false
+    });
     let bound = bound_names(&mut resolved.body);
     let mut canonical: HashMap<Ident, Ident> = HashMap::new();
     for stmt in &mut resolved.body {

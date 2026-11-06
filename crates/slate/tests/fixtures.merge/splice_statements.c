@@ -296,7 +296,10 @@ int main(void) {
 // CHECK-NEXT:         #[cfg(feature = "alpha")]
 // CHECK-NEXT:         {
 // CHECK-NEXT:             [[I_0]] = 0;
-// CHECK-NEXT:             '[[JOIN_0:__join_[0-9]+]]: {
+// CHECK-NEXT:         }
+// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
+// CHECK-NEXT:             #[cfg(feature = "alpha")]
+// CHECK-NEXT:             {
 // CHECK-NEXT:                 while [[I_0]] < limit {
 // CHECK-NEXT:                     if [[I_0]] == value {
 // CHECK-NEXT:                         break '[[JOIN_0]];
@@ -305,33 +308,33 @@ int main(void) {
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 result += 50;
-// CHECK-NEXT:                 i = 0;
-// CHECK-NEXT:                 while i < limit {
-// CHECK-NEXT:                     if i * 2 == value {
-// CHECK-NEXT:                         break '[[JOIN_0]];
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         result += i;
-// CHECK-NEXT:                         i += 1;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 result += 7;
-// CHECK-NEXT:                 return result;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             result += 1000;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         #[cfg(not(feature = "alpha"))]
-// CHECK-NEXT:         {
 // CHECK-NEXT:             i = 0;
 // CHECK-NEXT:             while i < limit {
 // CHECK-NEXT:                 if i * 2 == value {
-// CHECK-NEXT:                     result += 1000;
-// CHECK-NEXT:                     return result;
+// CHECK-NEXT:                     #[cfg(feature = "alpha")]
+// CHECK-NEXT:                     {
+// CHECK-NEXT:                         break '[[JOIN_0]];
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     #[cfg(not(feature = "alpha"))]
+// CHECK-NEXT:                     {
+// CHECK-NEXT:                         result += 1000;
+// CHECK-NEXT:                         return result;
+// CHECK-NEXT:                     }
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     result += i;
 // CHECK-NEXT:                     i += 1;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:             result += 7;
+// CHECK-NEXT:             #[cfg(feature = "alpha")]
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 return result;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:         #[cfg(feature = "alpha")]
+// CHECK-NEXT:         {
+// CHECK-NEXT:             result += 1000;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         return result;
 // CHECK-NEXT:     }

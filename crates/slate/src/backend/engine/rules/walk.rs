@@ -181,6 +181,49 @@ pub(in crate::backend::engine) fn child_exprs_mut(expr: &mut Expr) -> Vec<&mut E
     }
 }
 
+pub(crate) fn unlabeled_jump(stmt: &Stmt, macro_jumps: &dyn Fn(&str) -> bool) -> bool {
+    match stmt {
+        Stmt::Break(None) | Stmt::Continue(None) => return true,
+        Stmt::Loop { .. } | Stmt::While { .. } | Stmt::For { .. } => return false,
+        Stmt::Cfg { body, .. } => {
+            return body.iter().any(|stmt| unlabeled_jump(stmt, macro_jumps));
+        }
+        _ => {}
+    }
+    let mut exprs = Vec::new();
+    stmt_exprs(stmt, &mut exprs);
+    exprs
+        .into_iter()
+        .any(|expr| expr_unlabeled_jump(expr, macro_jumps))
+        || stmt
+            .clone()
+            .child_bodies_mut()
+            .into_iter()
+            .any(|body| body.iter().any(|stmt| unlabeled_jump(stmt, macro_jumps)))
+}
+
+fn expr_unlabeled_jump(expr: &Expr, macro_jumps: &dyn Fn(&str) -> bool) -> bool {
+    match expr {
+        Expr::Block(block) | Expr::Unsafe(block) => {
+            block
+                .stmts
+                .iter()
+                .any(|stmt| unlabeled_jump(stmt, macro_jumps))
+                || block
+                    .tail
+                    .as_deref()
+                    .is_some_and(|tail| expr_unlabeled_jump(tail, macro_jumps))
+        }
+        Expr::Closure { .. } => false,
+        Expr::Macro { name, args } => {
+            macro_jumps(name) || args.iter().any(|arg| expr_unlabeled_jump(arg, macro_jumps))
+        }
+        _ => child_exprs(expr)
+            .into_iter()
+            .any(|expr| expr_unlabeled_jump(expr, macro_jumps)),
+    }
+}
+
 fn expr_has_stmts(expr: &Expr) -> bool {
     matches!(expr, Expr::Block(block) | Expr::Unsafe(block) if !block.stmts.is_empty())
         || child_exprs(expr).into_iter().any(expr_has_stmts)

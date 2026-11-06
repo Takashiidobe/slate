@@ -2,9 +2,10 @@ use super::cfg::{TargetConditions, holds};
 use super::matrix::Matrix;
 use super::splice::Variants;
 use crate::backend::engine::macro_templates::rename_templates;
+use crate::backend::engine::unlabeled_jump;
 use crate::backend::link::signatures::{self, UnitCompiles};
 use crate::backend::rust_ast::{
-    Attr, Cfg, CrateAttr, Expr, ExternDecl, Item, MacroOutcome, MacroParam, Program,
+    Attr, Cfg, CrateAttr, Expr, ExternDecl, Item, MacroOutcome, MacroParam, Program, Stmt,
     macro_template_base,
 };
 use crate::backend::{self, Exports};
@@ -1026,10 +1027,47 @@ fn hoist_values(key: &str, values: &[Value]) -> Option<super::hoist::Hoisted> {
     super::hoist::hoist(&variants)
 }
 
+fn unscoped_macros(targets: &[TargetBuild], index: usize) -> HashSet<String> {
+    let mut bodies: BTreeMap<&str, Vec<(&[Stmt], bool)>> = BTreeMap::new();
+    for target in targets {
+        for compiled in &target.units[index].compiled {
+            for entry in &compiled.entries {
+                if let Item::MacroRules {
+                    name, body, value, ..
+                } = &entry.item
+                {
+                    bodies.entry(name).or_default().push((body, *value));
+                }
+            }
+        }
+    }
+    let mut unscoped: HashSet<String> = HashSet::new();
+    loop {
+        let found: Vec<&str> = bodies
+            .iter()
+            .filter(|(name, _)| !unscoped.contains(**name))
+            .filter(|(_, variants)| {
+                variants.iter().any(|(body, value)| {
+                    body.iter().any(|stmt| {
+                        (!value && matches!(stmt, Stmt::Let { .. } | Stmt::LetIf { .. }))
+                            || unlabeled_jump(stmt, &|name| unscoped.contains(name))
+                    })
+                })
+            })
+            .map(|(name, _)| *name)
+            .collect();
+        if found.is_empty() {
+            return unscoped;
+        }
+        unscoped.extend(found.into_iter().map(str::to_string));
+    }
+}
+
 fn splice_values(
     key: &str,
     values: &[Value],
     gate: &mut impl FnMut(&Variants, &Variants) -> Option<Cfg>,
+    unscoped: &HashSet<String>,
 ) -> Option<(Item, Vec<(Variants, Item)>)> {
     if key.contains('#') {
         return None;
@@ -1043,7 +1081,7 @@ fn splice_values(
                     _ => None,
                 })
                 .collect::<Option<Vec<_>>>()?;
-            super::splice::splice_function(&variants, gate)
+            super::splice::splice_function(&variants, gate, &|name| unscoped.contains(name))
                 .map(|spliced| (Item::Fn(spliced.function), spliced.bindings))
         }
         Item::Record(_) => {
@@ -1149,6 +1187,7 @@ fn merge_unit(
         combined_cfg(groups, present, conditions)
     };
     let cfg_of = |on: &[BTreeSet<u32>]| cfg_within(on, &cares);
+    let unscoped = unscoped_macros(targets, index);
     for key in order {
         let values = table.remove(&key).expect("ordered key is in the table");
         if values.len() > 1
@@ -1193,7 +1232,7 @@ fn merge_unit(
                     })
                     .clone()
             };
-            if let Some((item, bindings)) = splice_values(&key, &values, &mut gate) {
+            if let Some((item, bindings)) = splice_values(&key, &values, &mut gate, &unscoped) {
                 out.spliced.push((key.clone(), values.len()));
                 for (on, binding) in bindings {
                     let cfg = cfg_of(&union_on(&values, &on, targets.len()));
