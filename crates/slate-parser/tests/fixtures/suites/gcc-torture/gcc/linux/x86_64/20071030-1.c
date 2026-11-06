@@ -173,7 +173,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_cl_2:[0-9]+]] cl: @type[[TYPE_client_s]] [storage=automatic] [c="client_t"];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_cs_free]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_client_s]]>>(%[[VALUE_cl_2]]) [c="client_t *"]), const<i32>(0), size_of<u64, @type[[TYPE_client_s]]>(2056));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_cs_free]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_client_s]]>>(%[[VALUE_cl_2]]) [c="client_t *"]), const<i32>(0), size_of<u64, @type[[TYPE_client_s]]>(2056) [c="__size_t"]);
 // DEFAULT-NEXT:         write<f32>(field1(deref(ptr_offset<ptr<@type[[TYPE2]]>, subtract=false, element=@type[[TYPE2]], overflow=ub>(array_decay<ptr<@type[[TYPE2]]>, length=Some(64)>(field2(%[[VALUE_cl_2]])), const<i32>(0)))), const<f32>(1.0));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE_client_s]]>) -> i32>(%[[VALUE_CalcPing]], addr_of<ptr<@type[[TYPE_client_s]]>>(%[[VALUE_cl_2]]) [c="client_t *"]), const<i32>(1000))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_cs_server]]);

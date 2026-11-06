@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:     sum = [[V_2]] + [[V_3]];
 // CHECK-NEXT:     println!("{} {} {} {}", a, post, pre, sum);
 // CHECK-NEXT:     let mut c: u8 = 0;
-// CHECK-NEXT:     c = ((((c as u32) as i32) - 1) as i8) as u8;
+// CHECK-NEXT:     c = ((c as i32) - 1) as u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), c as u32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

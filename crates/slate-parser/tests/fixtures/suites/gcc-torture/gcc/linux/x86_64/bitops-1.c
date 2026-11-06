@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_values:[0-9]+]] values: array<i32, 8> [storage=static] [align=16] = aggregate<array<i32, 8>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(1), index2 = const<i32>(2), index3 = const<i32>(3), index4 = neg<i32, overflow=ub>(const<i32>(1)), index5 = neg<i32, overflow=ub>(const<i32>(2)), index6 = neg<i32, overflow=ub>(const<i32>(3)), index7 = const<i32>(65664)) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_numvalues:[0-9]+]] numvalues: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(size_of<u64, array<i32, 8>>(32), size_of<u64, i32>(4)))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_numvalues:[0-9]+]] numvalues: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(size_of<u64, array<i32, 8>>(32) [c="__size_t"], size_of<u64, i32>(4) [c="__size_t"]) [c="__size_t"])) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_h0:[0-9]+]] @h0(%[[VALUE_A:[0-9]+]] A: i32, %[[VALUE_B:[0-9]+]] B: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return and<i32>(or<i32>(read<i32>(%[[VALUE_A]]), read<i32>(%[[VALUE_B]])), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(%[[VALUE_A]]), read<i32>(%[[VALUE_B]]))));
 // DEFAULT-NEXT:     }

@@ -52,10 +52,10 @@ int wide_size = sizeof(enum wide);
 // DEFAULT-NEXT:     type @type[[TYPE_wide:[0-9]+]] wide = enum : i32 {
 // DEFAULT-NEXT:         %[[VALUE_s0]] w0 = const<i32>(-2147483648);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %[[VALUE_small_size:[0-9]+]] small_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_small]]>(4))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_shorter_size:[0-9]+]] shorter_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_shorter]]>(4))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_negative_size:[0-9]+]] negative_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_negative]]>(4))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_wide_size:[0-9]+]] wide_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_wide]]>(4))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_small_size:[0-9]+]] small_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_small]]>(4) [c="__size_t"])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_shorter_size:[0-9]+]] shorter_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_shorter]]>(4) [c="__size_t"])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_negative_size:[0-9]+]] negative_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_negative]]>(4) [c="__size_t"])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wide_size:[0-9]+]] wide_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_wide]]>(4) [c="__size_t"])) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN SHORT
@@ -96,9 +96,9 @@ int wide_size = sizeof(enum wide);
 // SHORT-NEXT:     type @type[[TYPE_wide:[0-9]+]] wide = enum : i32 {
 // SHORT-NEXT:         %[[VALUE_s0]] w0 = const<i32>(-2147483648);
 // SHORT-NEXT:     } [size=4, align=4];
-// SHORT-NEXT:     global %[[VALUE_small_size:[0-9]+]] small_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_small]]>(1))) [linkage=external];
-// SHORT-NEXT:     global %[[VALUE_shorter_size:[0-9]+]] shorter_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_shorter]]>(2))) [linkage=external];
-// SHORT-NEXT:     global %[[VALUE_negative_size:[0-9]+]] negative_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_negative]]>(1))) [linkage=external];
-// SHORT-NEXT:     global %[[VALUE_wide_size:[0-9]+]] wide_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_wide]]>(4))) [linkage=external];
+// SHORT-NEXT:     global %[[VALUE_small_size:[0-9]+]] small_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_small]]>(1) [c="__size_t"])) [linkage=external];
+// SHORT-NEXT:     global %[[VALUE_shorter_size:[0-9]+]] shorter_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_shorter]]>(2) [c="__size_t"])) [linkage=external];
+// SHORT-NEXT:     global %[[VALUE_negative_size:[0-9]+]] negative_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_negative]]>(1) [c="__size_t"])) [linkage=external];
+// SHORT-NEXT:     global %[[VALUE_wide_size:[0-9]+]] wide_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_wide]]>(4) [c="__size_t"])) [linkage=external];
 // SHORT-NEXT: }
 // SLATE-FILECHECK-END SHORT

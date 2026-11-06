@@ -272,25 +272,25 @@ main (void)
 // DEFAULT-NEXT:     global %[[VALUE_test_struct_9:[0-9]+]] test_struct_9: @type[[TYPE__struct_9]] [storage=static] = aggregate<@type[[TYPE__struct_9]], zero_fill=false>(field0 = const<f64>(20.0), field1 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(3))), field2 = widen<i64, reason=assign>(const<i32>(23957)), field3 = const<f64>(20.0), field4 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1001631)))) [linkage=external] [c="struct_9"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort(unprototyped) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))), size_of<u64, @type[[TYPE__struct_0]]>(1))
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="__size_t"], size_of<u64, @type[[TYPE__struct_0]]>(1) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))), size_of<u64, @type[[TYPE__struct_1]]>(4))
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))) [c="__size_t"], size_of<u64, @type[[TYPE__struct_1]]>(4) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(24))), size_of<u64, @type[[TYPE__struct_2]]>(32))
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(24))) [c="__size_t"], size_of<u64, @type[[TYPE__struct_2]]>(32) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), size_of<u64, @type[[TYPE__struct_3]]>(16))
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))) [c="__size_t"], size_of<u64, @type[[TYPE__struct_3]]>(16) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32))), size_of<u64, @type[[TYPE__struct_4]]>(32))
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32))) [c="__size_t"], size_of<u64, @type[[TYPE__struct_4]]>(32) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(12))), size_of<u64, @type[[TYPE__struct_5]]>(24))
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(12))) [c="__size_t"], size_of<u64, @type[[TYPE__struct_5]]>(24) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(40))), size_of<u64, @type[[TYPE__struct_6]]>(48))
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(40))) [c="__size_t"], size_of<u64, @type[[TYPE__struct_6]]>(48) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), size_of<u64, @type[[TYPE__struct_7]]>(8))
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))) [c="__size_t"], size_of<u64, @type[[TYPE__struct_7]]>(8) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(20))), size_of<u64, @type[[TYPE__struct_8]]>(32))
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(20))) [c="__size_t"], size_of<u64, @type[[TYPE__struct_8]]>(32) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32))), size_of<u64, @type[[TYPE__struct_9]]>(32))
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32))) [c="__size_t"], size_of<u64, @type[[TYPE__struct_9]]>(32) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

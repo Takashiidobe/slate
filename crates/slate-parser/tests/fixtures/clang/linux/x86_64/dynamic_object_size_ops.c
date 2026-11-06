@@ -63,8 +63,8 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_free:[0-9]+]] @free(%[[VALUE___ptr:[0-9]+]] __ptr: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_runtime_alloc_size:[0-9]+]] @runtime_alloc_size(%[[VALUE_n:[0-9]+]] n: i32) -> u64 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_n]]))));
-// DEFAULT-NEXT:         let %[[VALUE_size:[0-9]+]] size: u64 [storage=automatic] = intrinsic<u64, llvm.objectsize>(read<ptr<void>>(%[[VALUE_p]]), const<bool>(false), const<bool>(false), const<bool>(true));
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_n]]))) [c="__size_t"]);
+// DEFAULT-NEXT:         let %[[VALUE_size:[0-9]+]] size: u64 [storage=automatic] = reinterpret<u64, reason=assign>(intrinsic<u64, llvm.objectsize>(read<ptr<void>>(%[[VALUE_p]]), const<bool>(false), const<bool>(false), const<bool>(true)) [c="__size_t"]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_p]]));
 // DEFAULT-NEXT:         return read<u64>(%[[VALUE_size]]);
 // DEFAULT-NEXT:     }
@@ -73,11 +73,11 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(6)>(%[[VALUE_local]]);
 // DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: volatile i32 [storage=automatic] = const<i32>(3);
 // DEFAULT-NEXT:         read<i32, volatile>(%[[VALUE_v]]);
-// DEFAULT-NEXT:         let %[[VALUE_local_whole:[0-9]+]] local_whole: u64 [storage=automatic] = const<u64>(24);
-// DEFAULT-NEXT:         let %[[VALUE_local_remaining:[0-9]+]] local_remaining: u64 [storage=automatic] = const<u64>(16);
-// DEFAULT-NEXT:         let %[[VALUE_global_whole:[0-9]+]] global_whole: u64 [storage=automatic] = const<u64>(16);
-// DEFAULT-NEXT:         let %[[VALUE_unknown:[0-9]+]] unknown: u64 [storage=automatic] = intrinsic<u64, llvm.objectsize>(read<ptr<i32>>(%[[VALUE_p_2]]), const<bool>(false), const<bool>(false), const<bool>(true));
-// DEFAULT-NEXT:         let %[[VALUE_unknown_upper:[0-9]+]] unknown_upper: u64 [storage=automatic] = intrinsic<u64, llvm.objectsize>(read<ptr<i32>>(%[[VALUE_p_2]]), const<bool>(true), const<bool>(false), const<bool>(true));
+// DEFAULT-NEXT:         let %[[VALUE_local_whole:[0-9]+]] local_whole: u64 [storage=automatic] = reinterpret<u64, reason=assign>(const<u64>(24) [c="__size_t"]);
+// DEFAULT-NEXT:         let %[[VALUE_local_remaining:[0-9]+]] local_remaining: u64 [storage=automatic] = reinterpret<u64, reason=assign>(const<u64>(16) [c="__size_t"]);
+// DEFAULT-NEXT:         let %[[VALUE_global_whole:[0-9]+]] global_whole: u64 [storage=automatic] = reinterpret<u64, reason=assign>(const<u64>(16) [c="__size_t"]);
+// DEFAULT-NEXT:         let %[[VALUE_unknown:[0-9]+]] unknown: u64 [storage=automatic] = reinterpret<u64, reason=assign>(intrinsic<u64, llvm.objectsize>(read<ptr<i32>>(%[[VALUE_p_2]]), const<bool>(false), const<bool>(false), const<bool>(true)) [c="__size_t"]);
+// DEFAULT-NEXT:         let %[[VALUE_unknown_upper:[0-9]+]] unknown_upper: u64 [storage=automatic] = reinterpret<u64, reason=assign>(intrinsic<u64, llvm.objectsize>(read<ptr<i32>>(%[[VALUE_p_2]]), const<bool>(true), const<bool>(false), const<bool>(true)) [c="__size_t"]);
 // DEFAULT-NEXT:         let %[[VALUE_runtime_alloc:[0-9]+]] runtime_alloc: u64 [storage=automatic] = call<u64, signature=fn(i32) -> u64>(%[[VALUE_runtime_alloc_size]], const<i32>(37));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(25)>(%[[VALUE_str]])), read<u64>(%[[VALUE_local_whole]]), read<u64>(%[[VALUE_local_remaining]]), read<u64>(%[[VALUE_global_whole]]), read<u64>(%[[VALUE_unknown]]), read<u64>(%[[VALUE_unknown_upper]]), read<u64>(%[[VALUE_runtime_alloc]]));
 // DEFAULT-NEXT:         return const<i32>(0);

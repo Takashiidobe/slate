@@ -60,7 +60,7 @@ int main(void) {
 // CHECK-NEXT: total: 4 compiles across 4 targets
 // CHECK-NEXT: unit large_arrays: 30 items, 15 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:read_crossing: 2 variants
-// CHECK-NEXT:   spliced fn:__slate_main: 4 variants
+// CHECK-NEXT:   spliced fn:__slate_main: 3 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
@@ -169,8 +169,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn read_table(index: i32) -> i32 {
-// CHECK-NEXT:     (((unsafe { table.0[index as usize].len }) as u32) as i32)
-// CHECK-NEXT:         + (((unsafe { (*unsafe { descriptor }.offset(index as isize)).freq }) as u32) as i32)
+// CHECK-NEXT:     ((unsafe { table.0[index as usize].len }) as i32)
+// CHECK-NEXT:         + ((unsafe { (*unsafe { descriptor }.offset(index as isize)).freq }) as i32)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -211,8 +211,8 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d %d %d\n".as_ptr(),
-// CHECK-NEXT:                 (exported.0[15] as u32) as i32,
-// CHECK-NEXT:                 (small[1] as u32) as i32,
+// CHECK-NEXT:                 exported.0[15] as i32,
+// CHECK-NEXT:                 small[1] as i32,
 // CHECK-NEXT:                 read_crossing(),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
@@ -225,8 +225,8 @@ int main(void) {
 // CHECK-NEXT:         println!("{} {}", read_table(3i32), read_local(10i32));
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {} {}",
-// CHECK-NEXT:             ((unsafe { exported.0[15] }) as u32) as i32,
-// CHECK-NEXT:             ((unsafe { small[1] }) as u32) as i32,
+// CHECK-NEXT:             (unsafe { exported.0[15] }) as i32,
+// CHECK-NEXT:             (unsafe { small[1] }) as i32,
 // CHECK-NEXT:             read_crossing()
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
@@ -253,14 +253,10 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     #[cfg(not(target_arch = "x86"))]
+// CHECK-NEXT:     if ((unsafe { std::ptr::addr_of!(explicit_large.0) as *const c_char }) as uintptr_t) % 16 != 0
+// CHECK-NEXT:         || ((unsafe { std::ptr::addr_of!(larger.0) as *const c_char }) as uintptr_t) % 32 != 0
 // CHECK-NEXT:     {
-// CHECK-NEXT:         if ((unsafe { std::ptr::addr_of!(explicit_large.0) as *const c_char }) as uintptr_t) % 16
-// CHECK-NEXT:             != 0
-// CHECK-NEXT:             || ((unsafe { std::ptr::addr_of!(larger.0) as *const c_char }) as uintptr_t) % 32 != 0
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 1;
-// CHECK-NEXT:         }
+// CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", unix))]
 // CHECK-NEXT:     {
@@ -268,19 +264,6 @@ int main(void) {
 // CHECK-NEXT:             || ((unsafe { std::ptr::addr_of!(exported.0) as *const u8 }) as uintptr_t) % 16 != 0
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 2;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(target_arch = "x86")]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         if (((unsafe { std::ptr::addr_of!(explicit_large.0) as *const c_char }) as uintptr_t)
-// CHECK-NEXT:             as u32)
-// CHECK-NEXT:             % 16
-// CHECK-NEXT:             != 0
-// CHECK-NEXT:             || (((unsafe { std::ptr::addr_of!(larger.0) as *const c_char }) as uintptr_t) as u32)
-// CHECK-NEXT:                 % 32
-// CHECK-NEXT:                 != 0
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

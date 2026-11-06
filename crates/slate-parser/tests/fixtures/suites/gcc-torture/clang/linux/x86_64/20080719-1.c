@@ -107,7 +107,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: ptr<const u32> [storage=automatic] = call<ptr<const u32>, signature=fn(i32) -> ptr<const u32>>(%[[VALUE_xxx]], const<i32>(8)) [c="const u32 *"] [c="const u32 *"];
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(read<ptr<const u32>>(%[[VALUE_a]]), const<i32>(0)))) [c="u32"]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE_b]])), reinterpret<u32, reason=promotion>(read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<const u32>, length=Some(16)>(%[[VALUE_cfb_tab8_be]]), const<i32>(0)))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE_b]])) [c="u32"], read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<const u32>, length=Some(16)>(%[[VALUE_cfb_tab8_be]]), const<i32>(0)))) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

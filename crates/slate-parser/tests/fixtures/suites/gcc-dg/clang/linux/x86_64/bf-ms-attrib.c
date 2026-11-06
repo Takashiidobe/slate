@@ -79,9 +79,9 @@ main()
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 6, 8], bit_offsets=[None, None, Some(48), None], bit_units=[(6, 2)], field_units=[None, None, Some(0), None]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_one_ms]]>(12), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(12))))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_one_ms]]>(12) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(12))) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_one_gcc]]>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_one_gcc]]>(8) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

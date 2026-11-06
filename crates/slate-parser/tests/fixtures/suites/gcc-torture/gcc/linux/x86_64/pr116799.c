@@ -68,7 +68,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_strlen:[0-9]+]] @__builtin_strlen(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x_2:[0-9]+]] x: ptr<const i8>, %[[VALUE_v:[0-9]+]] v: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_w:[0-9]+]] w: ptr<const i8> [storage=automatic] = ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_x_2]]), call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], read<ptr<const i8>>(%[[VALUE_x_2]])));
+// DEFAULT-NEXT:         let %[[VALUE_w:[0-9]+]] w: ptr<const i8> [storage=automatic] = ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_x_2]]), call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], read<ptr<const i8>>(%[[VALUE_x_2]])) [c="__size_t"]);
 // DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] logical_and<bool>(eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_x_2]]), const<i32>(0))))), const<i32>(42)), lt<ptr<const i8>>(read<ptr<const i8>>(%[[VALUE_x_2]]), ptr_offset<ptr<const i8>, subtract=true, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_w]]), const<i32>(1))))
 // DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: ptr<const i8> [synthetic] = read<ptr<const i8>>(%[[VALUE_x_2]]);
 // DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE2]]), const<i32>(1));
@@ -77,7 +77,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_z_2:[0-9]+]] z: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         if ge<ptr<const i8>>(read<ptr<const i8>>(%[[VALUE_y_2]]), read<ptr<const i8>>(%[[VALUE_x_2]]))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 while %[[VALUE4:[0-9]+]] logical_and<bool>(gt<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<const i8>>(%[[VALUE_y_2]]), read<ptr<const i8>>(%[[VALUE_x_2]])), widen<i64, reason=usual_arith>(const<i32>(0))), eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<const i8>>(%[[VALUE_y_2]])))), const<i32>(42)))
+// DEFAULT-NEXT:                 while %[[VALUE4:[0-9]+]] logical_and<bool>(gt<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<const i8>>(%[[VALUE_y_2]]), read<ptr<const i8>>(%[[VALUE_x_2]])) [c="__ptrdiff_t"], widen<i64, reason=usual_arith>(const<i32>(0)) [c="__ptrdiff_t"]), eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<const i8>>(%[[VALUE_y_2]])))), const<i32>(42)))
 // DEFAULT-NEXT:                     let %[[VALUE5:[0-9]+]]: ptr<const i8> [synthetic] = read<ptr<const i8>>(%[[VALUE_y_2]]);
 // DEFAULT-NEXT:                     let %[[VALUE6:[0-9]+]]: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=true, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE5]]), const<i32>(1));
 // DEFAULT-NEXT:                     write<ptr<const i8>>(%[[VALUE_y_2]], read<ptr<const i8>>(%[[VALUE6]]));

@@ -71,7 +71,7 @@ void f(int n) {
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(i32, ptr<void>, ptr<void>, ptr<void>) -> ptr<void>>(%[[VALUE___builtin_coro_id]], const<i32>(32), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_promise]])), null<ptr<void>>, null<ptr<void>>);
 // DEFAULT-NEXT:         call<bool, signature=fn() -> bool>(%[[VALUE___builtin_coro_alloc]]);
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE___builtin_coro_noop]]);
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>) -> ptr<void>>(%[[VALUE___builtin_coro_begin]], call<ptr<void>, signature=fn(i64) -> ptr<void>>(%[[VALUE_myAlloc]], reinterpret<i64, reason=arg, fits=unknown>(call<u64, signature=fn() -> u64>(%[[VALUE___builtin_coro_size]]))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>) -> ptr<void>>(%[[VALUE___builtin_coro_begin]], call<ptr<void>, signature=fn(i64) -> ptr<void>>(%[[VALUE_myAlloc]], reinterpret<i64, reason=arg, fits=unknown>(call<u64, signature=fn() -> u64>(%[[VALUE___builtin_coro_size]]) [c="__size_t"])));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE___builtin_coro_resume]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE___builtin_coro_frame]]));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE___builtin_coro_destroy]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE___builtin_coro_frame]]));
 // DEFAULT-NEXT:         call<bool, signature=fn(ptr<void>) -> bool>(%[[VALUE___builtin_coro_done]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE___builtin_coro_frame]]));

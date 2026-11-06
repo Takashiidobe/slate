@@ -67,7 +67,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=unknown>(const<i32>(65521))))), const<i32>(65521))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_A]]>(2), size_of<u64, @type[[TYPE_B]]>(2))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_A]]>(2) [c="__size_t"], size_of<u64, @type[[TYPE_B]]>(2) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

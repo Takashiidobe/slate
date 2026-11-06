@@ -70,7 +70,7 @@ int unevaluated(int *p) {
 // IR-WARN-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(from_bool<i32, reason=promotion>(eq<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), int_to_ptr<ptr<i32>, reason=usual_arith>(read<i32>(%[[VALUE_x]])))), from_bool<i32, reason=promotion>(eq<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), pointer_cast<ptr<i32>, reason=usual_arith>(read<ptr<u32>>(%[[VALUE_u]]))))), from_bool<i32, reason=promotion>(lt<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), pointer_cast<ptr<i32>, reason=usual_arith>(read<ptr<i64>>(%[[VALUE_l]]))))), from_bool<i32, reason=promotion>(eq<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), pointer_cast<ptr<i32>, reason=usual_arith>(read<ptr<void>>(%[[VALUE_v]]))))), from_bool<i32, reason=promotion>(eq<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), null<ptr<i32>>)));
 // IR-WARN-NEXT:     }
 // IR-WARN-NEXT:     fn %[[VALUE_unevaluated:[0-9]+]] @unevaluated(%[[VALUE_p_2:[0-9]+]] p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-WARN-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, i32>(4)));
+// IR-WARN-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, i32>(4) [c="__size_t"]));
 // IR-WARN-NEXT:     }
 // IR-WARN-NEXT: }
 // SLATE-FILECHECK-END IR-WARN

@@ -64,7 +64,7 @@ int main(void) {
 // CHECK-NEXT:         memcmp(
 // CHECK-NEXT:             (dyn_a.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
 // CHECK-NEXT:             (dyn_b.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
-// CHECK-NEXT:             ((n as i64) as u64) as usize,
+// CHECK-NEXT:             (n as u64) as usize,
 // CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     println!("{} {} {} {}", equal_result, unequal_result, partial_result, dyn_result);

@@ -160,7 +160,7 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:         let %[[VALUE_old_chunk:[0-9]+]] old_chunk: ptr<@type[[TYPE__obstack_chunk]]> [storage=automatic] = read<ptr<@type[[TYPE__obstack_chunk]]>>(field1(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]]))));
 // DEFAULT-NEXT:         let %[[VALUE_new_chunk:[0-9]+]] new_chunk: ptr<@type[[TYPE__obstack_chunk]]> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_new_size:[0-9]+]] new_size: i64 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_obj_size:[0-9]+]] obj_size: i64 [storage=automatic] = ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(field3(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]])))), read<ptr<i8>>(field2(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]])))));
+// DEFAULT-NEXT:         let %[[VALUE_obj_size:[0-9]+]] obj_size: i64 [storage=automatic] = reinterpret<i64, reason=assign>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(field3(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]])))), read<ptr<i8>>(field2(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]]))))) [c="__ptrdiff_t"]);
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_already:[0-9]+]] already: i64 [storage=automatic];
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_new_size]], add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(read<i64>(%[[VALUE_obj_size]]), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_length]]))), shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(%[[VALUE_obj_size]]), const<i32>(3))), widen<i64, reason=usual_arith>(const<i32>(100))));
@@ -177,11 +177,11 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE_new_chunk]])), read<i64>(%[[VALUE_new_size]]));
 // DEFAULT-NEXT:         write<ptr<i8>>(field4(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]]))), read<ptr<i8>>(%[[VALUE1]]));
 // DEFAULT-NEXT:         write<ptr<i8>>(field0(deref(read<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE_new_chunk]]))), read<ptr<i8>>(%[[VALUE1]]));
-// DEFAULT-NEXT:         if ge<i64>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(read<i32>(field6(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]])))), const<i32>(1))), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<f64>>(field1(deref(null<ptr<@type[[TYPE_fooalign]]>>)))), null<ptr<i8>>))
+// DEFAULT-NEXT:         if ge<i64>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(read<i32>(field6(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]])))), const<i32>(1))), reinterpret<i64, reason=explicit>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<f64>>(field1(deref(null<ptr<@type[[TYPE_fooalign]]>>)))), null<ptr<i8>>) [c="__ptrdiff_t"]))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i64>(%[[VALUE_i]], reinterpret<i64, reason=assign, fits=unknown>(sub<u64, overflow=wrap>(div<u64, by_zero=ub>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%[[VALUE_obj_size]])), size_of<u64, i32>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))));
+// DEFAULT-NEXT:                         write<i64>(%[[VALUE_i]], reinterpret<i64, reason=assign, fits=unknown>(sub<u64, overflow=wrap>(div<u64, by_zero=ub>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%[[VALUE_obj_size]])) [c="__size_t"], size_of<u64, i32>(4) [c="__size_t"]) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="__size_t"]) [c="__size_t"]));
 // DEFAULT-NEXT:                     condition: ge<i64>(read<i64>(%[[VALUE_i]]), widen<i64, reason=usual_arith>(const<i32>(0)))
 // DEFAULT-NEXT:                     increment: {
 // DEFAULT-NEXT:                         let %[[VALUE3:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_i]]);
@@ -191,7 +191,7 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(pointer_cast<ptr<i32>, reason=explicit>(array_decay<ptr<i8>, length=Some(4)>(field2(deref(read<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE_new_chunk]]))))), read<i64>(%[[VALUE_i]]))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(pointer_cast<ptr<i32>, reason=explicit>(read<ptr<i8>>(field2(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]]))))), read<i64>(%[[VALUE_i]])))));
-// DEFAULT-NEXT:                 write<i64>(%[[VALUE_already]], reinterpret<i64, reason=assign, fits=unknown>(mul<u64, overflow=wrap>(div<u64, by_zero=ub>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%[[VALUE_obj_size]])), size_of<u64, i32>(4)), size_of<u64, i32>(4))));
+// DEFAULT-NEXT:                 write<i64>(%[[VALUE_already]], reinterpret<i64, reason=assign, fits=unknown>(mul<u64, overflow=wrap>(div<u64, by_zero=ub>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%[[VALUE_obj_size]])) [c="__size_t"], size_of<u64, i32>(4) [c="__size_t"]) [c="__size_t"], size_of<u64, i32>(4) [c="__size_t"]) [c="__size_t"]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<i64>(%[[VALUE_already]], widen<i64, reason=assign>(const<i32>(0)));

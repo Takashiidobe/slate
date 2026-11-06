@@ -81,7 +81,7 @@ main ()
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_S]]>(32), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32))))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_S]]>(32) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32))) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..4, bits=0..2>(%[[VALUE_s]]), neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]

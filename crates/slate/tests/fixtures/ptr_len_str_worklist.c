@@ -30,8 +30,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0..bytes.len() as i32 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = score;
 // CHECK-NEXT:         score = [[V_0]]
-// CHECK-NEXT:             + (((unsafe { *(bytes.as_ptr() as *const u8).offset(i as isize) }) as u32)
-// CHECK-NEXT:                 as i32);
+// CHECK-NEXT:             + ((unsafe { *(bytes.as_ptr() as *const u8).offset(i as isize) }) as i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     score
 // CHECK-NEXT: }

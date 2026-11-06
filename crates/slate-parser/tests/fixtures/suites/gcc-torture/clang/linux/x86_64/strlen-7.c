@@ -81,14 +81,14 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_strlen:[0-9]+]] @__builtin_strlen(%[[VALUE5:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_test_dynamic_type:[0-9]+]] @test_dynamic_type(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_A]]>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]]))))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_b]])), size_of<u64, @type[[TYPE_B]]>(12)));
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]]))))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_b]])), size_of<u64, @type[[TYPE_B]]>(12) [c="__size_t"]));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>, ptr<const i8>) -> void>(%[[VALUE_init]], read<ptr<i8>>(%[[VALUE_q]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]])));
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(6))), call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_q]]))))
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(6))) [c="__size_t"], call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_q]]))) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE6:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<@type[[TYPE_A]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_A]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], size_of<u64, @type[[TYPE_A]]>(16)));
+// DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<@type[[TYPE_A]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_A]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], size_of<u64, @type[[TYPE_A]]>(16) [c="__size_t"]));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_A]]>) -> void>(%[[VALUE_test_dynamic_type]], read<ptr<@type[[TYPE_A]]>>(%[[VALUE_p_2]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -91,7 +91,7 @@ int main(void) {
 // CHECK-NEXT:     1000i32,
 // CHECK-NEXT: ]);
 // CHECK-NEXT: fn r_uchar() {
-// CHECK-NEXT:     let x: u8 = 165u8;
+// CHECK-NEXT:     let x: u8 = 165;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
 // CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
@@ -111,7 +111,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn r_ushort() {
-// CHECK-NEXT:     let x: u16 = 35889u16;
+// CHECK-NEXT:     let x: u16 = 35889;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
 // CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)

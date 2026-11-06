@@ -31,8 +31,7 @@ int main(void) {
 // CHECK-NEXT:         word.bytes[1] = 66;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", ((unsafe { word.bytes[0] }) as u32) as i32, ((unsafe { word.bytes[1] })
-// CHECK-NEXT:         as u32) as i32
+// CHECK-NEXT:         "{} {}", (unsafe { word.bytes[0] }) as i32, (unsafe { word.bytes[1] }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

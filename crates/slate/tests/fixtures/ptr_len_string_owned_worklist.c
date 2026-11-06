@@ -39,8 +39,8 @@ int main(void) {
 // CHECK-NEXT:     for i in 0..text.len() as i32 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = score;
 // CHECK-NEXT:         score = [[V_0]]
-// CHECK-NEXT:             + ((((unsafe { *(text.as_mut_ptr() as *mut i8).offset(i as isize) }) as u8)
-// CHECK-NEXT:                 as u32) as i32);
+// CHECK-NEXT:             + (((unsafe { *(text.as_mut_ptr() as *mut i8).offset(i as isize) }) as u8)
+// CHECK-NEXT:                 as i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     score
 // CHECK-NEXT: }
@@ -50,15 +50,14 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let len: i32 = 4;
 // CHECK-NEXT:     let text: *mut i8 = (unsafe {
-// CHECK-NEXT:         malloc(
-// CHECK-NEXT:             ((len as i64) as u64).wrapping_mul(std::mem::size_of::<i8>() as u64) as usize,
-// CHECK-NEXT:         ) as *mut ()
+// CHECK-NEXT:         malloc((len as u64).wrapping_mul(std::mem::size_of::<i8>() as u64) as usize)
+// CHECK-NEXT:             as *mut ()
 // CHECK-NEXT:     }) as *mut i8;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             ((b"abc\0".as_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((text as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:             (((len as i64) as u64) as usize) as usize,
+// CHECK-NEXT:             ((len as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let score: i32 = forward_text_owner(unsafe {

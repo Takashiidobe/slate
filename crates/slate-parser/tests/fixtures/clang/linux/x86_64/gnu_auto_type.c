@@ -40,7 +40,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic] = const<i32>(5);
 // DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: i32 [storage=automatic] = reinterpret<i32, reason=assign>(add<i32, overflow=ub>(read<i32>(%[[VALUE_x]]), const<i32>(2))) [c="typeof(x)"] [c="typeof(x)"];
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), reinterpret<i32, reason=vararg>(read<i32>(%[[VALUE_y]]) [c="typeof(x)"]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), read<i32>(%[[VALUE_y]]) [c="typeof(x)"]);
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return>(read<i32>(%[[VALUE_y]]) [c="typeof(x)"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

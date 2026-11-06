@@ -150,7 +150,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_c:[0-9]+]] @c(%[[VALUE_d:[0-9]+]] d: u64 [c="ull"], %[[VALUE_f:[0-9]+]] f: u32 [c="ul"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(ull, ul)"] {
 // DEFAULT-NEXT:         write<u64>(field1(%[[VALUE_ud]]), read<u64>(%[[VALUE_d]]) [c="ull"]) [c="ull"];
 // DEFAULT-NEXT:         write<f32>(field0(%[[VALUE_uf]]), float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=observable>(read<f64>(field0(%[[VALUE_ud]]))));
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(read<u32>(field1(%[[VALUE_uf]])) [c="ul"]), reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_f]]) [c="ul"]))
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(field1(%[[VALUE_uf]])) [c="ul"], read<u32>(%[[VALUE_f]]) [c="ul"])
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_failed]]);
 // DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
@@ -158,7 +158,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(size_of<u64, f32>(4), size_of<u64, u32>(4)), ne<u64>(size_of<u64, f64>(8), size_of<u64, u64>(8)))
+// DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(size_of<u64, f32>(4) [c="__size_t"], size_of<u64, u32>(4) [c="__size_t"]), ne<u64>(size_of<u64, f64>(8) [c="__size_t"], size_of<u64, u64>(8) [c="__size_t"]))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], reinterpret<u64, reason=arg>(const<u64>(3931642474694443008)) [c="ull"], reinterpret<u32, reason=arg>(const<u32>(0)) [c="ul"]);
 // DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], reinterpret<u64, reason=arg>(const<u64>(3931642474694443009)) [c="ull"], reinterpret<u32, reason=arg>(const<u32>(1)) [c="ul"]);

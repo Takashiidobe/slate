@@ -98,8 +98,8 @@ int main(void) {
 // CHECK-NEXT:             c"%d %lu %c %c\n".as_ptr(),
 // CHECK-NEXT:             ok,
 // CHECK-NEXT:             size_read,
-// CHECK-NEXT:             (buffer[1] as u32) as i32,
-// CHECK-NEXT:             (tag.0[4] as u32) as i32,
+// CHECK-NEXT:             buffer[1] as i32,
+// CHECK-NEXT:             tag.0[4] as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

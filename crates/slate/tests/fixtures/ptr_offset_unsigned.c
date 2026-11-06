@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { *p.add(i as usize) }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn load_byte(p: *const u8, n: u64) -> i32 {
-// CHECK-NEXT:     ((unsafe { *p.add((n / 8) as usize) }) as u32) as i32
+// CHECK-NEXT:     (unsafe { *p.add((n / 8) as usize) }) as i32
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn back(end: *const i32, n: u32) -> *const i32 {
 // CHECK-NEXT:     unsafe { end.sub(n as usize) }

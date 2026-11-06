@@ -96,7 +96,7 @@ main ()
 // DEFAULT-NEXT:             write<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_exchange_tmp]])), read<i32>(%[[VALUE1]])) [c="typeof((cast)0, *__atomic_exchange_ptr)"];
 // DEFAULT-NEXT:             write<i32>(%[[VALUE0]], read<i32>(%[[VALUE___atomic_exchange_tmp]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE0]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]), read<i32>(%[[VALUE_count]]))
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE0]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"], reinterpret<i32, reason=usual_arith>(read<i32>(%[[VALUE_count]])) [c="typeof((cast)0, *__atomic_exchange_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_count]]);
 // DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
@@ -110,7 +110,7 @@ main ()
 // DEFAULT-NEXT:             write<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_exchange_tmp_2]])), read<i32>(%[[VALUE5]])) [c="typeof((cast)0, *__atomic_exchange_ptr)"];
 // DEFAULT-NEXT:             write<i32>(%[[VALUE4]], read<i32>(%[[VALUE___atomic_exchange_tmp_2]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE4]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]), read<i32>(%[[VALUE_count]]))
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE4]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"], reinterpret<i32, reason=usual_arith>(read<i32>(%[[VALUE_count]])) [c="typeof((cast)0, *__atomic_exchange_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_count]]);
 // DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE6]]), const<i32>(1));
@@ -124,7 +124,7 @@ main ()
 // DEFAULT-NEXT:             write<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_exchange_tmp_3]])), read<i32>(%[[VALUE9]])) [c="typeof((cast)0, *__atomic_exchange_ptr)"];
 // DEFAULT-NEXT:             write<i32>(%[[VALUE8]], read<i32>(%[[VALUE___atomic_exchange_tmp_3]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE8]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]), read<i32>(%[[VALUE_count]]))
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE8]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"], reinterpret<i32, reason=usual_arith>(read<i32>(%[[VALUE_count]])) [c="typeof((cast)0, *__atomic_exchange_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_count]]);
 // DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE10]]), const<i32>(1));
@@ -138,7 +138,7 @@ main ()
 // DEFAULT-NEXT:             write<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_exchange_tmp_4]])), read<i32>(%[[VALUE13]])) [c="typeof((cast)0, *__atomic_exchange_ptr)"];
 // DEFAULT-NEXT:             write<i32>(%[[VALUE12]], read<i32>(%[[VALUE___atomic_exchange_tmp_4]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE12]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]), read<i32>(%[[VALUE_count]]))
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE12]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"], reinterpret<i32, reason=usual_arith>(read<i32>(%[[VALUE_count]])) [c="typeof((cast)0, *__atomic_exchange_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE14:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_count]]);
 // DEFAULT-NEXT:         let %[[VALUE15:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE14]]), const<i32>(1));
@@ -152,7 +152,7 @@ main ()
 // DEFAULT-NEXT:             write<i32>(deref(addr_of<ptr<i32>>(%[[VALUE___atomic_exchange_tmp_5]])), read<i32>(%[[VALUE17]])) [c="typeof((cast)0, *__atomic_exchange_ptr)"];
 // DEFAULT-NEXT:             write<i32>(%[[VALUE16]], read<i32>(%[[VALUE___atomic_exchange_tmp_5]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE16]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]), read<i32>(%[[VALUE_count]]))
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE16]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"], reinterpret<i32, reason=usual_arith>(read<i32>(%[[VALUE_count]])) [c="typeof((cast)0, *__atomic_exchange_ptr)"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE18:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_count]]);
 // DEFAULT-NEXT:         let %[[VALUE19:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE18]]), const<i32>(1));

@@ -52,9 +52,9 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if eq<u64>(size_of<u64, i64>(8), size_of<u64, i32>(4))
+// DEFAULT-NEXT:         if eq<u64>(size_of<u64, i64>(8) [c="__size_t"], size_of<u64, i32>(4) [c="__size_t"])
 // DEFAULT-NEXT:             return const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_shift_half:[0-9]+]] shift_half: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(mul<u64, overflow=wrap>(size_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))))));
+// DEFAULT-NEXT:         let %[[VALUE_shift_half:[0-9]+]] shift_half: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(mul<u64, overflow=wrap>(size_of<u64, i32>(4) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))) [c="__size_t"]) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))) [c="__size_t"]) [c="__size_t"]));
 // DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: i64 [storage=automatic] = shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i64>(3), read<i32>(%[[VALUE_shift_half]])), read<i32>(%[[VALUE_shift_half]]));
 // DEFAULT-NEXT:         let %[[VALUE_y_2:[0-9]+]] y: i64 [storage=automatic] = shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i64>(5), read<i32>(%[[VALUE_shift_half]])), read<i32>(%[[VALUE_shift_half]]));
 // DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: i64 [storage=automatic] = call<i64, signature=fn(i64, i64) -> i64>(%[[VALUE_foo]], read<i64>(%[[VALUE_x_2]]), read<i64>(%[[VALUE_y_2]]));

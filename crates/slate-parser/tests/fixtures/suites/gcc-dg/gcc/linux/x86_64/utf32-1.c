@@ -77,25 +77,25 @@ int main ()
 // DEFAULT-NEXT:     global %[[VALUE_c4:[0-9]+]] c4: u32 [storage=static] = reinterpret<u32, reason=assign>(const<u32>(410401)) [c="char32_t"] [linkage=external] [c="char32_t"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u32>(4), size_of<u64, u32>(4))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u32>(4) [c="__size_t"], size_of<u64, u32>(4) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u32>(4), size_of<u64, u32>(4))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u32>(4) [c="__size_t"], size_of<u64, u32>(4) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u32>(4), size_of<u64, u32>(4))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u32>(4) [c="__size_t"], size_of<u64, u32>(4) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u32>(4), size_of<u64, u32>(4))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u32>(4) [c="__size_t"], size_of<u64, u32>(4) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u32>(4), size_of<u64, u32>(4))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u32>(4) [c="__size_t"], size_of<u64, u32>(4) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_c0]]) [c="char32_t"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(97)))
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_c0]]) [c="char32_t"], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(97)) [c="char32_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_c1]]) [c="char32_t"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_c1]]) [c="char32_t"], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)) [c="char32_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_c2]]) [c="char32_t"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(36)))
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_c2]]) [c="char32_t"], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(36)) [c="char32_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_c3]]) [c="char32_t"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8233)))
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_c3]]) [c="char32_t"], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8233)) [c="char32_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_c4]]) [c="char32_t"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(410401)))
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_c4]]) [c="char32_t"], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(410401)) [c="char32_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

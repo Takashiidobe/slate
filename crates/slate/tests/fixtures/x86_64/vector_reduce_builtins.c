@@ -817,9 +817,9 @@ int main(void) {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
 // CHECK-NEXT:         for i in 0i32..4i32 {
-// CHECK-NEXT:             lanes.0[i as usize] = (unsafe {
+// CHECK-NEXT:             lanes.0[i as usize] = unsafe {
 // CHECK-NEXT:                 __slate_intrinsic_ea593a52181dce5d(u)
-// CHECK-NEXT:             }[i as usize] as u64) as i64;
+// CHECK-NEXT:             }[i as usize] as i64;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
@@ -865,7 +865,7 @@ int main(void) {
 // CHECK-NEXT:     '[[SLATE_BREAK_2:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
 // CHECK-NEXT:         '[[SLATE_BREAK_3:__slate_break_[0-9]+]]: for i in 0i32..4i32 {
-// CHECK-NEXT:             lanes.0[i as usize] = (unsafe {
+// CHECK-NEXT:             lanes.0[i as usize] = unsafe {
 // CHECK-NEXT:                 __slate_intrinsic_909e0aaaa733917e(
 // CHECK-NEXT:                     u,
 // CHECK-NEXT:                     *{
@@ -875,7 +875,7 @@ int main(void) {
 // CHECK-NEXT:                         std::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                 )
-// CHECK-NEXT:             }[i as usize] as u64) as i64;
+// CHECK-NEXT:             }[i as usize] as i64;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
@@ -925,7 +925,7 @@ int main(void) {
 // CHECK-NEXT:     '[[SLATE_BREAK_6:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 16]> = __SlateAlign16([0i64; 16]);
 // CHECK-NEXT:         '[[SLATE_BREAK_7:__slate_break_[0-9]+]]: for i in 0i32..16i32 {
-// CHECK-NEXT:             lanes.0[i as usize] = (unsafe {
+// CHECK-NEXT:             lanes.0[i as usize] = unsafe {
 // CHECK-NEXT:                 __slate_intrinsic_d5c5fa99040dca20(
 // CHECK-NEXT:                     bytes,
 // CHECK-NEXT:                     *{
@@ -936,7 +936,7 @@ int main(void) {
 // CHECK-NEXT:                         std::ptr::addr_of_mut!([[SLATE_COMPOUND_4]])
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                 )
-// CHECK-NEXT:             }[i as usize] as u64) as i64;
+// CHECK-NEXT:             }[i as usize] as i64;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {

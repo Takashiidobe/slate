@@ -137,10 +137,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u %d %u\n".as_ptr(),
-// CHECK-NEXT:             (padded.first as u32) as i32,
-// CHECK-NEXT:             (padded.second as u32) as i32,
+// CHECK-NEXT:             padded.first as i32,
+// CHECK-NEXT:             padded.second as i32,
 // CHECK-NEXT:             flags.first as i32,
-// CHECK-NEXT:             (flags.second as u32) as i32,
+// CHECK-NEXT:             flags.second as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -156,8 +156,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u\n".as_ptr(),
-// CHECK-NEXT:             (padded.first as u32) as i32,
-// CHECK-NEXT:             (padded.second as u32) as i32,
+// CHECK-NEXT:             padded.first as i32,
+// CHECK-NEXT:             padded.second as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -180,11 +180,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(
-// CHECK-NEXT:             c"%d %u\n".as_ptr(),
-// CHECK-NEXT:             set.first as i32,
-// CHECK-NEXT:             (set.second as u32) as i32,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         slate_support::printf(c"%d %u\n".as_ptr(), set.first as i32, set.second as i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut bits: bits = {
@@ -208,7 +204,7 @@ int main(void) {
 // CHECK-NEXT:             c"%u %u %u\n".as_ptr(),
 // CHECK-NEXT:             bits.__slate_bits_0.__get_low() as i32,
 // CHECK-NEXT:             bits.__slate_bits_0.__get_high() as i32,
-// CHECK-NEXT:             (bits.tail as u32) as i32,
+// CHECK-NEXT:             bits.tail as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -242,11 +238,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(
-// CHECK-NEXT:             c"%u %u\n".as_ptr(),
-// CHECK-NEXT:             (partial.byte as u32) as i32,
-// CHECK-NEXT:             partial.word,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         slate_support::printf(c"%u %u\n".as_ptr(), partial.byte as i32, partial.word)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut nested: nested = nested {
@@ -276,7 +268,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %u %d %d\n".as_ptr(),
 // CHECK-NEXT:             nested.inner.first as i32,
-// CHECK-NEXT:             (nested.inner.second as u32) as i32,
+// CHECK-NEXT:             nested.inner.second as i32,
 // CHECK-NEXT:             nested.done[0] as i32,
 // CHECK-NEXT:             nested.done[1] as i32,
 // CHECK-NEXT:         )

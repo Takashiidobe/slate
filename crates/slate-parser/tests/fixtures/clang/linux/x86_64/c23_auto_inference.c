@@ -264,7 +264,7 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // VALID-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
 // VALID-NEXT:     fn %[[VALUE_h:[0-9]+]] @h(%[[VALUE1:[0-9]+]] <unnamed>: i64) -> i64 [linkage=external];
 // VALID-NEXT:     fn %[[VALUE_deduce:[0-9]+]] @deduce(%[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_ip:[0-9]+]] ip: ptr<i32>, %[[VALUE_cip:[0-9]+]] cip: ptr<const i32>, %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]]) -> void [linkage=external] [abi=sysv64(scalar, scalar, scalar, native_c) -> void] [fallthrough=ret_void] {
-// VALID-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n]])));
+// VALID-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n]]))) [c="__size_t"];
 // VALID-NEXT:         let %[[VALUE_vla:[0-9]+]] vla: vla<i32, %[[VALUE2]]> [storage=automatic];
 // VALID-NEXT:         let %[[VALUE_a1:[0-9]+]] a1: i32 [storage=automatic] = read<i32>(%[[VALUE_ci]]);
 // VALID-NEXT:         let %[[VALUE_a2:[0-9]+]] a2: atomic i32 [storage=automatic] = read<i32, atomic=seq_cst>(%[[VALUE_ai]]);

@@ -63,8 +63,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_PackedAligned]] [storage=automatic];
 // DEFAULT-NEXT:         write<i8>(field0(%[[VALUE_s]]), truncate<i8, reason=assign, fits=always>(const<i32>(7)));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_s]]), const<i32>(4660));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str]])), size_of<u64, @type[[TYPE_PackedAligned]]>(8), align_of<u64, @type[[TYPE_PackedAligned]]>(4));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_2]])), offset_of<u64, @type[[TYPE_PackedAligned]], a>(0), offset_of<u64, @type[[TYPE_PackedAligned]], b>(1));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str]])), size_of<u64, @type[[TYPE_PackedAligned]]>(8) [c="__size_t"], align_of<u64, @type[[TYPE_PackedAligned]]>(4) [c="__size_t"]);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_2]])), offset_of<u64, @type[[TYPE_PackedAligned]], a>(0) [c="__size_t"], offset_of<u64, @type[[TYPE_PackedAligned]], b>(1) [c="__size_t"]);
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_3]])), widen<i32, reason=vararg>(read<i8>(field0(%[[VALUE_s]]))), read<i32>(field1(%[[VALUE_s]])));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_s]]), add<i32, overflow=ub>(read<i32>(field1(%[[VALUE_s]])), const<i32>(1)));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_4]])), read<i32>(field1(%[[VALUE_s]])));

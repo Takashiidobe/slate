@@ -68,11 +68,11 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_sizeof_values:[0-9]+]] @sizeof_values() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_values:[0-9]+]] values: array<i32, 3> [storage=automatic];
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(size_of<u64, i32>(4), size_of<u64, array<i32, 3>>(12)), size_of<u64, @type[[TYPE_Pair]]>(8)), size_of<u64, @type[[TYPE_Slot]]>(4))));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(size_of<u64, i32>(4) [c="__size_t"], size_of<u64, array<i32, 3>>(12) [c="__size_t"]) [c="__size_t"], size_of<u64, @type[[TYPE_Pair]]>(8) [c="__size_t"]) [c="__size_t"], size_of<u64, @type[[TYPE_Slot]]>(4) [c="__size_t"]) [c="__size_t"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_sizeof_expr:[0-9]+]] @sizeof_expr() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_value:[0-9]+]] value: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, i32>(4)));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, i32>(4) [c="__size_t"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), call<i32, signature=fn() -> i32>(%[[VALUE_sizeof_values]]));

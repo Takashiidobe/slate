@@ -66,9 +66,9 @@ int main(void) {
 // DEFAULT-NEXT:             return const<i32>(4);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(const<f128>(1.5)), const<f64>(1.5))
 // DEFAULT-NEXT:             return const<i32>(5);
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, f128>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, f128>(16) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))) [c="__size_t"])
 // DEFAULT-NEXT:             return const<i32>(6);
-// DEFAULT-NEXT:         if ne<u64>(align_of<u64, f128>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))))
+// DEFAULT-NEXT:         if ne<u64>(align_of<u64, f128>(16) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))) [c="__size_t"])
 // DEFAULT-NEXT:             return const<i32>(7);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

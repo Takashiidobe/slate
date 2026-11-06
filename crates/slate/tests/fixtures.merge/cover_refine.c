@@ -65,7 +65,7 @@ int main(void) {
 // CHECK-NEXT:   cover_refine.c: [alpha,beta,gamma,delta,epsilon] 32 compiled
 // CHECK-NEXT:     8 assignments preprocess like a compiled one
 // CHECK-NEXT: total: 48 compiles across 2 targets
-// CHECK-NEXT: unit cover_refine: 12 items, 3 gated, 0 duplicated functions
+// CHECK-NEXT: unit cover_refine: 12 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced record:state: 4 variants
 // CHECK-NEXT:   spliced fn:nested: 5 variants
 // CHECK-NEXT:   spliced fn:joint: 4 variants
@@ -222,7 +222,6 @@ int main(void) {
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: #[cfg(any(feature = "alpha", feature = "beta"))]
 // CHECK-NEXT: use core::ffi::c_long;
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: use core::ffi::c_ulong;
+// CHECK-NEXT: use slate_support::size_t;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

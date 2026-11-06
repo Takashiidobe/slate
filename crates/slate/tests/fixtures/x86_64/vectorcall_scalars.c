@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: extern "vectorcall-unwind" fn add_ints(a: i32, b: i64, c: u8, d: i16, e: i32) -> i32 {
-// CHECK-NEXT:     a + (b as i32) + ((c as u32) as i32) + (d as i32) + e
+// CHECK-NEXT:     a + (b as i32) + (c as i32) + (d as i32) + e
 // CHECK-NEXT: }
 // CHECK-NEXT: extern "vectorcall-unwind" fn mix(
 // CHECK-NEXT:     a: i32,

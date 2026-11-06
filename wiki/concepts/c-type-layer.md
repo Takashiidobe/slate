@@ -100,6 +100,12 @@ _Atomic`. Tags print by definition name.
 - `size_t` / `ptrdiff_t`: `long` on LP64, `long long` on LLP64, `int` on
   ILP32. Character and string literals keep plain `char`, signed character
   kinds, and encoding-specific types.
+- As in clang 21+, `CTypes::size_type` and `ptrdiff_type` return the sugar
+  typedefs `__size_t` and `__ptrdiff_t`, so `sizeof`, pointer differences and
+  `size_t` builtin parameters carry the name in `[c=...]`. Slate spells them
+  `size_t` and `ptrdiff_t`, which merges per-target arms under `--merge`.
+- Integer promotion returns an `int`-ranked operand (`uint32_t`, a 32-bit
+  `size_t`) unchanged, sugar included, so it emits no `reinterpret`.
 - Variadic calls: `float` and `__fp16` promote to `double`; `_Float16`
   stays `half` (clang 22.1.8 IR).
 

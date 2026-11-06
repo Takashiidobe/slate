@@ -87,7 +87,7 @@ int main(void) {
 // DEFAULT-NEXT:         if eq<ptr<@type[[TYPE_S]]>>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]]), null<ptr<@type[[TYPE_S]]>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]], addr_of<ptr<@type[[TYPE_S]]>>(%[[VALUE_q]]));
-// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]])), const<i32>(0), size_of<u64, @type[[TYPE_S]]>(24));
+// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]])), const<i32>(0), size_of<u64, @type[[TYPE_S]]>(24) [c="__size_t"]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         write<ptr<void>>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]]))), read<ptr<void>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         write<ptr<void>>(field1(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]]))), read<ptr<void>>(%[[VALUE_b]]));

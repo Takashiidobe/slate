@@ -57,7 +57,7 @@ int main(void) {
 // DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(read<i16>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if logical_or<bool>(lt<u64>(size_of<u64, i16>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), ge<u64>(size_of<u64, i16>(2), size_of<u64, i32>(4)))
+// DEFAULT-NEXT:         if logical_or<bool>(lt<u64>(size_of<u64, i16>(2) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))) [c="__size_t"]), ge<u64>(size_of<u64, i16>(2) [c="__size_t"], size_of<u64, i32>(4) [c="__size_t"]))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(i16) -> u16>(%[[VALUE_f]], truncate<i16, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(32767)))))), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

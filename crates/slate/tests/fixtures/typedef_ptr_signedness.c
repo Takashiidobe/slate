@@ -38,9 +38,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%c%c%c\n".as_ptr(),
-// CHECK-NEXT:             (*b.start.add(0) as u32) as i32,
-// CHECK-NEXT:             (*b.start.add(1) as u32) as i32,
-// CHECK-NEXT:             (*b.start.add(2) as u32) as i32,
+// CHECK-NEXT:             *b.start.add(0) as i32,
+// CHECK-NEXT:             *b.start.add(1) as i32,
+// CHECK-NEXT:             *b.start.add(2) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

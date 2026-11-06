@@ -33,7 +33,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             counter = counter + ((opmodes[i as usize] as u32) as i32);
+// CHECK-NEXT:             counter = counter + (opmodes[i as usize] as i32);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

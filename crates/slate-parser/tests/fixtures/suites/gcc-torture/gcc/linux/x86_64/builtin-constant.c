@@ -56,7 +56,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_i:[0-9]+]] i: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_size:[0-9]+]] size: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, i32>(4)));
+// DEFAULT-NEXT:         let %[[VALUE_size:[0-9]+]] size: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, i32>(4) [c="__size_t"]));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>) -> void>(%[[VALUE_foo]], conditional<ptr<i8>>(ne<i32>(const<i32>(0), const<i32>(0)), array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str]]), array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_2]])));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>) -> void>(%[[VALUE_foo]], conditional<ptr<i8>>(ne<i32>(const<i32>(0), const<i32>(0)), array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_3]]), array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_4]])));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

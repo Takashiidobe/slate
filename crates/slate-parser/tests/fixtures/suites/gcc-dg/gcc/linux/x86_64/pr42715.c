@@ -111,7 +111,7 @@ baz (struct B *y)
 // DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(unprototyped) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: ptr<@type[[TYPE_C]]>) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_and<bool>(eq<u32>(read<u32>(field1(deref(read<ptr<@type[[TYPE_C]]>>(%[[VALUE_x]])))), read<u32>(field2(deref(read<ptr<@type[[TYPE_C]]>>(%[[VALUE_x]]))))), ne<ptr<void>>(read<ptr<void>>(field0(deref(read<ptr<@type[[TYPE_C]]>>(%[[VALUE_x]])))), null<ptr<void>>))
-// DEFAULT-NEXT:             call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_f1]], call<i32, signature=fn() -> i32>(%[[VALUE_foo]]), read<ptr<void>>(field0(deref(read<ptr<@type[[TYPE_C]]>>(%[[VALUE_x]])))), mul<u64, overflow=wrap>(widen<u64, reason=usual_arith>(read<u32>(field2(deref(read<ptr<@type[[TYPE_C]]>>(%[[VALUE_x]]))))), size_of<u64, void>(1)));
+// DEFAULT-NEXT:             call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_f1]], call<i32, signature=fn() -> i32>(%[[VALUE_foo]]), read<ptr<void>>(field0(deref(read<ptr<@type[[TYPE_C]]>>(%[[VALUE_x]])))), mul<u64, overflow=wrap>(widen<u64, reason=usual_arith>(read<u32>(field2(deref(read<ptr<@type[[TYPE_C]]>>(%[[VALUE_x]]))))) [c="__size_t"], size_of<u64, void>(1) [c="__size_t"]) [c="__size_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(unprototyped) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_strchr:[0-9]+]] @__builtin_strchr(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE1:[0-9]+]] <unnamed>: i32) -> ptr<i8> [linkage=external];
@@ -123,7 +123,7 @@ baz (struct B *y)
 // DEFAULT-NEXT:         for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i]]))), size_of<u64, @type[[TYPE_B]]>(24))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i]]))) [c="__size_t"], size_of<u64, @type[[TYPE_B]]>(24) [c="__size_t"])
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), const<i32>(1));

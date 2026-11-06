@@ -43,9 +43,9 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = reinterpret<i32, reason=assign>(const<i32>(0)) [c="I"] [c="I"];
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_b]]) [c="I"] [c="I"];
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign>(or<i32>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE0]]) [c="I"]), const<i32>(2))) [c="I"] [c="I"];
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = or<i32>(read<i32>(%[[VALUE0]]) [c="I"], reinterpret<i32, reason=usual_arith>(const<i32>(2)) [c="I"]) [c="I"] [c="I"];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], read<i32>(%[[VALUE1]]) [c="I"]) [c="I"] [c="I"];
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_b]]) [c="I"]), const<i32>(2))
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_b]]) [c="I"], reinterpret<i32, reason=usual_arith>(const<i32>(2)) [c="I"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

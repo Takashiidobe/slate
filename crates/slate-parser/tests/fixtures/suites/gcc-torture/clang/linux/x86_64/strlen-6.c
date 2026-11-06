@@ -229,7 +229,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s:[0-9]+]] _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_2]])), array_decay<ptr<const i8>, length=Some(3)>(deref(ptr_offset<ptr<const array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<const array<i8, 3>>, length=Some(2)>(%[[VALUE_ca]]), const<i32>(0)))));
-// DEFAULT-NEXT:                 let %[[VALUE__n:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE3]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -244,7 +244,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_2:[0-9]+]] _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), array_decay<ptr<const i8>, length=Some(3)>(deref(ptr_offset<ptr<const array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<const array<i8, 3>>, length=Some(2)>(%[[VALUE_ca]]), const<i32>(0)))), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_5]])));
-// DEFAULT-NEXT:                 let %[[VALUE__n_2:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_2]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_2:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_2]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_2]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE7]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -259,7 +259,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE10:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_3:[0-9]+]] _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_8]])), array_decay<ptr<const i8>, length=Some(3)>(deref(ptr_offset<ptr<const array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<const array<i8, 3>>, length=Some(2)>(%[[VALUE_cb]]), const<i32>(0)))));
-// DEFAULT-NEXT:                 let %[[VALUE__n_3:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_3]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_3:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_3]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE11:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_3]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE11]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -274,7 +274,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE14:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_4:[0-9]+]] _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), array_decay<ptr<const i8>, length=Some(3)>(deref(ptr_offset<ptr<const array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<const array<i8, 3>>, length=Some(2)>(%[[VALUE_cb]]), const<i32>(0)))), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_11]])));
-// DEFAULT-NEXT:                 let %[[VALUE__n_4:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_4]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_4:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_4]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE15:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_4]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE15]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -289,7 +289,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE18:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_5:[0-9]+]] _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_14]]), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%[[VALUE_va]]), const<i32>(0))))));
-// DEFAULT-NEXT:                 let %[[VALUE__n_5:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_5]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_5:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_5]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE19:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_5]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE19]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -304,7 +304,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE22:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_6:[0-9]+]] _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%[[VALUE_va]]), const<i32>(0)))), array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_17]])));
-// DEFAULT-NEXT:                 let %[[VALUE__n_6:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_6]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_6:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_6]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE23:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_6]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE23]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -319,7 +319,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE26:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_7:[0-9]+]] _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_20]]), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%[[VALUE_vb]]), const<i32>(0))))));
-// DEFAULT-NEXT:                 let %[[VALUE__n_7:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_7]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_7:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_7]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE27:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_7]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE27]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -334,7 +334,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE30:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_8:[0-9]+]] _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%[[VALUE_vb]]), const<i32>(0)))), array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_23]])));
-// DEFAULT-NEXT:                 let %[[VALUE__n_8:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_8]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_8:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_8]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE31:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_8]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE31]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -355,7 +355,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE34:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_9:[0-9]+]] _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_26]])), array_decay<ptr<const i8>, length=Some(3)>(deref(ptr_offset<ptr<const array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<const array<i8, 3>>, length=Some(2)>(%[[VALUE_lca]]), const<i32>(0)))));
-// DEFAULT-NEXT:                 let %[[VALUE__n_9:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_9]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_9:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_9]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE35:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_9]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE35]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -370,7 +370,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE38:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_10:[0-9]+]] _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), array_decay<ptr<const i8>, length=Some(3)>(deref(ptr_offset<ptr<const array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<const array<i8, 3>>, length=Some(2)>(%[[VALUE_lca]]), const<i32>(0)))), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_29]])));
-// DEFAULT-NEXT:                 let %[[VALUE__n_10:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_10]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_10:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_10]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE39:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_10]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE39]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -385,7 +385,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE42:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_11:[0-9]+]] _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_32]])), array_decay<ptr<const i8>, length=Some(3)>(deref(ptr_offset<ptr<const array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<const array<i8, 3>>, length=Some(2)>(%[[VALUE_lcb]]), const<i32>(0)))));
-// DEFAULT-NEXT:                 let %[[VALUE__n_11:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_11]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_11:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_11]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE43:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_11]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE43]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -400,7 +400,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE46:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_12:[0-9]+]] _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), array_decay<ptr<const i8>, length=Some(3)>(deref(ptr_offset<ptr<const array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<const array<i8, 3>>, length=Some(2)>(%[[VALUE_lcb]]), const<i32>(0)))), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_35]])));
-// DEFAULT-NEXT:                 let %[[VALUE__n_12:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_12]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_12:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_12]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE47:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_12]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE47]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -415,7 +415,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE50:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_13:[0-9]+]] _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_38]]), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%[[VALUE_lva]]), const<i32>(0))))));
-// DEFAULT-NEXT:                 let %[[VALUE__n_13:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_13]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_13:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_13]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE51:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_13]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE51]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -430,7 +430,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE54:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_14:[0-9]+]] _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%[[VALUE_lva]]), const<i32>(0)))), array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_41]])));
-// DEFAULT-NEXT:                 let %[[VALUE__n_14:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_14]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_14:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_14]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE55:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_14]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE55]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -445,7 +445,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE58:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_15:[0-9]+]] _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_44]]), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%[[VALUE_lvb]]), const<i32>(0))))));
-// DEFAULT-NEXT:                 let %[[VALUE__n_15:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_15]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_15:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_15]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE59:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_15]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE59]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -460,7 +460,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE62:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_16:[0-9]+]] _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%[[VALUE_lvb]]), const<i32>(0)))), array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_47]])));
-// DEFAULT-NEXT:                 let %[[VALUE__n_16:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_16]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_16:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_16]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE63:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_16]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE63]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -477,7 +477,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE66:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_17:[0-9]+]] _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(eq<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), read<ptr<const i8>>(%[[VALUE_s]]), pointer_cast<ptr<const i8>, reason=usual_arith>(conditional<ptr<i8>>(eq<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(1)), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%[[VALUE_vb]]), const<i32>(0)))), array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_50]]))));
-// DEFAULT-NEXT:                 let %[[VALUE__n_17:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_17]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_17:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_17]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE67:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_17]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(6)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE67]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -492,7 +492,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE70:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_18:[0-9]+]] _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(eq<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%[[VALUE_vb]]), const<i32>(0))))), conditional<ptr<const i8>>(eq<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(1)), read<ptr<const i8>>(%[[VALUE_s]]), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_53]]))));
-// DEFAULT-NEXT:                 let %[[VALUE__n_18:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_18]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_18:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_18]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE71:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_18]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE71]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -507,7 +507,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE74:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_19:[0-9]+]] _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(eq<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_56]])), conditional<ptr<const i8>>(eq<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(1)), read<ptr<const i8>>(%[[VALUE_s]]), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%[[VALUE_vb]]), const<i32>(0)))))));
-// DEFAULT-NEXT:                 let %[[VALUE__n_19:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_19]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_19:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_19]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE75:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_19]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE75]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -524,7 +524,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE78:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_20:[0-9]+]] _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), array_decay<ptr<const i8>, length=Some(3)>(deref(read<ptr<const array<i8, 3>>>(%[[VALUE_pca]]))), array_decay<ptr<const i8>, length=Some(3)>(deref(read<ptr<const array<i8, 3>>>(%[[VALUE_pcb]]))));
-// DEFAULT-NEXT:                 let %[[VALUE__n_20:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_20]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_20:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_20]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE79:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_20]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE79]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -539,7 +539,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE82:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_21:[0-9]+]] _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), array_decay<ptr<const i8>, length=Some(3)>(deref(read<ptr<const array<i8, 3>>>(%[[VALUE_pcb]]))), array_decay<ptr<const i8>, length=Some(3)>(deref(read<ptr<const array<i8, 3>>>(%[[VALUE_pca]]))));
-// DEFAULT-NEXT:                 let %[[VALUE__n_21:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_21]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_21:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_21]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE83:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_21]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE83]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -554,7 +554,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE86:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_22:[0-9]+]] _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), array_decay<ptr<i8>, length=Some(3)>(deref(read<ptr<array<i8, 3>>>(%[[VALUE_pva]]))), array_decay<ptr<i8>, length=Some(3)>(deref(read<ptr<array<i8, 3>>>(%[[VALUE_pvb]])))));
-// DEFAULT-NEXT:                 let %[[VALUE__n_22:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_22]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_22:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_22]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE87:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_22]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE87]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -569,7 +569,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %[[VALUE90:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE__s_23:[0-9]+]] _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%[[VALUE_i0]]), const<i32>(0)), array_decay<ptr<i8>, length=Some(3)>(deref(read<ptr<array<i8, 3>>>(%[[VALUE_pvb]]))), array_decay<ptr<i8>, length=Some(3)>(deref(read<ptr<array<i8, 3>>>(%[[VALUE_pva]])))));
-// DEFAULT-NEXT:                 let %[[VALUE__n_23:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_23]])));
+// DEFAULT-NEXT:                 let %[[VALUE__n_23:[0-9]+]] _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE__s_23]])) [c="__size_t"]);
 // DEFAULT-NEXT:                 let %[[VALUE91:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%[[VALUE__n_23]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE91]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));

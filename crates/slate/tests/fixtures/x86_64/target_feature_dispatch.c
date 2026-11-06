@@ -654,7 +654,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut bytes: __SlateAlign16<[u8; 32]> = __SlateAlign16([0u8; 32]);
 // CHECK-NEXT:     for i in 0i32..32i32 {
-// CHECK-NEXT:         bytes.0[i as usize] = ((i * 3) as i8) as u8;
+// CHECK-NEXT:         bytes.0[i as usize] = (i * 3) as u8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if std::arch::is_x86_feature_detected!("avx2") {
 // CHECK-NEXT:         unsafe { reverse_bytes_avx2(bytes.0.as_mut_ptr() as *mut u8) };
@@ -666,7 +666,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d%c".as_ptr(),
-// CHECK-NEXT:                 (bytes.0[i as usize] as u32) as i32,
+// CHECK-NEXT:                 bytes.0[i as usize] as i32,
 // CHECK-NEXT:                 if i == 31 { 10i32 } else { 32i32 },
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };

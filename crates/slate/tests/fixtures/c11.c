@@ -700,11 +700,10 @@ int main(void) {
 // CHECK-NEXT:         + ((((unsafe { std::ptr::addr_of_mut!(c11_aligned_buffer.0) as *mut u8 }) as u64)
 // CHECK-NEXT:             % 64 == 0) as i32)
 // CHECK-NEXT:         + (((std::ptr::addr_of_mut!(aligned_object) as u64) % 32 == 0) as i32);
-// CHECK-NEXT:     let unicode_total: i32 = ((((unsafe { utf8_text[0] }) as u8) as u32) as i32)
-// CHECK-NEXT:         + ((((unsafe { utf8_text[1] }) as u8) as u32) as i32)
-// CHECK-NEXT:         + (((unsafe { utf16_text[0] }) as u32) as i32)
-// CHECK-NEXT:         + ((unsafe { utf32_text[0] }) as i32) + ((utf16_character as u32) as i32)
-// CHECK-NEXT:         + (utf32_character as i32);
+// CHECK-NEXT:     let unicode_total: i32 = (((unsafe { utf8_text[0] }) as u8) as i32)
+// CHECK-NEXT:         + (((unsafe { utf8_text[1] }) as u8) as i32)
+// CHECK-NEXT:         + ((unsafe { utf16_text[0] }) as i32) + ((unsafe { utf32_text[0] }) as i32)
+// CHECK-NEXT:         + (utf16_character as i32) + (utf32_character as i32);
 // CHECK-NEXT:     let generic_total: i32 = 11 + 22 + 33;
 // CHECK-NEXT:     let mut anonymous_total: i32 = 0;
 // CHECK-NEXT:     let mut evaluation_total: i32 = 0;
@@ -804,36 +803,36 @@ int main(void) {
 // CHECK-NEXT:         unsafe { tss_delete(thread_key) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     concurrency_total += true as i32;
-// CHECK-NEXT:     conversion_total = (((unsafe {
+// CHECK-NEXT:     conversion_total = ((unsafe {
 // CHECK-NEXT:         mbrtoc16(
 // CHECK-NEXT:             std::ptr::addr_of_mut!(converted16),
 // CHECK-NEXT:             c"A".as_ptr(),
 // CHECK-NEXT:             1u64,
 // CHECK-NEXT:             std::ptr::addr_of_mut!(utf16_state),
 // CHECK-NEXT:         )
-// CHECK-NEXT:     }) as u32) as i32)
-// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:     }) as i32)
+// CHECK-NEXT:         + ((unsafe {
 // CHECK-NEXT:             c16rtomb(
 // CHECK-NEXT:                 multibyte16.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:                 65u16,
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(utf16_state),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }) as u32) as i32)
-// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:         }) as i32)
+// CHECK-NEXT:         + ((unsafe {
 // CHECK-NEXT:             mbrtoc32(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(converted32),
 // CHECK-NEXT:                 c"B".as_ptr(),
 // CHECK-NEXT:                 1u64,
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(utf32_state),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }) as u32) as i32)
-// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:         }) as i32)
+// CHECK-NEXT:         + ((unsafe {
 // CHECK-NEXT:             c32rtomb(
 // CHECK-NEXT:                 multibyte32.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:                 66u32,
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(utf32_state),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }) as u32) as i32) + ((converted16 as u32) as i32) + (converted32 as i32)
+// CHECK-NEXT:         }) as i32) + (converted16 as i32) + (converted32 as i32)
 // CHECK-NEXT:         + (multibyte16.0[0] as i32) + (multibyte32.0[0] as i32);
 // CHECK-NEXT:     let aligned_memory: *mut () = unsafe {
 // CHECK-NEXT:         aligned_alloc(64u64 as usize, 64u64 as usize) as *mut ()

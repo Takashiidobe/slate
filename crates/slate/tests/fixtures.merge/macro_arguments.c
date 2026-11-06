@@ -92,7 +92,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_arguments.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_arguments: 34 items, 4 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_arguments: 34 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced record:odd_fields: 2 variants
 // CHECK-NEXT:   spliced fn:thrice: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
@@ -127,13 +127,6 @@ int main(void) {
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! SIZE_PLUS {
-// CHECK-NEXT:     ($T:ty, $n:expr) => {
-// CHECK-NEXT:         (std::mem::size_of::<$T>() as c_ulong).wrapping_add(($n) as c_ulong)
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: mod __slate_bits {
 // CHECK-NEXT:     #[bitfields::bitfield(
 // CHECK-NEXT:         u8,
@@ -152,13 +145,6 @@ int main(void) {
 // CHECK-NEXT:         #[bits(6, access = na)]
 // CHECK-NEXT:         pub __slate_pad_1: u8,
 // CHECK-NEXT:     }
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: macro_rules! SIZE_PLUS {
-// CHECK-NEXT:     ($T:ty, $n:expr) => {
-// CHECK-NEXT:         (std::mem::size_of::<$T>() as u64).wrapping_add((($n) as i64) as u64)
-// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -271,10 +257,7 @@ int main(void) {
 // CHECK-NEXT:     let c: c_long = CAST_TO!(c_long, i);
 // CHECK-NEXT:     let d: i32 = CAST_TO!(i32, m);
 // CHECK-NEXT:     let c2: c_long = NESTED_CAST!(c_long, i);
-// CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let z: c_ulong = SIZE_PLUS!(i32, 1i32) as c_ulong;
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     let z: c_ulong = SIZE_PLUS!(i32, 1i32);
 // CHECK-NEXT:     let e: i32 = APPLY!(i);
 // CHECK-NEXT:     let e2: i32 = APPLY__2!(r#fn, i);
 // CHECK-NEXT:     let g: i32 = CALL2!(i, j);
@@ -464,6 +447,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SIZE_PLUS {
+// CHECK-NEXT:     ($T:ty, $n:expr) => {
+// CHECK-NEXT:         (std::mem::size_of::<$T>() as size_t).wrapping_add(($n) as size_t)
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SWAP {
 // CHECK-NEXT:     ($T:ty, $a:expr, $b:expr) => {
 // CHECK-NEXT:         loop {
@@ -510,5 +499,6 @@ int main(void) {
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: use core::ffi::c_long;
 // CHECK-NEXT: use core::ffi::c_ulong;
+// CHECK-NEXT: use slate_support::size_t;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

@@ -50,7 +50,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE___s:[0-9]+]] __s: ptr<const i8>) -> u64 [linkage=external] [memory=read] [c="size_t(const char *)"];
 // DEFAULT-NEXT:     fn %[[VALUE_first_byte:[0-9]+]] @first_byte(%[[VALUE_bytes:[0-9]+]] bytes: ptr<const u8>, %[[VALUE_len:[0-9]+]] len: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const u8>>(%[[VALUE_bytes]])));
+// DEFAULT-NEXT:         call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const u8>>(%[[VALUE_bytes]]))) [c="__size_t"];
 // DEFAULT-NEXT:         let %[[VALUE_value:[0-9]+]] value: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:

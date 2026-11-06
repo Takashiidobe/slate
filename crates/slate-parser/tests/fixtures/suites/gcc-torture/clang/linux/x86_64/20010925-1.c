@@ -55,7 +55,7 @@ int foo(void *a, void *b, unsigned int c) {
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: ptr<void>, %[[VALUE_b:[0-9]+]] b: ptr<void>, %[[VALUE_c:[0-9]+]] c: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if eq<u32>(read<u32>(%[[VALUE_c]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
 // DEFAULT-NEXT:             return const<i32>(1);
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], read<ptr<void>>(%[[VALUE_a]]), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_b]])), widen<u64, reason=arg>(read<u32>(%[[VALUE_c]])));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], read<ptr<void>>(%[[VALUE_a]]), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_b]])), widen<u64, reason=arg>(read<u32>(%[[VALUE_c]])) [c="__size_t"]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {

@@ -47,7 +47,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%x %x %llx %d\n".as_ptr(),
-// CHECK-NEXT:             (small as u32) as i32,
+// CHECK-NEXT:             small as i32,
 // CHECK-NEXT:             medium,
 // CHECK-NEXT:             large,
 // CHECK-NEXT:             calls,

@@ -170,7 +170,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_s_3:[0-9]+]] s: u32 [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_s_3]], reinterpret<u32, reason=assign, fits=always>(const<i32>(23)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<u8>, u32, u32) -> void>(%[[VALUE_bar]], array_decay<ptr<u8>, length=Some(23)>(%[[VALUE_p]]), read<u32>(%[[VALUE_s_3]]), add<u32, overflow=wrap>(read<u32>(%[[VALUE_s_3]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(41566))));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(23)>(%[[VALUE_p]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(23)>(%[[VALUE_q]])), widen<u64, reason=arg>(read<u32>(%[[VALUE_s_3]]))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(23)>(%[[VALUE_p]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(23)>(%[[VALUE_q]])), widen<u64, reason=arg>(read<u32>(%[[VALUE_s_3]])) [c="__size_t"]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

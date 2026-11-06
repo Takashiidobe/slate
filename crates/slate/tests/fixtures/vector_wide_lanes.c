@@ -275,16 +275,15 @@ int main(void) {
 // CHECK-NEXT:     spread = -spread;
 // CHECK-NEXT:     let mut total: u32 = 0;
 // CHECK-NEXT:     for i in 0i32..128i32 {
-// CHECK-NEXT:         total = total
-// CHECK-NEXT:             .wrapping_add((((spread[i as usize] as u32) as i32) * (i + 1)) as u32);
+// CHECK-NEXT:         total = total.wrapping_add(((spread[i as usize] as i32) * (i + 1)) as u32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"spread %u %d %d\n".as_ptr(),
 // CHECK-NEXT:             total,
-// CHECK-NEXT:             (spread[1] as u32) as i32,
-// CHECK-NEXT:             (spread[127] as u32) as i32,
+// CHECK-NEXT:             spread[1] as i32,
+// CHECK-NEXT:             spread[127] as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -312,7 +311,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_5:__t[0-9]+]] = spread.to_array();
 // CHECK-NEXT:         std::simd::Simd::from_array([[[T_4]][1], [[T_4]][127]])
 // CHECK-NEXT:     };
-// CHECK-NEXT:     println!("pair {} {}", (pair[0] as u32) as i32, (pair[1] as u32) as i32);
+// CHECK-NEXT:     println!("pair {} {}", pair[0] as i32, pair[1] as i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),

@@ -107,7 +107,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<ptr<array<@type[[TYPE___jmp_buf_tag]], 1>>>(%[[VALUE_jb_stack]], pointer_cast<ptr<array<@type[[TYPE___jmp_buf_tag]], 1>>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(size_of<u64, array<@type[[TYPE___jmp_buf_tag]], 1>>(200), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))) [c="jmp_buf *"]) [c="jmp_buf *"];
+// DEFAULT-NEXT:         write<ptr<array<@type[[TYPE___jmp_buf_tag]], 1>>>(%[[VALUE_jb_stack]], pointer_cast<ptr<array<@type[[TYPE___jmp_buf_tag]], 1>>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(size_of<u64, array<@type[[TYPE___jmp_buf_tag]], 1>>(200) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))) [c="__size_t"]) [c="__size_t"])) [c="jmp_buf *"]) [c="jmp_buf *"];
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_run_case]], const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_run_case]], const<i32>(1), const<i32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_run_case]], const<i32>(2), const<i32>(0));

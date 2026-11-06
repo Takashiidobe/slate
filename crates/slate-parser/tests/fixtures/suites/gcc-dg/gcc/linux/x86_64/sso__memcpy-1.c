@@ -108,7 +108,7 @@ int main(void)
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: u32 [storage=automatic] [const] = reinterpret<u32, reason=assign, fits=always>(const<i32>(305419896)) [c="uint32_t"] [c="const uint32_t"];
 // DEFAULT-NEXT:         let %[[VALUE_tempb:[0-9]+]] tempb: @type[[TYPE0]] [storage=automatic] [c="upal_u32be_t"];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_tempb]]) [c="upal_u32be_t *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const u32>>(%[[VALUE_u]]) [c="const uint32_t *"]), size_of<u64, u32>(4));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_tempb]]) [c="upal_u32be_t *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const u32>>(%[[VALUE_u]]) [c="const uint32_t *"]), size_of<u64, u32>(4) [c="__size_t"]);
 // DEFAULT-NEXT:         let %[[VALUE_bu:[0-9]+]] bu: u32 [storage=automatic] = read<u32>(field0(%[[VALUE_tempb]])) [c="uint32_t"] [c="uint32_t"];
 // DEFAULT-NEXT:         let %[[VALUE_b1u:[0-9]+]] b1u: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%[[VALUE_native_to_big_endian]], read<u32>(%[[VALUE_u]]) [c="uint32_t"]) [c="uint32_t"] [c="uint32_t"];
 // DEFAULT-NEXT:         do %[[VALUE4:[0-9]+]]
@@ -140,7 +140,7 @@ int main(void)
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         let %[[VALUE_templ:[0-9]+]] templ: @type[[TYPE1]] [storage=automatic] [c="upal_u32le_t"];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE1]]>>(%[[VALUE_templ]]) [c="upal_u32le_t *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const u32>>(%[[VALUE_u]]) [c="const uint32_t *"]), size_of<u64, u32>(4));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE1]]>>(%[[VALUE_templ]]) [c="upal_u32le_t *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const u32>>(%[[VALUE_u]]) [c="const uint32_t *"]), size_of<u64, u32>(4) [c="__size_t"]);
 // DEFAULT-NEXT:         let %[[VALUE_lu:[0-9]+]] lu: u32 [storage=automatic] = read<u32>(field0(%[[VALUE_templ]])) [c="uint32_t"] [c="uint32_t"];
 // DEFAULT-NEXT:         let %[[VALUE_l1u:[0-9]+]] l1u: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%[[VALUE_native_to_little_endian]], read<u32>(%[[VALUE_u]]) [c="uint32_t"]) [c="uint32_t"] [c="uint32_t"];
 // DEFAULT-NEXT:         do %[[VALUE9:[0-9]+]]

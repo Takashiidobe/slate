@@ -43,7 +43,7 @@ foo (int n)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_n:[0-9]+]] n: i905b, %[[VALUE0:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external] [c="void(_BitInt(905), int[*])"];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_n_2:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]]))) [c="__size_t"];
 // DEFAULT-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: vla<i32, %[[VALUE1]]> [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(i905b, ptr<i32>) -> void>(%[[VALUE_bar]], widen<i905b, reason=arg>(read<i32>(%[[VALUE_n_2]])), array_decay<ptr<i32>, length=None>(%[[VALUE_buf]]));
 // DEFAULT-NEXT:     }

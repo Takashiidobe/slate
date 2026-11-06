@@ -58,19 +58,19 @@ unsigned long effects(char *p) {
 // IR-NEXT:     fn %[[VALUE_next:[0-9]+]] @next() -> i32 [linkage=external];
 // IR-NEXT:     fn %[[VALUE_folded:[0-9]+]] @folded() -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %[[VALUE_record:[0-9]+]] record: @type[[TYPE_Record]] [storage=automatic];
-// IR-NEXT:         return add<u64>(const<u64>(9), const<u64>(7));
+// IR-NEXT:         return reinterpret<u64>(add<u64>(const<u64>(9) [c="__size_t"], const<u64>(7) [c="__size_t"]) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_member:[0-9]+]] @member(%[[VALUE_record_2:[0-9]+]] record: ptr<@type[[TYPE_Record]]>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return intrinsic<u64, llvm.objectsize>(addr_of<ptr<array<i8, 10>>>(field1(deref(read<ptr<@type[[TYPE_Record]]>>(%[[VALUE_record_2]])))), const<bool>(false), const<bool>(false), const<bool>(false));
+// IR-NEXT:         return reinterpret<u64>(intrinsic<u64, llvm.objectsize>(addr_of<ptr<array<i8, 10>>>(field1(deref(read<ptr<@type[[TYPE_Record]]>>(%[[VALUE_record_2]])))), const<bool>(false), const<bool>(false), const<bool>(false)) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_deferred:[0-9]+]] @deferred(%[[VALUE_p:[0-9]+]] p: ptr<i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<u64>(intrinsic<u64, llvm.objectsize>(read<ptr<i8>>(%[[VALUE_p]]), const<bool>(false), const<bool>(false), const<bool>(false)), intrinsic<u64, llvm.objectsize>(read<ptr<i8>>(%[[VALUE_p]]), const<bool>(true), const<bool>(false), const<bool>(true)));
+// IR-NEXT:         return reinterpret<u64>(add<u64>(intrinsic<u64, llvm.objectsize>(read<ptr<i8>>(%[[VALUE_p]]), const<bool>(false), const<bool>(false), const<bool>(false)) [c="__size_t"], intrinsic<u64, llvm.objectsize>(read<ptr<i8>>(%[[VALUE_p]]), const<bool>(true), const<bool>(false), const<bool>(true)) [c="__size_t"]) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_lower_bound:[0-9]+]] @lower_bound(%[[VALUE_p_2:[0-9]+]] p: ptr<i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(0);
+// IR-NEXT:         return reinterpret<u64>(const<u64>(0) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_effects:[0-9]+]] @effects(%[[VALUE_p_3:[0-9]+]] p: ptr<i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(18446744073709551615);
+// IR-NEXT:         return reinterpret<u64>(const<u64>(18446744073709551615) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

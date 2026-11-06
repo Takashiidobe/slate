@@ -88,18 +88,18 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1() -> i64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: i64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: f64 [storage=automatic] = const<f64>(2.225073858507201e-308);
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i64>>(%[[VALUE_t]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f64>>(%[[VALUE_d]])), size_of<u64, i64>(8));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i64>>(%[[VALUE_t]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f64>>(%[[VALUE_d]])), size_of<u64, i64>(8) [c="__size_t"]);
 // DEFAULT-NEXT:         return read<i64>(%[[VALUE_t]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2() -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_t_2:[0-9]+]] t: i64 [storage=automatic] = const<i64>(4483583629026627);
 // DEFAULT-NEXT:         let %[[VALUE_d_2:[0-9]+]] d: f64 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<f64>>(%[[VALUE_d_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i64>>(%[[VALUE_t_2]])), size_of<u64, i64>(8));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<f64>>(%[[VALUE_d_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i64>>(%[[VALUE_t_2]])), size_of<u64, i64>(8) [c="__size_t"]);
 // DEFAULT-NEXT:         return read<f64>(%[[VALUE_d_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(size_of<u64, i64>(8), size_of<u64, f64>(8)), ne<i32>(neg<i32, overflow=ub>(const<i32>(1021)), neg<i32, overflow=ub>(const<i32>(1021))))
+// DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(size_of<u64, i64>(8) [c="__size_t"], size_of<u64, f64>(8) [c="__size_t"]), ne<i32>(neg<i32, overflow=ub>(const<i32>(1021)), neg<i32, overflow=ub>(const<i32>(1021))))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         write<i64>(field0(%[[VALUE_u]]), call<i64, signature=fn() -> i64>(%[[VALUE_f1]]));
 // DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(field1(%[[VALUE_u]])), const<f64>(2.225073858507201e-308))
@@ -110,9 +110,9 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: f64 [storage=automatic] = const<f64>(234.0);
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_d_3:[0-9]+]] d: f64 [storage=automatic] = read<f64>(%[[VALUE_b]]);
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i64>>(%[[VALUE_c]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f64>>(%[[VALUE_b]])), size_of<u64, f64>(8));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i64>>(%[[VALUE_c]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f64>>(%[[VALUE_b]])), size_of<u64, f64>(8) [c="__size_t"]);
 // DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: i64 [storage=automatic] = read<i64>(%[[VALUE_c]]);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i64>>(%[[VALUE_e]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f64>>(%[[VALUE_d_3]])), size_of<u64, f64>(8)), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i64>>(%[[VALUE_e]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f64>>(%[[VALUE_d_3]])), size_of<u64, f64>(8) [c="__size_t"]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

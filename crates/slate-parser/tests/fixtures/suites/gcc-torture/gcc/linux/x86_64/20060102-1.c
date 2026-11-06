@@ -41,7 +41,7 @@ int          main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_one:[0-9]+]] one: volatile i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return conditional<i32>(ne<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_x]]), sub<u64, overflow=wrap>(mul<u64, overflow=wrap>(size_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(1)), const<i32>(1));
+// DEFAULT-NEXT:         return conditional<i32>(ne<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_x]]), sub<u64, overflow=wrap>(mul<u64, overflow=wrap>(size_of<u64, i32>(4) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))) [c="__size_t"]) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="__size_t"]) [c="__size_t"]), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(1)), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_f]], read<i32, volatile>(%[[VALUE_one]])), call<i32, signature=fn(i32) -> i32>(%[[VALUE_f]], neg<i32, overflow=ub>(read<i32, volatile>(%[[VALUE_one]]))))

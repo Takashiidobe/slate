@@ -103,7 +103,7 @@ int main()
 // DEFAULT-NEXT:     global %[[VALUE_s5:[0-9]+]] s5: @type[[TYPE_s5_t]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort(unprototyped) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_offs:[0-9]+]] @offs(%[[VALUE_a:[0-9]+]] a: ptr<const void>, %[[VALUE_b:[0-9]+]] b: ptr<const void>) -> i64 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const void>>(%[[VALUE_a]])), pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const void>>(%[[VALUE_b]])));
+// DEFAULT-NEXT:         return reinterpret<i64, reason=explicit>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const void>>(%[[VALUE_a]])), pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const void>>(%[[VALUE_b]]))) [c="__ptrdiff_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];

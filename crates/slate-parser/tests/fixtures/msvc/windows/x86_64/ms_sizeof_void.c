@@ -26,7 +26,7 @@ unsigned long long align = _Alignof(void);
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %[[VALUE_size:[0-9]+]] size: u64 [storage=static] = size_of<u64, void>(0) [linkage=external];
-// IR-NEXT:     global %[[VALUE_align:[0-9]+]] align: u64 [storage=static] = align_of<u64, void>(1) [linkage=external];
+// IR-NEXT:     global %[[VALUE_size:[0-9]+]] size: u64 [storage=static] = reinterpret<u64>(size_of<u64, void>(0) [c="__size_t"]) [linkage=external];
+// IR-NEXT:     global %[[VALUE_align:[0-9]+]] align: u64 [storage=static] = reinterpret<u64>(align_of<u64, void>(1) [c="__size_t"]) [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

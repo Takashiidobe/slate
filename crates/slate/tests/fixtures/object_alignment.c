@@ -122,7 +122,7 @@ int main(void) {
 // CHECK-NEXT:         1u64,
 // CHECK-NEXT:         2u64,
 // CHECK-NEXT:         3u64,
-// CHECK-NEXT:         (depth as i64) as u64,
+// CHECK-NEXT:         depth as u64,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let tag2: i8 = tag;
 // CHECK-NEXT:     let mut line: __SlateAlign64<[u8; 8]> = __SlateAlign64({
@@ -134,7 +134,7 @@ int main(void) {
 // CHECK-NEXT:     let mut block: __SlateAlign16<[u8; 32]> = __SlateAlign16([0u8; 32]);
 // CHECK-NEXT:     let mut word: __SlateAlign16<u32> = __SlateAlign16(5u32);
 // CHECK-NEXT:     for i in 0i32..32i32 {
-// CHECK-NEXT:         block.0[i as usize] = ((i + depth) as i8) as u8;
+// CHECK-NEXT:         block.0[i as usize] = (i + depth) as u8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut ok: i32 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = aligned(row.0.as_mut_ptr() as *const (), 16u64) != 0
@@ -145,14 +145,14 @@ int main(void) {
 // CHECK-NEXT:     ok = [[V_2]] as i32;
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: bool = ok != 0
 // CHECK-NEXT:         && sum_vectors(row.0.as_mut_ptr() as *const u64, 4i32)
-// CHECK-NEXT:             == 6u64.wrapping_add((depth as i64) as u64);
+// CHECK-NEXT:             == 6u64.wrapping_add(depth as u64);
 // CHECK-NEXT:     ok = [[V_3]] as i32;
 // CHECK-NEXT:     if depth > 0 {
 // CHECK-NEXT:         let [[V_4:__v[0-9]+]]: bool = ok != 0 && locals(depth - 1) != 0;
 // CHECK-NEXT:         ok = [[V_4]] as i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     ok + (tag2 as i32) - (tag as i32) + (marker as i32) - 7 + ((line.0[0] as u32) as i32)
-// CHECK-NEXT:         + ((block.0[0] as u32) as i32) - depth + (word.0 as i32) - 5
+// CHECK-NEXT:     ok + (tag2 as i32) - (tag as i32) + (marker as i32) - 7 + (line.0[0] as i32)
+// CHECK-NEXT:         + (block.0[0] as i32) - depth + (word.0 as i32) - 5
 // CHECK-NEXT: }
 // CHECK-NEXT: fn dispatched(n: i32) -> i32 {
 // CHECK-NEXT:     let mut values: std::mem::MaybeUninit<__SlateAlign16<[u64; 2]>> = std::mem::MaybeUninit::uninit();
@@ -179,14 +179,14 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return (((*[[SLATE_SLOT_0]])[0] % 1000) as u32) as i32;
+// CHECK-NEXT:         return ((*[[SLATE_SLOT_0]])[0] % 1000) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0i32..64i32 {
 // CHECK-NEXT:         for j in 0i32..64i32 {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 table.0[i as usize][j as usize] = ((i * 64 + j) as i64) as u64;
+// CHECK-NEXT:                 table.0[i as usize][j as usize] = (i * 64 + j) as u64;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

@@ -87,7 +87,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_frame_address]] @__builtin_frame_address(%[[VALUE0:[0-9]+]] <unnamed>: u32) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_alloca:[0-9]+]] @__builtin_alloca(%[[VALUE1:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_unused_2:[0-9]+]] unused: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(call<i32, signature=fn() -> i32>(%[[VALUE_how_much]])))));
+// DEFAULT-NEXT:         let %[[VALUE_unused_2:[0-9]+]] unused: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(call<i32, signature=fn() -> i32>(%[[VALUE_how_much]]))) [c="__size_t"]));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_check_fa]], read<ptr<i8>>(%[[VALUE_unused_2]])), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

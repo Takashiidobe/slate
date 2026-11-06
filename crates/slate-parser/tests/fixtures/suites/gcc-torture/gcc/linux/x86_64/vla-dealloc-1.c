@@ -58,7 +58,7 @@ int main(void) {
 // DEFAULT-NEXT:                 label %[[VALUE_lab:[0-9]+]] lab:
 // DEFAULT-NEXT:                     ;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(add<i32, overflow=ub>(rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_n]]), const<i32>(1000)), const<i32>(1))));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(add<i32, overflow=ub>(rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_n]]), const<i32>(1000)), const<i32>(1)))) [c="__size_t"];
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: vla<i32, %[[VALUE0]]> [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%[[VALUE_x]]), const<i32>(0))), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%[[VALUE_x]]), rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_n]]), const<i32>(1000)))), const<i32>(2));

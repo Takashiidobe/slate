@@ -100,8 +100,7 @@ int main(void) {
 // CHECK-NEXT:   macro_calls.c: [] 1 compiled
 // CHECK-NEXT:   units/macro_calls_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit macro_calls: 41 items, 18 gated, 0 duplicated functions
-// CHECK-NEXT:   hoisted fn:make_buffer: 2 variants
+// CHECK-NEXT: unit macro_calls: 38 items, 15 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:twice: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: unit macro_calls_helper: 8 items, 3 gated, 0 duplicated functions
@@ -220,9 +219,6 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: type __SlateHoist_make_buffer = c_ulong;
-// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! CALL_BUFFER {
 // CHECK-NEXT:     ($n:expr) => {
@@ -279,9 +275,6 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: type __SlateHoist_make_buffer = u64;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {
@@ -419,10 +412,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn make_buffer(count: i32) -> *mut i32 {
 // CHECK-NEXT:     let buffer: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc(
-// CHECK-NEXT:             ((count as size_t).wrapping_mul(std::mem::size_of::<i32>() as size_t)
-// CHECK-NEXT:                 as __SlateHoist_make_buffer) as usize,
-// CHECK-NEXT:         ) as *mut ()
+// CHECK-NEXT:         malloc((count as size_t).wrapping_mul(std::mem::size_of::<i32>() as size_t) as usize)
+// CHECK-NEXT:             as *mut ()
 // CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         unsafe {
@@ -490,8 +481,6 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: use core::ffi::c_ulong;
 // CHECK-NEXT: use slate_support::size_t;
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::free;

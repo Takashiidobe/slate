@@ -79,16 +79,16 @@ main (void)
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE3]]));
-// DEFAULT-NEXT:         let %[[VALUE1]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE3]])));
+// DEFAULT-NEXT:         let %[[VALUE1]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE3]]))) [c="__size_t"];
 // DEFAULT-NEXT:         write<ptr<vla<i32, %[[VALUE1]]>>>(%[[VALUE_p]], null<ptr<vla<i32, %[[VALUE1]]>>>);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(2))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(mul<u64, overflow=wrap>(read<u64>(%[[VALUE1]]), const<u64>(4)), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))), size_of<u64, i32>(4)))
+// DEFAULT-NEXT:         if ne<u64>(mul<u64, overflow=wrap>(read<u64>(%[[VALUE1]]) [c="__size_t"], const<u64>(4) [c="__size_t"]) [c="__size_t"], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))) [c="__size_t"], size_of<u64, i32>(4) [c="__size_t"]) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u64 [synthetic] = widen<u64, reason=assign>(read<u32>(%[[VALUE_u]]));
-// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: u64 [synthetic] = widen<u64, reason=assign>(read<u32>(%[[VALUE_u]]));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u64 [synthetic] = widen<u64, reason=assign>(read<u32>(%[[VALUE_u]])) [c="__size_t"];
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: u64 [synthetic] = widen<u64, reason=assign>(read<u32>(%[[VALUE_u]])) [c="__size_t"];
 // DEFAULT-NEXT:         let %[[VALUE_vla:[0-9]+]] vla: vla<vla<i32, %[[VALUE5]]>, %[[VALUE4]]> [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: u64 [synthetic] = widen<u64, reason=assign>(read<u32>(%[[VALUE_u]]));
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: u64 [synthetic] = widen<u64, reason=assign>(read<u32>(%[[VALUE_u]])) [c="__size_t"];
 // DEFAULT-NEXT:         let %[[VALUE_vp:[0-9]+]] vp: ptr<vla<i32, %[[VALUE6]]>> [storage=automatic] = pointer_cast<ptr<vla<i32, %[[VALUE6]]>>, reason=assign>(addr_of<ptr<vla<i32, %[[VALUE5]]>>>(deref(ptr_offset<ptr<vla<i32, %[[VALUE5]]>>, subtract=false, element=vla<i32, %[[VALUE5]]>, overflow=ub>(array_decay<ptr<vla<i32, %[[VALUE5]]>>, length=None>(%[[VALUE_vla]]), const<i32>(0)))));
 // DEFAULT-NEXT:         let %[[VALUE_vpp:[0-9]+]] vpp: ptr<vla<i32, %[[VALUE6]]>> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: ptr<vla<i32, %[[VALUE6]]>> [synthetic] = read<ptr<vla<i32, %[[VALUE6]]>>>(%[[VALUE_vp]]);

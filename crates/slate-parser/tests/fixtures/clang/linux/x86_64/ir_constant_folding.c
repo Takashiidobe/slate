@@ -54,10 +54,10 @@ unsigned long constants(void) {
 // IR-NEXT:         div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(1), const<i32>(0));
 // IR-NEXT:         add<i32, overflow=ub>(const<i32>(2147483647), const<i32>(1));
 // IR-NEXT:         shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(32));
-// IR-NEXT:         mul<u64, overflow=wrap>(size_of<u64, i32>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))));
+// IR-NEXT:         mul<u64, overflow=wrap>(size_of<u64, i32>(4) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))) [c="__size_t"]) [c="__size_t"];
 // IR-NEXT:         shl<i256b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i256b, reason=explicit>(const<i32>(1)), const<i32>(200));
 // IR-NEXT:         truncate<u32b, reason=explicit, fits=unknown>(const<u64>(4294967297));
-// IR-NEXT:         return add<u64, overflow=wrap>(size_of<u64, i32>(4), align_of<u64, f64>(8));
+// IR-NEXT:         return reinterpret<u64, reason=return>(add<u64, overflow=wrap>(size_of<u64, i32>(4) [c="__size_t"], align_of<u64, f64>(8) [c="__size_t"]) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

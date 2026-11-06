@@ -140,7 +140,7 @@ int main(void) {
 // DEFAULT-NEXT:                             let %[[VALUE6:[0-9]+]]: ptr<@type[[TYPE_mult_index]]> [synthetic] = read<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_destptr]]);
 // DEFAULT-NEXT:                             let %[[VALUE7:[0-9]+]]: ptr<@type[[TYPE_mult_index]]> [synthetic] = ptr_offset<ptr<@type[[TYPE_mult_index]]>, subtract=false, element=@type[[TYPE_mult_index]], overflow=ub>(read<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE6]]), const<i32>(1));
 // DEFAULT-NEXT:                             write<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_destptr]], read<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE7]]));
-// DEFAULT-NEXT:                         write<u64>(%[[VALUE_nitems]], reinterpret<u64, reason=assign, fits=unknown>(ptr_diff<i64, element=@type[[TYPE_mult_index]], same_array=required, overflow=ub>(read<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_destptr]]), read<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_dest]]))) [c="size_t"]) [c="size_t"];
+// DEFAULT-NEXT:                         write<u64>(%[[VALUE_nitems]], reinterpret<u64, reason=assign, fits=unknown>(ptr_diff<i64, element=@type[[TYPE_mult_index]], same_array=required, overflow=ub>(read<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_destptr]]), read<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_dest]])) [c="__ptrdiff_t"]) [c="size_t"]) [c="size_t"];
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);

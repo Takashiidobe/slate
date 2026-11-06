@@ -336,8 +336,8 @@ int main(void) {
 // CHECK-NEXT:     __SlateAlign16([0i32; 5]);
 // CHECK-NEXT:     println!("{}", std::mem::size_of::< [i32; 5] > () as i32);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", (((std::mem::size_of::< [i32; 5] > () as u64) / (std::mem::size_of::< i32 >
-// CHECK-NEXT:         () as u64)) as u32) as i32
+// CHECK-NEXT:         "{}", ((std::mem::size_of::< [i32; 5] > () as u64) / (std::mem::size_of::< i32 >
+// CHECK-NEXT:         () as u64)) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", std::mem::size_of::<* mut i8 > () as i32);
 // CHECK-NEXT:     println!("{}", std::mem::size_of::< Packed > () as i32);

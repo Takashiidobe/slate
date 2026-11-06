@@ -164,10 +164,10 @@ unsigned long wide_complex_size(void) {
 // IR-NEXT:         return conditional<f64>(ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%[[VALUE_a_17]]), real_to_complex<complex<f64>, reason=usual_arith>(const<f64>(0.0))), const<f64>(1.0), const<f64>(2.0));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_complex_size:[0-9]+]] @complex_size() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return size_of<u64, complex<f64>>(16);
+// IR-NEXT:         return reinterpret<u64, reason=return>(size_of<u64, complex<f64>>(16) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_wide_complex_size:[0-9]+]] @wide_complex_size() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return size_of<u64, complex<f80>>(32);
+// IR-NEXT:         return reinterpret<u64, reason=return>(size_of<u64, complex<f80>>(32) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

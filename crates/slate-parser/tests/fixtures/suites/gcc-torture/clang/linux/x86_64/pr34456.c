@@ -95,7 +95,7 @@ int main(void) {
 // DEFAULT-NEXT:         return neg<i32, overflow=ub>(read<i32>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, u64, u64, ptr<fn(ptr<const void>, ptr<const void>) -> i32>) -> void>(%[[VALUE_qsort]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type[[TYPE_s]]>, length=Some(2)>(%[[VALUE_array]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))) [c="size_t"], reinterpret<u64, reason=arg>(size_of<u64, @type[[TYPE_s]]>(16)) [c="size_t"], function_decay<ptr<fn(ptr<const void>, ptr<const void>) -> i32>>(%[[VALUE_compare]]) [c="__compar_fn_t"]);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, u64, u64, ptr<fn(ptr<const void>, ptr<const void>) -> i32>) -> void>(%[[VALUE_qsort]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type[[TYPE_s]]>, length=Some(2)>(%[[VALUE_array]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))) [c="size_t"], reinterpret<u64, reason=arg>(size_of<u64, @type[[TYPE_s]]>(16) [c="__size_t"]) [c="size_t"], function_decay<ptr<fn(ptr<const void>, ptr<const void>) -> i32>>(%[[VALUE_compare]]) [c="__compar_fn_t"]);
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%[[VALUE_errors]]), const<i32>(0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

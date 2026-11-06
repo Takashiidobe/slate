@@ -89,8 +89,8 @@ int gcc_values[] = {CLZ_ZERO, CTZG_ZERO};
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([102, 111, 117, 114, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_names:[0-9]+]] names: array<ptr<const i8>, 3> [storage=static] [const] [align=16] = aggregate<array<ptr<const i8>, 3>, zero_fill=true>(index2 = pointer_cast<ptr<const i8>>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str]]))) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_values:[0-9]+]] values: array<i32, 16> [storage=static] [align=16] = aggregate<array<i32, 16>, zero_fill=false>(index0 = const<i32>(31), index1 = const<i32>(0), index2 = const<i32>(63), index3 = const<i32>(34), index4 = const<i32>(3), index5 = const<i32>(32), index6 = const<i32>(1), index7 = const<i32>(0), index8 = const<i32>(33), index9 = const<i32>(31), index10 = const<i32>(31), index11 = const<i32>(30), index12 = const<i32>(13330), index13 = const<i32>(7), index14 = const<i32>(7), index15 = const<i32>(-1)) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_ilog2_size:[0-9]+]] ilog2_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_ilog2]]>(136))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_names_size:[0-9]+]] names_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, array<ptr<const i8>, 3>>(24))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ilog2_size:[0-9]+]] ilog2_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_ilog2]]>(136) [c="__size_t"])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_names_size:[0-9]+]] names_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, array<ptr<const i8>, 3>>(24) [c="__size_t"])) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_gcc_values:[0-9]+]] gcc_values: array<i32, 2> [storage=static] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(32), index1 = const<i32>(32)) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

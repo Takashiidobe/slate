@@ -129,7 +129,7 @@ int main() {
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(8)>(%[[VALUE_r]]), read<i32>(%[[VALUE_i]]))), pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<const f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<const f32>, length=Some(8)>(%[[VALUE_Zf]]), read<i32>(%[[VALUE_i]]))), size_of<u64, f32>(4)), const<i32>(0))
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(8)>(%[[VALUE_r]]), read<i32>(%[[VALUE_i]]))), pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<const f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<const f32>, length=Some(8)>(%[[VALUE_Zf]]), read<i32>(%[[VALUE_i]]))), size_of<u64, f32>(4) [c="__size_t"]), const<i32>(0))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_copysign:[0-9]+]] @__builtin_copysign(%[[VALUE5:[0-9]+]] <unnamed>: f64, %[[VALUE6:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
@@ -155,7 +155,7 @@ int main() {
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(8)>(%[[VALUE_r_2]]), read<i32>(%[[VALUE_i_2]]))), pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<const f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<const f64>, length=Some(8)>(%[[VALUE_Z]]), read<i32>(%[[VALUE_i_2]]))), size_of<u64, f64>(8)), const<i32>(0))
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(8)>(%[[VALUE_r_2]]), read<i32>(%[[VALUE_i_2]]))), pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<const f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<const f64>, length=Some(8)>(%[[VALUE_Z]]), read<i32>(%[[VALUE_i_2]]))), size_of<u64, f64>(8) [c="__size_t"]), const<i32>(0))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_copysignl:[0-9]+]] @__builtin_copysignl(%[[VALUE10:[0-9]+]] <unnamed>: f80, %[[VALUE11:[0-9]+]] <unnamed>: f80) -> f80 [linkage=external] [memory=none];
@@ -181,7 +181,7 @@ int main() {
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(8)>(%[[VALUE_r_3]]), read<i32>(%[[VALUE_i_3]]))), pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<const f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<const f80>, length=Some(8)>(%[[VALUE_Zl]]), read<i32>(%[[VALUE_i_3]]))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(10)))), const<i32>(0))
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(8)>(%[[VALUE_r_3]]), read<i32>(%[[VALUE_i_3]]))), pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<const f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<const f80>, length=Some(8)>(%[[VALUE_Zl]]), read<i32>(%[[VALUE_i_3]]))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(10))) [c="__size_t"]), const<i32>(0))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {

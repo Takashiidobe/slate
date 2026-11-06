@@ -147,16 +147,14 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(c"%d %d %d\n".as_ptr(), (buffer as u32) as i32, used, total)
-// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d %d\n".as_ptr(), buffer as i32, used, total) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {} {}",
-// CHECK-NEXT:             ((unsafe { buffer }) as u32) as i32,
+// CHECK-NEXT:             (unsafe { buffer }) as i32,
 // CHECK-NEXT:             unsafe { used },
 // CHECK-NEXT:             unsafe { total }
 // CHECK-NEXT:         );
@@ -167,12 +165,12 @@ int main(void) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         #[cfg(windows)]
 // CHECK-NEXT:         {
-// CHECK-NEXT:             unsafe { slate_support::printf(c"%d\n".as_ptr(), (bytes.0[i as usize] as u32) as i32) };
+// CHECK-NEXT:             unsafe { slate_support::printf(c"%d\n".as_ptr(), bytes.0[i as usize] as i32) };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         #[cfg(unix)]
 // CHECK-NEXT:         {
-// CHECK-NEXT:             println!("{}", ((unsafe { bytes.0[i as usize] }) as u32) as i32);
+// CHECK-NEXT:             println!("{}", (unsafe { bytes.0[i as usize] }) as i32);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
@@ -197,8 +195,7 @@ int main(void) {
 // CHECK-NEXT:     if width > 8 {
 // CHECK-NEXT:         let val: i32 = index + 2;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = ((((buffer as u32) as i32) | ((((val as i16) as u16) as u32) as i32)) as i16)
-// CHECK-NEXT:                 as u16;
+// CHECK-NEXT:             buffer = ((buffer as i32) | ((val as u16) as i32)) as u16;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         PUT_SHORT!(unsafe { buffer });
 // CHECK-NEXT:         unsafe {
@@ -206,8 +203,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = ((((buffer as u32) as i32) | (((((index + 2) as i16) as u16) as u32) as i32))
-// CHECK-NEXT:                 as i16) as u16;
+// CHECK-NEXT:             buffer = ((buffer as i32) | (((index + 2) as u16) as i32)) as u16;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             total = total + width;
@@ -300,15 +296,15 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! PUT_SHORT {
 // CHECK-NEXT:     ($w:expr) => {
-// CHECK-NEXT:         PUT_BYTE!(((((($w) as u32) as i32) & 255) as i8) as u8);
-// CHECK-NEXT:         PUT_BYTE!((((((($w) as u16) as u32) as i32) >> 8i32) as i8) as u8);
+// CHECK-NEXT:         PUT_BYTE!(((($w) as i32) & 255) as u8);
+// CHECK-NEXT:         PUT_BYTE!((((($w) as u16) as i32) >> 8i32) as u8);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! PUT_SHORT__2 {
 // CHECK-NEXT:     ($w:expr) => {
-// CHECK-NEXT:         PUT_BYTE!(((($w) & 255) as i8) as u8);
-// CHECK-NEXT:         PUT_BYTE!((((((($w) as u16) as u32) as i32) >> 8i32) as i8) as u8);
+// CHECK-NEXT:         PUT_BYTE!((($w) & 255) as u8);
+// CHECK-NEXT:         PUT_BYTE!((((($w) as u16) as i32) >> 8i32) as u8);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -328,8 +324,7 @@ int main(void) {
 // CHECK-NEXT:             let val: i32 = ($value) as i32;
 // CHECK-NEXT:             let __v: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = ((((__v as u32) as i32) | ((((val as i16) as u16) as u32) as i32)) as i16)
-// CHECK-NEXT:                     as u16;
+// CHECK-NEXT:                 buffer = ((__v as i32) | ((val as u16) as i32)) as u16;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             PUT_SHORT!(unsafe { buffer });
 // CHECK-NEXT:             unsafe {
@@ -338,8 +333,7 @@ int main(void) {
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer =
-// CHECK-NEXT:                     (((([[V_0]] as u32) as i32) | (((($value) as u16) as u32) as i32)) as i16) as u16;
+// CHECK-NEXT:                 buffer = (([[V_0]] as i32) | ((($value) as u16) as i32)) as u16;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 total = total + width;
@@ -358,13 +352,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SEND__2 {
 // CHECK-NEXT:     ($value:expr, $length:expr) => {
-// CHECK-NEXT:         let width: i32 = (($length) as u32) as i32;
+// CHECK-NEXT:         let width: i32 = ($length) as i32;
 // CHECK-NEXT:         if width > 8 {
 // CHECK-NEXT:             let val: i32 = ($value) as i32;
 // CHECK-NEXT:             let __v: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = ((((__v as u32) as i32) | ((((val as i16) as u16) as u32) as i32)) as i16)
-// CHECK-NEXT:                     as u16;
+// CHECK-NEXT:                 buffer = ((__v as i32) | ((val as u16) as i32)) as u16;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             PUT_SHORT!(unsafe { buffer });
 // CHECK-NEXT:             unsafe {
@@ -373,8 +366,7 @@ int main(void) {
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             let [[V_0]]: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer =
-// CHECK-NEXT:                     (((([[V_0]] as u32) as i32) | (((($value) as u16) as u32) as i32)) as i16) as u16;
+// CHECK-NEXT:                 buffer = (([[V_0]] as i32) | ((($value) as u16) as i32)) as u16;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 total = total + width;

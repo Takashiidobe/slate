@@ -35,7 +35,7 @@ l2:;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         label %[[VALUE_l1:[0-9]+]] l1:
-// DEFAULT-NEXT:             return truncate<i32, reason=return, fits=unknown>(ptr_diff<i64, element=void, same_array=required, overflow=ub>(label_addr<ptr<void>>(%[[VALUE_l1]]), label_addr<ptr<void>>(%[[VALUE_l2:[0-9]+]])));
+// DEFAULT-NEXT:             return truncate<i32, reason=return, fits=unknown>(ptr_diff<i64, element=void, same_array=required, overflow=ub>(label_addr<ptr<void>>(%[[VALUE_l1]]), label_addr<ptr<void>>(%[[VALUE_l2:[0-9]+]])) [c="__ptrdiff_t"]);
 // DEFAULT-NEXT:         label %[[VALUE_l2]] l2:
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }

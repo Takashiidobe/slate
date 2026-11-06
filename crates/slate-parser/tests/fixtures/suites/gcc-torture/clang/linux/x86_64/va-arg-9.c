@@ -222,7 +222,7 @@ int main(void) {
 // DEFAULT-NEXT:         return widen<i32, reason=return>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(17)>(%[[VALUE_hex]]), read<u32>(%[[VALUE_a]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fap:[0-9]+]] @fap(%[[VALUE_i:[0-9]+]] i: i32, %[[VALUE_format:[0-9]+]] format: ptr<i8>, %[[VALUE_ap:[0-9]+]] ap: va_list [c="va_list"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(int, char *, va_list)"] {
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_format]]))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(sub<i32, overflow=ub>(const<i32>(16), read<i32>(%[[VALUE_i]])))))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_format]]))) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(sub<i32, overflow=ub>(const<i32>(16), read<i32>(%[[VALUE_i]])))) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         while %[[VALUE2:[0-9]+]] ne<i8>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_format]]))), const<i8>(0))
 // DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_format]]);

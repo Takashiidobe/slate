@@ -66,7 +66,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_6]].compare(<bitint::BInt<258, 5, 40, bitint::A8>>::from_u128([[T_7]] as u128))
 // CHECK-NEXT:             != 0
 // CHECK-NEXT:     }) as i32;
-// CHECK-NEXT:     println!("{} {}", o, (ur as u32) as i32);
+// CHECK-NEXT:     println!("{} {}", o, ur as i32);
 // CHECK-NEXT:     o = ({
 // CHECK-NEXT:         let [[T_8:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<
 // CHECK-NEXT:             258,
@@ -88,7 +88,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_10]].compare(<bitint::BInt<258, 5, 40, bitint::A8>>::from_u128([[T_11]] as u128))
 // CHECK-NEXT:             != 0
 // CHECK-NEXT:     }) as i32;
-// CHECK-NEXT:     println!("{} {}", o, ((ur >> 120i32) as u32) as i32);
+// CHECK-NEXT:     println!("{} {}", o, (ur >> 120i32) as i32);
 // CHECK-NEXT:     o = ({
 // CHECK-NEXT:         let [[T_12:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<
 // CHECK-NEXT:             258,

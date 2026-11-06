@@ -62,7 +62,7 @@ foo (int x)
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(lt<i32>(read<i32>(%[[VALUE_x]]), neg<i32, overflow=ub>(const<i32>(128))), gt<i32>(read<i32>(%[[VALUE_x]]), const<i32>(255))), eq<i32>(read<i32>(%[[VALUE_x]]), neg<i32, overflow=ub>(const<i32>(1))))
 // DEFAULT-NEXT:             return reinterpret<u32, reason=return, fits=always>(const<i32>(26));
 // DEFAULT-NEXT:         write<ptr<u8>>(field0(%[[VALUE_a]]), pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_b]])));
-// DEFAULT-NEXT:         write<ptr<u8>>(field1(%[[VALUE_a]]), ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(field0(%[[VALUE_a]])), size_of<u64, u32>(4)));
+// DEFAULT-NEXT:         write<ptr<u8>>(field1(%[[VALUE_a]]), ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(field0(%[[VALUE_a]])), size_of<u64, u32>(4) [c="__size_t"]));
 // DEFAULT-NEXT:         write<i32>(field2(%[[VALUE_a]]), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_A]]>) -> void>(%[[VALUE_bar]], addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         return read<u32>(%[[VALUE_b]]);

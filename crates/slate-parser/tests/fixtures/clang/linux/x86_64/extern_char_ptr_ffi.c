@@ -45,7 +45,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE___s_2:[0-9]+]] __s: ptr<const i8>) -> u64 [linkage=external] [memory=read] [c="size_t(const char *)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_msg:[0-9]+]] msg: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str]]));
-// DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: u64 [storage=automatic] = reinterpret<u64, reason=assign>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE_msg]]))) [c="size_t"] [c="size_t"];
+// DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: u64 [storage=automatic] = reinterpret<u64, reason=assign>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE_msg]])) [c="__size_t"]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_puts]], read<ptr<const i8>>(%[[VALUE_msg]]));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_2]])), read<u64>(%[[VALUE_n]]) [c="size_t"]);
 // DEFAULT-NEXT:         return const<i32>(0);

@@ -286,7 +286,7 @@ void falias_nothrow (void);
 // DEFAULT-NEXT:     fn %[[VALUE___builtin___strcpy_chk:[0-9]+]] @__builtin___strcpy_chk(%[[VALUE2:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE3:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE4:[0-9]+]] <unnamed>: u64) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_call_xref12:[0-9]+]] @call_xref12() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_xref12]], const<i32>(3));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE___builtin___strcpy_chk]], pointer_cast<ptr<i8>, reason=arg>(read<ptr<void>>(%[[VALUE_p]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), intrinsic<u64, llvm.objectsize>(read<ptr<void>>(%[[VALUE_p]]), const<bool>(false), const<bool>(false), const<bool>(false)));
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE___builtin___strcpy_chk]], pointer_cast<ptr<i8>, reason=arg>(read<ptr<void>>(%[[VALUE_p]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), intrinsic<u64, llvm.objectsize>(read<ptr<void>>(%[[VALUE_p]]), const<bool>(false), const<bool>(false), const<bool>(false)) [c="__size_t"]);
 // DEFAULT-NEXT:         return read<ptr<void>>(%[[VALUE_p]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fconst:[0-9]+]] @fconst() -> i32 [linkage=external] [memory=none];
@@ -325,12 +325,12 @@ void falias_nothrow (void);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE7:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_ftarget_malloc:[0-9]+]] @ftarget_malloc() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))) [c="__size_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_falias_malloc:[0-9]+]] @falias_malloc() -> ptr<void> [linkage=external] [alias="ftarget_malloc"];
 // DEFAULT-NEXT:     fn %[[VALUE_call_falias_malloc:[0-9]+]] @call_falias_malloc() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_p_3:[0-9]+]] p: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_falias_malloc]]));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE___builtin___strcpy_chk]], read<ptr<i8>>(%[[VALUE_p_3]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), intrinsic<u64, llvm.objectsize>(read<ptr<i8>>(%[[VALUE_p_3]]), const<bool>(false), const<bool>(false), const<bool>(false)));
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE___builtin___strcpy_chk]], read<ptr<i8>>(%[[VALUE_p_3]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), intrinsic<u64, llvm.objectsize>(read<ptr<i8>>(%[[VALUE_p_3]]), const<bool>(false), const<bool>(false), const<bool>(false)) [c="__size_t"]);
 // DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(read<ptr<i8>>(%[[VALUE_p_3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ftarget_nothrow:[0-9]+]] @ftarget_nothrow() -> void [linkage=external] [fallthrough=ret_void] {

@@ -542,8 +542,8 @@ int main(void) {
 // CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
 // CHECK-NEXT:         unsafe { c89_external_value }, unsafe { c89_const_global }, unsafe {
 // CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(c89_volatile_global)) }, unsafe {
-// CHECK-NEXT:         c89_joined_value }, 13i32, standard_macro, signed_value, (unsigned_value as u32)
-// CHECK-NEXT:         as i32, signed_character as i32, float_value as i32, double_value as i32,
+// CHECK-NEXT:         c89_joined_value }, 13i32, standard_macro, signed_value, unsigned_value as i32,
+// CHECK-NEXT:         signed_character as i32, float_value as i32, double_value as i32,
 // CHECK-NEXT:         __slate_f80_to_i32(long_double_value), wide_character, color as u32, point.x +
 // CHECK-NEXT:         point.y, bits.__slate_bits_0.__get_low() as i32, bits.__slate_bits_0
 // CHECK-NEXT:         .__get_high(), unsafe { number.integer }, (unsafe { * const_pointer.add(0) }) +

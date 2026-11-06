@@ -59,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(bitfield2<unit=0, bytes=0..4, bits=20..30>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(bitfield2<unit=0, bytes=0..4, bits=20..30>(%[[VALUE_x]]), read<i32>(%[[VALUE5]]));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str]])), read<i32>(%[[VALUE0]]), read<i32>(%[[VALUE2]]), read<i32>(%[[VALUE4]]), size_of<u64, @type[[TYPE0]]>(4));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str]])), read<i32>(%[[VALUE0]]), read<i32>(%[[VALUE2]]), read<i32>(%[[VALUE4]]), size_of<u64, @type[[TYPE0]]>(4) [c="__size_t"]);
 // DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..10>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE6]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..4, bits=0..10>(%[[VALUE_x]]), read<i32>(%[[VALUE7]]));

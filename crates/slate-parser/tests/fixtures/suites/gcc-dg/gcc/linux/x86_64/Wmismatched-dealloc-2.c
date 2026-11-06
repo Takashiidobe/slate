@@ -194,7 +194,7 @@ void test_realloc (void)
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_p_4:[0-9]+]] p: ptr<void> [storage=automatic] = pointer_cast<ptr<void>, reason=assign>(call<ptr<@type[[TYPE_A]]>, signature=fn(i32) -> ptr<@type[[TYPE_A]]>>(%[[VALUE_alloc_A]], const<i32>(1)) [c="A *"]);
-// DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_p_4]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_p_4]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2)))));
+// DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_p_4]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_p_4]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))) [c="__size_t"]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_p_4]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
@@ -209,7 +209,7 @@ void test_realloc (void)
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_p_7:[0-9]+]] p: ptr<void> [storage=automatic] = pointer_cast<ptr<void>, reason=assign>(call<ptr<@type[[TYPE_A]]>, signature=fn(i32) -> ptr<@type[[TYPE_A]]>>(%[[VALUE_alloc_A]], const<i32>(1)) [c="A *"]);
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_p_7]], pointer_cast<ptr<void>, reason=assign>(call<ptr<@type[[TYPE_A]]>, signature=fn(ptr<@type[[TYPE_A]]>, i32) -> ptr<@type[[TYPE_A]]>>(%[[VALUE_realloc_A]], pointer_cast<ptr<@type[[TYPE_A]]>, reason=arg>(read<ptr<void>>(%[[VALUE_p_7]])) [c="A *"], const<i32>(2)) [c="A *"]));
-// DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_p_7]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_p_7]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))));
+// DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_p_7]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_p_7]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))) [c="__size_t"]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE___builtin_free]], read<ptr<void>>(%[[VALUE_p_7]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
@@ -226,7 +226,7 @@ void test_realloc (void)
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_p_10:[0-9]+]] p: ptr<void> [storage=automatic] = pointer_cast<ptr<void>, reason=assign>(call<ptr<@type[[TYPE_A]]>, signature=fn(ptr<@type[[TYPE_A]]>, i32) -> ptr<@type[[TYPE_A]]>>(%[[VALUE_realloc_A]], null<ptr<@type[[TYPE_A]]>> [c="A *"], const<i32>(3)) [c="A *"]);
-// DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_p_10]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_p_10]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2)))));
+// DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_p_10]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_p_10]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))) [c="__size_t"]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_p_10]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
@@ -241,7 +241,7 @@ void test_realloc (void)
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_p_13:[0-9]+]] p: ptr<void> [storage=automatic] = pointer_cast<ptr<void>, reason=assign>(call<ptr<@type[[TYPE_A]]>, signature=fn(ptr<@type[[TYPE_A]]>, i32) -> ptr<@type[[TYPE_A]]>>(%[[VALUE_realloc_A]], null<ptr<@type[[TYPE_A]]>> [c="A *"], const<i32>(6)) [c="A *"]);
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_p_13]], pointer_cast<ptr<void>, reason=assign>(call<ptr<@type[[TYPE_A]]>, signature=fn(ptr<@type[[TYPE_A]]>, i32) -> ptr<@type[[TYPE_A]]>>(%[[VALUE_realloc_A]], pointer_cast<ptr<@type[[TYPE_A]]>, reason=explicit>(read<ptr<void>>(%[[VALUE_p_13]])) [c="A *"], const<i32>(2)) [c="A *"]));
-// DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_p_13]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_p_13]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))));
+// DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_p_13]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_p_13]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))) [c="__size_t"]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE___builtin_free]], read<ptr<void>>(%[[VALUE_p_13]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
@@ -249,25 +249,25 @@ void test_realloc (void)
 // DEFAULT-NEXT:     fn %[[VALUE_realloc:[0-9]+]] @realloc(%[[VALUE9:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE10:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(void *, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_test_realloc:[0-9]+]] @test_realloc() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE_p_14:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))));
+// DEFAULT-NEXT:             let %[[VALUE_p_14:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))) [c="__size_t"]);
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_p_14]], pointer_cast<ptr<void>, reason=assign>(call<ptr<@type[[TYPE_A]]>, signature=fn(ptr<@type[[TYPE_A]]>, i32) -> ptr<@type[[TYPE_A]]>>(%[[VALUE_realloc_A]], pointer_cast<ptr<@type[[TYPE_A]]>, reason=arg>(read<ptr<void>>(%[[VALUE_p_14]])) [c="A *"], const<i32>(2)) [c="A *"]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE___builtin_free]], read<ptr<void>>(%[[VALUE_p_14]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE_p_15:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))));
+// DEFAULT-NEXT:             let %[[VALUE_p_15:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))) [c="__size_t"]);
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_p_15]], pointer_cast<ptr<void>, reason=assign>(call<ptr<@type[[TYPE_A]]>, signature=fn(ptr<@type[[TYPE_A]]>, i32) -> ptr<@type[[TYPE_A]]>>(%[[VALUE_realloc_A]], pointer_cast<ptr<@type[[TYPE_A]]>, reason=arg>(read<ptr<void>>(%[[VALUE_p_15]])) [c="A *"], const<i32>(2)) [c="A *"]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_p_15]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE_p_16:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
+// DEFAULT-NEXT:             let %[[VALUE_p_16:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))) [c="__size_t"]);
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_p_16]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE_p_17:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4))));
+// DEFAULT-NEXT:             let %[[VALUE_p_17:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4))) [c="__size_t"]);
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE___builtin_free]], read<ptr<void>>(%[[VALUE_p_17]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE_p_18:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(5))));
+// DEFAULT-NEXT:             let %[[VALUE_p_18:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(5))) [c="__size_t"]);
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_dealloc]], read<ptr<void>>(%[[VALUE_p_18]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }

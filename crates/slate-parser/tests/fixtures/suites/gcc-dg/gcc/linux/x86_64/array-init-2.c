@@ -108,7 +108,7 @@ main (void)
 // DEFAULT-NEXT:                 default %[[VALUE3]]:
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]]))))), pointer_cast<ptr<const void>, reason=arg>(read<ptr<const i8>>(%[[VALUE_p]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(10)))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]]))))), pointer_cast<ptr<const void>, reason=arg>(read<ptr<const i8>>(%[[VALUE_p]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(10))) [c="__size_t"]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

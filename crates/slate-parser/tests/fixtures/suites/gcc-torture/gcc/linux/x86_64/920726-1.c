@@ -121,9 +121,9 @@ int main(void) {
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_number]], va_arg<i32>(%[[VALUE_args]]));
 // DEFAULT-NEXT:                         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(%[[VALUE_sprintf]], read<ptr<i8>>(%[[VALUE_bp]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])), read<i32>(%[[VALUE_number]]));
-// DEFAULT-NEXT:                         let %[[VALUE5:[0-9]+]]: u64 [synthetic] = call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_bp]])));
+// DEFAULT-NEXT:                         let %[[VALUE5:[0-9]+]]: u64 [synthetic] = call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_bp]]))) [c="__size_t"];
 // DEFAULT-NEXT:                         let %[[VALUE6:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_bp]]);
-// DEFAULT-NEXT:                         let %[[VALUE7:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE6]]), read<u64>(%[[VALUE5]]));
+// DEFAULT-NEXT:                         let %[[VALUE7:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE6]]), read<u64>(%[[VALUE5]]) [c="__size_t"]);
 // DEFAULT-NEXT:                         write<ptr<i8>>(%[[VALUE_bp]], read<ptr<i8>>(%[[VALUE7]]));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 else
@@ -157,9 +157,9 @@ int main(void) {
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_number_2]], va_arg<i32>(%[[VALUE_args_2]]));
 // DEFAULT-NEXT:                         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(%[[VALUE_sprintf]], read<ptr<i8>>(%[[VALUE_bp_2]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_2]])), read<i32>(%[[VALUE_number_2]]));
-// DEFAULT-NEXT:                         let %[[VALUE13:[0-9]+]]: u64 [synthetic] = call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_bp_2]])));
+// DEFAULT-NEXT:                         let %[[VALUE13:[0-9]+]]: u64 [synthetic] = call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_bp_2]]))) [c="__size_t"];
 // DEFAULT-NEXT:                         let %[[VALUE14:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_bp_2]]);
-// DEFAULT-NEXT:                         let %[[VALUE15:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE14]]), read<u64>(%[[VALUE13]]));
+// DEFAULT-NEXT:                         let %[[VALUE15:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE14]]), read<u64>(%[[VALUE13]]) [c="__size_t"]);
 // DEFAULT-NEXT:                         write<ptr<i8>>(%[[VALUE_bp_2]], read<ptr<i8>>(%[[VALUE15]]));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 else

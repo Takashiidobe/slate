@@ -50,9 +50,9 @@ int main() {
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, i64>(8), size_of<u64, @type[[TYPE_foo]]>(8))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, i64>(8) [c="__size_t"], size_of<u64, @type[[TYPE_foo]]>(8) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(align_of<u64, i64>(8), align_of<u64, @type[[TYPE_foo]]>(8))
+// DEFAULT-NEXT:         if ne<u64>(align_of<u64, i64>(8) [c="__size_t"], align_of<u64, @type[[TYPE_foo]]>(8) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

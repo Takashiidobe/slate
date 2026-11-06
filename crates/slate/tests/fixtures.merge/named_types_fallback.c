@@ -23,8 +23,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   named_types_fallback.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit named_types_fallback: 11 items, 5 gated, 1 duplicated functions
-// CHECK-NEXT:   duplicated fn:shift: 2 variants
+// CHECK-NEXT: unit named_types_fallback: 10 items, 3 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
@@ -34,23 +33,11 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn shift(value: c_char) -> c_char {
-// CHECK-NEXT:     ((((value as u32) as i32) + 1) as i8) as c_char
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: type c_char = u8;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: use slate_support::printf;
 // CHECK-NEXT: use slate_support::size_t;
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn shift(value: c_char) -> c_char {
-// CHECK-NEXT:     ((value as i32) + 1) as c_char
-// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: use core::ffi::c_char;
@@ -62,6 +49,11 @@ int main(void) {
 // CHECK-NEXT:         length = length.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     length
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: extern "C-unwind" fn shift(value: c_char) -> c_char {
+// CHECK-NEXT:     ((value as i32) + 1) as c_char
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -87,7 +79,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             printf(
 // CHECK-NEXT:                 (c"%d %zu\n".as_ptr() as *const c_char) as *const core::ffi::c_char,
-// CHECK-NEXT:                 (shift((97 as c_char)) as u32) as i32,
+// CHECK-NEXT:                 shift((97 as c_char)) as i32,
 // CHECK-NEXT:                 count(c"abc".as_ptr() as *const c_char),
 // CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         };

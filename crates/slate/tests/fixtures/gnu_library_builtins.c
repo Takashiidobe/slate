@@ -71,7 +71,7 @@ int main(void) {
 // CHECK-NEXT:             formatted.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             c"%s-%d".as_ptr(),
 // CHECK-NEXT:             copy.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             (__builtin_strlen(buffer as *const i8) as u32) as i32,
+// CHECK-NEXT:             __builtin_strlen(buffer as *const i8) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut bounded: [i8; 4] = [0i8; 4];

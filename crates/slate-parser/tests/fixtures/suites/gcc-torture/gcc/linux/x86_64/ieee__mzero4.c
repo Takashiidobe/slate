@@ -92,7 +92,7 @@ int main() {
 // DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(%[[VALUE_value]]), read<f64>(%[[VALUE_expected]]))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE9]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE9]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%[[VALUE_value]]))), pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%[[VALUE_expected]]))), size_of<u64, f64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE9]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%[[VALUE_value]]))), pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%[[VALUE_expected]]))), size_of<u64, f64>(8) [c="__size_t"]), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE9]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -101,7 +101,7 @@ int main() {
 // DEFAULT-NEXT:         if ne<f32, exceptions=observable>(read<f32>(%[[VALUE_value_2]]), read<f32>(%[[VALUE_expected_2]]))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE10]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE10]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f32>>(%[[VALUE_value_2]]))), pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f32>>(%[[VALUE_expected_2]]))), size_of<u64, f32>(4)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE10]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f32>>(%[[VALUE_value_2]]))), pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f32>>(%[[VALUE_expected_2]]))), size_of<u64, f32>(4) [c="__size_t"]), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE10]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }

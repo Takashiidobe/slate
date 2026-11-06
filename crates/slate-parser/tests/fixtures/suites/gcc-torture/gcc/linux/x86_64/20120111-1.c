@@ -51,7 +51,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_r1:[0-9]+]] r1: u32 [storage=automatic] [c="uint32_t"];
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r1]], call<u32, signature=fn(u64) -> u32>(%[[VALUE_f0a]], reinterpret<u64, reason=arg>(const<u64>(12094370573988097329)) [c="uint64_t"]) [c="uint32_t"]) [c="uint32_t"];
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_r1]]) [c="uint32_t"]), not<u32>(const<u32>(0)))
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_r1]]) [c="uint32_t"], reinterpret<u32, reason=usual_arith>(not<u32>(const<u32>(0))) [c="uint32_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

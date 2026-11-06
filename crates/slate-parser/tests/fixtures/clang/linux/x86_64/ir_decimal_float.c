@@ -37,7 +37,7 @@ int sizes = sizeof(_Decimal32) + sizeof(_Decimal64) + _Alignof(_Decimal128);
 // IR-NEXT:     global %[[VALUE_a:[0-9]+]] a: d32 [storage=static] = const<d32>(1.5) [linkage=external];
 // IR-NEXT:     global %[[VALUE_b:[0-9]+]] b: d64 [storage=static] = const<d64>(1.0) [linkage=external];
 // IR-NEXT:     global %[[VALUE_c:[0-9]+]] c: d128 [storage=static] = const<d128>(0.10) [linkage=external];
-// IR-NEXT:     global %[[VALUE_sizes:[0-9]+]] sizes: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(size_of<u64, d32>(4), size_of<u64, d64>(8)), align_of<u64, d128>(16)))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_sizes:[0-9]+]] sizes: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(size_of<u64, d32>(4) [c="__size_t"], size_of<u64, d64>(8) [c="__size_t"]) [c="__size_t"], align_of<u64, d128>(16) [c="__size_t"]) [c="__size_t"])) [linkage=external];
 // IR-NEXT:     fn %[[VALUE_sum:[0-9]+]] @sum(%[[VALUE_x:[0-9]+]] x: d64, %[[VALUE_y:[0-9]+]] y: d64) -> d64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return add<d64, rounding=nearest_even, exceptions=ignore, contract=on>(read<d64>(%[[VALUE_x]]), read<d64>(%[[VALUE_y]]));
 // IR-NEXT:     }

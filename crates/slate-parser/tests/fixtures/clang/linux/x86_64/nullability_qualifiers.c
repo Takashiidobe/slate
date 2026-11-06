@@ -58,7 +58,7 @@ int use(int *_Nullable p) {
 // DEFAULT-NEXT:     fn %[[VALUE_sized_array_parameter:[0-9]+]] @sized_array_parameter(%[[VALUE_a_2:[0-9]+]] a: ptr<i32> [array=3]) -> i32 [linkage=external] [c="int(int[3])"];
 // DEFAULT-NEXT:     fn %[[VALUE_use:[0-9]+]] @use(%[[VALUE_p_3:[0-9]+]] p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: ptr<i32> [storage=automatic] = read<ptr<i32>>(%[[VALUE_p_3]]);
-// DEFAULT-NEXT:         return add<i32>(add<i32>(reinterpret<i32>(truncate<u32>(size_of<u64, ptr<i32>>(8))), reinterpret<i32>(truncate<u32>(size_of<u64, ptr<i32>>(8)))), read<i32>(deref(read<ptr<i32>>(%[[VALUE_local]]))));
+// DEFAULT-NEXT:         return add<i32>(add<i32>(reinterpret<i32>(truncate<u32>(size_of<u64, ptr<i32>>(8) [c="__size_t"])), reinterpret<i32>(truncate<u32>(size_of<u64, ptr<i32>>(8) [c="__size_t"]))), read<i32>(deref(read<ptr<i32>>(%[[VALUE_local]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

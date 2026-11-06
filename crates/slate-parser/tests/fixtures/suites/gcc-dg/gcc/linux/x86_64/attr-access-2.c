@@ -146,12 +146,12 @@ RW (2, 3) void g1 (int n, int[n], int);     // { dg-warning "16: attribute 'acce
 // DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE13:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external] [c="void(int, int[*])"];
 // DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8(%[[VALUE_n_3:[0-9]+]] n: i32, %[[VALUE14:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external] [c="void(int, int[*])"];
 // DEFAULT-NEXT:     fn %[[VALUE_f9:[0-9]+]] @f9(%[[VALUE_n_4:[0-9]+]] n: i32, %[[VALUE_a:[0-9]+]] a: ptr<i8> [array=%[[VALUE15:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] [c="void(int, char[])"] {
-// DEFAULT-NEXT:         let %[[VALUE15]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_4]])));
+// DEFAULT-NEXT:         let %[[VALUE15]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_4]]))) [c="__size_t"];
 // DEFAULT-NEXT:         addr_of<ptr<i32>>(%[[VALUE_n_4]]);
 // DEFAULT-NEXT:         addr_of<ptr<ptr<i8>>>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f10:[0-9]+]] @f10(%[[VALUE_n_5:[0-9]+]] n: i32, %[[VALUE_a_2:[0-9]+]] a: ptr<i8> [array=%[[VALUE16:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] [c="void(int, char[])"] {
-// DEFAULT-NEXT:         let %[[VALUE16]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_5]])));
+// DEFAULT-NEXT:         let %[[VALUE16]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_5]]))) [c="__size_t"];
 // DEFAULT-NEXT:         addr_of<ptr<i32>>(%[[VALUE_n_5]]);
 // DEFAULT-NEXT:         addr_of<ptr<ptr<i8>>>(%[[VALUE_a_2]]);
 // DEFAULT-NEXT:     }

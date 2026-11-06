@@ -287,7 +287,7 @@ int main(void) {
 // CHECK-NEXT:             c"%d %lld %d %llu %d\n".as_ptr(),
 // CHECK-NEXT:             (*(m as *mut Mixed)).__slate_bits_0.__get_tag(),
 // CHECK-NEXT:             (*(m as *mut Mixed)).__slate_bits_0.__get_mid().to_i128() as i64,
-// CHECK-NEXT:             ((*(m as *mut Mixed)).__slate_bits_0.__get_flag() as u32) as i32,
+// CHECK-NEXT:             (*(m as *mut Mixed)).__slate_bits_0.__get_flag() as i32,
 // CHECK-NEXT:             (*(m as *mut Mixed)).__slate_bits_0.__get_top().to_u128() as u64,
 // CHECK-NEXT:             (*(m as *mut Mixed)).__slate_bits_1.__get_small() as i32,
 // CHECK-NEXT:         )

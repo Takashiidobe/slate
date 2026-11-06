@@ -171,7 +171,7 @@ size_t hp_const_ptr_sub() NO_TAIL {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>) -> void>(%[[VALUE_take_data]], read<ptr<const void>>(%[[VALUE_y_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_hp_const_ptr_sub:[0-9]+]] @hp_const_ptr_sub(unprototyped) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="size_t()"] {
-// DEFAULT-NEXT:         return reinterpret<u64, reason=return, fits=unknown>(ptr_diff<i64, element=u8, same_array=required, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<@type[[TYPE_HasPointers]]>>(%[[VALUE_g_has_pointers]])), pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<array<i32, 10>>>(%[[VALUE_g_data]])))) [c="size_t"];
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return, fits=unknown>(ptr_diff<i64, element=u8, same_array=required, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<@type[[TYPE_HasPointers]]>>(%[[VALUE_g_has_pointers]])), pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<array<i32, 10>>>(%[[VALUE_g_data]]))) [c="__ptrdiff_t"]) [c="size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

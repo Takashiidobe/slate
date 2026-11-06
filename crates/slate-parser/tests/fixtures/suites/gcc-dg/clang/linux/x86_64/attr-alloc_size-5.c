@@ -397,7 +397,7 @@ test_alloca (size_t n)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_alloca:[0-9]+]] @alloca(%[[VALUE37:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_test_alloca:[0-9]+]] @test_alloca(%[[VALUE_n_11:[0-9]+]] n: u64 [c="size_t"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(size_t)"] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_alloca]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_alloca]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))) [c="__size_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

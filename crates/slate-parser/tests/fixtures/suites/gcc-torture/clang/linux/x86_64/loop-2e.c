@@ -88,13 +88,13 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<void> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_q_2:[0-9]+]] q: array<ptr<i32>, 40> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_start:[0-9]+]] start: u64 [storage=automatic];
-// DEFAULT-NEXT:         if eq<u64>(size_of<u64, u64>(8), size_of<u64, i32>(4))
+// DEFAULT-NEXT:         if eq<u64>(size_of<u64, u64>(8) [c="__size_t"], size_of<u64, i32>(4) [c="__size_t"])
 // DEFAULT-NEXT:             write<u64>(%[[VALUE_start]], reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(2147483647))));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             if eq<u64>(size_of<u64, u64>(8), size_of<u64, i64>(8))
+// DEFAULT-NEXT:             if eq<u64>(size_of<u64, u64>(8) [c="__size_t"], size_of<u64, i64>(8) [c="__size_t"])
 // DEFAULT-NEXT:                 write<u64>(%[[VALUE_start]], reinterpret<u64, reason=explicit, fits=always>(const<i64>(9223372036854775807)));
 // DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 if eq<u64>(size_of<u64, u64>(8), size_of<u64, i64>(8))
+// DEFAULT-NEXT:                 if eq<u64>(size_of<u64, u64>(8) [c="__size_t"], size_of<u64, i64>(8) [c="__size_t"])
 // DEFAULT-NEXT:                     write<u64>(%[[VALUE_start]], reinterpret<u64, reason=explicit, fits=always>(const<i64>(9223372036854775807)));
 // DEFAULT-NEXT:                 else
 // DEFAULT-NEXT:                     return const<i32>(0);

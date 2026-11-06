@@ -44,7 +44,7 @@ int main(void) {
 // CHECK-NEXT: static mut ui: u32 = 240;
 // CHECK-NEXT: static mut ul: u64 = 32768;
 // CHECK-NEXT: static mut ull: u64 = 12884901888;
-// CHECK-NEXT: static mut u128: u128 = ((1i32 as i128) as u128) << 100i32;
+// CHECK-NEXT: static mut u128: u128 = (1i32 as u128) << 100i32;
 // CHECK-NEXT: static mut zero: u32 = 0;
 // CHECK-NEXT: static mut side_effects: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn fallback(value: i32) -> i32 {

@@ -60,9 +60,9 @@ main (void)
 // DEFAULT-NEXT:     fn %[[VALUE_vla:[0-9]+]] @vla() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: u32 [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_n]], reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = widen<u64, reason=assign>(read<u32>(%[[VALUE_n]]));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = widen<u64, reason=assign>(read<u32>(%[[VALUE_n]])) [c="__size_t"];
 // DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: vla<i32, %[[VALUE0]]> [storage=automatic];
-// DEFAULT-NEXT:         if eq<u64>(read<u64>(%[[VALUE0]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
+// DEFAULT-NEXT:         if eq<u64>(read<u64>(%[[VALUE0]]) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))) [c="__size_t"])
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
@@ -73,8 +73,8 @@ main (void)
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
-// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE1]])));
-// DEFAULT-NEXT:         if eq<u64>(read<u64>(%[[VALUE3]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE1]]))) [c="__size_t"];
+// DEFAULT-NEXT:         if eq<u64>(read<u64>(%[[VALUE3]]) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))) [c="__size_t"])
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

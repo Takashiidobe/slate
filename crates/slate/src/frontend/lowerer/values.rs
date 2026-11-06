@@ -1066,9 +1066,14 @@ impl FunctionLowerer<'_, '_> {
             {
                 self.lower_value(operand)?
             }
-            ValueKind::Convert { operand, .. } => {
+            ValueKind::Convert { kind, operand, .. } => {
                 let operand = if odd_width(self.tables.resolve_type(&value.ty)).is_none() {
                     let target = self.lower_value_type(value)?;
+                    let operand = if *kind == ir::ConversionKind::Reinterpret {
+                        self.peel_resize(operand, value)
+                    } else {
+                        operand
+                    };
                     self.peel_widening_to_named(operand, &target)
                 } else {
                     operand
@@ -2310,6 +2315,24 @@ impl FunctionLowerer<'_, '_> {
             args,
             FunctionIdentity::Unknown,
         )))
+    }
+
+    fn peel_resize<'v>(&self, operand: &'v ir::Value, value: &ir::Value) -> &'v ir::Value {
+        let plain = |ty: &ir::Type| {
+            matches!(
+                self.tables.resolve_type(ty),
+                ir::Type::Numeric(ir::NumericType::Integer { .. })
+            ) && odd_width(self.tables.resolve_type(ty)).is_none()
+                && self.tables.wide_int(ty).is_none()
+        };
+        match &operand.node.value {
+            ValueKind::Convert {
+                kind: ir::ConversionKind::Widen | ir::ConversionKind::Truncate,
+                operand: inner,
+                ..
+            } if plain(&inner.ty) && plain(&operand.ty) && plain(&value.ty) => inner,
+            _ => operand,
+        }
     }
 
     fn peel_widening_to_named<'v>(

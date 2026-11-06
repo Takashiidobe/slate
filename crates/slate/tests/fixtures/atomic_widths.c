@@ -27,7 +27,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut u8: u8 = 250u8;
+// CHECK-NEXT:     let mut u8: u8 = 250;
 // CHECK-NEXT:     let mut i8: i8 = -5;
 // CHECK-NEXT:     let mut u32: u32 = 1000;
 // CHECK-NEXT:     let mut i64: i64 = -10000000000;
@@ -71,12 +71,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %d %u %lld %u %d %u %lld\n".as_ptr(),
-// CHECK-NEXT:             (old_u8 as u32) as i32,
+// CHECK-NEXT:             old_u8 as i32,
 // CHECK-NEXT:             old_i8 as i32,
 // CHECK-NEXT:             old_u32,
 // CHECK-NEXT:             old_i64,
-// CHECK-NEXT:             (std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of!(u8) as *mut u8)
-// CHECK-NEXT:                 .load(std::sync::atomic::Ordering::SeqCst) as u32) as i32,
+// CHECK-NEXT:             std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of!(u8) as *mut u8)
+// CHECK-NEXT:                 .load(std::sync::atomic::Ordering::SeqCst) as i32,
 // CHECK-NEXT:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of!(i8) as *mut i8)
 // CHECK-NEXT:                 .load(std::sync::atomic::Ordering::SeqCst) as i32,
 // CHECK-NEXT:             std::sync::atomic::AtomicU32::from_ptr(std::ptr::addr_of!(u32) as *mut u32)

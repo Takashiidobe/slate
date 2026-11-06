@@ -90,7 +90,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_free:[0-9]+]] @free(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_init:[0-9]+]] @init(unprototyped) -> ptr<@type[[TYPE_STable]]> [linkage=external] [fallthrough=ub_if_used] [c="TTable *()"] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<@type[[TYPE_STable]]>, reason=return>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], size_of<u64, @type[[TYPE_STable]]>(2))) [c="TTable *"];
+// DEFAULT-NEXT:         return pointer_cast<ptr<@type[[TYPE_STable]]>, reason=return>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], size_of<u64, @type[[TYPE_STable]]>(2) [c="__size_t"])) [c="TTable *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_expect_func:[0-9]+]] @expect_func(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: ptr<u8>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE___builtin_abs:[0-9]+]], from_bool<i32, reason=arg>(eq<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0)))), const<i32>(0))

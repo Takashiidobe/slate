@@ -54,10 +54,10 @@ main()
 // DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_s]] [storage=static] = aggregate<@type[[TYPE_s]], zero_fill=false>(field0 = const<i32>(1), field1 = code_units<array<i8, 6>>([48, 49, 50, 51, 52, 0])) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return const<u64>(0);
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return>(const<u64>(0) [c="__size_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn() -> u64>(%[[VALUE_f]]), size_of<u64, array<i8, 6>>(6))
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn() -> u64>(%[[VALUE_f]]), reinterpret<u64, reason=usual_arith>(size_of<u64, array<i8, 6>>(6) [c="__size_t"]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

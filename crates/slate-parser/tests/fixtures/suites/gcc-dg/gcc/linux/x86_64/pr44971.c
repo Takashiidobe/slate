@@ -66,7 +66,7 @@ void _XftCloseint (int dpy, XftintInfo * info,XftintInfo  * *prev)
 // DEFAULT-NEXT:     global %[[VALUE__XftintInfo:[0-9]+]] _XftintInfo: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE__XftintInfoGet:[0-9]+]] @_XftintInfoGet(%[[VALUE_dpy:[0-9]+]] dpy: ptr<i32>, %[[VALUE_createIfNecessary:[0-9]+]] createIfNecessary: i32 [c="FcBool"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(int *, FcBool)"] {
 // DEFAULT-NEXT:         let %[[VALUE_event_base:[0-9]+]] event_base: i32 [storage=automatic];
-// DEFAULT-NEXT:         logical_and<bool>(ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_event_base]]), null<ptr<i32>>), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_dpy]]), reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_createIfNecessary]]))))), const<i32>(0)));
+// DEFAULT-NEXT:         logical_and<bool>(ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_event_base]]), null<ptr<i32>>), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_dpy]]), read<i32>(%[[VALUE_createIfNecessary]])))), const<i32>(0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE__XftCloseint:[0-9]+]] @_XftCloseint(%[[VALUE_dpy_2:[0-9]+]] dpy: i32, %[[VALUE_info:[0-9]+]] info: ptr<@type[[TYPE1]]> [c="XftintInfo *"], %[[VALUE_prev:[0-9]+]] prev: ptr<ptr<@type[[TYPE1]]>> [c="XftintInfo **"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(int, XftintInfo *, XftintInfo **)"] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, i32) -> void>(%[[VALUE__XftintInfoGet]], int_to_ptr<ptr<i32>, reason=arg>(read<i32>(%[[VALUE_dpy_2]])), reinterpret<i32, reason=arg>(const<i32>(0)) [c="FcBool"]);

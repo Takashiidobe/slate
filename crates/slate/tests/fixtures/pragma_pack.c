@@ -89,7 +89,7 @@ int main(void) {
 // CHECK-NEXT:         PackedTwoAgain > () as i32, std::mem::offset_of!(PackedTwoAgain, value) as i32,
 // CHECK-NEXT:         std::mem::offset_of!(NaturalAfter, value) as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     if ((packed.tag as u32) as i32) == 29 && packed.value == 31 { 0 } else { 1 }
+// CHECK-NEXT:     if (packed.tag as i32) == 29 && packed.value == 31 { 0 } else { 1 }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(

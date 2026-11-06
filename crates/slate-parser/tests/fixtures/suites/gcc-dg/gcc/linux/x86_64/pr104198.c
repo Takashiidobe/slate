@@ -96,7 +96,7 @@ int main()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: array<i32, 6> [storage=automatic] [align=16] = aggregate<array<i32, 6>, zero_fill=false>(index0 = const<i32>(2), index1 = const<i32>(1), index2 = neg<i32, overflow=ub>(const<i32>(13)), index3 = const<i32>(2147483647), index4 = sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), index5 = const<i32>(0));
-// DEFAULT-NEXT:         let %[[VALUE_res:[0-9]+]] res: i32 [storage=automatic] = call<i32, signature=fn(ptr<i32>, i32) -> i32>(%[[VALUE_foo]], array_decay<ptr<i32>, length=Some(6)>(%[[VALUE_a_2]]), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=unknown>(div<u64, by_zero=ub>(size_of<u64, array<i32, 6>>(24), size_of<u64, i32>(4)))));
+// DEFAULT-NEXT:         let %[[VALUE_res:[0-9]+]] res: i32 [storage=automatic] = call<i32, signature=fn(ptr<i32>, i32) -> i32>(%[[VALUE_foo]], array_decay<ptr<i32>, length=Some(6)>(%[[VALUE_a_2]]), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=unknown>(div<u64, by_zero=ub>(size_of<u64, array<i32, 6>>(24) [c="__size_t"], size_of<u64, i32>(4) [c="__size_t"]) [c="__size_t"])));
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_res]]), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(1)))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else

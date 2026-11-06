@@ -117,7 +117,7 @@ func (void) UNK { /* { dg-warning "ignored" } */
 // DEFAULT-NEXT:     extern %[[VALUE_E1]] a: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: array<i32, 3> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_z:[0-9]+]] z: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, i32>(4))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_z:[0-9]+]] z: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, i32>(4) [c="__size_t"])) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_a:[0-9]+]] a: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h(%[[VALUE0:[0-9]+]] <unnamed>: ptr<fn() -> i32>) -> i32 [linkage=external] [c="int(int(void))"];

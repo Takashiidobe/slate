@@ -218,7 +218,7 @@ int main(void) {
 // CHECK-NEXT:                 ((b"gnu\0".as_ptr() as *const ()) as *const core::ffi::c_void)
 // CHECK-NEXT:                     as *const u8,
 // CHECK-NEXT:                 (((*__o).next_free as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:                 (((__len as i64) as u64) as usize) as usize,
+// CHECK-NEXT:                 ((__len as u64) as usize) as usize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let [[V_7:__v[0-9]+]]: *mut i8 = unsafe { (*__o).next_free };
@@ -295,7 +295,7 @@ int main(void) {
 // CHECK-NEXT:                 ((b"libc\0".as_ptr() as *const ()) as *const core::ffi::c_void)
 // CHECK-NEXT:                     as *const u8,
 // CHECK-NEXT:                 (((*__o).next_free as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:                 (((__len as i64) as u64) as usize) as usize,
+// CHECK-NEXT:                 ((__len as u64) as usize) as usize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let [[V_3]]: *mut i8 = unsafe { (*__o).next_free };
@@ -375,9 +375,9 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_13:__v[0-9]+]]: u32;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let __o: *const obstack = std::ptr::addr_of_mut!(storage) as *const obstack;
-// CHECK-NEXT:         [[V_13]] = (((unsafe {
+// CHECK-NEXT:         [[V_13]] = ((unsafe {
 // CHECK-NEXT:             unsafe { (*__o).next_free }.offset_from((*__o).object_base as *mut i8)
-// CHECK-NEXT:         }) as i64) as i32) as u32;
+// CHECK-NEXT:         }) as i64) as u32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total += ([[V_13]] == 0) as i32;
 // CHECK-NEXT:     let __o: *mut obstack = std::ptr::addr_of_mut!(storage);

@@ -284,12 +284,12 @@ int main ()
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_c]]>(2), size_of<u64, @type[[TYPE_BitField_c]]>(2))
+// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_c]]>(2) [c="__size_t"], size_of<u64, @type[[TYPE_BitField_c]]>(2) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str]])), array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_2]]));
 // DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_c]]>(1), align_of<u64, @type[[TYPE_BitField_c]]>(1))
+// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_c]]>(1) [c="__size_t"], align_of<u64, @type[[TYPE_BitField_c]]>(1) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%[[VALUE_str_3]])), array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_4]]));
@@ -298,12 +298,12 @@ int main ()
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 do %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_sc]]>(2), size_of<u64, @type[[TYPE_BitField_sc]]>(2))
+// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_sc]]>(2) [c="__size_t"], size_of<u64, @type[[TYPE_BitField_sc]]>(2) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_5]])), array_decay<ptr<i8>, length=Some(12)>(%[[VALUE_str_6]]));
 // DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_sc]]>(1), align_of<u64, @type[[TYPE_BitField_sc]]>(1))
+// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_sc]]>(1) [c="__size_t"], align_of<u64, @type[[TYPE_BitField_sc]]>(1) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%[[VALUE_str_7]])), array_decay<ptr<i8>, length=Some(12)>(%[[VALUE_str_8]]));
@@ -312,12 +312,12 @@ int main ()
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_uc]]>(2), size_of<u64, @type[[TYPE_BitField_uc]]>(2))
+// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_uc]]>(2) [c="__size_t"], size_of<u64, @type[[TYPE_BitField_uc]]>(2) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_9]])), array_decay<ptr<i8>, length=Some(14)>(%[[VALUE_str_10]]));
 // DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_uc]]>(1), align_of<u64, @type[[TYPE_BitField_uc]]>(1))
+// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_uc]]>(1) [c="__size_t"], align_of<u64, @type[[TYPE_BitField_uc]]>(1) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%[[VALUE_str_11]])), array_decay<ptr<i8>, length=Some(14)>(%[[VALUE_str_12]]));
@@ -330,12 +330,12 @@ int main ()
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 do %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_s]]>(4), size_of<u64, @type[[TYPE_BitField_s]]>(4))
+// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_s]]>(4) [c="__size_t"], size_of<u64, @type[[TYPE_BitField_s]]>(4) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_13]])), array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str_14]]));
 // DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_s]]>(2), align_of<u64, @type[[TYPE_BitField_s]]>(2))
+// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_s]]>(2) [c="__size_t"], align_of<u64, @type[[TYPE_BitField_s]]>(2) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%[[VALUE_str_15]])), array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str_16]]));
@@ -344,12 +344,12 @@ int main ()
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 do %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_ss]]>(4), size_of<u64, @type[[TYPE_BitField_ss]]>(4))
+// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_ss]]>(4) [c="__size_t"], size_of<u64, @type[[TYPE_BitField_ss]]>(4) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_17]])), array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_18]]));
 // DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_ss]]>(2), align_of<u64, @type[[TYPE_BitField_ss]]>(2))
+// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_ss]]>(2) [c="__size_t"], align_of<u64, @type[[TYPE_BitField_ss]]>(2) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%[[VALUE_str_19]])), array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_20]]));
@@ -358,12 +358,12 @@ int main ()
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 do %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_us]]>(4), size_of<u64, @type[[TYPE_BitField_us]]>(4))
+// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_us]]>(4) [c="__size_t"], size_of<u64, @type[[TYPE_BitField_us]]>(4) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_21]])), array_decay<ptr<i8>, length=Some(15)>(%[[VALUE_str_22]]));
 // DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_us]]>(2), align_of<u64, @type[[TYPE_BitField_us]]>(2))
+// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_us]]>(2) [c="__size_t"], align_of<u64, @type[[TYPE_BitField_us]]>(2) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%[[VALUE_str_23]])), array_decay<ptr<i8>, length=Some(15)>(%[[VALUE_str_24]]));
@@ -376,12 +376,12 @@ int main ()
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 do %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_i]]>(8), size_of<u64, @type[[TYPE_BitField_i]]>(8))
+// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_i]]>(8) [c="__size_t"], size_of<u64, @type[[TYPE_BitField_i]]>(8) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_25]])), array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_26]]));
 // DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_i]]>(4), align_of<u64, @type[[TYPE_BitField_i]]>(4))
+// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_i]]>(4) [c="__size_t"], align_of<u64, @type[[TYPE_BitField_i]]>(4) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%[[VALUE_str_27]])), array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_28]]));
@@ -390,12 +390,12 @@ int main ()
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 do %[[VALUE10:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_si]]>(8), size_of<u64, @type[[TYPE_BitField_si]]>(8))
+// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_si]]>(8) [c="__size_t"], size_of<u64, @type[[TYPE_BitField_si]]>(8) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_29]])), array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_30]]));
 // DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_si]]>(4), align_of<u64, @type[[TYPE_BitField_si]]>(4))
+// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_si]]>(4) [c="__size_t"], align_of<u64, @type[[TYPE_BitField_si]]>(4) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%[[VALUE_str_31]])), array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_32]]));
@@ -404,12 +404,12 @@ int main ()
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 do %[[VALUE11:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_ui]]>(8), size_of<u64, @type[[TYPE_BitField_ui]]>(8))
+// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_ui]]>(8) [c="__size_t"], size_of<u64, @type[[TYPE_BitField_ui]]>(8) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_33]])), array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_34]]));
 // DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_ui]]>(4), align_of<u64, @type[[TYPE_BitField_ui]]>(4))
+// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_ui]]>(4) [c="__size_t"], align_of<u64, @type[[TYPE_BitField_ui]]>(4) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%[[VALUE_str_35]])), array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_36]]));
@@ -422,12 +422,12 @@ int main ()
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 do %[[VALUE13:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_l]]>(16), size_of<u64, @type[[TYPE_BitField_l]]>(16))
+// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_l]]>(16) [c="__size_t"], size_of<u64, @type[[TYPE_BitField_l]]>(16) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_37]])), array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_38]]));
 // DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_l]]>(8), align_of<u64, @type[[TYPE_BitField_l]]>(8))
+// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_l]]>(8) [c="__size_t"], align_of<u64, @type[[TYPE_BitField_l]]>(8) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%[[VALUE_str_39]])), array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_40]]));
@@ -436,12 +436,12 @@ int main ()
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 do %[[VALUE14:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_sl]]>(16), size_of<u64, @type[[TYPE_BitField_sl]]>(16))
+// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_sl]]>(16) [c="__size_t"], size_of<u64, @type[[TYPE_BitField_sl]]>(16) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_41]])), array_decay<ptr<i8>, length=Some(12)>(%[[VALUE_str_42]]));
 // DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_sl]]>(8), align_of<u64, @type[[TYPE_BitField_sl]]>(8))
+// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_sl]]>(8) [c="__size_t"], align_of<u64, @type[[TYPE_BitField_sl]]>(8) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%[[VALUE_str_43]])), array_decay<ptr<i8>, length=Some(12)>(%[[VALUE_str_44]]));
@@ -450,12 +450,12 @@ int main ()
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 do %[[VALUE15:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_ul]]>(16), size_of<u64, @type[[TYPE_BitField_ul]]>(16))
+// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_ul]]>(16) [c="__size_t"], size_of<u64, @type[[TYPE_BitField_ul]]>(16) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_45]])), array_decay<ptr<i8>, length=Some(14)>(%[[VALUE_str_46]]));
 // DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_ul]]>(8), align_of<u64, @type[[TYPE_BitField_ul]]>(8))
+// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_ul]]>(8) [c="__size_t"], align_of<u64, @type[[TYPE_BitField_ul]]>(8) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%[[VALUE_str_47]])), array_decay<ptr<i8>, length=Some(14)>(%[[VALUE_str_48]]));
@@ -468,12 +468,12 @@ int main ()
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 do %[[VALUE17:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_ll]]>(16), size_of<u64, @type[[TYPE_BitField_ll]]>(16))
+// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_ll]]>(16) [c="__size_t"], size_of<u64, @type[[TYPE_BitField_ll]]>(16) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_49]])), array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str_50]]));
 // DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_ll]]>(8), align_of<u64, @type[[TYPE_BitField_ll]]>(8))
+// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_ll]]>(8) [c="__size_t"], align_of<u64, @type[[TYPE_BitField_ll]]>(8) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%[[VALUE_str_51]])), array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str_52]]));
@@ -482,12 +482,12 @@ int main ()
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 do %[[VALUE18:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_sll]]>(16), size_of<u64, @type[[TYPE_BitField_sll]]>(16))
+// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_sll]]>(16) [c="__size_t"], size_of<u64, @type[[TYPE_BitField_sll]]>(16) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_53]])), array_decay<ptr<i8>, length=Some(17)>(%[[VALUE_str_54]]));
 // DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_sll]]>(8), align_of<u64, @type[[TYPE_BitField_sll]]>(8))
+// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_sll]]>(8) [c="__size_t"], align_of<u64, @type[[TYPE_BitField_sll]]>(8) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%[[VALUE_str_55]])), array_decay<ptr<i8>, length=Some(17)>(%[[VALUE_str_56]]));
@@ -496,12 +496,12 @@ int main ()
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 do %[[VALUE19:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_ull]]>(16), size_of<u64, @type[[TYPE_BitField_ull]]>(16))
+// DEFAULT-NEXT:                         if ne<u64>(size_of<u64, @type[[TYPE_Field_ull]]>(16) [c="__size_t"], size_of<u64, @type[[TYPE_BitField_ull]]>(16) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%[[VALUE_str_57]])), array_decay<ptr<i8>, length=Some(19)>(%[[VALUE_str_58]]));
 // DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_ull]]>(8), align_of<u64, @type[[TYPE_BitField_ull]]>(8))
+// DEFAULT-NEXT:                         if ne<u64>(align_of<u64, @type[[TYPE_Field_ull]]>(8) [c="__size_t"], align_of<u64, @type[[TYPE_BitField_ull]]>(8) [c="__size_t"])
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_fail]], const<i32>(1));
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%[[VALUE_str_59]])), array_decay<ptr<i8>, length=Some(19)>(%[[VALUE_str_60]]));

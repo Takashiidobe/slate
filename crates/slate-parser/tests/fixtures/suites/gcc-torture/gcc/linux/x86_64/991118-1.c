@@ -141,7 +141,7 @@ int main(void) {
 // DEFAULT-NEXT:         return copy<@type[[TYPE_tmp4]], reason=return>(read<@type[[TYPE_tmp4]]>(%[[VALUE_tmp4_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, i64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, i64>(8) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         write<@type[[TYPE_tmp]]>(%[[VALUE_tmp]], copy<@type[[TYPE_tmp]], reason=assign>(call<@type[[TYPE_tmp]], signature=fn(@type[[TYPE_tmp]]) -> @type[[TYPE_tmp]], abi=sysv64(native_c) -> native_c>(%[[VALUE_sub]], copy<@type[[TYPE_tmp]], reason=arg>(read<@type[[TYPE_tmp]]>(%[[VALUE_tmp]])))));
 // DEFAULT-NEXT:         write<@type[[TYPE_tmp2]]>(%[[VALUE_tmp2]], copy<@type[[TYPE_tmp2]], reason=assign>(call<@type[[TYPE_tmp2]], signature=fn(@type[[TYPE_tmp2]]) -> @type[[TYPE_tmp2]], abi=sysv64(native_c) -> native_c>(%[[VALUE_sub2]], copy<@type[[TYPE_tmp2]], reason=arg>(read<@type[[TYPE_tmp2]]>(%[[VALUE_tmp2]])))));

@@ -83,15 +83,15 @@ f ()
 // DEFAULT-NEXT:         const<i32>(3);
 // DEFAULT-NEXT:         const<i32>(2);
 // DEFAULT-NEXT:         const<i32>(3);
-// DEFAULT-NEXT:         size_of<u64, i32>(4);
-// DEFAULT-NEXT:         size_of<u64, i32>(4);
-// DEFAULT-NEXT:         size_of<u64, i32>(4);
-// DEFAULT-NEXT:         size_of<u64, i32>(4);
-// DEFAULT-NEXT:         size_of<u64, i32>(4);
+// DEFAULT-NEXT:         size_of<u64, i32>(4) [c="__size_t"];
+// DEFAULT-NEXT:         size_of<u64, i32>(4) [c="__size_t"];
+// DEFAULT-NEXT:         size_of<u64, i32>(4) [c="__size_t"];
+// DEFAULT-NEXT:         size_of<u64, i32>(4) [c="__size_t"];
+// DEFAULT-NEXT:         size_of<u64, i32>(4) [c="__size_t"];
 // DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_not_ok1]]);
 // DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_not_ok2]]);
-// DEFAULT-NEXT:         size_of<u64, i32>(4);
-// DEFAULT-NEXT:         size_of<u64, i32>(4);
+// DEFAULT-NEXT:         size_of<u64, i32>(4) [c="__size_t"];
+// DEFAULT-NEXT:         size_of<u64, i32>(4) [c="__size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

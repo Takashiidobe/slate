@@ -151,9 +151,9 @@ int main(void) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         token_score = token_score * 10
-// CHECK-NEXT:             + (((unsafe {
+// CHECK-NEXT:             + ((unsafe {
 // CHECK-NEXT:                 strlen((token as *const i8) as *const core::ffi::c_char) as u64
-// CHECK-NEXT:             }) as u32) as i32);
+// CHECK-NEXT:             }) as i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { memfrob(obscured.as_mut_ptr() as *mut (), 3u64) };
 // CHECK-NEXT:     unsafe { memfrob(obscured.as_mut_ptr() as *mut (), 3u64) };

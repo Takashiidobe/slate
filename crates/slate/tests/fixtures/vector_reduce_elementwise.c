@@ -138,7 +138,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u\n".as_ptr(),
 // CHECK-NEXT:             __slate_intrinsic_2784696dc045b6b0(u),
-// CHECK-NEXT:             (__slate_intrinsic_f05269fefaa055b0(b) as u32) as i32,
+// CHECK-NEXT:             __slate_intrinsic_f05269fefaa055b0(b) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

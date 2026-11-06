@@ -61,7 +61,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_check_target:[0-9]+]] @check_target(%[[VALUE_ptr:[0-9]+]] ptr: ptr<const i8>, %[[VALUE_end:[0-9]+]] end: ptr<const i8>, %[[VALUE_tokPtr:[0-9]+]] tokPtr: ptr<i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_upper:[0-9]+]] upper: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_tokPtr]])), const<i32>(7));
-// DEFAULT-NEXT:         if ne<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<const i8>>(%[[VALUE_end]]), read<ptr<const i8>>(%[[VALUE_ptr]])), widen<i64, reason=usual_arith>(const<i32>(3)))
+// DEFAULT-NEXT:         if ne<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<const i8>>(%[[VALUE_end]]), read<ptr<const i8>>(%[[VALUE_ptr]])) [c="__ptrdiff_t"], widen<i64, reason=usual_arith>(const<i32>(3)) [c="__ptrdiff_t"])
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_ptr]]), const<i32>(0)))))
 // DEFAULT-NEXT:             {

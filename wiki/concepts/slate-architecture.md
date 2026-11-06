@@ -7,6 +7,7 @@
 - [Projects and targets](#projects-and-targets)
 - [Macro templates](#macro-templates)
 - [Validation](#validation)
+- [System declarations](#system-declarations)
 <!-- /toc -->
 
 ## Pipeline

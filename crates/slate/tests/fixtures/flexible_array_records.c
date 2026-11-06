@@ -328,8 +328,8 @@ int main(void) {
 // CHECK-NEXT:     let array: *mut [u8; 0] = unsafe { std::ptr::addr_of_mut!((* bytes).bytes) };
 // CHECK-NEXT:     for i in 0i32..9i32 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *(std::ptr::addr_of_mut!(* array) as *mut u8).offset(i as isize) = ((i * 3)
-// CHECK-NEXT:                 as i8) as u8;
+// CHECK-NEXT:             *(std::ptr::addr_of_mut!(* array) as *mut u8).offset(i as isize) = (i * 3)
+// CHECK-NEXT:                 as u8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..3i32 {
@@ -349,8 +349,8 @@ int main(void) {
 // CHECK-NEXT:                 .add(3))
 // CHECK-NEXT:                 .tag
 // CHECK-NEXT:         }) != 10
-// CHECK-NEXT:         || (((unsafe { *(std::ptr::addr_of_mut!((* bytes).bytes) as *mut u8).add(8) })
-// CHECK-NEXT:             as u32) as i32) != 24 || (unsafe { (*bytes).head }) != 2.5f64
+// CHECK-NEXT:         || ((unsafe { *(std::ptr::addr_of_mut!((* bytes).bytes) as *mut u8).add(8) })
+// CHECK-NEXT:             as i32) != 24 || (unsafe { (*bytes).head }) != 2.5f64
 // CHECK-NEXT:         || (unsafe { (*bytes).tag }) != 17
 // CHECK-NEXT:         || (unsafe {
 // CHECK-NEXT:             *(std::ptr::addr_of_mut!((* wide).values) as *mut LongDouble).add(2)

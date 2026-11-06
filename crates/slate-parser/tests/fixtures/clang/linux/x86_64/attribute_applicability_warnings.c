@@ -109,7 +109,7 @@ int uses(hidden_alias value) { return value + not_a_union + not_a_local; }
 // IR-WARN-NEXT:     }
 // IR-WARN-NEXT:     fn %[[VALUE_cleanup_target:[0-9]+]] @cleanup_target(%[[VALUE_p:[0-9]+]] p: ptr<void>) -> void [linkage=external];
 // IR-WARN-NEXT:     fn %[[VALUE_uses:[0-9]+]] @uses(%[[VALUE_value:[0-9]+]] value: i32 [c="hidden_alias"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(hidden_alias)"] {
-// IR-WARN-NEXT:         return add<i32>(add<i32>(reinterpret<i32>(read<i32>(%[[VALUE_value]]) [c="hidden_alias"]), read<i32>(%[[VALUE_not_a_union]])), read<i32>(%[[VALUE_not_a_local]]));
+// IR-WARN-NEXT:         return reinterpret<i32>(add<i32>(add<i32>(read<i32>(%[[VALUE_value]]) [c="hidden_alias"], reinterpret<i32>(read<i32>(%[[VALUE_not_a_union]])) [c="hidden_alias"]) [c="hidden_alias"], reinterpret<i32>(read<i32>(%[[VALUE_not_a_local]])) [c="hidden_alias"]) [c="hidden_alias"]);
 // IR-WARN-NEXT:     }
 // IR-WARN-NEXT: }
 // SLATE-FILECHECK-END IR-WARN

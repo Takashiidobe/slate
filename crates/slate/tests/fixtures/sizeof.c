@@ -43,10 +43,10 @@ int main(void) {
 // CHECK-NEXT:     raw: u32,
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sizeof_values() -> i32 {
-// CHECK-NEXT:     ((std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:     (std::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:         .wrapping_add(std::mem::size_of::<[i32; 3]>() as u64)
 // CHECK-NEXT:         .wrapping_add(std::mem::size_of::<Pair>() as u64)
-// CHECK-NEXT:         .wrapping_add(std::mem::size_of::<Slot>() as u64) as u32) as i32
+// CHECK-NEXT:         .wrapping_add(std::mem::size_of::<Slot>() as u64) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sizeof_expr() -> i32 {
 // CHECK-NEXT:     std::mem::size_of::<i32>() as i32

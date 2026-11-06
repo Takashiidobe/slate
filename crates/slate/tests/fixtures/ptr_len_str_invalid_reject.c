@@ -27,12 +27,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe { strlen((bytes as *const i8) as *const core::ffi::c_char) as u64 };
 // CHECK-NEXT:     let mut value: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         value += ((unsafe { __bytes_view[i as usize] }) as u32) as i32;
+// CHECK-NEXT:         value += (unsafe { __bytes_view[i as usize] }) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut bytes: [u8; 3] = [195u8, 169u8, 0];
+// CHECK-NEXT:     let mut bytes: [u8; 3] = [195, 169, 0];
 // CHECK-NEXT:     let value: i32 = first_byte(bytes.as_ptr() as *const u8, 1i32);
 // CHECK-NEXT:     println!("{}", value);
 // CHECK-NEXT:     0

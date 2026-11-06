@@ -74,8 +74,7 @@ int main(void) {
 // CHECK-NEXT:     let a: i8 = 7;
 // CHECK-NEXT:     let b: f32 = 2.5f32;
 // CHECK-NEXT:     let c: u16 = 19;
-// CHECK-NEXT:     if (unsafe { callback.unwrap()(3i32, a as i32, b as f64, (c as u32) as i32) }) != 31
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if (unsafe { callback.unwrap()(3i32, a as i32, b as f64, c as i32) }) != 31 {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     callback = None;

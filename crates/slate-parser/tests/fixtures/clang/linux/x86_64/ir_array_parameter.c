@@ -68,7 +68,7 @@ int plain(int a[]) {
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_unspecified_extent:[0-9]+]] @unspecified_extent(%[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_a_5:[0-9]+]] a: ptr<i32> [array=*]) -> void [linkage=external] [c="void(int, int[*])"];
 // IR-NEXT:     fn %[[VALUE_guaranteed_variable:[0-9]+]] @guaranteed_variable(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE_a_6:[0-9]+]] a: ptr<i32> [array=static %[[VALUE0:[0-9]+]]]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int, int[*])"] {
-// IR-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
+// IR-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]]))) [c="__size_t"];
 // IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_a_6]]), const<i32>(0))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_const_element:[0-9]+]] @const_element(%[[VALUE_a_7:[0-9]+]] a: ptr<const i32> [array=3]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(const int[3])"] {

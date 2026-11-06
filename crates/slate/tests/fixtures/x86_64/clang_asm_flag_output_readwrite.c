@@ -44,12 +44,12 @@ int main(void) {
 // CHECK-NEXT:         flag = unsafe { std::mem::transmute::<u8, u8>([[T_0]] as u8) };
 // CHECK-NEXT:         a = unsafe { std::mem::transmute::<u32, u32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     ((((flag as u32) as i32) * 10 + ((a == 0) as i32)) as i8) as u8
+// CHECK-NEXT:     ((flag as i32) * 10 + ((a == 0) as i32)) as u8
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", equal_rw(3i32, 3i32), equal_rw(3i32, 4i32), (carry_rw(4294967295u32,
-// CHECK-NEXT:         1u32) as u32) as i32
+// CHECK-NEXT:         "{} {} {}", equal_rw(3i32, 3i32), equal_rw(3i32, 4i32), carry_rw(4294967295u32,
+// CHECK-NEXT:         1u32) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

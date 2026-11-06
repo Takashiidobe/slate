@@ -102,7 +102,7 @@ int main(void) {
 // CHECK-NEXT:             / (std::mem::size_of::<Rec__18>() as u64)
 // CHECK-NEXT:     {
 // CHECK-NEXT:         total
-// CHECK-NEXT:             += ((items.0[i as usize].n as u32) as i32)
+// CHECK-NEXT:             += (items.0[i as usize].n as i32)
 // CHECK-NEXT:                 + ((items.0[i as usize].code as u32) as i32)
 // CHECK-NEXT:                 + ((unsafe { *items.0[i as usize].text.add(0) }) as i32);
 // CHECK-NEXT:         i = i.wrapping_add(1);

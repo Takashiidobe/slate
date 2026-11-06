@@ -43,7 +43,7 @@ long long difference(const int *a, int *b) { return a - b; }
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_mixed:[0-9]+]] mixed: u32 [storage=static] [linkage=external] [c="typeof(1L + 1u)"] [c_canon="unsigned long"];
-// DEFAULT-NEXT:     global %[[VALUE_size:[0-9]+]] size: u64 [storage=static] [linkage=external] [c="typeof(sizeof(...))"] [c_canon="unsigned long long"];
+// DEFAULT-NEXT:     global %[[VALUE_size:[0-9]+]] size: u64 [storage=static] [linkage=external] [c="typeof(sizeof(...))"] [c_canon="unsigned long long"] [typedef_chain="__size_t"];
 // DEFAULT-NEXT:     global %[[VALUE_wider:[0-9]+]] wider: i64 [storage=static] [linkage=external] [c="typeof(1LL + 1u)"] [c_canon="long long"];
 // DEFAULT-NEXT:     fn %[[VALUE_ranks:[0-9]+]] @ranks(%[[VALUE_a:[0-9]+]] a: i32 [c="long"], %[[VALUE_b:[0-9]+]] b: u32 [c="unsigned int"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(long, unsigned int)"] {
 // DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: u32 [storage=automatic] = reinterpret<u32, reason=assign>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE_a]])), reinterpret<u32, reason=usual_arith>(read<u32>(%[[VALUE_b]])))) [c="typeof(a + b)"] [c="typeof(a + b)"] [c_canon="unsigned long"];
@@ -53,7 +53,7 @@ long long difference(const int *a, int *b) { return a - b; }
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_difference:[0-9]+]] @difference(%[[VALUE_a_3:[0-9]+]] a: ptr<const i32> [c="const int *"], %[[VALUE_b_3:[0-9]+]] b: ptr<i32> [c="int *"]) -> i64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="long long"] [c="long long(const int *, int *)"] {
-// DEFAULT-NEXT:         return ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<const i32>>(%[[VALUE_a_3]]), read<ptr<i32>>(%[[VALUE_b_3]]));
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return>(ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<const i32>>(%[[VALUE_a_3]]), read<ptr<i32>>(%[[VALUE_b_3]])) [c="__ptrdiff_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

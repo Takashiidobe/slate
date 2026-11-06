@@ -61,7 +61,7 @@ const char *retained(void) {
 // IR-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_str_4]]));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_measured:[0-9]+]] @measured() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return size_of<u64, array<i8, 9>>(9);
+// IR-NEXT:         return reinterpret<u64, reason=return>(size_of<u64, array<i8, 9>>(9) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_indexed:[0-9]+]] @indexed() -> i8 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_str_5]]), const<i32>(1))));

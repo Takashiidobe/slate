@@ -49,20 +49,20 @@ here:
 // IR-NEXT:         return addr_of<ptr<void>>(%[[VALUE_incomplete_object]]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_void_size:[0-9]+]] @void_size() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return size_of<u64, void>(1);
+// IR-NEXT:         return reinterpret<u64, reason=return>(size_of<u64, void>(1) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_void_align:[0-9]+]] @void_align() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return align_of<u64, void>(1);
+// IR-NEXT:         return reinterpret<u64, reason=return>(align_of<u64, void>(1) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_advance:[0-9]+]] @advance(%[[VALUE_p:[0-9]+]] p: ptr<void>, %[[VALUE_n:[0-9]+]] n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(read<ptr<void>>(%[[VALUE_p]]), read<i32>(%[[VALUE_n]]));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_distance:[0-9]+]] @distance(%[[VALUE_a:[0-9]+]] a: ptr<void>, %[[VALUE_b:[0-9]+]] b: ptr<void>) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return ptr_diff<i64, element=void, same_array=required, overflow=ub>(read<ptr<void>>(%[[VALUE_a]]), read<ptr<void>>(%[[VALUE_b]]));
+// IR-NEXT:         return reinterpret<i64, reason=return>(ptr_diff<i64, element=void, same_array=required, overflow=ub>(read<ptr<void>>(%[[VALUE_a]]), read<ptr<void>>(%[[VALUE_b]])) [c="__ptrdiff_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_label_delta:[0-9]+]] @label_delta() -> i64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         label %[[VALUE_here:[0-9]+]] here:
-// IR-NEXT:             return ptr_diff<i64, element=void, same_array=required, overflow=ub>(label_addr<ptr<void>>(%[[VALUE_here]]), label_addr<ptr<void>>(%[[VALUE_here]]));
+// IR-NEXT:             return reinterpret<i64, reason=return>(ptr_diff<i64, element=void, same_array=required, overflow=ub>(label_addr<ptr<void>>(%[[VALUE_here]]), label_addr<ptr<void>>(%[[VALUE_here]])) [c="__ptrdiff_t"]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

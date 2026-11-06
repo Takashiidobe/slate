@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *(*(c as *mut cursor)).p = n;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         n = ((((n as u32) as i32) + 1) as i8) as u8;
+// CHECK-NEXT:         n = ((n as i32) + 1) as u8;
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut u8 = unsafe { (*c).p };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             (*c).p = [[V_0]].add(1);
@@ -60,7 +60,7 @@ int main(void) {
 // CHECK-NEXT:     fill(unsafe { &mut (*std::ptr::addr_of_mut!(c)) }, 1u8);
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0i32..8i32 {
-// CHECK-NEXT:         total += (c.buf[i as usize] as u32) as i32;
+// CHECK-NEXT:         total += c.buf[i as usize] as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", total);
 // CHECK-NEXT:     0

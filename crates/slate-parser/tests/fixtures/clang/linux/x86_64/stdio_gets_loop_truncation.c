@@ -130,7 +130,7 @@ int main(void) {
 // DEFAULT-NEXT:                 return const<i32>(0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         let %[[VALUE_line:[0-9]+]] line: array<i8, 8> [storage=automatic];
-// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<ptr<i8>>(call<ptr<i8>, signature=fn(ptr<i8>, i32, ptr<@type[[TYPE__IO_FILE]]>) -> ptr<i8>>(%[[VALUE_fgets]], array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_line]]), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(size_of<u64, array<i8, 8>>(8))), read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_g]]) [c="FILE *"]), null<ptr<i8>>)
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<ptr<i8>>(call<ptr<i8>, signature=fn(ptr<i8>, i32, ptr<@type[[TYPE__IO_FILE]]>) -> ptr<i8>>(%[[VALUE_fgets]], array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_line]]), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(size_of<u64, array<i8, 8>>(8) [c="__size_t"])), read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_g]]) [c="FILE *"]), null<ptr<i8>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ptr<@type[[TYPE__IO_FILE]]>) -> i32>(%[[VALUE_fputs]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_line]])), read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stdout]]) [c="FILE *"]);
 // DEFAULT-NEXT:             }

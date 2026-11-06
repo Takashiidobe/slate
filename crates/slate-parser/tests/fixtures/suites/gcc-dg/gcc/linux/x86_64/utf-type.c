@@ -47,9 +47,9 @@ int main ()
 // DEFAULT-NEXT:     type @type[[TYPE_char32_t:[0-9]+]] char32_t = u32;
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u16>(2), size_of<u64, u16>(2))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u16>(2) [c="__size_t"], size_of<u64, u16>(2) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u32>(4), size_of<u64, u32>(4))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u32>(4) [c="__size_t"], size_of<u64, u32>(4) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -64,7 +64,7 @@ test (void)
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_x]])));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_x]]))) [c="__size_t"];
 // DEFAULT-NEXT:         let %[[VALUE_arr:[0-9]+]] arr: vla<i8, %[[VALUE0]]> [storage=automatic];
 // DEFAULT-NEXT:         label %[[VALUE_lab:[0-9]+]] lab:
 // DEFAULT-NEXT:             if eq<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_foo]]), neg<i32, overflow=ub>(const<i32>(1)))

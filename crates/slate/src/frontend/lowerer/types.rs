@@ -1195,6 +1195,11 @@ fn known_c_name(types: &CTypes, mut c: QualType, target: &str) -> Option<&'stati
                 if FIXED_WIDTH_TYPEDEFS.contains(&name.as_str()) {
                     return None;
                 }
+                match name.as_str() {
+                    "__size_t" => return Some("size_t"),
+                    "__ptrdiff_t" => return Some("ptrdiff_t"),
+                    _ => {}
+                }
                 if let Some(known) = NAMED_TYPEDEFS.iter().find(|known| **known == name) {
                     return Some(known);
                 }

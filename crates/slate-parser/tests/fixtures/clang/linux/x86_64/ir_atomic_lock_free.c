@@ -59,12 +59,12 @@ int runtime(unsigned long size) {
 // IR-NEXT:     global %[[VALUE_always_address:[0-9]+]] always_address: bool [storage=static] = const<bool>(true) [linkage=external];
 // IR-NEXT:     fn %[[VALUE___atomic_is_lock_free:[0-9]+]] @__atomic_is_lock_free(%[[VALUE0:[0-9]+]] <unnamed>: u64, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const volatile void>) -> bool [linkage=external];
 // IR-NEXT:     fn %[[VALUE_runtime:[0-9]+]] @runtime(%[[VALUE_size:[0-9]+]] size: u64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = from_bool<i32, reason=assign>(call<bool, signature=fn(u64, ptr<const volatile void>) -> bool>(%[[VALUE___atomic_is_lock_free]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(16))), null<ptr<const volatile void>>));
-// IR-NEXT:         let %[[VALUE2:[0-9]+]]: bool [synthetic] = call<bool, signature=fn(u64, ptr<const volatile void>) -> bool>(%[[VALUE___atomic_is_lock_free]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4))), pointer_cast<ptr<const volatile void>, reason=arg>(addr_of<ptr<@type[[TYPE_packed]]>>(%[[VALUE_packed]])));
+// IR-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = from_bool<i32, reason=assign>(call<bool, signature=fn(u64, ptr<const volatile void>) -> bool>(%[[VALUE___atomic_is_lock_free]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(16))) [c="__size_t"], null<ptr<const volatile void>>));
+// IR-NEXT:         let %[[VALUE2:[0-9]+]]: bool [synthetic] = call<bool, signature=fn(u64, ptr<const volatile void>) -> bool>(%[[VALUE___atomic_is_lock_free]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4))) [c="__size_t"], pointer_cast<ptr<const volatile void>, reason=arg>(addr_of<ptr<@type[[TYPE_packed]]>>(%[[VALUE_packed]])));
 // IR-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
 // IR-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE2]])));
 // IR-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE4]]));
-// IR-NEXT:         let %[[VALUE5:[0-9]+]]: bool [synthetic] = call<bool, signature=fn(u64, ptr<const volatile void>) -> bool>(%[[VALUE___atomic_is_lock_free]], read<u64>(%[[VALUE_size]]), null<ptr<const volatile void>>);
+// IR-NEXT:         let %[[VALUE5:[0-9]+]]: bool [synthetic] = call<bool, signature=fn(u64, ptr<const volatile void>) -> bool>(%[[VALUE___atomic_is_lock_free]], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_size]])) [c="__size_t"], null<ptr<const volatile void>>);
 // IR-NEXT:         let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
 // IR-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE6]]), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE5]])));
 // IR-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE7]]));

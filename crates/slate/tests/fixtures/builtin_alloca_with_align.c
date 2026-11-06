@@ -168,16 +168,14 @@ int main(void) {
 // CHECK-NEXT:     let mut ok: i32 = 1;
 // CHECK-NEXT:     let small: *mut i8 = (__slate_alloca::alloca(3 as usize, 16usize) as *mut ())
 // CHECK-NEXT:         as *mut i8;
-// CHECK-NEXT:     let a: *mut i8 = (__slate_alloca::alloca(
-// CHECK-NEXT:         ((n as i64) as u64) as usize,
-// CHECK-NEXT:         (64 as usize) / 8usize,
-// CHECK-NEXT:     ) as *mut ()) as *mut i8;
+// CHECK-NEXT:     let a: *mut i8 = (__slate_alloca::alloca((n as u64) as usize, (64 as usize) / 8usize)
+// CHECK-NEXT:         as *mut ()) as *mut i8;
 // CHECK-NEXT:     let b: *mut i8 = (__slate_alloca::alloca(
-// CHECK-NEXT:         ((n as i64) as u64) as usize,
+// CHECK-NEXT:         (n as u64) as usize,
 // CHECK-NEXT:         (512 as usize) / 8usize,
 // CHECK-NEXT:     ) as *mut ()) as *mut i8;
 // CHECK-NEXT:     let c: *mut i8 = (__slate_alloca::alloca(
-// CHECK-NEXT:         ((n as i64) as u64) as usize,
+// CHECK-NEXT:         (n as u64) as usize,
 // CHECK-NEXT:         (32768 as usize) / 8usize,
 // CHECK-NEXT:     ) as *mut ()) as *mut i8;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = aligned_to(a as *mut (), 8u64) != 0
@@ -196,21 +194,21 @@ int main(void) {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             ((a as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (2i32 as i32) as u8,
-// CHECK-NEXT:             (((n as i64) as u64) as usize) as usize,
+// CHECK-NEXT:             ((n as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             ((b as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (3i32 as i32) as u8,
-// CHECK-NEXT:             (((n as i64) as u64) as usize) as usize,
+// CHECK-NEXT:             ((n as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             ((c as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (4i32 as i32) as u8,
-// CHECK-NEXT:             (((n as i64) as u64) as usize) as usize,
+// CHECK-NEXT:             ((n as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ok
@@ -222,7 +220,7 @@ int main(void) {
 // CHECK-NEXT: fn with_align_uninitialized(n: i32) -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let p: *mut i32 = (__slate_alloca::alloca(
-// CHECK-NEXT:         (std::mem::size_of::<i32>() as u64).wrapping_mul((n as i64) as u64) as usize,
+// CHECK-NEXT:         (std::mem::size_of::<i32>() as u64).wrapping_mul(n as u64) as usize,
 // CHECK-NEXT:         (1024 as usize) / 8usize,
 // CHECK-NEXT:     ) as *mut ()) as *mut i32;
 // CHECK-NEXT:     for i in 0..n {
@@ -252,7 +250,7 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let [[V_0]]: i32 = aligned_to(p as *mut (), 256u64)
-// CHECK-NEXT:             * (((unsafe { *p.add(1099999) }) as u32) as i32);
+// CHECK-NEXT:             * ((unsafe { *p.add(1099999) }) as i32);
 // CHECK-NEXT:         total += [[V_0]] as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total

@@ -151,7 +151,7 @@ int main(void) {
 // CHECK-NEXT:         let mut i: u32 = 0;
 // CHECK-NEXT:         while (i as u64) < (std::mem::size_of::<small_first>() as u64) {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(c"%02x".as_ptr(), (bytes[i as usize] as u32) as i32) };
+// CHECK-NEXT:             unsafe { slate_support::printf(c"%02x".as_ptr(), bytes[i as usize] as i32) };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:             i = i.wrapping_add(1);
 // CHECK-NEXT:         }
@@ -162,7 +162,7 @@ int main(void) {
 // CHECK-NEXT:         let mut i: u32 = 0;
 // CHECK-NEXT:         while (i as u64) < (std::mem::size_of::<padded>() as u64) {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(c"%02x".as_ptr(), (pbytes[i as usize] as u32) as i32) };
+// CHECK-NEXT:             unsafe { slate_support::printf(c"%02x".as_ptr(), pbytes[i as usize] as i32) };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:             i = i.wrapping_add(1);
 // CHECK-NEXT:         }
@@ -189,7 +189,7 @@ int main(void) {
 // CHECK-NEXT:         let mut i: u32 = 0;
 // CHECK-NEXT:         while (i as u64) < (std::mem::size_of::<padded>() as u64) {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(c"%02x".as_ptr(), (abytes[i as usize] as u32) as i32) };
+// CHECK-NEXT:             unsafe { slate_support::printf(c"%02x".as_ptr(), abytes[i as usize] as i32) };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:             i = i.wrapping_add(1);
 // CHECK-NEXT:         }
@@ -225,9 +225,7 @@ int main(void) {
 // CHECK-NEXT:         let mut i: u32 = 0;
 // CHECK-NEXT:         while (i as u64) < (std::mem::size_of::<nested>() as u64) {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::printf(c"%02x".as_ptr(), (lbytes.0[i as usize] as u32) as i32)
-// CHECK-NEXT:             };
+// CHECK-NEXT:             unsafe { slate_support::printf(c"%02x".as_ptr(), lbytes.0[i as usize] as i32) };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:             i = i.wrapping_add(1);
 // CHECK-NEXT:         }
@@ -259,7 +257,7 @@ int main(void) {
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64) < (std::mem::size_of::<nested>() as u64) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%02x".as_ptr(), (nbytes.0[i as usize] as u32) as i32) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%02x".as_ptr(), nbytes.0[i as usize] as i32) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }

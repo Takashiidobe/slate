@@ -32,13 +32,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     check(std::mem::size_of::<[i8; 3]>() as i32, 3i32);
-// CHECK-NEXT:     check((((unsafe { narrow[0] }) as u8) as u32) as i32, 195i32);
+// CHECK-NEXT:     check(((unsafe { narrow[0] }) as u8) as i32, 195i32);
 // CHECK-NEXT:     check(
-// CHECK-NEXT:         (((std::mem::size_of::<[u16; 2]>() as u64) / (std::mem::size_of::<u16>() as u64)) as u32)
-// CHECK-NEXT:             as i32,
+// CHECK-NEXT:         ((std::mem::size_of::<[u16; 2]>() as u64) / (std::mem::size_of::<u16>() as u64)) as i32,
 // CHECK-NEXT:         2i32,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     check(((unsafe { __slate_str6[0] }) as u32) as i32, 233i32);
+// CHECK-NEXT:     check((unsafe { __slate_str6[0] }) as i32, 233i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

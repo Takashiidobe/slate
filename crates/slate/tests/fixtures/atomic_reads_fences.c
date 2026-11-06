@@ -81,7 +81,7 @@ int main(void) {
 // CHECK-NEXT:     (p as *const i32) as *mut i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut a: u8 = 231u8;
+// CHECK-NEXT:     let mut a: u8 = 231;
 // CHECK-NEXT:     let mut b: i16 = -1234;
 // CHECK-NEXT:     let mut c: i32 = -765432;
 // CHECK-NEXT:     let mut d: u64 = 18364758544493064720;
@@ -90,7 +90,7 @@ int main(void) {
 // CHECK-NEXT:     let mut r#fn: Option<unsafe extern "C-unwind" fn(i32) -> i32> = Some(callback);
 // CHECK-NEXT:     let mut flag: bool = true;
 // CHECK-NEXT:     let mut v: i32 = 17;
-// CHECK-NEXT:     let mut s: u16 = 65000u16;
+// CHECK-NEXT:     let mut s: u16 = 65000;
 // CHECK-NEXT:     let mut wide: u64 = d;
 // CHECK-NEXT:     let mut counters: Counters = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Counters = unsafe { std::mem::zeroed() };
@@ -98,10 +98,10 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].small = 9u16;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let av: i32 = ((unsafe {
+// CHECK-NEXT:     let av: i32 = (unsafe {
 // CHECK-NEXT:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(a) as *mut u8)
 // CHECK-NEXT:             .load(std::sync::atomic::Ordering::Relaxed)
-// CHECK-NEXT:     }) as u32) as i32;
+// CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     let bv: i32 = (unsafe {
 // CHECK-NEXT:         std::sync::atomic::AtomicI16::from_ptr(std::ptr::addr_of_mut!(b) as *mut i16)
 // CHECK-NEXT:             .load(std::sync::atomic::Ordering::Acquire)
@@ -244,7 +244,7 @@ int main(void) {
 // CHECK-NEXT:             dv,
 // CHECK-NEXT:             *pv,
 // CHECK-NEXT:             vv,
-// CHECK-NEXT:             (sv as u32) as i32,
+// CHECK-NEXT:             sv as i32,
 // CHECK-NEXT:             wv,
 // CHECK-NEXT:             calls,
 // CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(v)),
@@ -252,7 +252,7 @@ int main(void) {
 // CHECK-NEXT:                     std::ptr::addr_of_mut!(shared) as *mut i32,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .load(std::sync::atomic::Ordering::Acquire),
-// CHECK-NEXT:             (std::ptr::read_volatile(std::ptr::addr_of!(counters.small)) as u32) as i32,
+// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(counters.small)) as i32,
 // CHECK-NEXT:             std::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                     std::ptr::addr_of_mut!(counters.value) as *mut i32,
 // CHECK-NEXT:                 )

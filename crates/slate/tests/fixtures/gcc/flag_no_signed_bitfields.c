@@ -133,7 +133,7 @@ int main(void) {
 // CHECK-NEXT:             v.__slate_bits_0.__get_a(),
 // CHECK-NEXT:             v.__slate_bits_0.__get_b() as i32,
 // CHECK-NEXT:             v.__slate_bits_0.__get_c() as i32,
-// CHECK-NEXT:             (v.__slate_bits_0.__get_d() as u32) as i32,
+// CHECK-NEXT:             v.__slate_bits_0.__get_d() as i32,
 // CHECK-NEXT:             v.__slate_bits_0.__get_e() as i32,
 // CHECK-NEXT:             v.__slate_bits_1.__get_f() as i32,
 // CHECK-NEXT:             v.__slate_bits_1.__get_h() as i32,
@@ -152,10 +152,10 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     v.__slate_bits_1.__set_i(7 as u128);
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     unsafe { printf(c"%d\n".as_ptr(), (v.__slate_bits_1.__get_i() as u32) as i32) };
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v.__slate_bits_1.__get_i() as i32) };
 // I686-UNKNOWN-LINUX-GNU-NEXT:     unsafe { printf(c"7\n".as_ptr()) };
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     v.__slate_bits_1.__set_i(7 as u128);
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     unsafe { printf(c"%d\n".as_ptr(), (v.__slate_bits_1.__get_i() as u32) as i32) };
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v.__slate_bits_1.__get_i() as i32) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

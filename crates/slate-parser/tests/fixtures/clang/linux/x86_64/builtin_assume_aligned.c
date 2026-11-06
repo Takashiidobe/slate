@@ -51,11 +51,11 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_assume_aligned:[0-9]+]] @__builtin_assume_aligned(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE1:[0-9]+]] <unnamed>: u64, ...) -> ptr<void> [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_first_word:[0-9]+]] @first_word(%[[VALUE_p:[0-9]+]] p: ptr<void>) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<const void>, u64, ...) -> ptr<void>>(%[[VALUE___builtin_assume_aligned]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_p]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(32))));
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<const void>, u64, ...) -> ptr<void>>(%[[VALUE___builtin_assume_aligned]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_p]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(32))) [c="__size_t"]);
 // DEFAULT-NEXT:         return read<ptr<void>>(%[[VALUE_q]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_first_word_offset:[0-9]+]] @first_word_offset(%[[VALUE_p_2:[0-9]+]] p: ptr<void>, %[[VALUE_off:[0-9]+]] off: u64 [c="size_t"]) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] [c="void *(void *, size_t)"] {
-// DEFAULT-NEXT:         let %[[VALUE_q_2:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<const void>, u64, ...) -> ptr<void>>(%[[VALUE___builtin_assume_aligned]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_p_2]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(32))), read<u64>(%[[VALUE_off]]) [c="size_t"]);
+// DEFAULT-NEXT:         let %[[VALUE_q_2:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<const void>, u64, ...) -> ptr<void>>(%[[VALUE___builtin_assume_aligned]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_p_2]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(32))) [c="__size_t"], read<u64>(%[[VALUE_off]]) [c="size_t"]);
 // DEFAULT-NEXT:         return read<ptr<void>>(%[[VALUE_q_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

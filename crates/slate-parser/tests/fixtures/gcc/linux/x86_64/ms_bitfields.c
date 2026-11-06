@@ -52,9 +52,9 @@ int widening_size = sizeof(struct widening);
 // DEFAULT-NEXT:         field1 y: i64 : 3;
 // DEFAULT-NEXT:         field2 z: i32 : 3;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0, 0], bit_offsets=[Some(0), Some(3), Some(6)], bit_units=[(0, 2)], field_units=[Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     global %[[VALUE_plain_size:[0-9]+]] plain_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_plain]]>(4))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_opted_out_size:[0-9]+]] opted_out_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_opted_out]]>(4))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_widening_size:[0-9]+]] widening_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_widening]]>(8))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_plain_size:[0-9]+]] plain_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_plain]]>(4) [c="__size_t"])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_opted_out_size:[0-9]+]] opted_out_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_opted_out]]>(4) [c="__size_t"])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_widening_size:[0-9]+]] widening_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_widening]]>(8) [c="__size_t"])) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN ON
@@ -95,9 +95,9 @@ int widening_size = sizeof(struct widening);
 // ON-NEXT:         field1 y: i64 : 3;
 // ON-NEXT:         field2 z: i32 : 3;
 // ON-NEXT:     } [size=24, align=8, offsets=[0, 8, 16], bit_offsets=[Some(0), Some(64), Some(128)], bit_units=[(0, 4), (8, 8), (16, 4)], field_units=[Some(0), Some(1), Some(2)]];
-// ON-NEXT:     global %[[VALUE_plain_size:[0-9]+]] plain_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_plain]]>(12))) [linkage=external];
-// ON-NEXT:     global %[[VALUE_opted_out_size:[0-9]+]] opted_out_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_opted_out]]>(4))) [linkage=external];
-// ON-NEXT:     global %[[VALUE_widening_size:[0-9]+]] widening_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_widening]]>(24))) [linkage=external];
+// ON-NEXT:     global %[[VALUE_plain_size:[0-9]+]] plain_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_plain]]>(12) [c="__size_t"])) [linkage=external];
+// ON-NEXT:     global %[[VALUE_opted_out_size:[0-9]+]] opted_out_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_opted_out]]>(4) [c="__size_t"])) [linkage=external];
+// ON-NEXT:     global %[[VALUE_widening_size:[0-9]+]] widening_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_widening]]>(24) [c="__size_t"])) [linkage=external];
 // ON-NEXT: }
 // SLATE-FILECHECK-END ON
 // SLATE-FILECHECK-BEGIN OFF
@@ -138,8 +138,8 @@ int widening_size = sizeof(struct widening);
 // OFF-NEXT:         field1 y: i64 : 3;
 // OFF-NEXT:         field2 z: i32 : 3;
 // OFF-NEXT:     } [size=8, align=8, offsets=[0, 0, 0], bit_offsets=[Some(0), Some(3), Some(6)], bit_units=[(0, 2)], field_units=[Some(0), Some(0), Some(0)]];
-// OFF-NEXT:     global %[[VALUE_plain_size:[0-9]+]] plain_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_plain]]>(4))) [linkage=external];
-// OFF-NEXT:     global %[[VALUE_opted_out_size:[0-9]+]] opted_out_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_opted_out]]>(4))) [linkage=external];
-// OFF-NEXT:     global %[[VALUE_widening_size:[0-9]+]] widening_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_widening]]>(8))) [linkage=external];
+// OFF-NEXT:     global %[[VALUE_plain_size:[0-9]+]] plain_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_plain]]>(4) [c="__size_t"])) [linkage=external];
+// OFF-NEXT:     global %[[VALUE_opted_out_size:[0-9]+]] opted_out_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_opted_out]]>(4) [c="__size_t"])) [linkage=external];
+// OFF-NEXT:     global %[[VALUE_widening_size:[0-9]+]] widening_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_widening]]>(8) [c="__size_t"])) [linkage=external];
 // OFF-NEXT: }
 // SLATE-FILECHECK-END OFF

@@ -54,7 +54,7 @@ int main (void)
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u32 [storage=automatic] [c="uint32_t"];
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_b]], reinterpret<u32, reason=assign>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg>(read<u32>(%[[VALUE_a]]) [c="uint32_t"]))) [c="uint32_t"]) [c="uint32_t"];
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a]], reinterpret<u32, reason=assign>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg>(read<u32>(%[[VALUE_b]]) [c="uint32_t"]))) [c="uint32_t"]) [c="uint32_t"];
-// DEFAULT-NEXT:         if logical_or<bool>(eq<u32>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_b]]) [c="uint32_t"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4))), ne<u32>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_a]]) [c="uint32_t"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4))))
+// DEFAULT-NEXT:         if logical_or<bool>(eq<u32>(read<u32>(%[[VALUE_b]]) [c="uint32_t"], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4)) [c="uint32_t"]), ne<u32>(read<u32>(%[[VALUE_a]]) [c="uint32_t"], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4)) [c="uint32_t"]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

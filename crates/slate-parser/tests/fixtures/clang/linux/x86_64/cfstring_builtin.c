@@ -54,7 +54,7 @@ unsigned long size(void) { return sizeof(__NSConstantString); }
 // DEFAULT-NEXT:         return pointer_cast<ptr<const void>, reason=return>(addr_of<ptr<const @type[[TYPE___NSConstantString_tag]]>>(%[[VALUE__unnamed_cfstring_12]]) [c="const __NSConstantString *"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_size:[0-9]+]] @size() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return size_of<u64, @type[[TYPE___NSConstantString_tag]]>(32);
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return>(size_of<u64, @type[[TYPE___NSConstantString_tag]]>(32) [c="__size_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

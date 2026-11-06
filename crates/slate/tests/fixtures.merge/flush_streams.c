@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT: target android-x86_64: 1 compiles
 // CHECK-NEXT:   flush_streams.c: [] 1 compiled
 // CHECK-NEXT: total: 3 compiles across 3 targets
-// CHECK-NEXT: unit flush_streams: 12 items, 1 gated, 0 duplicated functions
+// CHECK-NEXT: unit flush_streams: 11 items, 0 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 2 function-like, 2 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   macro CHECK: 3 lifted, inline:
@@ -111,29 +111,18 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             fwrite(
-// CHECK-NEXT:                 b"written\n\0".as_ptr() as *const (),
-// CHECK-NEXT:                 1u64,
-// CHECK-NEXT:                 8u64,
-// CHECK-NEXT:                 slate_support::stderr(),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("five {}", 5i32);
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             fwrite(
-// CHECK-NEXT:                 b"written\n\0".as_ptr() as *const (),
-// CHECK-NEXT:                 (1 as c_ulong),
-// CHECK-NEXT:                 (8 as c_ulong),
-// CHECK-NEXT:                 slate_support::stderr(),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
 // CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         fwrite(
+// CHECK-NEXT:             b"written\n\0".as_ptr() as *const (),
+// CHECK-NEXT:             (1 as size_t),
+// CHECK-NEXT:             (8 as size_t),
+// CHECK-NEXT:             slate_support::stderr(),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::fputc(54i32, slate_support::stdout()) };
@@ -213,8 +202,6 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: use core::ffi::c_ulong;
 // CHECK-NEXT: use slate_support::size_t;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

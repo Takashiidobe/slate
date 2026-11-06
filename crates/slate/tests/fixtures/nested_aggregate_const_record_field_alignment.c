@@ -95,7 +95,7 @@ int main(void) {
 // CHECK-NEXT:         .inner.scanners[2] } .unwrap() (10i32) }, unsafe { g.inner.tag }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..8i32 {
-// CHECK-NEXT:         print!("{} ", ((unsafe { g.bytes[i as usize] }) as u32) as i32);
+// CHECK-NEXT:         print!("{} ", (unsafe { g.bytes[i as usize] }) as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");

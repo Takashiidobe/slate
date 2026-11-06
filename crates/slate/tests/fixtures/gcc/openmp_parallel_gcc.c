@@ -200,7 +200,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn vla_sum(mut n: i32) -> i32 {
-// CHECK-NEXT:     let mut [[V_3:__v[0-9]+]]: u64 = (n as i64) as u64;
+// CHECK-NEXT:     let mut [[V_3:__v[0-9]+]]: u64 = n as u64;
 // CHECK-NEXT:     let mut values: Vec<i32> = {
 // CHECK-NEXT:         let mut __slate_vla: Vec<i32> = Vec::with_capacity([[V_3]] as usize);
 // CHECK-NEXT:         unsafe {

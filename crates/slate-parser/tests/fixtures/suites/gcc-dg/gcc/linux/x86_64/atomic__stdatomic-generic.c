@@ -93,7 +93,7 @@ main ()
 // DEFAULT-NEXT:     global %[[VALUE_ones:[0-9]+]] ones: @type[[TYPE_test]] [storage=static] = aggregate<@type[[TYPE_test]], zero_fill=false>(field0 = aggregate<array<i32, 10>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(1), index2 = const<i32>(1), index3 = const<i32>(1), index4 = const<i32>(1), index5 = const<i32>(1), index6 = const<i32>(1), index7 = const<i32>(1), index8 = const<i32>(1), index9 = const<i32>(1))) [linkage=external] [c="test_struct"];
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: atomic @type[[TYPE_test]] [storage=static] [linkage=external] [c="_Atomic test_struct"];
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: @type[[TYPE_test]] [storage=static] [linkage=external] [c="test_struct"];
-// DEFAULT-NEXT:     global %[[VALUE_size:[0-9]+]] size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, @type[[TYPE_test]]>(40))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_size:[0-9]+]] size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(size_of<u64, @type[[TYPE_test]]>(40) [c="__size_t"])) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_memcmp:[0-9]+]] @memcmp(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
@@ -103,7 +103,7 @@ main ()
 // DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp:[0-9]+]] __atomic_store_tmp: @type[[TYPE_test]] [storage=automatic] = copy<@type[[TYPE_test]], reason=assign>(read<@type[[TYPE_test]]>(%[[VALUE_zero]]) [c="test_struct"]) [c="typeof((cast)0, *__atomic_store_ptr)"] [c="typeof((cast)0, *__atomic_store_ptr)"];
 // DEFAULT-NEXT:             write<@type[[TYPE_test]], atomic=relaxed>(deref(read<ptr<atomic @type[[TYPE_test]]>>(%[[VALUE___atomic_store_ptr]])), read<@type[[TYPE_test]]>(deref(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE___atomic_store_tmp]]))) [c="typeof((cast)0, *__atomic_store_ptr)"]) [c="_Atomic test_struct"];
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<atomic @type[[TYPE_test]]>>(%[[VALUE_a]]) [c="_Atomic test_struct *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_zero]]) [c="test_struct *"]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_size]])))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<atomic @type[[TYPE_test]]>>(%[[VALUE_a]]) [c="_Atomic test_struct *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_zero]]) [c="test_struct *"]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_size]]))) [c="__size_t"]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: @type[[TYPE_test]] [synthetic];
 // DEFAULT-NEXT:         {
@@ -115,9 +115,9 @@ main ()
 // DEFAULT-NEXT:             write<@type[[TYPE_test]]>(%[[VALUE3]], read<@type[[TYPE_test]]>(%[[VALUE___atomic_exchange_tmp]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<@type[[TYPE_test]]>(%[[VALUE_c]], copy<@type[[TYPE_test]], reason=assign>(read<@type[[TYPE_test]]>(%[[VALUE3]]) [c="typeof((cast)0, *__atomic_exchange_ptr)"]) [c="test_struct"]) [c="test_struct"];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_c]]) [c="test_struct *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_zero]]) [c="test_struct *"]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_size]])))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_c]]) [c="test_struct *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_zero]]) [c="test_struct *"]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_size]]))) [c="__size_t"]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<atomic @type[[TYPE_test]]>>(%[[VALUE_a]]) [c="_Atomic test_struct *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_ones]]) [c="test_struct *"]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_size]])))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<atomic @type[[TYPE_test]]>>(%[[VALUE_a]]) [c="_Atomic test_struct *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_ones]]) [c="test_struct *"]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_size]]))) [c="__size_t"]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: @type[[TYPE_test]] [synthetic];
 // DEFAULT-NEXT:         {
@@ -127,7 +127,7 @@ main ()
 // DEFAULT-NEXT:             write<@type[[TYPE_test]]>(%[[VALUE5]], read<@type[[TYPE_test]]>(%[[VALUE___atomic_load_tmp]]) [c="typeof((cast)0, *__atomic_load_ptr)"]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<@type[[TYPE_test]]>(%[[VALUE_b]], copy<@type[[TYPE_test]], reason=assign>(read<@type[[TYPE_test]]>(%[[VALUE5]]) [c="typeof((cast)0, *__atomic_load_ptr)"]) [c="test_struct"]) [c="test_struct"];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_b]]) [c="test_struct *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_ones]]) [c="test_struct *"]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_size]])))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_b]]) [c="test_struct *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_ones]]) [c="test_struct *"]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_size]]))) [c="__size_t"]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
@@ -138,7 +138,7 @@ main ()
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%[[VALUE6]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<atomic @type[[TYPE_test]]>>(%[[VALUE_a]]) [c="_Atomic test_struct *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_zero]]) [c="test_struct *"]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_size]])))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<atomic @type[[TYPE_test]]>>(%[[VALUE_a]]) [c="_Atomic test_struct *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_zero]]) [c="test_struct *"]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_size]]))) [c="__size_t"]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
@@ -149,7 +149,7 @@ main ()
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE8]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_b]]) [c="test_struct *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_zero]]) [c="test_struct *"]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_size]])))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_b]]) [c="test_struct *"]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_test]]>>(%[[VALUE_zero]]) [c="test_struct *"]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_size]]))) [c="__size_t"]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -87,7 +87,7 @@ int main(void) {
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         label %[[VALUE_loopDone2]] loopDone2:
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         if ne<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_a]]), read<ptr<i8>>(%[[VALUE_pz]])), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_b]]), read<ptr<i8>>(%[[VALUE_pzDta]])))
+// DEFAULT-NEXT:         if ne<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_a]]), read<ptr<i8>>(%[[VALUE_pz]])) [c="__ptrdiff_t"], ptr_diff<i64, element=i8, same_array=required, overflow=ub>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_b]]), read<ptr<i8>>(%[[VALUE_pzDta]])) [c="__ptrdiff_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

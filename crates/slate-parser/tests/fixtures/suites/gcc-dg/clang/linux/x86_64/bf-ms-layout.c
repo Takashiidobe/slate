@@ -361,112 +361,112 @@ int main(){
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]]), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_i]]))))), read<u8>(%[[VALUE_i]]));
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_one]]>>(%[[VALUE_test_one]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_one]]>(8));
+// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_one]]>>(%[[VALUE_test_one]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_one]]>(8) [c="__size_t"]);
 // DEFAULT-NEXT:             if ne<i32>(widen<i32, reason=promotion>(read<i8>(field3(%[[VALUE_test_one]]))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_exp_one_c]]))))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_two]]>>(%[[VALUE_test_two]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_two]]>(8));
+// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_two]]>>(%[[VALUE_test_two]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_two]]>(8) [c="__size_t"]);
 // DEFAULT-NEXT:             if ne<i32>(widen<i32, reason=promotion>(read<i8>(field3(%[[VALUE_test_two]]))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_exp_two_c]]))))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_three]]>>(%[[VALUE_test_three]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_three]]>(6));
+// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_three]]>>(%[[VALUE_test_three]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_three]]>(6) [c="__size_t"]);
 // DEFAULT-NEXT:             if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(bitfield3<unit=0, bytes=2..5, bits=12..19>(%[[VALUE_test_three]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_exp_three_c]]))))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_four]]>>(%[[VALUE_test_four]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_four]]>(6));
+// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_four]]>>(%[[VALUE_test_four]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_four]]>(6) [c="__size_t"]);
 // DEFAULT-NEXT:             if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(bitfield3<unit=1, bytes=4..5, bits=0..7>(%[[VALUE_test_four]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_exp_four_c]]))))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_five]]>>(%[[VALUE_test_five]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_five]]>(6));
+// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_five]]>>(%[[VALUE_test_five]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_five]]>(6) [c="__size_t"]);
 // DEFAULT-NEXT:             if ne<i32>(widen<i32, reason=promotion>(read<i8>(field3(%[[VALUE_test_five]]))), widen<i32, reason=promotion>(read<i8>(%[[VALUE_exp_five_c]])))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_six]]>>(%[[VALUE_test_six]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_six]]>(6));
+// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_six]]>>(%[[VALUE_test_six]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_six]]>(6) [c="__size_t"]);
 // DEFAULT-NEXT:             if ne<i32>(widen<i32, reason=promotion>(read<i8>(field3(%[[VALUE_test_six]]))), widen<i32, reason=promotion>(read<i8>(%[[VALUE_exp_six_c]])))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_seven]]>>(%[[VALUE_test_seven]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_seven]]>(6));
+// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_seven]]>>(%[[VALUE_test_seven]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_seven]]>(6) [c="__size_t"]);
 // DEFAULT-NEXT:             if ne<i32>(widen<i32, reason=promotion>(read<i8>(field4(%[[VALUE_test_seven]]))), widen<i32, reason=promotion>(read<i8>(%[[VALUE_exp_seven_c]])))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_eight]]>>(%[[VALUE_test_eight]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_eight]]>(2));
+// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_eight]]>>(%[[VALUE_test_eight]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_eight]]>(2) [c="__size_t"]);
 // DEFAULT-NEXT:             if ne<i32>(widen<i32, reason=promotion>(read<i8>(field1(%[[VALUE_test_eight]]))), widen<i32, reason=promotion>(read<i8>(%[[VALUE_exp_eight_c]])))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_nine]]>>(%[[VALUE_test_nine]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_nine]]>(8));
+// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_nine]]>>(%[[VALUE_test_nine]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_nine]]>(8) [c="__size_t"]);
 // DEFAULT-NEXT:             if ne<i32>(widen<i32, reason=promotion>(read<i8>(field1(%[[VALUE_test_nine]]))), widen<i32, reason=promotion>(read<i8>(%[[VALUE_exp_nine_c]])))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_ten]]>>(%[[VALUE_test_ten]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_ten]]>(8));
+// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_ten]]>>(%[[VALUE_test_ten]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(16)>(%[[VALUE_filler]])), size_of<u64, @type[[TYPE_ten]]>(8) [c="__size_t"]);
 // DEFAULT-NEXT:             if ne<i32>(widen<i32, reason=promotion>(read<i8>(field2(%[[VALUE_test_ten]]))), widen<i32, reason=promotion>(read<i8>(%[[VALUE_exp_ten_c]])))
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_one]]>(8), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_one]]) [c="size_t"]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_one]]>(8) [c="__size_t"], reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_one]]) [c="size_t"]) [c="__size_t"])
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_two]]>(8), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_two]]) [c="size_t"]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_two]]>(8) [c="__size_t"], reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_two]]) [c="size_t"]) [c="__size_t"])
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_three]]>(6), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_three]]) [c="size_t"]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_three]]>(6) [c="__size_t"], reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_three]]) [c="size_t"]) [c="__size_t"])
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_four]]>(6), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_four]]) [c="size_t"]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_four]]>(6) [c="__size_t"], reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_four]]) [c="size_t"]) [c="__size_t"])
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_five]]>(6), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_five]]) [c="size_t"]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_five]]>(6) [c="__size_t"], reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_five]]) [c="size_t"]) [c="__size_t"])
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_six]]>(6), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_six]]) [c="size_t"]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_six]]>(6) [c="__size_t"], reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_six]]) [c="size_t"]) [c="__size_t"])
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_seven]]>(6), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_seven]]) [c="size_t"]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_seven]]>(6) [c="__size_t"], reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_seven]]) [c="size_t"]) [c="__size_t"])
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_eight]]>(2), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_eight]]) [c="size_t"]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_eight]]>(2) [c="__size_t"], reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_eight]]) [c="size_t"]) [c="__size_t"])
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_nine]]>(8), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_nine]]) [c="size_t"]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_nine]]>(8) [c="__size_t"], reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_nine]]) [c="size_t"]) [c="__size_t"])
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_ten]]>(8), reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_ten]]) [c="size_t"]))
+// DEFAULT-NEXT:             if ne<u64>(size_of<u64, @type[[TYPE_ten]]>(8) [c="__size_t"], reinterpret<u64, reason=usual_arith>(read<u64>(%[[VALUE_exp_sizeof_ten]]) [c="size_t"]) [c="__size_t"])
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;

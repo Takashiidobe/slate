@@ -231,7 +231,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_values.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_values: 53 items, 2 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_values: 55 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:double_it: 2 variants
 // CHECK-NEXT:   spliced fn:show_trace: 2 variants
 // CHECK-NEXT:   spliced fn:plain_values: 2 variants
@@ -560,7 +560,7 @@ int main(void) {
 // CHECK-NEXT:                 r,
 // CHECK-NEXT:                 (unsafe { cursor }
 // CHECK-NEXT:                     .offset_from((std::ptr::addr_of_mut!(table.0) as *mut i32) as *mut i32)
-// CHECK-NEXT:                     as i64) as i32,
+// CHECK-NEXT:                     as ptrdiff_t) as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -573,7 +573,7 @@ int main(void) {
 // CHECK-NEXT:             ((unsafe {
 // CHECK-NEXT:                 unsafe { cursor }
 // CHECK-NEXT:                     .offset_from((std::ptr::addr_of_mut!(table.0) as *mut i32) as *mut i32)
-// CHECK-NEXT:             }) as c_long) as i32
+// CHECK-NEXT:             }) as ptrdiff_t) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut local: *mut i32 = unsafe { std::ptr::addr_of_mut!(table.0) as *mut i32 };
@@ -588,7 +588,7 @@ int main(void) {
 // CHECK-NEXT:                 c"%d %d\n".as_ptr(),
 // CHECK-NEXT:                 sum,
 // CHECK-NEXT:                 (local.offset_from((std::ptr::addr_of_mut!(table.0) as *mut i32) as *mut i32)
-// CHECK-NEXT:                     as i64) as i32,
+// CHECK-NEXT:                     as ptrdiff_t) as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -600,7 +600,7 @@ int main(void) {
 // CHECK-NEXT:             sum,
 // CHECK-NEXT:             ((unsafe {
 // CHECK-NEXT:                 local.offset_from((std::ptr::addr_of_mut!(table.0) as *mut i32) as *mut i32)
-// CHECK-NEXT:             }) as c_long) as i32
+// CHECK-NEXT:             }) as ptrdiff_t) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut count: i32 = 0;
@@ -703,7 +703,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     let wide: c_long = MIN!((5000000000 as c_long), (7000000000 as c_long));
-// CHECK-NEXT:     let small: u8 = 200u8;
+// CHECK-NEXT:     let small: u8 = 200;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -721,7 +721,7 @@ int main(void) {
 // CHECK-NEXT:             c"%.2f %d %d\n".as_ptr(),
 // CHECK-NEXT:             half,
 // CHECK-NEXT:             BIT!(a),
-// CHECK-NEXT:             (TEXT_LENGTH!(c"four".as_ptr() as *mut c_char) as u32) as i32,
+// CHECK-NEXT:             TEXT_LENGTH!(c"four".as_ptr() as *mut c_char) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -864,7 +864,7 @@ int main(void) {
 // CHECK-NEXT:             "{} {} {}",
 // CHECK-NEXT:             shifted,
 // CHECK-NEXT:             unsafe { global_size },
-// CHECK-NEXT:             (WIDE_MIN!((100 as c_ulong), unsafe { global_size }) as u32) as i32
+// CHECK-NEXT:             WIDE_MIN!((100 as c_ulong), unsafe { global_size }) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -1254,11 +1254,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! MAX__2 {
 // CHECK-NEXT:     ($a:expr, $b:expr) => {
-// CHECK-NEXT:         if ((($a) as u32) as i32) > $b {
-// CHECK-NEXT:             (($a) as u32) as i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             $b
-// CHECK-NEXT:         }
+// CHECK-NEXT:         if (($a) as i32) > $b { ($a) as i32 } else { $b }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -1336,7 +1332,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! TWICE__2 {
 // CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         ((($x) as u32) as i32) + ((($x) as u32) as i32)
+// CHECK-NEXT:         (($x) as i32) + (($x) as i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -1373,6 +1369,8 @@ int main(void) {
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: use core::ffi::c_long;
 // CHECK-NEXT: use core::ffi::c_ulong;
+// CHECK-NEXT: use slate_support::ptrdiff_t;
+// CHECK-NEXT: use slate_support::size_t;
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-NOT: {{.}}

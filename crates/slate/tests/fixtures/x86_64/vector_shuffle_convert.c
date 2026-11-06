@@ -503,7 +503,7 @@ int main(void) {
 // CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 16]> = __SlateAlign16([0i64; 16]);
 // CHECK-NEXT:         for i in 0i32..16i32 {
 // CHECK-NEXT:             lanes.0[i as usize] =
-// CHECK-NEXT:                 (std::simd::num::SimdUint::cast::<u16>(unsigned_bytes)[i as usize] as u64) as i64;
+// CHECK-NEXT:                 std::simd::num::SimdUint::cast::<u16>(unsigned_bytes)[i as usize] as i64;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {

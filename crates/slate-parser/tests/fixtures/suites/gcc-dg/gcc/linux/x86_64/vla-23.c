@@ -46,7 +46,7 @@ foo (int a)
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0)))
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_a]])));
+// DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_a]]))) [c="__size_t"];
 // DEFAULT-NEXT:             let %[[VALUE_s:[0-9]+]] s: vla<i32, %[[VALUE0]]> [storage=automatic];
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         }

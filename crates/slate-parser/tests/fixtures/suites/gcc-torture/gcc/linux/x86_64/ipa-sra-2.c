@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_r]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] [c="int(int, char *[])"] {
-// DEFAULT-NEXT:         let %[[VALUE_agg_2:[0-9]+]] agg: ptr<@type[[TYPE_both]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_both]]>, reason=assign>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_calloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), size_of<u64, @type[[TYPE_small]]>(40)));
+// DEFAULT-NEXT:         let %[[VALUE_agg_2:[0-9]+]] agg: ptr<@type[[TYPE_both]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_both]]>, reason=assign>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_calloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))) [c="__size_t"], size_of<u64, @type[[TYPE_small]]>(40) [c="__size_t"]));
 // DEFAULT-NEXT:         let %[[VALUE_r_2:[0-9]+]] r: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_r_2]], call<i32, signature=fn(i32, ptr<@type[[TYPE_both]]>) -> i32>(%[[VALUE_foo]], from_bool<i32, reason=arg>(gt<i32>(read<i32>(%[[VALUE_argc]]), const<i32>(2000))), read<ptr<@type[[TYPE_both]]>>(%[[VALUE_agg_2]])));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_both]]>>(%[[VALUE_agg_2]])));

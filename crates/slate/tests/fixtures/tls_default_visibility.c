@@ -72,8 +72,7 @@ int main(void) {
 // CHECK-NEXT: fn detect() -> i32 {
 // CHECK-NEXT:     if (unsafe { supported }) == -1 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             supported = ((strlen(malloc_conf as *const core::ffi::c_char) as u64) as u32)
-// CHECK-NEXT:                 as i32;
+// CHECK-NEXT:             supported = (strlen(malloc_conf as *const core::ffi::c_char) as u64) as i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { supported }

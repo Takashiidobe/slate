@@ -250,7 +250,7 @@ void c(int n, ...) {
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_a_2:[0-9]+]] a: ptr<i32> [storage=automatic] = va_arg<ptr<i32>>(%[[VALUE_list_2]]);
-// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset:[0-9]+]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%[[VALUE_a_2]])), const<i32>(0), size_of<u64, array<i32, 500>>(2000));
+// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset:[0-9]+]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%[[VALUE_a_2]])), const<i32>(0), size_of<u64, array<i32, 500>>(2000) [c="__size_t"]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         va_end(%[[VALUE_list_2]]);
 // DEFAULT-NEXT:     }

@@ -32,7 +32,7 @@ unsigned long function_size(void) {
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_add:[0-9]+]] @add(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE1:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
 // IR-NEXT:     fn %[[VALUE_function_size:[0-9]+]] @function_size() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(1);
+// IR-NEXT:         return reinterpret<u64, reason=return>(const<u64>(1) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

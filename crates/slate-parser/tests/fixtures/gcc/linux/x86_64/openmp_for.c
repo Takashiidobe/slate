@@ -171,7 +171,7 @@ void chunk_capture(int chunk, int *out) {
 // DEFAULT-NEXT:                         loop %[[VALUE_p_2:[0-9]+]] p: ptr<f64> [storage=automatic]
 // DEFAULT-NEXT:                             lower: read<ptr<f64>>(%[[VALUE_first]])
 // DEFAULT-NEXT:                             condition: lt read<ptr<f64>>(%[[VALUE_last]])
-// DEFAULT-NEXT:                             step: add widen<i64>(const<i32>(1))
+// DEFAULT-NEXT:                             step: add widen<i64>(const<i32>(1)) [c="__ptrdiff_t"]
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             write<f64>(deref(read<ptr<f64>>(%[[VALUE_p_2]])), int_to_float<f64>(const<i32>(1)));
 // DEFAULT-NEXT:                     omp_for %[[VALUE7:[0-9]+]]

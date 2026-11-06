@@ -124,7 +124,7 @@ int main(void) {
 // CHECK-NEXT:             flag as i32,
 // CHECK-NEXT:             number as u32,
 // CHECK-NEXT:             word.value,
-// CHECK-NEXT:             (half.value as u32) as i32,
+// CHECK-NEXT:             half.value as i32,
 // CHECK-NEXT:             r#fn.unwrap()(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

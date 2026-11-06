@@ -85,10 +85,10 @@ int values(void) {
 // IR-NEXT:         return const<i32>(0);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_table:[0-9]+]] @table() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return size_of<u64, array<i32, 4>>(16);
+// IR-NEXT:         return reinterpret<u64, reason=return>(size_of<u64, array<i32, 4>>(16) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_values:[0-9]+]] @values() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(0), const<i32>(-1)), const<i32>(1)), const<i32>(16)), const<i32>(1)))), size_of<u64, @type[[TYPE_flags]]>(4))));
+// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(0), const<i32>(-1)), const<i32>(1)), const<i32>(16)), const<i32>(1)))) [c="__size_t"], size_of<u64, @type[[TYPE_flags]]>(4) [c="__size_t"]) [c="__size_t"]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

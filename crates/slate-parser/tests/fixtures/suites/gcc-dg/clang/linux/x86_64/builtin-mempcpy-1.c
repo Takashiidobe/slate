@@ -36,7 +36,7 @@ void test_bare (void *d, const void *s, __SIZE_TYPE__ n) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_mempcpy:[0-9]+]] @__builtin_mempcpy(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_test_bare:[0-9]+]] @test_bare(%[[VALUE_d:[0-9]+]] d: ptr<void>, %[[VALUE_s:[0-9]+]] s: ptr<const void>, %[[VALUE_n:[0-9]+]] n: u64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_mempcpy]], read<ptr<void>>(%[[VALUE_d]]), read<ptr<const void>>(%[[VALUE_s]]), read<u64>(%[[VALUE_n]]));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_mempcpy]], read<ptr<void>>(%[[VALUE_d]]), read<ptr<const void>>(%[[VALUE_s]]), reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_n]])) [c="__size_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

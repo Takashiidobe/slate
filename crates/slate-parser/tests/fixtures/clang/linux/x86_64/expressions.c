@@ -88,7 +88,7 @@ done:
 // DEFAULT-NEXT:         let %[[VALUE_target:[0-9]+]] target: ptr<void> [storage=automatic] = label_addr<ptr<void>>(%[[VALUE_done:[0-9]+]]);
 // DEFAULT-NEXT:         goto *read<ptr<void>>(%[[VALUE_target]]);
 // DEFAULT-NEXT:         label %[[VALUE_done]] done:
-// DEFAULT-NEXT:             return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(size_of<u64, @type[[TYPE_point]]>(8), size_of<u64, ptr<void>>(8))));
+// DEFAULT-NEXT:             return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(size_of<u64, @type[[TYPE_point]]>(8) [c="__size_t"], size_of<u64, ptr<void>>(8) [c="__size_t"]) [c="__size_t"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

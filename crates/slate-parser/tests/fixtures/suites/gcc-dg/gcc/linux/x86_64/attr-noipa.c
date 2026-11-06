@@ -227,7 +227,7 @@ fn25 (void)
 // DEFAULT-NEXT:     fn %[[VALUE_fn4:[0-9]+]] @fn4(%[[VALUE0:[0-9]+]] <unnamed>: ptr<i8>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_alloca:[0-9]+]] @__builtin_alloca(%[[VALUE1:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_fn5:[0-9]+]] @fn5(%[[VALUE_x_3:[0-9]+]] x: i32, %[[VALUE_y_2:[0-9]+]] y: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(add<i32, overflow=ub>(read<i32>(%[[VALUE_x_3]]), read<i32>(%[[VALUE_y_2]]))))));
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(add<i32, overflow=ub>(read<i32>(%[[VALUE_x_3]]), read<i32>(%[[VALUE_y_2]])))) [c="__size_t"]));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>) -> void>(%[[VALUE_fn4]], read<ptr<i8>>(%[[VALUE_p]]));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_x_3]]), read<i32>(%[[VALUE_y_2]]));
 // DEFAULT-NEXT:     }

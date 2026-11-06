@@ -78,7 +78,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_bump]], addr_of<ptr<i32>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = const<i32>(10);
 // DEFAULT-NEXT:         let %[[VALUE_peeked:[0-9]+]] peeked: i32 [storage=automatic] = call<i32, signature=fn(ptr<i32>) -> i32>(%[[VALUE_peek]], addr_of<ptr<i32>>(%[[VALUE_b]]));
-// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], size_of<u64, i32>(4)));
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], size_of<u64, i32>(4) [c="__size_t"]));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_c]])), const<i32>(100));
 // DEFAULT-NEXT:         let %[[VALUE_v_2:[0-9]+]] v: i32 [storage=automatic] = call<i32, signature=fn(ptr<i32>) -> i32>(%[[VALUE_use_and_free]], read<ptr<i32>>(%[[VALUE_c]]));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])), read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_peeked]]), read<i32>(%[[VALUE_v_2]]));

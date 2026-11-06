@@ -19,9 +19,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn all_bytes_identical(src: *const (), size: u64) -> i32 {
 // CHECK-NEXT:     let b: u8 = unsafe { *(src as *const u8).add(0) };
 // CHECK-NEXT:     for p in 1..size {
-// CHECK-NEXT:         if (((unsafe { *(src as *const u8).add(p as usize) }) as u32) as i32)
-// CHECK-NEXT:             != ((b as u32) as i32)
-// CHECK-NEXT:         {
+// CHECK-NEXT:         if ((unsafe { *(src as *const u8).add(p as usize) }) as i32) != (b as i32) {
 // CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

@@ -112,10 +112,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c" %02x".as_ptr(),
-// CHECK-NEXT:                 (*bytes.add(i as usize) as u32) as i32,
-// CHECK-NEXT:             )
+// CHECK-NEXT:             slate_support::printf(c" %02x".as_ptr(), *bytes.add(i as usize) as i32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }

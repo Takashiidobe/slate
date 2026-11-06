@@ -37,7 +37,7 @@ void f(__SIZE_TYPE__ d)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_t:[0-9]+]] t = vla<i32, %[[VALUE0:[0-9]+]]>;
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_d:[0-9]+]] d: u64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE0]]: u64 [synthetic] = read<u64>(%[[VALUE_d]]);
+// DEFAULT-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign>(read<u64>(%[[VALUE_d]])) [c="__size_t"];
 // DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: ptr<vla<i32, %[[VALUE0]]>> [storage=automatic] = int_to_ptr<ptr<vla<i32, %[[VALUE0]]>>, reason=explicit>(read<u64>(%[[VALUE_d]])) [c="t *"] [c="t *"];
 // DEFAULT-NEXT:         read<ptr<vla<i32, %[[VALUE0]]>>>(%[[VALUE_g]]) [c="t *"];
 // DEFAULT-NEXT:     }

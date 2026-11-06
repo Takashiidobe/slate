@@ -79,8 +79,7 @@ int main(void) {
 // CHECK-NEXT: unit named_types: 19 items, 0 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:add_total: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit named_types_helper: 6 items, 2 gated, 1 duplicated functions
-// CHECK-NEXT:   duplicated fn:tally_sum: 2 variants
+// CHECK-NEXT: unit named_types_helper: 5 items, 0 gated, 0 duplicated functions
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 2 shared symbols, 0 mismatches
@@ -131,7 +130,7 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn clamp_base(mut value: c_ulong, byte: u8, length: size_t) -> c_ulong {
 // CHECK-NEXT:     if length < 16 {
-// CHECK-NEXT:         value = value.wrapping_add(((byte as u32) as i32) as c_ulong);
+// CHECK-NEXT:         value = value.wrapping_add((byte as i32) as c_ulong);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if value >= 65521 {
 // CHECK-NEXT:         value = value.wrapping_sub(65521);
@@ -266,28 +265,19 @@ int main(void) {
 // CHECK-NEXT: use core::ffi::c_ulong;
 // CHECK-NEXT: use slate_support::size_t;
 // CHECK-NEXT: file named_types_helper.rs
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn tally_sum(tally: *const tally) -> c_long {
-// CHECK-NEXT:     (unsafe { (*tally).count })
-// CHECK-NEXT:         + ((unsafe { (*tally).bytes }) as c_long)
-// CHECK-NEXT:         + ((unsafe { (*tally).tag }) as c_long)
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn tally_sum(tally: *const tally) -> c_long {
-// CHECK-NEXT:     (unsafe { (*tally).count })
-// CHECK-NEXT:         + (((unsafe { (*tally).bytes }) as u32) as c_long)
-// CHECK-NEXT:         + ((unsafe { (*tally).tag }) as c_long)
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct tally {
 // CHECK-NEXT:     count: c_long,
 // CHECK-NEXT:     bytes: size_t,
 // CHECK-NEXT:     tag: c_char,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: extern "C-unwind" fn tally_sum(tally: *const tally) -> c_long {
+// CHECK-NEXT:     (unsafe { (*tally).count })
+// CHECK-NEXT:         + ((unsafe { (*tally).bytes }) as c_long)
+// CHECK-NEXT:         + ((unsafe { (*tally).tag }) as c_long)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;

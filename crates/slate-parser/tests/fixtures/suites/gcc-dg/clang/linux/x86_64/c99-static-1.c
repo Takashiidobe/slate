@@ -81,19 +81,19 @@ void g6(void) { sizeof(sizeof(int [f6()])); }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3() -> i32 [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_g3:[0-9]+]] @g3() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         size_of<u64, i32>(4);
+// DEFAULT-NEXT:         size_of<u64, i32>(4) [c="__size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4() -> i32 [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_g4:[0-9]+]] @g4() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         size_of<u64, ptr<vla<i32, %[[VALUE1:[0-9]+]]>>>(8);
+// DEFAULT-NEXT:         size_of<u64, ptr<vla<i32, %[[VALUE1:[0-9]+]]>>>(8) [c="__size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5() -> i32 [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_g5:[0-9]+]] @g5() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         size_of<u64, array<i32, 1>>(4);
+// DEFAULT-NEXT:         size_of<u64, array<i32, 1>>(4) [c="__size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6() -> i32 [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_g6:[0-9]+]] @g6() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         size_of<u64, u64>(8);
+// DEFAULT-NEXT:         size_of<u64, u64>(8) [c="__size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

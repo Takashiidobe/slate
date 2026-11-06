@@ -266,7 +266,7 @@ char * _do_text_substitution (char *input)
 // DEFAULT-NEXT:                         yield ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE4]]), null<ptr<i8>>);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             write<i32>(%[[VALUE_start]], truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(%[[VALUE_found]]), read<ptr<i8>>(%[[VALUE_input]]))));
+// DEFAULT-NEXT:                             write<i32>(%[[VALUE_start]], truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(%[[VALUE_found]]), read<ptr<i8>>(%[[VALUE_input]])) [c="__ptrdiff_t"]));
 // DEFAULT-NEXT:                             write<ptr<i8>>(%[[VALUE_input]], read<ptr<i8>>(%[[VALUE_temp]]));
 // DEFAULT-NEXT:                             write<ptr<i8>>(%[[VALUE_reader]], ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_temp]]), read<i32>(%[[VALUE_start]])), read<i32>(%[[VALUE_middle]])));
 // DEFAULT-NEXT:                         }
@@ -292,7 +292,7 @@ char * _do_text_substitution (char *input)
 // DEFAULT-NEXT:         let %[[VALUE_line:[0-9]+]] line: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_f1:[0-9]+]] f1: ptr<@type[[TYPE__IO_FILE]]> [storage=automatic] = null<ptr<@type[[TYPE__IO_FILE]]>> [c="FILE *"] [c="FILE *"];
 // DEFAULT-NEXT:         let %[[VALUE_f2:[0-9]+]] f2: ptr<@type[[TYPE__IO_FILE]]> [storage=automatic] = null<ptr<@type[[TYPE__IO_FILE]]>> [c="FILE *"] [c="FILE *"];
-// DEFAULT-NEXT:         if logical_or<bool>(not<bool>(ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_new_filename]]), null<ptr<i8>>)), lt<u64>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_new_filename]]))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))))
+// DEFAULT-NEXT:         if logical_or<bool>(not<bool>(ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_new_filename]]), null<ptr<i8>>)), lt<u64>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_new_filename]]))) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))) [c="__size_t"]))
 // DEFAULT-NEXT:             write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_new_filename]]), sub<u64, overflow=wrap>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_filename_2]]))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))), truncate<i8, reason=assign, fits=always>(const<i32>(120)));
 // DEFAULT-NEXT:         if logical_or<bool>(not<bool>(ne<ptr<@type[[TYPE__IO_FILE]]>>(read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f1]]) [c="FILE *"], null<ptr<@type[[TYPE__IO_FILE]]>>)), not<bool>(ne<ptr<@type[[TYPE__IO_FILE]]>>(read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f2]]) [c="FILE *"], null<ptr<@type[[TYPE__IO_FILE]]>>)))
 // DEFAULT-NEXT:             while %[[VALUE5:[0-9]+]] {

@@ -146,7 +146,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 6 compiles
 // CHECK-NEXT:   splice_statements.c: [alpha,beta,gamma] 6 compiled
 // CHECK-NEXT: total: 12 compiles across 2 targets
-// CHECK-NEXT: unit splice_statements: 15 items, 2 gated, 0 duplicated functions
+// CHECK-NEXT: unit splice_statements: 15 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced record:state: 2 variants
 // CHECK-NEXT:   spliced fn:added_statement: 2 variants
 // CHECK-NEXT:   spliced fn:repeated_text: 4 variants
@@ -457,7 +457,6 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: use core::ffi::c_ulong;
+// CHECK-NEXT: use slate_support::size_t;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

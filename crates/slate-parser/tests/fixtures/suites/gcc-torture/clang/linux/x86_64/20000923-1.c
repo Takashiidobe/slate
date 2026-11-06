@@ -35,8 +35,8 @@ void foo (void)
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] [const] = const<i32>(3) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [const] = const<i32>(50) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_a]])));
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_b]])));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_a]]))) [c="__size_t"];
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_b]]))) [c="__size_t"];
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: vla<vla<i64, %[[VALUE1]]>, %[[VALUE0]]> [storage=automatic];
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             in 0 "r" [reg] width 64 array_decay<ptr<vla<i64, %[[VALUE1]]>>, length=None>(%[[VALUE_x]]);

@@ -167,7 +167,7 @@ inline void testC();
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=always>(const<i32>(3)) [c="typeof(sizeof(...))"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test8:[0-9]+]] @test8(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<u32, signature=fn(ptr<i8>, ptr<const i8>, u32) -> u32>(%[[VALUE_strlcpy]], null<ptr<i8>>, null<ptr<const i8>>, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         call<u32, signature=fn(ptr<i8>, ptr<const i8>, u32) -> u32>(%[[VALUE_strlcpy]], null<ptr<i8>>, null<ptr<const i8>>, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)) [c="__size_t"]) [c="__size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test9:[0-9]+]] @test9(unprototyped) -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }

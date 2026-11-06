@@ -33,7 +33,7 @@ void foo(int i, int A[i+1])
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_i:[0-9]+]] i: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_i_2:[0-9]+]] i: i32, %[[VALUE_A:[0-9]+]] A: ptr<i32> [array=%[[VALUE0:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] [c="void(int, int[*])"] {
-// DEFAULT-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(add<i32, overflow=ub>(read<i32>(%[[VALUE_i_2]]), const<i32>(1))));
+// DEFAULT-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(add<i32, overflow=ub>(read<i32>(%[[VALUE_i_2]]), const<i32>(1)))) [c="__size_t"];
 // DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic] = read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_A]]), read<i32>(%[[VALUE_i_2]]))));
 // DEFAULT-NEXT:         nested_fn %[[VALUE_bar:[0-9]+]] @bar() -> void [captures=%[[VALUE_A]]: ptr<i32>, %[[VALUE_i_2]]: i32] {
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_baz]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_A]]), read<i32>(%[[VALUE_i_2]])))));

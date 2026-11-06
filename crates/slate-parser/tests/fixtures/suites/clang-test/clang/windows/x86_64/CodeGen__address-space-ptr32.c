@@ -69,26 +69,26 @@ size_t test_calling_strlen_with_64_bit_pointer ( char *s ) {
 // DEFAULT-NEXT:     type @type[[TYPE_size_t_2:[0-9]+]] size_t = u64;
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: ptr<fn(i32) -> i32, ptr32_sptr> [storage=automatic];
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, ptr<fn(i32) -> i32, ptr32_sptr>>(4)));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, ptr<fn(i32) -> i32, ptr32_sptr>>(4) [c="__size_t"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i32, ptr32_sptr> [storage=automatic];
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, ptr<i32, ptr32_sptr>>(4)));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, ptr<i32, ptr32_sptr>>(4) [c="__size_t"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<i32, ptr32_sptr> [storage=automatic] [c="IP32_PTR"];
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, ptr<i32, ptr32_sptr>>(4)));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, ptr<i32, ptr32_sptr>>(4) [c="__size_t"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fugu:[0-9]+]] @fugu() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_p_3:[0-9]+]] p: ptr<i32, ptr32_sptr> [storage=automatic];
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, ptr<i32, ptr32_sptr>>(4)));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, ptr<i32, ptr32_sptr>>(4) [c="__size_t"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external] [c="size_t(const char *)"];
 // DEFAULT-NEXT:     fn %[[VALUE_test_calling_strlen_with_32_bit_pointer:[0-9]+]] @test_calling_strlen_with_32_bit_pointer(%[[VALUE_s:[0-9]+]] s: ptr<i8, ptr32_sptr>) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="size_t(char *__ptr32)"] {
-// DEFAULT-NEXT:         return reinterpret<u64, reason=return>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], address_space_cast<ptr<const i8>, reason=arg>(read<ptr<i8, ptr32_sptr>>(%[[VALUE_s]])))) [c="size_t"];
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], address_space_cast<ptr<const i8>, reason=arg>(read<ptr<i8, ptr32_sptr>>(%[[VALUE_s]]))) [c="__size_t"]) [c="size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_calling_strlen_with_64_bit_pointer:[0-9]+]] @test_calling_strlen_with_64_bit_pointer(%[[VALUE_s_2:[0-9]+]] s: ptr<i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="size_t(char *)"] {
-// DEFAULT-NEXT:         return reinterpret<u64, reason=return>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_s_2]])))) [c="size_t"];
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_s_2]]))) [c="__size_t"]) [c="size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

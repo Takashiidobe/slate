@@ -46,8 +46,8 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%x %02x %02x\n".as_ptr(),
 // CHECK-NEXT:             scalar as u32,
-// CHECK-NEXT:             (*bytes.add(0) as u32) as i32,
-// CHECK-NEXT:             (*bytes.add(7) as u32) as i32,
+// CHECK-NEXT:             *bytes.add(0) as i32,
+// CHECK-NEXT:             *bytes.add(7) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

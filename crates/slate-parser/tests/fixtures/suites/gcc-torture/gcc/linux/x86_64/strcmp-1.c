@@ -191,7 +191,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<u64>(%[[VALUE_off1]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"]) [c="size_t"];
-// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%[[VALUE_off1]]) [c="size_t"], reinterpret<u64, reason=usual_arith>(size_of<u64, i64>(8)) [c="size_t"])
+// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%[[VALUE_off1]]) [c="size_t"], reinterpret<u64, reason=usual_arith>(size_of<u64, i64>(8) [c="__size_t"]) [c="size_t"])
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_off1]]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE2]]) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="size_t"]) [c="size_t"] [c="size_t"];
@@ -202,7 +202,7 @@ int main(void) {
 // DEFAULT-NEXT:                 for %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:                     init:
 // DEFAULT-NEXT:                         write<u64>(%[[VALUE_off2]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"]) [c="size_t"];
-// DEFAULT-NEXT:                     condition: lt<u64>(read<u64>(%[[VALUE_off2]]) [c="size_t"], reinterpret<u64, reason=usual_arith>(size_of<u64, i64>(8)) [c="size_t"])
+// DEFAULT-NEXT:                     condition: lt<u64>(read<u64>(%[[VALUE_off2]]) [c="size_t"], reinterpret<u64, reason=usual_arith>(size_of<u64, i64>(8) [c="__size_t"]) [c="size_t"])
 // DEFAULT-NEXT:                     increment: {
 // DEFAULT-NEXT:                         let %[[VALUE5:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_off2]]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                         let %[[VALUE6:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE5]]) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="size_t"]) [c="size_t"] [c="size_t"];
@@ -213,7 +213,7 @@ int main(void) {
 // DEFAULT-NEXT:                         for %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:                             init:
 // DEFAULT-NEXT:                                 write<u64>(%[[VALUE_len]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"]) [c="size_t"];
-// DEFAULT-NEXT:                             condition: lt<u64>(read<u64>(%[[VALUE_len]]) [c="size_t"], reinterpret<u64, reason=usual_arith>(mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), size_of<u64, i64>(8))) [c="size_t"])
+// DEFAULT-NEXT:                             condition: lt<u64>(read<u64>(%[[VALUE_len]]) [c="size_t"], reinterpret<u64, reason=usual_arith>(mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))) [c="__size_t"], size_of<u64, i64>(8) [c="__size_t"]) [c="__size_t"]) [c="size_t"])
 // DEFAULT-NEXT:                             increment: {
 // DEFAULT-NEXT:                                 let %[[VALUE8:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_len]]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                                 let %[[VALUE9:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE8]]) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="size_t"]) [c="size_t"] [c="size_t"];
@@ -258,7 +258,7 @@ int main(void) {
 // DEFAULT-NEXT:                                     for %[[VALUE20:[0-9]+]]
 // DEFAULT-NEXT:                                         init:
 // DEFAULT-NEXT:                                             write<u64>(%[[VALUE_i]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"]) [c="size_t"];
-// DEFAULT-NEXT:                                         condition: lt<u64>(read<u64>(%[[VALUE_i]]) [c="size_t"], reinterpret<u64, reason=usual_arith>(add<u64, overflow=wrap>(size_of<u64, i64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))))) [c="size_t"])
+// DEFAULT-NEXT:                                         condition: lt<u64>(read<u64>(%[[VALUE_i]]) [c="size_t"], reinterpret<u64, reason=usual_arith>(add<u64, overflow=wrap>(size_of<u64, i64>(8) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))) [c="__size_t"]) [c="__size_t"]) [c="size_t"])
 // DEFAULT-NEXT:                                         increment: {
 // DEFAULT-NEXT:                                             let %[[VALUE21:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_i]]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                                             let %[[VALUE22:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE21]]) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="size_t"]) [c="size_t"] [c="size_t"];
@@ -306,7 +306,7 @@ int main(void) {
 // DEFAULT-NEXT:                                     for %[[VALUE35:[0-9]+]]
 // DEFAULT-NEXT:                                         init:
 // DEFAULT-NEXT:                                             write<u64>(%[[VALUE_i]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"]) [c="size_t"];
-// DEFAULT-NEXT:                                         condition: lt<u64>(read<u64>(%[[VALUE_i]]) [c="size_t"], reinterpret<u64, reason=usual_arith>(add<u64, overflow=wrap>(size_of<u64, i64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))))) [c="size_t"])
+// DEFAULT-NEXT:                                         condition: lt<u64>(read<u64>(%[[VALUE_i]]) [c="size_t"], reinterpret<u64, reason=usual_arith>(add<u64, overflow=wrap>(size_of<u64, i64>(8) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))) [c="__size_t"]) [c="__size_t"]) [c="size_t"])
 // DEFAULT-NEXT:                                         increment: {
 // DEFAULT-NEXT:                                             let %[[VALUE36:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_i]]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                                             let %[[VALUE37:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE36]]) [c="size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))) [c="size_t"]) [c="size_t"] [c="size_t"];

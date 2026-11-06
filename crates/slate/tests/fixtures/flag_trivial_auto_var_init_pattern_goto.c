@@ -56,9 +56,7 @@ int main(void) {
 // CHECK-NEXT:             std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 8usize);
 // CHECK-NEXT:             let n: i32 = -1431655766i32;
 // CHECK-NEXT:             let raw: *const u8 = std::ptr::addr_of_mut!(*[[SLATE_SLOT_0]]) as *const u8;
-// CHECK-NEXT:             total += ((*raw.add(0) as u32) as i32)
-// CHECK-NEXT:                 + ((*raw.add(1) as u32) as i32)
-// CHECK-NEXT:                 + ((((n as i8) as u8) as u32) as i32);
+// CHECK-NEXT:             total += (*raw.add(0) as i32) + (*raw.add(1) as i32) + ((n as u8) as i32);
 // CHECK-NEXT:             round += 1;
 // CHECK-NEXT:             if round >= limit {
 // CHECK-NEXT:                 break;

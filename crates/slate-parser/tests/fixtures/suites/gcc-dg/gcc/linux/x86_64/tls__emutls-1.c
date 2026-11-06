@@ -52,7 +52,7 @@ int main ()
 // DEFAULT-NEXT:     extern %[[VALUE___tls__i:[0-9]+]] __tls__i: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     extern %[[VALUE___tls__j:[0-9]+]] __tls__j: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_delta:[0-9]+]] delta: i32 [storage=automatic] = truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE___tls__j]])), pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE___tls__i]]))));
+// DEFAULT-NEXT:         let %[[VALUE_delta:[0-9]+]] delta: i32 [storage=automatic] = truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE___tls__j]])), pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE___tls__i]]))) [c="__ptrdiff_t"]);
 // DEFAULT-NEXT:         if lt<i32>(read<i32>(%[[VALUE_delta]]), const<i32>(0))
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_delta]], neg<i32, overflow=ub>(read<i32>(%[[VALUE_delta]])));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<i32>(read<i32>(%[[VALUE_delta]]), const<i32>(12)));

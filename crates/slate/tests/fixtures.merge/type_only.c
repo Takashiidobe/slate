@@ -22,7 +22,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 2 compiles
 // CHECK-NEXT:   type_only.c: [alpha] 2 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit type_only: 9 items, 3 gated, 0 duplicated functions
+// CHECK-NEXT: unit type_only: 9 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced record:state: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
@@ -94,7 +94,6 @@ int main(void) {
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: #[cfg(feature = "alpha")]
 // CHECK-NEXT: use core::ffi::c_long;
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: use core::ffi::c_ulong;
+// CHECK-NEXT: use slate_support::size_t;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

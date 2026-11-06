@@ -30,10 +30,10 @@ int main(void) {
 // CHECK-NEXT:     let mut sa: i32 = 0;
 // CHECK-NEXT:     let mut sb: i32 = 0;
 // CHECK-NEXT:     for i in 0..a.len() as i32 {
-// CHECK-NEXT:         sa += ((unsafe { a[i as usize] }) as u32) as i32;
+// CHECK-NEXT:         sa += (unsafe { a[i as usize] }) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0..b.len() as i32 {
-// CHECK-NEXT:         sb += ((unsafe { b[i as usize] }) as u32) as i32;
+// CHECK-NEXT:         sb += (unsafe { b[i as usize] }) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let order: i32 = unsafe {
 // CHECK-NEXT:         a[0usize..(3u64 as usize) as usize].cmp(&b[0usize..(3u64 as usize) as usize])

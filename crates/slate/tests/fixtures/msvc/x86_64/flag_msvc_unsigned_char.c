@@ -18,8 +18,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: // { dg-options "/Zc:preprocessor /J" }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let c: u8 = 200u8;
-// CHECK-NEXT:     if ((c as u32) as i32) != 200 || ((c as u32) as i32) <= 0 || 255i32 != 255 {
+// CHECK-NEXT:     let c: u8 = 200;
+// CHECK-NEXT:     if (c as i32) != 200 || (c as i32) <= 0 || 255i32 != 255 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

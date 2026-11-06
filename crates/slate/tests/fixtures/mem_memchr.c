@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-NEXT:     let mut buf: [u8; 8] = [10, 20, 30, 40, 50, 60, 70, 80];
 // CHECK-NEXT:     let mut cbuf: [u8; 4] = [9, 8, 7, 6];
 // CHECK-NEXT:     let mut word: [i8; 4] = [97, 98, 99, 0];
-// CHECK-NEXT:     let needle: i32 = (buf[3] as u32) as i32;
+// CHECK-NEXT:     let needle: i32 = buf[3] as i32;
 // CHECK-NEXT:     let partial_count: u64 = 4;
 // CHECK-NEXT:     let hit: *mut u8 = (unsafe {
 // CHECK-NEXT:         __builtin_memchr(buf.as_mut_ptr() as *const (), needle, 8u64)

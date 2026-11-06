@@ -34,7 +34,7 @@ int f2(char *d, char *e, int f) { int g = e - d; return *f1(&f, &g); }
 // DEFAULT-NEXT:         return read<ptr<i32>>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_d:[0-9]+]] d: ptr<i8>, %[[VALUE_e:[0-9]+]] e: ptr<i8>, %[[VALUE_f:[0-9]+]] f: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: i32 [storage=automatic] = truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(%[[VALUE_e]]), read<ptr<i8>>(%[[VALUE_d]])));
+// DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: i32 [storage=automatic] = truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(%[[VALUE_e]]), read<ptr<i8>>(%[[VALUE_d]])) [c="__ptrdiff_t"]);
 // DEFAULT-NEXT:         return read<i32>(deref(call<ptr<i32>, signature=fn(ptr<i32>, ptr<i32>) -> ptr<i32>>(%[[VALUE_f1]], addr_of<ptr<i32>>(%[[VALUE_f]]), addr_of<ptr<i32>>(%[[VALUE_g]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

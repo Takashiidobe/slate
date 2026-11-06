@@ -43,7 +43,7 @@ int main () {
 // DEFAULT-NEXT:         field0 <anonymous>: i32 : 0;
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[0], bit_offsets=[Some(0)]];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(align_of<u64, @type[[TYPE_S]]>(1), align_of<u64, @type[[TYPE_U]]>(1))
+// DEFAULT-NEXT:         if ne<u64>(align_of<u64, @type[[TYPE_S]]>(1) [c="__size_t"], align_of<u64, @type[[TYPE_U]]>(1) [c="__size_t"])
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

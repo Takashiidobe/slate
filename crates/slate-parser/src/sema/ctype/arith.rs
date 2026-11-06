@@ -37,7 +37,16 @@ impl CTypes {
     }
 
     pub fn size_type(&mut self, target: &TargetInfo) -> QualType {
-        self.pointer_integer(target, false)
+        let underlying = self.pointer_integer(target, false);
+        self.predefined_sugar("__size_t", underlying)
+    }
+
+    fn predefined_sugar(&mut self, name: &str, underlying: QualType) -> QualType {
+        self.qual(CTypeKind::Typedef {
+            name: name.to_string(),
+            underlying,
+            alignment: None,
+        })
     }
 
     pub fn va_list_type(&mut self, target: &TargetInfo) -> QualType {
@@ -51,7 +60,8 @@ impl CTypes {
     }
 
     pub fn ptrdiff_type(&mut self, target: &TargetInfo) -> QualType {
-        self.pointer_integer(target, true)
+        let underlying = self.pointer_integer(target, true);
+        self.predefined_sugar("__ptrdiff_t", underlying)
     }
 
     fn pointer_integer(&mut self, target: &TargetInfo, signed: bool) -> QualType {
@@ -99,6 +109,9 @@ impl CTypes {
             return q;
         }
         let width = bits.unwrap_or(integer.width);
+        if integer.rank == IntRank::Int as u32 + 2 && width >= target.int_width {
+            return q;
+        }
         if integer.rank <= IntRank::Int as u32 + 2
             || bits.is_some_and(|width| width < target.int_width)
         {

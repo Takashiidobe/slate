@@ -221,7 +221,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     while i < 10 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             src.bytes[i as usize] = ((i * 17 + 3) as i8) as u8;
+// CHECK-NEXT:             src.bytes[i as usize] = (i * 17 + 3) as u8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
@@ -236,8 +236,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     i = 0;
 // CHECK-NEXT:     while i < 10 {
-// CHECK-NEXT:         if (((unsafe { dst.bytes[i as usize] }) as u32) as i32)
-// CHECK-NEXT:             != (((unsafe { src.bytes[i as usize] }) as u32) as i32)
+// CHECK-NEXT:         if ((unsafe { dst.bytes[i as usize] }) as i32)
+// CHECK-NEXT:             != ((unsafe { src.bytes[i as usize] }) as i32)
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 1;
 // CHECK-NEXT:         }

@@ -88,7 +88,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: ptr<i32> [synthetic] = addr_of<ptr<i32>>(%[[VALUE_d]]);
 // DEFAULT-NEXT:         write<ptr<i32>>(deref(read<ptr<ptr<i32>>>(%[[VALUE_p2]])), read<ptr<i32>>(%[[VALUE3]]));
 // DEFAULT-NEXT:         write<ptr<i32>>(deref(read<ptr<ptr<i32>>>(%[[VALUE_e]])), read<ptr<i32>>(%[[VALUE3]]));
-// DEFAULT-NEXT:         size_of<u64, i32>(4);
+// DEFAULT-NEXT:         size_of<u64, i32>(4) [c="__size_t"];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             if ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_r]]), null<ptr<i32>>)
 // DEFAULT-NEXT:                 ;

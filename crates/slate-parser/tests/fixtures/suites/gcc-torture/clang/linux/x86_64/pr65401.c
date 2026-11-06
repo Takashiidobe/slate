@@ -121,7 +121,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i_3:[0-9]+]] i: u32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_s_3:[0-9]+]] s: @type[[TYPE_S]] [storage=automatic];
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u16>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u16>(2) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))) [c="__size_t"])
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         for %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             init:

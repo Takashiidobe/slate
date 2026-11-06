@@ -46,7 +46,7 @@ float casts(double d, unsigned long u) { return (short)d + (float)u; }
 // IR-NEXT:     fn %[[VALUE_narrow:[0-9]+]] @narrow(%[[VALUE_x:[0-9]+]] x: f32) -> f64 [linkage=external];
 // IR-NEXT:     fn %[[VALUE_sizes:[0-9]+]] @sizes(%[[VALUE_array:[0-9]+]] array: ptr<i32> [array=4]) -> u64 [linkage=external] [fallthrough=ub_if_used] [c="unsigned long(int[4])"] {
 // IR-NEXT:         let %[[VALUE_local:[0-9]+]] local: array<i32, 3> [storage=automatic];
-// IR-NEXT:         return add<u64, overflow=wrap>(add<u64, overflow=wrap>(size_of<u64, array<i32, 3>>(12), size_of<u64, ptr<i32>>(8)), size_of<u64, f64>(8));
+// IR-NEXT:         return reinterpret<u64, reason=return>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(size_of<u64, array<i32, 3>>(12) [c="__size_t"], size_of<u64, ptr<i32>>(8) [c="__size_t"]) [c="__size_t"], size_of<u64, f64>(8) [c="__size_t"]) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_nulls:[0-9]+]] @nulls(%[[VALUE_p:[0-9]+]] p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<i32> [storage=automatic] = null<ptr<i32>>;

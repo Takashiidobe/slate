@@ -540,12 +540,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ((input_size == 1) as i32) + ((output_size == 1) as i32)
 // CHECK-NEXT:         + (((output.0[0] as i32) == 65) as i32)
-// CHECK-NEXT:         + (((((unsafe {
+// CHECK-NEXT:         + ((((unsafe {
 // CHECK-NEXT:             std::sync::atomic::AtomicU8::from_ptr(
 // CHECK-NEXT:                     std::ptr::addr_of_mut!(atomic_character) as *mut u8,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .load(std::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:         }) as u32) as i32) == 66) as i32) + (true as i32)
+// CHECK-NEXT:         }) as i32) == 66) as i32) + (true as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c23_memory() -> i32 {
 // CHECK-NEXT:     let mut source: [i8; 7] = [97, 98, 99, 100, 101, 102, 0];
@@ -849,7 +849,7 @@ int main(void) {
 // CHECK-NEXT:                 c"1101 21 34".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         }) == 0) as i32) + scanned + ((binary_value == 11) as i32)
-// CHECK-NEXT:         + ((((exact_value as u32) as i32) == 55) as i32) + ((fast_value == 89) as i32)
+// CHECK-NEXT:         + (((exact_value as i32) == 55) as i32) + ((fast_value == 89) as i32)
 // CHECK-NEXT:         + floating_written
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             strcmp(

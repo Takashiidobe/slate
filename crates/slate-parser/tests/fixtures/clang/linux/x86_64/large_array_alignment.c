@@ -78,7 +78,7 @@ void locals(int n) {
 // IR-NEXT:     fn %[[VALUE_locals:[0-9]+]] @locals(%[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         let %[[VALUE_local_sixteen:[0-9]+]] local_sixteen: array<i64, 2> [storage=automatic] [align=16];
 // IR-NEXT:         let %[[VALUE_local_fifteen:[0-9]+]] local_fifteen: array<i8, 15> [storage=automatic];
-// IR-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64>(widen<i64>(read<i32>(%[[VALUE_n]])));
+// IR-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64>(widen<i64>(read<i32>(%[[VALUE_n]]))) [c="__size_t"];
 // IR-NEXT:         let %[[VALUE_vla:[0-9]+]] vla: vla<i8, %[[VALUE1]]> [storage=automatic];
 // IR-NEXT:         call<void>(%[[VALUE_sink]], pointer_cast<ptr<void>>(array_decay<ptr<i64>, length=Some(2)>(%[[VALUE_local_sixteen]])));
 // IR-NEXT:         call<void>(%[[VALUE_sink]], pointer_cast<ptr<void>>(array_decay<ptr<i8>, length=Some(15)>(%[[VALUE_local_fifteen]])));

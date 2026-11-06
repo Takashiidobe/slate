@@ -68,7 +68,7 @@ void g3(void) { sizeof(f3()); }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3() -> i32 [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_g3:[0-9]+]] @g3() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         size_of<u64, i32>(4);
+// DEFAULT-NEXT:         size_of<u64, i32>(4) [c="__size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

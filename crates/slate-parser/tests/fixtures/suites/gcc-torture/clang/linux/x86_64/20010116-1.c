@@ -69,7 +69,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], truncate<i32, reason=assign, fits=unknown>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(ptr_diff<i64, element=@type[[TYPE0]], same_array=required, overflow=ub>(read<ptr<@type[[TYPE0]]>>(%[[VALUE_last]]) [c="Data *"], read<ptr<@type[[TYPE0]]>>(%[[VALUE_first]]) [c="Data *"]), const<i32>(2))));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], truncate<i32, reason=assign, fits=unknown>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(ptr_diff<i64, element=@type[[TYPE0]], same_array=required, overflow=ub>(read<ptr<@type[[TYPE0]]>>(%[[VALUE_last]]) [c="Data *"], read<ptr<@type[[TYPE0]]>>(%[[VALUE_first]]) [c="Data *"]) [c="__ptrdiff_t"], const<i32>(2)) [c="__ptrdiff_t"]));
 // DEFAULT-NEXT:             condition: gt<i32>(read<i32>(%[[VALUE_i_2]]), const<i32>(0))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_2]]);

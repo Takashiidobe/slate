@@ -148,7 +148,10 @@ Each conversion node does one thing; the reason is metadata.
 
 - A change of width and signedness is two nodes: width first (in source
   signedness), then `reinterpret`. `(u32)(i8)x` →
-  `reinterpret<u32>(widen<i32>(x))`.
+  `reinterpret<u32>(widen<i32>(x))`. Rust lowering prints such a pair (or
+  `truncate` then `reinterpret`) as one `x as u32`, since a Rust integer `as`
+  extends by the source's signedness, so the text matches a target where the
+  widths are equal.
 - A written integer cast whose operand is a macro argument is one `int_cast`
   node, kept even when the types match, so `(ush)x` lifts as one `$x as u16`
   template for every integer argument. Rust lowering always prints it, also at

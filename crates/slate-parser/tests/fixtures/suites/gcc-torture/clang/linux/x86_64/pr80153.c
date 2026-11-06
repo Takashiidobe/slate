@@ -84,7 +84,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE__fputs:[0-9]+]] @_fputs(%[[VALUE_str_2:[0-9]+]] str: ptr<const i8>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<ptr<const i8>>(%[[VALUE_buf]], read<ptr<const i8>>(%[[VALUE_str_2]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], const<i32>(0));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_l]], reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen:[0-9]+]], read<ptr<const i8>>(%[[VALUE_buf]])))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_l]], reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen:[0-9]+]], read<ptr<const i8>>(%[[VALUE_buf]])) [c="__size_t"])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_strlen]] @__builtin_strlen(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE__fgetc:[0-9]+]] @_fgetc(unprototyped) -> i8 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
@@ -104,7 +104,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_2]]))), call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], read<ptr<const i8>>(%[[VALUE_string]])))
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_2]]))) [c="__size_t"], call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], read<ptr<const i8>>(%[[VALUE_string]])) [c="__size_t"])
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_2]]);
 // DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(1));

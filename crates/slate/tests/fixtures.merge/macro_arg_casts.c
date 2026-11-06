@@ -99,38 +99,32 @@ int main(void) {
 // CHECK-NEXT:     let lc: u32 = 70000;
 // CHECK-NEXT:     let wide: i32 = 70001;
 // CHECK-NEXT:     let small: u16 = 3;
-// CHECK-NEXT:     let code: u8 = 200u8;
+// CHECK-NEXT:     let code: u8 = 200;
 // CHECK-NEXT:     PUT!(wide, (unsafe { flips }) > 0);
 // CHECK-NEXT:     if (unsafe { flips }) < 0 {
 // CHECK-NEXT:         let val: i32 = wide - 1;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = ((((buffer as u32) as i32) | ((((val as i16) as u16) as u32) as i32) << 1i32)
-// CHECK-NEXT:                 as i16) as u16;
+// CHECK-NEXT:             buffer = ((buffer as i32) | ((val as u16) as i32) << 1i32) as u16;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             flips = flips + val;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = ((((buffer as u32) as i32)
-// CHECK-NEXT:                 | (((((wide - 1) as i16) as u16) as u32) as i32) << 1i32)
-// CHECK-NEXT:                 as i16) as u16;
+// CHECK-NEXT:             buffer = ((buffer as i32) | (((wide - 1) as u16) as i32) << 1i32) as u16;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { flips }) == 0 {
 // CHECK-NEXT:         let val: i32 = wide + 2;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = ((((buffer as u32) as i32) | ((((val as i16) as u16) as u32) as i32) << 1i32)
-// CHECK-NEXT:                 as i16) as u16;
+// CHECK-NEXT:             buffer = ((buffer as i32) | ((val as u16) as i32) << 1i32) as u16;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             flips = flips + val;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = ((((buffer as u32) as i32)
-// CHECK-NEXT:                 | (((((wide + 2) as i16) as u16) as u32) as i32) << 1i32)
-// CHECK-NEXT:                 as i16) as u16;
+// CHECK-NEXT:             buffer = ((buffer as i32) | (((wide + 2) as u16) as i32) << 1i32) as u16;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     PUT!(small, (unsafe { flips }) == 0);
@@ -138,33 +132,27 @@ int main(void) {
 // CHECK-NEXT:     if true {
 // CHECK-NEXT:         let val: i32 = (lc as i32) - 1;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = ((((buffer as u32) as i32) | ((((val as i16) as u16) as u32) as i32) << 1i32)
-// CHECK-NEXT:                 as i16) as u16;
+// CHECK-NEXT:             buffer = ((buffer as i32) | ((val as u16) as i32) << 1i32) as u16;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             flips = flips + val;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = ((((buffer as u32) as i32)
-// CHECK-NEXT:                 | (((lc.wrapping_sub(1) as u16) as u32) as i32) << 1i32)
-// CHECK-NEXT:                 as i16) as u16;
+// CHECK-NEXT:             buffer = ((buffer as i32) | ((lc.wrapping_sub(1) as u16) as i32) << 1i32) as u16;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { flips }) != 0 {
-// CHECK-NEXT:         let val: i32 = ((code as u32) as i32) + 1;
+// CHECK-NEXT:         let val: i32 = (code as i32) + 1;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = ((((buffer as u32) as i32) | ((((val as i16) as u16) as u32) as i32) << 1i32)
-// CHECK-NEXT:                 as i16) as u16;
+// CHECK-NEXT:             buffer = ((buffer as i32) | ((val as u16) as i32) << 1i32) as u16;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             flips = flips + val;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = ((((buffer as u32) as i32)
-// CHECK-NEXT:                 | (((((((code as u32) as i32) + 1) as i16) as u16) as u32) as i32) << 1i32)
-// CHECK-NEXT:                 as i16) as u16;
+// CHECK-NEXT:             buffer = ((buffer as i32) | ((((code as i32) + 1) as u16) as i32) << 1i32) as u16;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     PUT!(lc as i32, (unsafe { flips }) != 0);
@@ -175,9 +163,9 @@ int main(void) {
 // CHECK-NEXT:     SUM_TWICE!(wide);
 // CHECK-NEXT:     SUM_TWICE__2!(code);
 // CHECK-NEXT:     MIXED!(wide);
-// CHECK-NEXT:     MIXED!(((small as u32) as i32) + 1);
+// CHECK-NEXT:     MIXED!((small as i32) + 1);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         flips = flips + (((small as u32) as i32) + 1 * ((small as u32) as i32) + 1);
+// CHECK-NEXT:         flips = flips + ((small as i32) + 1 * (small as i32) + 1);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     UNHYGIENIC!(code);
 // CHECK-NEXT:     #[cfg(windows)]
@@ -187,11 +175,11 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d %d %d %d %d\n".as_ptr(),
-// CHECK-NEXT:                 (buffer as u32) as i32,
+// CHECK-NEXT:                 buffer as i32,
 // CHECK-NEXT:                 flips,
 // CHECK-NEXT:                 used,
-// CHECK-NEXT:                 (bytes[0] as u32) as i32,
-// CHECK-NEXT:                 (bytes[3] as u32) as i32,
+// CHECK-NEXT:                 bytes[0] as i32,
+// CHECK-NEXT:                 bytes[3] as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -200,11 +188,11 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {} {} {} {}",
-// CHECK-NEXT:             ((unsafe { buffer }) as u32) as i32,
+// CHECK-NEXT:             (unsafe { buffer }) as i32,
 // CHECK-NEXT:             unsafe { flips },
 // CHECK-NEXT:             unsafe { used },
-// CHECK-NEXT:             ((unsafe { bytes[0] }) as u32) as i32,
-// CHECK-NEXT:             ((unsafe { bytes[3] }) as u32) as i32
+// CHECK-NEXT:             (unsafe { bytes[0] }) as i32,
+// CHECK-NEXT:             (unsafe { bytes[3] }) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
@@ -218,7 +206,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: u16 = unsafe { buffer };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = (((([[V_0]] as u32) as i32) ^ (((($a) as u16) as u32) as i32)) as i16) as u16;
+// CHECK-NEXT:             buffer = (([[V_0]] as i32) ^ ((($a) as u16) as i32)) as u16;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -229,8 +217,7 @@ int main(void) {
 // CHECK-NEXT:             let val: i32 = ($value) as i32;
 // CHECK-NEXT:             let __v: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = ((((__v as u32) as i32) | ((((val as i16) as u16) as u32) as i32) << 1i32)
-// CHECK-NEXT:                     as i16) as u16;
+// CHECK-NEXT:                 buffer = ((__v as i32) | ((val as u16) as i32) << 1i32) as u16;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 flips = flips + val;
@@ -238,8 +225,7 @@ int main(void) {
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             let [[V_1:__v[0-9]+]]: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = (((([[V_1]] as u32) as i32) | (((($value) as u16) as u32) as i32) << 1i32)
-// CHECK-NEXT:                     as i16) as u16;
+// CHECK-NEXT:                 buffer = (([[V_1]] as i32) | ((($value) as u16) as i32) << 1i32) as u16;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
@@ -270,7 +256,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let __v: i32 = unsafe { flips };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             flips = __v + (((($a) as u32) as i32) + ((($a) as u32) as i32));
+// CHECK-NEXT:             flips = __v + ((($a) as i32) + (($a) as i32));
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -279,7 +265,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let __v: i32 = unsafe { flips };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             flips = __v + ((($a) as u32) as i32) * ((($a) as u32) as i32);
+// CHECK-NEXT:             flips = __v + (($a) as i32) * (($a) as i32);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

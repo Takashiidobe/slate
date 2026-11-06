@@ -94,7 +94,7 @@ int main() {
 // DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_cp]]);
 // DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE3]]), const<i32>(1));
 // DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_cp]], read<ptr<i8>>(%[[VALUE4]]));
-// DEFAULT-NEXT:                 if logical_or<bool>(eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_cp]]), read<ptr<i8>>(%[[VALUE_cq]])), gt<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(%[[VALUE_cp]]), read<ptr<i8>>(%[[VALUE_cq]])), widen<i64, reason=usual_arith>(const<i32>(3))))
+// DEFAULT-NEXT:                 if logical_or<bool>(eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_cp]]), read<ptr<i8>>(%[[VALUE_cq]])), gt<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(%[[VALUE_cp]]), read<ptr<i8>>(%[[VALUE_cq]])) [c="__ptrdiff_t"], widen<i64, reason=usual_arith>(const<i32>(3)) [c="__ptrdiff_t"]))
 // DEFAULT-NEXT:                     break %[[VALUE1]];
 // DEFAULT-NEXT:                 if logical_or<bool>(eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_cp]])))), const<i32>(46)), eq<i32>(read<i32>(%[[VALUE_octets]]), const<i32>(3)))
 // DEFAULT-NEXT:                     let %[[VALUE5:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_octets]]);

@@ -60,7 +60,7 @@ int main(void) {
 // DEFAULT-NEXT:         if logical_or<bool>(lt<i32>(read<i32>(%[[VALUE_x]]), add<i32, overflow=ub>(const<i32>(4096), const<i32>(8))), ge<i32>(read<i32>(%[[VALUE_x]]), add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(4096), const<i32>(256)), const<i32>(8))))
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: array<i8, 5> [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: i32 [storage=automatic] = call<i32, signature=fn(ptr<i8>, u64, ptr<const i8>, ...) -> i32>(%[[VALUE___builtin_snprintf]], array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_buf]]), size_of<u64, array<i8, 5>>(5), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str]])), add<i32, overflow=ub>(read<i32>(%[[VALUE_x]]), const<i32>(1)));
+// DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: i32 [storage=automatic] = call<i32, signature=fn(ptr<i8>, u64, ptr<const i8>, ...) -> i32>(%[[VALUE___builtin_snprintf]], array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_buf]]), size_of<u64, array<i8, 5>>(5) [c="__size_t"], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str]])), add<i32, overflow=ub>(read<i32>(%[[VALUE_x]]), const<i32>(1)));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE___builtin_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%[[VALUE_str_2]])), add<i32, overflow=ub>(read<i32>(%[[VALUE_x]]), const<i32>(1)), read<i32>(%[[VALUE_n]]));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_n]]);
 // DEFAULT-NEXT:     }

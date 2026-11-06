@@ -136,7 +136,7 @@ int main(void) {
 // CHECK-NEXT: fn input_barrier(p: &mut [u8]) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..p.len() as i32 {
-// CHECK-NEXT:         sum += ((unsafe { p[i as usize] }) as u32) as i32;
+// CHECK-NEXT:         sum += (unsafe { p[i as usize] }) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
@@ -160,9 +160,9 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             std::ptr::write_volatile(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(d),
-// CHECK-NEXT:                 (((([[V_0]] as u32) as i32)
-// CHECK-NEXT:                     | ((__x_view[i as usize] as u32) as i32)
-// CHECK-NEXT:                         ^ ((__y_view[i as usize] as u32) as i32)) as i16) as u16,
+// CHECK-NEXT:                 (([[V_0]] as i32)
+// CHECK-NEXT:                     | (__x_view[i as usize] as i32) ^ (__y_view[i as usize] as i32))
+// CHECK-NEXT:                     as u16,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
@@ -178,15 +178,14 @@ int main(void) {
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (1
-// CHECK-NEXT:         & (((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) }) as u32) as i32)
-// CHECK-NEXT:             - 1 >> 8i32) - 1
+// CHECK-NEXT:         & ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) }) as i32) - 1
+// CHECK-NEXT:             >> 8i32) - 1
 // CHECK-NEXT: }
 // CHECK-NEXT: fn nonvolatile_guard(x: &[u8]) -> i32 {
 // CHECK-NEXT:     let mut d: u8 = 0;
 // CHECK-NEXT:     let mut e: u16 = 0;
 // CHECK-NEXT:     for i in 0..x.len() as i32 {
-// CHECK-NEXT:         d = ((((d as u32) as i32) | (((unsafe { x[i as usize] }) as u32) as i32)) as i8)
-// CHECK-NEXT:             as u8;
+// CHECK-NEXT:         d = ((d as i32) | ((unsafe { x[i as usize] }) as i32)) as u8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     e = d as u16;
 // CHECK-NEXT:     unsafe {
@@ -197,7 +196,7 @@ int main(void) {
 // CHECK-NEXT:         );
 // CHECK-NEXT:         e = unsafe { std::mem::transmute::<u16, u16>([[T_0]] as u16) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     (1 & ((e as u32) as i32) - 1 >> 8i32) - 1
+// CHECK-NEXT:     (1 & (e as i32) - 1 >> 8i32) - 1
 // CHECK-NEXT: }
 // CHECK-NEXT: fn no_unroll(p: &mut [f32]) -> i32 {
 // CHECK-NEXT:     let mut sum: f32 = 0i32 as f32;

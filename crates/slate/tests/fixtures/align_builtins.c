@@ -75,14 +75,14 @@ int main(void) {
 // CHECK-NEXT:     let __slate_printf_arg0 = (((unsafe {
 // CHECK-NEXT:         up.offset_from(buffer.0.as_mut_ptr() as *mut i8)
 // CHECK-NEXT:     }) as i64) as i32)
-// CHECK-NEXT:         - (((((buffer.0.as_mut_ptr() as *mut i8) as u64).wrapping_add(3).wrapping_add(15)
+// CHECK-NEXT:         - ((((buffer.0.as_mut_ptr() as *mut i8) as u64).wrapping_add(3).wrapping_add(15)
 // CHECK-NEXT:             / 16)
 // CHECK-NEXT:             .wrapping_mul(16)
-// CHECK-NEXT:             .wrapping_sub((buffer.0.as_mut_ptr() as *mut i8) as u64) as u32) as i32);
+// CHECK-NEXT:             .wrapping_sub((buffer.0.as_mut_ptr() as *mut i8) as u64) as i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}", __slate_printf_arg0, ((((unsafe { base.offset_from(down as * mut i8)
-// CHECK-NEXT:         }) as i64) as i32) == ((((base as u64) % 16) as u32) as i32)) as i32, ((cup as
-// CHECK-NEXT:         u64) % 8 == 0) as i32
+// CHECK-NEXT:         }) as i64) as i32) == (((base as u64) % 16) as i32)) as i32, ((cup as u64) % 8 ==
+// CHECK-NEXT:         0) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let [[V_6:__v[0-9]+]]: u64 = 15u64;
 // CHECK-NEXT:     let [[V_7:__v[0-9]+]]: *mut i8 = up;
@@ -94,8 +94,8 @@ int main(void) {
 // CHECK-NEXT:     let [[V_10:__v[0-9]+]]: u8 = 3u8;
 // CHECK-NEXT:     let [[V_11:__v[0-9]+]]: u8 = 3u8;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", ((small.wrapping_add([[V_10]]) & ! [[V_10]]) as u32) as i32, ((small & !
-// CHECK-NEXT:         [[V_11]]) as u32) as i32, std::mem::size_of::< u8 > () as i32
+// CHECK-NEXT:         "{} {} {}", (small.wrapping_add([[V_10]]) & ! [[V_10]]) as i32, (small & ! [[V_11]]) as
+// CHECK-NEXT:         i32, std::mem::size_of::< u8 > () as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = next().wrapping_sub(1);
 // CHECK-NEXT:     println!("{} {}", 100i32.wrapping_add([[V_12]]) & ! [[V_12]], unsafe { calls });

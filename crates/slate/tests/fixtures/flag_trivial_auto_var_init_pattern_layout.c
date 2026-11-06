@@ -488,8 +488,7 @@ int main(void) {
 // CHECK-NEXT:     let bytes: *const u8 = p as *const u8;
 // CHECK-NEXT:     let mut h: u32 = 2166136261;
 // CHECK-NEXT:     for i in 0..size {
-// CHECK-NEXT:         h = (h ^ ((((unsafe { *bytes.add(i as usize) }) as u32) as i32) as u32))
-// CHECK-NEXT:             .wrapping_mul(16777619);
+// CHECK-NEXT:         h = (h ^ (((unsafe { *bytes.add(i as usize) }) as i32) as u32)).wrapping_mul(16777619);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     h
 // CHECK-NEXT: }
@@ -498,7 +497,7 @@ int main(void) {
 // CHECK-NEXT:     let bytes: *const u8 = p as *const u8;
 // CHECK-NEXT:     unsafe { printf(c"%s:".as_ptr(), name) };
 // CHECK-NEXT:     for i in 0..size {
-// CHECK-NEXT:         unsafe { printf(c" %02x".as_ptr(), (*bytes.add(i as usize) as u32) as i32) };
+// CHECK-NEXT:         unsafe { printf(c" %02x".as_ptr(), *bytes.add(i as usize) as i32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { printf(c"\n".as_ptr()) };
 // CHECK-NEXT: }
@@ -754,12 +753,7 @@ int main(void) {
 // CHECK-NEXT:         std::mem::size_of::<pair>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let raw: *const u8 = std::ptr::addr_of_mut!(pad) as *const u8;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"padding byte: %02x\n".as_ptr(),
-// CHECK-NEXT:             (*raw.add(1) as u32) as i32,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { printf(c"padding byte: %02x\n".as_ptr(), *raw.add(1) as i32) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -94,7 +94,7 @@ void test(int img_type, int img_data, int img_len)
 // DEFAULT-NEXT:                 write<ptr<@type[[TYPE_fit_loadable_tbl]]>>(%[[VALUE2]], pointer_cast<ptr<@type[[TYPE_fit_loadable_tbl]]>, reason=explicit>(addr_of<ptr<array<i8, 0>>>(%[[VALUE_end]])));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_fit_loadable_tbl]]>>(%[[VALUE_end_2]], read<ptr<@type[[TYPE_fit_loadable_tbl]]>>(%[[VALUE2]]));
-// DEFAULT-NEXT:             let %[[VALUE__ll_result:[0-9]+]] _ll_result: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=unknown>(truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=@type[[TYPE_fit_loadable_tbl]], same_array=required, overflow=ub>(read<ptr<@type[[TYPE_fit_loadable_tbl]]>>(%[[VALUE_end_2]]), read<ptr<@type[[TYPE_fit_loadable_tbl]]>>(%[[VALUE_start_3]]))));
+// DEFAULT-NEXT:             let %[[VALUE__ll_result:[0-9]+]] _ll_result: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=unknown>(truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=@type[[TYPE_fit_loadable_tbl]], same_array=required, overflow=ub>(read<ptr<@type[[TYPE_fit_loadable_tbl]]>>(%[[VALUE_end_2]]), read<ptr<@type[[TYPE_fit_loadable_tbl]]>>(%[[VALUE_start_3]])) [c="__ptrdiff_t"]));
 // DEFAULT-NEXT:             write<u32>(%[[VALUE0]], read<u32>(%[[VALUE__ll_result]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_count]], read<u32>(%[[VALUE0]]));

@@ -58,10 +58,7 @@ int main(void) { return 0; }
 // CHECK-NEXT:         GetSystemTime(std::ptr::addr_of_mut!(time)
 // CHECK-NEXT:             as *mut slate_support::windows::Win32::Foundation::SYSTEMTIME)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     if ((time.wYear as u32) as i32) < 2020
-// CHECK-NEXT:         || ((time.wMonth as u32) as i32) < 1
-// CHECK-NEXT:         || ((time.wMonth as u32) as i32) > 12
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if (time.wYear as i32) < 2020 || (time.wMonth as i32) < 1 || (time.wMonth as i32) > 12 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let event: *mut () = unsafe {

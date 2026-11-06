@@ -147,7 +147,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ADD_ONE {
 // CHECK-NEXT:     ($c:expr) => {
-// CHECK-NEXT:         ((($c) as u32) as i32) + 1
+// CHECK-NEXT:         (($c) as i32) + 1
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

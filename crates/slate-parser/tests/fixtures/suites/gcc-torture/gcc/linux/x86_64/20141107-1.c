@@ -60,7 +60,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_checkf:[0-9]+]] @checkf(%[[VALUE_a_2:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: bool) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: bool [storage=automatic] = call<bool, signature=fn(i32, bool) -> bool>(%[[VALUE_f]], read<i32>(%[[VALUE_a_2]]), read<bool>(%[[VALUE_b]]));
 // DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: i8 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i8>>(%[[VALUE_d]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<bool>>(%[[VALUE_c_2]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i8>>(%[[VALUE_d]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<bool>>(%[[VALUE_c_2]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))) [c="__size_t"]);
 // DEFAULT-NEXT:         if ne<i32>(xor<i32>(from_bool<i32, reason=promotion>(ne<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_d]])), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(%[[VALUE_a_2]]), const<i32>(0))))), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_b]]))), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }

@@ -81,11 +81,11 @@ int locals(void) {
 // IR-NEXT:     global %[[VALUE_global_raised:[0-9]+]] global_raised: i32 [storage=static] [align=16] [linkage=external] [c="raised"];
 // IR-NEXT:     global %[[VALUE_global_lowered:[0-9]+]] global_lowered: i32 [storage=static] [align=1] [linkage=external] [c="lowered"];
 // IR-NEXT:     global %[[VALUE_global_requested:[0-9]+]] global_requested: i64 [storage=static] [align=4] [linkage=external] [c="packed_long"];
-// IR-NEXT:     global %[[VALUE_alignments:[0-9]+]] alignments: array<u64, 11> [storage=static] [align=16] = aggregate<array<u64, 11>, zero_fill=false>(index0 = align_of<u64, @type[[TYPE_holds_raised]]>(16), index1 = align_of<u64, @type[[TYPE_holds_lowered]]>(1), index2 = align_of<u64, @type[[TYPE_holds_chain]]>(16), index3 = align_of<u64, @type[[TYPE_holds_array]]>(2), index4 = const<u64>(16), index5 = const<u64>(1), index6 = const<u64>(16), index7 = align_of<u64, i32>(4), index8 = const<u64>(2), index9 = const<u64>(4), index10 = const<u64>(1)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_alignments:[0-9]+]] alignments: array<u64, 11> [storage=static] [align=16] = aggregate<array<u64, 11>, zero_fill=false>(index0 = reinterpret<u64>(align_of<u64, @type[[TYPE_holds_raised]]>(16) [c="__size_t"]), index1 = reinterpret<u64>(align_of<u64, @type[[TYPE_holds_lowered]]>(1) [c="__size_t"]), index2 = reinterpret<u64>(align_of<u64, @type[[TYPE_holds_chain]]>(16) [c="__size_t"]), index3 = reinterpret<u64>(align_of<u64, @type[[TYPE_holds_array]]>(2) [c="__size_t"]), index4 = reinterpret<u64>(const<u64>(16) [c="__size_t"]), index5 = reinterpret<u64>(const<u64>(1) [c="__size_t"]), index6 = reinterpret<u64>(const<u64>(16) [c="__size_t"]), index7 = reinterpret<u64>(align_of<u64, i32>(4) [c="__size_t"]), index8 = reinterpret<u64>(const<u64>(2) [c="__size_t"]), index9 = reinterpret<u64>(const<u64>(4) [c="__size_t"]), index10 = reinterpret<u64>(const<u64>(1) [c="__size_t"])) [linkage=external];
 // IR-NEXT:     fn %[[VALUE_locals:[0-9]+]] @locals() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic] [align=16] = reinterpret<i32>(const<i32>(1)) [c="raised"] [c="raised"];
 // IR-NEXT:         let %[[VALUE_l:[0-9]+]] l: i32 [storage=automatic] [align=1] = reinterpret<i32>(const<i32>(2)) [c="lowered"] [c="lowered"];
-// IR-NEXT:         return add<i32>(reinterpret<i32>(read<i32>(%[[VALUE_r]]) [c="raised"]), reinterpret<i32>(read<i32, align=1>(%[[VALUE_l]]) [c="lowered"]));
+// IR-NEXT:         return reinterpret<i32>(add<i32>(read<i32>(%[[VALUE_r]]) [c="raised"], reinterpret<i32>(read<i32, align=1>(%[[VALUE_l]]) [c="lowered"]) [c="raised"]) [c="raised"]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

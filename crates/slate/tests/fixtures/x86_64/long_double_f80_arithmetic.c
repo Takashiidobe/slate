@@ -240,17 +240,15 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     for i in 0i32..10i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(c"%02x".as_ptr(), (bytes[i as usize] as u32) as i32)
-// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%02x".as_ptr(), bytes[i as usize] as i32) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut one_bits: [u8; 10] = [0, 0, 0, 0, 0, 0, 0, 128u8, 255u8, 63];
-// CHECK-NEXT:     let mut two_bits: [u8; 10] = [0, 0, 0, 0, 0, 0, 0, 128u8, 0, 64];
-// CHECK-NEXT:     let mut near_bits: [u8; 10] = [1, 0, 0, 0, 0, 0, 0, 128u8, 255u8, 63];
+// CHECK-NEXT:     let mut one_bits: [u8; 10] = [0, 0, 0, 0, 0, 0, 0, 128, 255, 63];
+// CHECK-NEXT:     let mut two_bits: [u8; 10] = [0, 0, 0, 0, 0, 0, 0, 128, 0, 64];
+// CHECK-NEXT:     let mut near_bits: [u8; 10] = [1, 0, 0, 0, 0, 0, 0, 128, 255, 63];
 // CHECK-NEXT:     let one: LongDouble = load80(one_bits.as_mut_ptr() as *const u8);
 // CHECK-NEXT:     let two: LongDouble = load80(two_bits.as_mut_ptr() as *const u8);
 // CHECK-NEXT:     let near: LongDouble = load80(near_bits.as_mut_ptr() as *const u8);

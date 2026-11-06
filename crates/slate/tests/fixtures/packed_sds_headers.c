@@ -253,13 +253,13 @@ int main(void) {
 // CHECK-NEXT:     match ((unsafe { *s.offset(-1 as isize) }) as i32) & 7 {
 // CHECK-NEXT:         1 => {
 // CHECK-NEXT:             let sh: *mut sdshdr8 = (unsafe { s.sub(3) }) as *mut sdshdr8;
-// CHECK-NEXT:             return (((((unsafe { (*sh).alloc }) as u32) as i32)
-// CHECK-NEXT:                 - (((unsafe { (*sh).len }) as u32) as i32)) as i64) as u64;
+// CHECK-NEXT:             return (((unsafe { (*sh).alloc }) as i32) - ((unsafe { (*sh).len }) as i32))
+// CHECK-NEXT:                 as u64;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         2 => {
 // CHECK-NEXT:             let sh: *mut sdshdr16 = (unsafe { s.sub(5) }) as *mut sdshdr16;
-// CHECK-NEXT:             return (((((unsafe { (*sh).alloc }) as u32) as i32)
-// CHECK-NEXT:                 - (((unsafe { (*sh).len }) as u32) as i32)) as i64) as u64;
+// CHECK-NEXT:             return (((unsafe { (*sh).alloc }) as i32) - ((unsafe { (*sh).len }) as i32))
+// CHECK-NEXT:                 as u64;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         4 => {
 // CHECK-NEXT:             let sh: *mut sdshdr64 = (unsafe { s.sub(17) }) as *mut sdshdr64;
@@ -323,15 +323,13 @@ int main(void) {
 // CHECK-NEXT:         1 => {
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: *mut sdshdr8 = (unsafe { s.sub(3) }) as *mut sdshdr8;
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*[[V_0]]).len = (((((*[[V_0]]).len as u32) as i32) as i64) as u64)
-// CHECK-NEXT:                     .wrapping_add(inc) as u8;
+// CHECK-NEXT:                 (*[[V_0]]).len = (((*[[V_0]]).len as i32) as u64).wrapping_add(inc) as u8;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         2 => {
 // CHECK-NEXT:             let [[V_1:__v[0-9]+]]: *mut sdshdr16 = (unsafe { s.sub(5) }) as *mut sdshdr16;
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*[[V_1]]).len = (((((*[[V_1]]).len as u32) as i32) as i64) as u64)
-// CHECK-NEXT:                     .wrapping_add(inc) as u16;
+// CHECK-NEXT:                 (*[[V_1]]).len = (((*[[V_1]]).len as i32) as u64).wrapping_add(inc) as u16;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         4 => {
@@ -469,10 +467,10 @@ int main(void) {
 // CHECK-NEXT:                 (buffer.0.as_mut_ptr() as *mut u8).add(used as usize)
 // CHECK-NEXT:             }) as *mut payloadHeader;
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*header).payload_len = ((i * 100) as i64) as u64;
+// CHECK-NEXT:                 (*header).payload_len = (i * 100) as u64;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*header).payload_type = (i as i8) as u8;
+// CHECK-NEXT:                 (*header).payload_type = i as u8;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             let [[V_1]]: u64 = unsafe { (*header).payload_len };
 // CHECK-NEXT:             unsafe {
@@ -480,8 +478,7 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:             used = used
 // CHECK-NEXT:                 .wrapping_add(
-// CHECK-NEXT:                     (std::mem::size_of::<payloadHeader>() as u64)
-// CHECK-NEXT:                         .wrapping_add((i as i64) as u64),
+// CHECK-NEXT:                     (std::mem::size_of::<payloadHeader>() as u64).wrapping_add(i as u64),
 // CHECK-NEXT:                 );
 // CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
@@ -506,7 +503,7 @@ int main(void) {
 // CHECK-NEXT:                     c"%zu %zu %d\n".as_ptr(),
 // CHECK-NEXT:                     offset,
 // CHECK-NEXT:                     header.payload_len,
-// CHECK-NEXT:                     (header.payload_type as u32) as i32,
+// CHECK-NEXT:                     header.payload_type as i32,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
@@ -533,7 +530,7 @@ int main(void) {
 // CHECK-NEXT:         holder.events[i as usize].events = (i + 1) as u32;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             holder.events[i as usize].data.u64 = 1234605616436508552u64
-// CHECK-NEXT:                 .wrapping_add((i as i64) as u64);
+// CHECK-NEXT:                 .wrapping_add(i as u64);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
@@ -547,7 +544,7 @@ int main(void) {
 // CHECK-NEXT:             c"%c %zu %u %d %llx %llx %d\n".as_ptr(),
 // CHECK-NEXT:             holder.tag as i32,
 // CHECK-NEXT:             holder.header.payload_len,
-// CHECK-NEXT:             (holder.header.payload_type as u32) as i32,
+// CHECK-NEXT:             holder.header.payload_type as i32,
 // CHECK-NEXT:             holder.events[1].data.fd,
 // CHECK-NEXT:             holder.events[0].data.u64,
 // CHECK-NEXT:             copy.data.u64,

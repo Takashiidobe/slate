@@ -146,7 +146,7 @@ test7 (void)
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p]], ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), const<i32>(4)));
-// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(read<ptr<i8>>(%[[VALUE_p]]), const<bool>(false), const<bool>(false), const<bool>(false)), sub<u64, overflow=wrap>(size_of<u64, array<i8, 1073741824>>(1073741824), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))
+// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(read<ptr<i8>>(%[[VALUE_p]]), const<bool>(false), const<bool>(false), const<bool>(false)) [c="__size_t"], sub<u64, overflow=wrap>(size_of<u64, array<i8, 1073741824>>(1073741824) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))) [c="__size_t"]) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_x_2:[0-9]+]] x: u64 [c="size_t"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(size_t)"] {
@@ -164,7 +164,7 @@ test7 (void)
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_2]], ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p_2]]), const<i32>(4)));
-// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(read<ptr<i8>>(%[[VALUE_p_2]]), const<bool>(false), const<bool>(false), const<bool>(false)), sub<u64, overflow=wrap>(size_of<u64, array<i8, 1073741824>>(1073741824), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))
+// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(read<ptr<i8>>(%[[VALUE_p_2]]), const<bool>(false), const<bool>(false), const<bool>(false)) [c="__size_t"], sub<u64, overflow=wrap>(size_of<u64, array<i8, 1073741824>>(1073741824) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))) [c="__size_t"]) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3(%[[VALUE_x_3:[0-9]+]] x: u64 [c="size_t"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(size_t)"] {
@@ -182,7 +182,7 @@ test7 (void)
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_3]], ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p_3]]), const<i32>(4)));
-// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(read<ptr<i8>>(%[[VALUE_p_3]]), const<bool>(true), const<bool>(false), const<bool>(false)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
+// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(read<ptr<i8>>(%[[VALUE_p_3]]), const<bool>(true), const<bool>(false), const<bool>(false)) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4(%[[VALUE_x_4:[0-9]+]] x: u64 [c="size_t"]) -> void [linkage=external] [fallthrough=ret_void] [c="void(size_t)"] {
@@ -200,17 +200,17 @@ test7 (void)
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_4]], ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p_4]]), const<i32>(4)));
-// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(read<ptr<i8>>(%[[VALUE_p_4]]), const<bool>(true), const<bool>(false), const<bool>(false)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
+// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(read<ptr<i8>>(%[[VALUE_p_4]]), const<bool>(true), const<bool>(false), const<bool>(false)) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test5:[0-9]+]] @test5() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_p_5:[0-9]+]] p: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1073741824)>(%[[VALUE_buf]]), const<u32>(2415919108))));
-// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p_5]]), const<i32>(2)), const<bool>(false), const<bool>(false), const<bool>(false)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
+// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p_5]]), const<i32>(2)), const<bool>(false), const<bool>(false), const<bool>(false)) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test6:[0-9]+]] @test6() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_p_6:[0-9]+]] p: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1073741824)>(%[[VALUE_buf]]), neg<i32, overflow=ub>(const<i32>(4)))));
-// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p_6]]), const<i32>(2)), const<bool>(false), const<bool>(false), const<bool>(false)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
+// DEFAULT-NEXT:         if ne<u64>(intrinsic<u64, llvm.objectsize>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p_6]]), const<i32>(2)), const<bool>(false), const<bool>(false), const<bool>(false)) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

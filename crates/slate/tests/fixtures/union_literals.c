@@ -395,7 +395,7 @@ int main(void) {
 // CHECK-NEXT: fn zero_after(object: *const (), start: u64, size: u64) -> i32 {
 // CHECK-NEXT:     let bytes: *const u8 = object as *const u8;
 // CHECK-NEXT:     for i in start..size {
-// CHECK-NEXT:         if (((unsafe { *bytes.add(i as usize) }) as u32) as i32) != 0 {
+// CHECK-NEXT:         if ((unsafe { *bytes.add(i as usize) }) as i32) != 0 {
 // CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -404,8 +404,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{} {}", ((unsafe { table[i as usize].fc.freq }) as u32) as i32, ((unsafe {
-// CHECK-NEXT:             table[i as usize].dl.code }) as u32) as i32
+// CHECK-NEXT:             "{} {}", (unsafe { table[i as usize].fc.freq }) as i32, (unsafe { table[i as
+// CHECK-NEXT:             usize].dl.code }) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -435,7 +435,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let seed: i32 = 3;
 // CHECK-NEXT:     let local: same_size = same_size {
-// CHECK-NEXT:         freq: ((seed * 2) as i16) as u16,
+// CHECK-NEXT:         freq: (seed * 2) as u16,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut local_partial: partial = {
 // CHECK-NEXT:         let mut [[T_0]]: partial = unsafe { std::mem::zeroed() };
@@ -451,7 +451,7 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", ((unsafe { local.code }) as u32) as i32,
+// CHECK-NEXT:         "{} {} {}", (unsafe { local.code }) as i32,
 // CHECK-NEXT:         zero_after(std::ptr::addr_of_mut!(local_partial) as * const (), 1u64,
 // CHECK-NEXT:         std::mem::size_of::< partial > () as u64), (unsafe { local_partial.small }) as
 // CHECK-NEXT:         i32

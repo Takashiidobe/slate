@@ -55,7 +55,7 @@ int main(void) {
 // DEFAULT-NEXT:         return call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_parse_num]], read<ptr<i8>>(%[[VALUE_s_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_text_len:[0-9]+]] @text_len(%[[VALUE_s_3:[0-9]+]] s: ptr<i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_s_3]])))));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_s_3]]))) [c="__size_t"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_digits:[0-9]+]] digits: array<i8, 3> [storage=automatic] = code_units<array<i8, 3>>([52, 50, 0]);

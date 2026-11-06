@@ -143,126 +143,126 @@ main (void)
 // DEFAULT-NEXT:         do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x:[0-9]+]] x: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, bool>(1), align_of<u64, bool>(1))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, bool>(1) [c="__size_t"], align_of<u64, bool>(1) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x_2:[0-9]+]] x: @type[[TYPE1]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, i8>(1), align_of<u64, i8>(1))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, i8>(1) [c="__size_t"], align_of<u64, i8>(1) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x_3:[0-9]+]] x: @type[[TYPE2]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, i8>(1), align_of<u64, i8>(1))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, i8>(1) [c="__size_t"], align_of<u64, i8>(1) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x_4:[0-9]+]] x: @type[[TYPE3]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, u8>(1), align_of<u64, u8>(1))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, u8>(1) [c="__size_t"], align_of<u64, u8>(1) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x_5:[0-9]+]] x: @type[[TYPE4]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, i16>(2), align_of<u64, i16>(2))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, i16>(2) [c="__size_t"], align_of<u64, i16>(2) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x_6:[0-9]+]] x: @type[[TYPE5]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, u16>(2), align_of<u64, u16>(2))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, u16>(2) [c="__size_t"], align_of<u64, u16>(2) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x_7:[0-9]+]] x: @type[[TYPE6]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, i32>(4), align_of<u64, i32>(4))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, i32>(4) [c="__size_t"], align_of<u64, i32>(4) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x_8:[0-9]+]] x: @type[[TYPE7]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, u32>(4), align_of<u64, u32>(4))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, u32>(4) [c="__size_t"], align_of<u64, u32>(4) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x_9:[0-9]+]] x: @type[[TYPE8]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, i64>(8), align_of<u64, i64>(8))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, i64>(8) [c="__size_t"], align_of<u64, i64>(8) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE10:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x_10:[0-9]+]] x: @type[[TYPE9]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, u64>(8), align_of<u64, u64>(8))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, u64>(8) [c="__size_t"], align_of<u64, u64>(8) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE11:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x_11:[0-9]+]] x: @type[[TYPE10]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, i64>(8), align_of<u64, i64>(8))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, i64>(8) [c="__size_t"], align_of<u64, i64>(8) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE12:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x_12:[0-9]+]] x: @type[[TYPE11]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, u64>(8), align_of<u64, u64>(8))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, u64>(8) [c="__size_t"], align_of<u64, u64>(8) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE13:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x_13:[0-9]+]] x: @type[[TYPE12]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, f32>(4), align_of<u64, f32>(4))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, f32>(4) [c="__size_t"], align_of<u64, f32>(4) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE14:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x_14:[0-9]+]] x: @type[[TYPE13]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, f64>(8), align_of<u64, f64>(8))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, f64>(8) [c="__size_t"], align_of<u64, f64>(8) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE15:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x_15:[0-9]+]] x: @type[[TYPE14]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, f80>(16), align_of<u64, f80>(16))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, f80>(16) [c="__size_t"], align_of<u64, f80>(16) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE16:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x_16:[0-9]+]] x: @type[[TYPE15]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, complex<f32>>(4), align_of<u64, complex<f32>>(4))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, complex<f32>>(4) [c="__size_t"], align_of<u64, complex<f32>>(4) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE17:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x_17:[0-9]+]] x: @type[[TYPE16]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, complex<f64>>(8), align_of<u64, complex<f64>>(8))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, complex<f64>>(8) [c="__size_t"], align_of<u64, complex<f64>>(8) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE18:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_x_18:[0-9]+]] x: @type[[TYPE17]] [storage=automatic];
-// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, complex<f80>>(16), align_of<u64, complex<f80>>(16))
+// DEFAULT-NEXT:                 if gt<u64>(align_of<u64, complex<f80>>(16) [c="__size_t"], align_of<u64, complex<f80>>(16) [c="__size_t"])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));

@@ -43,22 +43,22 @@ unsigned long ignored(int r __attribute__((unused))) { return _Alignof(r); }
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_aligned_attribute:[0-9]+]] @aligned_attribute(%[[VALUE_q:[0-9]+]] q: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(16);
+// IR-NEXT:         return reinterpret<u64>(const<u64>(16) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_alignas_specifier:[0-9]+]] @alignas_specifier(%[[VALUE_p:[0-9]+]] p: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(32);
+// IR-NEXT:         return reinterpret<u64>(const<u64>(32) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_below_natural:[0-9]+]] @below_natural(%[[VALUE_q_2:[0-9]+]] q: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(1);
+// IR-NEXT:         return reinterpret<u64>(const<u64>(1) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_repeated:[0-9]+]] @repeated(%[[VALUE_q_3:[0-9]+]] q: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(16);
+// IR-NEXT:         return reinterpret<u64>(const<u64>(16) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_plain:[0-9]+]] @plain(%[[VALUE_r:[0-9]+]] r: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return align_of<u64, i32>(4);
+// IR-NEXT:         return reinterpret<u64>(align_of<u64, i32>(4) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_ignored:[0-9]+]] @ignored(%[[VALUE_r_2:[0-9]+]] r: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return align_of<u64, i32>(4);
+// IR-NEXT:         return reinterpret<u64>(align_of<u64, i32>(4) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -100,15 +100,15 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_strcmp:[0-9]+]] @strcmp(%[[VALUE14:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE15:[0-9]+]] <unnamed>: ptr<const i8>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_strncmp:[0-9]+]] @strncmp(%[[VALUE16:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE17:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE18:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> i32 [linkage=external] [c="int(const char *, const char *, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_ptr:[0-9]+]] ptr: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<ptr<void>>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], read<ptr<void>>(%[[VALUE_ptr]]), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_ptr]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8)))), read<ptr<void>>(%[[VALUE_ptr]]))
+// DEFAULT-NEXT:         if ne<ptr<void>>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], read<ptr<void>>(%[[VALUE_ptr]]), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_ptr]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))) [c="__size_t"]), read<ptr<void>>(%[[VALUE_ptr]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_ptr_2:[0-9]+]] ptr: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<ptr<void>>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_mempcpy]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i8>>(%[[VALUE_ptr_2]])), pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%[[VALUE_ptr_2]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8)))), pointer_cast<ptr<void>, reason=usual_arith>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_ptr_2]]), const<i32>(8))))
+// DEFAULT-NEXT:         if ne<ptr<void>>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_mempcpy]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i8>>(%[[VALUE_ptr_2]])), pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%[[VALUE_ptr_2]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))) [c="__size_t"]), pointer_cast<ptr<void>, reason=usual_arith>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_ptr_2]]), const<i32>(8))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3(%[[VALUE_ptr_3:[0-9]+]] ptr: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<ptr<void>>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memmove]], read<ptr<void>>(%[[VALUE_ptr_3]]), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_ptr_3]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8)))), read<ptr<void>>(%[[VALUE_ptr_3]]))
+// DEFAULT-NEXT:         if ne<ptr<void>>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memmove]], read<ptr<void>>(%[[VALUE_ptr_3]]), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_ptr_3]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))) [c="__size_t"]), read<ptr<void>>(%[[VALUE_ptr_3]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4(%[[VALUE_ptr_4:[0-9]+]] ptr: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
@@ -116,7 +116,7 @@ int main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test5:[0-9]+]] @test5(%[[VALUE_ptr_5:[0-9]+]] ptr: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_ptr_5]])), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_ptr_5]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8)))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_ptr_5]])), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_ptr_5]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))) [c="__size_t"]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test6:[0-9]+]] @test6(%[[VALUE_ptr_6:[0-9]+]] ptr: ptr<const i8>) -> void [linkage=external] [fallthrough=ret_void] {
@@ -124,7 +124,7 @@ int main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test7:[0-9]+]] @test7(%[[VALUE_ptr_7:[0-9]+]] ptr: ptr<const i8>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%[[VALUE_strncmp]], read<ptr<const i8>>(%[[VALUE_ptr_7]]), read<ptr<const i8>>(%[[VALUE_ptr_7]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8)))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%[[VALUE_strncmp]], read<ptr<const i8>>(%[[VALUE_ptr_7]]), read<ptr<const i8>>(%[[VALUE_ptr_7]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))) [c="__size_t"]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

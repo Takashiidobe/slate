@@ -175,7 +175,7 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_verify:[0-9]+]] @verify(%[[VALUE_a1:[0-9]+]] a1: i32 [c="siint"], %[[VALUE_a2:[0-9]+]] a2: i32 [c="siint"], %[[VALUE_b1:[0-9]+]] b1: i32 [c="siint"], %[[VALUE_b2:[0-9]+]] b2: i32 [c="siint"], %[[VALUE_big:[0-9]+]] big: @type[[TYPE0]] [c="big_t"]) -> void [linkage=external] [abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> void] [fallthrough=ret_void] [c="void(siint, siint, siint, siint, big_t)"] {
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_a1]]) [c="siint"]), reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_b1]]) [c="siint"])), ne<i32>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_a2]]) [c="siint"]), reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_b2]]) [c="siint"])))
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_a1]]) [c="siint"], read<i32>(%[[VALUE_b1]]) [c="siint"]), ne<i32>(read<i32>(%[[VALUE_a2]]) [c="siint"], read<i32>(%[[VALUE_b2]]) [c="siint"]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {

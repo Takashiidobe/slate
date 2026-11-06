@@ -65,7 +65,7 @@ fi (void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fi:[0-9]+]] @fi() -> void [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         read<i32>(%[[VALUE_a]]);
-// DEFAULT-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_a]]))) [c="__size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

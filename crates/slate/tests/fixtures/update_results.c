@@ -135,8 +135,8 @@ int main(void) {
 // CHECK-NEXT:     let mut us: u16 = 0;
 // CHECK-NEXT:     let mut old_us: i32 = 0;
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: u16 = us;
-// CHECK-NEXT:     us = (((([[V_2]] as u32) as i32) - 1) as i16) as u16;
-// CHECK-NEXT:     old_us = ([[V_2]] as u32) as i32;
+// CHECK-NEXT:     us = (([[V_2]] as i32) - 1) as u16;
+// CHECK-NEXT:     old_us = [[V_2]] as i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%d %u\n".as_ptr(), old_us, us as u32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

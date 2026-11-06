@@ -171,7 +171,7 @@ int main(void) {
 // CHECK-NEXT:     let assumed: *mut () = storage.0.as_mut_ptr() as *mut ();
 // CHECK-NEXT:     let likely: i32 = 29;
 // CHECK-NEXT:     let probable: i32 = 31;
-// CHECK-NEXT:     unsafe { std::hint::assert_unchecked(((storage.0[0] as u32) as i32) == 0) };
+// CHECK-NEXT:     unsafe { std::hint::assert_unchecked((storage.0[0] as i32) == 0) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_intrinsic_7eb885185d29c159(
 // CHECK-NEXT:             code.as_mut_ptr() as *mut (),
@@ -203,9 +203,8 @@ int main(void) {
 // CHECK-NEXT:     let mut down: u64 = 0;
 // CHECK-NEXT:     down = 64u64;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u64 = 15u64;
-// CHECK-NEXT:     24 + 24 + 12 + ((address == std::ptr::addr_of_mut!(value)) as i32)
-// CHECK-NEXT:         + ((up as u32) as i32) + ((down as u32) as i32) + ((up & [[V_1]] == 0) as i32)
-// CHECK-NEXT:         + ((1i32 != 0) as i32)
+// CHECK-NEXT:     24 + 24 + 12 + ((address == std::ptr::addr_of_mut!(value)) as i32) + (up as i32)
+// CHECK-NEXT:         + (down as i32) + ((up & [[V_1]] == 0) as i32) + ((1i32 != 0) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_builtin_source() -> i32 {
 // CHECK-NEXT:     ((((unsafe { *(c"gnu_builtin_source".as_ptr() as *mut i8).add(0) }) as i32) == 103)

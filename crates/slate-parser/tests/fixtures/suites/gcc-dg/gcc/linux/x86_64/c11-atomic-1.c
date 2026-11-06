@@ -400,7 +400,7 @@ func10 (_Atomic int *p)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_func7:[0-9]+]] @func7() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<atomic i32>>(%[[VALUE_xaip1]]), read<ptr<volatile atomic i32>>(%[[VALUE_xaip2]]))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<atomic i32>>(%[[VALUE_xaip1]]), read<ptr<volatile atomic i32>>(%[[VALUE_xaip2]])) [c="__ptrdiff_t"]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], from_bool<i32, reason=assign>(lt<ptr<atomic i32>>(read<ptr<atomic i32>>(%[[VALUE_xaip1]]), pointer_cast<ptr<atomic i32>, reason=usual_arith>(read<ptr<volatile atomic i32>>(%[[VALUE_xaip2]])))));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], from_bool<i32, reason=assign>(gt<ptr<atomic i32>>(read<ptr<atomic i32>>(%[[VALUE_xaip1]]), pointer_cast<ptr<atomic i32>, reason=usual_arith>(read<ptr<volatile atomic i32>>(%[[VALUE_xaip2]])))));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], from_bool<i32, reason=assign>(le<ptr<atomic i32>>(read<ptr<atomic i32>>(%[[VALUE_xaip1]]), pointer_cast<ptr<atomic i32>, reason=usual_arith>(read<ptr<volatile atomic i32>>(%[[VALUE_xaip2]])))));

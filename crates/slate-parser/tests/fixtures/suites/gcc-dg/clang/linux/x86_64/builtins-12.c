@@ -55,11 +55,11 @@ char *test3(const char *ptr)
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE0:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_n:[0-9]+]] n: u64 [c="size_t"]) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] [c="void *(size_t)"] {
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_n]]) [c="size_t"]));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_n]]) [c="size_t"]) [c="__size_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_calloc:[0-9]+]] @__builtin_calloc(%[[VALUE1:[0-9]+]] <unnamed>: u64, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_n_2:[0-9]+]] n: u64 [c="size_t"], %[[VALUE_s:[0-9]+]] s: u64 [c="size_t"]) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] [c="void *(size_t, size_t)"] {
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE___builtin_calloc]], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_n_2]]) [c="size_t"]), reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_s]]) [c="size_t"]));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE___builtin_calloc]], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_n_2]]) [c="size_t"]) [c="__size_t"], reinterpret<u64, reason=arg>(read<u64>(%[[VALUE_s]]) [c="size_t"]) [c="__size_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_strdup:[0-9]+]] @__builtin_strdup(%[[VALUE3:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3(%[[VALUE_ptr:[0-9]+]] ptr: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {

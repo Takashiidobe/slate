@@ -17,15 +17,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let alignment: i32 = std::mem::align_of::<i32>() as i32;
-// CHECK-NEXT:     let repeated: i32 = ((((unsafe { text[1] }) as u8) as u32) as i32)
-// CHECK-NEXT:         + ((((unsafe { text[1] }) as u8) as u32) as i32);
+// CHECK-NEXT:     let repeated: i32 = (((unsafe { text[1] }) as u8) as i32)
+// CHECK-NEXT:         + (((unsafe { text[1] }) as u8) as i32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u %u %zu %d %d\n".as_ptr(),
-// CHECK-NEXT:             ((text[0] as u8) as u32) as i32,
-// CHECK-NEXT:             ((text[1] as u8) as u32) as i32,
-// CHECK-NEXT:             ((text[2] as u8) as u32) as i32,
+// CHECK-NEXT:             (text[0] as u8) as i32,
+// CHECK-NEXT:             (text[1] as u8) as i32,
+// CHECK-NEXT:             (text[2] as u8) as i32,
 // CHECK-NEXT:             std::mem::size_of::<[i8; 3]>() as u64,
 // CHECK-NEXT:             alignment,
 // CHECK-NEXT:             repeated,

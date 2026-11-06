@@ -41,8 +41,8 @@ unsigned long block_array_size = sizeof(void (^[3])(void));
 // DEFAULT-NEXT:     extern %[[VALUE_global_block:[0-9]+]] global_block: block<fn(i32) -> i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_frozen:[0-9]+]] frozen: block<fn() -> void> [storage=static] [const] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_block_pointer_pointer:[0-9]+]] block_pointer_pointer: ptr<block<fn(i32) -> i32>> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_block_size:[0-9]+]] block_size: u64 [storage=static] = size_of<u64, block<fn(i32) -> i32>>(8) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_block_array_size:[0-9]+]] block_array_size: u64 [storage=static] = size_of<u64, array<block<fn() -> void>, 3>>(24) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_block_size:[0-9]+]] block_size: u64 [storage=static] = reinterpret<u64>(size_of<u64, block<fn(i32) -> i32>>(8) [c="__size_t"]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_block_array_size:[0-9]+]] block_array_size: u64 [storage=static] = reinterpret<u64>(size_of<u64, array<block<fn() -> void>, 3>>(24) [c="__size_t"]) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_run:[0-9]+]] @run(%[[VALUE_callback:[0-9]+]] callback: block<fn(i32) -> i32>, %[[VALUE_op:[0-9]+]] op: block<fn(i32, i32) -> i32> [c="binop"], %[[VALUE_handlers:[0-9]+]] handlers: ptr<block<fn() -> void>> [array=2]) -> i32 [linkage=external] [c="int(int (^)(int), binop, void (^[2])(void))"];
 // DEFAULT-NEXT:     fn %[[VALUE_make_adder:[0-9]+]] @make_adder(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> block<fn(i32) -> i32> [linkage=external];
 // DEFAULT-NEXT: }

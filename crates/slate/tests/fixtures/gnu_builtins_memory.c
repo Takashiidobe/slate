@@ -243,10 +243,8 @@ int main(void) {
 // CHECK-NEXT:         as *mut ()) as *mut u8;
 // CHECK-NEXT:     unsafe { __builtin_memset(first as *mut (), 3i32, 16u64) };
 // CHECK-NEXT:     unsafe { __builtin_memset(aligned as *mut (), 5i32, 16u64) };
-// CHECK-NEXT:     (((unsafe { *first.add(0) }) as u32) as i32)
-// CHECK-NEXT:         + (((unsafe { *first.add(15) }) as u32) as i32)
-// CHECK-NEXT:         + (((unsafe { *aligned.add(0) }) as u32) as i32)
-// CHECK-NEXT:         + (((unsafe { *aligned.add(15) }) as u32) as i32)
+// CHECK-NEXT:     ((unsafe { *first.add(0) }) as i32) + ((unsafe { *first.add(15) }) as i32)
+// CHECK-NEXT:         + ((unsafe { *aligned.add(0) }) as i32) + ((unsafe { *aligned.add(15) }) as i32)
 // CHECK-NEXT:         + (((aligned as u64) % 16 == 0) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_builtin_memory() -> i32 {
@@ -339,10 +337,9 @@ int main(void) {
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             __builtin_memchr(first.0.as_mut_ptr() as *const (), 104i32, 16u64)
 // CHECK-NEXT:         }) == ((unsafe { (first.0.as_mut_ptr() as *mut u8).add(7) }) as *mut ())) as i32)
-// CHECK-NEXT:         + ((((third.0[2] as u32) as i32) == 97) as i32)
-// CHECK-NEXT:         + ((((third.0[9] as u32) as i32) == 104) as i32) + ((second.0[0] as u32) as i32)
-// CHECK-NEXT:         + ((second.0[1] as u32) as i32) + ((second.0[16] as u32) as i32)
-// CHECK-NEXT:         + ((second.0[19] as u32) as i32)
+// CHECK-NEXT:         + (((third.0[2] as i32) == 97) as i32) + (((third.0[9] as i32) == 104) as i32)
+// CHECK-NEXT:         + (second.0[0] as i32) + (second.0[1] as i32) + (second.0[16] as i32)
+// CHECK-NEXT:         + (second.0[19] as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_builtin_strings() -> i32 {
 // CHECK-NEXT:     let mut first: __SlateAlign16<[i8; 64]> = __SlateAlign16({
@@ -391,7 +388,7 @@ int main(void) {
 // CHECK-NEXT:             std::mem::size_of::<[i8; 64]>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     (((unsafe { __builtin_strlen(first.0.as_mut_ptr() as *const i8) }) as u32) as i32)
+// CHECK-NEXT:     ((unsafe { __builtin_strlen(first.0.as_mut_ptr() as *const i8) }) as i32)
 // CHECK-NEXT:         + ((end == unsafe { (first.0.as_mut_ptr() as *mut i8).add(11) }) as i32)
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             __builtin_strcmp(third.0.as_mut_ptr() as *const i8, c"memory-ok".as_ptr())
@@ -410,12 +407,12 @@ int main(void) {
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             __builtin_strstr(second.0.as_mut_ptr() as *const i8, c"head".as_ptr())
 // CHECK-NEXT:         }) == unsafe { (second.0.as_mut_ptr() as *mut i8).add(6) }) as i32)
-// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:         + ((unsafe {
 // CHECK-NEXT:             __builtin_strspn(second.0.as_mut_ptr() as *const i8, c"clang".as_ptr())
-// CHECK-NEXT:         }) as u32) as i32)
-// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:         }) as i32)
+// CHECK-NEXT:         + ((unsafe {
 // CHECK-NEXT:             __builtin_strcspn(second.0.as_mut_ptr() as *const i8, c"-".as_ptr())
-// CHECK-NEXT:         }) as u32) as i32)
+// CHECK-NEXT:         }) as i32)
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             __builtin_strpbrk(second.0.as_mut_ptr() as *const i8, c"-g".as_ptr())
 // CHECK-NEXT:         }) == unsafe { (second.0.as_mut_ptr() as *mut i8).add(4) }) as i32)

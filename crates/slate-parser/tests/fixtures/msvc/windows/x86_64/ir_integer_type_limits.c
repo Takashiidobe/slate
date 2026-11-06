@@ -125,7 +125,7 @@ int null_limit(int *value) {
 // C2Y-NEXT:     global %[[VALUE_huge_max:[0-9]+]] huge_max: u575b [storage=static] = const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567) [linkage=external];
 // C2Y-NEXT:     global %[[VALUE_bound:[0-9]+]] bound: array<i32, 7> [storage=static] [align=16] [linkage=external];
 // C2Y-NEXT:     fn %[[VALUE_expression:[0-9]+]] @expression(%[[VALUE_value:[0-9]+]] value: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// C2Y-NEXT:         return add<i32, overflow=ub>(reinterpret<i32, reason=promotion>(const<i32>(2147483647) [c="typeof((*value)++)"]), const<i32>(-2147483648));
+// C2Y-NEXT:         return reinterpret<i32, reason=return>(add<i32, overflow=ub>(const<i32>(2147483647) [c="typeof((*value)++)"], reinterpret<i32, reason=usual_arith>(const<i32>(-2147483648)) [c="typeof((*value)++)"]) [c="typeof((*value)++)"]);
 // C2Y-NEXT:     }
 // C2Y-NEXT:     fn %[[VALUE_null_limit:[0-9]+]] @null_limit(%[[VALUE_value_2:[0-9]+]] value: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // C2Y-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32>>(read<ptr<i32>>(%[[VALUE_value_2]]), null<ptr<i32>>));
@@ -196,7 +196,7 @@ int null_limit(int *value) {
 // GNU2Y-NEXT:     global %[[VALUE_huge_max:[0-9]+]] huge_max: u575b [storage=static] = const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567) [linkage=external];
 // GNU2Y-NEXT:     global %[[VALUE_bound:[0-9]+]] bound: array<i32, 7> [storage=static] [align=16] [linkage=external];
 // GNU2Y-NEXT:     fn %[[VALUE_expression:[0-9]+]] @expression(%[[VALUE_value:[0-9]+]] value: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// GNU2Y-NEXT:         return add<i32, overflow=ub>(reinterpret<i32, reason=promotion>(const<i32>(2147483647) [c="typeof((*value)++)"]), const<i32>(-2147483648));
+// GNU2Y-NEXT:         return reinterpret<i32, reason=return>(add<i32, overflow=ub>(const<i32>(2147483647) [c="typeof((*value)++)"], reinterpret<i32, reason=usual_arith>(const<i32>(-2147483648)) [c="typeof((*value)++)"]) [c="typeof((*value)++)"]);
 // GNU2Y-NEXT:     }
 // GNU2Y-NEXT:     fn %[[VALUE_null_limit:[0-9]+]] @null_limit(%[[VALUE_value_2:[0-9]+]] value: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // GNU2Y-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32>>(read<ptr<i32>>(%[[VALUE_value_2]]), null<ptr<i32>>));

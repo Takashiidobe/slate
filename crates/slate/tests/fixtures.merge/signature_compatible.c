@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-NEXT: total: 12 compiles across 2 targets
 // CHECK-NEXT: unit signature_compatible: 20 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit signature_compatible_helper: 22 items, 5 gated, 0 duplicated functions
+// CHECK-NEXT: unit signature_compatible_helper: 22 items, 4 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:scale: 2 variants
 // CHECK-NEXT:   spliced record:opaque: 2 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
@@ -246,8 +246,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: use core::ffi::c_long;
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: use core::ffi::c_ulong;
+// CHECK-NEXT: use slate_support::size_t;
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::exit;
 // CHECK-NOT: {{.}}

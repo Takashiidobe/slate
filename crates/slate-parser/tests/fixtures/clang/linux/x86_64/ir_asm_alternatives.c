@@ -66,7 +66,7 @@ void alternatives(int x, int *p, long double f, struct Big big) {
 // IR-NEXT:         asm "# %0 %1" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0 " " %1;
 // IR-NEXT:             in 0 "ri" [reg | imm | sym] -> imm width 32 const<i32>(42);
-// IR-NEXT:             in 1 "g" [reg | mem | imm | sym] -> imm width 64 const<u64>(24);
+// IR-NEXT:             in 1 "g" [reg | mem | imm | sym] -> imm width 64 const<u64>(24) [c="__size_t"];
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1" [dialect=att] [options=nostack] [alternative=1] {
 // IR-NEXT:             template: "# " %0 " " %1;

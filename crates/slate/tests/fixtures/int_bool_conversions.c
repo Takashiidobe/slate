@@ -59,19 +59,19 @@ int main(void) {
 // CHECK-NEXT:     x as i8
 // CHECK-NEXT: }
 // CHECK-NEXT: fn trunc_uc(x: i32) -> u8 {
-// CHECK-NEXT:     (x as i8) as u8
+// CHECK-NEXT:     x as u8
 // CHECK-NEXT: }
 // CHECK-NEXT: fn trunc_s(x: i64) -> i16 {
 // CHECK-NEXT:     x as i16
 // CHECK-NEXT: }
 // CHECK-NEXT: fn widen_u(c: i8) -> u32 {
-// CHECK-NEXT:     (c as i32) as u32
+// CHECK-NEXT:     c as u32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn widen_ll(s: u16) -> i64 {
-// CHECK-NEXT:     (s as u64) as i64
+// CHECK-NEXT:     s as i64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn widen_ull(x: i32) -> u64 {
-// CHECK-NEXT:     (x as i64) as u64
+// CHECK-NEXT:     x as u64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn reinterp(x: u32) -> i32 {
 // CHECK-NEXT:     x as i32
@@ -80,7 +80,7 @@ int main(void) {
 // CHECK-NEXT:     x as u32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn promote(a: u8, b: u8) -> i32 {
-// CHECK-NEXT:     ((a as u32) as i32) - ((b as u32) as i32)
+// CHECK-NEXT:     (a as i32) - (b as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn promote_s(a: i16, b: i16) -> i32 {
 // CHECK-NEXT:     (a as i32) * (b as i32)
@@ -97,7 +97,7 @@ int main(void) {
 // CHECK-NEXT:     let bi: i32 = b as i32;
 // CHECK-NEXT:     println!("{}", bi);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", trunc_sc(200i32) as i32, (trunc_uc(- 1i32) as u32) as i32,
+// CHECK-NEXT:         "{} {} {}", trunc_sc(200i32) as i32, trunc_uc(- 1i32) as i32,
 // CHECK-NEXT:         trunc_s(305419896i64) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
@@ -119,9 +119,9 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{} {}", promote(1u8, 2u8), promote_s(300i16, 300i16));
-// CHECK-NEXT:     let mut uc: u8 = 255u8;
-// CHECK-NEXT:     uc = ((((uc as u32) as i32) + 1) as i8) as u8;
-// CHECK-NEXT:     println!("{}", (uc as u32) as i32);
+// CHECK-NEXT:     let mut uc: u8 = 255;
+// CHECK-NEXT:     uc = ((uc as i32) + 1) as u8;
+// CHECK-NEXT:     println!("{}", uc as i32);
 // CHECK-NEXT:     let c: bool = !b;
 // CHECK-NEXT:     println!("{} {}", c as i32, (bi == 0) as i32);
 // CHECK-NEXT:     (to_bool(3i32) as i32) + (to_bool(0i32) as i32)

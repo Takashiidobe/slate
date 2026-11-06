@@ -61,6 +61,6 @@ int packed_size = sizeof(struct Packed);
 // IR-WARN-NEXT:     global %[[VALUE_imported_address:[0-9]+]] imported_address: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_imported]]) [linkage=external];
 // IR-WARN-NEXT:     global %[[VALUE_exported:[0-9]+]] exported: i32 [storage=static] = const<i32>(1) [linkage=external] [dllexport];
 // IR-WARN-NEXT:     global %[[VALUE_weak_value:[0-9]+]] weak_value: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %[[VALUE_packed_size:[0-9]+]] packed_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_Packed]]>(8))) [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_packed_size:[0-9]+]] packed_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(size_of<u64, @type[[TYPE_Packed]]>(8) [c="__size_t"])) [linkage=external];
 // IR-WARN-NEXT: }
 // SLATE-FILECHECK-END IR-WARN

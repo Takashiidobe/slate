@@ -40,13 +40,13 @@ unsigned long then_member(void) { return __builtin_offsetof(struct s, c[-1].y); 
 // IR-NEXT:         field1 y: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // IR-NEXT:     fn %[[VALUE_before_array:[0-9]+]] @before_array() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(18446744073709551612);
+// IR-NEXT:         return reinterpret<u64, reason=return>(const<u64>(18446744073709551612) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_inner_index:[0-9]+]] @inner_index() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(20);
+// IR-NEXT:         return reinterpret<u64, reason=return>(const<u64>(20) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_then_member:[0-9]+]] @then_member() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(36);
+// IR-NEXT:         return reinterpret<u64, reason=return>(const<u64>(36) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

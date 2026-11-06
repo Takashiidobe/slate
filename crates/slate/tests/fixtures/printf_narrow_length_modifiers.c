@@ -27,9 +27,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let s: i16 = 300;
-// CHECK-NEXT:     let us: u16 = 60000u16;
+// CHECK-NEXT:     let us: u16 = 60000;
 // CHECK-NEXT:     let c: i8 = -5;
-// CHECK-NEXT:     let uc: u8 = 200u8;
+// CHECK-NEXT:     let uc: u8 = 200;
 // CHECK-NEXT:     let j: i64 = 123456789;
 // CHECK-NEXT:     let ju: u64 = 123456789;
 // CHECK-NEXT:     let t: i64 = -7;
@@ -38,9 +38,9 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%hd %hu %hhd %hhu %jd %ju %td\n".as_ptr(),
 // CHECK-NEXT:             s as i32,
-// CHECK-NEXT:             (us as u32) as i32,
+// CHECK-NEXT:             us as i32,
 // CHECK-NEXT:             c as i32,
-// CHECK-NEXT:             (uc as u32) as i32,
+// CHECK-NEXT:             uc as i32,
 // CHECK-NEXT:             j,
 // CHECK-NEXT:             ju,
 // CHECK-NEXT:             t,
@@ -55,7 +55,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%hhd %hhd %hhu %hd %hu\n".as_ptr(),
 // CHECK-NEXT:             full_int,
-// CHECK-NEXT:             (uc as u32) as i32,
+// CHECK-NEXT:             uc as i32,
 // CHECK-NEXT:             negative,
 // CHECK-NEXT:             wide,
 // CHECK-NEXT:             wide,

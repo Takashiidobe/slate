@@ -71,14 +71,14 @@ int main(void) {
 // CHECK-NEXT: fn struct_values() -> i32 {
 // CHECK-NEXT:     let mut m: Mixed = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     m.tag = 65;
-// CHECK-NEXT:     m.code = 200u8;
+// CHECK-NEXT:     m.code = 200;
 // CHECK-NEXT:     m.ratio = 1.5f32;
 // CHECK-NEXT:     m.total = 2.25f64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%c\n".as_ptr(), m.tag as i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), (m.code as u32) as i32) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), m.code as i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%f\n".as_ptr(), m.ratio as f64) };
@@ -86,7 +86,7 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%f\n".as_ptr(), m.total) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     (m.code as u32) as i32
+// CHECK-NEXT:     m.code as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn union_double(value: f64) -> f64 {
 // CHECK-NEXT:     let mut s: Scalar = unsafe { std::mem::zeroed() };

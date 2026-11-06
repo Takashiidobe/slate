@@ -124,7 +124,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_testf:[0-9]+]] @testf() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(size_of<u64, array<@type[[TYPE_Df]], 8>>(96), size_of<u64, @type[[TYPE_Df]]>(12))));
+// DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(size_of<u64, array<@type[[TYPE_Df]], 8>>(96) [c="__size_t"], size_of<u64, @type[[TYPE_Df]]>(12) [c="__size_t"]) [c="__size_t"]));
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: f32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -139,7 +139,7 @@ int main() {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f32>(%[[VALUE_r]], call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_cf]], read<f32>(field0(deref(ptr_offset<ptr<const @type[[TYPE_Df]]>, subtract=false, element=@type[[TYPE_Df]], overflow=ub>(array_decay<ptr<const @type[[TYPE_Df]]>, length=Some(8)>(%[[VALUE_Tf]]), read<i32>(%[[VALUE_i]]))))), read<f32>(field1(deref(ptr_offset<ptr<const @type[[TYPE_Df]]>, subtract=false, element=@type[[TYPE_Df]], overflow=ub>(array_decay<ptr<const @type[[TYPE_Df]]>, length=Some(8)>(%[[VALUE_Tf]]), read<i32>(%[[VALUE_i]])))))));
-// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f32>>(%[[VALUE_r]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const f32>>(field2(deref(ptr_offset<ptr<const @type[[TYPE_Df]]>, subtract=false, element=@type[[TYPE_Df]], overflow=ub>(array_decay<ptr<const @type[[TYPE_Df]]>, length=Some(8)>(%[[VALUE_Tf]]), read<i32>(%[[VALUE_i]])))))), size_of<u64, f32>(4)), const<i32>(0))
+// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f32>>(%[[VALUE_r]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const f32>>(field2(deref(ptr_offset<ptr<const @type[[TYPE_Df]]>, subtract=false, element=@type[[TYPE_Df]], overflow=ub>(array_decay<ptr<const @type[[TYPE_Df]]>, length=Some(8)>(%[[VALUE_Tf]]), read<i32>(%[[VALUE_i]])))))), size_of<u64, f32>(4) [c="__size_t"]), const<i32>(0))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
@@ -149,7 +149,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_n_2:[0-9]+]] n: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(size_of<u64, array<@type[[TYPE_D]], 8>>(192), size_of<u64, @type[[TYPE_D]]>(24))));
+// DEFAULT-NEXT:         let %[[VALUE_n_2:[0-9]+]] n: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(size_of<u64, array<@type[[TYPE_D]], 8>>(192) [c="__size_t"], size_of<u64, @type[[TYPE_D]]>(24) [c="__size_t"]) [c="__size_t"]));
 // DEFAULT-NEXT:         let %[[VALUE_r_2:[0-9]+]] r: f64 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -164,7 +164,7 @@ int main() {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f64>(%[[VALUE_r_2]], call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_c]], read<f64>(field0(deref(ptr_offset<ptr<const @type[[TYPE_D]]>, subtract=false, element=@type[[TYPE_D]], overflow=ub>(array_decay<ptr<const @type[[TYPE_D]]>, length=Some(8)>(%[[VALUE_T]]), read<i32>(%[[VALUE_i_2]]))))), read<f64>(field1(deref(ptr_offset<ptr<const @type[[TYPE_D]]>, subtract=false, element=@type[[TYPE_D]], overflow=ub>(array_decay<ptr<const @type[[TYPE_D]]>, length=Some(8)>(%[[VALUE_T]]), read<i32>(%[[VALUE_i_2]])))))));
-// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f64>>(%[[VALUE_r_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const f64>>(field2(deref(ptr_offset<ptr<const @type[[TYPE_D]]>, subtract=false, element=@type[[TYPE_D]], overflow=ub>(array_decay<ptr<const @type[[TYPE_D]]>, length=Some(8)>(%[[VALUE_T]]), read<i32>(%[[VALUE_i_2]])))))), size_of<u64, f64>(8)), const<i32>(0))
+// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f64>>(%[[VALUE_r_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const f64>>(field2(deref(ptr_offset<ptr<const @type[[TYPE_D]]>, subtract=false, element=@type[[TYPE_D]], overflow=ub>(array_decay<ptr<const @type[[TYPE_D]]>, length=Some(8)>(%[[VALUE_T]]), read<i32>(%[[VALUE_i_2]])))))), size_of<u64, f64>(8) [c="__size_t"]), const<i32>(0))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
@@ -174,7 +174,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_testl:[0-9]+]] @testl() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_i_3:[0-9]+]] i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE_n_3:[0-9]+]] n: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(size_of<u64, array<@type[[TYPE_Dl]], 8>>(384), size_of<u64, @type[[TYPE_Dl]]>(48))));
+// DEFAULT-NEXT:         let %[[VALUE_n_3:[0-9]+]] n: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(size_of<u64, array<@type[[TYPE_Dl]], 8>>(384) [c="__size_t"], size_of<u64, @type[[TYPE_Dl]]>(48) [c="__size_t"]) [c="__size_t"]));
 // DEFAULT-NEXT:         let %[[VALUE_r_3:[0-9]+]] r: f80 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE12:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -189,7 +189,7 @@ int main() {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f80>(%[[VALUE_r_3]], call<f80, signature=fn(f80, f80) -> f80>(%[[VALUE_cl]], read<f80>(field0(deref(ptr_offset<ptr<const @type[[TYPE_Dl]]>, subtract=false, element=@type[[TYPE_Dl]], overflow=ub>(array_decay<ptr<const @type[[TYPE_Dl]]>, length=Some(8)>(%[[VALUE_Tl]]), read<i32>(%[[VALUE_i_3]]))))), read<f80>(field1(deref(ptr_offset<ptr<const @type[[TYPE_Dl]]>, subtract=false, element=@type[[TYPE_Dl]], overflow=ub>(array_decay<ptr<const @type[[TYPE_Dl]]>, length=Some(8)>(%[[VALUE_Tl]]), read<i32>(%[[VALUE_i_3]])))))));
-// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f80>>(%[[VALUE_r_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const f80>>(field2(deref(ptr_offset<ptr<const @type[[TYPE_Dl]]>, subtract=false, element=@type[[TYPE_Dl]], overflow=ub>(array_decay<ptr<const @type[[TYPE_Dl]]>, length=Some(8)>(%[[VALUE_Tl]]), read<i32>(%[[VALUE_i_3]])))))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(10)))), const<i32>(0))
+// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f80>>(%[[VALUE_r_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const f80>>(field2(deref(ptr_offset<ptr<const @type[[TYPE_Dl]]>, subtract=false, element=@type[[TYPE_Dl]], overflow=ub>(array_decay<ptr<const @type[[TYPE_Dl]]>, length=Some(8)>(%[[VALUE_Tl]]), read<i32>(%[[VALUE_i_3]])))))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(10))) [c="__size_t"]), const<i32>(0))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }

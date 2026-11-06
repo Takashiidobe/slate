@@ -161,7 +161,7 @@ image_render_color (struct s4 *penum, unsigned char *buffer,
 // DEFAULT-NEXT:         let %[[VALUE_psrc:[0-9]+]] psrc: ptr<u8> [storage=automatic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_buffer]]), mul<i32, overflow=ub>(read<i32>(%[[VALUE_data_x]]), read<i32>(%[[VALUE_spp]])));
 // DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: array<u8, 6> [storage=automatic];
 // DEFAULT-NEXT:         write<@type[[TYPE_s2]]>(%[[VALUE_pnext]], copy<@type[[TYPE_s2]], reason=assign>(read<@type[[TYPE_s2]]>(field1(field5(deref(read<ptr<@type[[TYPE_s4]]>>(%[[VALUE_penum]])))))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset:[0-9]+]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<array<u8, 6>>>(%[[VALUE_v]])), const<i32>(0), size_of<u64, array<u8, 6>>(6));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset:[0-9]+]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<array<u8, 6>>>(%[[VALUE_v]])), const<i32>(0), size_of<u64, array<u8, 6>>(6) [c="__size_t"]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ptr<void>) -> void>(read<ptr<fn(ptr<void>, ptr<void>) -> void>>(field0(deref(read<ptr<@type[[TYPE_s0]]>>(%[[VALUE_pcs]])))), null<ptr<void>>, null<ptr<void>>);
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_spp]]), const<i32>(4))
 // DEFAULT-NEXT:             {

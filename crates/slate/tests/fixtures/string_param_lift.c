@@ -53,8 +53,7 @@ int main(void) {
 // CHECK-NEXT:     parse_num(s)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn text_len(s: *mut i8) -> i32 {
-// CHECK-NEXT:     ((unsafe { strlen((s as *const i8) as *const core::ffi::c_char) as u64 }) as u32)
-// CHECK-NEXT:         as i32
+// CHECK-NEXT:     (unsafe { strlen((s as *const i8) as *const core::ffi::c_char) as u64 }) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut digits: [i8; 3] = [52, 50, 0];

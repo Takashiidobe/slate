@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), l) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), (c as u32) as i32) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), c as i32) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{} {}", b0 as i32, b1 as i32);
 // CHECK-NEXT:     0

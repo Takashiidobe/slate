@@ -427,9 +427,7 @@ int main(void) {
 // CHECK-NEXT: fn report_folded(index: i32) {
 // CHECK-NEXT:     println!("{}", 32i32);
 // CHECK-NEXT:     println!("{}", 52i32);
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", (24u64.wrapping_add(((index as i64) as u64).wrapping_mul(4)) as u32) as i32
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{}", 24u64.wrapping_add((index as u64).wrapping_mul(4)) as i32);
 // CHECK-NEXT:     println!("{}", std::mem::offset_of!(Holder, tag) as i32);
 // CHECK-NEXT:     println!("{}", 4i32);
 // CHECK-NEXT:     println!("{}", 8i32);

@@ -98,7 +98,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<ptr<u8>>(field0(%[[VALUE_s]]), array_decay<ptr<u8>, length=Some(6)>(%[[VALUE_b]]));
-// DEFAULT-NEXT:         write<ptr<u8>>(field1(%[[VALUE_s]]), ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(6)>(%[[VALUE_b]]), size_of<u64, array<u8, 6>>(6)));
+// DEFAULT-NEXT:         write<ptr<u8>>(field1(%[[VALUE_s]]), ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(6)>(%[[VALUE_b]]), size_of<u64, array<u8, 6>>(6) [c="__size_t"]));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE_input_ty]]>) -> i32>(%[[VALUE_check_header]], addr_of<ptr<@type[[TYPE_input_ty]]>>(%[[VALUE_s]])), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<ptr<u8>>(read<ptr<u8>>(field0(%[[VALUE_s]])), read<ptr<u8>>(field1(%[[VALUE_s]])))

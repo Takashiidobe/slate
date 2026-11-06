@@ -85,7 +85,7 @@ int bounds(void) {
 // IR-NEXT:     fn %[[VALUE_bounds:[0-9]+]] @bounds() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %[[VALUE_list_storage:[0-9]+]] list_storage: @type[[TYPE0]] [storage=automatic];
 // IR-NEXT:         let %[[VALUE_structure_storage:[0-9]+]] structure_storage: @type[[TYPE1]] [storage=automatic];
-// IR-NEXT:         return reinterpret<i32>(truncate<u32>(add<u64>(size_of<u64, array<u8, 32>>(32), size_of<u64, array<u8, 40>>(40))));
+// IR-NEXT:         return reinterpret<i32>(truncate<u32>(add<u64>(size_of<u64, array<u8, 32>>(32) [c="__size_t"], size_of<u64, array<u8, 40>>(40) [c="__size_t"]) [c="__size_t"]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

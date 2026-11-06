@@ -160,7 +160,7 @@ int sizes(void) {
 // DEFAULT-NEXT:         field1 value: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     fn %[[VALUE_sizes:[0-9]+]] @sizes() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32>(truncate<u32>(add<u64>(add<u64>(size_of<u64, @type[[TYPE_Fields]]>(32), size_of<u64, @type[[TYPE_Packed]]>(5)), size_of<u64, @type[[TYPE_Leading]]>(8))));
+// DEFAULT-NEXT:         return reinterpret<i32>(truncate<u32>(add<u64>(add<u64>(size_of<u64, @type[[TYPE_Fields]]>(32) [c="__size_t"], size_of<u64, @type[[TYPE_Packed]]>(5) [c="__size_t"]) [c="__size_t"], size_of<u64, @type[[TYPE_Leading]]>(8) [c="__size_t"]) [c="__size_t"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
@@ -216,7 +216,7 @@ int sizes(void) {
 // IR-WARN-NEXT:         field1 value: i32;
 // IR-WARN-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // IR-WARN-NEXT:     fn %[[VALUE_sizes:[0-9]+]] @sizes() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-WARN-NEXT:         return reinterpret<i32>(truncate<u32>(add<u64>(add<u64>(size_of<u64, @type[[TYPE_Fields]]>(32), size_of<u64, @type[[TYPE_Packed]]>(5)), size_of<u64, @type[[TYPE_Leading]]>(8))));
+// IR-WARN-NEXT:         return reinterpret<i32>(truncate<u32>(add<u64>(add<u64>(size_of<u64, @type[[TYPE_Fields]]>(32) [c="__size_t"], size_of<u64, @type[[TYPE_Packed]]>(5) [c="__size_t"]) [c="__size_t"], size_of<u64, @type[[TYPE_Leading]]>(8) [c="__size_t"]) [c="__size_t"]));
 // IR-WARN-NEXT:     }
 // IR-WARN-NEXT: }
 // SLATE-FILECHECK-END IR-WARN

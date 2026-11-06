@@ -48,7 +48,7 @@ void h(int l) {
 // DEFAULT-NEXT:                 let %[[VALUE_op:[0-9]+]] op: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(512)>(%[[VALUE_buf]]);
 // DEFAULT-NEXT:                 if eq<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_f]]), const<i32>(0))
 // DEFAULT-NEXT:                     break %[[VALUE1]];
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_g]], truncate<i32, reason=arg, fits=unknown>(add<i64, overflow=ub>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(%[[VALUE_op]]), array_decay<ptr<i8>, length=Some(512)>(%[[VALUE_buf]])), widen<i64, reason=usual_arith>(const<i32>(1))))), const<i32>(0))
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_g]], truncate<i32, reason=arg, fits=unknown>(add<i64, overflow=ub>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(%[[VALUE_op]]), array_decay<ptr<i8>, length=Some(512)>(%[[VALUE_buf]])) [c="__ptrdiff_t"], widen<i64, reason=usual_arith>(const<i32>(1)) [c="__ptrdiff_t"]) [c="__ptrdiff_t"])), const<i32>(0))
 // DEFAULT-NEXT:                     break %[[VALUE1]];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }

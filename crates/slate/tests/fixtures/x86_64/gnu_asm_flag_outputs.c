@@ -73,6 +73,6 @@ int main(void) {
 // CHECK-NEXT:         sign = unsafe { std::mem::transmute::<u16, u16>([[T_0]] as u16) };
 // CHECK-NEXT:         nonzero = unsafe { std::mem::transmute::<u64, u64>([[T_1]] as u64) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     ((((((sign as u32) as i32) * 10) as i64) as u64).wrapping_add(nonzero) as u32) as i32
+// CHECK-NEXT:     (((sign as i32) * 10) as u64).wrapping_add(nonzero) as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

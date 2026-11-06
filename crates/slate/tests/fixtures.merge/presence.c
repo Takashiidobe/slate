@@ -24,7 +24,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 4 compiles
 // CHECK-NEXT:   presence.c: [alpha,beta] 4 compiled
 // CHECK-NEXT: total: 8 compiles across 2 targets
-// CHECK-NEXT: unit presence: 8 items, 5 gated, 0 duplicated functions
+// CHECK-NEXT: unit presence: 8 items, 4 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 8 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
@@ -51,9 +51,6 @@ int main(void) {
 // CHECK-NEXT: #[cfg(not(feature = "beta"))]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut table: [i32; 3] = [1, 2, 3];
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: use core::ffi::c_ulong;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {
@@ -84,8 +81,8 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d\n".as_ptr(),
-// CHECK-NEXT:                 (((std::mem::size_of::<[i32; 3]>() as u64) / (std::mem::size_of::<i32>() as u64))
-// CHECK-NEXT:                     as u32) as i32,
+// CHECK-NEXT:                 ((std::mem::size_of::<[i32; 3]>() as size_t)
+// CHECK-NEXT:                     / (std::mem::size_of::<i32>() as size_t)) as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
@@ -94,8 +91,8 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d\n".as_ptr(),
-// CHECK-NEXT:                 (((std::mem::size_of::<[i32; 2]>() as u64) / (std::mem::size_of::<i32>() as u64))
-// CHECK-NEXT:                     as u32) as i32,
+// CHECK-NEXT:                 ((std::mem::size_of::<[i32; 2]>() as size_t)
+// CHECK-NEXT:                     / (std::mem::size_of::<i32>() as size_t)) as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
@@ -111,21 +108,22 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{}",
-// CHECK-NEXT:             (((std::mem::size_of::<[i32; 3]>() as c_ulong)
-// CHECK-NEXT:                 / (std::mem::size_of::<i32>() as c_ulong)) as u32) as i32
+// CHECK-NEXT:             ((std::mem::size_of::<[i32; 3]>() as size_t) / (std::mem::size_of::<i32>() as size_t))
+// CHECK-NEXT:                 as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(unix, feature = "beta"))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{}",
-// CHECK-NEXT:             (((std::mem::size_of::<[i32; 2]>() as c_ulong)
-// CHECK-NEXT:                 / (std::mem::size_of::<i32>() as c_ulong)) as u32) as i32
+// CHECK-NEXT:             ((std::mem::size_of::<[i32; 2]>() as size_t) / (std::mem::size_of::<i32>() as size_t))
+// CHECK-NEXT:                 as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
+// CHECK-NEXT: use slate_support::size_t;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

@@ -87,6 +87,6 @@ int date_redefined = sizeof(__DATE__) != 12;
 // DEFAULT-NEXT:     global %[[VALUE_defined_time:[0-9]+]] defined_time: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_defined_timestamp:[0-9]+]] defined_timestamp: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_counter_after_undef:[0-9]+]] counter_after_undef: i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_date_redefined:[0-9]+]] date_redefined: i32 [storage=static] = from_bool<i32, reason=assign>(ne<u64>(size_of<u64, array<i8, 12>>(12), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(12))))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_date_redefined:[0-9]+]] date_redefined: i32 [storage=static] = from_bool<i32, reason=assign>(ne<u64>(size_of<u64, array<i8, 12>>(12) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(12))) [c="__size_t"])) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

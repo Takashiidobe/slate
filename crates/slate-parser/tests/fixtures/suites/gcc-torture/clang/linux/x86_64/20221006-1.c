@@ -59,11 +59,11 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:         let %[[VALUE_len:[0-9]+]] len: i32 [storage=automatic] [const] = conditional<i32>(eq<i32>(read<i32>(%[[VALUE_argc]]), const<i32>(2)), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(read<ptr<ptr<i8>>>(%[[VALUE_argv]]), const<i32>(1)))))), const<i32>(4));
 // DEFAULT-NEXT:         let %[[VALUE_count:[0-9]+]] count: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_data:[0-9]+]] data: array<i32, 64> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_len]])));
-// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_len]])));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_len]]))) [c="__size_t"];
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_len]]))) [c="__size_t"];
 // DEFAULT-NEXT:         let %[[VALUE_M1:[0-9]+]] M1: vla<vla<i32, %[[VALUE1]]>, %[[VALUE0]]> [storage=automatic];
-// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_len]])));
-// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_len]])));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_len]]))) [c="__size_t"];
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_len]]))) [c="__size_t"];
 // DEFAULT-NEXT:         let %[[VALUE_M2:[0-9]+]] M2: vla<vla<i32, %[[VALUE3]]>, %[[VALUE2]]> [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:             init:

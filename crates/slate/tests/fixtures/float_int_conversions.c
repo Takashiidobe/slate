@@ -90,7 +90,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{} {}", (- 32768.9f64 as i16) as i32, ((65535.9f64 as u16) as u32) as i32);
+// CHECK-NEXT:     println!("{} {}", (- 32768.9f64 as i16) as i32, (65535.9f64 as u16) as i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%lld %lld\n".as_ptr(), 1e18f64 as i64, -9.2e18f64 as i64)
 // CHECK-NEXT:     };
@@ -132,7 +132,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let sc: i8 = -7;
-// CHECK-NEXT:     let uc: u8 = 250u8;
+// CHECK-NEXT:     let uc: u8 = 250;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%g %g\n".as_ptr(), sc as f64, (uc as f32) as f64) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

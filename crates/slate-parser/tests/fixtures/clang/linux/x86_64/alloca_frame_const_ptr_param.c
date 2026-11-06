@@ -47,7 +47,7 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_Params:[0-9]+]] Params = @type[[TYPE0]];
 // DEFAULT-NEXT:     fn %[[VALUE_use_params:[0-9]+]] @use_params(%[[VALUE_params:[0-9]+]] params: ptr<const @type[[TYPE0]]> [c="const Params *"], %[[VALUE_out:[0-9]+]] out: ptr<u32>, %[[VALUE_lo:[0-9]+]] lo: ptr<const i8>, %[[VALUE_hi:[0-9]+]] hi: ptr<const i8>) -> void [linkage=internal] [fallthrough=ret_void] [c="void(const Params *, unsigned int *, const char *, const char *)"] {
-// DEFAULT-NEXT:         let %[[VALUE_diff:[0-9]+]] diff: i64 [storage=automatic] = ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<const i8>>(%[[VALUE_hi]]), read<ptr<const i8>>(%[[VALUE_lo]]));
+// DEFAULT-NEXT:         let %[[VALUE_diff:[0-9]+]] diff: i64 [storage=automatic] = reinterpret<i64, reason=assign>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<const i8>>(%[[VALUE_hi]]), read<ptr<const i8>>(%[[VALUE_lo]])) [c="__ptrdiff_t"]);
 // DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%[[VALUE_out]])), reinterpret<u32, reason=explicit, fits=unknown>(add<i32, overflow=ub>(read<i32>(field0(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_params]])))), truncate<i32, reason=explicit, fits=unknown>(read<i64>(%[[VALUE_diff]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

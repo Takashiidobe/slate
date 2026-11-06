@@ -138,7 +138,7 @@ int main() {
 // DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<u32>(%[[VALUE_i]], reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:             condition: lt<u64>(widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_i]])), div<u64, by_zero=ub>(size_of<u64, array<@type[[TYPE0]], 3>>(36), size_of<u64, @type[[TYPE0]]>(12)))
+// DEFAULT-NEXT:             condition: lt<u64>(widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_i]])) [c="__size_t"], div<u64, by_zero=ub>(size_of<u64, array<@type[[TYPE0]], 3>>(36) [c="__size_t"], size_of<u64, @type[[TYPE0]]>(12) [c="__size_t"]) [c="__size_t"])
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE2]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));

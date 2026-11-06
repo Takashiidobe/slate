@@ -85,7 +85,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_i:[0-9]+]] i: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_i]])), div<u64, by_zero=ub>(size_of<u64, array<@type[[TYPE_Rec]], 2>>(32), size_of<u64, @type[[TYPE_Rec]]>(16)))
+// DEFAULT-NEXT:             condition: lt<u64>(widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_i]])) [c="__size_t"], div<u64, by_zero=ub>(size_of<u64, array<@type[[TYPE_Rec]], 2>>(32) [c="__size_t"], size_of<u64, @type[[TYPE_Rec]]>(16) [c="__size_t"]) [c="__size_t"])
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE1]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
@@ -104,7 +104,7 @@ int main(void) {
 // DEFAULT-NEXT:         for %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_i_2:[0-9]+]] i: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_i_2]])), div<u64, by_zero=ub>(size_of<u64, array<@type[[TYPE_Rec_2]], 2>>(48), size_of<u64, @type[[TYPE_Rec_2]]>(24)))
+// DEFAULT-NEXT:             condition: lt<u64>(widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_i_2]])) [c="__size_t"], div<u64, by_zero=ub>(size_of<u64, array<@type[[TYPE_Rec_2]], 2>>(48) [c="__size_t"], size_of<u64, @type[[TYPE_Rec_2]]>(24) [c="__size_t"]) [c="__size_t"])
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_i_2]]);
 // DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE6]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));

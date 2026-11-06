@@ -62,7 +62,7 @@ int main(void) {
 // DEFAULT-NEXT:         return read<u64>(field0(%[[VALUE_data]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, i64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, i64>(8) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(i32, u64) -> u64>(%[[VALUE_bad]], const<i32>(0), widen<u64, reason=arg>(const<u32>(3735928559))), widen<u64, reason=usual_arith>(const<u32>(3735928559)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

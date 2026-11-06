@@ -64,7 +64,7 @@ h (void)
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         size_of<u64, array<i32, 10>>(40);
+// DEFAULT-NEXT:         size_of<u64, array<i32, 10>>(40) [c="__size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

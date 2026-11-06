@@ -97,7 +97,7 @@ int main() {
 // DEFAULT-NEXT:         return;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if eq<u64>(size_of<u64, f64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
+// DEFAULT-NEXT:         if eq<u64>(size_of<u64, f64>(8) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))) [c="__size_t"])
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         call<void, signature=fn(f64) -> void>(%[[VALUE_func]], const<f64>(1.0));
 // DEFAULT-NEXT:         return const<i32>(0);

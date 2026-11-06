@@ -93,10 +93,9 @@ int main(void) {
 // CHECK-NEXT:     lamp.state = flip(lamp.state);
 // CHECK-NEXT:     lamp.color = next(lamp.color);
 // CHECK-NEXT:     let mut size: u8 = lamp.size;
-// CHECK-NEXT:     size = (((((size as u8) as u32) as i32) + 3) as i8) as u8;
+// CHECK-NEXT:     size = (((size as u8) as i32) + 3) as u8;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", sum, lamp.state as u32, lamp.color as u32, ((size as u8) as u32)
-// CHECK-NEXT:         as i32
+// CHECK-NEXT:         "{} {} {} {}", sum, lamp.state as u32, lamp.color as u32, (size as u8) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}", (unsafe { favorite }) as u32, (unsafe { levels[0] }) as i32,

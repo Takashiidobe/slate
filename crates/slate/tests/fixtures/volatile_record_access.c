@@ -95,9 +95,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut u16 = unsafe { (state.counters.as_mut_ptr() as *mut u16).add(2) };
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u16 = unsafe { std::ptr::read_volatile([[V_0]]) };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_volatile([[V_0]], (((([[V_1]] as u32) as i32) + 23) as i16) as u16)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { std::ptr::write_volatile([[V_0]], (([[V_1]] as i32) + 23) as u16) };
 // CHECK-NEXT:     unsafe { std::ptr::write_volatile(state.pointer, 11i32) };
 // CHECK-NEXT:     let view: *const Interrupt = std::ptr::addr_of_mut!(interrupt) as *const Interrupt;
 // CHECK-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(interrupt.flag), 9i32) };
@@ -110,9 +108,9 @@ int main(void) {
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     if (((unsafe {
+// CHECK-NEXT:     if ((unsafe {
 // CHECK-NEXT:         std::ptr::read_volatile((state.counters.as_mut_ptr() as *mut u16).add(2))
-// CHECK-NEXT:     }) as u32) as i32) != 123 || target != 11
+// CHECK-NEXT:     }) as i32) != 123 || target != 11
 // CHECK-NEXT:         || (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(global)) }) != 26
 // CHECK-NEXT:         || (unsafe { calls }) != 1
 // CHECK-NEXT:     {
@@ -128,8 +126,8 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %u %d %d\n".as_ptr(),
 // CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(global)),
-// CHECK-NEXT:             (std::ptr::read_volatile((state.counters.as_mut_ptr() as *mut u16).add(2))
-// CHECK-NEXT:                 as u32) as i32,
+// CHECK-NEXT:             std::ptr::read_volatile((state.counters.as_mut_ptr() as *mut u16).add(2))
+// CHECK-NEXT:                 as i32,
 // CHECK-NEXT:             target,
 // CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!((* all).before)),
 // CHECK-NEXT:         )

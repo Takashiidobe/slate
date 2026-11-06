@@ -66,19 +66,19 @@ qux (void *p, _BitInt(502) x)
 // DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<void>, %[[VALUE_x:[0-9]+]] x: i246b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_p]]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i246b>>(%[[VALUE_x]])), size_of<u64, i246b>(32));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_p]]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i246b>>(%[[VALUE_x]])), size_of<u64, i246b>(32) [c="__size_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_p_2:[0-9]+]] p: ptr<void>, %[[VALUE_x_2:[0-9]+]] x: i246b) -> i246b [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: i246b [storage=automatic] = add<i246b, overflow=ub>(read<i246b>(%[[VALUE_x_2]]), widen<i246b, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_p_2]]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i246b>>(%[[VALUE_y]])), size_of<u64, i246b>(32));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_p_2]]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i246b>>(%[[VALUE_y]])), size_of<u64, i246b>(32) [c="__size_t"]);
 // DEFAULT-NEXT:         return read<i246b>(%[[VALUE_x_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_p_3:[0-9]+]] p: ptr<void>, %[[VALUE_x_3:[0-9]+]] x: i502b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_p_3]]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i502b>>(%[[VALUE_x_3]])), size_of<u64, i502b>(64));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_p_3]]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i502b>>(%[[VALUE_x_3]])), size_of<u64, i502b>(64) [c="__size_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_qux:[0-9]+]] @qux(%[[VALUE_p_4:[0-9]+]] p: ptr<void>, %[[VALUE_x_4:[0-9]+]] x: i502b) -> i502b [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_y_2:[0-9]+]] y: i502b [storage=automatic] = add<i502b, overflow=ub>(read<i502b>(%[[VALUE_x_4]]), widen<i502b, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_p_4]]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i502b>>(%[[VALUE_y_2]])), size_of<u64, i502b>(64));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_p_4]]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i502b>>(%[[VALUE_y_2]])), size_of<u64, i502b>(64) [c="__size_t"]);
 // DEFAULT-NEXT:         return read<i502b>(%[[VALUE_x_4]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

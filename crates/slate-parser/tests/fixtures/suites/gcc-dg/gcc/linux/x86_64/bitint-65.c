@@ -56,7 +56,7 @@ bar (void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_strlen:[0-9]+]] @__builtin_strlen(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(deref(ptr_offset<ptr<array<i8, 10>>, subtract=false, element=array<i8, 10>, overflow=ub>(array_decay<ptr<array<i8, 10>>, length=None>(%[[VALUE_b]]), read<i535b>(%[[VALUE_x]]))))))));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(deref(ptr_offset<ptr<array<i8, 10>>, subtract=false, element=array<i8, 10>, overflow=ub>(array_decay<ptr<array<i8, 10>>, length=None>(%[[VALUE_b]]), read<i535b>(%[[VALUE_x]])))))) [c="__size_t"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

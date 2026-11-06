@@ -323,10 +323,7 @@ int main(void) {
 // CHECK-NEXT:             std::simd::Simd<u8, 32>,
 // CHECK-NEXT:         >(a)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "bytes {} {} {}", (bytes[0] as u32) as i32, (bytes[12] as u32) as i32, (bytes[31]
-// CHECK-NEXT:         as u32) as i32
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("bytes {} {} {}", bytes[0] as i32, bytes[12] as i32, bytes[31] as i32);
 // CHECK-NEXT:     let mut h: holder = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: holder = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].tag = 120i8;

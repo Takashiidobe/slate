@@ -71,17 +71,17 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_frob_entry:[0-9]+]] @frob_entry(%[[VALUE_buf:[0-9]+]] buf: ptr<i8>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_event:[0-9]+]] event: @type[[TYPE_event]] [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_event]]>>(%[[VALUE_event]])), pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%[[VALUE_buf]])), size_of<u64, @type[[TYPE_event]]>(4));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_event]]>>(%[[VALUE_event]])), pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%[[VALUE_buf]])), size_of<u64, @type[[TYPE_event]]>(4) [c="__size_t"]);
 // DEFAULT-NEXT:         if lt<u32>(read<u32>(field0(field0(%[[VALUE_event]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(64)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<u32>(field0(field0(%[[VALUE_event]])), neg<u32, overflow=wrap>(const<u32>(1)));
-// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i8>>(%[[VALUE_buf]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_event]]>>(%[[VALUE_event]])), size_of<u64, @type[[TYPE_event]]>(4));
+// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i8>>(%[[VALUE_buf]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_event]]>>(%[[VALUE_event]])), size_of<u64, @type[[TYPE_event]]>(4) [c="__size_t"]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memset:[0-9]+]] @__builtin_memset(%[[VALUE3:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE4:[0-9]+]] <unnamed>: i32, %[[VALUE5:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE1]] [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE1]]>>(%[[VALUE_u]])), const<i32>(0), size_of<u64, @type[[TYPE1]]>(8));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE1]]>>(%[[VALUE_u]])), const<i32>(0), size_of<u64, @type[[TYPE1]]>(8) [c="__size_t"]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>) -> void>(%[[VALUE_frob_entry]], addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(5)>(field0(%[[VALUE_u]])), const<i32>(1)))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

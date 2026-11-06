@@ -140,7 +140,7 @@ main (void)
 // DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_buf]]), read<u64>(%[[VALUE_i]]))), reinterpret<i8, reason=explicit, fits=unknown>(truncate<u8, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_i]]) [c="size_t"])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_down1:[0-9]+]] @down1(%[[VALUE_i_2:[0-9]+]] i: i32) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%[[VALUE_i_2]]))));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%[[VALUE_i_2]])))) [c="__size_t"];
 // DEFAULT-NEXT:         let %[[VALUE_buf_2:[0-9]+]] buf: vla<i8, %[[VALUE3]]> [storage=automatic];
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%[[VALUE_i_2]]), const<i32>(0))
 // DEFAULT-NEXT:             {
@@ -150,7 +150,7 @@ main (void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_alloca:[0-9]+]] @__builtin_alloca(%[[VALUE4:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_down2:[0-9]+]] @down2(%[[VALUE_i_3:[0-9]+]] i: i32) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %[[VALUE_buf_3:[0-9]+]] buf: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%[[VALUE_i_3]]))))));
+// DEFAULT-NEXT:         let %[[VALUE_buf_3:[0-9]+]] buf: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%[[VALUE_i_3]])))) [c="__size_t"]));
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%[[VALUE_i_3]]), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<void, signature=fn(ptr<i8>, u64) -> void>(%[[VALUE_use_buffer]], read<ptr<i8>>(%[[VALUE_buf_3]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%[[VALUE_i_3]])))) [c="size_t"]);

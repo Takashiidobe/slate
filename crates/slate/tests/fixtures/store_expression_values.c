@@ -218,7 +218,7 @@ int main(void) {
 // CHECK-NEXT:         "{} {} {} {} {} {}", buffer.0[0], buffer.0[1], buffer.0[2], __slate_printf_arg3,
 // CHECK-NEXT:         total, second.value
 // CHECK-NEXT:     );
-// CHECK-NEXT:     println!("{} {} {} {}", flag, picked, (narrow as u32) as i32, widened);
+// CHECK-NEXT:     println!("{} {} {} {}", flag, picked, narrow as i32, widened);
 // CHECK-NEXT:     a + b + c & 127
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

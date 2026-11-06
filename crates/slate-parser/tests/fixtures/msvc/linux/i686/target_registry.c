@@ -43,10 +43,10 @@ struct pair record(struct pair value) { return value; }
 // I686-LINUX-GNU-MSVC-NEXT:         field1 b: i32;
 // I686-LINUX-GNU-MSVC-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // I686-LINUX-GNU-MSVC-NEXT:     global %[[VALUE_clang_major:[0-9]+]] clang_major: i32 [storage=static] = const<i32>(22) [linkage=external];
-// I686-LINUX-GNU-MSVC-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u32 [storage=static] = reinterpret<u32>(size_of<u32, i32>(4)) [linkage=external];
-// I686-LINUX-GNU-MSVC-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u32 [storage=static] = reinterpret<u32>(size_of<u32, f80>(12)) [linkage=external];
-// I686-LINUX-GNU-MSVC-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u32 [storage=static] = reinterpret<u32>(size_of<u32, ptr<i8>>(4)) [linkage=external];
-// I686-LINUX-GNU-MSVC-NEXT:     global %[[VALUE_alignof_long_long:[0-9]+]] alignof_long_long: u32 [storage=static] = reinterpret<u32>(align_of<u32, i64>(4)) [linkage=external];
+// I686-LINUX-GNU-MSVC-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u32 [storage=static] = reinterpret<u32>(size_of<u32, i32>(4) [c="__size_t"]) [linkage=external];
+// I686-LINUX-GNU-MSVC-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u32 [storage=static] = reinterpret<u32>(size_of<u32, f80>(12) [c="__size_t"]) [linkage=external];
+// I686-LINUX-GNU-MSVC-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u32 [storage=static] = reinterpret<u32>(size_of<u32, ptr<i8>>(4) [c="__size_t"]) [linkage=external];
+// I686-LINUX-GNU-MSVC-NEXT:     global %[[VALUE_alignof_long_long:[0-9]+]] alignof_long_long: u32 [storage=static] = reinterpret<u32>(align_of<u32, i64>(4) [c="__size_t"]) [linkage=external];
 // I686-LINUX-GNU-MSVC-NEXT:     fn %[[VALUE_record:[0-9]+]] @record(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_pair]]) -> @type[[TYPE_pair]] [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
 // I686-LINUX-GNU-MSVC-NEXT:         return copy<@type[[TYPE_pair]], reason=return>(read<@type[[TYPE_pair]]>(%[[VALUE_value]]));
 // I686-LINUX-GNU-MSVC-NEXT:     }

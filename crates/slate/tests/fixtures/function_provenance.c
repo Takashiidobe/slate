@@ -252,7 +252,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.strlen")]
 // CHECK-NEXT: extern "C-unwind" fn strlen(s: *const i8) -> u64 {
-// CHECK-NEXT:     ((if !s.is_null() { 5i32 } else { 0i32 }) as i64) as u64
+// CHECK-NEXT:     (if !s.is_null() { 5i32 } else { 0i32 }) as u64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strcpy(dst: *mut i8, src: *const i8) -> *mut i8 {
 // CHECK-NEXT:     if !src.is_null() { dst } else { std::ptr::null_mut::<i8>() }
@@ -304,10 +304,10 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strspn(s: *const i8, accept: *const i8) -> u64 {
-// CHECK-NEXT:     ((if !s.is_null() && !accept.is_null() { 31i32 } else { 0i32 }) as i64) as u64
+// CHECK-NEXT:     (if !s.is_null() && !accept.is_null() { 31i32 } else { 0i32 }) as u64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strcspn(s: *const i8, reject: *const i8) -> u64 {
-// CHECK-NEXT:     ((if !s.is_null() && !reject.is_null() { 32i32 } else { 0i32 }) as i64) as u64
+// CHECK-NEXT:     (if !s.is_null() && !reject.is_null() { 32i32 } else { 0i32 }) as u64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn atoi(s: *const i8) -> i32 {
 // CHECK-NEXT:     if !s.is_null() { 41 } else { 0 }
@@ -319,8 +319,7 @@ int main(void) {
 // CHECK-NEXT:     (if !s.is_null() && !end.is_null() && base != 0 { 43i32 } else { 0i32 }) as i64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strtoul(s: *const i8, end: *mut *mut i8, base: i32) -> u64 {
-// CHECK-NEXT:     ((if !s.is_null() && !end.is_null() && base != 0 { 44i32 } else { 0i32 }) as i64)
-// CHECK-NEXT:         as u64
+// CHECK-NEXT:     (if !s.is_null() && !end.is_null() && base != 0 { 44i32 } else { 0i32 }) as u64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn strtod(s: *const i8, end: *mut *mut i8) -> f64 {
 // CHECK-NEXT:     if !s.is_null() && !end.is_null() { 45.0f64 } else { 0.0f64 }
@@ -349,18 +348,18 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn fread(ptr: *mut (), size: u64, count: u64, stream: *mut ()) -> u64 {
-// CHECK-NEXT:     ((if !ptr.is_null() && size != 0 && count != 0 && !stream.is_null() {
+// CHECK-NEXT:     (if !ptr.is_null() && size != 0 && count != 0 && !stream.is_null() {
 // CHECK-NEXT:         56i32
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         0i32
-// CHECK-NEXT:     }) as i64) as u64
+// CHECK-NEXT:     }) as u64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn fwrite(ptr: *const (), size: u64, count: u64, stream: *mut ()) -> u64 {
-// CHECK-NEXT:     ((if !ptr.is_null() && size != 0 && count != 0 && !stream.is_null() {
+// CHECK-NEXT:     (if !ptr.is_null() && size != 0 && count != 0 && !stream.is_null() {
 // CHECK-NEXT:         57i32
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         0i32
-// CHECK-NEXT:     }) as i64) as u64
+// CHECK-NEXT:     }) as u64
 // CHECK-NEXT: }
 // CHECK-NEXT: fn fclose(stream: *mut ()) -> i32 {
 // CHECK-NEXT:     if !stream.is_null() { 58 } else { 0 }

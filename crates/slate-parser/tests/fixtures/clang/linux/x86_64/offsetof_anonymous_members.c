@@ -96,7 +96,7 @@ size_t deep_offset(void) {
 // IR-NEXT:         field1 bytes: array<i8, 8>;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 0]];
 // IR-NEXT:     fn %[[VALUE_deep_offset:[0-9]+]] @deep_offset() -> u64 [linkage=external] [fallthrough=ub_if_used] [c="size_t(void)"] {
-// IR-NEXT:         return reinterpret<u64, reason=return>(const<u64>(28)) [c="size_t"];
+// IR-NEXT:         return reinterpret<u64, reason=return>(const<u64>(28) [c="__size_t"]) [c="size_t"];
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

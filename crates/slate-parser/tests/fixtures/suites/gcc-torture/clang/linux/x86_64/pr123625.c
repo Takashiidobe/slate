@@ -137,13 +137,14 @@ int main(void) {
 // DEFAULT-NEXT:                             for %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:                                 init:
 // DEFAULT-NEXT:                                     let %[[VALUE_BS_TEMP_371:[0-9]+]] BS_TEMP_371: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)) [c="uint32_t"] [c="uint32_t"];
-// DEFAULT-NEXT:                                 condition: lt<u32>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_BS_TEMP_371]]) [c="uint32_t"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(16)))
+// DEFAULT-NEXT:                                 condition: lt<u32>(read<u32>(%[[VALUE_BS_TEMP_371]]) [c="uint32_t"], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(16)) [c="uint32_t"])
 // DEFAULT-NEXT:                                 increment: {
 // DEFAULT-NEXT:                                     let %[[VALUE9:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_BS_TEMP_371]]) [c="uint32_t"] [c="uint32_t"];
-// DEFAULT-NEXT:                                     let %[[VALUE10:[0-9]+]]: u32 [synthetic] = reinterpret<u32, reason=assign>(add<u32, overflow=wrap>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE9]]) [c="uint32_t"]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))) [c="uint32_t"] [c="uint32_t"];
+// DEFAULT-NEXT:                                     let %[[VALUE10:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE9]]) [c="uint32_t"], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)) [c="uint32_t"]) [c="uint32_t"] [c="uint32_t"];
 // DEFAULT-NEXT:                                     write<u32>(%[[VALUE_BS_TEMP_371]], read<u32>(%[[VALUE10]]) [c="uint32_t"]) [c="uint32_t"] [c="uint32_t"];
 // DEFAULT-NEXT:                                     yield void;
 // DEFAULT-NEXT:                                 }
+// DEFAULT-NEXT:                                 counted: %[[VALUE_BS_TEMP_371]] in reinterpret<u32, reason=assign, fits=always>(const<i32>(0)) [c="uint32_t"]..reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(16)) [c="uint32_t"]
 // DEFAULT-NEXT:                                 body:
 // DEFAULT-NEXT:                                     let %[[VALUE11:[0-9]+]]: ptr<i64> [synthetic] = read<ptr<i64>>(%[[VALUE_g_565]]) [c="int64_t *"] [c="int64_t *"];
 // DEFAULT-NEXT:                                     let %[[VALUE12:[0-9]+]]: i64 [synthetic] = read<i64>(deref(read<ptr<i64>>(%[[VALUE11]]))) [c="int64_t"] [c="int64_t"];

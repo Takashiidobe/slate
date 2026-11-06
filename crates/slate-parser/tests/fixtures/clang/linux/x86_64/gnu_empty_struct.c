@@ -44,11 +44,11 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 122, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_empty_size:[0-9]+]] @empty_size(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_GNUEmpty]]) -> u64 [linkage=internal] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] [c="size_t(struct GNUEmpty)"] {
-// DEFAULT-NEXT:         return reinterpret<u64, reason=return>(size_of<u64, @type[[TYPE_GNUEmpty]]>(0)) [c="size_t"];
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return>(size_of<u64, @type[[TYPE_GNUEmpty]]>(0) [c="__size_t"]) [c="size_t"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_value_2:[0-9]+]] value: @type[[TYPE_GNUEmpty]] [storage=automatic] = aggregate<@type[[TYPE_GNUEmpty]], zero_fill=false>();
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str]])), size_of<u64, @type[[TYPE_GNUEmpty]]>(0), call<u64, signature=fn(@type[[TYPE_GNUEmpty]]) -> u64, abi=sysv64(native_c) -> scalar>(%[[VALUE_empty_size]], copy<@type[[TYPE_GNUEmpty]], reason=arg>(read<@type[[TYPE_GNUEmpty]]>(%[[VALUE_value_2]]))) [c="size_t"]);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str]])), size_of<u64, @type[[TYPE_GNUEmpty]]>(0) [c="__size_t"], call<u64, signature=fn(@type[[TYPE_GNUEmpty]]) -> u64, abi=sysv64(native_c) -> scalar>(%[[VALUE_empty_size]], copy<@type[[TYPE_GNUEmpty]], reason=arg>(read<@type[[TYPE_GNUEmpty]]>(%[[VALUE_value_2]]))) [c="size_t"]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

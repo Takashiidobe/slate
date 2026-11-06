@@ -30,7 +30,7 @@ const char *spelled(int q, char *s) { return __PRETTY_FUNCTION__; }
 // IR-NEXT:     }
 // IR-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 8> [storage=static] = code_units<array<i8, 8>>([115, 112, 101, 108, 108, 101, 100, 0]) [linkage=internal];
 // IR-NEXT:     fn %[[VALUE_pretty:[0-9]+]] @pretty(%[[VALUE_q:[0-9]+]] q: i32, %[[VALUE_s:[0-9]+]] s: ptr<i8>) -> u64 [linkage=internal] [fallthrough=ub_if_used] {
-// IR-NEXT:         return size_of<u64, array<i8, 7>>(7);
+// IR-NEXT:         return reinterpret<u64, reason=return>(size_of<u64, array<i8, 7>>(7) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_spelled:[0-9]+]] @spelled(%[[VALUE_q_2:[0-9]+]] q: i32, %[[VALUE_s_2:[0-9]+]] s: ptr<i8>) -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_str]]));

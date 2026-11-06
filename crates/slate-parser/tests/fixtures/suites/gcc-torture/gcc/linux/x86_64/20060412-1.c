@@ -80,7 +80,7 @@ int main() {
 // DEFAULT-NEXT:         write<i64>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_q]]))), widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         if gt<ptr<@type[[TYPE_S]]>>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_q]]), read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if gt<i64>(ptr_diff<i64, element=@type[[TYPE_S]], same_array=required, overflow=ub>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_q]]), read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]])), widen<i64, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:         if gt<i64>(ptr_diff<i64, element=@type[[TYPE_S]], same_array=required, overflow=ub>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_q]]), read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]])) [c="__ptrdiff_t"], widen<i64, reason=usual_arith>(const<i32>(0)) [c="__ptrdiff_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

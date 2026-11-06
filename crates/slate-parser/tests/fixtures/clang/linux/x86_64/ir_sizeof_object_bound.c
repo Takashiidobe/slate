@@ -55,7 +55,7 @@ int f(int p) {
 // IR-NEXT:         let %[[VALUE_K_2:[0-9]+]] K: array<i8, 5> [storage=automatic];
 // IR-NEXT:         let %[[VALUE_by_param:[0-9]+]] by_param: array<i64, 4> [storage=automatic] [align=16];
 // IR-NEXT:         let %[[VALUE_shadowed:[0-9]+]] shadowed: array<i32, 5> [storage=automatic] [align=16];
-// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(size_of<u64, array<i64, 4>>(32), size_of<u64, array<i32, 5>>(20))));
+// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(size_of<u64, array<i64, 4>>(32) [c="__size_t"], size_of<u64, array<i32, 5>>(20) [c="__size_t"]) [c="__size_t"]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

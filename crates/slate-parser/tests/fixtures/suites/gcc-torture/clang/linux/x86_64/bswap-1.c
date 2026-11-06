@@ -95,7 +95,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: u64 [storage=automatic];
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u64>(8), mul<u64, overflow=wrap>(size_of<u64, i8>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u64>(8) [c="__size_t"], mul<u64, overflow=wrap>(size_of<u64, i8>(1) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))) [c="__size_t"]) [c="__size_t"])
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE_f]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(18)))), call<u64, signature=fn(u64) -> u64>(%[[VALUE_g]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(18)))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

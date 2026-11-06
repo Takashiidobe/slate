@@ -59,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_saveptr:[0-9]+]] saveptr: ptr<u8> [storage=automatic] = read<ptr<u8>>(%[[VALUE_ptr]]);
 // DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(ptr<ptr<u8>>, ptr<u8>) -> i32>(%[[VALUE_ns_name_skip]], addr_of<ptr<ptr<u8>>>(%[[VALUE_ptr]]), read<ptr<u8>>(%[[VALUE_eom]])), neg<i32, overflow=ub>(const<i32>(1)))
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(1));
-// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(ptr_diff<i64, element=u8, same_array=required, overflow=ub>(read<ptr<u8>>(%[[VALUE_ptr]]), read<ptr<u8>>(%[[VALUE_saveptr]])));
+// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(ptr_diff<i64, element=u8, same_array=required, overflow=ub>(read<ptr<u8>>(%[[VALUE_ptr]]), read<ptr<u8>>(%[[VALUE_saveptr]])) [c="__ptrdiff_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(ptr<u8>, ptr<u8>) -> i32>(%[[VALUE_dn_skipname]], addr_of<ptr<u8>>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(2)>(%[[VALUE_a]]), const<i32>(0)))), addr_of<ptr<u8>>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(2)>(%[[VALUE_a]]), const<i32>(1))))), const<i32>(0))

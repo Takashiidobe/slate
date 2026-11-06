@@ -57,7 +57,7 @@ int main(void) {
 // CHECK-NEXT:     let bytes: *const u8 = p as *const u8;
 // CHECK-NEXT:     let mut sum: u32 = 0;
 // CHECK-NEXT:     for i in 0..size {
-// CHECK-NEXT:         sum |= (((unsafe { *bytes.add(i as usize) }) as u32) as i32) as u32;
+// CHECK-NEXT:         sum |= ((unsafe { *bytes.add(i as usize) }) as i32) as u32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { printf(c"%s: %u bytes, or=%02x\n".as_ptr(), name, size, sum) };
 // CHECK-NEXT: }

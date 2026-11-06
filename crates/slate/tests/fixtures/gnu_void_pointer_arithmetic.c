@@ -81,9 +81,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u %u\n".as_ptr(),
-// CHECK-NEXT:             (at(start as *const (), 7i64) as u32) as i32,
-// CHECK-NEXT:             (at(middle, -2i64) as u32) as i32,
-// CHECK-NEXT:             (*(cursor as *mut u8) as u32) as i32,
+// CHECK-NEXT:             at(start as *const (), 7i64) as i32,
+// CHECK-NEXT:             at(middle, -2i64) as i32,
+// CHECK-NEXT:             *(cursor as *mut u8) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

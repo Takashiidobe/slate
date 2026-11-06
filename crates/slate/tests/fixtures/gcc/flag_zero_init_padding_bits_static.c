@@ -153,7 +153,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%02x".as_ptr(), (bytes.0[i as usize] as u32) as i32) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%02x".as_ptr(), bytes.0[i as usize] as i32) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");

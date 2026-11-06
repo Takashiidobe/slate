@@ -47,10 +47,10 @@ int extended_align = _Alignof(struct extended);
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 x: f80;
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %[[VALUE_wide_size:[0-9]+]] wide_size: i32 [storage=static] = reinterpret<i32>(size_of<u32, @type[[TYPE_wide]]>(28)) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_wide_align:[0-9]+]] wide_align: i32 [storage=static] = reinterpret<i32>(align_of<u32, @type[[TYPE_wide]]>(4)) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_extended_size:[0-9]+]] extended_size: i32 [storage=static] = reinterpret<i32>(size_of<u32, @type[[TYPE_extended]]>(16)) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_extended_align:[0-9]+]] extended_align: i32 [storage=static] = reinterpret<i32>(align_of<u32, @type[[TYPE_extended]]>(4)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wide_size:[0-9]+]] wide_size: i32 [storage=static] = reinterpret<i32>(size_of<u32, @type[[TYPE_wide]]>(28) [c="__size_t"]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wide_align:[0-9]+]] wide_align: i32 [storage=static] = reinterpret<i32>(align_of<u32, @type[[TYPE_wide]]>(4) [c="__size_t"]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_extended_size:[0-9]+]] extended_size: i32 [storage=static] = reinterpret<i32>(size_of<u32, @type[[TYPE_extended]]>(16) [c="__size_t"]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_extended_align:[0-9]+]] extended_align: i32 [storage=static] = reinterpret<i32>(align_of<u32, @type[[TYPE_extended]]>(4) [c="__size_t"]) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN ON
@@ -86,10 +86,10 @@ int extended_align = _Alignof(struct extended);
 // ON-NEXT:         field0 c: i8;
 // ON-NEXT:         field1 x: f80;
 // ON-NEXT:     } [size=16, align=4, offsets=[0, 4]];
-// ON-NEXT:     global %[[VALUE_wide_size:[0-9]+]] wide_size: i32 [storage=static] = reinterpret<i32>(size_of<u32, @type[[TYPE_wide]]>(32)) [linkage=external];
-// ON-NEXT:     global %[[VALUE_wide_align:[0-9]+]] wide_align: i32 [storage=static] = reinterpret<i32>(align_of<u32, @type[[TYPE_wide]]>(8)) [linkage=external];
-// ON-NEXT:     global %[[VALUE_extended_size:[0-9]+]] extended_size: i32 [storage=static] = reinterpret<i32>(size_of<u32, @type[[TYPE_extended]]>(16)) [linkage=external];
-// ON-NEXT:     global %[[VALUE_extended_align:[0-9]+]] extended_align: i32 [storage=static] = reinterpret<i32>(align_of<u32, @type[[TYPE_extended]]>(4)) [linkage=external];
+// ON-NEXT:     global %[[VALUE_wide_size:[0-9]+]] wide_size: i32 [storage=static] = reinterpret<i32>(size_of<u32, @type[[TYPE_wide]]>(32) [c="__size_t"]) [linkage=external];
+// ON-NEXT:     global %[[VALUE_wide_align:[0-9]+]] wide_align: i32 [storage=static] = reinterpret<i32>(align_of<u32, @type[[TYPE_wide]]>(8) [c="__size_t"]) [linkage=external];
+// ON-NEXT:     global %[[VALUE_extended_size:[0-9]+]] extended_size: i32 [storage=static] = reinterpret<i32>(size_of<u32, @type[[TYPE_extended]]>(16) [c="__size_t"]) [linkage=external];
+// ON-NEXT:     global %[[VALUE_extended_align:[0-9]+]] extended_align: i32 [storage=static] = reinterpret<i32>(align_of<u32, @type[[TYPE_extended]]>(4) [c="__size_t"]) [linkage=external];
 // ON-NEXT: }
 // SLATE-FILECHECK-END ON
 // SLATE-FILECHECK-BEGIN OFF
@@ -125,9 +125,9 @@ int extended_align = _Alignof(struct extended);
 // OFF-NEXT:         field0 c: i8;
 // OFF-NEXT:         field1 x: f80;
 // OFF-NEXT:     } [size=16, align=4, offsets=[0, 4]];
-// OFF-NEXT:     global %[[VALUE_wide_size:[0-9]+]] wide_size: i32 [storage=static] = reinterpret<i32>(size_of<u32, @type[[TYPE_wide]]>(28)) [linkage=external];
-// OFF-NEXT:     global %[[VALUE_wide_align:[0-9]+]] wide_align: i32 [storage=static] = reinterpret<i32>(align_of<u32, @type[[TYPE_wide]]>(4)) [linkage=external];
-// OFF-NEXT:     global %[[VALUE_extended_size:[0-9]+]] extended_size: i32 [storage=static] = reinterpret<i32>(size_of<u32, @type[[TYPE_extended]]>(16)) [linkage=external];
-// OFF-NEXT:     global %[[VALUE_extended_align:[0-9]+]] extended_align: i32 [storage=static] = reinterpret<i32>(align_of<u32, @type[[TYPE_extended]]>(4)) [linkage=external];
+// OFF-NEXT:     global %[[VALUE_wide_size:[0-9]+]] wide_size: i32 [storage=static] = reinterpret<i32>(size_of<u32, @type[[TYPE_wide]]>(28) [c="__size_t"]) [linkage=external];
+// OFF-NEXT:     global %[[VALUE_wide_align:[0-9]+]] wide_align: i32 [storage=static] = reinterpret<i32>(align_of<u32, @type[[TYPE_wide]]>(4) [c="__size_t"]) [linkage=external];
+// OFF-NEXT:     global %[[VALUE_extended_size:[0-9]+]] extended_size: i32 [storage=static] = reinterpret<i32>(size_of<u32, @type[[TYPE_extended]]>(16) [c="__size_t"]) [linkage=external];
+// OFF-NEXT:     global %[[VALUE_extended_align:[0-9]+]] extended_align: i32 [storage=static] = reinterpret<i32>(align_of<u32, @type[[TYPE_extended]]>(4) [c="__size_t"]) [linkage=external];
 // OFF-NEXT: }
 // SLATE-FILECHECK-END OFF

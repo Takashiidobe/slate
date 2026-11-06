@@ -224,7 +224,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! TEMP__2 {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let temp: i32 = (($a) as u32) as i32;
+// CHECK-NEXT:         let temp: i32 = ($a) as i32;
 // CHECK-NEXT:         println!("{}", temp + 1);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -320,7 +320,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! TEMP__2 {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let temp: i32 = (($a) as u32) as i32;
+// CHECK-NEXT:         let temp: i32 = ($a) as i32;
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), temp + 1) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -376,7 +376,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let local: i32 = 1;
-// CHECK-NEXT:     let byte: u8 = 200u8;
+// CHECK-NEXT:     let byte: u8 = 200;
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     let wide: c_long = (8589934592 as c_long);
 // CHECK-NEXT:     #[cfg(windows)]
@@ -472,7 +472,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let __v: c_long = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + (((($a) as u32) as i32) as c_long);
+// CHECK-NEXT:             total = __v + ((($a) as i32) as c_long);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

@@ -31,10 +31,10 @@ unsigned long below_natural(_Alignas(1) int p) { return _Alignof(p); }
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_above_natural:[0-9]+]] @above_natural(%[[VALUE_p:[0-9]+]] p: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u64>(32);
+// IR-NEXT:         return reinterpret<u64>(const<u64>(32) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_below_natural:[0-9]+]] @below_natural(%[[VALUE_p_2:[0-9]+]] p: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return align_of<u64, i32>(4);
+// IR-NEXT:         return reinterpret<u64>(align_of<u64, i32>(4) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

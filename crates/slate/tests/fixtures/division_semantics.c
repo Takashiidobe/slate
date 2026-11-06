@@ -101,18 +101,17 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     let mut sc: i8 = -100;
-// CHECK-NEXT:     let mut uc: u8 = 250u8;
+// CHECK-NEXT:     let mut uc: u8 = 250;
 // CHECK-NEXT:     let mut sh: i16 = -30000;
-// CHECK-NEXT:     let mut us: u16 = 65535u16;
+// CHECK-NEXT:     let mut us: u16 = 65535;
 // CHECK-NEXT:     sc = ((sc as i32) / 3) as i8;
-// CHECK-NEXT:     uc = ((((uc as u32) as i32) % 7) as i8) as u8;
+// CHECK-NEXT:     uc = ((uc as i32) % 7) as u8;
 // CHECK-NEXT:     sh = ((sh as i32) / -7) as i16;
-// CHECK-NEXT:     us = ((((us as u32) as i32) / 2) as i16) as u16;
+// CHECK-NEXT:     us = ((us as i32) / 2) as u16;
 // CHECK-NEXT:     let mut narrow: i8 = -128;
 // CHECK-NEXT:     narrow = ((narrow as i32) / -1) as i8;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {}", sc as i32, (uc as u32) as i32, sh as i32, (us as u32) as i32,
-// CHECK-NEXT:         narrow as i32
+// CHECK-NEXT:         "{} {} {} {} {}", sc as i32, uc as i32, sh as i32, us as i32, narrow as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut accumulator: u32 = 1000000007;
 // CHECK-NEXT:     let mut steps: i32 = 0;

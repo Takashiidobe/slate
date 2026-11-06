@@ -77,7 +77,7 @@ int main(void) {
 // CHECK-NEXT:   duplicated fn:hand_written: 3 variants
 // CHECK-NEXT:   spliced fn:classify: 4 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit libc_spellings_address: 36 items, 34 gated, 2 duplicated functions
+// CHECK-NEXT: unit libc_spellings_address: 37 items, 35 gated, 2 duplicated functions
 // CHECK-NEXT:   duplicated fn:isdigit: 2 variants
 // CHECK-NEXT:   duplicated fn:isgraph: 2 variants
 // CHECK-NEXT:   spliced fn:count_digits: 6 variants
@@ -92,6 +92,8 @@ int main(void) {
 // CHECK-NEXT: use core::ffi::c_long;
 // CHECK-NEXT: #[cfg(any(target_os = "macos", target_os = "freebsd"))]
 // CHECK-NEXT: use core::ffi::c_ulong;
+// CHECK-NEXT: #[cfg(target_os = "freebsd")]
+// CHECK-NEXT: use slate_support::size_t;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_env = "gnu")]
 // CHECK-NEXT: unsafe extern "C" {
@@ -141,8 +143,10 @@ int main(void) {
 // CHECK-NEXT: struct __SlateRecord_runetype_h_82 {
 // CHECK-NEXT:     __magic: [c_char; 8],
 // CHECK-NEXT:     __encoding: [c_char; 32],
-// CHECK-NEXT:     __sgetrune: Option<unsafe extern "C-unwind" fn(*const c_char, u64, *mut *const c_char) -> i32>,
-// CHECK-NEXT:     __sputrune: Option<unsafe extern "C-unwind" fn(i32, *mut c_char, u64, *mut *mut c_char) -> i32>,
+// CHECK-NEXT:     __sgetrune:
+// CHECK-NEXT:         Option<unsafe extern "C-unwind" fn(*const c_char, size_t, *mut *const c_char) -> i32>,
+// CHECK-NEXT:     __sputrune:
+// CHECK-NEXT:         Option<unsafe extern "C-unwind" fn(i32, *mut c_char, size_t, *mut *mut c_char) -> i32>,
 // CHECK-NEXT:     __invalid_rune: i32,
 // CHECK-NEXT:     __runetype: [c_ulong; 256],
 // CHECK-NEXT:     __maplower: [i32; 256],
@@ -176,7 +180,7 @@ int main(void) {
 // CHECK-NEXT:             *((*__getCurrentRuneLocale()).__runetype.as_ptr() as *const c_ulong).offset(_c as isize)
 // CHECK-NEXT:         }) & _f
 // CHECK-NEXT:     };
-// CHECK-NEXT:     ([[V_0]] as u32) as i32
+// CHECK-NEXT:     [[V_0]] as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_os = "freebsd")]
@@ -323,8 +327,7 @@ int main(void) {
 // CHECK-NEXT:                 isdigit as *const (),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) + unsafe { *(__errno_location() as *mut i32) }
-// CHECK-NEXT:             + if (((unsafe { *unsafe { *__ctype_b_loc() }.add(97) }) as u32) as i32) & 32768i32 != 0
-// CHECK-NEXT:             {
+// CHECK-NEXT:             + if ((unsafe { *unsafe { *__ctype_b_loc() }.add(97) }) as i32) & 32768 != 0 {
 // CHECK-NEXT:                 1
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0

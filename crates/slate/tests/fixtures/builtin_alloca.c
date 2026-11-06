@@ -258,44 +258,42 @@ int main(void) {
 // CHECK-NEXT:             (16u64 as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     (((unsafe { *buf.add(0) }) as u32) as i32)
-// CHECK-NEXT:         + (((unsafe { *buf.add(15) }) as u32) as i32)
+// CHECK-NEXT:     ((unsafe { *buf.add(0) }) as i32) + ((unsafe { *buf.add(15) }) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn dyn_alloca(n: i32) -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
-// CHECK-NEXT:     let buf: *mut u8 = (__slate_alloca::alloca(((n as i64) as u64) as usize, 16usize)
-// CHECK-NEXT:         as *mut ()) as *mut u8;
+// CHECK-NEXT:     let buf: *mut u8 = (__slate_alloca::alloca((n as u64) as usize, 16usize) as *mut ())
+// CHECK-NEXT:         as *mut u8;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             ((buf as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (7i32 as i32) as u8,
-// CHECK-NEXT:             (((n as i64) as u64) as usize) as usize,
+// CHECK-NEXT:             ((n as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     (((unsafe { *buf.add(0) }) as u32) as i32)
-// CHECK-NEXT:         + (((unsafe { *buf.offset((n - 1) as isize) }) as u32) as i32)
+// CHECK-NEXT:     ((unsafe { *buf.add(0) }) as i32)
+// CHECK-NEXT:         + ((unsafe { *buf.offset((n - 1) as isize) }) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn uninitialized_alloca(n: i32) -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
-// CHECK-NEXT:     let buf: *mut u8 = (__slate_alloca::alloca(((n as i64) as u64) as usize, 16usize)
-// CHECK-NEXT:         as *mut ()) as *mut u8;
+// CHECK-NEXT:     let buf: *mut u8 = (__slate_alloca::alloca((n as u64) as usize, 16usize) as *mut ())
+// CHECK-NEXT:         as *mut u8;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             ((buf as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (9i32 as i32) as u8,
-// CHECK-NEXT:             (((n as i64) as u64) as usize) as usize,
+// CHECK-NEXT:             ((n as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     (((unsafe { *buf.add(0) }) as u32) as i32)
-// CHECK-NEXT:         + (((unsafe { *buf.offset((n - 1) as isize) }) as u32) as i32)
+// CHECK-NEXT:     ((unsafe { *buf.add(0) }) as i32)
+// CHECK-NEXT:         + ((unsafe { *buf.offset((n - 1) as isize) }) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn loop_alloca(n: i32) -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let mut slots: __SlateAlign16<[*mut i32; 8]> = __SlateAlign16([0 as *mut i32; 8]);
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         slots.0[i as usize] = (__slate_alloca::alloca(
-// CHECK-NEXT:             (std::mem::size_of::<i32>() as u64).wrapping_mul(((i + 1) as i64) as u64)
-// CHECK-NEXT:                 as usize,
+// CHECK-NEXT:             (std::mem::size_of::<i32>() as u64).wrapping_mul((i + 1) as u64) as usize,
 // CHECK-NEXT:             16usize,
 // CHECK-NEXT:         ) as *mut ()) as *mut i32;
 // CHECK-NEXT:         let mut j: i32 = 0;
@@ -335,8 +333,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if argc < min {
 // CHECK-NEXT:         f.args = (__slate_alloca::alloca(
-// CHECK-NEXT:             (std::mem::size_of::<i32>() as u64).wrapping_mul((min as i64) as u64)
-// CHECK-NEXT:                 as usize,
+// CHECK-NEXT:             (std::mem::size_of::<i32>() as u64).wrapping_mul(min as u64) as usize,
 // CHECK-NEXT:             16usize,
 // CHECK-NEXT:         ) as *mut ()) as *mut i32;
 // CHECK-NEXT:         for i in 0..argc {
@@ -358,7 +355,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut () = if !scratch.is_null() {
 // CHECK-NEXT:         scratch as *mut ()
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         __slate_alloca::alloca(((n as i64) as u64) as usize, 16usize) as *mut ()
+// CHECK-NEXT:         __slate_alloca::alloca((n as u64) as usize, 16usize) as *mut ()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let buf: *mut i8 = [[V_0]] as *mut i8;
 // CHECK-NEXT:     for i in 0..n {
@@ -392,7 +389,7 @@ int main(void) {
 // CHECK-NEXT:     let mut ok: i32 = 1;
 // CHECK-NEXT:     let mut n: i32 = 1;
 // CHECK-NEXT:     while n < 40 {
-// CHECK-NEXT:         let p: *mut i8 = (__slate_alloca::alloca(((n as i64) as u64) as usize, 16usize)
+// CHECK-NEXT:         let p: *mut i8 = (__slate_alloca::alloca((n as u64) as usize, 16usize)
 // CHECK-NEXT:             as *mut ()) as *mut i8;
 // CHECK-NEXT:         ok &= ((p as u64) & 15 == 0) as i32;
 // CHECK-NEXT:         n += 3;
@@ -435,8 +432,8 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         total
-// CHECK-NEXT:             += ((((unsafe { *a.add(599999) }) as u32) as i32)
-// CHECK-NEXT:                 + (((unsafe { *b.add(0) }) as u32) as i32)) as i64;
+// CHECK-NEXT:             += (((unsafe { *a.add(599999) }) as i32) + ((unsafe { *b.add(0) }) as i32))
+// CHECK-NEXT:                 as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

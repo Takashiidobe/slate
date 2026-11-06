@@ -207,8 +207,7 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn offset(base: *const (), field: *const ()) -> u32 {
-// CHECK-NEXT:     (((unsafe { (field as *const i8).offset_from(base as *const i8) }) as i64) as i32)
-// CHECK-NEXT:         as u32
+// CHECK-NEXT:     ((unsafe { (field as *const i8).offset_from(base as *const i8) }) as i64) as u32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut e: extended = {

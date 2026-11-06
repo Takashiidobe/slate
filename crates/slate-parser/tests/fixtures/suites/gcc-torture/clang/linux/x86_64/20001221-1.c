@@ -109,11 +109,11 @@ foo ()
 // DEFAULT-NEXT:         let %[[VALUE_type:[0-9]+]] type: i32 [storage=automatic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_nibbles:[0-9]+]] nibbles: i64 [storage=automatic] [const] = widen<i64, reason=assign>(const<i32>(8));
-// DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(add<i64, overflow=ub>(read<i64>(%[[VALUE_nibbles]]), widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(add<i64, overflow=ub>(read<i64>(%[[VALUE_nibbles]]), widen<i64, reason=usual_arith>(const<i32>(1)))) [c="__size_t"];
 // DEFAULT-NEXT:             let %[[VALUE_buf1:[0-9]+]] buf1: vla<i8, %[[VALUE0]]> [storage=automatic];
-// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(add<i64, overflow=ub>(read<i64>(%[[VALUE_nibbles]]), widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(add<i64, overflow=ub>(read<i64>(%[[VALUE_nibbles]]), widen<i64, reason=usual_arith>(const<i32>(1)))) [c="__size_t"];
 // DEFAULT-NEXT:             let %[[VALUE_buf2:[0-9]+]] buf2: vla<i8, %[[VALUE1]]> [storage=automatic];
-// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(add<i64, overflow=ub>(read<i64>(%[[VALUE_nibbles]]), widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(add<i64, overflow=ub>(read<i64>(%[[VALUE_nibbles]]), widen<i64, reason=usual_arith>(const<i32>(1)))) [c="__size_t"];
 // DEFAULT-NEXT:             let %[[VALUE_buf3:[0-9]+]] buf3: vla<i8, %[[VALUE2]]> [storage=automatic];
 // DEFAULT-NEXT:             write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=None>(%[[VALUE_buf1]]), read<i64>(%[[VALUE_nibbles]]))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:             write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=None>(%[[VALUE_buf2]]), read<i64>(%[[VALUE_nibbles]]))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));

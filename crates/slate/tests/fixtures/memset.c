@@ -49,23 +49,23 @@ int main(void) {
 // CHECK-NEXT:         std::ptr::write_bytes(
 // CHECK-NEXT:             ((dynamic_buf.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (9i32 as i32) as u8,
-// CHECK-NEXT:             (((n as i64) as u64) as usize) as usize,
+// CHECK-NEXT:             ((n as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0i32..8i32 {
-// CHECK-NEXT:         print!("{} ", (zero_buf[i as usize] as u32) as i32);
+// CHECK-NEXT:         print!("{} ", zero_buf[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..8i32 {
-// CHECK-NEXT:         print!("{} ", (value_buf[i as usize] as u32) as i32);
+// CHECK-NEXT:         print!("{} ", value_buf[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..8i32 {
-// CHECK-NEXT:         print!("{} ", (partial_buf[i as usize] as u32) as i32);
+// CHECK-NEXT:         print!("{} ", partial_buf[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..8i32 {
-// CHECK-NEXT:         print!("{} ", (dynamic_buf[i as usize] as u32) as i32);
+// CHECK-NEXT:         print!("{} ", dynamic_buf[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");

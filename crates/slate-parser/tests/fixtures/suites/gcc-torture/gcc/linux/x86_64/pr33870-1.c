@@ -179,7 +179,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: array<ptr<@type[[TYPE_PgHdr]]>, 25> [storage=automatic] [align=16] [c="PgHdr *[25]"];
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_PgHdr]]> [storage=automatic] [c="PgHdr *"];
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<ptr<@type[[TYPE_PgHdr]]>>, length=Some(25)>(%[[VALUE_a]]) [c="PgHdr **"]), const<i32>(0), size_of<u64, array<ptr<@type[[TYPE_PgHdr]]>, 25>>(200));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<ptr<@type[[TYPE_PgHdr]]>>, length=Some(25)>(%[[VALUE_a]]) [c="PgHdr **"]), const<i32>(0), size_of<u64, array<ptr<@type[[TYPE_PgHdr]]>, 25>>(200) [c="__size_t"]);
 // DEFAULT-NEXT:         while %[[VALUE4:[0-9]+]] ne<ptr<@type[[TYPE_PgHdr]]>>(read<ptr<@type[[TYPE_PgHdr]]>>(%[[VALUE_pIn]]) [c="PgHdr *"], null<ptr<@type[[TYPE_PgHdr]]>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<ptr<@type[[TYPE_PgHdr]]>>(%[[VALUE_p]], read<ptr<@type[[TYPE_PgHdr]]>>(%[[VALUE_pIn]]) [c="PgHdr *"]) [c="PgHdr *"];

@@ -87,7 +87,7 @@ int main(void) {
 // CHECK-NEXT:         std::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             ((src_f.as_mut_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((dst_f.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:             (((n as i64) as u64) as usize) as usize,
+// CHECK-NEXT:             ((n as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut dst_g: [u8; 4] = [0, 0, 0, 0];
@@ -108,31 +108,31 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { free((src_g as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     for i in 0i32..8i32 {
-// CHECK-NEXT:         print!("{} ", (dst_a[i as usize] as u32) as i32);
+// CHECK-NEXT:         print!("{} ", dst_a[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..8i32 {
-// CHECK-NEXT:         print!("{} ", (dst_b[i as usize] as u32) as i32);
+// CHECK-NEXT:         print!("{} ", dst_b[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..8i32 {
-// CHECK-NEXT:         print!("{} ", (self_c[i as usize] as u32) as i32);
+// CHECK-NEXT:         print!("{} ", self_c[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..8i32 {
-// CHECK-NEXT:         print!("{} ", (dst_d[i as usize] as u32) as i32);
+// CHECK-NEXT:         print!("{} ", dst_d[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..8i32 {
-// CHECK-NEXT:         print!("{} ", (dst_e[i as usize] as u32) as i32);
+// CHECK-NEXT:         print!("{} ", dst_e[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..8i32 {
-// CHECK-NEXT:         print!("{} ", (dst_f[i as usize] as u32) as i32);
+// CHECK-NEXT:         print!("{} ", dst_f[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..4i32 {
-// CHECK-NEXT:         print!("{} ", (dst_g[i as usize] as u32) as i32);
+// CHECK-NEXT:         print!("{} ", dst_g[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");

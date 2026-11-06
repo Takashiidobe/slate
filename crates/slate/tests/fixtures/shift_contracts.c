@@ -56,7 +56,7 @@ int main(void) {
 // CHECK-NEXT:     value << amount
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sar(value: i32, amount: u8) -> i32 {
-// CHECK-NEXT:     value >> ((amount as u32) as i32)
+// CHECK-NEXT:     value >> (amount as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn shr(value: u32, amount: i64) -> u32 {
 // CHECK-NEXT:     value >> amount
@@ -82,18 +82,15 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(c"%llu %lld %lld\n".as_ptr(), top, neg >> 1i32, -1i64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let uc: u8 = 128u8;
+// CHECK-NEXT:     let uc: u8 = 128;
 // CHECK-NEXT:     let sc: i8 = -128;
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", ((uc as u32) as i32) << 1i32, (sc as i32) >> 3i32, ((uc as u32) as
-// CHECK-NEXT:         i32) >> 7i32
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {} {}", (uc as i32) << 1i32, (sc as i32) >> 3i32, (uc as i32) >> 7i32);
 // CHECK-NEXT:     let mut s: i16 = 4660;
 // CHECK-NEXT:     s = ((s as i32) << 4i32) as i16;
 // CHECK-NEXT:     let mut c: i8 = -64;
 // CHECK-NEXT:     c = ((c as i32) >> 2i32) as i8;
-// CHECK-NEXT:     let mut b: u8 = 255u8;
-// CHECK-NEXT:     b = ((((b as u32) as i32) << 4i32) as i8) as u8;
+// CHECK-NEXT:     let mut b: u8 = 255;
+// CHECK-NEXT:     b = ((b as i32) << 4i32) as u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%d %d %u\n".as_ptr(), s as i32, c as i32, b as u32)

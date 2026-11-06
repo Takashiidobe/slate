@@ -66,7 +66,7 @@ int local(const char *name) {
 // IR-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([97, 98, 99, 0]) [linkage=internal];
 // IR-NEXT:     fn %[[VALUE_create:[0-9]+]] @create(%[[VALUE_name:[0-9]+]] name: ptr<const i8>) -> ptr<void> [linkage=external];
 // IR-NEXT:     fn %[[VALUE_named:[0-9]+]] @named() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         size_of<u64, @type[[TYPE0]]>(1);
+// IR-NEXT:         size_of<u64, @type[[TYPE0]]>(1) [c="__size_t"];
 // IR-NEXT:         return call<ptr<void>>(%[[VALUE_create]], pointer_cast<ptr<const i8>>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_local:[0-9]+]] @local(%[[VALUE_name_2:[0-9]+]] name: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {

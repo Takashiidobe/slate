@@ -39,7 +39,7 @@ void choose(int c) {
 // DEFAULT-NEXT:     global %[[VALUE_plain:[0-9]+]] plain: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str]])) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([116, 111, 112, 32, 108, 101, 118, 101, 108, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_pretty:[0-9]+]] pretty: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str_2]])) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_plain_size:[0-9]+]] plain_size: u64 [storage=static] = size_of<u64, array<i8, 1>>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_plain_size:[0-9]+]] plain_size: u64 [storage=static] = reinterpret<u64, reason=assign>(size_of<u64, array<i8, 1>>(1) [c="__size_t"]) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_touch:[0-9]+]] @touch() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_plus:[0-9]+]] @plus(%[[VALUE_v:[0-9]+]] v: vector<i32, 4> [c="v4"]) -> vector<i32, 4> [linkage=external] [abi=sysv64(direct) -> direct] [fallthrough=ub_if_used] [c="v4(v4)"] {
 // DEFAULT-NEXT:         return read<vector<i32, 4>>(%[[VALUE_v]]) [c="v4"];

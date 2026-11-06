@@ -68,19 +68,19 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn use_fixed_types() -> i32 {
 // CHECK-NEXT:     let small: i8 = -5;
-// CHECK-NEXT:     let byte: u8 = 250u8;
+// CHECK-NEXT:     let byte: u8 = 250;
 // CHECK-NEXT:     let short_value: i16 = 1200;
-// CHECK-NEXT:     let ushort_value: u16 = 65000u16;
+// CHECK-NEXT:     let ushort_value: u16 = 65000;
 // CHECK-NEXT:     let signed_value: i32 = add_i32(100000i32, short_value);
 // CHECK-NEXT:     let wide: u64 = widen_u32(unsafe { global_u32 });
 // CHECK-NEXT:     let mut pair: FixedPair = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     pair.left = short_value;
 // CHECK-NEXT:     pair.right = unsafe { global_u32 };
 // CHECK-NEXT:     pair.count = unsafe { global_size }.wrapping_add(3);
-// CHECK-NEXT:     (((((small as i32) + ((byte as u32) as i32) + (pair.left as i32) + signed_value
-// CHECK-NEXT:         + ((ushort_value as u32) as i32)) as i64) as u64)
+// CHECK-NEXT:     (((small as i32) + (byte as i32) + (pair.left as i32) + signed_value
+// CHECK-NEXT:         + (ushort_value as i32)) as u64)
 // CHECK-NEXT:         .wrapping_add(pair.count)
-// CHECK-NEXT:         .wrapping_add(wide) as u32) as i32
+// CHECK-NEXT:         .wrapping_add(wide) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", add_i32(10i32, 20i16));

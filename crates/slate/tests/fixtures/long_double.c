@@ -543,9 +543,9 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"i8=%d u8=%u i16=%d u16=%u i32=%d u32=%u i64=%lld u64=%llu\n".as_ptr(),
 // CHECK-NEXT:             i8 as i32,
-// CHECK-NEXT:             (u8 as u32) as i32,
+// CHECK-NEXT:             u8 as i32,
 // CHECK-NEXT:             i16 as i32,
-// CHECK-NEXT:             (u16 as u32) as i32,
+// CHECK-NEXT:             u16 as i32,
 // CHECK-NEXT:             i32,
 // CHECK-NEXT:             u32,
 // CHECK-NEXT:             i64,

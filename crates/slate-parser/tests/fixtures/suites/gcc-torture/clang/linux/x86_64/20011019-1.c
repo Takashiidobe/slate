@@ -51,7 +51,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(%[[VALUE_y]]), array_decay<ptr<i32>, length=Some(5)>(field1(%[[VALUE_x]]))));
+// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(%[[VALUE_y]]), array_decay<ptr<i32>, length=Some(5)>(field1(%[[VALUE_x]]))) [c="__ptrdiff_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_y]], array_decay<ptr<i32>, length=Some(5)>(field1(%[[VALUE_x]])));

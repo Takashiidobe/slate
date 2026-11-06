@@ -44,7 +44,7 @@ foo (void)
 // DEFAULT-NEXT:     fn %[[VALUE_reallocarray:[0-9]+]] @reallocarray(%[[VALUE2:[0-9]+]] <unnamed>: ptr<void>) -> ptr<void> [linkage=external] [deallocator=%[[VALUE_reallocarray]], argument=0];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>) -> ptr<void>>(%[[VALUE_reallocarray]], null<ptr<void>>));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i8>>(%[[VALUE_buf]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i8>>(%[[VALUE_buf]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))) [c="__size_t"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

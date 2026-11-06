@@ -63,7 +63,7 @@ int main(void) {
 // CHECK-NEXT:         while index < unsafe { (*flexible).count } {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 *(std::ptr::addr_of_mut!((* flexible).values) as *mut i32)
-// CHECK-NEXT:                     .add(index as usize) = ((index as u32) as i32) + 1;
+// CHECK-NEXT:                     .add(index as usize) = (index as i32) + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             index = index.wrapping_add(1);
 // CHECK-NEXT:         }

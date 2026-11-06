@@ -458,292 +458,292 @@ int main() {
 // DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_n_72]]) [c="s16"]), const<i32>(15))) [c="s16"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_0:[0-9]+]] @ashift_si_0(%[[VALUE_n_73:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_73]]) [c="u32"]), const<i32>(0))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_73]]) [c="u32"], const<i32>(0)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_1:[0-9]+]] @ashift_si_1(%[[VALUE_n_74:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_74]]) [c="u32"]), const<i32>(1))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_74]]) [c="u32"], const<i32>(1)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_2:[0-9]+]] @ashift_si_2(%[[VALUE_n_75:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_75]]) [c="u32"]), const<i32>(2))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_75]]) [c="u32"], const<i32>(2)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_3:[0-9]+]] @ashift_si_3(%[[VALUE_n_76:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_76]]) [c="u32"]), const<i32>(3))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_76]]) [c="u32"], const<i32>(3)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_4:[0-9]+]] @ashift_si_4(%[[VALUE_n_77:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_77]]) [c="u32"]), const<i32>(4))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_77]]) [c="u32"], const<i32>(4)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_5:[0-9]+]] @ashift_si_5(%[[VALUE_n_78:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_78]]) [c="u32"]), const<i32>(5))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_78]]) [c="u32"], const<i32>(5)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_6:[0-9]+]] @ashift_si_6(%[[VALUE_n_79:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_79]]) [c="u32"]), const<i32>(6))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_79]]) [c="u32"], const<i32>(6)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_7:[0-9]+]] @ashift_si_7(%[[VALUE_n_80:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_80]]) [c="u32"]), const<i32>(7))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_80]]) [c="u32"], const<i32>(7)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_8:[0-9]+]] @ashift_si_8(%[[VALUE_n_81:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_81]]) [c="u32"]), const<i32>(8))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_81]]) [c="u32"], const<i32>(8)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_9:[0-9]+]] @ashift_si_9(%[[VALUE_n_82:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_82]]) [c="u32"]), const<i32>(9))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_82]]) [c="u32"], const<i32>(9)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_10:[0-9]+]] @ashift_si_10(%[[VALUE_n_83:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_83]]) [c="u32"]), const<i32>(10))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_83]]) [c="u32"], const<i32>(10)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_11:[0-9]+]] @ashift_si_11(%[[VALUE_n_84:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_84]]) [c="u32"]), const<i32>(11))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_84]]) [c="u32"], const<i32>(11)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_12:[0-9]+]] @ashift_si_12(%[[VALUE_n_85:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_85]]) [c="u32"]), const<i32>(12))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_85]]) [c="u32"], const<i32>(12)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_13:[0-9]+]] @ashift_si_13(%[[VALUE_n_86:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_86]]) [c="u32"]), const<i32>(13))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_86]]) [c="u32"], const<i32>(13)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_14:[0-9]+]] @ashift_si_14(%[[VALUE_n_87:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_87]]) [c="u32"]), const<i32>(14))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_87]]) [c="u32"], const<i32>(14)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_15:[0-9]+]] @ashift_si_15(%[[VALUE_n_88:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_88]]) [c="u32"]), const<i32>(15))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_88]]) [c="u32"], const<i32>(15)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_16:[0-9]+]] @ashift_si_16(%[[VALUE_n_89:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_89]]) [c="u32"]), const<i32>(16))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_89]]) [c="u32"], const<i32>(16)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_17:[0-9]+]] @ashift_si_17(%[[VALUE_n_90:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_90]]) [c="u32"]), const<i32>(17))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_90]]) [c="u32"], const<i32>(17)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_18:[0-9]+]] @ashift_si_18(%[[VALUE_n_91:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_91]]) [c="u32"]), const<i32>(18))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_91]]) [c="u32"], const<i32>(18)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_19:[0-9]+]] @ashift_si_19(%[[VALUE_n_92:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_92]]) [c="u32"]), const<i32>(19))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_92]]) [c="u32"], const<i32>(19)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_20:[0-9]+]] @ashift_si_20(%[[VALUE_n_93:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_93]]) [c="u32"]), const<i32>(20))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_93]]) [c="u32"], const<i32>(20)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_21:[0-9]+]] @ashift_si_21(%[[VALUE_n_94:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_94]]) [c="u32"]), const<i32>(21))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_94]]) [c="u32"], const<i32>(21)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_22:[0-9]+]] @ashift_si_22(%[[VALUE_n_95:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_95]]) [c="u32"]), const<i32>(22))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_95]]) [c="u32"], const<i32>(22)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_23:[0-9]+]] @ashift_si_23(%[[VALUE_n_96:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_96]]) [c="u32"]), const<i32>(23))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_96]]) [c="u32"], const<i32>(23)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_24:[0-9]+]] @ashift_si_24(%[[VALUE_n_97:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_97]]) [c="u32"]), const<i32>(24))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_97]]) [c="u32"], const<i32>(24)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_25:[0-9]+]] @ashift_si_25(%[[VALUE_n_98:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_98]]) [c="u32"]), const<i32>(25))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_98]]) [c="u32"], const<i32>(25)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_26:[0-9]+]] @ashift_si_26(%[[VALUE_n_99:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_99]]) [c="u32"]), const<i32>(26))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_99]]) [c="u32"], const<i32>(26)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_27:[0-9]+]] @ashift_si_27(%[[VALUE_n_100:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_100]]) [c="u32"]), const<i32>(27))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_100]]) [c="u32"], const<i32>(27)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_28:[0-9]+]] @ashift_si_28(%[[VALUE_n_101:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_101]]) [c="u32"]), const<i32>(28))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_101]]) [c="u32"], const<i32>(28)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_29:[0-9]+]] @ashift_si_29(%[[VALUE_n_102:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_102]]) [c="u32"]), const<i32>(29))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_102]]) [c="u32"], const<i32>(29)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_30:[0-9]+]] @ashift_si_30(%[[VALUE_n_103:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_103]]) [c="u32"]), const<i32>(30))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_103]]) [c="u32"], const<i32>(30)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashift_si_31:[0-9]+]] @ashift_si_31(%[[VALUE_n_104:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_104]]) [c="u32"]), const<i32>(31))) [c="u32"];
+// DEFAULT-NEXT:         return shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_n_104]]) [c="u32"], const<i32>(31)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_0:[0-9]+]] @lshiftrt_si_0(%[[VALUE_n_105:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_105]]) [c="u32"]), const<i32>(0))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_105]]) [c="u32"], const<i32>(0)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_1:[0-9]+]] @lshiftrt_si_1(%[[VALUE_n_106:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_106]]) [c="u32"]), const<i32>(1))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_106]]) [c="u32"], const<i32>(1)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_2:[0-9]+]] @lshiftrt_si_2(%[[VALUE_n_107:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_107]]) [c="u32"]), const<i32>(2))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_107]]) [c="u32"], const<i32>(2)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_3:[0-9]+]] @lshiftrt_si_3(%[[VALUE_n_108:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_108]]) [c="u32"]), const<i32>(3))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_108]]) [c="u32"], const<i32>(3)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_4:[0-9]+]] @lshiftrt_si_4(%[[VALUE_n_109:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_109]]) [c="u32"]), const<i32>(4))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_109]]) [c="u32"], const<i32>(4)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_5:[0-9]+]] @lshiftrt_si_5(%[[VALUE_n_110:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_110]]) [c="u32"]), const<i32>(5))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_110]]) [c="u32"], const<i32>(5)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_6:[0-9]+]] @lshiftrt_si_6(%[[VALUE_n_111:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_111]]) [c="u32"]), const<i32>(6))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_111]]) [c="u32"], const<i32>(6)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_7:[0-9]+]] @lshiftrt_si_7(%[[VALUE_n_112:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_112]]) [c="u32"]), const<i32>(7))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_112]]) [c="u32"], const<i32>(7)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_8:[0-9]+]] @lshiftrt_si_8(%[[VALUE_n_113:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_113]]) [c="u32"]), const<i32>(8))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_113]]) [c="u32"], const<i32>(8)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_9:[0-9]+]] @lshiftrt_si_9(%[[VALUE_n_114:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_114]]) [c="u32"]), const<i32>(9))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_114]]) [c="u32"], const<i32>(9)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_10:[0-9]+]] @lshiftrt_si_10(%[[VALUE_n_115:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_115]]) [c="u32"]), const<i32>(10))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_115]]) [c="u32"], const<i32>(10)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_11:[0-9]+]] @lshiftrt_si_11(%[[VALUE_n_116:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_116]]) [c="u32"]), const<i32>(11))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_116]]) [c="u32"], const<i32>(11)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_12:[0-9]+]] @lshiftrt_si_12(%[[VALUE_n_117:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_117]]) [c="u32"]), const<i32>(12))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_117]]) [c="u32"], const<i32>(12)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_13:[0-9]+]] @lshiftrt_si_13(%[[VALUE_n_118:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_118]]) [c="u32"]), const<i32>(13))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_118]]) [c="u32"], const<i32>(13)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_14:[0-9]+]] @lshiftrt_si_14(%[[VALUE_n_119:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_119]]) [c="u32"]), const<i32>(14))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_119]]) [c="u32"], const<i32>(14)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_15:[0-9]+]] @lshiftrt_si_15(%[[VALUE_n_120:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_120]]) [c="u32"]), const<i32>(15))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_120]]) [c="u32"], const<i32>(15)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_16:[0-9]+]] @lshiftrt_si_16(%[[VALUE_n_121:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_121]]) [c="u32"]), const<i32>(16))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_121]]) [c="u32"], const<i32>(16)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_17:[0-9]+]] @lshiftrt_si_17(%[[VALUE_n_122:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_122]]) [c="u32"]), const<i32>(17))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_122]]) [c="u32"], const<i32>(17)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_18:[0-9]+]] @lshiftrt_si_18(%[[VALUE_n_123:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_123]]) [c="u32"]), const<i32>(18))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_123]]) [c="u32"], const<i32>(18)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_19:[0-9]+]] @lshiftrt_si_19(%[[VALUE_n_124:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_124]]) [c="u32"]), const<i32>(19))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_124]]) [c="u32"], const<i32>(19)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_20:[0-9]+]] @lshiftrt_si_20(%[[VALUE_n_125:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_125]]) [c="u32"]), const<i32>(20))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_125]]) [c="u32"], const<i32>(20)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_21:[0-9]+]] @lshiftrt_si_21(%[[VALUE_n_126:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_126]]) [c="u32"]), const<i32>(21))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_126]]) [c="u32"], const<i32>(21)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_22:[0-9]+]] @lshiftrt_si_22(%[[VALUE_n_127:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_127]]) [c="u32"]), const<i32>(22))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_127]]) [c="u32"], const<i32>(22)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_23:[0-9]+]] @lshiftrt_si_23(%[[VALUE_n_128:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_128]]) [c="u32"]), const<i32>(23))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_128]]) [c="u32"], const<i32>(23)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_24:[0-9]+]] @lshiftrt_si_24(%[[VALUE_n_129:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_129]]) [c="u32"]), const<i32>(24))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_129]]) [c="u32"], const<i32>(24)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_25:[0-9]+]] @lshiftrt_si_25(%[[VALUE_n_130:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_130]]) [c="u32"]), const<i32>(25))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_130]]) [c="u32"], const<i32>(25)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_26:[0-9]+]] @lshiftrt_si_26(%[[VALUE_n_131:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_131]]) [c="u32"]), const<i32>(26))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_131]]) [c="u32"], const<i32>(26)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_27:[0-9]+]] @lshiftrt_si_27(%[[VALUE_n_132:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_132]]) [c="u32"]), const<i32>(27))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_132]]) [c="u32"], const<i32>(27)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_28:[0-9]+]] @lshiftrt_si_28(%[[VALUE_n_133:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_133]]) [c="u32"]), const<i32>(28))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_133]]) [c="u32"], const<i32>(28)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_29:[0-9]+]] @lshiftrt_si_29(%[[VALUE_n_134:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_134]]) [c="u32"]), const<i32>(29))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_134]]) [c="u32"], const<i32>(29)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_30:[0-9]+]] @lshiftrt_si_30(%[[VALUE_n_135:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_135]]) [c="u32"]), const<i32>(30))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_135]]) [c="u32"], const<i32>(30)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_lshiftrt_si_31:[0-9]+]] @lshiftrt_si_31(%[[VALUE_n_136:[0-9]+]] n: u32 [c="u32"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c="u32(u32)"] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(read<u32>(%[[VALUE_n_136]]) [c="u32"]), const<i32>(31))) [c="u32"];
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_n_136]]) [c="u32"], const<i32>(31)) [c="u32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_0:[0-9]+]] @ashiftrt_si_0(%[[VALUE_n_137:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_137]]) [c="s32"]), const<i32>(0))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_137]]) [c="s32"], const<i32>(0)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_1:[0-9]+]] @ashiftrt_si_1(%[[VALUE_n_138:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_138]]) [c="s32"]), const<i32>(1))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_138]]) [c="s32"], const<i32>(1)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_2:[0-9]+]] @ashiftrt_si_2(%[[VALUE_n_139:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_139]]) [c="s32"]), const<i32>(2))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_139]]) [c="s32"], const<i32>(2)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_3:[0-9]+]] @ashiftrt_si_3(%[[VALUE_n_140:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_140]]) [c="s32"]), const<i32>(3))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_140]]) [c="s32"], const<i32>(3)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_4:[0-9]+]] @ashiftrt_si_4(%[[VALUE_n_141:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_141]]) [c="s32"]), const<i32>(4))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_141]]) [c="s32"], const<i32>(4)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_5:[0-9]+]] @ashiftrt_si_5(%[[VALUE_n_142:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_142]]) [c="s32"]), const<i32>(5))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_142]]) [c="s32"], const<i32>(5)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_6:[0-9]+]] @ashiftrt_si_6(%[[VALUE_n_143:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_143]]) [c="s32"]), const<i32>(6))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_143]]) [c="s32"], const<i32>(6)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_7:[0-9]+]] @ashiftrt_si_7(%[[VALUE_n_144:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_144]]) [c="s32"]), const<i32>(7))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_144]]) [c="s32"], const<i32>(7)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_8:[0-9]+]] @ashiftrt_si_8(%[[VALUE_n_145:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_145]]) [c="s32"]), const<i32>(8))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_145]]) [c="s32"], const<i32>(8)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_9:[0-9]+]] @ashiftrt_si_9(%[[VALUE_n_146:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_146]]) [c="s32"]), const<i32>(9))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_146]]) [c="s32"], const<i32>(9)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_10:[0-9]+]] @ashiftrt_si_10(%[[VALUE_n_147:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_147]]) [c="s32"]), const<i32>(10))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_147]]) [c="s32"], const<i32>(10)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_11:[0-9]+]] @ashiftrt_si_11(%[[VALUE_n_148:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_148]]) [c="s32"]), const<i32>(11))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_148]]) [c="s32"], const<i32>(11)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_12:[0-9]+]] @ashiftrt_si_12(%[[VALUE_n_149:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_149]]) [c="s32"]), const<i32>(12))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_149]]) [c="s32"], const<i32>(12)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_13:[0-9]+]] @ashiftrt_si_13(%[[VALUE_n_150:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_150]]) [c="s32"]), const<i32>(13))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_150]]) [c="s32"], const<i32>(13)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_14:[0-9]+]] @ashiftrt_si_14(%[[VALUE_n_151:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_151]]) [c="s32"]), const<i32>(14))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_151]]) [c="s32"], const<i32>(14)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_15:[0-9]+]] @ashiftrt_si_15(%[[VALUE_n_152:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_152]]) [c="s32"]), const<i32>(15))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_152]]) [c="s32"], const<i32>(15)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_16:[0-9]+]] @ashiftrt_si_16(%[[VALUE_n_153:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_153]]) [c="s32"]), const<i32>(16))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_153]]) [c="s32"], const<i32>(16)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_17:[0-9]+]] @ashiftrt_si_17(%[[VALUE_n_154:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_154]]) [c="s32"]), const<i32>(17))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_154]]) [c="s32"], const<i32>(17)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_18:[0-9]+]] @ashiftrt_si_18(%[[VALUE_n_155:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_155]]) [c="s32"]), const<i32>(18))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_155]]) [c="s32"], const<i32>(18)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_19:[0-9]+]] @ashiftrt_si_19(%[[VALUE_n_156:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_156]]) [c="s32"]), const<i32>(19))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_156]]) [c="s32"], const<i32>(19)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_20:[0-9]+]] @ashiftrt_si_20(%[[VALUE_n_157:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_157]]) [c="s32"]), const<i32>(20))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_157]]) [c="s32"], const<i32>(20)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_21:[0-9]+]] @ashiftrt_si_21(%[[VALUE_n_158:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_158]]) [c="s32"]), const<i32>(21))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_158]]) [c="s32"], const<i32>(21)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_22:[0-9]+]] @ashiftrt_si_22(%[[VALUE_n_159:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_159]]) [c="s32"]), const<i32>(22))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_159]]) [c="s32"], const<i32>(22)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_23:[0-9]+]] @ashiftrt_si_23(%[[VALUE_n_160:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_160]]) [c="s32"]), const<i32>(23))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_160]]) [c="s32"], const<i32>(23)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_24:[0-9]+]] @ashiftrt_si_24(%[[VALUE_n_161:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_161]]) [c="s32"]), const<i32>(24))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_161]]) [c="s32"], const<i32>(24)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_25:[0-9]+]] @ashiftrt_si_25(%[[VALUE_n_162:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_162]]) [c="s32"]), const<i32>(25))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_162]]) [c="s32"], const<i32>(25)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_26:[0-9]+]] @ashiftrt_si_26(%[[VALUE_n_163:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_163]]) [c="s32"]), const<i32>(26))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_163]]) [c="s32"], const<i32>(26)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_27:[0-9]+]] @ashiftrt_si_27(%[[VALUE_n_164:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_164]]) [c="s32"]), const<i32>(27))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_164]]) [c="s32"], const<i32>(27)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_28:[0-9]+]] @ashiftrt_si_28(%[[VALUE_n_165:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_165]]) [c="s32"]), const<i32>(28))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_165]]) [c="s32"], const<i32>(28)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_29:[0-9]+]] @ashiftrt_si_29(%[[VALUE_n_166:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_166]]) [c="s32"]), const<i32>(29))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_166]]) [c="s32"], const<i32>(29)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_30:[0-9]+]] @ashiftrt_si_30(%[[VALUE_n_167:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_167]]) [c="s32"]), const<i32>(30))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_167]]) [c="s32"], const<i32>(30)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ashiftrt_si_31:[0-9]+]] @ashiftrt_si_31(%[[VALUE_n_168:[0-9]+]] n: i32 [c="s32"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="s32(s32)"] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE_n_168]]) [c="s32"]), const<i32>(31))) [c="s32"];
+// DEFAULT-NEXT:         return shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%[[VALUE_n_168]]) [c="s32"], const<i32>(31)) [c="s32"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
@@ -948,264 +948,264 @@ int main() {
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(call<i16, signature=fn(i16) -> i16>(%[[VALUE_ashiftrt_hi_15]], truncate<i16, reason=arg, fits=always>(const<i32>(0)) [c="s16"]) [c="s16"]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_0]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(0))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_0]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(0)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_1]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(1))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_1]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(1)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_2]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(2))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_2]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(2)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_3]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(3))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_3]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(3)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_4]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(4))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_4]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(4)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_5]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(5))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_5]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(5)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_6]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(6))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_6]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(6)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_7]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(7))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_7]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(7)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_8]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(8))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_8]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(8)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_9]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(9))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_9]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(9)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_10]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(10))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_10]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(10)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_11]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(11))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_11]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(11)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_12]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(12))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_12]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(12)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_13]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(13))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_13]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(13)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_14]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(14))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_14]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(14)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_15]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(15))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_15]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(15)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_16]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(16))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_16]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(16)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_17]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(17))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_17]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(17)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_18]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(18))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_18]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(18)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_19]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(19))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_19]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(19)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_20]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(20))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_20]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(20)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_21]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(21))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_21]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(21)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_22]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(22))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_22]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(22)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_23]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(23))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_23]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(23)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_24]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(24))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_24]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(24)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_25]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(25))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_25]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(25)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_26]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(26))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_26]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(26)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_27]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(27))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_27]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(27)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_28]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(28))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_28]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(28)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_29]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(29))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_29]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(29)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_30]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(30))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_30]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(30)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_31]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(31))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_0]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(0))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_1]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(1))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_2]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(2))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_3]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(3))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_4]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(4))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_5]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(5))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_6]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(6))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_7]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(7))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_8]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(8))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_9]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(9))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_10]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(10))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_11]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(11))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_12]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(12))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_13]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(13))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_14]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(14))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_15]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(15))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_16]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(16))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_17]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(17))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_18]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(18))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_19]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(19))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_20]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(20))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_21]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(21))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_22]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(22))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_23]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(23))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_24]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(24))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_25]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(25))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_26]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(26))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_27]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(27))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_28]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(28))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_29]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(29))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_30]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(30))) [c="u32"]))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=promotion>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_31]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"]), reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=promotion>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"]), const<i32>(31))) [c="u32"]))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_ashift_si_31]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shl<u32, overflow=wrap, amount_out_of_range=ub>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(31)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_0]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_0]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(0)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_1]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_1]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(1)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_2]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_2]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(2)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_3]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_3]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(3)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_4]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_4]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(4)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_5]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_5]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(5)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_6]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_6]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(6)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_7]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_7]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(7)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_8]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_8]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(8)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_9]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_9]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(9)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_10]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_10]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(10)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_11]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_11]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(11)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_12]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_12]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(12)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_13]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_13]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(13)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_14]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_14]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(14)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_15]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_15]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(15)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_16]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_16]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(16)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_17]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_17]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(17)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_18]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_18]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(18)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_19]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_19]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(19)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_20]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_20]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(20)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_21]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_21]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(21)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_22]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_22]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(22)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_23]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_23]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(23)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_24]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_24]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(24)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_25]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_25]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(25)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_26]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_26]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(26)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_27]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_27]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(27)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_28]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_28]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(28)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_29]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_29]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(29)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_30]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_30]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(30)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_31]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"]), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_lshiftrt_si_31]], reinterpret<u32, reason=arg>(const<u32>(4294967295)) [c="u32"]) [c="u32"], shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit>(const<u32>(4294967295)) [c="u32"], const<i32>(31)) [c="u32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_0]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_0]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_1]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_1]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_2]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_2]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_3]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_3]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_4]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_4]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_5]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_5]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_6]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_6]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_7]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_7]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_8]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_8]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_9]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_9]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_10]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_10]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_11]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_11]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_12]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_12]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_13]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_13]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_14]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_14]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_15]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_15]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_16]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_16]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_17]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_17]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_18]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_18]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_19]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_19]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_20]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_20]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_21]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_21]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_22]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_22]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_23]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_23]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_24]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_24]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_25]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_25]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_26]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_26]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_27]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_27]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_28]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_28]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_29]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_29]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_30]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_30]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_31]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"]), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_31]], reinterpret<i32, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         ;
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_0]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_1]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_2]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_3]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_4]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_5]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_6]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_7]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_8]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_9]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_10]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_11]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_12]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_13]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_14]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_15]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_16]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_17]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_18]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_19]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_20]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_21]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_22]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_23]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_24]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_25]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_26]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_27]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_28]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_29]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_30]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_ashiftrt_si_31]], reinterpret<i32, reason=arg>(const<i32>(0)) [c="s32"]) [c="s32"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="s32"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

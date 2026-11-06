@@ -51,11 +51,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn mixed_types(wide: u64, narrow: i32) -> u64 {
-// CHECK-NEXT:     if wide == 3 {
-// CHECK-NEXT:         ((narrow + 3) as i64) as u64
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     }
+// CHECK-NEXT:     if wide == 3 { (narrow + 3) as u64 } else { 0 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
@@ -67,11 +63,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn mixed_types(wide: u64, narrow: i32) -> u64 {
-// CHECK-NEXT:     if wide == 1 {
-// CHECK-NEXT:         ((narrow + 1) as i64) as u64
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     }
+// CHECK-NEXT:     if wide == 1 { (narrow + 1) as u64 } else { 0 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -99,7 +91,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     two_values() + two_statements(1i32) + ((mixed_types(3u64, 1i32) as u32) as i32) - 34 - 1 - 4
+// CHECK-NEXT:     two_values() + two_statements(1i32) + (mixed_types(3u64, 1i32) as i32) - 34 - 1 - 4
 // CHECK-NEXT: }
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

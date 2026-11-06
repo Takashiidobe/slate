@@ -46,28 +46,28 @@ unsigned gnu_struct(void) { return __alignof__(struct holder); }
 // IR-NEXT:     } [size=12, align=4, offsets=[0, 4]];
 // IR-NEXT:     global %[[VALUE_pair:[0-9]+]] pair: array<i64, 2> [storage=static] [linkage=external];
 // IR-NEXT:     fn %[[VALUE_gnu_type:[0-9]+]] @gnu_type() -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u32>(8);
+// IR-NEXT:         return reinterpret<u32>(const<u32>(8) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_gnu_array:[0-9]+]] @gnu_array() -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u32>(8);
+// IR-NEXT:         return reinterpret<u32>(const<u32>(8) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_gnu_object:[0-9]+]] @gnu_object() -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return const<u32>(8);
+// IR-NEXT:         return reinterpret<u32>(const<u32>(8) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_gnu_int:[0-9]+]] @gnu_int() -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return align_of<u32, i32>(4);
+// IR-NEXT:         return reinterpret<u32>(align_of<u32, i32>(4) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_iso_type:[0-9]+]] @iso_type() -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return align_of<u32, i64>(4);
+// IR-NEXT:         return reinterpret<u32>(align_of<u32, i64>(4) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_iso_array:[0-9]+]] @iso_array() -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return align_of<u32, array<i64, 2>>(4);
+// IR-NEXT:         return reinterpret<u32>(align_of<u32, array<i64, 2>>(4) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_gnu_member:[0-9]+]] @gnu_member(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_holder]]>) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return align_of<u32, i64>(4);
+// IR-NEXT:         return reinterpret<u32>(align_of<u32, i64>(4) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_gnu_struct:[0-9]+]] @gnu_struct() -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return align_of<u32, @type[[TYPE_holder]]>(4);
+// IR-NEXT:         return reinterpret<u32>(align_of<u32, @type[[TYPE_holder]]>(4) [c="__size_t"]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -128,10 +128,8 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_control_flow.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_control_flow: 31 items, 1 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_control_flow: 31 items, 0 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:bails: 2 variants
-// CHECK-NEXT:   spliced fn:guarded_buffer: 2 variants
-// CHECK-NEXT:   spliced fn:hidden_buffer_return: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 12 function-like, 10 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   inline break_out_of_macro: 4
@@ -373,20 +371,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn guarded_buffer(n: i32) -> *mut i32 {
-// CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut () = if n < 0 {
 // CHECK-NEXT:         std::ptr::null_mut::<()>()
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             malloc((4 as c_ulong).wrapping_mul(std::mem::size_of::<i32>() as c_ulong) as usize)
+// CHECK-NEXT:             malloc((4 as size_t).wrapping_mul(std::mem::size_of::<i32>() as size_t) as usize)
 // CHECK-NEXT:                 as *mut ()
 // CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let [[V_0]]: *mut () = if n < 0 {
-// CHECK-NEXT:         std::ptr::null_mut::<()>()
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         unsafe { malloc(4u64.wrapping_mul(std::mem::size_of::<i32>() as u64) as usize) as *mut () }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let p: *mut i32 = [[V_0]] as *mut i32;
 // CHECK-NEXT:     NULL_GUARD__2!(p);
@@ -403,15 +394,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn hidden_buffer_return(n: i32) -> *mut i32 {
 // CHECK-NEXT:     NEG_NULL!(n);
-// CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     let p: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc((n as c_ulong).wrapping_mul(std::mem::size_of::<i32>() as c_ulong) as usize)
-// CHECK-NEXT:             as *mut ()
-// CHECK-NEXT:     }) as *mut i32;
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let p: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc(((n as i64) as u64).wrapping_mul(std::mem::size_of::<i32>() as u64) as usize)
-// CHECK-NEXT:             as *mut ()
+// CHECK-NEXT:         malloc((n as size_t).wrapping_mul(std::mem::size_of::<i32>() as size_t) as usize) as *mut ()
 // CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p.add(0) = n;
@@ -604,8 +588,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
-// CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: use core::ffi::c_ulong;
+// CHECK-NEXT: use slate_support::size_t;
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::malloc;

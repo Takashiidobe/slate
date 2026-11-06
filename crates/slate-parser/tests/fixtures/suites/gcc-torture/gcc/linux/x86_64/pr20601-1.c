@@ -158,15 +158,15 @@ int main(void) {
 // DEFAULT-NEXT:         return null<ptr<i8>>;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_x_2:[0-9]+]] x: ptr<i8>, %[[VALUE_y_2:[0-9]+]] y: u32) -> ptr<i8> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(ne<u64>(size_of<u64, array<i8, 4096>>(4096), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))))), gt<u64>(widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_y_2]])), size_of<u64, array<i8, 4096>>(4096)))
+// DEFAULT-NEXT:         if logical_and<bool>(ne<u64>(size_of<u64, array<i8, 4096>>(4096) [c="__size_t"], widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))) [c="__size_t"]), gt<u64>(widen<u64, reason=usual_arith>(read<u32>(%[[VALUE_y_2]])) [c="__size_t"], size_of<u64, array<i8, 4096>>(4096) [c="__size_t"]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<i8>, u32) -> ptr<i8>>(%[[VALUE_bar]], read<ptr<i8>>(%[[VALUE_x_2]]), read<u32>(%[[VALUE_y_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_setup1:[0-9]+]] @setup1(%[[VALUE_x_3:[0-9]+]] x: i32) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_rval:[0-9]+]] rval: i32 [storage=automatic];
-// DEFAULT-NEXT:         if not<bool>(ne<ptr<i8>>(call<ptr<i8>, signature=fn(ptr<i8>, u32) -> ptr<i8>>(%[[VALUE_baz]], array_decay<ptr<i8>, length=Some(4096)>(field1(%[[VALUE_t]])), truncate<u32, reason=arg, fits=always>(size_of<u64, array<i8, 4096>>(4096))), null<ptr<i8>>))
-// DEFAULT-NEXT:             call<ptr<i8>, signature=fn(ptr<i8>, u32) -> ptr<i8>>(%[[VALUE_baz]], array_decay<ptr<i8>, length=Some(4096)>(field1(%[[VALUE_t]])), truncate<u32, reason=arg, fits=always>(size_of<u64, array<i8, 4096>>(4096)));
+// DEFAULT-NEXT:         if not<bool>(ne<ptr<i8>>(call<ptr<i8>, signature=fn(ptr<i8>, u32) -> ptr<i8>>(%[[VALUE_baz]], array_decay<ptr<i8>, length=Some(4096)>(field1(%[[VALUE_t]])), truncate<u32, reason=arg, fits=always>(size_of<u64, array<i8, 4096>>(4096) [c="__size_t"])), null<ptr<i8>>))
+// DEFAULT-NEXT:             call<ptr<i8>, signature=fn(ptr<i8>, u32) -> ptr<i8>>(%[[VALUE_baz]], array_decay<ptr<i8>, length=Some(4096)>(field1(%[[VALUE_t]])), truncate<u32, reason=arg, fits=always>(size_of<u64, array<i8, 4096>>(4096) [c="__size_t"]));
 // DEFAULT-NEXT:         if ne<i32>(and<i32>(read<i32>(%[[VALUE_x_3]]), const<i32>(512)), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_h:[0-9]+]] h: ptr<ptr<i8>> [storage=automatic];

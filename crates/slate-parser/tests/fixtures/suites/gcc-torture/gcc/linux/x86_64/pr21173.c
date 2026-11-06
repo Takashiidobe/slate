@@ -62,7 +62,7 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: ptr<ptr<void>> [synthetic] = ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(2)>(%[[VALUE_a]]), read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: ptr<void> [synthetic] = read<ptr<void>>(deref(read<ptr<ptr<void>>>(%[[VALUE3]])));
-// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: ptr<void> [synthetic] = ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(read<ptr<void>>(%[[VALUE4]]), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), addr_of<ptr<i8>>(%[[VALUE_q]])));
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: ptr<void> [synthetic] = ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(read<ptr<void>>(%[[VALUE4]]), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), addr_of<ptr<i8>>(%[[VALUE_q]])) [c="__ptrdiff_t"]);
 // DEFAULT-NEXT:                 write<ptr<void>>(deref(read<ptr<ptr<void>>>(%[[VALUE3]])), read<ptr<void>>(%[[VALUE5]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

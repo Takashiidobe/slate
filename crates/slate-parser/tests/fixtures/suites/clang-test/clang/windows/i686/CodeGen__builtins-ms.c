@@ -36,11 +36,11 @@ void test_alloca_with_align(int n) {
 // DEFAULT-NEXT:     fn %[[VALUE_capture:[0-9]+]] @capture(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE__alloca:[0-9]+]] @_alloca(%[[VALUE1:[0-9]+]] <unnamed>: u32) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_test_alloca:[0-9]+]] @test_alloca(%[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_capture]], call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE__alloca]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_n]]))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_capture]], call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE__alloca]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_n]])) [c="__size_t"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_alloca_with_align:[0-9]+]] @__builtin_alloca_with_align(%[[VALUE2:[0-9]+]] <unnamed>: u32, %[[VALUE3:[0-9]+]] <unnamed>: u32) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_test_alloca_with_align:[0-9]+]] @test_alloca_with_align(%[[VALUE_n_2:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_capture]], call<ptr<void>, signature=fn(u32, u32) -> ptr<void>>(%[[VALUE___builtin_alloca_with_align]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_n_2]])), reinterpret<u32, reason=arg, fits=always>(const<i32>(64))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_capture]], call<ptr<void>, signature=fn(u32, u32) -> ptr<void>>(%[[VALUE___builtin_alloca_with_align]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_n_2]])) [c="__size_t"], reinterpret<u32, reason=arg, fits=always>(const<i32>(64)) [c="__size_t"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

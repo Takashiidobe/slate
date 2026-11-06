@@ -66,11 +66,11 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_free:[0-9]+]] @free(%[[VALUE___ptr:[0-9]+]] __ptr: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_FlexibleArray]]>(8), size_of<u64, u64>(8))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_FlexibleArray]]>(8) [c="__size_t"], size_of<u64, u64>(8) [c="__size_t"])
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(1);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         let %[[VALUE_flexible:[0-9]+]] flexible: ptr<@type[[TYPE_FlexibleArray]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_FlexibleArray]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], add<u64, overflow=wrap>(size_of<u64, @type[[TYPE_FlexibleArray]]>(8), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3))), size_of<u64, i32>(4)))));
+// DEFAULT-NEXT:         let %[[VALUE_flexible:[0-9]+]] flexible: ptr<@type[[TYPE_FlexibleArray]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_FlexibleArray]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], add<u64, overflow=wrap>(size_of<u64, @type[[TYPE_FlexibleArray]]>(8) [c="__size_t"], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3))) [c="__size_t"], size_of<u64, i32>(4) [c="__size_t"]) [c="__size_t"]) [c="__size_t"]));
 // DEFAULT-NEXT:         if eq<ptr<@type[[TYPE_FlexibleArray]]>>(read<ptr<@type[[TYPE_FlexibleArray]]>>(%[[VALUE_flexible]]), null<ptr<@type[[TYPE_FlexibleArray]]>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(2);

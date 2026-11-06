@@ -76,7 +76,7 @@ int main(void) {
 // CHECK-NEXT:             v.__slate_bits_0.__get_a() as i32,
 // CHECK-NEXT:             v.__slate_bits_0.__get_b() as i32,
 // CHECK-NEXT:             v.__slate_bits_0.__get_c(),
-// CHECK-NEXT:             (v.__slate_bits_0.__get_d() as u32) as i32,
+// CHECK-NEXT:             v.__slate_bits_0.__get_d() as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {

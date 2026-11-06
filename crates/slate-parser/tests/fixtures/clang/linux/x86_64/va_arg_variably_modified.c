@@ -46,7 +46,7 @@ void *take(int n, ...) {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE0]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE1]]));
-// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = reinterpret<u64>(widen<i64>(read<i32>(%[[VALUE1]])));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = reinterpret<u64>(widen<i64>(read<i32>(%[[VALUE1]]))) [c="__size_t"];
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], pointer_cast<ptr<void>>(va_arg<ptr<vla<i32, %[[VALUE2]]>>>(%[[VALUE_ap]]) [c="typeof(int (*)[*])"]));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         return read<ptr<void>>(%[[VALUE_p]]);

@@ -62,9 +62,9 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 122, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external] [c="int(const char *restrict, ...)"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str]])), size_of<u64, f80>(16), align_of<u64, f80>(16));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%[[VALUE_str_2]])), size_of<u64, @type[[TYPE_ld_box]]>(48), align_of<u64, @type[[TYPE_ld_box]]>(16), offset_of<u64, @type[[TYPE_ld_box]], value>(16), offset_of<u64, @type[[TYPE_ld_box]], tail>(32));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_3]])), size_of<u64, @type[[TYPE_ld_union]]>(16), align_of<u64, @type[[TYPE_ld_union]]>(16));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str]])), size_of<u64, f80>(16) [c="__size_t"], align_of<u64, f80>(16) [c="__size_t"]);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%[[VALUE_str_2]])), size_of<u64, @type[[TYPE_ld_box]]>(48) [c="__size_t"], align_of<u64, @type[[TYPE_ld_box]]>(16) [c="__size_t"], offset_of<u64, @type[[TYPE_ld_box]], value>(16) [c="__size_t"], offset_of<u64, @type[[TYPE_ld_box]], tail>(32) [c="__size_t"]);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_3]])), size_of<u64, @type[[TYPE_ld_union]]>(16) [c="__size_t"], align_of<u64, @type[[TYPE_ld_union]]>(16) [c="__size_t"]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

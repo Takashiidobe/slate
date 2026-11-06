@@ -60,11 +60,11 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_c_literal:[0-9]+]] c_literal: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         let %[[VALUE_c_expr:[0-9]+]] c_expr: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         let %[[VALUE_c_volatile:[0-9]+]] c_volatile: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE_local_whole:[0-9]+]] local_whole: u64 [storage=automatic] = const<u64>(24);
-// DEFAULT-NEXT:         let %[[VALUE_local_remaining:[0-9]+]] local_remaining: u64 [storage=automatic] = const<u64>(16);
-// DEFAULT-NEXT:         let %[[VALUE_global_whole:[0-9]+]] global_whole: u64 [storage=automatic] = const<u64>(16);
-// DEFAULT-NEXT:         let %[[VALUE_unknown:[0-9]+]] unknown: u64 [storage=automatic] = intrinsic<u64, llvm.objectsize>(read<ptr<i32>>(%[[VALUE_p]]), const<bool>(false), const<bool>(false), const<bool>(false));
-// DEFAULT-NEXT:         let %[[VALUE_unknown_upper:[0-9]+]] unknown_upper: u64 [storage=automatic] = intrinsic<u64, llvm.objectsize>(read<ptr<i32>>(%[[VALUE_p]]), const<bool>(true), const<bool>(false), const<bool>(false));
+// DEFAULT-NEXT:         let %[[VALUE_local_whole:[0-9]+]] local_whole: u64 [storage=automatic] = reinterpret<u64, reason=assign>(const<u64>(24) [c="__size_t"]);
+// DEFAULT-NEXT:         let %[[VALUE_local_remaining:[0-9]+]] local_remaining: u64 [storage=automatic] = reinterpret<u64, reason=assign>(const<u64>(16) [c="__size_t"]);
+// DEFAULT-NEXT:         let %[[VALUE_global_whole:[0-9]+]] global_whole: u64 [storage=automatic] = reinterpret<u64, reason=assign>(const<u64>(16) [c="__size_t"]);
+// DEFAULT-NEXT:         let %[[VALUE_unknown:[0-9]+]] unknown: u64 [storage=automatic] = reinterpret<u64, reason=assign>(intrinsic<u64, llvm.objectsize>(read<ptr<i32>>(%[[VALUE_p]]), const<bool>(false), const<bool>(false), const<bool>(false)) [c="__size_t"]);
+// DEFAULT-NEXT:         let %[[VALUE_unknown_upper:[0-9]+]] unknown_upper: u64 [storage=automatic] = reinterpret<u64, reason=assign>(intrinsic<u64, llvm.objectsize>(read<ptr<i32>>(%[[VALUE_p]]), const<bool>(true), const<bool>(false), const<bool>(false)) [c="__size_t"]);
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(30)>(%[[VALUE_str]])), read<i32>(%[[VALUE_c_literal]]), read<i32>(%[[VALUE_c_expr]]), read<i32>(%[[VALUE_c_volatile]]), read<u64>(%[[VALUE_local_whole]]), read<u64>(%[[VALUE_local_remaining]]), read<u64>(%[[VALUE_global_whole]]), read<u64>(%[[VALUE_unknown]]), read<u64>(%[[VALUE_unknown_upper]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

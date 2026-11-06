@@ -91,11 +91,11 @@ int main ()
 // DEFAULT-NEXT:     global %[[VALUE_s6:[0-9]+]] s6: ptr<u16> [storage=static] = array_decay<ptr<u16>, length=Some(4)>(%[[VALUE_str_7]]) [c="char16_t *"] [linkage=external] [c="char16_t *"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u16>(2), size_of<u64, u16>(2))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u16>(2) [c="__size_t"], size_of<u64, u16>(2) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u16>(2), size_of<u64, u16>(2))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u16>(2) [c="__size_t"], size_of<u64, u16>(2) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u16>(2), size_of<u64, u16>(2))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, u16>(2) [c="__size_t"], size_of<u64, u16>(2) [c="__size_t"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(read<ptr<u16>>(%[[VALUE_s0]]), const<i32>(0)))) [c="char16_t"])), const<i32>(97)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(read<ptr<u16>>(%[[VALUE_s0]]), const<i32>(1)))) [c="char16_t"])), const<i32>(98))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(read<ptr<u16>>(%[[VALUE_s0]]), const<i32>(2)))) [c="char16_t"])), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

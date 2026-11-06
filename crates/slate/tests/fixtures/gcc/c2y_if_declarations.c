@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let i: i32 = 3;
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u64 = (i as i64) as u64;
+// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u64 = i as u64;
 // CHECK-NEXT:     let mut arr: Vec<i32> = {
 // CHECK-NEXT:         let mut __slate_vla: Vec<i32> = Vec::with_capacity([[V_0]] as usize);
 // CHECK-NEXT:         unsafe {

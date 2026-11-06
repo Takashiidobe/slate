@@ -30,7 +30,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].tag = 0u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     bits.tag = 165u8;
+// CHECK-NEXT:     bits.tag = 165;
 // CHECK-NEXT:     bits.__slate_bits_0.__set_low(7u32);
 // CHECK-NEXT:     bits.__slate_bits_0.__set_delta(-17i32);
 // CHECK-NEXT:     bits.__slate_bits_1.__set_wide(30370190968u64);
@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u %d %llu %u %zu\n".as_ptr(),
-// CHECK-NEXT:             (bits.tag as u32) as i32,
+// CHECK-NEXT:             bits.tag as i32,
 // CHECK-NEXT:             bits.__slate_bits_0.__get_low() as i32,
 // CHECK-NEXT:             bits.__slate_bits_0.__get_delta(),
 // CHECK-NEXT:             bits.__slate_bits_1.__get_wide(),

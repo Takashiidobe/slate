@@ -65,16 +65,16 @@ long pointers(Element *p, const int *q, unsigned long n, struct Pair *r, int (*r
 // IR-NEXT:         write<ptr<i32>>(%[[VALUE_p]], read<ptr<i32>>(%[[VALUE7]]) [c="Element *"]) [c="Element *"] [c="Element *"];
 // IR-NEXT:         ptr_offset<ptr<@type[[TYPE_Pair]]>, subtract=false, element=@type[[TYPE_Pair]], overflow=wrap>(read<ptr<@type[[TYPE_Pair]]>>(%[[VALUE_r]]), read<u64>(%[[VALUE_n]]));
 // IR-NEXT:         ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=wrap>(read<ptr<array<i32, 3>>>(%[[VALUE_rows]]), const<i32>(1));
-// IR-NEXT:         ptr_diff<i64, element=@type[[TYPE_Pair]], same_array=required, overflow=ub>(read<ptr<@type[[TYPE_Pair]]>>(%[[VALUE_r]]), read<ptr<@type[[TYPE_Pair]]>>(%[[VALUE_r]]));
-// IR-NEXT:         ptr_diff<i64, element=array<i32, 3>, same_array=required, overflow=ub>(read<ptr<array<i32, 3>>>(%[[VALUE_rows]]), read<ptr<array<i32, 3>>>(%[[VALUE_rows]]));
+// IR-NEXT:         ptr_diff<i64, element=@type[[TYPE_Pair]], same_array=required, overflow=ub>(read<ptr<@type[[TYPE_Pair]]>>(%[[VALUE_r]]), read<ptr<@type[[TYPE_Pair]]>>(%[[VALUE_r]])) [c="__ptrdiff_t"];
+// IR-NEXT:         ptr_diff<i64, element=array<i32, 3>, same_array=required, overflow=ub>(read<ptr<array<i32, 3>>>(%[[VALUE_rows]]), read<ptr<array<i32, 3>>>(%[[VALUE_rows]])) [c="__ptrdiff_t"];
 // IR-NEXT:         let %[[VALUE8:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_n]]);
 // IR-NEXT:         let %[[VALUE9:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE8]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
 // IR-NEXT:         write<u64>(%[[VALUE_n]], read<u64>(%[[VALUE9]]));
 // IR-NEXT:         let %[[VALUE10:[0-9]+]]: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=wrap>(read<ptr<i32>>(%[[VALUE_p]]) [c="Element *"], read<u64>(%[[VALUE8]])) [c="Element *"] [c="Element *"];
 // IR-NEXT:         let %[[VALUE11:[0-9]+]]: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%[[VALUE10]]))) [c="Element"] [c="Element"];
-// IR-NEXT:         let %[[VALUE12:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign>(add<i32, overflow=wrap>(reinterpret<i32, reason=promotion>(read<i32>(%[[VALUE11]]) [c="Element"]), const<i32>(1))) [c="Element"] [c="Element"];
+// IR-NEXT:         let %[[VALUE12:[0-9]+]]: i32 [synthetic] = add<i32, overflow=wrap>(read<i32>(%[[VALUE11]]) [c="Element"], reinterpret<i32, reason=usual_arith>(const<i32>(1)) [c="Element"]) [c="Element"] [c="Element"];
 // IR-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE10]])), read<i32>(%[[VALUE12]]) [c="Element"]) [c="Element"] [c="Element"];
-// IR-NEXT:         return ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(%[[VALUE_p]]) [c="Element *"], read<ptr<const i32>>(%[[VALUE_q]]));
+// IR-NEXT:         return reinterpret<i64, reason=return>(ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(%[[VALUE_p]]) [c="Element *"], read<ptr<const i32>>(%[[VALUE_q]])) [c="__ptrdiff_t"]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

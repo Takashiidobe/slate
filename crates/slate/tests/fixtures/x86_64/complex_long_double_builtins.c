@@ -301,8 +301,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u %d %d\n".as_ptr(),
-// CHECK-NEXT:             (gs.x.re as u32) as i32,
-// CHECK-NEXT:             (gs.x.im as u32) as i32,
+// CHECK-NEXT:             gs.x.re as i32,
+// CHECK-NEXT:             gs.x.im as i32,
 // CHECK-NEXT:             gs.y.re as i32,
 // CHECK-NEXT:             gs.y.im as i32,
 // CHECK-NEXT:         )
