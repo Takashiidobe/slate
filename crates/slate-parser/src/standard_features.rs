@@ -243,6 +243,9 @@ impl StandardFeatures {
             features.static_assert_expressions = true;
             features.named_loops = true;
             features.identifier_utf8 = features.identifier_ucns;
+            if features.identifier_list_definitions == Availability::Rejected {
+                features.identifier_list_definitions = Availability::Extension;
+            }
             if standard == LanguageStandard::Gnu99 {
                 features.unicode_literal_prefixes = Availability::Extension;
             }

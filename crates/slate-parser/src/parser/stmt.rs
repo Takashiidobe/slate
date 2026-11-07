@@ -72,8 +72,7 @@ impl Parser {
         mut pos: usize,
         names: &[String],
     ) -> Result<(Vec<ParameterDeclaration>, usize), ParseError> {
-        let mut declared: HashMap<String, (DeclarationSpecifiers, Declarator, Span<()>)> =
-            HashMap::new();
+        let mut declared: HashMap<String, Span<ParameterDeclarationKind>> = HashMap::new();
         while tokens.value_at(pos) != Some(&Token::LBrace) {
             let mut parser = self.declarator_parser(tokens, pos);
             let specifiers = parser
@@ -98,12 +97,31 @@ impl Parser {
                         format!("`{name}` is not a parameter of this function"),
                     ));
                 }
+                let name = name.to_string();
+                let attributes = parser
+                    .parse_attributes()
+                    .map_err(|error| self.error_at_tokens(tokens, parser.pos, error.to_string()))?;
+                let mut specifiers = specifiers.clone();
+                let type_attributes = specifiers
+                    .attributes
+                    .iter()
+                    .chain(&attributes)
+                    .cloned()
+                    .collect::<Vec<_>>();
+                let ty = std::mem::replace(&mut specifiers.ty, TypeSpecifier::Void);
+                specifiers.ty = ty.with_type_attributes(&type_attributes);
                 declared.insert(
-                    name.to_string(),
-                    (
-                        specifiers.clone(),
-                        declarator,
-                        self.cover_tokens((), tokens, declarator_start, parser.pos),
+                    name,
+                    self.cover_tokens(
+                        ParameterDeclarationKind {
+                            specifiers,
+                            declarator,
+                            attributes,
+                            comments: Vec::new(),
+                        },
+                        tokens,
+                        declarator_start,
+                        parser.pos,
                     ),
                 );
                 if !parser.matches(Token::Comma) {
@@ -122,12 +140,7 @@ impl Parser {
         let parameters = names
             .iter()
             .map(|name| match declared.remove(name) {
-                Some((specifiers, declarator, span)) => span.with_value(ParameterDeclarationKind {
-                    specifiers,
-                    declarator,
-                    attributes: Vec::new(),
-                    comments: Vec::new(),
-                }),
+                Some(parameter) => parameter,
                 None => {
                     let span = tokens
                         .iter()
