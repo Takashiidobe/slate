@@ -127,6 +127,11 @@ other expansion stays inline, and `macro_keep.rs` records why in the merge repor
   `$($args:expr),*` when it is the only parameter), always the last parameter, so
   every argument count shares a template. Earlier elements, and any element with a
   conversion, stay separate `$args__N`; at most one list per template repeats.
+  One exception to keeping conversions in the template: a list element's
+  `reason=vararg` conversions (default argument promotions at a variadic position)
+  are lowered into the caller's argument (`narrow as i32`, `f as f64`), since they
+  depend on the argument's type, not the macro. Other parameters keep them in the
+  template, because a plain hole can occur more than once with one argument value.
   Codegen prints the repetition as `__slate_macro_list_<name>`, which `format.rs`
   turns back into `$($name),*`, or `$($name,)*` before a comma. Writes to bit-fields
   stay inline.

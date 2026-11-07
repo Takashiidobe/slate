@@ -327,21 +327,39 @@ impl FunctionLowerer<'_, '_> {
         Ok(Expr::Macro { name, args })
     }
 
-    pub(super) fn lower_macro_hole(
-        &mut self,
-        expansion: MacroExpansionId,
-        argument: usize,
-        value: &ir::Value,
-    ) -> Result<Expr> {
-        let is_call_argument = self
-            .tables
+    fn is_call_list_argument(&self, expansion: MacroExpansionId, argument: usize) -> bool {
+        self.tables
             .macros
             .expansion(expansion)
             .argument_uses
             .iter()
             .any(|using| {
                 using.argument == argument && matches!(using.cover, MacroCover::CallArguments(_))
-            });
+            })
+    }
+
+    pub(super) fn lower_promoted_list_hole(&mut self, value: &ir::Value) -> Option<Result<Expr>> {
+        let (expansion, argument) = vararg_promoted_hole(value)?;
+        if !self.is_call_list_argument(expansion, argument)
+            || !self
+                .macro_sites
+                .iter()
+                .any(|site| site.expansion == expansion)
+        {
+            return None;
+        }
+        let mut promoted = value.clone();
+        strip_promoted_hole(&mut promoted);
+        Some(self.lower_macro_hole(expansion, argument, &promoted))
+    }
+
+    pub(super) fn lower_macro_hole(
+        &mut self,
+        expansion: MacroExpansionId,
+        argument: usize,
+        value: &ir::Value,
+    ) -> Result<Expr> {
+        let is_call_argument = self.is_call_list_argument(expansion, argument);
         let mut element = 0;
         let parameter = self.lower_hole_argument(expansion, argument, |this, site| {
             let found = this.lower_value(value)?;
@@ -448,5 +466,40 @@ impl FunctionLowerer<'_, '_> {
             return Err(Invariant::MacroTemplateMismatch(self.owner.clone(), difference).into());
         }
         Ok(())
+    }
+}
+
+fn vararg_promoted_hole(value: &ir::Value) -> Option<(MacroExpansionId, usize)> {
+    let (ir::ValueKind::Convert {
+        operand,
+        reason: ir::ConversionReason::Vararg,
+        ..
+    }
+    | ir::ValueKind::Copy {
+        operand,
+        reason: ir::ConversionReason::Vararg,
+    }) = &value.node.value
+    else {
+        return None;
+    };
+    match &operand.node.value {
+        ir::ValueKind::MacroArg {
+            expansion,
+            argument,
+            ..
+        } => Some((*expansion, *argument)),
+        _ => vararg_promoted_hole(operand),
+    }
+}
+
+fn strip_promoted_hole(value: &mut ir::Value) {
+    let (ir::ValueKind::Convert { operand, .. } | ir::ValueKind::Copy { operand, .. }) =
+        &mut value.node.value
+    else {
+        return;
+    };
+    match &operand.node.value {
+        ir::ValueKind::MacroArg { value: inner, .. } => **operand = (**inner).clone(),
+        _ => strip_promoted_hole(operand),
     }
 }

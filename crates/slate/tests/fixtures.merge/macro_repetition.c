@@ -13,12 +13,14 @@ int main(void) {
     long m = 3;
     const char *s = "str";
     unsigned char narrow = 7;
+    float f = 1.5f;
     Tracev(("plain\n"));
     Tracev(("%d\n", i));
     Tracev(("%d %d\n", i, j));
     Tracev(("%d %d %ld %s\n", i, j, m, s));
     Tracev(("%d %d %d %d %d %d %d\n", i, j, i, j, i, j, i));
     Tracev(("%d\n", narrow));
+    Tracev(("%d %.1f %d\n", narrow, f, i));
     REPORT("one", ("%d\n", i));
     REPORT("two", ("%d %ld\n", j, m));
     printf("%d\n", SUM_OF((i, j, 3)));
@@ -31,12 +33,12 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_repetition.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_repetition: 11 items, 0 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_repetition: 10 items, 0 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 3 function-like, 3 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   macro REPORT: 4 lifted, inline:
 // CHECK-NEXT:   macro SUM_OF: 2 lifted, inline:
-// CHECK-NEXT:   macro Tracev: 12 lifted, inline:
+// CHECK-NEXT:   macro Tracev: 14 lifted, inline:
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
@@ -64,6 +66,7 @@ int main(void) {
 // CHECK-NEXT:     let m: c_long = 3;
 // CHECK-NEXT:     let s: *const c_char = c"str".as_ptr();
 // CHECK-NEXT:     let narrow: u8 = 7;
+// CHECK-NEXT:     let f: f32 = 1.5f32;
 // CHECK-NEXT:     Tracev!(c"plain\n".as_ptr() as *mut c_char);
 // CHECK-NEXT:     Tracev!(c"%d\n".as_ptr() as *mut c_char, i);
 // CHECK-NEXT:     Tracev!(c"%d %d\n".as_ptr() as *mut c_char, i, j);
@@ -78,7 +81,13 @@ int main(void) {
 // CHECK-NEXT:         j,
 // CHECK-NEXT:         i
 // CHECK-NEXT:     );
-// CHECK-NEXT:     Tracev__2!(c"%d\n".as_ptr() as *mut c_char, narrow);
+// CHECK-NEXT:     Tracev!(c"%d\n".as_ptr() as *mut c_char, narrow as i32);
+// CHECK-NEXT:     Tracev!(
+// CHECK-NEXT:         c"%d %.1f %d\n".as_ptr() as *mut c_char,
+// CHECK-NEXT:         narrow as i32,
+// CHECK-NEXT:         f as f64,
+// CHECK-NEXT:         i
+// CHECK-NEXT:     );
 // CHECK-NEXT:     REPORT!(
 // CHECK-NEXT:         c"one".as_ptr() as *mut c_char,
 // CHECK-NEXT:         c"%d\n".as_ptr() as *mut c_char,
@@ -136,27 +145,6 @@ int main(void) {
 // CHECK-NEXT:             if (unsafe { verbose }) > 1 {
 // CHECK-NEXT:                 let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:                 unsafe { slate_support::printf(($x__0) as *const c_char, $($x),*) };
-// CHECK-NEXT:                 unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! Tracev__2 {
-// CHECK-NEXT:     ($x__0:expr, $x__1:expr $(, $x:expr)*) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             if (unsafe { verbose }) > 1 {
-// CHECK-NEXT:                 let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     slate_support::printf(
-// CHECK-NEXT:                         ($x__0) as *const c_char,
-// CHECK-NEXT:                         ($x__1) as i32,
-// CHECK-NEXT:                         $($x,)*
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 };
 // CHECK-NEXT:                 unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {
