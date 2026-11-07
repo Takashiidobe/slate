@@ -20,5 +20,6 @@ struct ld_box {
 };
 
 typedef long double (*ld_binary_fn)(long double, long double);
+typedef long double (*ld_variadic_fn)(long double, int, ...);
 
 #endif

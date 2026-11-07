@@ -42,6 +42,13 @@ pub(super) fn long_double_bridge_tags<'a>(
         .collect()
 }
 
+fn code_pointer() -> rust::Type {
+    rust::Type::Ptr {
+        mutable: false,
+        inner: Box::new(rust::Type::Unit),
+    }
+}
+
 pub(super) fn function_is_variadic(function: &ir::Function) -> bool {
     matches!(
         function.parameters,
@@ -58,17 +65,36 @@ pub(super) fn long_double_export_name(symbol: &str, definition: &FnDef) -> Resul
     if symbol.contains("__") {
         return Err(unsupported());
     }
+    long_double_entry_export_name(symbol, definition)
+}
+
+pub(super) fn long_double_entry_export_name(entry: &str, definition: &FnDef) -> Result<String> {
+    let (prefix, params) = match definition.params.split_last() {
+        Some((last, fixed)) if last.ty == rust::Type::VaList && last.name == calls::VA_ARGS => {
+            ("__slate_ldv__", fixed)
+        }
+        _ => ("__slate_ld__", definition.params.as_slice()),
+    };
+    if prefix == "__slate_ldv__" && params.is_empty() {
+        return Err(Construct::LongDouble {
+            detail: format!("export of {entry} with no fixed parameters"),
+        }
+        .into());
+    }
     let ret = definition.ret.clone().unwrap_or(rust::Type::Unit);
     let tags = long_double_bridge_tags(
-        symbol,
+        entry,
         std::iter::once(&ret)
-            .chain(definition.params.iter().map(|param| &param.ty))
+            .chain(params.iter().map(|param| &param.ty))
             .map(|ty| (ty, None)),
     )?;
     if tags.iter().any(|tag| tag == "cf80") {
-        return Err(unsupported());
+        return Err(Construct::LongDouble {
+            detail: format!("export of {entry}"),
+        }
+        .into());
     }
-    Ok(format!("__slate_ld__{symbol}__r{}", tags.join("_")))
+    Ok(format!("{prefix}{entry}__r{}", tags.join("_")))
 }
 
 impl Tables<'_> {
@@ -198,7 +224,7 @@ impl FunctionLowerer<'_, '_> {
             .iter()
             .map(|argument| self.lower_value(argument))
             .collect::<Result<Vec<_>>>()?;
-        Ok(self.call_c_bridge(name, params, ret, args, function.identity))
+        Ok(self.call_long_double_bridge(name, params, ret, args, function.identity))
     }
 
     pub(super) fn lower_long_double_variadic_trampoline(
@@ -239,7 +265,7 @@ impl FunctionLowerer<'_, '_> {
         }))
         .chain(arguments.iter().map(|argument| self.lower_value(argument)))
         .collect::<Result<Vec<_>>>()?;
-        Ok(self.call_c_bridge(
+        Ok(self.call_long_double_bridge(
             name,
             std::iter::once(code_pointer).chain(params).collect(),
             ret,
@@ -259,29 +285,24 @@ impl FunctionLowerer<'_, '_> {
             .collect()
     }
 
-    fn long_double_pointer_tags(
-        &mut self,
-        ty: &ir::Type,
-        subject: &str,
-        allow_variadic: bool,
-    ) -> Result<Vec<String>> {
+    fn long_double_pointer_tags(&mut self, ty: &ir::Type, subject: &str) -> Result<Vec<String>> {
         let unsupported = || {
             Failure::from(Construct::LongDouble {
                 detail: format!("function pointer {subject}"),
             })
         };
-        let (parameters, return_type) = match self.tables.resolve_type(ty) {
-            ir::Type::Pointer { pointee, .. } => match self.tables.resolve_type(pointee) {
-                ir::Type::Function {
-                    parameters,
-                    return_type,
-                    variadic,
-                    prototyped: true,
-                    ..
-                } if allow_variadic || !variadic => (parameters, return_type),
-                _ => return Err(unsupported()),
-            },
-            _ => return Err(unsupported()),
+        let function = match self.tables.resolve_type(ty) {
+            ir::Type::Pointer { pointee, .. } => self.tables.resolve_type(pointee),
+            function => function,
+        };
+        let ir::Type::Function {
+            parameters,
+            return_type,
+            prototyped: true,
+            ..
+        } = function
+        else {
+            return Err(unsupported());
         };
         let ret = match return_type {
             Some(ty) => self.lower_type(ty)?,
@@ -317,8 +338,28 @@ impl FunctionLowerer<'_, '_> {
         value: &ir::Value,
         id: BindingId,
     ) -> Result<Expr> {
+        Ok(Expr::Transmute {
+            from: code_pointer(),
+            to: self.lower_type(&value.ty)?,
+            expr: Box::new(self.long_double_native_address(id, &value.ty)?),
+        })
+    }
+
+    pub(super) fn lower_long_double_variadic_direct_call(
+        &mut self,
+        id: BindingId,
+        signature: &ir::Type,
+        arguments: &[ir::Value],
+        ret: &ir::Type,
+    ) -> Result<Expr> {
+        let callee = self.long_double_native_address(id, signature)?;
+        self.lower_long_double_native_call(signature, callee, arguments, ret)
+    }
+
+    fn long_double_native_address(&mut self, id: BindingId, ty: &ir::Type) -> Result<Expr> {
         let name = &self.tables.names[&id];
-        let tags = self.long_double_pointer_tags(&value.ty, &name.rust, false)?;
+        let tags = self.long_double_pointer_tags(ty, &name.rust)?;
+        let name = &self.tables.names[&id];
         let entry = format!("__slate_ldfp_{}_{}", self.tables.unit, name.rust);
         let link_name = if name.is_extern || name.exported {
             Some(
@@ -326,6 +367,8 @@ impl FunctionLowerer<'_, '_> {
                     .builtin_library(id)
                     .map_or_else(|| name.rust.clone(), str::to_string),
             )
+        } else if name.is_variadic {
+            None
         } else {
             self.dependencies.long_double_exports.insert(
                 name.rust.clone(),
@@ -347,17 +390,9 @@ impl FunctionLowerer<'_, '_> {
                 ret: None,
                 safe: false,
             });
-        let address = rust::Type::Ptr {
-            mutable: false,
-            inner: Box::new(rust::Type::Unit),
-        };
-        Ok(Expr::Transmute {
-            from: address.clone(),
-            to: self.lower_type(&value.ty)?,
-            expr: Box::new(Expr::Cast {
-                expr: Box::new(Expr::Var(entry.into())),
-                ty: address,
-            }),
+        Ok(Expr::Cast {
+            expr: Box::new(Expr::Var(entry.into())),
+            ty: code_pointer(),
         })
     }
 
@@ -367,13 +402,28 @@ impl FunctionLowerer<'_, '_> {
         arguments: &[ir::Value],
         ret: &ir::Type,
     ) -> Result<Expr> {
-        let tags = self.long_double_pointer_tags(&pointer.ty, "call", true)?;
+        let callee = Expr::Transmute {
+            from: self.lower_type(&pointer.ty)?,
+            to: code_pointer(),
+            expr: Box::new(self.lower_value(pointer)?),
+        };
+        self.lower_long_double_native_call(&pointer.ty, callee, arguments, ret)
+    }
+
+    fn lower_long_double_native_call(
+        &mut self,
+        ty: &ir::Type,
+        callee: Expr,
+        arguments: &[ir::Value],
+        ret: &ir::Type,
+    ) -> Result<Expr> {
+        let tags = self.long_double_pointer_tags(ty, "call")?;
         let params = arguments
             .iter()
             .map(|argument| self.lower_type(&argument.ty))
             .collect::<Result<Vec<_>>>()?;
         let mut name = format!("__slate_icall__r{}", tags.join("_"));
-        if self.tables.is_variadic_function_pointer(&pointer.ty) {
+        if self.tables.is_variadic_function_pointer(ty) {
             let fixed = tags.len() - 1;
             let aggregates = arguments[fixed..]
                 .iter()
@@ -387,26 +437,44 @@ impl FunctionLowerer<'_, '_> {
             }
             name = format!("{name}__{}", variadic.join("_"));
         }
-        let code_pointer = rust::Type::Ptr {
-            mutable: false,
-            inner: Box::new(rust::Type::Unit),
-        };
         let ret = self.lower_type(ret)?;
-        let callee = Expr::Transmute {
-            from: self.lower_type(&pointer.ty)?,
-            to: code_pointer.clone(),
-            expr: Box::new(self.lower_value(pointer)?),
-        };
         let args = std::iter::once(Ok(callee))
             .chain(arguments.iter().map(|argument| self.lower_value(argument)))
             .collect::<Result<Vec<_>>>()?;
-        Ok(self.call_c_bridge(
+        Ok(self.call_long_double_bridge(
             name,
-            std::iter::once(code_pointer).chain(params).collect(),
+            std::iter::once(code_pointer()).chain(params).collect(),
             ret,
             args,
             FunctionIdentity::Unknown,
         ))
+    }
+
+    fn call_long_double_bridge(
+        &mut self,
+        name: String,
+        params: Vec<rust::Type>,
+        ret: rust::Type,
+        args: Vec<Expr>,
+        identity: FunctionIdentity,
+    ) -> Expr {
+        let (params, args) = params
+            .into_iter()
+            .zip(args)
+            .map(|(ty, arg)| {
+                if long_double::long_double_shim_type_tag(&ty) == "fp" {
+                    let erased = Expr::Transmute {
+                        from: ty,
+                        to: code_pointer(),
+                        expr: Box::new(arg),
+                    };
+                    (code_pointer(), erased)
+                } else {
+                    (ty, arg)
+                }
+            })
+            .unzip();
+        self.call_c_bridge(name, params, ret, args, identity)
     }
 }
 

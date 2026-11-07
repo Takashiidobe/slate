@@ -56,6 +56,9 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn __slate_ldfp_long_double_va_arg_first_twice();
+// CHECK-NEXT:     fn __slate_ldfp_long_double_va_arg_mixed();
+// CHECK-NEXT:     fn __slate_ldfp_long_double_va_arg_sum_long_doubles();
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -139,21 +142,20 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_to_f32(__a: LongDouble) -> f32;
 // CHECK-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;
 // CHECK-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
-// CHECK-NEXT:     fn __slate_printf__ri32_pi8_f80(_0: *const i8, _1: LongDouble) -> i32;
-// CHECK-NEXT:     fn __slate_vcall__rf80_i32__f80_f80(
+// CHECK-NEXT:     fn __slate_icall__rf80_i32__f80_f80(
 // CHECK-NEXT:         _0: *const (),
 // CHECK-NEXT:         _1: i32,
 // CHECK-NEXT:         _2: LongDouble,
 // CHECK-NEXT:         _3: LongDouble,
 // CHECK-NEXT:     ) -> LongDouble;
-// CHECK-NEXT:     fn __slate_vcall__rf80_i32__f80_f80_f80(
+// CHECK-NEXT:     fn __slate_icall__rf80_i32__f80_f80_f80(
 // CHECK-NEXT:         _0: *const (),
 // CHECK-NEXT:         _1: i32,
 // CHECK-NEXT:         _2: LongDouble,
 // CHECK-NEXT:         _3: LongDouble,
 // CHECK-NEXT:         _4: LongDouble,
 // CHECK-NEXT:     ) -> LongDouble;
-// CHECK-NEXT:     fn __slate_vcall__rf80_i32__i32_i32_i32_f64_i32_f80_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f80_i32_f64(
+// CHECK-NEXT:     fn __slate_icall__rf80_i32__i32_i32_i32_f64_i32_f80_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f80_i32_f64(
 // CHECK-NEXT:         _0: *const (),
 // CHECK-NEXT:         _1: i32,
 // CHECK-NEXT:         _2: i32,
@@ -181,6 +183,7 @@ int main(void) {
 // CHECK-NEXT:         _24: i32,
 // CHECK-NEXT:         _25: f64,
 // CHECK-NEXT:     ) -> LongDouble;
+// CHECK-NEXT:     fn __slate_printf__ri32_pi8_f80(_0: *const i8, _1: LongDouble) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
@@ -268,9 +271,12 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(
+// CHECK-NEXT:     export_name = "__slate_ldv____slate_ldfp_long_double_va_arg_sum_long_doubles__rf80_i32"
+// CHECK-NEXT: )]
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum_long_doubles(
 // CHECK-NEXT:     count: i32,
-// CHECK-NEXT:     mut __va_args: ...
+// CHECK-NEXT:     mut __va_args: core::ffi::VaList<'static>,
 // CHECK-NEXT: ) -> LongDouble {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
@@ -286,7 +292,11 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C-unwind" fn mixed(count: i32, mut __va_args: ...) -> LongDouble {
+// CHECK-NEXT: #[unsafe(export_name = "__slate_ldv____slate_ldfp_long_double_va_arg_mixed__rf80_i32")]
+// CHECK-NEXT: unsafe extern "C-unwind" fn mixed(
+// CHECK-NEXT:     count: i32,
+// CHECK-NEXT:     mut __va_args: core::ffi::VaList<'static>,
+// CHECK-NEXT: ) -> LongDouble {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -316,7 +326,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C-unwind" fn first_twice(unused: i32, mut __va_args: ...) -> LongDouble {
+// CHECK-NEXT: #[unsafe(
+// CHECK-NEXT:     export_name = "__slate_ldv____slate_ldfp_long_double_va_arg_first_twice__rf80_i32"
+// CHECK-NEXT: )]
+// CHECK-NEXT: unsafe extern "C-unwind" fn first_twice(
+// CHECK-NEXT:     unused: i32,
+// CHECK-NEXT:     mut __va_args: core::ffi::VaList<'static>,
+// CHECK-NEXT: ) -> LongDouble {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let mut copy: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
@@ -338,8 +354,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(
 // CHECK-NEXT:             c"%.3Lf\n".as_ptr(),
-// CHECK-NEXT:             __slate_vcall__rf80_i32__f80_f80_f80(
-// CHECK-NEXT:                 sum_long_doubles as *const (),
+// CHECK-NEXT:             __slate_icall__rf80_i32__f80_f80_f80(
+// CHECK-NEXT:                 __slate_ldfp_long_double_va_arg_sum_long_doubles as *const (),
 // CHECK-NEXT:                 3i32,
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 255, 63]),
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]),
@@ -352,8 +368,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(
 // CHECK-NEXT:             c"%La\n".as_ptr(),
-// CHECK-NEXT:             __slate_vcall__rf80_i32__f80_f80(
-// CHECK-NEXT:                 sum_long_doubles as *const (),
+// CHECK-NEXT:             __slate_icall__rf80_i32__f80_f80(
+// CHECK-NEXT:                 __slate_ldfp_long_double_va_arg_sum_long_doubles as *const (),
 // CHECK-NEXT:                 2i32,
 // CHECK-NEXT:                 precise,
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -365,8 +381,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(
 // CHECK-NEXT:             c"%.3Lf\n".as_ptr(),
-// CHECK-NEXT:             __slate_vcall__rf80_i32__i32_i32_i32_f64_i32_f80_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f80_i32_f64(
-// CHECK-NEXT:                 mixed as *const (),
+// CHECK-NEXT:             __slate_icall__rf80_i32__i32_i32_i32_f64_i32_f80_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f64_i32_f80_i32_f64(
+// CHECK-NEXT:                 __slate_ldfp_long_double_va_arg_mixed as *const (),
 // CHECK-NEXT:                 12i32,
 // CHECK-NEXT:                 0i32,
 // CHECK-NEXT:                 1i32,
@@ -400,8 +416,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(
 // CHECK-NEXT:             c"%.1Lf\n".as_ptr(),
-// CHECK-NEXT:             __slate_vcall__rf80_i32__f80_f80(
-// CHECK-NEXT:                 first_twice as *const (),
+// CHECK-NEXT:             __slate_icall__rf80_i32__f80_f80(
+// CHECK-NEXT:                 __slate_ldfp_long_double_va_arg_first_twice as *const (),
 // CHECK-NEXT:                 0i32,
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
@@ -410,8 +426,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     __slate_f80_to_i32(unsafe {
-// CHECK-NEXT:         __slate_vcall__rf80_i32__f80_f80(
-// CHECK-NEXT:             sum_long_doubles as *const (),
+// CHECK-NEXT:         __slate_icall__rf80_i32__f80_f80(
+// CHECK-NEXT:             __slate_ldfp_long_double_va_arg_sum_long_doubles as *const (),
 // CHECK-NEXT:             2i32,
 // CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 164, 3, 64]),
 // CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 172, 3, 64]),

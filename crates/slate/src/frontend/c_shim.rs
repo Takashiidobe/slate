@@ -159,7 +159,56 @@ fn render_indirect_trampoline(name: &str) -> Option<String> {
     ))
 }
 
+fn render_variadic_export(name: &str) -> Option<String> {
+    let (entry, tags) = name.strip_prefix("__slate_ldv__")?.rsplit_once("__")?;
+    let mut tags = split_tags(tags);
+    let ret_tag = tags.next()?.strip_prefix('r')?;
+    let fixed = tags.collect::<Vec<_>>();
+    let last = fixed.len().checked_sub(1)?;
+    let rust_params = fixed
+        .iter()
+        .map(|tag| c_type_for_tag(tag))
+        .chain(["va_list".to_string()])
+        .collect::<Vec<_>>()
+        .join(", ");
+    let params = fixed
+        .iter()
+        .enumerate()
+        .map(|(i, tag)| format!("{} _{i}", native_c_type(tag)))
+        .collect::<Vec<_>>()
+        .join(", ");
+    let args = fixed
+        .iter()
+        .enumerate()
+        .map(|(i, tag)| match *tag {
+            "f80" => format!("__slate_f80_store(_{i})"),
+            _ => format!("_{i}"),
+        })
+        .chain(["_ap".to_string()])
+        .collect::<Vec<_>>()
+        .join(", ");
+    let rust_ret = c_type_for_tag(ret_tag);
+    let (call, result) = match ret_tag {
+        "v" => (format!("{name}({args});"), String::new()),
+        "f80" => (
+            format!("{rust_ret} _r = {name}({args});"),
+            "\n    return __slate_f80_load(_r);".to_string(),
+        ),
+        _ => (
+            format!("{rust_ret} _r = {name}({args});"),
+            "\n    return _r;".to_string(),
+        ),
+    };
+    Some(format!(
+        "{rust_ret} {name}({rust_params});\n{} {entry}({params}, ...) {{\n    va_list _ap;\n    va_start(_ap, _{last});\n    {call}\n    va_end(_ap);{result}\n}}\n",
+        native_c_type(ret_tag)
+    ))
+}
+
 fn render_trampoline(name: &str) -> Option<String> {
+    if name.starts_with("__slate_ldv__") {
+        return render_variadic_export(name);
+    }
     if name.starts_with("__slate_vcall__") {
         return render_variadic_trampoline(name);
     }
@@ -298,7 +347,10 @@ pub fn collect_program_shim_names(program: &Program) -> Vec<String> {
             }
             Item::Fn(definition) => {
                 names.extend(definition.attrs.iter().filter_map(|attr| match attr {
-                    Attr::ExportName(name) if name.starts_with("__slate_ld__") => {
+                    Attr::ExportName(name)
+                        if name.starts_with("__slate_ld__")
+                            || name.starts_with("__slate_ldv__") =>
+                    {
                         Some(name.clone())
                     }
                     _ => None,
@@ -335,7 +387,10 @@ pub fn render_shim_c_source_for_names(names: &BTreeSet<String>) -> String {
             .join("\n"),
     ];
     if names.iter().any(|name| {
-        name.contains("f80") || name.contains("s80") || name.starts_with("__slate_f128_")
+        name.contains("f80")
+            || name.contains("s80")
+            || name.starts_with("__slate_f128_")
+            || name.starts_with("__slate_ldv__")
     }) {
         blocks.push(F80_SHIMS.to_string());
     }

@@ -53,6 +53,10 @@ EXPORT long double ld_vsum(long double scale, int count, ...) {
   return total * scale;
 }
 
+EXPORT long double ld_vcall(ld_variadic_fn fn, long double a, long double b) {
+  return fn(a, 2, a, b) + fn(b, 0);
+}
+
 EXPORT size_t ld_box_layout(size_t *x, size_t *tail) {
   *x = offsetof(struct ld_box, x);
   *tail = offsetof(struct ld_box, tail);

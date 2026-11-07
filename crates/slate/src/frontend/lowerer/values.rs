@@ -1900,6 +1900,22 @@ impl FunctionLowerer<'_, '_> {
             }
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),
+                signature,
+                arguments,
+                ..
+            } if self.tables.names.get(id).is_some_and(|name| {
+                name.is_variadic
+                    && (!name.is_extern
+                        || crate::function_identity::Known::from_symbol(
+                            name.library.as_deref().unwrap_or(&name.rust),
+                        )
+                        .is_none())
+            }) && self.tables.function_type_passes_long_double(signature) =>
+            {
+                self.lower_long_double_variadic_direct_call(*id, signature, arguments, &value.ty)?
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
                 arguments,
                 ..
             } if self.tables.names.get(id).is_some_and(|name| name.is_extern)

@@ -887,10 +887,20 @@ impl<'m> ModuleLowerer<'m> {
             };
             let exported = exports_symbol(self.options, function);
             let lowered = match lowered {
+                Ok(Item::Fn(mut definition))
+                    if !exported
+                        && function_is_variadic(function)
+                        && self.tables.passes_long_double(function) =>
+                {
+                    let entry = format!("__slate_ldfp_{}_{}", self.tables.unit, definition.name);
+                    long_double_entry_export_name(&entry, &definition).map(|export| {
+                        definition.attrs.push(Attr::ExportName(export));
+                        definition.abi = Some(rust::Abi::CUnwind);
+                        Item::Fn(definition)
+                    })
+                }
                 Ok(Item::Fn(mut definition)) if exported => {
-                    let export = if self.tables.passes_long_double(function)
-                        && !function_is_variadic(function)
-                    {
+                    let export = if self.tables.passes_long_double(function) {
                         long_double_export_name(&function.name, &definition).map(Attr::ExportName)
                     } else if definition.name != function.name {
                         Ok(Attr::ExportName(function.name.clone()))

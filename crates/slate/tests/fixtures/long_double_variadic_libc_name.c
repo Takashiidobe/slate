@@ -21,6 +21,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn __slate_ldfp_long_double_variadic_libc_name_exit();
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -104,13 +105,13 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_to_f32(__a: LongDouble) -> f32;
 // CHECK-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;
 // CHECK-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
-// CHECK-NEXT:     fn __slate_printf__ri32_pi8_f80(_0: *const i8, _1: LongDouble) -> i32;
-// CHECK-NEXT:     fn __slate_vcall__rf80_i32__f80_f80(
+// CHECK-NEXT:     fn __slate_icall__rf80_i32__f80_f80(
 // CHECK-NEXT:         _0: *const (),
 // CHECK-NEXT:         _1: i32,
 // CHECK-NEXT:         _2: LongDouble,
 // CHECK-NEXT:         _3: LongDouble,
 // CHECK-NEXT:     ) -> LongDouble;
+// CHECK-NEXT:     fn __slate_printf__ri32_pi8_f80(_0: *const i8, _1: LongDouble) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
@@ -198,7 +199,13 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C-unwind" fn exit(count: i32, mut __va_args: ...) -> LongDouble {
+// CHECK-NEXT: #[unsafe(
+// CHECK-NEXT:     export_name = "__slate_ldv____slate_ldfp_long_double_variadic_libc_name_exit__rf80_i32"
+// CHECK-NEXT: )]
+// CHECK-NEXT: unsafe extern "C-unwind" fn exit(
+// CHECK-NEXT:     count: i32,
+// CHECK-NEXT:     mut __va_args: core::ffi::VaList<'static>,
+// CHECK-NEXT: ) -> LongDouble {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -218,8 +225,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(
 // CHECK-NEXT:             c"%.2Lf\n".as_ptr(),
-// CHECK-NEXT:             __slate_vcall__rf80_i32__f80_f80(
-// CHECK-NEXT:                 exit as *const (),
+// CHECK-NEXT:             __slate_icall__rf80_i32__f80_f80(
+// CHECK-NEXT:                 __slate_ldfp_long_double_variadic_libc_name_exit as *const (),
 // CHECK-NEXT:                 2i32,
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 255, 63]),
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]),

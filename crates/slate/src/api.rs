@@ -30,18 +30,25 @@ pub fn slate_ir_with_args(
     frontend::parse_module_with_args(path, compiler_args).map_err(Error::from)
 }
 
+fn single_file_options(path: &Path) -> frontend::lowerer::LowerOptions {
+    frontend::lowerer::LowerOptions {
+        unit: path
+            .file_stem()
+            .and_then(|stem| stem.to_str())
+            .map(merge::rust_ident)
+            .unwrap_or_default(),
+        ..Default::default()
+    }
+}
+
 pub fn translate(path: &Path) -> Result<String, Error> {
     translate_with_args(path, &[])
 }
 
 pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String, Error> {
     let (module, files, diagnostics) = frontend::parse_module_with_source(path, None, extra_args)?;
-    let mut program = frontend::lower_single_module(
-        &module,
-        &files,
-        &frontend::lowerer::LowerOptions::default(),
-        "main",
-    )?;
+    let mut program =
+        frontend::lower_single_module(&module, &files, &single_file_options(path), "main")?;
     insert_after_crate_attrs(
         &mut program,
         diagnostics
@@ -125,13 +132,11 @@ fn checked_program(
         let (module, files, directives) =
             frontend::parse_module_with_diagnostics(path, None, args, diagnostics)?;
         frontend::reject_directive_errors(path, &directives)?;
-        let program = frontend::lower_single_module(
-            &module,
-            &files,
-            &frontend::lowerer::LowerOptions::default(),
-            "main",
-        )
-        .inspect_err(|error| diagnostics.push(crate::diagnostics::frontend(error, &files)))?;
+        let program =
+            frontend::lower_single_module(&module, &files, &single_file_options(path), "main")
+                .inspect_err(|error| {
+                    diagnostics.push(crate::diagnostics::frontend(error, &files))
+                })?;
         Ok(backend::apply_with_target(program, &module.target))
     })();
     for diagnostic in &mut diagnostics[start..] {

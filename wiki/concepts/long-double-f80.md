@@ -55,8 +55,21 @@ symbol from other translated units (through their bridges), native C, and
 `dlsym` all reach the native ABI; same-unit Rust callers call the Rust function
 directly. The double underscore after `ld` keeps these names distinct from
 bridges, whose callee never contains `__`. This revives the CIR lowerer's
-`__slate_ld_<name>` callback trampoline with the symbols swapped. Variadic and
-complex f80 exports are barriers.
+`__slate_ld_<name>` callback trampoline with the symbols swapped. Complex f80
+exports are barriers.
+
+C cannot forward `...`, so a variadic definition whose fixed parameters or
+return hold f80 is lowered with its `...` binding as a `VaList` parameter
+instead, exported as `__slate_ldv__<entry>__r<ret>_<fixed tags>`. `c_shim`
+renders the native `<entry>(<fixed>, ...)`, which `va_start`s, stores the f80
+fixed arguments, passes the `va_list`, and loads the result. Since the Rust
+body has no `...` entry, every call, including a direct same-unit one, goes
+through the native entry as `__slate_icall__` (`<entry>` is `<name>` when
+exported, else `__slate_ldfp_<unit>_<name>`). Single-file translation uses the
+file stem as the unit, as merged projects do, so `static` entries stay distinct
+when the test harness links many fixtures' shims together
+(`long_double_variadic_definition_address.c`). A variadic definition with no
+fixed parameters is a barrier.
 
 Function pointers whose signature holds f80 by value always point at native-ABI
 code, so they can be handed to C (redis passes `RM_*LongDouble` to modules) or
@@ -77,15 +90,16 @@ variadic pointer, when its signature or any variadic argument holds f80, becomes
 `<ret> (*)(<fixed>, ...)` and loads every f80 argument. Variadic arguments are
 always passed natively, which Rust-defined variadic functions expect since their
 `va_arg` reads x87 values (`long_double_variadic_function_pointer.c`,
-`fixtures.dylink/long_double_abi`). Taking the address of a Rust-defined
-variadic function whose signature holds f80 is a barrier, since no C wrapper can
-forward its arguments. Unprototyped and complex f80 function pointers are
+`fixtures.dylink/long_double_abi`). Function-pointer arguments (tag `fp`) are
+declared as `*const ()` in the bridge's Rust declaration, so bridges whose names
+match also have matching Rust types. Unprototyped and complex f80 function pointers are
 barriers (`long_double_function_pointer.c`,
 `fixtures.release/long_double_static_callbacks`).
 
 Variadic `long double` arguments must reach the callee as real x87 values in
 memory; Rust would pass `LongDouble` as an INTEGER-class struct. A call to a
-Rust-defined variadic function with f80 variadic arguments becomes a call to
+Rust-defined variadic function whose fixed signature holds no f80 (otherwise it
+has a native entry, above), with f80 variadic arguments, becomes a call to
 `__slate_vcall__r<ret>_<fixed tags>__<variadic tags>(callee as *const (), ...)`.
 The C trampoline (`c_shim::render_variadic_trampoline`) calls the pointer as
 `<ret> (*)(<fixed>, ...)` with fixed f80 parameters and the return kept as

@@ -29,14 +29,14 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     #[link_name = "cbrtl"]
-// CHECK-NEXT:     fn __slate_ldfp__cbrtl();
+// CHECK-NEXT:     fn __slate_ldfp_long_double_function_pointer_cbrtl();
 // CHECK-NEXT:     #[link_name = "fabsl"]
-// CHECK-NEXT:     fn __slate_ldfp__fabsl();
-// CHECK-NEXT:     fn __slate_ldfp__halve();
+// CHECK-NEXT:     fn __slate_ldfp_long_double_function_pointer_fabsl();
+// CHECK-NEXT:     fn __slate_ldfp_long_double_function_pointer_halve();
 // CHECK-NEXT:     #[link_name = "ldexpl"]
-// CHECK-NEXT:     fn __slate_ldfp__ldexpl();
-// CHECK-NEXT:     fn __slate_ldfp__shift();
-// CHECK-NEXT:     fn __slate_ldfp__twice();
+// CHECK-NEXT:     fn __slate_ldfp_long_double_function_pointer_ldexpl();
+// CHECK-NEXT:     fn __slate_ldfp_long_double_function_pointer_shift();
+// CHECK-NEXT:     fn __slate_ldfp_long_double_function_pointer_twice();
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -213,17 +213,23 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: #[unsafe(export_name = "__slate_ld____slate_ldfp__twice__rf80_f80")]
+// CHECK-NEXT: #[unsafe(
+// CHECK-NEXT:     export_name = "__slate_ld____slate_ldfp_long_double_function_pointer_twice__rf80_f80"
+// CHECK-NEXT: )]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.twice")]
 // CHECK-NEXT: extern "C-unwind" fn twice(x: LongDouble) -> LongDouble {
 // CHECK-NEXT:     x * __slate_f80_from_i32(2i32)
 // CHECK-NEXT: }
-// CHECK-NEXT: #[unsafe(export_name = "__slate_ld____slate_ldfp__halve__rf80_f80")]
+// CHECK-NEXT: #[unsafe(
+// CHECK-NEXT:     export_name = "__slate_ld____slate_ldfp_long_double_function_pointer_halve__rf80_f80"
+// CHECK-NEXT: )]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.halve")]
 // CHECK-NEXT: extern "C-unwind" fn halve(x: LongDouble) -> LongDouble {
 // CHECK-NEXT:     x / __slate_f80_from_i32(2i32)
 // CHECK-NEXT: }
-// CHECK-NEXT: #[unsafe(export_name = "__slate_ld____slate_ldfp__shift__rf80_f80_i32")]
+// CHECK-NEXT: #[unsafe(
+// CHECK-NEXT:     export_name = "__slate_ld____slate_ldfp_long_double_function_pointer_shift__rf80_f80_i32"
+// CHECK-NEXT: )]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.shift")]
 // CHECK-NEXT: extern "C-unwind" fn shift(x: LongDouble, n: i32) -> LongDouble {
 // CHECK-NEXT:     (unsafe { __slate_ldexpl__rf80_f80_i32(x, n) })
@@ -253,31 +259,31 @@ int main(void) {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 *const (),
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(LongDouble) -> LongDouble>,
-// CHECK-NEXT:             >(__slate_ldfp__twice as *const ())
+// CHECK-NEXT:             >(__slate_ldfp_long_double_function_pointer_twice as *const ())
 // CHECK-NEXT:         },
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 *const (),
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(LongDouble) -> LongDouble>,
-// CHECK-NEXT:             >(__slate_ldfp__halve as *const ())
+// CHECK-NEXT:             >(__slate_ldfp_long_double_function_pointer_halve as *const ())
 // CHECK-NEXT:         },
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 *const (),
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(LongDouble) -> LongDouble>,
-// CHECK-NEXT:             >(__slate_ldfp__cbrtl as *const ())
+// CHECK-NEXT:             >(__slate_ldfp_long_double_function_pointer_cbrtl as *const ())
 // CHECK-NEXT:         },
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 *const (),
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(LongDouble) -> LongDouble>,
-// CHECK-NEXT:             >(__slate_ldfp__fabsl as *const ())
+// CHECK-NEXT:             >(__slate_ldfp_long_double_function_pointer_fabsl as *const ())
 // CHECK-NEXT:         },
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 *const (),
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(LongDouble) -> LongDouble>,
-// CHECK-NEXT:             >(__slate_ldfp__twice as *const ())
+// CHECK-NEXT:             >(__slate_ldfp_long_double_function_pointer_twice as *const ())
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut x: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 216, 3, 192]);
@@ -294,13 +300,13 @@ int main(void) {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 *const (),
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(LongDouble, i32) -> LongDouble>,
-// CHECK-NEXT:             >(__slate_ldfp__shift as *const ())
+// CHECK-NEXT:             >(__slate_ldfp_long_double_function_pointer_shift as *const ())
 // CHECK-NEXT:         },
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 *const (),
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(LongDouble, i32) -> LongDouble>,
-// CHECK-NEXT:             >(__slate_ldfp__ldexpl as *const ())
+// CHECK-NEXT:             >(__slate_ldfp_long_double_function_pointer_ldexpl as *const ())
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     for i in 0i32..2i32 {
@@ -328,7 +334,8 @@ int main(void) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "eq {} {}", (table.0[0] == table.0[4]) as i32, (table.0[0] == unsafe {
 // CHECK-NEXT:         std::mem::transmute::<* const (), Option < unsafe extern "C-unwind" fn
-// CHECK-NEXT:         (LongDouble) -> LongDouble >> (__slate_ldfp__twice as * const ()) }) as i32
+// CHECK-NEXT:         (LongDouble) -> LongDouble >> (__slate_ldfp_long_double_function_pointer_twice as
+// CHECK-NEXT:         * const ()) }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

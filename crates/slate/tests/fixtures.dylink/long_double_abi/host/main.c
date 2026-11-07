@@ -1,4 +1,5 @@
 #include <float.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include "dylink.h"
@@ -16,6 +17,17 @@ static void dump(const char *name, long double value) {
 }
 
 static long double fused(long double a, long double b) { return a * b + a; }
+
+#ifndef _WIN32
+static long double scaled_sum(long double scale, int count, ...) {
+  va_list ap;
+  va_start(ap, count);
+  long double total = scale;
+  for (int i = 0; i < count; i++) total += va_arg(ap, long double) * scale;
+  va_end(ap);
+  return total;
+}
+#endif
 
 // @check-fn-begin
 int main(void) {
@@ -46,7 +58,10 @@ int main(void) {
       (long double (*)(long double, int, ...))dl_sym(lib, "ld_vsum");
   size_t (*box_layout)(size_t *, size_t *) =
       (size_t (*)(size_t *, size_t *))dl_sym(lib, "ld_box_layout");
-  if (!identity || !sum10 || !mix || !pair_swap || !one_half || !box_bump || !call || !vsum || !box_layout) {
+  long double (*vcall)(ld_variadic_fn, long double, long double) =
+      (long double (*)(ld_variadic_fn, long double, long double))dl_sym(lib, "ld_vcall");
+  if (!identity || !sum10 || !mix || !pair_swap || !one_half || !box_bump || !call || !vsum ||
+      !vcall || !box_layout) {
     printf("resolve failed\n");
     return 2;
   }
@@ -74,6 +89,9 @@ int main(void) {
   dump("call", call(fused, a, b));
 
   dump("vsum", vsum(0x1.8p0L, 3, a, 7.5L, b));
+#ifndef _WIN32
+  dump("vcall", vcall(scaled_sum, a, b));
+#endif
 
   size_t x = 0;
   size_t tail = 0;
@@ -340,6 +358,44 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:             Option<unsafe extern "C-unwind" fn(*mut u64, *mut u64) -> u64>,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         >(dl_sym!(lib, c"ld_box_layout".as_ptr() as *mut i8))
 // CHECK-NEXT:     };
+// CHECK-NEXT:     let vcall: Option<
+// CHECK-NEXT:         unsafe extern "C-unwind" fn(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             LongDouble,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             LongDouble,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:         ) -> LongDouble,
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             Option<unsafe extern "C-unwind" fn(f128, i32, ...) -> f128>,
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             f128,
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             f128,
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ) -> f128,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             Option<unsafe extern "C-unwind" fn(f64, i32, ...) -> f64>,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             f64,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             f64,
+// X86_64-PC-WINDOWS-MSVC-NEXT:         ) -> f64,
+// CHECK-NEXT:     > = unsafe {
+// CHECK-NEXT:         std::mem::transmute::<
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             *mut (),
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             *mut (),
+// X86_64-PC-WINDOWS-MSVC-NEXT:             Option<unsafe extern "C-unwind" fn() -> i64>,
+// CHECK-NEXT:             Option<
+// CHECK-NEXT:                 unsafe extern "C-unwind" fn(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     LongDouble,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     LongDouble,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ) -> LongDouble,
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                     Option<unsafe extern "C-unwind" fn(f128, i32, ...) -> f128>,
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                     f128,
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                     f128,
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 ) -> f128,
+// X86_64-PC-WINDOWS-MSVC-NEXT:                     Option<unsafe extern "C-unwind" fn(f64, i32, ...) -> f64>,
+// X86_64-PC-WINDOWS-MSVC-NEXT:                     f64,
+// X86_64-PC-WINDOWS-MSVC-NEXT:                     f64,
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 ) -> f64,
+// CHECK-NEXT:             >,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:         >(dl_sym!(lib, c"ld_vcall".as_ptr() as *mut i8))
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         >(dl_sym!(lib, c"ld_vcall".as_ptr() as *mut u8))
+// X86_64-PC-WINDOWS-MSVC-NEXT:         >(dl_sym!(lib, c"ld_vcall".as_ptr() as *mut i8))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     if identity == None
 // CHECK-NEXT:         || sum10 == None
 // CHECK-NEXT:         || mix == None
@@ -348,6 +404,7 @@ int main(void) {
 // CHECK-NEXT:         || box_bump == None
 // CHECK-NEXT:         || call == None
 // CHECK-NEXT:         || vsum == None
+// CHECK-NEXT:         || vcall == None
 // CHECK-NEXT:         || box_layout == None
 // CHECK-NEXT:     {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         println!("resolve failed");
@@ -589,9 +646,14 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             },
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             unsafe {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 std::mem::transmute::<
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     *const (),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                     Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble>,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 >(__slate_ldfp_main_fused as *const ())
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     *const (),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 >(unsafe {
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     std::mem::transmute::<
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         *const (),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble>,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     >(__slate_ldfp_main_fused as *const ())
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 })
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             },
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             a,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             b,
@@ -614,6 +676,38 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             b,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         )
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         vsum.unwrap()(1.5f128, 3i32, a, 7.5f128, b)
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:     });
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     });
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:     dump(c"vcall".as_ptr(), unsafe {
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     dump(c"vcall".as_ptr(), unsafe {
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:         __slate_icall__rf80_fp_f80_f80(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             unsafe {
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 std::mem::transmute::<
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     Option<
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         unsafe extern "C-unwind" fn(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                             Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                             LongDouble,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                             LongDouble,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         ) -> LongDouble,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     >,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     *const (),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 >(vcall)
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             },
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             unsafe {
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 std::mem::transmute::<
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     *const (),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 >(unsafe {
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     std::mem::transmute::<
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         *const (),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     >(__slate_ldfp_main_scaled_sum as *const ())
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             },
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             a,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             b,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:         )
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         vcall.unwrap()(Some(scaled_sum), a, b)
 // X86_64-PC-WINDOWS-MSVC-NEXT:         vsum.unwrap()(1.5f64, 3i32, a, 7.5f64, b)
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut x: u64 = 0;

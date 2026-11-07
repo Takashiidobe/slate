@@ -395,7 +395,11 @@ impl FunctionLowerer<'_, '_> {
                 comments: Vec::new(),
                 name: VA_ARGS.into(),
                 mutable: true,
-                ty: rust::Type::Variadic,
+                ty: if self.tables.passes_long_double(function) {
+                    rust::Type::VaList
+                } else {
+                    rust::Type::Variadic
+                },
             });
         }
         if function.semantics.naked {
