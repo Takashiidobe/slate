@@ -1,6 +1,4 @@
 asm_barriers
-bitint_float
-bitint_rotate
 bitint_va_wide
 builtin_generic_bit_counts
 int128_arith

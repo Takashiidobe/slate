@@ -33,6 +33,7 @@ pub struct CrossTarget {
     pub rust_triple: &'static str,
     pub cc: String,
     pub cc_extra_args: Vec<String>,
+    pub cc_link_args: Vec<String>,
     pub cargo_linker_env: String,
     pub linker: String,
     pub cargo_env: Vec<(String, String)>,
@@ -47,6 +48,13 @@ impl CrossTarget {
             rust_triple: "i686-unknown-linux-gnu",
             cc: "clang".into(),
             cc_extra_args: vec!["--target=i686-linux-gnu".into(), "-m32".into()],
+            cc_link_args: vec![
+                "-lgcc".into(),
+                rust_compiler_builtins("i686-unknown-linux-gnu")
+                    .display()
+                    .to_string(),
+                "-Wl,--defsym=rust_eh_personality=0".into(),
+            ],
             cargo_linker_env: "CARGO_TARGET_I686_UNKNOWN_LINUX_GNU_LINKER".into(),
             linker: "clang".into(),
             cargo_env: vec![(
@@ -68,6 +76,7 @@ impl CrossTarget {
                 "--sysroot=/usr/aarch64-linux-gnu".into(),
                 "--gcc-toolchain=/usr".into(),
             ],
+            cc_link_args: Vec::new(),
             cargo_linker_env: "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER".into(),
             linker: "aarch64-linux-gnu-gcc".into(),
             cargo_env: Vec::new(),
@@ -95,6 +104,7 @@ impl CrossTarget {
                 format!("--sysroot={}", sysroot.display()),
                 format!("--gcc-toolchain={}", toolchain.display()),
             ],
+            cc_link_args: Vec::new(),
             cargo_linker_env: "CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER".into(),
             linker: "arm-linux-gnueabihf-gcc".into(),
             cargo_env: Vec::new(),
@@ -175,6 +185,7 @@ impl CrossTarget {
             rust_triple,
             cc: "cl.exe".into(),
             cc_extra_args: Vec::new(),
+            cc_link_args: Vec::new(),
             cargo_linker_env: format!("CARGO_TARGET_{}_LINKER", env_triple.to_uppercase()),
             linker: "lld-link".into(),
             cargo_env: vec![
@@ -455,8 +466,12 @@ pub fn compile_c_with_args_for_target(
         (None, Some(cc_bin)) => (cc_bin.to_string(), Vec::new()),
         (None, None) => (cc(), Vec::new()),
     };
-    let cache_key = serde_json::to_string(&(1, src, &cc_bin, &cc_extra_args, extra_args))
-        .map_err(|e| format!("encode C cache key: {e}"))?;
+    let cc_link_args = cross
+        .map(|cross| cross.cc_link_args.clone())
+        .unwrap_or_default();
+    let cache_key =
+        serde_json::to_string(&(1, src, &cc_bin, &cc_extra_args, extra_args, &cc_link_args))
+            .map_err(|e| format!("encode C cache key: {e}"))?;
     let mut inputs = vec![src];
     inputs.extend(
         extra_args
@@ -485,9 +500,30 @@ pub fn compile_c_with_args_for_target(
             .args(&blocks)
             .arg("-lm")
             .arg("-latomic")
+            .args(&cc_link_args)
             .output()
             .map_err(|e| format!("spawn {cc_bin}: {e}"))
     })
+}
+
+fn rust_compiler_builtins(triple: &str) -> PathBuf {
+    let sysroot = Command::new("rustc")
+        .args(["--print", "sysroot"])
+        .output()
+        .expect("rustc --print sysroot");
+    let lib = Path::new(String::from_utf8_lossy(&sysroot.stdout).trim())
+        .join("lib/rustlib")
+        .join(triple)
+        .join("lib");
+    std::fs::read_dir(&lib)
+        .unwrap_or_else(|e| panic!("read {}: {e}", lib.display()))
+        .filter_map(|entry| entry.ok().map(|entry| entry.path()))
+        .find(|path| {
+            path.file_name()
+                .and_then(|name| name.to_str())
+                .is_some_and(|name| name.starts_with("libcompiler_builtins-"))
+        })
+        .unwrap_or_else(|| panic!("no libcompiler_builtins rlib in {}", lib.display()))
 }
 
 fn blocks_runtime_dir() -> PathBuf {
