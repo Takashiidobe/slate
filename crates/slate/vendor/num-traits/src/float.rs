@@ -2,8 +2,6 @@ use core::cmp::Ordering;
 use core::num::FpCategory;
 use core::ops::{Add, Div, Neg};
 
-use core::f32;
-use core::f64;
 
 use crate::{Num, NumCast, ToPrimitive};
 
@@ -2461,7 +2459,6 @@ mod tests {
     fn total_cmp() {
         use crate::float::TotalOrder;
         use core::cmp::Ordering;
-        use core::{f32, f64};
 
         fn check_eq<T: TotalOrder>(x: T, y: T) {
             assert_eq!(x.total_cmp(&y), Ordering::Equal);

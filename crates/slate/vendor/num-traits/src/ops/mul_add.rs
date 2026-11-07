@@ -130,7 +130,6 @@ mod tests {
             ($($t:ident)+) => {
                 $(
                     {
-                        use core::$t;
 
                         let m: $t = 12.0;
                         let x: $t = 3.4;
