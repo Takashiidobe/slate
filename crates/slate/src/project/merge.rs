@@ -104,6 +104,7 @@ fn item_key(item: &Item) -> String {
         Item::Cfg { item, .. } => item_key(item),
         Item::SupportModule(module) => format!("support-module:{}", module.name),
         Item::GlobalAsm(asm) => format!("global-asm:{}", asm.template),
+        Item::Comdat { symbol, .. } => format!("comdat:{symbol}"),
     }
 }
 
@@ -236,6 +237,7 @@ pub fn translate_units(
         None => Exports::Fixed,
     };
     let mut programs: Vec<_> = lowered.into_iter().map(|lowered| lowered.program).collect();
+    backend::keep_first_comdats(&mut programs);
     let shared_types = backend::apply_interprocedural(&mut programs, &exports);
     let programs = units
         .par_iter()

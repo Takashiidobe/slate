@@ -37,6 +37,16 @@ pub fn apply_interprocedural(programs: &mut [Program], exports: &Exports) -> Opt
     interproc::run(programs, exports)
 }
 
+pub fn keep_first_comdats(programs: &mut [Program]) {
+    let mut seen = std::collections::BTreeSet::new();
+    for program in programs {
+        program.items.retain(|item| match item {
+            rust_ast::Item::Comdat { symbol, .. } => seen.insert(symbol.clone()),
+            _ => true,
+        });
+    }
+}
+
 pub const SHARED_TYPES_MODULE: &str = link::SHARED_MODULE;
 
 pub fn apply_local(program: Program, target: &slate_parser::target_info::TargetInfo) -> Program {

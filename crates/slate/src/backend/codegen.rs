@@ -336,7 +336,7 @@ impl<W: Write> Codegen<W> {
                 self.item(item)?;
             }
             Item::SupportModule(module) => writeln!(self.out, "{}", module.source)?,
-            Item::GlobalAsm(asm) => self.inline_asm(asm)?,
+            Item::GlobalAsm(asm) | Item::Comdat { asm, .. } => self.inline_asm(asm)?,
         }
         Ok(())
     }

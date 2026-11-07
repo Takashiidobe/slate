@@ -114,6 +114,10 @@ pub enum Item {
     },
     SupportModule(SupportModule),
     GlobalAsm(InlineAsm),
+    Comdat {
+        symbol: String,
+        asm: InlineAsm,
+    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]

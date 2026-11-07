@@ -35,6 +35,7 @@ mod openmp;
 mod padding;
 mod places;
 mod pointers;
+mod selectany;
 mod statements;
 mod stdio;
 mod switch;
@@ -695,7 +696,11 @@ impl<'m> ModuleLowerer<'m> {
         };
         tables.over_aligned = statics
             .iter()
-            .filter(|global| global.definition && !global.variable.name.starts_with('.'))
+            .filter(|global| {
+                global.definition
+                    && !global.symbol.selectany
+                    && !global.variable.name.starts_with('.')
+            })
             .filter_map(|global| {
                 Some((
                     global.variable.id,
@@ -765,6 +770,35 @@ impl<'m> ModuleLowerer<'m> {
                 .cloned()
                 .chain(asm_name.clone().map(Attr::LinkName))
                 .collect();
+            if global.definition && global.symbol.selectany {
+                match self.lowerer().lower_selectany(global) {
+                    Ok((ty, asm)) => {
+                        self.externs.push(rust::ExternDecl::Static {
+                            attrs: linked,
+                            mutable: true,
+                            name,
+                            ty,
+                        });
+                        self.items.push(Item::Comdat {
+                            symbol: global
+                                .symbol
+                                .asm_name
+                                .clone()
+                                .unwrap_or_else(|| global.variable.name.clone()),
+                            asm,
+                        });
+                    }
+                    Err(error) => self.barriers.push(
+                        error
+                            .within(
+                                Site::of(global),
+                                format!("in global `{}`", global.variable.name),
+                            )
+                            .into_public(None, Site::of(global))?,
+                    ),
+                }
+                continue;
+            }
             match self.lowerer().lower_static(global) {
                 Ok((ty, Some(_))) if imported => self.externs.push(rust::ExternDecl::Static {
                     attrs: linked,
