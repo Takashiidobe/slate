@@ -31,7 +31,7 @@ fn c_type_for_tag(tag: &str) -> String {
         "cf80" => "__slate_cf80",
         "lq" => "long double",
         "fp" => "void *",
-        tag if memory_aggregate_size(tag).is_some() => return format!("struct __slate_{tag}"),
+        tag if memory_aggregate(tag).is_some() => return format!("struct __slate_{tag}"),
         _ => "void *",
     }
     .to_string()
@@ -45,11 +45,13 @@ fn split_tags(tags: &str) -> impl Iterator<Item = &str> {
     })
 }
 
-fn memory_aggregate_size(tag: &str) -> Option<u64> {
-    tag.strip_prefix('m')?
-        .parse()
-        .ok()
-        .filter(|size| *size > 16 && size % 16 == 0)
+fn memory_aggregate(tag: &str) -> Option<(u64, u64)> {
+    let rest = tag.strip_prefix('m')?;
+    let (size, align) = match rest.split_once('a') {
+        Some((size, align)) => (size.parse().ok()?, align.parse().ok()?),
+        None => (rest.parse().ok()?, 16),
+    };
+    (size > 0 && u64::is_power_of_two(align) && size % align == 0).then_some((size, align))
 }
 
 fn native_c_type(tag: &str) -> String {
@@ -400,15 +402,15 @@ pub fn render_shim_c_source_for_names(names: &BTreeSet<String>) -> String {
     if names.iter().any(|name| name.starts_with("__slate_fenv_")) {
         blocks.push(FENV_SHIMS.to_string());
     }
-    let aggregate_sizes = names
+    let aggregates = names
         .iter()
         .flat_map(|name| name.split('_'))
-        .filter_map(|tag| memory_aggregate_size(tag.strip_prefix('r').unwrap_or(tag)))
+        .map(|tag| tag.strip_prefix('r').unwrap_or(tag))
+        .filter_map(|tag| memory_aggregate(tag).map(|layout| (tag, layout)))
         .collect::<BTreeSet<_>>();
-    for size in aggregate_sizes {
+    for (tag, (size, align)) in aggregates {
         blocks.push(format!(
-            "struct __slate_m{size} {{\n    long double v[{}];\n}};\n",
-            size / 16
+            "struct __slate_{tag} {{\n    _Alignas({align}) unsigned char v[{size}];\n}};\n"
         ));
     }
     for name in names {

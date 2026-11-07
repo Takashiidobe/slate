@@ -1,4 +1,5 @@
 use super::*;
+use slate_parser::target_info::TargetFamily;
 
 pub(super) fn long_double_literal(bits: u128) -> Expr {
     Expr::TupleStructLit {
@@ -124,13 +125,29 @@ impl Tables<'_> {
     }
 
     pub(super) fn long_double_aggregate_tag(&self, ty: &ir::Type) -> Option<String> {
-        if self.is_long_double(ty) || !self.holds_long_double(ty) {
+        if self.record_fields(ty).is_none() || self.holds_vector(ty) {
             return None;
         }
-        match self.storage_of(ty)? {
-            (16, 16) if self.single_long_double(ty) => Some("s80".into()),
-            (size, 16) if size > 16 => Some(format!("m{size}")),
+        let (size, align) = self.storage_of(ty)?;
+        match self.target.family {
+            TargetFamily::X86 => Some(format!("m{size}a{align}")),
+            TargetFamily::X86_64 if self.holds_long_double(ty) => match (size, align) {
+                (16, 16) if self.single_long_double(ty) => Some("s80".into()),
+                (size, 16) if size > 16 => Some(format!("m{size}")),
+                _ => None,
+            },
+            TargetFamily::X86_64 if size > 16 => Some(format!("m{size}a{align}")),
             _ => None,
+        }
+    }
+
+    fn holds_vector(&self, ty: &ir::Type) -> bool {
+        match self.resolve_type(ty) {
+            ir::Type::Vector { .. } => true,
+            ir::Type::Array { element, .. } => self.holds_vector(element),
+            ty => self
+                .record_fields(ty)
+                .is_some_and(|fields| fields.iter().any(|field| self.holds_vector(&field.ty))),
         }
     }
 
