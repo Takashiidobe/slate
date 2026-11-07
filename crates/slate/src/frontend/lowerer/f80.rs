@@ -84,7 +84,7 @@ pub(super) fn long_double_entry_export_name(entry: &str, definition: &FnDef) -> 
             .chain(params.iter().map(|param| &param.ty))
             .map(|ty| (ty, None)),
     )?;
-    if tags.iter().any(|tag| tag == "cf80") {
+    if prefix == "__slate_ldv__" && tags.iter().any(|tag| tag == "cf80") {
         return Err(Construct::LongDouble {
             detail: format!("export of {entry}"),
         }
@@ -152,7 +152,7 @@ impl Tables<'_> {
             .iter()
             .map(|parameter| &parameter.ty)
             .chain(&function.return_type)
-            .any(|ty| self.holds_long_double(ty))
+            .any(|ty| self.bridges_long_double(ty))
     }
 
     pub(super) fn function_type_passes_long_double(&self, ty: &ir::Type) -> bool {

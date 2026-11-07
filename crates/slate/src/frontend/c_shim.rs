@@ -233,8 +233,8 @@ fn render_trampoline(name: &str) -> Option<String> {
         Some(tag) if tag.starts_with('r') && tag.len() > 1 => (&tag[1..], &tags[1..]),
         _ => ("i32", &tags[..]),
     };
-    let ret_c_type = if native_entry && ret_tag == "f80" {
-        "long double".to_string()
+    let ret_c_type = if native_entry && matches!(ret_tag, "f80" | "cf80") {
+        native_c_type(ret_tag)
     } else {
         c_type_for_tag(ret_tag)
     };
@@ -242,8 +242,8 @@ fn render_trampoline(name: &str) -> Option<String> {
         .iter()
         .enumerate()
         .map(|(i, tag)| {
-            let ty = if native_entry && *tag == "f80" {
-                "long double".to_string()
+            let ty = if native_entry && matches!(*tag, "f80" | "cf80") {
+                native_c_type(tag)
             } else {
                 c_type_for_tag(tag)
             };
@@ -257,6 +257,8 @@ fn render_trampoline(name: &str) -> Option<String> {
         .map(|(i, tag)| {
             if native_entry && *tag == "f80" {
                 format!("__slate_f80_store(_{i})")
+            } else if native_entry && *tag == "cf80" {
+                format!("__slate_cf80_store(_{i})")
             } else if *tag == "cf80" {
                 format!("__slate_cf80_load(_{i})")
             } else if *tag == "pcf80" {
@@ -283,6 +285,8 @@ fn render_trampoline(name: &str) -> Option<String> {
     let call = format!("{target}({args})");
     let body = if ret_tag == "v" {
         format!("{call};")
+    } else if native_entry && ret_tag == "cf80" {
+        format!("return __slate_cf80_load({call});")
     } else if ret_tag == "cf80" {
         format!("return __slate_cf80_store({call});")
     } else if native_entry && ret_tag == "f80" {

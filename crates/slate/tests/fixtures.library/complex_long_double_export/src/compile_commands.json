@@ -1,0 +1,26 @@
+[
+  {
+    "file": "api.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "api.c",
+      "-o",
+      "api.o"
+    ],
+    "directory": "."
+  },
+  {
+    "file": "cld.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "cld.c",
+      "-o",
+      "cld.o"
+    ],
+    "directory": "."
+  }
+]
