@@ -137,6 +137,72 @@ mod streams {
 
 pub use streams::{stderr, stdin, stdout};
 
+#[cfg(all(windows, any(target_arch = "x86", target_arch = "x86_64")))]
+mod string_intrinsics {
+    #[inline]
+    unsafe fn movs<T: Copy>(dst: *mut T, src: *const T, n: usize) {
+        if (dst as usize).wrapping_sub(src as usize) >= n * size_of::<T>() {
+            unsafe { core::ptr::copy(src, dst, n) };
+        } else {
+            for i in 0..n {
+                unsafe { dst.add(i).write(src.add(i).read()) };
+            }
+        }
+    }
+
+    #[inline]
+    unsafe fn stos<T: Copy>(dst: *mut T, value: T, n: usize) {
+        for i in 0..n {
+            unsafe { dst.add(i).write(value) };
+        }
+    }
+
+    #[inline]
+    pub unsafe fn __movsb(dst: *mut u8, src: *const u8, n: usize) {
+        unsafe { movs(dst, src, n) }
+    }
+
+    #[inline]
+    pub unsafe fn __movsw(dst: *mut u16, src: *const u16, n: usize) {
+        unsafe { movs(dst, src, n) }
+    }
+
+    #[inline]
+    pub unsafe fn __movsd(dst: *mut u32, src: *const u32, n: usize) {
+        unsafe { movs(dst, src, n) }
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    #[inline]
+    pub unsafe fn __movsq(dst: *mut u64, src: *const u64, n: usize) {
+        unsafe { movs(dst, src, n) }
+    }
+
+    #[inline]
+    pub unsafe fn __stosb(dst: *mut u8, value: u8, n: usize) {
+        unsafe { core::ptr::write_bytes(dst, value, n) }
+    }
+
+    #[inline]
+    pub unsafe fn __stosw(dst: *mut u16, value: u16, n: usize) {
+        unsafe { stos(dst, value, n) }
+    }
+
+    #[inline]
+    pub unsafe fn __stosd(dst: *mut u32, value: u32, n: usize) {
+        unsafe { stos(dst, value, n) }
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    #[inline]
+    pub unsafe fn __stosq(dst: *mut u64, value: u64, n: usize) {
+        unsafe { stos(dst, value, n) }
+    }
+}
+
+#[cfg(all(windows, any(target_arch = "x86", target_arch = "x86_64")))]
+pub use string_intrinsics::*;
+
 #[cfg(target_pointer_width = "64")]
 pub type size_t = u64;
 #[cfg(target_pointer_width = "32")]

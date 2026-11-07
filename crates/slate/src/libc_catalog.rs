@@ -18,8 +18,35 @@ pub struct Symbol {
 
 include!("libc_symbols_table.rs");
 
+const MSVC_X86: &[&str] = &["i686-pc-windows-msvc", "x86_64-pc-windows-msvc"];
+const MSVC_X64: &[&str] = &["x86_64-pc-windows-msvc"];
+
+const fn msvc_intrinsic(
+    name: &'static str,
+    rust_path: &'static str,
+    targets: &'static [&'static str],
+) -> Symbol {
+    Symbol {
+        name,
+        rust_path,
+        targets,
+        kind: Kind::Function,
+    }
+}
+
+const MSVC_INTRINSICS: &[Symbol] = &[
+    msvc_intrinsic("__movsb", "slate_support::__movsb", MSVC_X86),
+    msvc_intrinsic("__movsw", "slate_support::__movsw", MSVC_X86),
+    msvc_intrinsic("__movsd", "slate_support::__movsd", MSVC_X86),
+    msvc_intrinsic("__movsq", "slate_support::__movsq", MSVC_X64),
+    msvc_intrinsic("__stosb", "slate_support::__stosb", MSVC_X86),
+    msvc_intrinsic("__stosw", "slate_support::__stosw", MSVC_X86),
+    msvc_intrinsic("__stosd", "slate_support::__stosd", MSVC_X86),
+    msvc_intrinsic("__stosq", "slate_support::__stosq", MSVC_X64),
+];
+
 pub fn lookup(name: &str, target: &str, kind: Kind) -> Option<&'static Symbol> {
-    SYMBOLS.iter().find(|symbol| {
+    SYMBOLS.iter().chain(MSVC_INTRINSICS).find(|symbol| {
         symbol.name == name && symbol.kind == kind && symbol.targets.contains(&target)
     })
 }
