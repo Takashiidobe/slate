@@ -1004,8 +1004,8 @@ fn slate_worker_pool() -> Result<rayon::ThreadPool, String> {
 }
 
 fn unit_file_stem(stem: &str) -> String {
-    if stem == "main" {
-        "__slate_unit_main".to_string()
+    if matches!(stem, "main" | "lib") {
+        format!("__slate_unit_{stem}")
     } else {
         stem.to_string()
     }

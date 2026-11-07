@@ -1,0 +1,14 @@
+[
+  {
+    "file": "lib.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "lib.c",
+      "-o",
+      "lib.o"
+    ],
+    "directory": "."
+  }
+]

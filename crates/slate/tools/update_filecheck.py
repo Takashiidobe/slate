@@ -156,7 +156,7 @@ def generated_rust(target, path):
             src = WORK / "dylink" / target / dylink_project(path) / "rust" / "src"
         else:
             src = WORK / "release" / release_project(path) / "src"
-        unit = src / f"{'__slate_unit_main' if path.stem == 'main' else path.stem}.rs"
+        unit = src / f"{'__slate_unit_' + path.stem if path.stem in ('main', 'lib') else path.stem}.rs"
         return unit if unit.is_file() else src / "main.rs"
     if target.endswith(WINDOWS_SUFFIX):
         return WORK / f"{run_target(target)}-windows" / f"{path.stem}.generated.rs"

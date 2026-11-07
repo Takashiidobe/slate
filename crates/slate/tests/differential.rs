@@ -416,8 +416,8 @@ fn release_build_differential() {
 
 fn release_unit_output(crate_dir: &Path, source: &Path) -> PathBuf {
     let stem = source.file_stem().unwrap().to_string_lossy();
-    let unit = if stem == "main" {
-        "__slate_unit_main".to_string()
+    let unit = if matches!(&*stem, "main" | "lib") {
+        format!("__slate_unit_{stem}")
     } else {
         stem.into_owned()
     };

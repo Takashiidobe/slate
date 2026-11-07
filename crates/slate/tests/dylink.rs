@@ -281,8 +281,8 @@ impl Platform {
                 continue;
             }
             let stem = source.file_stem().unwrap().to_string_lossy();
-            let unit = if stem == "main" {
-                "__slate_unit_main".to_string()
+            let unit = if matches!(&*stem, "main" | "lib") {
+                format!("__slate_unit_{stem}")
             } else {
                 stem.to_string()
             };
