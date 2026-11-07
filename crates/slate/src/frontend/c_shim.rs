@@ -100,22 +100,38 @@ fn render_variadic_trampoline(name: &str) -> Option<String> {
 }
 
 fn render_indirect_trampoline(name: &str) -> Option<String> {
-    let mut tags = split_tags(name.strip_prefix("__slate_icall__")?);
-    let ret_tag = tags.next()?.strip_prefix('r')?;
-    let tags = tags.collect::<Vec<_>>();
+    let rest = name.strip_prefix("__slate_icall__")?;
+    let (fixed, variadic) = match rest.split_once("__") {
+        Some((fixed, variadic)) => (fixed, Some(variadic)),
+        None => (rest, None),
+    };
+    let mut fixed = split_tags(fixed);
+    let ret_tag = fixed.next()?.strip_prefix('r')?;
+    let fixed = fixed.collect::<Vec<_>>();
+    let native_params = fixed
+        .iter()
+        .map(|tag| native_c_type(tag))
+        .chain(variadic.map(|_| "...".to_string()))
+        .collect::<Vec<_>>();
+    let native_params = if native_params.is_empty() {
+        "void".to_string()
+    } else {
+        native_params.join(", ")
+    };
+    let tags = fixed
+        .into_iter()
+        .chain(
+            variadic
+                .into_iter()
+                .flat_map(split_tags)
+                .filter(|tag| !tag.is_empty()),
+        )
+        .collect::<Vec<_>>();
     let params = tags
         .iter()
         .enumerate()
         .map(|(i, tag)| format!(", {} _{i}", c_type_for_tag(tag)))
         .collect::<String>();
-    let native_params = if tags.is_empty() {
-        "void".to_string()
-    } else {
-        tags.iter()
-            .map(|tag| native_c_type(tag))
-            .collect::<Vec<_>>()
-            .join(", ")
-    };
     let args = tags
         .iter()
         .enumerate()

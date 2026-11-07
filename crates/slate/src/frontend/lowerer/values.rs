@@ -1935,7 +1935,12 @@ impl FunctionLowerer<'_, '_> {
                 callee: ir::Callee::Indirect(pointer),
                 arguments,
                 ..
-            } if self.tables.function_type_passes_long_double(&pointer.ty) => {
+            } if self.tables.function_type_passes_long_double(&pointer.ty)
+                || (self.tables.is_variadic_function_pointer(&pointer.ty)
+                    && arguments
+                        .iter()
+                        .any(|argument| self.tables.holds_long_double(&argument.ty))) =>
+            {
                 self.lower_long_double_indirect_call(pointer, arguments, &value.ty)?
             }
             ValueKind::Call {

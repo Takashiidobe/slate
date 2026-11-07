@@ -135,6 +135,14 @@ impl Tables<'_> {
             _ => false,
         }
     }
+
+    pub(super) fn is_variadic_function_pointer(&self, ty: &ir::Type) -> bool {
+        match self.resolve_type(ty) {
+            ir::Type::Pointer { pointee, .. } => self.is_variadic_function_pointer(pointee),
+            ir::Type::Function { variadic, .. } => *variadic,
+            _ => false,
+        }
+    }
 }
 
 impl FunctionLowerer<'_, '_> {
@@ -251,7 +259,12 @@ impl FunctionLowerer<'_, '_> {
             .collect()
     }
 
-    fn long_double_pointer_tags(&mut self, ty: &ir::Type, subject: &str) -> Result<Vec<String>> {
+    fn long_double_pointer_tags(
+        &mut self,
+        ty: &ir::Type,
+        subject: &str,
+        allow_variadic: bool,
+    ) -> Result<Vec<String>> {
         let unsupported = || {
             Failure::from(Construct::LongDouble {
                 detail: format!("function pointer {subject}"),
@@ -262,10 +275,10 @@ impl FunctionLowerer<'_, '_> {
                 ir::Type::Function {
                     parameters,
                     return_type,
-                    variadic: false,
+                    variadic,
                     prototyped: true,
                     ..
-                } => (parameters, return_type),
+                } if allow_variadic || !variadic => (parameters, return_type),
                 _ => return Err(unsupported()),
             },
             _ => return Err(unsupported()),
@@ -305,7 +318,7 @@ impl FunctionLowerer<'_, '_> {
         id: BindingId,
     ) -> Result<Expr> {
         let name = &self.tables.names[&id];
-        let tags = self.long_double_pointer_tags(&value.ty, &name.rust)?;
+        let tags = self.long_double_pointer_tags(&value.ty, &name.rust, false)?;
         let entry = format!("__slate_ldfp_{}_{}", self.tables.unit, name.rust);
         let link_name = if name.is_extern || name.exported {
             Some(
@@ -354,16 +367,30 @@ impl FunctionLowerer<'_, '_> {
         arguments: &[ir::Value],
         ret: &ir::Type,
     ) -> Result<Expr> {
-        let tags = self.long_double_pointer_tags(&pointer.ty, "call")?;
-        let name = format!("__slate_icall__r{}", tags.join("_"));
-        let code_pointer = rust::Type::Ptr {
-            mutable: false,
-            inner: Box::new(rust::Type::Unit),
-        };
+        let tags = self.long_double_pointer_tags(&pointer.ty, "call", true)?;
         let params = arguments
             .iter()
             .map(|argument| self.lower_type(&argument.ty))
             .collect::<Result<Vec<_>>>()?;
+        let mut name = format!("__slate_icall__r{}", tags.join("_"));
+        if self.tables.is_variadic_function_pointer(&pointer.ty) {
+            let fixed = tags.len() - 1;
+            let aggregates = arguments[fixed..]
+                .iter()
+                .map(|argument| self.tables.long_double_aggregate_tag(&argument.ty));
+            let variadic = long_double_bridge_tags("call", params[fixed..].iter().zip(aggregates))?;
+            if variadic.iter().any(|tag| tag == "cf80") {
+                return Err(Construct::LongDouble {
+                    detail: "function pointer call".into(),
+                }
+                .into());
+            }
+            name = format!("{name}__{}", variadic.join("_"));
+        }
+        let code_pointer = rust::Type::Ptr {
+            mutable: false,
+            inner: Box::new(rust::Type::Unit),
+        };
         let ret = self.lower_type(ret)?;
         let callee = Expr::Transmute {
             from: self.lower_type(&pointer.ty)?,

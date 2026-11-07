@@ -71,9 +71,17 @@ functions that share a name in different units apart. `c_shim` splits the
 export name at the last `__`, since tags never contain one. An indirect call
 through such a pointer becomes
 `__slate_icall__r<ret>_<tags>(pointer as *const (), args)`, a C trampoline that
-loads the f80 arguments and calls the pointer natively. Variadic, unprototyped,
-and complex f80 function pointers are barriers
-(`long_double_function_pointer.c`, `fixtures.release/long_double_static_callbacks`).
+loads the f80 arguments and calls the pointer natively. A call through a
+variadic pointer, when its signature or any variadic argument holds f80, becomes
+`__slate_icall__r<ret>_<fixed tags>__<variadic tags>`, which calls the pointer as
+`<ret> (*)(<fixed>, ...)` and loads every f80 argument. Variadic arguments are
+always passed natively, which Rust-defined variadic functions expect since their
+`va_arg` reads x87 values (`long_double_variadic_function_pointer.c`,
+`fixtures.dylink/long_double_abi`). Taking the address of a Rust-defined
+variadic function whose signature holds f80 is a barrier, since no C wrapper can
+forward its arguments. Unprototyped and complex f80 function pointers are
+barriers (`long_double_function_pointer.c`,
+`fixtures.release/long_double_static_callbacks`).
 
 Variadic `long double` arguments must reach the callee as real x87 values in
 memory; Rust would pass `LongDouble` as an INTEGER-class struct. A call to a

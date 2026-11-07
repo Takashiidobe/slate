@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #include "dylink.h"
 #include "long_double_abi/ld_abi.h"
 
@@ -42,6 +43,15 @@ EXPORT struct ld_box ld_box_bump(struct ld_box b) {
 }
 
 EXPORT long double ld_call(ld_binary_fn fn, long double a, long double b) { return fn(a, b) * 2.0L; }
+
+EXPORT long double ld_vsum(long double scale, int count, ...) {
+  va_list ap;
+  va_start(ap, count);
+  long double total = 0;
+  for (int i = 0; i < count; i++) total += va_arg(ap, long double);
+  va_end(ap);
+  return total * scale;
+}
 
 EXPORT size_t ld_box_layout(size_t *x, size_t *tail) {
   *x = offsetof(struct ld_box, x);
