@@ -358,12 +358,120 @@ def table_records(clang_tblgen, clang, source):
     return records
 
 
+NEON_INFO = re.compile(
+    r"StrOffsets\{\d+ /\* (.*?) \*/, \d+ /\* (.*?) \*/, \d+ /\* (.*?) \*/, \d+ /\* (.*?) \*/\}"
+)
+NEON_OVERLOAD = re.compile(r"case NEON::BI(__builtin_neon_\w+): mask = ")
+NEON_BASES = {
+    "v": "void",
+    "c": "char",
+    "s": "short",
+    "i": "int",
+    "h": "__fp16",
+    "x": "_Float16",
+    "y": "__bf16",
+    "f": "float",
+    "d": "double",
+    "m": "unsigned char",
+}
+NEON_ATTRIBUTES = {"n": "NoThrow"}
+
+
+def neon_scalar(code, signed, unsigned, width):
+    if code == "c":
+        return "signed char" if signed else "unsigned char" if unsigned else "char"
+    if code in ("s", "i"):
+        if width == "W":
+            return "uint64_t" if unsigned else "int64_t"
+        base = {"s": "short", "i": "int"}[code] if not width else f"{'long ' * width}int"
+        return f"unsigned {base}" if unsigned else base
+    if signed or unsigned or width:
+        raise PrototypeError(f"modifiers on `{code}`")
+    return NEON_BASES[code]
+
+
+def neon_type(text, position):
+    constant = signed = unsigned = False
+    width = 0
+    while text[position] in "ISUWL":
+        flag = text[position]
+        position += 1
+        if flag == "I":
+            constant = True
+        elif flag == "S":
+            signed = True
+        elif flag == "U":
+            unsigned = True
+        elif flag == "W":
+            width = "W"
+        else:
+            width += 1
+    if text[position] == "V":
+        digits = re.match(r"\d+", text[position + 1 :])[0]
+        element, position = neon_type(text, position + 1 + len(digits))
+        if signed or unsigned or width or constant:
+            raise PrototypeError(f"modifiers on vector in `{text}`")
+        spelling = f"_Vector<{digits}, {element}>"
+    else:
+        if text[position] not in NEON_BASES:
+            raise PrototypeError(f"type code `{text[position]}` in `{text}`")
+        spelling = neon_scalar(text[position], signed, unsigned, width)
+        position += 1
+    while position < len(text) and text[position] in "*C":
+        spelling += " *" if text[position] == "*" else " const"
+        position += 1
+    return ("_Constant " if constant else "") + spelling, position
+
+
+def neon_prototype(text, overloaded):
+    types = []
+    position = 0
+    while position < len(text):
+        spelling, position = neon_type(text, position)
+        types.append(spelling)
+    ret, *params = types
+    if overloaded:
+        params[-1] = "_Constant " + params[-1]
+    return f"{ret} ({', '.join(params)})"
+
+
+def neon_records(clang_tblgen, clang, sources):
+    records = []
+    for source in sources:
+        command = [
+            str(clang_tblgen),
+            "-gen-arm-neon-sema",
+            "-I",
+            str(clang / "include/clang/Basic"),
+            str(clang / "include/clang/Basic" / source),
+        ]
+        output = subprocess.run(command, check=True, capture_output=True, text=True).stdout
+        overloaded = set(NEON_OVERLOAD.findall(output))
+        for name, encoding, attributes, features in NEON_INFO.findall(output):
+            name = f"__builtin_neon_{name}"
+            records.append(
+                (
+                    name,
+                    name,
+                    neon_prototype(encoding, name in overloaded),
+                    "Builtin",
+                    [NEON_ATTRIBUTES[flag] for flag in attributes],
+                    None,
+                    None,
+                    features or None,
+                )
+            )
+    records.sort(key=lambda item: item[0])
+    return records
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--clang-tblgen", type=Path, required=True)
     parser.add_argument("--llvm-project", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--table", action="append", metavar="NAME=SOURCE.td")
+    parser.add_argument("--neon-table", action="append", metavar="NAME=SOURCE.td,...")
     parser.add_argument("--prototype-prefix", default="PROTOTYPE")
     args = parser.parse_args()
     clang = args.llvm_project / "clang"
@@ -373,6 +481,8 @@ def main():
     tables = [
         (table, table_records(args.clang_tblgen, clang, source)) for table, source in selected
     ]
+    for table, sources in (item.split("=", 1) for item in args.neon_table or []):
+        tables.append((table, neon_records(args.clang_tblgen, clang, sources.split(","))))
     prototypes = {}
     spellings = {item[2] for _, records in tables for item in records if item[2]}
     for spelling in sorted(spellings):

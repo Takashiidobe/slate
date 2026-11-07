@@ -749,8 +749,9 @@ fn target_builtin(name: &str, family: TargetFamily) -> Option<&'static ClangBuil
         TargetFamily::X86 => registered_builtin(CLANG_X86_BUILTINS, name),
         TargetFamily::X86_64 => registered_builtin(CLANG_X86_BUILTINS, name)
             .or_else(|| registered_builtin(CLANG_X86_64_BUILTINS, name)),
-        TargetFamily::AArch64 => registered_builtin(CLANG_AARCH64_BUILTINS, name),
-        TargetFamily::Arm32 => None,
+        TargetFamily::AArch64 => registered_builtin(CLANG_AARCH64_BUILTINS, name)
+            .or_else(|| registered_builtin(CLANG_NEON_BUILTINS, name)),
+        TargetFamily::Arm32 => registered_builtin(CLANG_NEON_BUILTINS, name),
     }
 }
 
