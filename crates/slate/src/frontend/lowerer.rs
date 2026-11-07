@@ -1107,7 +1107,11 @@ impl<'m> ModuleLowerer<'m> {
                 },
             );
         }
-        let mut features = vec![rust::CrateAttr::Allow(vec![rust::Lint::NonCamelCaseTypes])];
+        let mut features = vec![rust::CrateAttr::Allow(vec![
+            rust::Lint::NonCamelCaseTypes,
+            rust::Lint::NonSnakeCase,
+            rust::Lint::NonUpperCaseGlobals,
+        ])];
         if dependencies.long_const_eval {
             features.push(rust::CrateAttr::Allow(vec![
                 rust::Lint::LongRunningConstEval,

@@ -22,7 +22,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: use slate_support::strcmp;
 // CHECK-NEXT: fn cmp_texts(a: &str, b: &str) -> i32 {

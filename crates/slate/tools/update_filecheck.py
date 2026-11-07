@@ -510,7 +510,7 @@ def fixture_targets(path, requested, extra):
 
 def main(argv):
     parser = argparse.ArgumentParser(
-        description="Regenerate the FileCheck blocks of tests/fixtures, tests/fixtures.release, tests/fixtures.plan, tests/fixtures.lowered-names and tests/fixtures.merge fixtures: the whole generated output, or only the @check-fn-wrapped functions."
+        description="Regenerate the FileCheck blocks of tests/fixtures, tests/fixtures.release, tests/fixtures.plan, tests/fixtures.lowered-names, tests/fixtures.merge, tests/fixtures.select and tests/fixtures.build fixtures: the whole generated output, or only the @check-fn-wrapped functions."
     )
     parser.add_argument(
         "fixtures",

@@ -2196,7 +2196,7 @@ macro_rules! float_const_impl {
     (@float $T:ident, $($constant:ident,)+) => (
         impl FloatConst for $T {
             constant! {
-                $( $constant() -> $T::consts::$constant; )+
+                $( $constant() -> core::$T::consts::$constant; )+
                 TAU() -> 6.28318530717958647692528676655900577;
                 LOG10_2() -> 0.301029995663981195213738894724493027;
                 LOG2_10() -> 3.32192809488736234787031942948939018;

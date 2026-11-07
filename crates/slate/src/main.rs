@@ -1205,6 +1205,8 @@ fn write_project_crate(
     if root.is_none() {
         let crate_attrs = [rust_ast::CrateAttr::Allow(vec![
             rust_ast::Lint::NonCamelCaseTypes,
+            rust_ast::Lint::NonSnakeCase,
+            rust_ast::Lint::NonUpperCaseGlobals,
             rust_ast::Lint::RustdocAll,
         ])]
         .into_iter()

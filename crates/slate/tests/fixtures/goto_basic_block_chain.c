@@ -50,7 +50,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: static mut trace: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: static mut saved: *mut i32 = unsafe { std::mem::zeroed() };

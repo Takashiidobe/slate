@@ -5,7 +5,7 @@ __attribute__((target("rtm"))) void abort_transaction(void) {
 int main(void) { return 0; }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(link_llvm_intrinsics)]
 // CHECK-NEXT: #![feature(rtm_target_feature)]
 // CHECK-NEXT: #![no_main]

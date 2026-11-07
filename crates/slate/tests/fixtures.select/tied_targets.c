@@ -13,7 +13,12 @@ int value(void) {
 // CHECK-NEXT:     2 * 10
 // CHECK-NEXT: }
 // CHECK-NEXT: file lib.rs
-// CHECK-NEXT: #![allow(non_camel_case_types, rustdoc::all)]
+// CHECK-NEXT: #![allow(
+// CHECK-NEXT:     non_camel_case_types,
+// CHECK-NEXT:     non_snake_case,
+// CHECK-NEXT:     non_upper_case_globals,
+// CHECK-NEXT:     rustdoc::all
+// CHECK-NEXT: )]
 // CHECK-EMPTY:
 // CHECK-NEXT: #[path = "helper.rs"]
 // CHECK-NEXT: mod __slate_unit_helper;

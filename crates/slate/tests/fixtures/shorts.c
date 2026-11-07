@@ -16,7 +16,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: fn sadd(a: i16, b: i16) -> i16 {
 // CHECK-NEXT:     let c: i16 = ((a as i32) + (b as i32)) as i16;

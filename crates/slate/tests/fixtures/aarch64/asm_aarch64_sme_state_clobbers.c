@@ -12,7 +12,7 @@ __attribute__((target("+fp8"))) static long fpmr_rw(long v) {
 int main(void){ printf("%ld %ld\n", za_roundtrip(7), fpmr_rw(5)); return 0; }
 
 // SLATE-FILECHECK-BEGIN aarch64-unknown-linux-gnu
-// CHECK: {{^}}#![allow(non_camel_case_types)]
+// CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(aarch64_unstable_target_feature)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
