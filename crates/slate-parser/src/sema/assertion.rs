@@ -2452,8 +2452,45 @@ impl Visitor for InvalidConstantArithmetic<'_> {
                 }
                 Ok(())
             }
+            ExprKind::Binary { left, right, .. } => {
+                self.operand(left)?;
+                self.operand(right)?;
+                visit::walk_expr(self, expr)
+            }
+            ExprKind::Unary {
+                op: UnaryOp::Plus | UnaryOp::Minus | UnaryOp::Not | UnaryOp::BitNot,
+                operand,
+            } => {
+                self.operand(operand)?;
+                visit::walk_expr(self, expr)
+            }
+            ExprKind::Cast { value, .. } => {
+                self.operand(value)?;
+                visit::walk_expr(self, expr)
+            }
             _ => visit::walk_expr(self, expr),
         }
+    }
+}
+
+impl InvalidConstantArithmetic<'_> {
+    fn operand(&mut self, expr: &Expr) -> Result<(), (Expr, &'static str)> {
+        let mut inner = expr;
+        while let ExprKind::Paren(value) | ExprKind::Cast { value, .. } = &inner.value {
+            inner = value;
+        }
+        if matches!(inner.value, ExprKind::Identifier(_))
+            && self.types.references.contains_key(&inner.id)
+            && self.types.constant_value(inner).is_err()
+            && self.types.expression_type(inner).is_ok_and(|c| {
+                !self.types.ctypes.is_function(c)
+                    && self.types.ctypes.element(c).is_none()
+                    && !self.types.ctypes.quals(c).is_const
+            })
+        {
+            return Err((inner.clone(), "reads a variable"));
+        }
+        Ok(())
     }
 }
 
