@@ -2796,10 +2796,11 @@ impl TypeResolver {
                             "array elements cannot have a sizeless type",
                         ));
                     }
-                    if self.ctypes.typedef_alignment(q).is_some()
-                        && let Ok(natural) = self.storage(self.ir_type(q))
-                    {
-                        let storage = self.typedef_storage(q, natural)?;
+                    if let Ok(natural) = self.storage(self.ir_type(q)) {
+                        let storage = match self.ctypes.typedef_alignment(q) {
+                            Some(_) => self.typedef_storage(q, natural)?,
+                            None => natural,
+                        };
                         if storage.size_bytes % u64::from(storage.alignment_bytes) != 0 {
                             return Err(ResolveError::Rejected(
                                 "array element size is not a multiple of its alignment",
