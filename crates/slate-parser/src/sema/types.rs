@@ -119,6 +119,7 @@ pub struct TypeResolver {
     pub(super) owners: HashMap<TypeId, Span<()>>,
     alias_definitions: HashMap<crate::ast::NodeId, (TypeId, QualType)>,
     tag_failures: HashMap<TagId, ResolveError>,
+    variable_records: HashSet<TypeId>,
     pub(super) overload_sets: HashMap<BindingId, Vec<BindingId>>,
     pub(super) passes_object_size: HashSet<BindingId>,
     pub(super) builtin_typedefs: HashMap<String, BindingId>,
@@ -254,6 +255,7 @@ impl TypeResolver {
             owners: HashMap::new(),
             alias_definitions: HashMap::new(),
             tag_failures: HashMap::new(),
+            variable_records: HashSet::new(),
             overload_sets: HashMap::new(),
             passes_object_size: HashSet::new(),
             builtin_typedefs: HashMap::new(),
@@ -973,6 +975,13 @@ impl TypeResolver {
                             node: e.derive(ValueKind::Constant(Number::Integer(n.into()))),
                         },
                     });
+                }
+                if matches!(e.value, ExprKind::SizeOfExpr(_))
+                    && self.has_runtime_size(&self.ir_type(ty))
+                {
+                    return Err(ResolveError::Rejected(
+                        "sizeof of a variably modified type is not a constant",
+                    ));
                 }
                 let layout = self
                     .measured_storage(
@@ -3091,7 +3100,12 @@ impl TypeResolver {
         if let Some(id) = self.tag_ids.get(&tag.id).copied() {
             return Ok(id);
         }
+        let variable_members =
+            self.flavor().is_gcc() && self.function_names.is_some() && !self.prototype_scope;
+        let provisional = self.provisional_extents;
+        self.provisional_extents |= variable_members;
         let defined = self.define_new_tag(tag);
+        self.provisional_extents = provisional;
         if let Err(error) = &defined {
             self.tag_failures.insert(tag.id, error.clone());
         }
@@ -3299,6 +3313,34 @@ impl TypeResolver {
                     })
                     .collect();
                 self.own_member_comments(id, siblings);
+                if field_types.iter().any(|&c| self.is_variable_record(c)) {
+                    return Err(ResolveError::Unimplemented(
+                        "member whose type has a variably modified member",
+                    ));
+                }
+                if let Some(position) = fields
+                    .iter()
+                    .position(|field| field.ty.is_variably_modified())
+                {
+                    if !self.flavor().is_gcc() {
+                        return Err(ResolveError::Rejected("fields must have a constant size"));
+                    }
+                    if self.function_names.is_none() || self.prototype_scope {
+                        return Err(ResolveError::Unimplemented(
+                            "variably modified member of a record outside a function body",
+                        ));
+                    }
+                    let trailing = match tag.kind {
+                        TagKind::Union => field_types.len() == 1,
+                        _ => position + 1 == field_types.len(),
+                    };
+                    if !trailing || fields[position].bit_width.is_some() {
+                        return Err(ResolveError::Unimplemented(
+                            "variably modified member other than a trailing array",
+                        ));
+                    }
+                    self.variable_records.insert(id);
+                }
                 let packed = self.dialect.options().layout.pack_records
                     || tag
                         .attributes
@@ -4170,8 +4212,81 @@ impl TypeResolver {
                     .qualified_storage((**element).clone(), field.access.atomic)?
                     .alignment_bytes,
             }),
+            Type::VariableArray { .. } | Type::Array { .. }
+                if (kind == TagKind::Union || position + 1 == count)
+                    && field.ty.is_variably_modified() =>
+            {
+                let mut element = &field.ty;
+                while let Type::VariableArray { element: inner, .. }
+                | Type::Array { element: inner, .. } = element
+                {
+                    element = inner;
+                }
+                Ok(StorageLayout {
+                    size_bytes: 0,
+                    alignment_bytes: self
+                        .qualified_storage(element.clone(), field.access.atomic)?
+                        .alignment_bytes,
+                })
+            }
             ty => self.qualified_storage(ty.clone(), field.access.atomic),
         }
+    }
+
+    pub(super) fn is_variable_record(&self, c: QualType) -> bool {
+        matches!(self.ctypes.canonical_kind(c), CTypeKind::Record { id, .. } if self.variable_records.contains(id))
+    }
+
+    pub(super) fn has_runtime_size(&self, ty: &Type) -> bool {
+        match ty {
+            Type::VariableArray { .. } | Type::Array { .. } => ty.is_variably_modified(),
+            Type::Defined(id) => self.variable_records.contains(id),
+            _ => false,
+        }
+    }
+
+    pub(super) fn tag_span(&self, tag: TagId) -> Option<Span<()>> {
+        self.tags
+            .iter()
+            .find(|definition| definition.value.id == tag)
+            .map(|definition| definition.derive(()))
+    }
+
+    fn variable_record_tag(&self, tag: TagId) -> Option<TypeId> {
+        self.tag_ids
+            .get(&tag)
+            .copied()
+            .filter(|id| self.variable_records.contains(id))
+    }
+
+    pub(super) fn variable_member_declarator(&self, tag: TagId) -> Option<Declarator> {
+        self.variable_record_tag(tag)?;
+        variable_member(&self.tags, tag).map(|(_, declarator)| declarator.declarator.clone())
+    }
+
+    pub(super) fn rebind_variable_member(&mut self, tag: TagId) -> Result<(), ResolveError> {
+        let Some(id) = self.variable_record_tag(tag) else {
+            return Ok(());
+        };
+        let tags = self.tags.clone();
+        let Some((specifiers, declarator)) = variable_member(&tags, tag) else {
+            return Ok(());
+        };
+        let resolved =
+            self.resolve_declarator(specifiers, &declarator.declarator, &declarator.attributes)?;
+        let ty = self.object_type(resolved, "void record field")?;
+        if let Some(last) = self.record_fields.get_mut(&id).and_then(|f| f.last_mut()) {
+            *last = resolved;
+        }
+        if let TypeDefinitionKind::Record {
+            fields: Some(fields),
+            ..
+        } = &mut self.definitions[id.0 as usize].kind
+            && let Some(last) = fields.last_mut()
+        {
+            last.value.ty = ty;
+        }
+        Ok(())
     }
 
     // clang's MicrosoftRecordLayoutBuilder, which clang uses for every MSVC-environment target, ms_struct or not
@@ -4998,4 +5113,26 @@ fn has_machine_mode(specifier: &TypeSpecifier) -> bool {
         TypeSpecifier::Vector(vector) => has_machine_mode(&vector.element),
         _ => false,
     }
+}
+
+fn variable_member(
+    tags: &[Span<TagDefinition>],
+    tag: TagId,
+) -> Option<(&DeclarationSpecifiers, &crate::ast::FieldDeclarator)> {
+    last_field_declarator(tags.iter().find(|definition| definition.value.id == tag)?)
+}
+
+pub(super) fn last_field_declarator(
+    definition: &TagDefinition,
+) -> Option<(&DeclarationSpecifiers, &crate::ast::FieldDeclarator)> {
+    let TagBody::Record(items) = &definition.body else {
+        return None;
+    };
+    items.iter().rev().find_map(|item| match &item.value {
+        FieldItemKind::Field(declaration) => declaration
+            .declarators
+            .last()
+            .map(|last| (&declaration.specifiers, last)),
+        _ => None,
+    })
 }

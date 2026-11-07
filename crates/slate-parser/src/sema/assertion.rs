@@ -1106,6 +1106,12 @@ impl Checker<'_> {
         let Some(tag) = self.unit.tag(*id) else {
             return;
         };
+        if self.in_function
+            && self.types.flavor().is_gcc()
+            && let Some((_, member)) = super::types::last_field_declarator(tag)
+        {
+            self.declarator(&member.declarator);
+        }
         if let TagBody::Enum {
             enumerators,
             fixed_type,

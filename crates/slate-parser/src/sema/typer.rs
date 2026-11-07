@@ -1934,10 +1934,10 @@ impl TypeResolver {
                 .is_some_and(|constant| self.ctypes.is_integer(constant.c)),
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty, .. } => self
                 .type_name(ty)
-                .is_ok_and(|c| !matches!(self.ir_type(c), Type::VariableArray { .. })),
+                .is_ok_and(|c| !self.has_runtime_size(&self.ir_type(c))),
             ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand, _) => self
                 .expression_type(operand)
-                .is_ok_and(|c| !matches!(self.ir_type(c), Type::VariableArray { .. })),
+                .is_ok_and(|c| !self.has_runtime_size(&self.ir_type(c))),
             ExprKind::CountOfType { ty } => self
                 .type_name(ty)
                 .is_ok_and(|c| matches!(self.count_extent(c), Ok(Extent::Fixed(_)))),
@@ -2173,7 +2173,7 @@ impl TypeResolver {
         atomic: bool,
     ) -> Result<(), ResolveError> {
         let ty = self.ir_type(c);
-        if sizeof && matches!(ty, Type::VariableArray { .. }) {
+        if sizeof && self.has_runtime_size(&ty) {
             return Ok(());
         }
         if self.failed_definition(c) {
@@ -2201,7 +2201,7 @@ impl TypeResolver {
             }
         };
         let ty = self.ir_type(c);
-        if self.ctypes.is_function(c) || (sizeof && matches!(ty, Type::VariableArray { .. })) {
+        if self.ctypes.is_function(c) || (sizeof && self.has_runtime_size(&ty)) {
             return Ok(());
         }
         if self.failed_definition(c) {

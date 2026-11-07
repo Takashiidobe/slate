@@ -21,12 +21,11 @@ main (int argc, char **argv)
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT:   × nonconstant or unknown identifier
-// DEFAULT:     ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20010605-1.c:7:3]
-// DEFAULT:   6 │
-// DEFAULT:   7 │ ╭─▶   typedef struct {
-// DEFAULT:   8 │ │       char val[size];
-// DEFAULT:   9 │ ╰─▶   } block;
-// DEFAULT:  10 │       block retframe_block()
+// DEFAULT:   × not implemented: value of a record with a variably modified member
+// DEFAULT:     ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20010605-1.c:12:14]
+// DEFAULT:  11 │     {
+// DEFAULT:  12 │       return *(block*)0;
+// DEFAULT:     ·              ──────────
+// DEFAULT:  13 │     }
 // DEFAULT:     ╰────
 // SLATE-FILECHECK-END DEFAULT

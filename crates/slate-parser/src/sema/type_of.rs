@@ -156,6 +156,13 @@ impl Lowerer {
                 self.typeof_evaluations(&ty.specifiers.ty, out)?;
                 self.extents(&ty.declarator, out)
             }
+            TypeSpecifier::Tag(TagSpecifier::Definition(tag)) => {
+                let Some(member) = self.types.variable_member_declarator(*tag) else {
+                    return Ok(());
+                };
+                self.extents(&member, out)?;
+                self.types.rebind_variable_member(*tag)
+            }
             _ => Ok(()),
         }
     }

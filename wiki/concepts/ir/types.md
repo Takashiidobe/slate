@@ -9,6 +9,7 @@
 - [Tags](#tags)
 - [Enums](#enums)
 - [Records](#records)
+  - [Variably modified members](#variably-modified-members)
   - [Alignment](#alignment)
   - [`#pragma pack` and `ms_struct`](#pragma-pack-and-ms_struct)
   - [Microsoft record layout](#microsoft-record-layout)
@@ -226,6 +227,37 @@ size` (bits of its declared type's natural alignment and size), in which
 - A trailing flexible array member (or, GNU, an incomplete array anywhere
   in a union) has size 0 and the element's alignment. Its initialized extent
   lives on the initializer ([initialization](initialization.md#flexible-array-members)).
+
+### Variably modified members
+
+GNU C (gcc flavor only) accepts a block-scope record whose member is a VLA
+(`struct { int h; char a[n]; } x;`). clang rejects it ("fields must have a
+constant size"), and so does the clang flavor.
+
+- Only a trailing array member of a struct, or the only member of a union,
+  is supported; it may be a VLA or a fixed array of one
+  (`int ar[1][i]` is `array<vla<i32, %e>, 1>`). Any other variably
+  modified member, and a member or array element whose type is such a
+  record, is `not implemented`.
+- The member's bounds are captured as `size_t` temporaries where the record
+  is defined (its declaration, or the type name of a cast or `sizeof`), not
+  where an object is declared: in `struct D { double d[n]; }; n++; struct D
+  v;` the extent is the old `n`. The checker resolves the member as
+  `vla<T, *>`; lowering rebinds it to the captured extent when it reaches
+  the definition. The field's type in the type table names that
+  function-local extent, like a VLA typedef.
+- Layout treats the member like a flexible array: size 0, the innermost
+  element's alignment, so every offset stays constant. `size` and `align`
+  exclude the runtime tail.
+- `sizeof` is runtime: `(offset + sizeof(member) + align - 1) / align *
+  align`, with `sizeof(member)` the product of its extents and element size
+  (`variable_length_array_type_names.c`'s `capture` rules apply to type
+  names). It is never an integer constant expression.
+- A value of such a record (a read, an assignment, passing it by value) is
+  `not implemented`; only places are supported: member access, address-of,
+  and memory operands.
+- Fixtures: `gcc/linux/x86_64/vla-record-members.c`,
+  `vla-record-member-not-trailing.c`, `vla-record-value.c`.
 
 ### Alignment
 

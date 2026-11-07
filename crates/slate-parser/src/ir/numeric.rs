@@ -218,6 +218,14 @@ impl Type {
     pub fn bit_precise(width: u32, signed: bool) -> Self {
         Self::Numeric(NumericType::bit_precise(width, signed))
     }
+
+    pub fn is_variably_modified(&self) -> bool {
+        match self {
+            Self::VariableArray { .. } => true,
+            Self::Array { element, .. } => element.is_variably_modified(),
+            _ => false,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]

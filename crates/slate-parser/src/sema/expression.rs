@@ -2251,6 +2251,11 @@ impl Lowerer {
                 length: None,
                 place,
             },
+            Type::Defined(_) if self.types.has_runtime_size(&place.ty) => {
+                return Err(ResolveError::Unimplemented(
+                    "value of a record with a variably modified member",
+                ));
+            }
             Type::Function { .. } => {
                 if let PlaceKind::Deref(pointer) = place.kind {
                     return Ok(Operand { value: *pointer, c });
@@ -2504,9 +2509,23 @@ impl Lowerer {
 
     fn runtime_size(&mut self, e: &Expr, ty: &Type) -> Result<Operand, ResolveError> {
         let c = self.types.ctypes.size_type(&self.context.target);
-        let Type::VariableArray { element, extent } = ty else {
-            let size = self.types.storage(ty.clone())?.size_bytes;
-            return Ok(self.operand(e, c, ValueKind::Constant(Number::Integer(size.into()))));
+        let (element, extent) = match ty {
+            Type::VariableArray { element, extent } => (element, extent),
+            Type::Array {
+                element,
+                length: Some(length),
+            } if element.is_variably_modified() => {
+                let count = self.size_constant(e, *length);
+                let element = self.runtime_size(e, element)?;
+                return self.size_arithmetic(e, BinaryOp::Mul, count, element);
+            }
+            Type::Defined(id) if self.types.has_runtime_size(ty) => {
+                return self.record_runtime_size(e, *id);
+            }
+            _ => {
+                let size = self.types.storage(ty.clone())?.size_bytes;
+                return Ok(self.size_constant(e, size));
+            }
         };
         let VariableExtent::Captured(extent) = *extent else {
             return Err(ResolveError::Internal(
@@ -2521,6 +2540,53 @@ impl Lowerer {
         Ok(Operand {
             value: self.value(e, ty, kind),
             c,
+        })
+    }
+
+    fn record_runtime_size(&mut self, e: &Expr, id: TypeId) -> Result<Operand, ResolveError> {
+        let TypeDefinitionKind::Record {
+            fields: Some(fields),
+            layout: Some(layout),
+            ..
+        } = &self.types.definitions[id.0 as usize].kind
+        else {
+            return Err(ResolveError::Internal("variable record without a layout"));
+        };
+        let (Some(tail), Some(&offset)) = (fields.last(), layout.offsets.last()) else {
+            return Err(ResolveError::Internal(
+                "variable record without a tail member",
+            ));
+        };
+        let tail = tail.value.ty.clone();
+        let align = layout.align;
+        let tail = self.runtime_size(e, &tail)?;
+        let offset = self.size_constant(e, offset + align - 1);
+        let end = self.size_arithmetic(e, BinaryOp::Add, offset, tail)?;
+        if align == 1 {
+            return Ok(end);
+        }
+        let divisor = self.size_constant(e, align);
+        let units = self.size_arithmetic(e, BinaryOp::Div, end, divisor)?;
+        let multiplier = self.size_constant(e, align);
+        self.size_arithmetic(e, BinaryOp::Mul, units, multiplier)
+    }
+
+    fn size_constant(&mut self, e: &Expr, amount: u64) -> Operand {
+        let c = self.types.ctypes.size_type(&self.context.target);
+        self.operand(e, c, ValueKind::Constant(Number::Integer(amount.into())))
+    }
+
+    fn size_arithmetic(
+        &mut self,
+        e: &Expr,
+        op: BinaryOp,
+        left: Operand,
+        right: Operand,
+    ) -> Result<Operand, ResolveError> {
+        let (ty, kind) = self.context.emit_binary(op, left.value, right.value)?;
+        Ok(Operand {
+            value: self.value(e, ty, kind),
+            c: left.c,
         })
     }
 
@@ -3183,7 +3249,7 @@ impl Lowerer {
                 let atomic = self.types.ctypes.quals(resolved).is_atomic;
                 let ty = self.types.ir_type(resolved);
                 if matches!(e.value, ExprKind::SizeOfType { .. })
-                    && matches!(ty, Type::VariableArray { .. })
+                    && self.types.has_runtime_size(&ty)
                 {
                     let size = self.runtime_size(e, &ty)?;
                     return Ok(self.with_extents(e, extents, size));
@@ -3227,9 +3293,7 @@ impl Lowerer {
                     return Ok(self.layout_constant(e, amount, "align_of", ty.to_string()));
                 }
                 let access = self.types.access_of(c);
-                if matches!(e.value, ExprKind::SizeOfExpr(_))
-                    && matches!(ty, Type::VariableArray { .. })
-                {
+                if matches!(e.value, ExprKind::SizeOfExpr(_)) && self.types.has_runtime_size(&ty) {
                     let size = self.runtime_size(e, &ty)?;
                     return Ok(self.after_operand(e, evaluated, size));
                 }

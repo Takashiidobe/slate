@@ -188,6 +188,8 @@ from the initializer, not the type.
 - `typedef int T[n];` captures `n` once; every later `T` shares the extent
   even if `n` changes. The alias sits in the flat type table and may name
   a function-local extent (`variable_length_array_typedefs.c`).
+- GNU records with a VLA member are in
+  [types](types.md#variably-modified-members).
 - The only valid VLA initializer is C23 `{}`, lowering to
   `aggregate<vla<T, %e>, zero_fill=true>()`. Static VLAs are invalid.
 - VLA types are compatible with each other and with fixed arrays of

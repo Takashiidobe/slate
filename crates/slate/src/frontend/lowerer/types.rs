@@ -173,6 +173,9 @@ impl<'m> Tables<'m> {
             ir::Type::Array { element, length } => self
                 .storage_of(element)
                 .map(|(size, align)| (size * length.unwrap_or(0), align)),
+            ir::Type::VariableArray { element, .. } => {
+                self.storage_of(element).map(|(_, align)| (0, align))
+            }
             ty => self
                 .rust_layout
                 .storage_of(ty.clone())

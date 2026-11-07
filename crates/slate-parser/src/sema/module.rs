@@ -1304,6 +1304,7 @@ impl Lowerer {
         item: &ast::Declaration,
         global: bool,
     ) -> Result<Vec<Span<Statement>>, ResolveError> {
+        let mut statements = Vec::new();
         if item.declarators.is_empty() {
             for attribute in &item.specifiers.attributes {
                 self.warn(
@@ -1315,6 +1316,18 @@ impl Lowerer {
             if !self.types.declare_forward_tag(&item.specifiers) {
                 self.resolve_type(&item.specifiers, &Declarator::Abstract)?;
             }
+            if !global
+                && let ast::TypeSpecifier::Tag(ast::TagSpecifier::Definition(tag)) =
+                    &item.specifiers.ty
+                && let Some(anchor) = self.types.tag_span(*tag)
+            {
+                self.capture_extents(
+                    Some(&item.specifiers.ty),
+                    &Declarator::Abstract,
+                    &anchor,
+                    &mut statements,
+                )?;
+            }
         }
         let storage_class = item.specifiers.storage;
         let inferred = matches!(item.specifiers.ty, ast::TypeSpecifier::Inferred);
@@ -1324,7 +1337,6 @@ impl Lowerer {
             ));
         }
         let mut deduced = None;
-        let mut statements = Vec::new();
         for (index, declarator) in item.declarators.iter().enumerate() {
             let attributes = item
                 .specifiers

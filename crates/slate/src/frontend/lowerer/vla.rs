@@ -5,8 +5,25 @@ impl Tables<'_> {
         match self.resolve_type(ty) {
             ir::Type::VariableArray { .. } => true,
             ir::Type::Array { element, .. } => self.variably_modified(element),
+            ir::Type::Defined(_) => self.variable_record(ty).is_some(),
             _ => false,
         }
+    }
+
+    pub(super) fn variable_record(&self, ty: &ir::Type) -> Option<(&ir::RecordLayout, &ir::Type)> {
+        let ir::Type::Defined(id) = self.resolve_type(ty) else {
+            return None;
+        };
+        let ir::TypeDefinitionKind::Record {
+            fields: Some(fields),
+            layout: Some(layout),
+            ..
+        } = &self.types.get(id)?.kind
+        else {
+            return None;
+        };
+        let tail = &fields.last()?.ty;
+        self.variably_modified(tail).then_some((layout, tail))
     }
 }
 
@@ -43,7 +60,11 @@ impl FunctionLowerer<'_, '_> {
                 factors.push(as_usize(self.lower_binding(*id)));
                 self.vla_layout(element, factors)
             }
-            ir::Type::VariableArray { .. } => Err(unsupported_type(ty)),
+            ir::Type::VariableArray { .. } | ir::Type::Defined(_)
+                if tables.variably_modified(ty) =>
+            {
+                Err(unsupported_type(ty))
+            }
             ir::Type::Array {
                 element,
                 length: Some(length),
@@ -85,7 +106,41 @@ impl FunctionLowerer<'_, '_> {
         })
     }
 
+    fn record_buffer_layout(&mut self, ty: &ir::Type) -> Result<Option<(rust::Type, Expr)>> {
+        let tables = self.tables;
+        let Some((layout, tail)) = tables.variable_record(ty) else {
+            return Ok(None);
+        };
+        let unit = match layout.align {
+            1 => Prim::U8,
+            2 => Prim::U16,
+            4 => Prim::U32,
+            8 => Prim::U64,
+            16 => Prim::U128,
+            _ => return Err(unsupported_type(ty)),
+        };
+        let offset = layout.offsets.last().copied().unwrap_or(0);
+        let tail_bytes = as_usize(self.runtime_stride(tail)?);
+        let bytes = Expr::Binary {
+            op: BinOp::Add,
+            lhs: Box::new(usize_value(offset + layout.align - 1)),
+            rhs: Box::new(tail_bytes),
+        };
+        let count = Expr::Binary {
+            op: BinOp::Div,
+            lhs: Box::new(bytes),
+            rhs: Box::new(usize_value(layout.align)),
+        };
+        Ok(Some((rust::Type::Prim(unit), count)))
+    }
+
     pub(super) fn vla_vec_type(&mut self, ty: &ir::Type) -> Result<rust::Type> {
+        if let Some((unit, _)) = self.record_buffer_layout(ty)? {
+            return Ok(rust::Type::Generic {
+                name: "Vec".into(),
+                args: vec![unit],
+            });
+        }
         let element = self.vla_layout(ty, &mut Vec::new())?;
         Ok(rust::Type::Generic {
             name: "Vec".into(),
@@ -105,9 +160,14 @@ impl FunctionLowerer<'_, '_> {
         {
             return Err(unsupported_value(initializer));
         }
-        let mut factors = Vec::new();
-        let element = self.vla_layout(&variable.ty, &mut factors)?;
-        let count = product(factors);
+        let (element, count) = match self.record_buffer_layout(&variable.ty)? {
+            Some(layout) => layout,
+            None => {
+                let mut factors = Vec::new();
+                let element = self.vla_layout(&variable.ty, &mut factors)?;
+                (element, product(factors))
+            }
+        };
         let storage = rust::Type::Generic {
             name: "Vec".into(),
             args: vec![element],
@@ -170,6 +230,16 @@ impl FunctionLowerer<'_, '_> {
                 },
             }),
             PlaceKind::Deref(ref pointer) => Some(self.lower_value(pointer)?),
+            PlaceKind::Field { bits: None, .. } => Some(Expr::Cast {
+                expr: Box::new(Expr::Unary {
+                    op: rust::UnaryOp::Raw(rust::Raw::Mut),
+                    expr: Box::new(self.lower_place(place)?),
+                }),
+                ty: rust::Type::Ptr {
+                    mutable: true,
+                    inner: Box::new(self.lower_type(&place.ty)?),
+                },
+            }),
             _ => None,
         })
     }
