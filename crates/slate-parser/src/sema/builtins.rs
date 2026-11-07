@@ -729,6 +729,17 @@ pub(crate) fn is_gcc_target_type_name(name: &str) -> bool {
     })
 }
 
+fn is_clang_aarch64_type_name(name: &str) -> bool {
+    name.starts_with("__SV")
+        || name == "__mfp8"
+        || name
+            .strip_suffix("_t")
+            .and_then(|vector| vector.rsplit_once('x'))
+            .is_some_and(|(element, lanes)| {
+                element.starts_with("__") && !element.starts_with("__builtin") && lanes != "1"
+            })
+}
+
 fn target_builtin(name: &str, family: TargetFamily) -> Option<&'static ClangBuiltin> {
     match family {
         TargetFamily::X86 => registered_builtin(CLANG_X86_BUILTINS, name),
@@ -1031,7 +1042,14 @@ impl TypeResolver {
 
     pub(super) fn gcc_target_type(&mut self, name: &str) -> Option<QualType> {
         let target = self.target_info().clone();
-        if self.dialect().flavor() != CompilerFlavor::Gcc {
+        let predeclared = match self.dialect().flavor() {
+            CompilerFlavor::Gcc => true,
+            CompilerFlavor::Clang => {
+                target.family == TargetFamily::AArch64 && is_clang_aarch64_type_name(name)
+            }
+            _ => false,
+        };
+        if !predeclared {
             return None;
         }
         let types = gcc_target_types(target.family);
