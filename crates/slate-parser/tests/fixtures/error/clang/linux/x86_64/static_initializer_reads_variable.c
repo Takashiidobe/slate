@@ -1,9 +1,13 @@
 // SLATE-FILECHECK-DEFINES SCALE SCALE
 // SLATE-FILECHECK-DEFINES NEGATE NEGATE
 // SLATE-FILECHECK-DEFINES CAST CAST
+// SLATE-FILECHECK-DEFINES OFFSET OFFSET
+// SLATE-FILECHECK-DEFINES INDEX INDEX
 // SLATE-FILECHECK-ERROR SCALE
 // SLATE-FILECHECK-ERROR NEGATE
 // SLATE-FILECHECK-ERROR CAST
+// SLATE-FILECHECK-ERROR OFFSET
+// SLATE-FILECHECK-ERROR INDEX
 // SLATE-FILECHECK-ARGS --dump-ir
 
 int x;
@@ -18,6 +22,16 @@ static int negated = -x;
 
 #ifdef CAST
 static long cast = (long)x;
+#endif
+
+#ifdef OFFSET
+struct S { int a; int b[4]; };
+static unsigned long offset = __builtin_offsetof(struct S, b[x]);
+#endif
+
+#ifdef INDEX
+static int arr[4];
+static int *index = &arr[x];
 #endif
 
 // SLATE-FILECHECK-BEGIN SCALE
@@ -53,3 +67,25 @@ static long cast = (long)x;
 // CAST:  14 │ #endif
 // CAST:     ╰────
 // SLATE-FILECHECK-END CAST
+// SLATE-FILECHECK-BEGIN OFFSET
+// OFFSET: Error:   × semantic analysis failed
+// OFFSET: Error:
+// OFFSET:   × initializer element is not a compile-time constant: reads a variable
+// OFFSET:     ╭─[tests/fixtures/error/clang/linux/x86_64/static_initializer_reads_variable.c:18:62]
+// OFFSET:  17 │ struct S { int a; int b[4]; };
+// OFFSET:  18 │ static unsigned long offset = __builtin_offsetof(struct S, b[x]);
+// OFFSET:     ·                                                              ─
+// OFFSET:  19 │ #endif
+// OFFSET:     ╰────
+// SLATE-FILECHECK-END OFFSET
+// SLATE-FILECHECK-BEGIN INDEX
+// INDEX: Error:   × semantic analysis failed
+// INDEX: Error:
+// INDEX:   × initializer element is not a compile-time constant: reads a variable
+// INDEX:     ╭─[tests/fixtures/error/clang/linux/x86_64/static_initializer_reads_variable.c:23:26]
+// INDEX:  22 │ static int arr[4];
+// INDEX:  23 │ static int *index = &arr[x];
+// INDEX:     ·                          ─
+// INDEX:  24 │ #endif
+// INDEX:     ╰────
+// SLATE-FILECHECK-END INDEX

@@ -2464,6 +2464,10 @@ impl Visitor for InvalidConstantArithmetic<'_> {
                 self.operand(operand)?;
                 visit::walk_expr(self, expr)
             }
+            ExprKind::Index { index, .. } => {
+                self.operand(index)?;
+                visit::walk_expr(self, expr)
+            }
             ExprKind::Cast { value, .. } => {
                 self.operand(value)?;
                 visit::walk_expr(self, expr)
