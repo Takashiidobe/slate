@@ -201,6 +201,11 @@ file (`src/main.rs` for the unit that defines `main` and for single-file
 projects, otherwise `src/<stem>.rs`). The shared `src/__slate_types.rs` of an
 executable project has no block; the release build checks it.
 
+`tests/fixtures.dylink/<name>/host/*.c` blocks are optional too. `dylink`
+checks one after the leg's runtime comparison passes, for that leg's triple
+(`x86_64-unknown-linux-gnu`, `aarch64-unknown-linux-gnu`,
+`x86_64-pc-windows-msvc`). `update_filecheck.py` covers all three by default.
+
 `tests/fixtures.plan/` fixtures pin `translate-project --plan` output instead
 of Rust. `plan_filecheck` (`tests/project_plan.rs`) treats each `.c` file as a
 one-unit project, using `<stem>.json` as its matrix when present and

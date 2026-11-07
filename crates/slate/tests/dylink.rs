@@ -4,6 +4,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 const WINDOWS_TRIPLE: &str = "x86_64-pc-windows-msvc";
+const AARCH64_TRIPLE: &str = "aarch64-unknown-linux-gnu";
 
 fn manifest_dir() -> &'static Path {
     Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -59,6 +60,7 @@ fn run_checked(command: &mut Command, what: &str) -> Result<(), String> {
 
 struct Platform {
     name: &'static str,
+    triple: &'static str,
     dep_file: &'static str,
     dep_path: &'static str,
     translate_args: Vec<String>,
@@ -70,6 +72,7 @@ impl Platform {
     fn linux() -> Self {
         Self {
             name: "linux",
+            triple: env!("SLATE_BUILD_TARGET"),
             dep_file: "libdep.so",
             dep_path: "./libdep.so",
             translate_args: vec!["-std=c23".into()],
@@ -78,9 +81,22 @@ impl Platform {
         }
     }
 
+    fn linux_aarch64() -> Self {
+        Self {
+            name: "linux-aarch64",
+            triple: AARCH64_TRIPLE,
+            dep_file: "libdep.so",
+            dep_path: "./libdep.so",
+            translate_args: vec!["-std=c23".into(), format!("--target={AARCH64_TRIPLE}")],
+            cross: Some(support::CrossTarget::aarch64_linux()),
+            msvc_root: None,
+        }
+    }
+
     fn windows(msvc_root: PathBuf) -> Self {
         Self {
             name: "windows",
+            triple: WINDOWS_TRIPLE,
             dep_file: "dep.dll",
             dep_path: ".\\\\dep.dll",
             translate_args: vec![format!("--target={WINDOWS_TRIPLE}")],
@@ -92,7 +108,18 @@ impl Platform {
     }
 
     fn is_windows(&self) -> bool {
-        self.cross.is_some()
+        self.msvc_root.is_some()
+    }
+
+    fn linux_cc(&self) -> Command {
+        match &self.cross {
+            Some(cross) => {
+                let mut command = Command::new(&cross.cc);
+                command.args(&cross.cc_extra_args);
+                command
+            }
+            None => Command::new(support::cc()),
+        }
     }
 
     fn run_config(&self) -> support::RunConfig {
@@ -133,7 +160,7 @@ impl Platform {
             run_checked(&mut command, "cl.exe /LD")
         } else {
             run_checked(
-                Command::new(support::cc())
+                self.linux_cc()
                     .args(["-O0", "-std=c23", "-shared", "-fPIC", "-fvisibility=hidden"])
                     .arg(format!("-I{}", fixtures_root().display()))
                     .arg("-o")
@@ -160,12 +187,16 @@ impl Platform {
             Ok(work.join("host_c.exe"))
         } else {
             let out = work.join("host_c");
-            support::compile_c_multi_with_std_include_and_args(
-                &sources,
-                &out,
-                "c23",
-                Some(&fixtures_root()),
-                &[format!("-I{}", work.display()), "-ldl".into()],
+            run_checked(
+                self.linux_cc()
+                    .args(["-O0", "-std=c23"])
+                    .arg(format!("-I{}", fixtures_root().display()))
+                    .arg(format!("-I{}", work.display()))
+                    .arg("-o")
+                    .arg(&out)
+                    .args(&sources)
+                    .args(["-ldl", "-lm"]),
+                "clang host",
             )?;
             Ok(out)
         }
@@ -174,6 +205,7 @@ impl Platform {
     fn build_translated_host(&self, fixture: &Path, work: &Path) -> Result<PathBuf, String> {
         let sources = c_sources_in(&fixture.join("host"));
         let crate_dir = work.join("rust");
+        let _ = std::fs::remove_file(crate_dir.join("runtime-ok"));
         std::fs::create_dir_all(&crate_dir).map_err(|e| e.to_string())?;
         let database = crate_dir.join("compile_commands.json");
         let host_dir = fixture.join("host");
@@ -220,7 +252,7 @@ impl Platform {
     fn check(&self, fixture: &Path, name: &str) -> Result<(), String> {
         let work = manifest_dir()
             .join("target/difftest-generated/dylink")
-            .join(self.name)
+            .join(self.triple)
             .join(name);
         std::fs::create_dir_all(&work).map_err(|e| e.to_string())?;
         support::write_if_changed(
@@ -240,7 +272,34 @@ impl Platform {
             ));
         }
         let rust = self.run(&translated, &work)?;
-        support::compare_runs(&c, &rust, false)
+        support::compare_runs(&c, &rust, false)?;
+        let crate_dir = work.join("rust");
+        std::fs::write(crate_dir.join("runtime-ok"), b"").map_err(|e| e.to_string())?;
+        for source in c_sources_in(&fixture.join("host")) {
+            let text = std::fs::read_to_string(&source).map_err(|e| e.to_string())?;
+            if !text.contains("SLATE-FILECHECK-BEGIN") {
+                continue;
+            }
+            let stem = source.file_stem().unwrap().to_string_lossy();
+            let unit = if stem == "main" {
+                "__slate_unit_main".to_string()
+            } else {
+                stem.to_string()
+            };
+            let generated = Some(crate_dir.join("src").join(format!("{unit}.rs")))
+                .filter(|path| path.is_file())
+                .unwrap_or_else(|| crate_dir.join("src/main.rs"));
+            let generated_rust = std::fs::read_to_string(&generated)
+                .map_err(|e| format!("read {}: {e}", generated.display()))?;
+            support::filecheck::check_generated_rust(
+                &text,
+                &generated_rust,
+                self.triple,
+                &crate_dir.join("filecheck").join(stem.as_ref()),
+            )
+            .map_err(|e| format!("{}: {e}", source.display()))?;
+        }
+        Ok(())
     }
 }
 
@@ -305,6 +364,38 @@ fn run_platform(platform: &Platform) {
 #[test]
 fn dylink_linux() {
     run_platform(&Platform::linux());
+}
+
+#[test]
+fn dylink_linux_aarch64() {
+    let missing = [
+        (
+            "qemu-aarch64-static",
+            Command::new("qemu-aarch64-static")
+                .arg("--version")
+                .output()
+                .is_ok(),
+        ),
+        (
+            "/usr/aarch64-linux-gnu",
+            Path::new("/usr/aarch64-linux-gnu").is_dir(),
+        ),
+        (
+            "rust target aarch64-unknown-linux-gnu",
+            support::rust_target_installed(AARCH64_TRIPLE),
+        ),
+    ]
+    .into_iter()
+    .filter_map(|(name, present)| (!present).then_some(name))
+    .collect::<Vec<_>>();
+    if missing.is_empty() {
+        run_platform(&Platform::linux_aarch64());
+    } else {
+        eprintln!(
+            "dylink: skipping linux-aarch64 leg, missing {}",
+            missing.join(", ")
+        );
+    }
 }
 
 #[test]

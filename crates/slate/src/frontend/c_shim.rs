@@ -30,9 +30,26 @@ fn c_type_for_tag(tag: &str) -> String {
         "f80" => "__slate_f80",
         "cf80" => "__slate_cf80",
         "lq" => "long double",
+        "fp" => "void *",
+        tag if memory_aggregate_size(tag).is_some() => return format!("struct __slate_{tag}"),
         _ => "void *",
     }
     .to_string()
+}
+
+fn split_tags(tags: &str) -> impl Iterator<Item = &str> {
+    tags.split('_').map(|tag| match tag {
+        "s80" => "f80",
+        "rs80" => "rf80",
+        tag => tag,
+    })
+}
+
+fn memory_aggregate_size(tag: &str) -> Option<u64> {
+    tag.strip_prefix('m')?
+        .parse()
+        .ok()
+        .filter(|size| *size > 16 && size % 16 == 0)
 }
 
 fn native_c_type(tag: &str) -> String {
@@ -47,10 +64,10 @@ fn native_c_type(tag: &str) -> String {
 
 fn render_variadic_trampoline(name: &str) -> Option<String> {
     let (fixed, variadic) = name.strip_prefix("__slate_vcall__")?.split_once("__")?;
-    let mut fixed = fixed.split('_');
+    let mut fixed = split_tags(fixed);
     let ret = c_type_for_tag(fixed.next()?.strip_prefix('r')?);
     let fixed = fixed.map(c_type_for_tag).collect::<Vec<_>>();
-    let variadic = variadic.split('_').collect::<Vec<_>>();
+    let variadic = split_tags(variadic).collect::<Vec<_>>();
     let params = fixed
         .iter()
         .cloned()
@@ -83,7 +100,7 @@ fn render_variadic_trampoline(name: &str) -> Option<String> {
 }
 
 fn render_indirect_trampoline(name: &str) -> Option<String> {
-    let mut tags = name.strip_prefix("__slate_icall__")?.split('_');
+    let mut tags = split_tags(name.strip_prefix("__slate_icall__")?);
     let ret_tag = tags.next()?.strip_prefix('r')?;
     let tags = tags.collect::<Vec<_>>();
     let params = tags
@@ -146,7 +163,7 @@ fn render_trampoline(name: &str) -> Option<String> {
     let exported_callee = exported.map(|(callee, _)| callee);
     let callback_callee = callee.strip_prefix("cb_").filter(|_| exported.is_none());
     let native_entry = callback_callee.is_some() || exported_callee.is_some();
-    let tags: Vec<&str> = tags.split('_').collect();
+    let tags: Vec<&str> = split_tags(tags).collect();
     let (ret_tag, arg_tags) = match tags.first() {
         Some(tag) if tag.starts_with('r') && tag.len() > 1 => (&tag[1..], &tags[1..]),
         _ => ("i32", &tags[..]),
@@ -301,14 +318,24 @@ pub fn render_shim_c_source_for_names(names: &BTreeSet<String>) -> String {
             .collect::<Vec<_>>()
             .join("\n"),
     ];
-    if names
-        .iter()
-        .any(|name| name.contains("f80") || name.starts_with("__slate_f128_"))
-    {
+    if names.iter().any(|name| {
+        name.contains("f80") || name.contains("s80") || name.starts_with("__slate_f128_")
+    }) {
         blocks.push(F80_SHIMS.to_string());
     }
     if names.iter().any(|name| name.starts_with("__slate_fenv_")) {
         blocks.push(FENV_SHIMS.to_string());
+    }
+    let aggregate_sizes = names
+        .iter()
+        .flat_map(|name| name.split('_'))
+        .filter_map(|tag| memory_aggregate_size(tag.strip_prefix('r').unwrap_or(tag)))
+        .collect::<BTreeSet<_>>();
+    for size in aggregate_sizes {
+        blocks.push(format!(
+            "struct __slate_m{size} {{\n    long double v[{}];\n}};\n",
+            size / 16
+        ));
     }
     for name in names {
         if name.starts_with("__slate_fenv_") {

@@ -26,8 +26,16 @@ A call to a body-less function whose return or argument holds f80 by value
 name (`frontend::c_shim::render_shim_c_source_for_names`) and links it with
 `shims/long_double.c`, and the direct extern declaration is dropped. Barriers
 remain for variadic callees missing from `function_identity::Known` (the
-bridge needs their header), and for non-pointer aggregate arguments to a
-bridge. Non-variadic bridged callees depend on `long_double.c` including
+bridge needs their header), and for aggregates by value that hold no f80.
+An aggregate holding f80 by value is tagged by its SysV class. Larger than
+16 bytes with alignment 16, it is MEMORY class in both C and Rust, so it is
+tagged `m<size>`, and the bridge passes it unchanged as
+`struct __slate_m<size> { long double v[size / 16]; }`, which has the same ABI.
+A 16-byte aggregate of one `long double` is X87 class in C (returned in `st0`)
+but INTEGER in Rust, so it is tagged `s80` and converted like a scalar `f80`.
+Other aggregates are barriers. A function pointer argument is tagged `fp` and
+passed as `void *`, since f80 function pointers already point at native-ABI
+code (`fixtures.dylink/long_double_abi`). Non-variadic bridged callees depend on `long_double.c` including
 `<math.h>`. A callee with no known header (a project function such as redis
 `ld2string`, or libc `qecvt`) is declared as
 `extern <native ret> __slate_extern_<callee>(<native params>) __asm__("<callee>")`

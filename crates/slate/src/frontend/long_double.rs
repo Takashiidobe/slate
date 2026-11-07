@@ -545,6 +545,12 @@ pub(crate) fn long_double_shim_type_tag(ty: &Type) -> String {
         Type::Complex(inner) if matches!(inner.as_ref(), Type::LongDouble) => "cf80".into(),
         Type::Unit => "v".into(),
         Type::Ptr { inner, .. } => format!("p{}", long_double_shim_type_tag(inner)),
+        Type::FnPtr { .. } => "fp".into(),
+        Type::Generic { name, args }
+            if name == "Option" && matches!(args.as_slice(), [Type::FnPtr { .. }]) =>
+        {
+            "fp".into()
+        }
         _ => "x".into(),
     }
 }

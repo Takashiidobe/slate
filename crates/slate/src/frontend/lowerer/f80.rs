@@ -22,20 +22,23 @@ pub(super) fn long_double_shim(name: &str, operand: Expr) -> Expr {
 
 pub(super) fn long_double_bridge_tags<'a>(
     callee: &str,
-    types: impl IntoIterator<Item = &'a rust::Type>,
+    types: impl IntoIterator<Item = (&'a rust::Type, Option<String>)>,
 ) -> Result<Vec<String>> {
     types
         .into_iter()
-        .map(|ty| match long_double::long_double_shim_type_tag(ty) {
-            tag if tag == "x" => Err(Construct::LongDouble {
-                detail: format!(
-                    "call to {callee} passing {}",
-                    crate::backend::codegen::type_to_string(ty)
-                ),
-            }
-            .into()),
-            tag => Ok(tag),
-        })
+        .map(
+            |(ty, aggregate)| match long_double::long_double_shim_type_tag(ty) {
+                tag if tag == "x" && aggregate.is_some() => Ok(aggregate.unwrap()),
+                tag if tag == "x" => Err(Construct::LongDouble {
+                    detail: format!(
+                        "call to {callee} passing {}",
+                        crate::backend::codegen::type_to_string(ty)
+                    ),
+                }
+                .into()),
+                tag => Ok(tag),
+            },
+        )
         .collect()
 }
 
@@ -58,7 +61,9 @@ pub(super) fn long_double_export_name(symbol: &str, definition: &FnDef) -> Resul
     let ret = definition.ret.clone().unwrap_or(rust::Type::Unit);
     let tags = long_double_bridge_tags(
         symbol,
-        std::iter::once(&ret).chain(definition.params.iter().map(|param| &param.ty)),
+        std::iter::once(&ret)
+            .chain(definition.params.iter().map(|param| &param.ty))
+            .map(|ty| (ty, None)),
     )?;
     if tags.iter().any(|tag| tag == "cf80") {
         return Err(unsupported());
@@ -80,6 +85,30 @@ impl Tables<'_> {
                 ir::Type::Array { element, .. } => self.holds_long_double(element),
                 ty => self.record_fields(ty).is_some_and(|fields| {
                     fields.iter().any(|field| self.holds_long_double(&field.ty))
+                }),
+            }
+    }
+
+    pub(super) fn long_double_aggregate_tag(&self, ty: &ir::Type) -> Option<String> {
+        if self.is_long_double(ty) || !self.holds_long_double(ty) {
+            return None;
+        }
+        match self.storage_of(ty)? {
+            (16, 16) if self.single_long_double(ty) => Some("s80".into()),
+            (size, 16) if size > 16 => Some(format!("m{size}")),
+            _ => None,
+        }
+    }
+
+    fn single_long_double(&self, ty: &ir::Type) -> bool {
+        self.is_long_double(ty)
+            || match self.resolve_type(ty) {
+                ir::Type::Array {
+                    element,
+                    length: Some(1),
+                } => self.single_long_double(element),
+                ty => self.record_fields(ty).is_some_and(|fields| {
+                    fields.len() == 1 && self.single_long_double(&fields[0].ty)
                 }),
             }
     }
@@ -152,8 +181,10 @@ impl FunctionLowerer<'_, '_> {
             .iter()
             .map(|argument| self.lower_type(&argument.ty))
             .collect::<Result<Vec<_>>>()?;
+        let aggregates = self.long_double_aggregate_tags(ret, arguments);
         let ret = self.lower_type(ret)?;
-        let tags = long_double_bridge_tags(callee, std::iter::once(&ret).chain(&params))?;
+        let tags =
+            long_double_bridge_tags(callee, std::iter::once(&ret).chain(&params).zip(aggregates))?;
         let name = format!("__slate_{callee}__r{}", tags.join("_"));
         let args = arguments
             .iter()
@@ -174,10 +205,17 @@ impl FunctionLowerer<'_, '_> {
             .iter()
             .map(|argument| self.lower_type(&argument.ty))
             .collect::<Result<Vec<_>>>()?;
+        let mut aggregates = self.long_double_aggregate_tags(ret, arguments);
+        let variadic_aggregates = aggregates.split_off(fixed + 1);
         let ret = self.lower_type(ret)?;
-        let fixed_tags =
-            long_double_bridge_tags(callee, std::iter::once(&ret).chain(&params[..fixed]))?;
-        let variadic_tags = long_double_bridge_tags(callee, &params[fixed..])?;
+        let fixed_tags = long_double_bridge_tags(
+            callee,
+            std::iter::once(&ret)
+                .chain(&params[..fixed])
+                .zip(aggregates),
+        )?;
+        let variadic_tags =
+            long_double_bridge_tags(callee, params[fixed..].iter().zip(variadic_aggregates))?;
         let name = format!(
             "__slate_vcall__r{}__{}",
             fixed_tags.join("_"),
@@ -200,6 +238,17 @@ impl FunctionLowerer<'_, '_> {
             args,
             FunctionIdentity::Unknown,
         ))
+    }
+
+    fn long_double_aggregate_tags(
+        &self,
+        ret: &ir::Type,
+        arguments: &[ir::Value],
+    ) -> Vec<Option<String>> {
+        std::iter::once(ret)
+            .chain(arguments.iter().map(|argument| &argument.ty))
+            .map(|ty| self.tables.long_double_aggregate_tag(ty))
+            .collect()
     }
 
     fn long_double_pointer_tags(&mut self, ty: &ir::Type, subject: &str) -> Result<Vec<String>> {
@@ -229,7 +278,21 @@ impl FunctionLowerer<'_, '_> {
             .iter()
             .map(|ty| self.lower_type(ty))
             .collect::<Result<Vec<_>>>()?;
-        let tags = long_double_bridge_tags(subject, std::iter::once(&ret).chain(&params))?;
+        let aggregates = std::iter::once(
+            return_type
+                .as_deref()
+                .and_then(|ty| self.tables.long_double_aggregate_tag(ty)),
+        )
+        .chain(
+            parameters
+                .iter()
+                .map(|ty| self.tables.long_double_aggregate_tag(ty)),
+        )
+        .collect::<Vec<_>>();
+        let tags = long_double_bridge_tags(
+            subject,
+            std::iter::once(&ret).chain(&params).zip(aggregates),
+        )?;
         if tags.iter().any(|tag| tag == "cf80") {
             return Err(unsupported());
         }

@@ -63,7 +63,12 @@ passes.
 (`host/*.c`) that loads it with `dlopen` or `LoadLibraryA` through
 `tests/fixtures.dylink/dylink.h`. Each host is built natively as the oracle and
 translated with `translate-project`; both run in the directory holding the
-dependency and must match. `dylink_linux` always runs. `dylink_windows` builds
+dependency and must match. A host `.c` may carry a `SLATE-FILECHECK` block for
+any of the three legs' triples, checked against that unit's generated file
+after runtime parity. `dylink_linux` always runs. `dylink_linux_aarch64`
+cross-builds with `CrossTarget::aarch64_linux` and runs under
+`qemu-aarch64-static`, skipping with a message when qemu, the
+`/usr/aarch64-linux-gnu` sysroot or the rustup target is missing. `dylink_windows` builds
 with `cl.exe` under wine and the translated host for `x86_64-pc-windows-msvc`
 (linked by `lld-link` against msvc-wine's libs), and skips with a message when
 `wine`, `lld-link`, msvc-wine, or the `x86_64-pc-windows-msvc` rustup target
@@ -107,8 +112,6 @@ c-testsuite, gcc-torture, gcc-dg, and chibicc corpus suites, all through the
 slate frontend. `chibicc_suite` translates each two-TU fixture with
 `translate-project`; external definitions become
 `#[unsafe(no_mangle)]` items and the linker resolves symbols across modules.
-Additional suites are tracked for restoration under `slate-p58o.6`; their
-fixture directories remain.
 
 Each suite is a ratchet: `tests/fixtures/` must pass, and
 `tests/fixtures.unsupported/` must still fail. When an unsupported fixture

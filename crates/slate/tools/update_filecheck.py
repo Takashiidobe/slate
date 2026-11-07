@@ -19,6 +19,8 @@ LOWERED_NAMES = TESTS / "fixtures.lowered-names"
 MERGE = TESTS / "fixtures.merge"
 SELECT = TESTS / "fixtures.select"
 BUILD = TESTS / "fixtures.build"
+DYLINK = TESTS / "fixtures.dylink"
+DYLINK_TARGETS = ["x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu", "x86_64-pc-windows-msvc"]
 PLAN_SUITES = {PLAN: "plan", LOWERED_NAMES: "lowered-names", MERGE: "merge", SELECT: "select"}
 WORK = CRATE / "target" / "difftest-generated"
 
@@ -37,6 +39,7 @@ LOWERED_NAMES_TEST_COMMAND = ["--test", "lowered_names", "-E", "test(=lowered_na
 MERGE_TEST_COMMAND = ["--test", "project_merge", "-E", "test(=merge_filecheck)"]
 SELECT_TEST_COMMAND = ["--test", "project_select", "-E", "test(=select_filecheck)"]
 BUILD_TEST_COMMAND = ["--test", "build_filecheck", "-E", "test(=build_filecheck)"]
+DYLINK_TEST_COMMAND = ["--test", "dylink", "-E", "test(/^dylink_/)"]
 
 BEGIN = "// SLATE-FILECHECK-BEGIN"
 END = "// SLATE-FILECHECK-END"
@@ -96,8 +99,16 @@ def run_target(target):
     return target
 
 
+def is_dylink(path):
+    return DYLINK in path.resolve().parents
+
+
+def dylink_project(path):
+    return path.resolve().relative_to(DYLINK).parts[0]
+
+
 def is_msvc(path):
-    return not is_release(path) and not is_plan(path) and not is_build(path) and path.resolve().relative_to(FIXTURES).parts[0] == "msvc"
+    return not is_release(path) and not is_plan(path) and not is_build(path) and not is_dylink(path) and path.resolve().relative_to(FIXTURES).parts[0] == "msvc"
 
 
 def is_build(path):
@@ -105,7 +116,7 @@ def is_build(path):
 
 
 def fixture_arch(path):
-    if is_release(path) or is_plan(path) or is_build(path):
+    if is_release(path) or is_plan(path) or is_build(path) or is_dylink(path):
         return None
     relative = path.resolve().relative_to(FIXTURES)
     if relative.parts[0] in ("gcc", "msvc"):
@@ -140,8 +151,11 @@ def generated_rust(target, path):
         return WORK / "build" / target / f"{path.parent.name}_{path.stem}.generated.rs"
     if is_plan(path):
         return WORK / PLAN_SUITES[path.resolve().parent] / target / f"{path.stem}.generated.rs"
-    if is_release(path):
-        src = WORK / "release" / release_project(path) / "src"
+    if is_release(path) or is_dylink(path):
+        if is_dylink(path):
+            src = WORK / "dylink" / target / dylink_project(path) / "rust" / "src"
+        else:
+            src = WORK / "release" / release_project(path) / "src"
         unit = src / f"{'__slate_unit_main' if path.stem == 'main' else path.stem}.rs"
         return unit if unit.is_file() else src / "main.rs"
     if target.endswith(WINDOWS_SUFFIX):
@@ -419,7 +433,8 @@ def update_source(source, outputs, sort=False):
 
 
 def run_harness(targets, fixtures):
-    generated = [path for path in fixtures if not is_release(path) and not is_plan(path) and not is_build(path)]
+    generated = [path for path in fixtures if not is_release(path) and not is_plan(path) and not is_build(path) and not is_dylink(path)]
+    dylink = [path for path in fixtures if is_dylink(path)]
     build = [path for path in fixtures if is_build(path)]
     release = [path for path in fixtures if is_release(path)]
     plan = [path for path in fixtures if path.resolve().parent == PLAN]
@@ -434,6 +449,7 @@ def run_harness(targets, fixtures):
         ({path.stem for path in merge}, MERGE_TEST_COMMAND),
         ({path.stem for path in select}, SELECT_TEST_COMMAND),
         ({path.stem for path in build}, BUILD_TEST_COMMAND),
+        ({dylink_project(path) for path in dylink}, DYLINK_TEST_COMMAND),
     ):
         if not names:
             continue
@@ -457,7 +473,12 @@ def all_fixtures():
         for path in RELEASE.rglob("*.c")
         if BEGIN in path.read_text(errors="surrogateescape")
     )
-    return sorted([*generated, *release, *PLAN.glob("*.c"), *LOWERED_NAMES.glob("*.c"), *MERGE.glob("*.c"), *SELECT.glob("*.c"), *BUILD.glob("*/*.c")])
+    dylink = (
+        path
+        for path in DYLINK.glob("*/host/*.c")
+        if BEGIN in path.read_text(errors="surrogateescape")
+    )
+    return sorted([*generated, *release, *dylink, *PLAN.glob("*.c"), *LOWERED_NAMES.glob("*.c"), *MERGE.glob("*.c"), *SELECT.glob("*.c"), *BUILD.glob("*/*.c")])
 
 
 def expand_glob(argument):
@@ -495,6 +516,8 @@ def fixture_targets(path, requested, extra):
         targets = block_targets(path.read_text(errors="surrogateescape"))
         if not targets and is_build(path):
             targets = next((line.removeprefix("// SLATE-BUILD-TARGETS:").split() for line in path.read_text().splitlines() if line.startswith("// SLATE-BUILD-TARGETS:")), [])
+        if not targets and is_dylink(path):
+            targets = list(DYLINK_TARGETS)
         if not targets:
             arch = fixture_arch(path)
             target = ARCH_TARGETS[arch] if arch else DEFAULT_TARGET
@@ -510,7 +533,7 @@ def fixture_targets(path, requested, extra):
 
 def main(argv):
     parser = argparse.ArgumentParser(
-        description="Regenerate the FileCheck blocks of tests/fixtures, tests/fixtures.release, tests/fixtures.plan, tests/fixtures.lowered-names, tests/fixtures.merge, tests/fixtures.select and tests/fixtures.build fixtures: the whole generated output, or only the @check-fn-wrapped functions."
+        description="Regenerate the FileCheck blocks of tests/fixtures, tests/fixtures.release, tests/fixtures.plan, tests/fixtures.lowered-names, tests/fixtures.merge, tests/fixtures.select, tests/fixtures.build and tests/fixtures.dylink host fixtures: the whole generated output, or only the @check-fn-wrapped functions."
     )
     parser.add_argument(
         "fixtures",
