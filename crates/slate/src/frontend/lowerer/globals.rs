@@ -221,6 +221,16 @@ impl Tables<'_> {
             ValueKind::Logical { left, right, .. } => {
                 self.is_constant_initializer(left) && self.is_constant_initializer(right)
             }
+            ValueKind::Conditional {
+                condition,
+                then_value,
+                else_value,
+            } => {
+                !self.bridges_long_double(&value.ty)
+                    && [condition, then_value, else_value]
+                        .iter()
+                        .all(|operand| self.is_constant_initializer(operand))
+            }
             ValueKind::PointerDifference { left, right, .. } => matches!(
                 (&left.node.value, &right.node.value),
                 (ValueKind::LabelAddress(_), ValueKind::LabelAddress(_))
@@ -260,6 +270,7 @@ impl Tables<'_> {
 
     pub(super) fn is_constant_address(&self, place: &ir::Place) -> bool {
         match &place.kind {
+            PlaceKind::Binding(id) if self.weak_globals.contains(id) => false,
             PlaceKind::Binding(id) => {
                 self.statics.contains(id)
                     || self.strings.contains_key(id)
@@ -292,6 +303,7 @@ impl FunctionLowerer<'_, '_> {
             asm_name: None,
             visibility: None,
             used: false,
+            weak: global.symbol.weak && global.definition,
             ..global.symbol.clone()
         };
         if matches!(variable.storage, ir::StorageDuration::Automatic)

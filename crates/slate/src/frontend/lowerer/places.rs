@@ -500,6 +500,12 @@ impl FunctionLowerer<'_, '_> {
             return self.vla_storage(id);
         }
         let binding = Expr::Var(self.binding_name(id).as_str().into());
+        if self.tables.weak_globals.contains(&id) {
+            return Expr::Unary {
+                op: rust::UnaryOp::Deref,
+                expr: Box::new(binding),
+            };
+        }
         if let Some(record) = self.tables.flexible_globals.get(&id) {
             return Expr::Unary {
                 op: rust::UnaryOp::Deref,
