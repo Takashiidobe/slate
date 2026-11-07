@@ -558,7 +558,7 @@ impl FunctionLowerer<'_, '_> {
         postfix: bool,
         atomic: &ir::Atomicity,
     ) -> Result<Option<Expr>> {
-        if !matches!(atomic.scope, ir::SyncScope::System) || place.access.volatile {
+        if !matches!(atomic.scope, ir::SyncScope::System) {
             return Ok(None);
         }
         let (Some(order), Some(fetch_order)) =
@@ -637,9 +637,6 @@ impl FunctionLowerer<'_, '_> {
         [success, failure]: [Expr; 2],
         form: ir::CompareExchangeForm,
     ) -> Result<Option<Expr>> {
-        if place.access.volatile {
-            return Ok(None);
-        }
         let Some(target) = self.atomic_target(&place.ty)? else {
             return Ok(None);
         };

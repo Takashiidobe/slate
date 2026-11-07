@@ -2322,16 +2322,10 @@ fn rewrite_stmt(stmt: &mut Stmt, ctx: &LiftCtx) {
             }
         }
         Stmt::Expr(expr) => rewrite_expr(expr, ctx),
-        Stmt::Return(Some(expr)) => {
-            if let Expr::Var(name) = expr
-                && let Some(plan) = ctx.own.get(name.as_str())
-                && let Some(mutable) = ctx.return_mutability
-            {
-                *expr = to_raw_pointer_as(name.as_str(), plan, mutable);
-            } else {
-                rewrite_expr(expr, ctx);
-            }
-        }
+        Stmt::Return(Some(expr)) => match ctx.return_mutability {
+            Some(mutable) => rewrite_returned(expr, ctx, mutable),
+            None => rewrite_expr(expr, ctx),
+        },
         Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
         Stmt::For { iter, body, .. } => {
             rewrite_expr(iter, ctx);
@@ -2377,6 +2371,39 @@ fn deref_of_tracked(expr: &Expr, own: &BTreeMap<String, LiftPlan>) -> Option<(St
     };
     own.get(name.as_str())
         .map(|plan| (name.as_str().to_string(), plan.kind))
+}
+
+fn rewrite_returned(expr: &mut Expr, ctx: &LiftCtx, mutable: bool) {
+    match expr {
+        Expr::Var(name) if let Some(plan) = ctx.own.get(name.as_str()) => {
+            *expr = to_raw_pointer_as(name.as_str(), plan, mutable);
+        }
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => {
+            rewrite_expr(cond, ctx);
+            rewrite_returned(then_expr, ctx, mutable);
+            rewrite_returned(else_expr, ctx, mutable);
+        }
+        Expr::Match {
+            expr: scrutinee,
+            arms,
+        } => {
+            rewrite_expr(scrutinee, ctx);
+            for arm in arms {
+                rewrite_returned(&mut arm.value, ctx, mutable);
+            }
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => {
+            rewrite_stmts(&mut block.stmts, ctx);
+            if let Some(tail) = &mut block.tail {
+                rewrite_returned(tail, ctx, mutable);
+            }
+        }
+        _ => rewrite_expr(expr, ctx),
+    }
 }
 
 fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
