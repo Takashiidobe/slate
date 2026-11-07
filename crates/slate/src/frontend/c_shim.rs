@@ -135,12 +135,10 @@ fn render_indirect_trampoline(name: &str) -> Option<String> {
     let args = tags
         .iter()
         .enumerate()
-        .map(|(i, tag)| {
-            if *tag == "f80" {
-                format!("__slate_f80_load(_{i})")
-            } else {
-                format!("_{i}")
-            }
+        .map(|(i, tag)| match *tag {
+            "f80" => format!("__slate_f80_load(_{i})"),
+            "cf80" => format!("__slate_cf80_load(_{i})"),
+            _ => format!("_{i}"),
         })
         .collect::<Vec<_>>()
         .join(", ");
@@ -151,6 +149,7 @@ fn render_indirect_trampoline(name: &str) -> Option<String> {
     let body = match ret_tag {
         "v" => format!("{call};"),
         "f80" => format!("return __slate_f80_store({call});"),
+        "cf80" => format!("return __slate_cf80_store({call});"),
         _ => format!("return {call};"),
     };
     Some(format!(

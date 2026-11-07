@@ -165,7 +165,7 @@ impl Tables<'_> {
             } => parameters
                 .iter()
                 .chain(return_type.as_deref())
-                .any(|ty| self.holds_long_double(ty)),
+                .any(|ty| self.bridges_long_double(ty)),
             _ => false,
         }
     }
@@ -331,14 +331,10 @@ impl FunctionLowerer<'_, '_> {
                 .map(|ty| self.tables.long_double_aggregate_tag(ty)),
         )
         .collect::<Vec<_>>();
-        let tags = long_double_bridge_tags(
+        long_double_bridge_tags(
             subject,
             std::iter::once(&ret).chain(&params).zip(aggregates),
-        )?;
-        if tags.iter().any(|tag| tag == "cf80") {
-            return Err(unsupported());
-        }
-        Ok(tags)
+        )
     }
 
     pub(super) fn lower_long_double_function_address(
