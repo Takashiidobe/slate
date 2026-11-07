@@ -354,9 +354,7 @@ int main(void) {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         std::mem::transmute::<std::simd::Simd<i16, 16>, std::simd::Simd<i64, 4>>(
 // CHECK-NEXT:             std::simd::num::SimdInt::cast::<i16>(unsafe {
-// CHECK-NEXT:                 std::mem::transmute::<std::simd::Simd<i8, 16>, std::simd::Simd<i8, 16>>(unsafe {
-// CHECK-NEXT:                     std::mem::transmute::<std::simd::Simd<i64, 2>, std::simd::Simd<i8, 16>>(__V)
-// CHECK-NEXT:                 })
+// CHECK-NEXT:                 std::mem::transmute::<std::simd::Simd<i64, 2>, std::simd::Simd<i8, 16>>(__V)
 // CHECK-NEXT:             }),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

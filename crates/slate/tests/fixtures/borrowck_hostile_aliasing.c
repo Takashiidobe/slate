@@ -139,17 +139,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: fn add_in_place(a: &mut i32, b: &i32) {
+// CHECK-NEXT: fn add_in_place([[V_0:__v[0-9]+]]: *mut i32, b: *mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *a = *a + *(b as *const i32);
+// CHECK-NEXT:         *[[V_0]] = *[[V_0]] + *b;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn alias_same_object() -> i32 {
 // CHECK-NEXT:     let mut x: i32 = 5;
-// CHECK-NEXT:     add_in_place(
-// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(x)) },
-// CHECK-NEXT:         unsafe { &(*std::ptr::addr_of_mut!(x)) },
-// CHECK-NEXT:     );
+// CHECK-NEXT:     add_in_place(std::ptr::addr_of_mut!(x), std::ptr::addr_of_mut!(x));
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
@@ -219,9 +216,9 @@ int main(void) {
 // CHECK-NEXT:         sum += unsafe { (*cur).val };
 // CHECK-NEXT:         cur = unsafe { (*cur).next };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut Node = unsafe { (*cur).prev };
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut Node = unsafe { (*cur).prev };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_0]]).val = (*[[V_0]]).val + 10;
+// CHECK-NEXT:         (*[[V_1]]).val = (*[[V_1]]).val + 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum + a.val + b.val + c.val
 // CHECK-NEXT: }
@@ -260,13 +257,13 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     root.left = std::ptr::addr_of_mut!(left);
 // CHECK-NEXT:     root.right = std::ptr::addr_of_mut!(right);
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut Tree = left.parent;
+// CHECK-NEXT:     let [[V_0]]: *mut Tree = left.parent;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_1]]).val = (*[[V_1]]).val + left.val;
+// CHECK-NEXT:         (*[[V_0]]).val = (*[[V_0]]).val + left.val;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_0]]: *mut Tree = right.parent;
+// CHECK-NEXT:     let [[V_1]]: *mut Tree = right.parent;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_0]]).val = (*[[V_0]]).val + right.val;
+// CHECK-NEXT:         (*[[V_1]]).val = (*[[V_1]]).val + right.val;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     root.val + left.val + right.val
 // CHECK-NEXT: }
@@ -297,8 +294,8 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *hi = t;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let [[V_1]]: *mut i32 = lo;
-// CHECK-NEXT:         lo = unsafe { [[V_1]].add(1) };
+// CHECK-NEXT:         let [[V_0]]: *mut i32 = lo;
+// CHECK-NEXT:         lo = unsafe { [[V_0]].add(1) };
 // CHECK-NEXT:         let [[V_3:__v[0-9]+]]: *mut i32 = hi;
 // CHECK-NEXT:         hi = unsafe { [[V_3]].sub(1) };
 // CHECK-NEXT:     }
@@ -323,9 +320,9 @@ int main(void) {
 // CHECK-NEXT: fn global_alias_with_local() -> i32 {
 // CHECK-NEXT:     let mut x: i32 = 7;
 // CHECK-NEXT:     capture_global(std::ptr::addr_of_mut!(x));
-// CHECK-NEXT:     let [[V_1]]: *mut i32 = unsafe { g_ptr };
+// CHECK-NEXT:     let [[V_0]]: *mut i32 = unsafe { g_ptr };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_1]] = *[[V_1]] + 1;
+// CHECK-NEXT:         *[[V_0]] = *[[V_0]] + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x += 1;
 // CHECK-NEXT:     x + unsafe { *g_ptr }

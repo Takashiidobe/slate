@@ -227,6 +227,12 @@ struct CallSite {
     caller_binding: String,
 }
 
+struct AliasedArgs {
+    caller: FnKey,
+    callee: FnKey,
+    arg_indices: Vec<usize>,
+}
+
 struct ReturnCallSite {
     caller: FnKey,
     callee: FnKey,
@@ -282,8 +288,9 @@ pub(in crate::backend) fn solve(
     let mut facts: BTreeMap<PointerBinding, PointerFact> = BTreeMap::new();
     let mut call_sites: Vec<CallSite> = Vec::new();
     let mut return_sites: Vec<ReturnCallSite> = Vec::new();
+    let mut aliased_args: Vec<AliasedArgs> = Vec::new();
     for (key, f) in &fn_defs {
-        let (local, sites, local_return_sites) = classify_function(
+        let (local, sites, local_return_sites, local_aliased_args) = classify_function(
             key,
             f,
             symbols,
@@ -294,6 +301,7 @@ pub(in crate::backend) fn solve(
         facts.extend(local);
         call_sites.extend(sites);
         return_sites.extend(local_return_sites);
+        aliased_args.extend(local_aliased_args);
     }
 
     let mut outbound: BTreeMap<FnKey, Vec<&CallSite>> = BTreeMap::new();
@@ -317,6 +325,20 @@ pub(in crate::backend) fn solve(
         }
     }
 
+    let mut alias_incident: BTreeMap<FnKey, Vec<&AliasedArgs>> = BTreeMap::new();
+    for group in &aliased_args {
+        alias_incident
+            .entry(group.caller.clone())
+            .or_default()
+            .push(group);
+        if group.callee != group.caller {
+            alias_incident
+                .entry(group.callee.clone())
+                .or_default()
+                .push(group);
+        }
+    }
+
     let mut graph = CallGraph::new(fn_defs.keys().cloned());
     for site in &call_sites {
         graph.add_edge(&site.caller, &site.callee);
@@ -324,9 +346,13 @@ pub(in crate::backend) fn solve(
     for site in &return_sites {
         graph.add_edge(&site.caller, &site.callee);
     }
+    for group in &aliased_args {
+        graph.add_edge(&group.caller, &group.callee);
+    }
     let order = interproc::scc_order(&graph);
     let empty_calls: Vec<&CallSite> = Vec::new();
     let empty_returns: Vec<&ReturnCallSite> = Vec::new();
+    let empty_aliases: Vec<&AliasedArgs> = Vec::new();
 
     interproc::run_worklist(&graph, &order, |name| {
         let mut changed = false;
@@ -380,6 +406,26 @@ pub(in crate::backend) fn solve(
                 && let Some(result_fact) = facts.get_mut(&result_binding)
             {
                 changed |= result_fact.merge_evidence_from(&callee_fact);
+            }
+        }
+        for group in alias_incident.get(name).unwrap_or(&empty_aliases) {
+            let bindings: Vec<PointerBinding> = group
+                .arg_indices
+                .iter()
+                .map(|&index| PointerBinding {
+                    function: group.callee.clone(),
+                    name: callee_param_name(&fn_defs, &group.callee, index),
+                })
+                .collect();
+            if bindings
+                .iter()
+                .any(|binding| facts.get(binding).is_some_and(|fact| fact.write))
+            {
+                for binding in &bindings {
+                    if let Some(fact) = facts.get_mut(binding) {
+                        changed |= fact.observe_escape();
+                    }
+                }
             }
         }
         changed
@@ -680,6 +726,7 @@ fn classify_function(
     BTreeMap<PointerBinding, PointerFact>,
     Vec<CallSite>,
     Vec<ReturnCallSite>,
+    Vec<AliasedArgs>,
 ) {
     let mut facts = BTreeMap::new();
     let mut tracked: BTreeMap<String, String> = BTreeMap::new();
@@ -706,6 +753,7 @@ fn classify_function(
 
     let mut sites = Vec::new();
     let mut return_sites = Vec::new();
+    let mut aliased_args = Vec::new();
     let mut ctx = ClassifyCtx {
         function: key,
         symbols,
@@ -720,11 +768,12 @@ fn classify_function(
         tracked: &mut tracked,
         sites: &mut sites,
         return_sites: &mut return_sites,
+        aliased_args: &mut aliased_args,
         use_counts: &use_counts,
         global_ptr_mutability,
     };
     ctx.body(&f.body);
-    (facts, sites, return_sites)
+    (facts, sites, return_sites, aliased_args)
 }
 
 struct ClassifyCtx<'a> {
@@ -737,6 +786,7 @@ struct ClassifyCtx<'a> {
     tracked: &'a mut BTreeMap<String, String>,
     sites: &'a mut Vec<CallSite>,
     return_sites: &'a mut Vec<ReturnCallSite>,
+    aliased_args: &'a mut Vec<AliasedArgs>,
     use_counts: &'a BTreeMap<String, usize>,
     global_ptr_mutability: &'a BTreeMap<String, bool>,
 }
@@ -1074,7 +1124,7 @@ impl ClassifyCtx<'_> {
                 {
                     self.observe(&canonical, PointerFact::observe_offset);
                 } else {
-                    self.place(recv, true);
+                    self.place(recv, !matches!(method.as_str(), "as_ptr" | "len"));
                 }
                 for arg in args {
                     self.expr(arg);
@@ -1220,6 +1270,12 @@ impl ClassifyCtx<'_> {
             } => Some(*known),
             _ => None,
         };
+        if known.is_none()
+            && let Some(callee) = &callee
+            && let Some(candidate) = self.candidates.get(callee)
+        {
+            self.record_aliased_args(callee, candidate, args);
+        }
         for (index, arg) in args.iter().enumerate() {
             let Some(name) = read_var_name(arg) else {
                 self.expr(arg);
@@ -1229,6 +1285,25 @@ impl ClassifyCtx<'_> {
                 continue;
             };
             self.classify_call_arg(&canonical, callee.as_ref(), known, index);
+        }
+    }
+
+    fn record_aliased_args(&mut self, callee: &FnKey, candidate: &Candidate, args: &[Expr]) {
+        let mut by_root: BTreeMap<String, Vec<usize>> = BTreeMap::new();
+        for &index in &candidate.param_indices {
+            if let Some(root) = args.get(index).and_then(pointer_root) {
+                let root = self.canonical_of(&root).unwrap_or(root);
+                by_root.entry(root).or_default().push(index);
+            }
+        }
+        for arg_indices in by_root.into_values() {
+            if arg_indices.len() > 1 {
+                self.aliased_args.push(AliasedArgs {
+                    caller: self.function.clone(),
+                    callee: callee.clone(),
+                    arg_indices,
+                });
+            }
         }
     }
 
@@ -1293,6 +1368,53 @@ fn peel_cast(expr: &Expr) -> &Expr {
     match expr {
         Expr::Cast { expr, .. } => peel_cast(expr),
         other => other,
+    }
+}
+
+fn peel_cast_and_unsafe(expr: &Expr) -> &Expr {
+    match expr {
+        Expr::Cast { expr, .. } => peel_cast_and_unsafe(expr),
+        Expr::Unsafe(block) if block.stmts.is_empty() => match &block.tail {
+            Some(tail) => peel_cast_and_unsafe(tail),
+            None => expr,
+        },
+        other => other,
+    }
+}
+
+fn pointer_root(expr: &Expr) -> Option<String> {
+    match peel_cast_and_unsafe(expr) {
+        Expr::Var(name) => Some(name.to_string()),
+        Expr::AddrOf { expr, .. } | Expr::Ref { expr, .. } => place_root(expr),
+        Expr::ArrayPtr { array, .. } => place_root(array),
+        Expr::MethodCall { recv, method, .. }
+            if matches!(
+                method.as_str(),
+                "add" | "offset" | "wrapping_add" | "sub" | "wrapping_sub"
+            ) =>
+        {
+            pointer_root(recv)
+        }
+        Expr::MethodCall { recv, method, .. }
+            if matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
+        {
+            place_root(recv)
+        }
+        _ => None,
+    }
+}
+
+fn place_root(expr: &Expr) -> Option<String> {
+    match peel_cast_and_unsafe(expr) {
+        Expr::Var(name) => Some(name.to_string()),
+        Expr::Field { base, .. } | Expr::TupleField { base, .. } | Expr::Index { base, .. } => {
+            place_root(base)
+        }
+        Expr::Unary {
+            op: UnaryOp::Deref,
+            expr,
+        } => pointer_root(expr),
+        _ => None,
     }
 }
 
