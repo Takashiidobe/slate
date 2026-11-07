@@ -91,5 +91,5 @@ explicitly out of scope for `slate-c16q`.
 `slate-c16q` (epic), `slate-c16q.1` (classifier), `slate-c16q.2` (known_cfg
 feature-macro entries). See also
 [cfg translation demo](../log/2026-09-06-15-34.md) and
-`tests/fixtures.cfg/README.md` for the existing target/os/arch cfg surface
+`crates/slate/tests/fixtures.merge/` for the existing target/os/arch cfg surface
 this extends.

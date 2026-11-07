@@ -1,1 +1,0 @@
-#define INCLUDED_VALUE 37
