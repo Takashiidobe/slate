@@ -437,8 +437,6 @@ fn write_file(path: &Path, contents: &str) -> Result<(), String> {
 
 include!(concat!(env!("OUT_DIR"), "/vendored_libc.rs"));
 include!(concat!(env!("OUT_DIR"), "/vendored_mach2.rs"));
-include!(concat!(env!("OUT_DIR"), "/vendored_windows-sys.rs"));
-include!(concat!(env!("OUT_DIR"), "/vendored_windows-link.rs"));
 
 fn write_vendored_libc(crate_dir: &Path) -> Result<(), String> {
     let libc_dir = crate_dir.join("libc");
@@ -455,19 +453,13 @@ fn write_vendored_libc(crate_dir: &Path) -> Result<(), String> {
 
 fn write_slate_support(crate_dir: &Path) -> Result<(), String> {
     write_vendored_libc(crate_dir)?;
-    for (name, files) in [
-        ("mach2", VENDORED_MACH2),
-        ("windows-sys", VENDORED_WINDOWS_SYS),
-        ("windows-link", VENDORED_WINDOWS_LINK),
-    ] {
-        for (relative, contents) in files {
-            let path = crate_dir.join(name).join(relative);
-            if let Some(parent) = path.parent() {
-                std::fs::create_dir_all(parent)
-                    .map_err(|error| format!("create {}: {error}", parent.display()))?;
-            }
-            write_file(&path, contents)?;
+    for (relative, contents) in VENDORED_MACH2 {
+        let path = crate_dir.join("mach2").join(relative);
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)
+                .map_err(|error| format!("create {}: {error}", parent.display()))?;
         }
+        write_file(&path, contents)?;
     }
     let support_dir = crate_dir.join("slate-support");
     let src_dir = support_dir.join("src");

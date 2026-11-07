@@ -36,25 +36,46 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT: }
 // I686-PC-WINDOWS-MSVC-EMPTY:
 // I686-PC-WINDOWS-MSVC-NEXT: unsafe extern "stdcall" {
+// CHECK-NEXT:     fn CloseHandle([[ARG_0:arg[0-9]+]]: *mut ()) -> i32;
+// CHECK-NEXT:     fn SetEvent([[ARG_0]]: *mut ()) -> i32;
+// CHECK-NEXT:     fn WaitForSingleObject([[ARG_0]]: *mut (), [[ARG_1:arg[0-9]+]]: u32) -> u32;
 // CHECK-NEXT:     fn CreateEventW(
-// CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: *mut slate_support::windows::Win32::Security::SECURITY_ATTRIBUTES,
-// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: i32,
+// CHECK-NEXT:         [[ARG_0]]: *mut _SECURITY_ATTRIBUTES,
+// CHECK-NEXT:         [[ARG_1]]: i32,
 // CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: i32,
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *const u16,
 // CHECK-NEXT:     ) -> *mut ();
+// CHECK-NEXT:     fn GetCurrentProcessId() -> u32;
+// CHECK-NEXT:     fn GetSystemTime([[ARG_0]]: *mut _SYSTEMTIME);
 // X86_64-PC-WINDOWS-MSVC-NEXT:     fn _getpid() -> i32;
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     fn _getpid() -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct _SECURITY_ATTRIBUTES {
+// CHECK-NEXT:     nLength: u32,
+// CHECK-NEXT:     lpSecurityDescriptor: *mut (),
+// CHECK-NEXT:     bInheritHandle: i32,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct _SYSTEMTIME {
+// CHECK-NEXT:     wYear: u16,
+// CHECK-NEXT:     wMonth: u16,
+// CHECK-NEXT:     wDayOfWeek: u16,
+// CHECK-NEXT:     wDay: u16,
+// CHECK-NEXT:     wHour: u16,
+// CHECK-NEXT:     wMinute: u16,
+// CHECK-NEXT:     wSecond: u16,
+// CHECK-NEXT:     wMilliseconds: u16,
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::abort;
-// CHECK-NEXT: use slate_support::windows::Win32::Foundation::CloseHandle;
-// CHECK-NEXT: use slate_support::windows::Win32::System::SystemInformation::GetSystemTime;
-// CHECK-NEXT: use slate_support::windows::Win32::System::Threading::GetCurrentProcessId;
-// CHECK-NEXT: use slate_support::windows::Win32::System::Threading::SetEvent;
-// CHECK-NEXT: use slate_support::windows::Win32::System::Threading::WaitForSingleObject;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn current_process_id() -> u32 {
-// CHECK-NEXT:     unsafe { GetCurrentProcessId() as u32 }
+// CHECK-NEXT:     unsafe { GetCurrentProcessId() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -72,32 +93,25 @@ int main(void) { return 0; }
 // CHECK-NEXT:     if [[V_0]] {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut time: slate_support::windows::Win32::Foundation::SYSTEMTIME =
-// CHECK-NEXT:         unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         GetSystemTime(std::ptr::addr_of_mut!(time)
-// CHECK-NEXT:             as *mut slate_support::windows::Win32::Foundation::SYSTEMTIME)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut time: _SYSTEMTIME = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     unsafe { GetSystemTime(std::ptr::addr_of_mut!(time)) };
 // CHECK-NEXT:     if (time.wYear as i32) < 2020 || (time.wMonth as i32) < 1 || (time.wMonth as i32) > 12 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let event: *mut () = unsafe {
 // CHECK-NEXT:         CreateEventW(
-// CHECK-NEXT:             std::ptr::null_mut::<slate_support::windows::Win32::Security::SECURITY_ATTRIBUTES>(),
-// CHECK-NEXT:             slate_support::windows::Win32::Foundation::FALSE as i32,
-// CHECK-NEXT:             slate_support::windows::Win32::Foundation::FALSE as i32,
+// CHECK-NEXT:             std::ptr::null_mut::<_SECURITY_ATTRIBUTES>(),
+// CHECK-NEXT:             0i32,
+// CHECK-NEXT:             0i32,
 // CHECK-NEXT:             std::ptr::null::<u16>(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool =
-// CHECK-NEXT:         event.is_null() || (unsafe { SetEvent(event as *mut core::ffi::c_void) as i32 }) == 0;
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: bool = [[V_1]]
-// CHECK-NEXT:         || (unsafe { WaitForSingleObject(event as *mut core::ffi::c_void, 0u32 as u32) as u32 })
-// CHECK-NEXT:             != 0u32;
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = event.is_null() || (unsafe { SetEvent(event) }) == 0;
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: bool = [[V_1]] || (unsafe { WaitForSingleObject(event, 0u32) }) != 0u32;
 // CHECK-NEXT:     if [[V_2]] {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (unsafe { CloseHandle(event as *mut core::ffi::c_void) as i32 }) == 0 {
+// CHECK-NEXT:     if (unsafe { CloseHandle(event) }) == 0 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

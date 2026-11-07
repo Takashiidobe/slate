@@ -37,7 +37,7 @@ pub fn prepare_libc(libc: &Path, work: &Path) -> Result<PathBuf> {
         let _ = std::fs::remove_file(&link);
         std::os::unix::fs::symlink(libc.join(entry), link)?;
     }
-    for name in ["mach2", "windows-sys", "windows-link", "slate-support"] {
+    for name in ["mach2", "slate-support"] {
         let destination = work.join(name);
         std::fs::create_dir_all(&destination)?;
         let source = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -64,42 +64,6 @@ pub fn prepare_libc(libc: &Path, work: &Path) -> Result<PathBuf> {
     let support = work.join("slate-support/Cargo.toml");
     let manifest = std::fs::read_to_string(&support)?;
     std::fs::write(&support, format!("{manifest}\n[workspace]\n"))?;
-    let output = Command::new("cargo")
-        .args(["metadata", "--format-version=1", "--manifest-path"])
-        .arg(&support)
-        .output()
-        .context("binding dependency metadata")?;
-    if !output.status.success() {
-        bail!(
-            "binding dependency metadata: {}",
-            String::from_utf8_lossy(&output.stderr)
-        );
-    }
-    let metadata: serde_json::Value = serde_json::from_slice(&output.stdout)?;
-    let package = metadata["packages"]
-        .as_array()
-        .context("binding packages")?
-        .iter()
-        .find(|package| package["name"] == "windows-sys")
-        .context("windows-sys metadata")?;
-    let features = package["features"]
-        .as_object()
-        .context("windows-sys features")?
-        .keys()
-        .filter(|name| name.starts_with("Win32"))
-        .cloned()
-        .collect::<Vec<_>>();
-    std::fs::write(
-        work.join("windows-features.json"),
-        serde_json::to_vec(&features)?,
-    )?;
-    std::fs::write(
-        support,
-        format!(
-            "{}\n[workspace]\n",
-            crate::providers::with_windows_features(&manifest, &features)
-        ),
-    )?;
     Ok(dir)
 }
 

@@ -31,7 +31,6 @@ pub fn shape(
     c: Option<QualType>,
     record: &impl Fn(&str) -> Option<String>,
     pointer_width: u32,
-    system: bool,
 ) -> Option<String> {
     fn inner(
         ty: &Type,
@@ -39,14 +38,14 @@ pub fn shape(
         ctypes: &ir::CTypeTable,
         mut c: Option<QualType>,
         record: &impl Fn(&str) -> Option<String>,
-        abi: (u32, bool),
+        pointer_width: u32,
         depth: usize,
     ) -> Option<String> {
-        let (pointer_width, system) = abi;
         if depth > 32 {
             return None;
         }
-        let recurse = |ty: &Type, c| inner(ty, definitions, ctypes, c, record, abi, depth + 1);
+        let recurse =
+            |ty: &Type, c| inner(ty, definitions, ctypes, c, record, pointer_width, depth + 1);
         while let Some(qual) = c {
             match ctypes.types.kind(qual.ty) {
                 CTypeKind::Typedef {
@@ -128,11 +127,8 @@ pub fn shape(
                 convention,
             } => {
                 let abi = match convention {
-                    ir::CallConv::C if system && pointer_width == 64 => "system",
                     ir::CallConv::C => "C",
-                    ir::CallConv::X86Stdcall if system => "system",
                     ir::CallConv::X86Stdcall => "stdcall",
-                    ir::CallConv::Win64 if system => "system",
                     _ => return None,
                 };
                 let (cparams, cret) = c
@@ -158,15 +154,7 @@ pub fn shape(
             _ => return None,
         })
     }
-    inner(
-        ty,
-        definitions,
-        ctypes,
-        c,
-        record,
-        (pointer_width, system),
-        0,
-    )
+    inner(ty, definitions, ctypes, c, record, pointer_width, 0)
 }
 
 pub fn function_type(function: &ir::Function) -> Option<Type> {

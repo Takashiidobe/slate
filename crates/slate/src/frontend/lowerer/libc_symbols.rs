@@ -25,7 +25,7 @@ fn use_symbol(path: &str, alias: &str) -> Item {
 impl Tables<'_> {
     pub(super) fn bind_libc_symbols(&mut self, module: &ir::Module) {
         let target = &module.target.triple;
-        let shape = |ty: &ir::Type, c, system| {
+        let shape = |ty: &ir::Type, c| {
             libc_catalog::shape(
                 ty,
                 &module.types,
@@ -33,7 +33,6 @@ impl Tables<'_> {
                 c,
                 &|name| record(name, module),
                 module.target.pointer_width,
-                system,
             )
         };
         for function in &module.functions {
@@ -54,7 +53,6 @@ impl Tables<'_> {
             let Some(mut actual) = shape(
                 &ty,
                 module.c_types.bindings.get(&function.value.id).copied(),
-                symbol.rust_path.starts_with("slate_support::windows::"),
             ) else {
                 continue;
             };

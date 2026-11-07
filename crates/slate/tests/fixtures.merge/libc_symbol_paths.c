@@ -30,35 +30,13 @@ int main(void) {
 // CHECK-NEXT: target freebsd-x86_64: 1 compiles
 // CHECK-NEXT:   libc_symbol_paths.c: [] 1 compiled
 // CHECK-NEXT: total: 6 compiles across 6 targets
-// CHECK-NEXT: unit libc_symbol_paths: 11 items, 4 gated, 1 duplicated functions
-// CHECK-NEXT:   duplicated fn:number: 2 variants
+// CHECK-NEXT: unit libc_symbol_paths: 9 items, 0 gated, 0 duplicated functions
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(target_os = "macos"))]
-// CHECK-NEXT: fn number(text: *const c_char) -> c_long {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         strtol(
-// CHECK-NEXT:             text as *const core::ffi::c_char,
-// CHECK-NEXT:             std::ptr::null_mut::<*mut c_char>() as *mut *mut core::ffi::c_char,
-// CHECK-NEXT:             10i32 as i32,
-// CHECK-NEXT:         ) as c_long
-// CHECK-NEXT:     }
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(target_os = "macos")]
-// CHECK-NEXT: fn number(text: *const c_char) -> c_long {
-// CHECK-NEXT:     unsafe { strtol(text, std::ptr::null_mut::<*mut c_char>(), 10i32) }
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(target_os = "macos")]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn strtol([[ARG_0:arg[0-9]+]]: *const c_char, [[ARG_1:arg[0-9]+]]: *mut *mut c_char, [[ARG_2:arg[0-9]+]]: i32) -> c_long;
-// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
@@ -93,6 +71,16 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: fn number(text: *const c_char) -> c_long {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         strtol(
+// CHECK-NEXT:             text as *const core::ffi::c_char,
+// CHECK-NEXT:             std::ptr::null_mut::<*mut c_char>() as *mut *mut core::ffi::c_char,
+// CHECK-NEXT:             10i32 as i32,
+// CHECK-NEXT:         ) as c_long
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn retry_code() -> i32 {
 // CHECK-NEXT:     slate_support::EAGAIN as i32
 // CHECK-NEXT: }
@@ -103,7 +91,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: use core::ffi::c_long;
-// CHECK-NEXT: #[cfg(not(target_os = "macos"))]
 // CHECK-NEXT: use slate_support::strtol;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

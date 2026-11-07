@@ -129,19 +129,12 @@ int main(void) {
 // CHECK-NEXT:     static mut optarg: *mut i8;
 // CHECK-NEXT:     static mut optind: i32;
 // CHECK-NEXT:     static mut opterr: i32;
-// CHECK-NEXT:     fn getopt_long(
-// CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: i32,
-// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: *const *mut i8,
-// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: *const i8,
-// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *const option,
-// CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut i32,
-// CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT:     fn argp_parse(
-// CHECK-NEXT:         [[ARG_0]]: *const argp,
-// CHECK-NEXT:         [[ARG_1]]: i32,
-// CHECK-NEXT:         [[ARG_2]]: *mut *mut i8,
-// CHECK-NEXT:         [[ARG_3]]: u32,
-// CHECK-NEXT:         [[ARG_4]]: *mut i32,
+// CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: *const argp,
+// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: i32,
+// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: *mut *mut i8,
+// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: u32,
+// CHECK-NEXT:         [[ARG_4:arg[0-9]+]]: *mut i32,
 // CHECK-NEXT:         [[ARG_5:arg[0-9]+]]: *mut (),
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT:     fn hsearch_r(
@@ -171,14 +164,6 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_4]]: *mut (),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     fn index([[ARG_0]]: *const i8, [[ARG_1]]: i32) -> *mut i8;
-// CHECK-NEXT: }
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct option {
-// CHECK-NEXT:     name: *const i8,
-// CHECK-NEXT:     has_arg: i32,
-// CHECK-NEXT:     flag: *mut i32,
-// CHECK-NEXT:     val: i32,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -251,6 +236,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: use slate_support::getopt_long;
 // CHECK-NEXT: use slate_support::atoi;
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
@@ -356,9 +342,9 @@ int main(void) {
 // CHECK-NEXT:         flag.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:         std::ptr::null_mut::<i8>(),
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let mut options: __SlateAlign16<[option; 3]> = __SlateAlign16([
+// CHECK-NEXT:     let mut options: __SlateAlign16<[slate_support::option; 3]> = __SlateAlign16([
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: option = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: slate_support::option = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:             [[T_0]].name = c"number".as_ptr();
 // CHECK-NEXT:             [[T_0]].has_arg = 1i32;
 // CHECK-NEXT:             [[T_0]].flag = std::ptr::null_mut::<i32>();
@@ -366,7 +352,7 @@ int main(void) {
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: option = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: slate_support::option = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]].name = c"flag".as_ptr();
 // CHECK-NEXT:             [[T_1]].has_arg = 0i32;
 // CHECK-NEXT:             [[T_1]].flag = std::ptr::null_mut::<i32>();
@@ -374,7 +360,7 @@ int main(void) {
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: option = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: slate_support::option = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:             [[T_2]].name = std::ptr::null::<i8>();
 // CHECK-NEXT:             [[T_2]].has_arg = 0i32;
 // CHECK-NEXT:             [[T_2]].flag = std::ptr::null_mut::<i32>();
@@ -394,12 +380,14 @@ int main(void) {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let [[V_2:__v[0-9]+]]: i32 = unsafe {
 // CHECK-NEXT:             getopt_long(
-// CHECK-NEXT:                 3i32,
-// CHECK-NEXT:                 arguments.0.as_mut_ptr() as *const *mut i8,
-// CHECK-NEXT:                 c"fn:".as_ptr(),
-// CHECK-NEXT:                 options.0.as_mut_ptr() as *const option,
-// CHECK-NEXT:                 std::ptr::null_mut::<i32>(),
-// CHECK-NEXT:             )
+// CHECK-NEXT:                 3i32 as i32,
+// CHECK-NEXT:                 (arguments.0.as_mut_ptr() as *const *mut i8)
+// CHECK-NEXT:                     as *const *mut core::ffi::c_char,
+// CHECK-NEXT:                 c"fn:".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:                 (options.0.as_mut_ptr() as *const slate_support::option)
+// CHECK-NEXT:                     as *const slate_support::option,
+// CHECK-NEXT:                 std::ptr::null_mut::<i32>() as *mut i32,
+// CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         };
 // CHECK-NEXT:         option = [[V_2]];
 // CHECK-NEXT:         if [[V_2]] == -1 {

@@ -165,12 +165,11 @@ cargo nextest r --release --profile slate
 - Apple `mach2` paths and header candidates come from target-specific rustdoc
   JSON, exposed through `slate_support::mach`. No hand-maintained symbol list;
   ambiguous names and failed ABI probes retain local declarations.
-- Windows `windows-sys` userspace paths also come from rustdoc, exposed through
-  `slate_support::windows`. Generated Cargo features cover accepted bindings and
-  their referenced types; C library mappings remain available.
-- Windows probes preserve stdcall on i686 and the native 64-bit ABI when
-  matching `extern "system"`; COFF import prefixes and stdcall decoration are
-  normalized only after signature checking.
+- Windows maps only the C runtime through `libc`. Win32 API declarations stay
+  local: `windows-sys` paths could not merge cfgs much further, and their
+  record field types clashed with the C types slate lowers field writes to.
+- COFF import prefixes and i686 stdcall decoration are normalized only after
+  signature checking.
 - The catalogs contain names, destinations and translation-target eligibility.
   Layouts, signatures, linker names and values stay in the generator report.
 - Lookup uses the translation target, never the host compiler cfg. Unknown or

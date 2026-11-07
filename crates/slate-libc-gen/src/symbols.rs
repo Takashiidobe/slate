@@ -101,15 +101,14 @@ pub fn collect(
             }
         }
         let macros: Vec<String> = definitions.into_keys().collect();
-        let parsed = if header == "windows.h" {
-            unit.parse_module_all_declarations()
-        } else {
-            unit.parse_module()
-        };
-        let (module, _) = match parsed {
-            Ok(module) => module,
-            Err(error) if header == "windows.h" => return Err(error.into()),
-            Err(_) => continue,
+        let module = unit.parse_module_all_declarations().ok().or_else(|| {
+            let (unit, _) =
+                slate::frontend::preprocess_traced(&source, slate::target::parse_args(&args).ok()?)
+                    .ok()?;
+            unit.parse_module().ok()
+        });
+        let Some((module, _)) = module else {
+            continue;
         };
         let record = |name: &str| {
             let definition = module
@@ -127,7 +126,7 @@ pub fn collect(
                 })
                 .map(|entry| entry.rust_path.clone())
         };
-        let shape = |ty: &ir::Type, c, system| {
+        let shape = |ty: &ir::Type, c| {
             libc_catalog::shape(
                 ty,
                 &module.types,
@@ -135,7 +134,6 @@ pub fn collect(
                 c,
                 &record,
                 module.target.pointer_width,
-                system,
             )
         };
         for function in &module.functions {
@@ -155,7 +153,6 @@ pub fn collect(
             let Some(mut shape) = shape(
                 &ty,
                 module.c_types.bindings.get(&function.value.id).copied(),
-                providers.system_abi(&function.name),
             ) else {
                 rejected.insert(format!(
                     "function `{}`: unverified signature type",
@@ -193,7 +190,6 @@ pub fn collect(
             let Some(shape) = shape(
                 &global.variable.ty,
                 module.c_types.bindings.get(&global.variable.id).copied(),
-                providers.system_abi(&global.variable.name),
             ) else {
                 continue;
             };
@@ -221,7 +217,7 @@ pub fn collect(
             }
             if let TypeDefinitionKind::Alias(ty) = &definition.kind
                 && let Some(name) = &definition.name
-                && let Some(shape) = shape(ty, None, false)
+                && let Some(shape) = shape(ty, None)
                 && matches!(
                     shape.as_str(),
                     "i8" | "u8"
@@ -322,9 +318,7 @@ pub fn collect(
             if candidate.kind == Kind::Type {
                 let support = format!("slate_support::{}", rust_side::ident(&candidate.name));
                 candidate.rust_path = support.clone();
-                if path.starts_with("slate_support::mach::")
-                    || path.starts_with("slate_support::windows::")
-                {
+                if path.starts_with("slate_support::mach::") {
                     let mut alternative = candidate.clone();
                     alternative.rust_path = path;
                     return vec![candidate, alternative];

@@ -703,6 +703,19 @@ impl TypeResolver {
                     bytes,
                 }
             }
+            CTypeKind::Complex(component) => {
+                let component_mode = match name {
+                    "SC" => "SF",
+                    "DC" => "DF",
+                    "XC" => "XF",
+                    "TC" => "TF",
+                    "QI" | "HI" | "SI" | "DI" | "TI" | "SF" | "DF" | "XF" | "TF" | "byte"
+                    | "word" | "unwind_word" | "pointer" => return Err(mismatch),
+                    _ => return Err(ResolveError::Rejected("machine mode")),
+                };
+                let component = self.machine_mode(QualType::new(component), component_mode)?;
+                CTypeKind::Complex(component.ty)
+            }
             CTypeKind::Float(_) => {
                 let long_double = self.dialect.target().long_double;
                 CTypeKind::Float(match name {
@@ -727,9 +740,6 @@ impl TypeResolver {
                     CTypeKind::SChar => true,
                     CTypeKind::Char => self.dialect.target().char_signed,
                     CTypeKind::Int { signed, .. } => signed,
-                    CTypeKind::Complex(_) => {
-                        return Err(ResolveError::Unimplemented("complex machine mode"));
-                    }
                     CTypeKind::Enum(_) => {
                         let underlying = self
                             .ctypes

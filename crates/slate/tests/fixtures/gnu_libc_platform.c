@@ -547,7 +547,9 @@ int main(void) {
 // CHECK-NEXT:         let mut [[T_0]]: __SlateRecord_dlfcn_h_94 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let page_size: i64 = unsafe { sysconf(30i32 as i32) as i64 };
+// CHECK-NEXT:     let page_size: i64 = unsafe {
+// CHECK-NEXT:         sysconf((slate_support::_SC_PAGESIZE as i32) as i32) as i64
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let [[V_6]]: i32 = ((unsafe { getauxval(6u64) }) == (page_size as u64)) as i32;
 // CHECK-NEXT:     total += [[V_6]];

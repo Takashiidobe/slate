@@ -145,7 +145,9 @@ int main(void) {
 // CHECK-NEXT:     let aligned: *mut () = unsafe { memalign(64u64, 80u64) };
 // CHECK-NEXT:     let page: *mut () = unsafe { valloc(1u64) };
 // CHECK-NEXT:     let rounded: *mut () = unsafe { pvalloc(1u64) };
-// CHECK-NEXT:     let page_size: i64 = unsafe { sysconf(30i32 as i32) as i64 };
+// CHECK-NEXT:     let page_size: i64 = unsafe {
+// CHECK-NEXT:         sysconf((slate_support::_SC_PAGESIZE as i32) as i32) as i64
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for index in 0i32..4i32 {
 // CHECK-NEXT:         unsafe {

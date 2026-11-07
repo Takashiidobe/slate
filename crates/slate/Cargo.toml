@@ -21,8 +21,6 @@ include = [
   "/vendor/num-traits",
   "/vendor/slate-blocks",
   "/vendor/slate-support",
-  "/vendor/windows-link",
-  "/vendor/windows-sys",
 ]
 
 [package.metadata.binstall]

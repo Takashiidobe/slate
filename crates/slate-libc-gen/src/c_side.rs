@@ -116,31 +116,27 @@ pub fn collect(
         .copied()
         .chain(providers.headers.iter().map(String::as_str))
         .collect();
-    let dumps: Vec<Option<String>> = headers
+    let dumps: Vec<String> = headers
         .par_iter()
-        .map(|header| {
-            let output = Command::new(parser)
-                .arg("ir")
-                .arg(&source)
-                .args(target_args(target))
-                .args(["-include", header])
-                .args((*header == "windows.h").then_some("--all-declarations"))
-                .output()
-                .context("run header parser")?;
-            if *header == "windows.h" && !output.status.success() {
-                anyhow::bail!(
-                    "{target}: windows.h probe failed: {}",
-                    String::from_utf8_lossy(&output.stderr)
-                );
-            }
-            Ok(output
-                .status
-                .success()
-                .then(|| String::from_utf8_lossy(&output.stdout).into_owned()))
+        .filter_map(|header| {
+            [true, false].into_iter().find_map(|all_declarations| {
+                let output = Command::new(parser)
+                    .arg("ir")
+                    .arg(&source)
+                    .args(target_args(target))
+                    .args(["-include", header])
+                    .args(all_declarations.then_some("--all-declarations"))
+                    .output()
+                    .ok()?;
+                output
+                    .status
+                    .success()
+                    .then(|| String::from_utf8_lossy(&output.stdout).into_owned())
+            })
         })
-        .collect::<Result<_>>()?;
+        .collect();
     let mut merged = CMap::new();
-    for dump in dumps.iter().flatten() {
+    for dump in &dumps {
         for (name, ty) in parse_ir(dump) {
             merged.entry(name).or_insert(ty);
         }

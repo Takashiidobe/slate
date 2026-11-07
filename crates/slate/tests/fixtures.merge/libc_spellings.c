@@ -77,7 +77,7 @@ int main(void) {
 // CHECK-NEXT:   duplicated fn:hand_written: 3 variants
 // CHECK-NEXT:   spliced fn:classify: 4 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit libc_spellings_address: 37 items, 35 gated, 2 duplicated functions
+// CHECK-NEXT: unit libc_spellings_address: 36 items, 34 gated, 2 duplicated functions
 // CHECK-NEXT:   duplicated fn:isdigit: 2 variants
 // CHECK-NEXT:   duplicated fn:isgraph: 2 variants
 // CHECK-NEXT:   spliced fn:count_digits: 6 variants
@@ -94,6 +94,9 @@ int main(void) {
 // CHECK-NEXT: use core::ffi::c_ulong;
 // CHECK-NEXT: #[cfg(target_os = "freebsd")]
 // CHECK-NEXT: use slate_support::size_t;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(any(target_os = "macos", target_os = "freebsd"))]
+// CHECK-NEXT: use slate_support::__error;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_env = "gnu")]
 // CHECK-NEXT: unsafe extern "C" {
@@ -191,13 +194,10 @@ int main(void) {
 // CHECK-NEXT:     static mut _ThreadRuneLocale: *const __SlateRecord_runetype_h_82;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(target_os = "freebsd")]
-// CHECK-NEXT: use slate_support::__error;
-// CHECK-NEXT: #[cfg(not(any(target_os = "android", target_os = "macos")))]
-// CHECK-NEXT: use slate_support::isdigit;
-// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_os = "linux")]
 // CHECK-NEXT: use slate_support::__errno_location;
+// CHECK-NEXT: #[cfg(not(any(target_os = "android", target_os = "macos")))]
+// CHECK-NEXT: use slate_support::isdigit;
 // CHECK-NEXT: #[cfg(any(windows, target_env = "musl"))]
 // CHECK-NEXT: use slate_support::isgraph;
 // CHECK-EMPTY:
@@ -288,7 +288,6 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut _DefaultRuneLocale: __SlateRecord_runetype_h_109;
 // CHECK-NEXT:     fn __maskrune([[ARG_0:arg[0-9]+]]: i32, [[ARG_1:arg[0-9]+]]: c_ulong) -> i32;
-// CHECK-NEXT:     fn __error() -> *mut i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -311,11 +310,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             *(__errno() as *mut i32) = 0;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         #[cfg(target_os = "macos")]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             *__error() = 0;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         #[cfg(target_os = "freebsd")]
+// CHECK-NEXT:         #[cfg(any(target_os = "macos", target_os = "freebsd"))]
 // CHECK-NEXT:         {
 // CHECK-NEXT:             *(__error() as *mut i32) = 0;
 // CHECK-NEXT:         }
@@ -372,7 +367,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_os = "macos")]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         count(Some(isdigit)) + unsafe { *__error() } + if isgraph(97i32) != 0 { 1 } else { 0 }
+// CHECK-NEXT:         count(Some(isdigit))
+// CHECK-NEXT:             + unsafe { *(__error() as *mut i32) }
+// CHECK-NEXT:             + if isgraph(97i32) != 0 { 1 } else { 0 }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_os = "freebsd")]
 // CHECK-NEXT:     {
