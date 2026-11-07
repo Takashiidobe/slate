@@ -4,5 +4,4 @@ builtin_generic_bit_counts
 int128_arith
 int128_struct
 long_double
-object_alignment
 saturating_arith

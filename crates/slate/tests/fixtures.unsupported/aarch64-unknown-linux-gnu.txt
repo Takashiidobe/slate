@@ -13,7 +13,6 @@ float128
 goto_into_later_switch_case_bitint
 long_double
 main_process_argv
-object_alignment
 saturating_arith
 stdlib_fp_contract
 switch_case_wide_bitint
