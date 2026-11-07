@@ -313,6 +313,63 @@ def curl_suite(project_dir, build_dir, relinked, archive, out, args):
             "log": "suite.log", "native_log": "suite-native.log"}
 
 
+LZ4_MODES = [[], ["-1"], ["-3"], ["-9"], ["-12"], ["--fast=5"], ["-B4"], ["-B5", "-BD"], ["-B7", "--content-size"],
+             ["--no-frame-crc"], ["-BX"], ["-l"], ["-l", "-9"]]
+
+
+def lz4_suite(project_dir, build_dir, relinked, archive, out, args):
+    inputs_dir = out / "suite-inputs"
+    shutil.rmtree(inputs_dir, ignore_errors=True)
+    inputs_dir.mkdir()
+    sources = sorted(path for pattern in ["lib/*.[ch]", "programs/*.[ch]", "README.md", "LICENSE", "doc/*"]
+                     for path in project_dir.glob(pattern) if path.is_file())
+    (inputs_dir / "empty").write_bytes(b"")
+    (inputs_dir / "all-sources").write_bytes(b"".join(path.read_bytes() for path in sources) * 4)
+    state, noise = 0x12345678, bytearray()
+    for _ in range(1 << 18):
+        state = (state * 1103515245 + 12345) & 0xFFFFFFFF
+        noise.append(state >> 24)
+    (inputs_dir / "noise").write_bytes(bytes(noise))
+    inputs = [*sources, *sorted(inputs_dir.iterdir())]
+    native, translated = build_dir / "lz4", relinked["lz4"]
+
+    def lz4(tool, arguments, data):
+        start = time.perf_counter()
+        result = subprocess.run([str(tool), *arguments], input=data, capture_output=True, timeout=120)
+        return result.returncode, result.stdout, time.perf_counter() - start
+
+    def case(item):
+        mode, path = item
+        data = path.read_bytes()
+        native_code, native_frame, native_seconds = lz4(native, [*mode, "-c"], data)
+        code, frame, seconds = lz4(translated, [*mode, "-c"], data)
+        problems = []
+        if code != native_code or frame != native_frame:
+            problems.append("compress")
+        for name, decoder in [("decompress", translated), ("native-decompress", native)]:
+            result = lz4(decoder, ["-d", "-c"], frame)
+            seconds += result[2] if decoder == translated else 0
+            if result[0] or result[1] != data:
+                problems.append(name)
+        result = lz4(translated, ["-d", "-c"], native_frame)
+        seconds += result[2]
+        if result[0] or result[1] != data:
+            problems.append("decompress-native-frame")
+        label = f"{' '.join(mode) or 'default'} {os.path.relpath(path, project_dir)}"
+        return label, native_code == 0, problems, native_seconds, seconds
+
+    with concurrent.futures.ThreadPoolExecutor(args.jobs) as pool:
+        results = list(pool.map(case, [(mode, path) for mode in LZ4_MODES for path in inputs]))
+    lines = [f"{label}: {'ok' if not problems else 'FAIL ' + ','.join(problems)}"
+             for label, _, problems, _, _ in results]
+    (out / "suite.log").write_text("\n".join(lines) + "\n")
+    return {"native_ok": sum(ok for _, ok, _, _, _ in results), "native_total": len(results),
+            "ok": sum(not problems for _, _, problems, _, _ in results), "total": len(results),
+            "regressions": [label for label, _, problems, _, _ in results if problems],
+            "native_seconds": round(sum(row[3] for row in results), 2),
+            "seconds": round(sum(row[4] for row in results), 2), "log": "suite.log"}
+
+
 NGINX_CONF = """daemon off;
 worker_processes 4;
 pid {work}/nginx.pid;
@@ -1035,6 +1092,7 @@ RECIPES = {
         benchmark=lua_benchmark,
     ),
     "cJSON": CMakeLibrary(library="libcjson.so", translate_tests=True),
+    "lz4": CMakeLibrary(library="liblz4.so", tools=["lz4"], translate_tests=True, suite=lz4_suite),
     "zlib": CMakeLibrary(
         library="libz.a",
         variants=["libz.so"],
