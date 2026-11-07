@@ -223,7 +223,7 @@ fn render_trampoline(name: &str) -> Option<String> {
         .and_then(|rest| rest.rsplit_once("__"));
     let (callee, tags) = match exported {
         Some(split) => split,
-        None => name.strip_prefix("__slate_")?.split_once("__")?,
+        None => name.strip_prefix("__slate_")?.rsplit_once("__")?,
     };
     let exported_callee = exported.map(|(callee, _)| callee);
     let callback_callee = callee.strip_prefix("cb_").filter(|_| exported.is_none());
@@ -364,7 +364,7 @@ pub fn collect_program_shim_names(program: &Program) -> Vec<String> {
 
 fn header_for_shim_name(name: &str) -> Option<&'static str> {
     let rest = name.strip_prefix("__slate_")?;
-    let callee = rest.split("__").next()?;
+    let callee = rest.rsplit_once("__").map_or(rest, |(callee, _)| callee);
     let callee = callee.strip_prefix("cb_").unwrap_or(callee);
     crate::function_identity::Known::from_symbol(callee)
         .map(crate::function_identity::Known::header)

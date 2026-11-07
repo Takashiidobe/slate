@@ -56,16 +56,12 @@ pub(super) fn function_is_variadic(function: &ir::Function) -> bool {
     )
 }
 
-pub(super) fn long_double_export_name(symbol: &str, definition: &FnDef) -> Result<String> {
-    let unsupported = || {
-        Failure::from(Construct::LongDouble {
-            detail: format!("export of {symbol}"),
-        })
-    };
-    if symbol.contains("__") {
-        return Err(unsupported());
-    }
-    long_double_entry_export_name(symbol, definition)
+const SHIM_FAMILY_PREFIXES: [&str; 6] = ["ld__", "ldv__", "vcall__", "icall__", "ldfp_", "cb_"];
+
+fn names_shim_family(callee: &str) -> bool {
+    SHIM_FAMILY_PREFIXES
+        .iter()
+        .any(|prefix| callee.starts_with(prefix))
 }
 
 pub(super) fn long_double_entry_export_name(entry: &str, definition: &FnDef) -> Result<String> {
@@ -216,7 +212,7 @@ impl FunctionLowerer<'_, '_> {
     ) -> Result<Expr> {
         let callee = function.library.as_deref().unwrap_or(&function.rust);
         if (function.is_variadic && crate::function_identity::Known::from_symbol(callee).is_none())
-            || callee.contains("__")
+            || names_shim_family(callee)
         {
             return Err(Construct::LongDouble {
                 detail: format!("call to {callee}"),

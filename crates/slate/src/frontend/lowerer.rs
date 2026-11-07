@@ -901,7 +901,8 @@ impl<'m> ModuleLowerer<'m> {
                 }
                 Ok(Item::Fn(mut definition)) if exported => {
                     let export = if self.tables.passes_long_double(function) {
-                        long_double_export_name(&function.name, &definition).map(Attr::ExportName)
+                        long_double_entry_export_name(&function.name, &definition)
+                            .map(Attr::ExportName)
                     } else if definition.name != function.name {
                         Ok(Attr::ExportName(function.name.clone()))
                     } else {
