@@ -2,7 +2,6 @@ use miette::{Diagnostic, Severity};
 use serde_json::{Value, json};
 use slate_parser::ast::Loc;
 use slate_parser::files::Files;
-use std::path::Path;
 
 pub fn collect(diagnostic: &dyn Diagnostic, output: &mut Vec<Value>) {
     let labels: Vec<_> = diagnostic
@@ -86,32 +85,6 @@ pub fn frontend(error: &crate::frontend::Error, files: &Files) -> Value {
 
 pub fn plain(message: &str) -> Value {
     json!({"severity": "error", "message": message, "labels": []})
-}
-
-pub fn directive(
-    error: &crate::frontend::directive_translate::DirectiveError,
-    path: &Path,
-) -> Value {
-    use crate::frontend::directive_translate::DirectiveError;
-    let line = match error {
-        DirectiveError::UnsupportedDirective { line, .. }
-        | DirectiveError::UnmappableDirectiveGuard { line, .. }
-        | DirectiveError::ConditionalInBody { line, .. }
-        | DirectiveError::VariantCapExceeded { line, .. }
-        | DirectiveError::UnmappablePredicate { line, .. }
-        | DirectiveError::UnselectableBranch { line, .. } => Some(*line),
-        _ => None,
-    };
-    let mut diagnostic = plain(&error.to_string());
-    if let Some(line) = line {
-        diagnostic["labels"] = json!([{
-            "file": path.display().to_string(),
-            "line": line,
-            "column": 1,
-            "primary": true,
-        }]);
-    }
-    diagnostic
 }
 
 pub fn render_error(error: &(dyn std::error::Error + 'static)) -> String {

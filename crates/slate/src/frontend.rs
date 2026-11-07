@@ -444,6 +444,3 @@ pub fn reject_directive_errors(
         source: Box::new(slate_parser::pp::DirectiveErrors { errors }),
     })
 }
-
-pub mod directive_translate;
-pub mod preprocess;

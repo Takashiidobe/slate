@@ -14,7 +14,7 @@
 | Scalar widths, char signedness, long double, endianness | `slate-parser::target_info::TargetInfo`                      |
 | Supported triples and predefine snapshots               | `slate-parser::target_registry`                              |
 | Active target selection                                 | `slate::target`                                              |
-| Rust target cfg fields                                  | `slate::frontend::{preprocess,directive_translate}`          |
+| Rust target cfg fields                                  | `slate::project::cfg`                                        |
 | Target facts used by rewrites                           | IR module's `target`, passed to `backend::apply_with_target` |
 
 ## Configuration
@@ -28,10 +28,7 @@
 
 ## Preprocessing
 
-- `preprocess::record_file`: slate-parser predefines and ordered `-D`/`-U` inputs.
-- `preprocess::record_translation_unit`: slate-parser preprocessing, including forced files and headers.
 - Active `#error` / `#warning` records come from slate-parser diagnostics and source spans.
-- `record-cfg` uses translation-unit recording so quoted includes resolve beside the input.
 
 ## Oracle
 

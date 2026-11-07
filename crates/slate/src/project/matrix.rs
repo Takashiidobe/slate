@@ -107,7 +107,7 @@ impl Matrix {
         Ok(matrix)
     }
 
-    fn validate(&self) -> Result<(), MatrixError> {
+    pub(crate) fn validate(&self) -> Result<(), MatrixError> {
         if self.sources.is_empty() {
             return Err(MatrixError::NoSources);
         }

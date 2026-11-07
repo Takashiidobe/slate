@@ -18,7 +18,7 @@ cargo run --release -p slate-c2rust -- translate \
   --target=aarch64-unknown-linux-gnu input.c
 ```
 
-- `translate --targets=<triple>,<triple> input.c` can merge supported whole-item configuration variants into Rust cfg items.
+- `translate --targets=<triple>,<triple> input.c` translates each target and merges them with the `translate-project --merge` engine.
 - `translate-project` consumes compile commands. When a file has commands with different arguments, it translates one build target, named by the directory of each entry's object file (`zlibstatic.dir` is `zlibstatic`, Meson's `libz.so.p` is `libz.so`). It prefers targets with no `main`, then the most files, then no `-fPIC`, then the first name, and prints the choice; `--build-target <name>` overrides this and also applies without a conflict. It does not generate a merged multi-target project.
 - `translate-project --matrix <file> --matrix-target <name> [--features a,b] <project> <crate>` translates one target and feature set from a hand-written matrix instead of a compile database, so host configure results cannot leak into other targets. `tools/corpus/matrices/zlib.json` is the zlib example.
 - `translate-project --plan --matrix <file> [--matrix-target <name>] <project>` prints, per target and translation unit, the feature configurations to compile, using only the preprocessor plus a parse and sema check of the chosen ones. It exits nonzero if a unit cannot be planned. `--plan-exhaustive` also tries every feature subset (at most 16 features) and reports what the plan missed.

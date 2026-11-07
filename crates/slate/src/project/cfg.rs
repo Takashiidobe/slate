@@ -1,11 +1,117 @@
 use crate::backend::rust_ast::Cfg;
-use crate::frontend::directive_translate::target_cfg;
-use slate_parser::target_info::{Endian, TargetInfo, TargetOs};
+use slate_parser::target_info::{Endian, TargetEnvironment, TargetFamily, TargetInfo, TargetOs};
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::sync::Mutex;
 
 pub const MAX_TARGETS: usize = u64::BITS as usize;
 const SEPARATOR: usize = ", ".len();
+
+pub(crate) fn target_cfg(target: &TargetInfo) -> Cfg {
+    let opt = |key: &str, value: &str| Cfg::Opt {
+        key: key.into(),
+        value: value.into(),
+    };
+    let arch = match target.family {
+        TargetFamily::X86_64 => "x86_64",
+        TargetFamily::X86 => "x86",
+        TargetFamily::AArch64 => "aarch64",
+        TargetFamily::Arm32 => "arm",
+    };
+    let os = match target.os {
+        TargetOs::Windows => Cfg::Flag("windows".into()),
+        TargetOs::Linux => opt("target_os", "linux"),
+        TargetOs::Darwin => opt("target_os", "macos"),
+        TargetOs::Android => opt("target_os", "android"),
+        TargetOs::FreeBsd => opt("target_os", "freebsd"),
+    };
+    let env = match target.environment {
+        _ if target.triple.contains("musl") => Some("musl"),
+        TargetEnvironment::Gnu | TargetEnvironment::GnuEabi | TargetEnvironment::GnuEabiHf => {
+            Some("gnu")
+        }
+        TargetEnvironment::Msvc => Some("msvc"),
+        TargetEnvironment::Darwin | TargetEnvironment::Android | TargetEnvironment::FreeBsd => None,
+    };
+    let mut atoms = vec![opt("target_arch", arch), os];
+    atoms.extend(env.map(|env| opt("target_env", env)));
+    Cfg::All(atoms)
+}
+
+fn cfg_atom_key(cfg: &Cfg) -> Option<String> {
+    match cfg {
+        Cfg::Flag(name) => Some(format!("flag:{name}")),
+        Cfg::Opt { key, .. } => Some(key.clone()),
+        Cfg::Not(_) | Cfg::Any(_) | Cfg::All(_) => None,
+    }
+}
+
+fn cfg_atoms(cfg: &Cfg) -> Option<Vec<Cfg>> {
+    match cfg {
+        Cfg::All(atoms) => atoms
+            .iter()
+            .map(|atom| cfg_atom_key(atom).map(|_| atom.clone()))
+            .collect(),
+        atom if cfg_atom_key(atom).is_some() => Some(vec![atom.clone()]),
+        _ => None,
+    }
+}
+
+pub(crate) fn factor_cfgs(cfgs: Vec<Cfg>) -> Cfg {
+    if cfgs.len() == 1 {
+        return cfgs.into_iter().next().unwrap();
+    }
+    let fallback = || Cfg::Any(cfgs.clone());
+
+    let Some(atom_lists): Option<Vec<Vec<Cfg>>> = cfgs.iter().map(cfg_atoms).collect() else {
+        return fallback();
+    };
+    let template_keys: Vec<String> = atom_lists[0]
+        .iter()
+        .map(|atom| cfg_atom_key(atom).expect("cfg_atoms only returns keyed atoms"))
+        .collect();
+    let same_shape = atom_lists.iter().all(|atoms| {
+        atoms.len() == template_keys.len()
+            && atoms
+                .iter()
+                .map(|atom| cfg_atom_key(atom).expect("cfg_atoms only returns keyed atoms"))
+                .eq(template_keys.iter().cloned())
+    });
+    if !same_shape {
+        return fallback();
+    }
+
+    let mut varying_positions = Vec::new();
+    for (i, _) in template_keys.iter().enumerate() {
+        let mut distinct: Vec<&Cfg> = Vec::new();
+        for atoms in &atom_lists {
+            if !distinct.contains(&&atoms[i]) {
+                distinct.push(&atoms[i]);
+            }
+        }
+        if distinct.len() > 1 {
+            varying_positions.push(i);
+        }
+    }
+    let [varying] = varying_positions[..] else {
+        return fallback();
+    };
+
+    let mut result_atoms = Vec::with_capacity(template_keys.len());
+    for i in 0..template_keys.len() {
+        if i == varying {
+            let mut values: Vec<Cfg> = Vec::new();
+            for atoms in &atom_lists {
+                if !values.contains(&atoms[i]) {
+                    values.push(atoms[i].clone());
+                }
+            }
+            result_atoms.push(Cfg::Any(values));
+        } else {
+            result_atoms.push(atom_lists[0][i].clone());
+        }
+    }
+    Cfg::All(result_atoms)
+}
 
 pub fn target_properties(target: &TargetInfo) -> BTreeSet<Cfg> {
     let opt = |key: &str, value: String| Cfg::Opt {

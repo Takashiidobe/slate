@@ -1,5 +1,8 @@
 use crate::backend::{self, rust_ast};
-use crate::frontend::{self, directive_translate, preprocess};
+use crate::frontend;
+use crate::project::matrix::{self, Matrix};
+use crate::project::merge::{self, Projection};
+use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 use thiserror::Error as ThisError;
 
@@ -16,8 +19,8 @@ pub enum Error {
     },
     #[error("format generated Rust: {message}")]
     Format { message: String },
-    #[error(transparent)]
-    Directive(#[from] directive_translate::DirectiveError),
+    #[error("{0}")]
+    Merge(String),
 }
 
 pub fn slate_ir_with_args(
@@ -27,29 +30,11 @@ pub fn slate_ir_with_args(
     frontend::parse_module_with_args(path, compiler_args).map_err(Error::from)
 }
 
-/// Translates a C source file into Rust.
-///
-/// # Errors
-///
-/// Returns [`Error`] when reading, lowering, formatting, or translating the source fails.
 pub fn translate(path: &Path) -> Result<String, Error> {
     translate_with_args(path, &[])
 }
 
-/// Translates a C source file into Rust with additional compiler arguments.
-///
-/// # Errors
-///
-/// Returns [`Error`] when preprocessing, lowering, formatting, or translation fails.
 pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String, Error> {
-    let (contents, _raw) = preprocess::read_source(path).map_err(|source| Error::Read {
-        path: path.to_path_buf(),
-        source,
-    })?;
-    if directive_translate::should_auto_expand(&contents) {
-        return directive_translate::translate_directives_with_args(path, extra_args)
-            .map_err(Error::Directive);
-    }
     let (module, files, diagnostics) = frontend::parse_module_with_source(path, None, extra_args)?;
     let mut program = frontend::lower_single_module(
         &module,
@@ -57,18 +42,13 @@ pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String,
         &frontend::lowerer::LowerOptions::default(),
         "main",
     )?;
-    directive_translate::insert_directive_items(
+    insert_after_crate_attrs(
         &mut program,
         diagnostics
             .iter()
             .enumerate()
             .flat_map(|(index, diagnostic)| match diagnostic.severity {
-                miette::Severity::Warning => directive_translate::warning_items(
-                    &diagnostic.text,
-                    index,
-                    None,
-                    directive_translate::WarningBackend::Standalone,
-                ),
+                miette::Severity::Warning => warning_items(&diagnostic.text, index),
                 _ => vec![rust_ast::Item::Macro {
                     name: "compile_error".into(),
                     args: vec![rust_ast::Expr::Str(diagnostic.text.clone())],
@@ -76,24 +56,19 @@ pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String,
             })
             .collect(),
     );
-    let mut program = backend::apply_with_target(program, &module.target);
-    backend::assign_template_names(std::iter::once(&mut program));
-    let source = program.emit();
-    backend::pretty_rust(&source).map_err(|message| Error::Format { message })
+    format_program(backend::apply_with_target(program, &module.target))
 }
 
-/// Translates a C source file for the requested target triples.
-///
-/// # Errors
-///
-/// Returns [`Error::Directive`] if target-specific directive translation fails.
 pub fn translate_targets_with_args(
     path: &Path,
     extra_args: &[String],
     targets: &[String],
 ) -> Result<String, Error> {
-    directive_translate::translate_targets_with_args(path, extra_args, targets)
-        .map_err(Error::Directive)
+    match dedup(targets).as_slice() {
+        [] => translate_with_args(path, extra_args),
+        [target] => translate_with_args(path, &with_target(extra_args, target)),
+        targets => merge_targets(path, extra_args, targets),
+    }
 }
 
 pub fn translate_with_diagnostics(
@@ -101,7 +76,168 @@ pub fn translate_with_diagnostics(
     extra_args: &[String],
     targets: &[String],
 ) -> (Result<String, Error>, Vec<serde_json::Value>) {
-    let (result, diagnostics) =
-        directive_translate::translate_with_diagnostics(path, extra_args, targets);
-    (result.map_err(Error::Directive), diagnostics)
+    let targets = dedup(targets);
+    let mut diagnostics = Vec::new();
+    let result = match targets.as_slice() {
+        [] => checked_program(path, extra_args, None, &mut diagnostics).and_then(format_program),
+        [target] => checked_program(
+            path,
+            &with_target(extra_args, target),
+            Some(target),
+            &mut diagnostics,
+        )
+        .and_then(format_program),
+        _ => targets
+            .iter()
+            .map(|target| {
+                checked_program(
+                    path,
+                    &with_target(extra_args, target),
+                    Some(target),
+                    &mut diagnostics,
+                )
+            })
+            .collect::<Vec<_>>()
+            .into_iter()
+            .find_map(Result::err)
+            .map_or_else(|| merge_targets(path, extra_args, &targets), Err),
+    };
+    if let Err(error) = &result
+        && !diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic["severity"] == "error")
+    {
+        diagnostics.push(crate::diagnostics::plain(&error.to_string()));
+    }
+    let mut seen = BTreeSet::new();
+    diagnostics.retain(|diagnostic| seen.insert(diagnostic.to_string()));
+    (result, diagnostics)
+}
+
+fn checked_program(
+    path: &Path,
+    args: &[String],
+    target: Option<&String>,
+    diagnostics: &mut Vec<serde_json::Value>,
+) -> Result<rust_ast::Program, Error> {
+    let start = diagnostics.len();
+    let result = (|| {
+        let (module, files, directives) =
+            frontend::parse_module_with_diagnostics(path, None, args, diagnostics)?;
+        frontend::reject_directive_errors(path, &directives)?;
+        let program = frontend::lower_single_module(
+            &module,
+            &files,
+            &frontend::lowerer::LowerOptions::default(),
+            "main",
+        )
+        .inspect_err(|error| diagnostics.push(crate::diagnostics::frontend(error, &files)))?;
+        Ok(backend::apply_with_target(program, &module.target))
+    })();
+    for diagnostic in &mut diagnostics[start..] {
+        diagnostic["target"] = serde_json::json!(target);
+    }
+    result
+}
+
+fn merge_targets(path: &Path, extra_args: &[String], targets: &[String]) -> Result<String, Error> {
+    let source = std::path::absolute(path).map_err(|source| Error::Read {
+        path: path.to_path_buf(),
+        source,
+    })?;
+    let project = source.parent().unwrap_or(Path::new("/"));
+    let mut flavor = "clang".to_string();
+    let args = extra_args
+        .iter()
+        .filter(|arg| match arg.strip_prefix("--flavor=") {
+            Some(value) => {
+                value.clone_into(&mut flavor);
+                false
+            }
+            None => true,
+        })
+        .cloned()
+        .collect();
+    let matrix = Matrix {
+        sources: vec![source.clone()],
+        args,
+        targets: targets
+            .iter()
+            .map(|triple| matrix::Target {
+                name: triple.clone(),
+                triple: triple.clone(),
+                flavor: flavor.clone(),
+                sysroot: None,
+                args: Vec::new(),
+            })
+            .collect(),
+        features: Vec::new(),
+        invalid_features: Vec::new(),
+    };
+    matrix
+        .validate()
+        .map_err(|error| Error::Merge(error.to_string()))?;
+    let merged =
+        merge::merge(&matrix, project, &[], Projection::Skip, &[]).map_err(Error::Merge)?;
+    let mut program = merged
+        .units
+        .into_iter()
+        .next()
+        .map(|(_, program)| program)
+        .unwrap_or_default();
+    let mut prologue = vec![merged.target_guard];
+    prologue.extend(
+        merged
+            .shared_macros
+            .into_iter()
+            .flat_map(|macros| macros.items),
+    );
+    insert_after_crate_attrs(&mut program, prologue);
+    backend::pretty_rust(&program.emit()).map_err(|message| Error::Format { message })
+}
+
+fn format_program(mut program: rust_ast::Program) -> Result<String, Error> {
+    backend::assign_template_names(std::iter::once(&mut program));
+    backend::pretty_rust(&program.emit()).map_err(|message| Error::Format { message })
+}
+
+fn dedup(targets: &[String]) -> Vec<String> {
+    let mut seen = BTreeSet::new();
+    targets
+        .iter()
+        .filter(|target| seen.insert(target.as_str()))
+        .cloned()
+        .collect()
+}
+
+fn with_target(args: &[String], target: &str) -> Vec<String> {
+    let mut args = args.to_vec();
+    args.push(format!("--target={target}"));
+    args
+}
+
+fn warning_items(message: &str, index: usize) -> Vec<rust_ast::Item> {
+    vec![
+        rust_ast::Item::Const {
+            attrs: vec![rust_ast::Attr::Deprecated(Some(message.into()))],
+            name: format!("__SLATE_WARNING_{index}"),
+            ty: rust_ast::Type::Unit,
+            init: rust_ast::Expr::Block(Box::default()),
+        },
+        rust_ast::Item::Const {
+            attrs: Vec::new(),
+            name: "_".into(),
+            ty: rust_ast::Type::Unit,
+            init: rust_ast::Expr::Var(format!("__SLATE_WARNING_{index}").into()),
+        },
+    ]
+}
+
+fn insert_after_crate_attrs(program: &mut rust_ast::Program, items: Vec<rust_ast::Item>) {
+    let index = program
+        .items
+        .iter()
+        .take_while(|item| matches!(item, rust_ast::Item::CrateAttrs(_)))
+        .count();
+    program.items.splice(index..index, items);
 }

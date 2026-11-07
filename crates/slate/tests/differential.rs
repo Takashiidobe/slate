@@ -649,7 +649,6 @@ fn translation_uses_builtin_frontend() {
     let target = "--target=x86_64-unknown-linux-gnu";
     let inputs = [
         vec!["translate", target, source.to_str().unwrap()],
-        vec!["record-cfg", source.to_str().unwrap(), target],
         vec![
             "translate-project",
             "--compile-commands",

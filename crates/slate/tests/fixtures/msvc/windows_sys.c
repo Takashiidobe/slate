@@ -31,12 +31,32 @@ int main(void) { return 0; }
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: unsafe extern "C" {
+// I686-PC-WINDOWS-MSVC-NEXT:     fn _getpid() -> i32;
+// I686-PC-WINDOWS-MSVC-NEXT: }
+// I686-PC-WINDOWS-MSVC-EMPTY:
+// I686-PC-WINDOWS-MSVC-NEXT: unsafe extern "stdcall" {
+// CHECK-NEXT:     fn CreateEventW(
+// CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: *mut slate_support::windows::Win32::Security::SECURITY_ATTRIBUTES,
+// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: i32,
+// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: i32,
+// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *const u16,
+// CHECK-NEXT:     ) -> *mut ();
+// X86_64-PC-WINDOWS-MSVC-NEXT:     fn _getpid() -> i32;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     fn _getpid() -> i32;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: use slate_support::abort;
+// CHECK-NEXT: use slate_support::windows::Win32::Foundation::CloseHandle;
+// CHECK-NEXT: use slate_support::windows::Win32::System::SystemInformation::GetSystemTime;
+// CHECK-NEXT: use slate_support::windows::Win32::System::Threading::GetCurrentProcessId;
+// CHECK-NEXT: use slate_support::windows::Win32::System::Threading::SetEvent;
+// CHECK-NEXT: use slate_support::windows::Win32::System::Threading::WaitForSingleObject;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn current_process_id() -> u32 {
 // CHECK-NEXT:     unsafe { GetCurrentProcessId() as u32 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:     let process_id: Option<unsafe extern "C-unwind" fn() -> u32> = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn() -> u32>>(
@@ -83,53 +103,14 @@ int main(void) { return 0; }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: unsafe extern "C-unwind" fn main(
-// CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
-// CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     unsafe { __slate_main() }
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(windows))]
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     0
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(windows))]
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: unsafe extern "C-unwind" fn main(
-// CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
-// CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     unsafe { __slate_main() }
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: unsafe extern "C" {
-// I686-PC-WINDOWS-MSVC-NEXT:     fn _getpid() -> i32;
-// I686-PC-WINDOWS-MSVC-NEXT: }
-// I686-PC-WINDOWS-MSVC-EMPTY:
-// I686-PC-WINDOWS-MSVC-NEXT: unsafe extern "stdcall" {
-// CHECK-NEXT:     fn CreateEventW(
-// CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: *mut slate_support::windows::Win32::Security::SECURITY_ATTRIBUTES,
-// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: i32,
-// CHECK-NEXT:         [[ARG_2:arg[0-9]+]]: i32,
-// CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *const u16,
-// CHECK-NEXT:     ) -> *mut ();
-// X86_64-PC-WINDOWS-MSVC-NEXT:     fn _getpid() -> i32;
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     fn _getpid() -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::abort;
-// CHECK-NEXT: use slate_support::windows::Win32::Foundation::CloseHandle;
-// CHECK-NEXT: use slate_support::windows::Win32::System::SystemInformation::GetSystemTime;
-// CHECK-NEXT: use slate_support::windows::Win32::System::Threading::GetCurrentProcessId;
-// CHECK-NEXT: use slate_support::windows::Win32::System::Threading::SetEvent;
-// CHECK-NEXT: use slate_support::windows::Win32::System::Threading::WaitForSingleObject;
-// CHECK-EMPTY:
 // CHECK-NEXT: // { dg-options "/Zc:preprocessor" }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

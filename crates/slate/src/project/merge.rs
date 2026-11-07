@@ -1,4 +1,4 @@
-use super::cfg::{TargetConditions, holds};
+use super::cfg::{TargetConditions, factor_cfgs, holds, target_cfg};
 use super::matrix::Matrix;
 use super::splice::Variants;
 use crate::backend::engine::macro_templates::rename_templates;
@@ -6,11 +6,10 @@ use crate::backend::engine::unlabeled_jump;
 use crate::backend::link::signatures::{self, UnitCompiles};
 use crate::backend::rust_ast::{
     Attr, Cfg, CrateAttr, Expr, ExternDecl, Item, MacroOutcome, MacroParam, Program, Stmt,
-    macro_template_base,
+    TraitRef, macro_template_base,
 };
 use crate::backend::{self, Exports};
 use crate::compile_commands::CompileCommand;
-use crate::frontend::directive_translate::{factor_cfgs, item_key, target_cfg};
 use crate::frontend::distinct_functions::{self, SectionCandidates};
 use crate::frontend::{self, lowerer};
 use rayon::prelude::*;
@@ -63,6 +62,49 @@ pub fn rust_ident(name: &str) -> String {
         out.insert(0, '_');
     }
     out
+}
+
+fn item_key(item: &Item) -> String {
+    match item {
+        Item::CrateAttrs(_) => "crate-attrs".into(),
+        Item::Comment(comment) => format!("comment:{}", comment.lines.join("\n")),
+        Item::ExternBlock { .. } => "extern".into(),
+        Item::Fn(f) => format!("fn:{}", f.name),
+        Item::Static { name, .. } => format!("static:{name}"),
+        Item::Const { name, .. } => format!("const:{name}"),
+        Item::TypeAlias { name, .. } => format!("type:{name}"),
+        Item::Mod { name, .. } => format!("mod:{name}"),
+        Item::InlineMod { name, .. } => format!("inline-mod:{name}"),
+        Item::Use { path, .. } => format!(
+            "use:{}",
+            path.segments
+                .iter()
+                .map(|s| s.as_str())
+                .collect::<Vec<_>>()
+                .join("::")
+        ),
+        Item::Enum(e) => format!("enum:{}", e.name),
+        Item::Record(r) => format!("record:{}", r.name),
+        Item::Struct(s) => format!("struct:{}", s.name),
+        Item::Impl(im) => format!(
+            "impl:{}:{}",
+            match &im.trait_ {
+                Some(TraitRef::Std(t)) => t.path().to_string(),
+                Some(TraitRef::From(ty)) => format!("From<{}>", ty.render()),
+                None => String::new(),
+            },
+            im.self_ty.render()
+        ),
+        Item::Macro { name, args } => format!(
+            "macro:{name}:{}",
+            args.iter().map(Expr::render).collect::<Vec<_>>().join(",")
+        ),
+        Item::MacroUseMod { name } => format!("mod:{name}"),
+        Item::MacroRules { name, .. } => format!("macro-rules:{name}"),
+        Item::Cfg { item, .. } => item_key(item),
+        Item::SupportModule(module) => format!("support-module:{}", module.name),
+        Item::GlobalAsm(asm) => format!("global-asm:{}", asm.template),
+    }
 }
 
 pub fn collect_all_errors<T>(results: Vec<Result<T, String>>) -> Result<Vec<T>, String> {

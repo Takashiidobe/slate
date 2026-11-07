@@ -22,7 +22,7 @@ C + target headers -> slate-parser -> ir::Module
 | Arguments and target    | `crates/slate/src/target.rs`                                  | Parser arguments, target default, layout options                        |
 | Preprocess, parse, sema | `crates/slate-parser` via `src/frontend.rs`                   | C semantics and typed IR                                                |
 | Rust lowering           | `src/frontend/lowerer.rs` and its modules                     | Translate typed values, places, statements and declarations             |
-| Directives              | `src/frontend/{preprocess,directive_translate}.rs`            | Record directives and merge supported whole-item configuration branches |
+| Multi-target merge      | `src/project/{merge,cfg,splice,hoist}.rs`                     | Merge per-target translations behind Rust cfg items                     |
 | C runtime bridges       | `src/frontend/{c_shim,long_double}.rs`, `src/frontend/shims/` | ABI bridges for values Rust cannot pass directly                        |
 | Backend                 | `src/backend/{rust_ast,codegen,engine,interproc}`             | Rust AST, emission, analyses and rewrites                               |
 | Project orchestration   | `src/main.rs`, `src/compile_commands.rs`                      | Parse translation units, export symbols, write a Cargo crate            |
@@ -45,8 +45,7 @@ with `crates/`.
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `emit-slate-ir`     | Printed typed parser IR                                                                                                                                                                                                                                                                          |
 | `lowering-barriers` | All lowering barriers, without emitting Rust                                                                                                                                                                                                                                                     |
-| `translate`         | Rust after the backend pipeline; supported directive branches may become cfg items                                                                                                                                                                                                               |
-| `record-cfg`        | Recorded directive activity, branches and diagnostics as JSON                                                                                                                                                                                                                                    |
+| `translate`         | Rust after the backend pipeline for one target; `--targets=a,b` merges several targets with the `--merge` engine                                                                                                                                                                                 |
 | `translate-project` | Cargo crate with translation units as modules and optional C shims: a binary when one unit defines `main`, otherwise a library with `--crate-type` rlib/staticlib/cdylib. Each command parses as the compiler it names unless `--flavor` overrides ([compiler-arg-rules](compiler-arg-rules.md)) |
 
 ## Projects and targets

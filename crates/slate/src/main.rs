@@ -2,7 +2,6 @@ use clap::{Args, Parser, Subcommand};
 use rayon::prelude::*;
 use slate::backend::{self, codegen, rust_ast};
 use slate::frontend::c_shim;
-use slate::frontend::preprocess;
 use slate::project::merge::{Unit as SlateUnit, collect_all_errors, rust_ident};
 use slate::project::{matrix, merge, plan};
 use slate::{api, compile_commands};
@@ -29,7 +28,6 @@ enum Command {
     EmitSlateIr(RawArgs),
     Translate(RawArgs),
     LoweringBarriers(RawArgs),
-    RecordCfg(RawArgs),
     TranslateProject(RawArgs),
     #[cfg(feature = "sysroot-install")]
     Sysroot(SysrootArgs),
@@ -109,10 +107,6 @@ fn run_cli() -> ExitCode {
         },
         Command::LoweringBarriers(raw) => match raw.args.split_last() {
             Some((path, compiler_args)) => lowering_barriers(Path::new(path), compiler_args),
-            None => ExitCode::from(2),
-        },
-        Command::RecordCfg(raw) => match raw.args.first() {
-            Some(path) => run(record_cfg(Path::new(path), &raw.args[1..])),
             None => ExitCode::from(2),
         },
         Command::TranslateProject(raw) => match raw.args.first() {
@@ -1271,80 +1265,4 @@ fn write_project_crate(
         .into_iter()
         .map(|path| format!("wrote {}\n", path.display()))
         .collect())
-}
-
-fn record_cfg(path: &Path, compiler_args: &[String]) -> Result<String, String> {
-    let (source, _raw) =
-        preprocess::read_source(path).map_err(|e| format!("read {}: {e}", path.display()))?;
-    let pp = cli_result(preprocess::record_translation_unit(
-        path,
-        &source,
-        compiler_args,
-    ))?;
-    let directives: Vec<serde_json::Value> = pp
-        .directives
-        .iter()
-        .map(|directive| {
-            serde_json::json!({
-                "name": directive.name.as_str(),
-                "disposition": directive.disposition().as_str(),
-                "raw_payload": directive.raw_payload,
-                "byte_start": directive.byte_start,
-                "byte_end": directive.byte_end,
-                "line_start": directive.line_start,
-                "line_end": directive.line_end,
-                "depth": directive.depth,
-                "condition": directive.condition.as_ref().map(preprocess::predicate_text),
-                "active": directive.active,
-            })
-        })
-        .collect();
-    let chains: Vec<serde_json::Value> = pp
-        .chains
-        .iter()
-        .map(|chain| {
-            let branches: Vec<serde_json::Value> = chain
-                .branches
-                .iter()
-                .map(|branch| {
-                    serde_json::json!({
-                        "kind": branch.kind.as_str(),
-                        "raw_predicate": branch.raw_predicate,
-                        "directive_line": branch.directive_line,
-                        "body_start": branch.body_start,
-                        "body_end": branch.body_end,
-                        "rust_cfg": branch.rust_cfg.as_ref().map(|c| c.render()),
-                        "active": branch.active,
-                    })
-                })
-                .collect();
-            serde_json::json!({
-                "depth": chain.depth,
-                "open_line": chain.open_line,
-                "endif_line": chain.endif_line,
-                "branches": branches,
-            })
-        })
-        .collect();
-    let diagnostics: Vec<serde_json::Value> = pp
-        .diagnostics
-        .iter()
-        .map(|d| {
-            serde_json::json!({
-                "kind": d.kind.as_str(),
-                "line": d.line,
-                "message": d.message,
-            })
-        })
-        .collect();
-    let doc = serde_json::json!({
-        "file": path.to_string_lossy(),
-        "directives": directives,
-        "chains": chains,
-        "diagnostics": diagnostics,
-    });
-    Ok(format!(
-        "{}\n",
-        serde_json::to_string_pretty(&doc).map_err(|e| format!("serialize cfg regions: {e}"))?
-    ))
 }

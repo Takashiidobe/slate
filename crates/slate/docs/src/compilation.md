@@ -13,10 +13,9 @@ headers from slate-sysroots. Building and running generated Rust also requires
 the matching Rust target, linker, C libraries and, when runtime bridges are
 used, a C cross compiler.
 
-Single-file `translate --targets=<triple>,<triple> input.c` can merge supported
-whole-item configuration branches into Rust cfg items. Project translation
-rejects multiple configurations of one translation unit; it does not merge
-several target builds of a project into one crate.
+Single-file `translate --targets=<triple>,<triple> input.c` and
+`translate-project --merge` translate each target and merge the results into
+one crate, gating what differs behind Rust cfg items.
 
 The current differential profile executes host-target tests. Successful
 cross-target translation alone is not runtime validation.
