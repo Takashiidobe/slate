@@ -1280,7 +1280,7 @@ fn slate_support_definition(name: &str, target: &TargetInfo) -> Option<Prim> {
         "ssize_t" | "ptrdiff_t" | "intptr_t" if wide => Prim::I64,
         "ssize_t" | "ptrdiff_t" | "intptr_t" => Prim::I32,
         "off_t" if windows => Prim::I32,
-        "off_t" if !wide && matches!(target.os, TargetOs::Android) => Prim::I32,
+        "off_t" if narrow_glibc_or_bionic => Prim::I32,
         "off_t" => Prim::I64,
         "wchar_t" if windows => Prim::U16,
         "wchar_t" if x86_64 || matches!(target.family, TargetFamily::X86) || darwin => Prim::I32,
@@ -1302,6 +1302,7 @@ pub(super) fn named_prim_item(name: &str, resolved: Prim, target: &TargetInfo) -
         use_item(&["core", "ffi", name])
     } else if let Some(symbol) =
         crate::libc_catalog::lookup(name, &target.triple, crate::libc_catalog::Kind::Type)
+        && slate_support_definition(name, target).is_none_or(|definition| definition == resolved)
     {
         use_item(&symbol.rust_path.split("::").collect::<Vec<_>>())
     } else if slate_support_definition(name, target) == Some(resolved) {

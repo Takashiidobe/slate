@@ -43,7 +43,6 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush([[ARG_0:arg[0-9]+]]: *mut slate_support::FILE) -> i32;
-// CHECK-NEXT:     fn getpid() -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn syscall3(mut x8: i64, mut x0: i64, mut x1: i64, mut x2: i64) -> i64 {
 // CHECK-NEXT:     unsafe {
@@ -56,6 +55,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x0
 // CHECK-NEXT: }
+// CHECK-NEXT: use slate_support::getpid;
 // CHECK-NEXT: fn syscall0(mut x8: i64) -> i64 {
 // CHECK-NEXT:     let mut x0: i64 = 0;
 // CHECK-NEXT:     unsafe {
@@ -103,7 +103,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%ld %d\n".as_ptr(),
 // CHECK-NEXT:             written,
-// CHECK-NEXT:             (syscall0(172i64) == (getpid() as i64)) as i32,
+// CHECK-NEXT:             (syscall0(172i64) == ((getpid() as i32) as i64)) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

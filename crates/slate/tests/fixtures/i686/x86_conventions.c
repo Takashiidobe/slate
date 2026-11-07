@@ -97,7 +97,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.fast_ints")]
 // CHECK-NEXT: extern "fastcall-unwind" fn fast_ints(a: i32, b: u8, c: i32, d: i16) -> i32 {
-// CHECK-NEXT:     a * 1000 + ((b as u32) as i32) * 100 + c * 10 + (d as i32)
+// CHECK-NEXT:     a * 1000 + (b as i32) * 100 + c * 10 + (d as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: extern "fastcall-unwind" fn fast_mix(x: f64, a: i32, y: f32, b: i32, c: i32) -> f64 {
 // CHECK-NEXT:     x + ((a * 2) as f64) + (y as f64) + ((b * 3) as f64) + ((c * 4) as f64)

@@ -53,9 +53,11 @@ checked-in catalogs contain names, canonical destinations and target
 eligibility; compatibility details stay in the generator report.
 
 The vendored libc defaults to FreeBSD 15 and to 64-bit file offsets and time on
-32-bit glibc. Header probes use `_FILE_OFFSET_BITS=64` and `_TIME_BITS=64` on
-those glibc targets. Workspace builds select the same libc settings. Explicit
-libc version and time-width overrides take precedence.
+32-bit glibc. Header probes use each target's default C ABI, so on 32-bit glibc
+`off_t` is 32 bits. `slate_support` therefore declares `off_t` and the functions
+taking it against the plain 32-bit symbols; bindings that depend on 64-bit
+`time_t` stay out of the 32-bit glibc catalog. Workspace builds select the same
+libc settings. Explicit libc version and time-width overrides take precedence.
 
 Translation honors each project's compiler flags. A source declaration using
 another ABI must select compatible libc settings before using these mappings.

@@ -53,13 +53,8 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-fcomplex-arithmetic=improved" }
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT: mod __slate_libgcc {
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     #[link(name = "gcc", kind = "static")]
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     unsafe extern "C" {}
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT: }
-// AARCH64-UNKNOWN-LINUX-GNU-EMPTY:
-// CHECK-NEXT: unsafe extern "C" {
-// I686-UNKNOWN-LINUX-GNU-NEXT:     fn memcpy([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u32) -> *mut ();
+// X86_64-UNKNOWN-LINUX-GNU-NEXT: unsafe extern "C" {
+// I686-UNKNOWN-LINUX-GNU-NEXT: unsafe extern "C" {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -282,7 +277,9 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn __slate_printf__ri32_pi8_f80_f80(_0: *const i8, _1: LongDouble, _2: LongDouble) -> i32;
 // I686-UNKNOWN-LINUX-GNU-NEXT:     fn __slate_printf__ri32_pi8_f80_f80(_0: *const i8, _1: LongDouble, _2: LongDouble) -> i32;
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     fn memcpy([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT: mod __slate_libgcc {
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     #[link(name = "gcc", kind = "static")]
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
@@ -489,8 +486,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%s %a %a\n".as_ptr(), name, z.re, z.im) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT: }
-// X86_64-UNKNOWN-LINUX-GNU-EMPTY:
-// X86_64-UNKNOWN-LINUX-GNU-NEXT: use slate_support::memcpy;
+// CHECK-EMPTY:
+// CHECK-NEXT: use slate_support::memcpy;
 // CHECK-EMPTY:
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: fn showf(name: *const i8, z: num_complex::Complex<f32>) {
 // I686-UNKNOWN-LINUX-GNU-NEXT: fn showf(name: *const i8, z: num_complex::Complex<f32>) {
@@ -544,12 +541,12 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((parts.0.as_mut_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((bits.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((std::mem::size_of::<[u64; 2]>() as u64) as usize) as usize,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 parts.as_mut_ptr() as *const u8,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 bits.as_mut_ptr() as *mut u8,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 std::mem::size_of::<[u64; 2]>(),
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 parts.as_mut_ptr() as *const u8,
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 bits.as_mut_ptr() as *mut u8,
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 std::mem::size_of::<[u64; 2]>(),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 ((parts.as_mut_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 ((bits.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 ((std::mem::size_of::<[u64; 2]>() as u32) as usize) as usize,
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 ((parts.as_mut_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 ((bits.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 ((std::mem::size_of::<[u64; 2]>() as u64) as usize) as usize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         hash = hash
@@ -575,15 +572,11 @@ int main(void) {
 // CHECK-NEXT:         let mut bitsf: [u32; 2] = [0u32; 2];
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             std::ptr::copy_nonoverlapping(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((partsf.as_mut_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((bitsf.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:                 ((partsf.as_mut_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:                 ((bitsf.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((std::mem::size_of::<[u32; 2]>() as u64) as usize) as usize,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 partsf.as_mut_ptr() as *const u8,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 bitsf.as_mut_ptr() as *mut u8,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 std::mem::size_of::<[u32; 2]>(),
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 partsf.as_mut_ptr() as *const u8,
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 bitsf.as_mut_ptr() as *mut u8,
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 std::mem::size_of::<[u32; 2]>(),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 ((std::mem::size_of::<[u32; 2]>() as u32) as usize) as usize,
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 ((std::mem::size_of::<[u32; 2]>() as u64) as usize) as usize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         hashf = hashf

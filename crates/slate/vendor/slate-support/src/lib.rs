@@ -165,7 +165,38 @@ pub type intptr_t = i64;
 #[cfg(target_pointer_width = "32")]
 pub type intptr_t = i32;
 
+#[cfg(not(all(target_os = "linux", target_env = "gnu", target_pointer_width = "32")))]
 pub use libc::off_t;
+#[cfg(all(target_os = "linux", target_env = "gnu", target_pointer_width = "32"))]
+pub type off_t = c_long;
+
+#[cfg(all(target_os = "linux", target_env = "gnu", target_pointer_width = "32"))]
+unsafe extern "C" {
+    pub fn lseek(fd: c_int, offset: off_t, whence: c_int) -> off_t;
+    pub fn pread(fd: c_int, buf: *mut c_void, count: usize, offset: off_t) -> isize;
+    pub fn pwrite(fd: c_int, buf: *const c_void, count: usize, offset: off_t) -> isize;
+    pub fn mmap(
+        addr: *mut c_void,
+        len: usize,
+        prot: c_int,
+        flags: c_int,
+        fd: c_int,
+        offset: off_t,
+    ) -> *mut c_void;
+    pub fn truncate(path: *const c_char, length: off_t) -> c_int;
+    pub fn ftruncate(fd: c_int, length: off_t) -> c_int;
+    pub fn fseeko(stream: *mut FILE, offset: off_t, whence: c_int) -> c_int;
+    pub fn ftello(stream: *mut FILE) -> off_t;
+    pub fn lockf(fd: c_int, cmd: c_int, len: off_t) -> c_int;
+    pub fn posix_fadvise(fd: c_int, offset: off_t, len: off_t, advise: c_int) -> c_int;
+    pub fn posix_fallocate(fd: c_int, offset: off_t, len: off_t) -> c_int;
+    pub fn fallocate(fd: c_int, mode: c_int, offset: off_t, len: off_t) -> c_int;
+    pub fn readahead(fd: c_int, offset: off_t, count: usize) -> isize;
+    pub fn preadv(fd: c_int, iov: *const iovec, iovcnt: c_int, offset: off_t) -> isize;
+    pub fn pwritev(fd: c_int, iov: *const iovec, iovcnt: c_int, offset: off_t) -> isize;
+    pub fn sync_file_range(fd: c_int, offset: off_t, nbytes: off_t, flags: c_uint) -> c_int;
+    pub fn sendfile(out_fd: c_int, in_fd: c_int, offset: *mut off_t, count: usize) -> isize;
+}
 
 #[cfg(windows)]
 pub type wchar_t = u16;

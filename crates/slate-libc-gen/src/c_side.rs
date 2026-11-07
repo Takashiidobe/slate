@@ -332,12 +332,5 @@ fn parse_ir(text: &str) -> CMap {
 }
 
 pub fn target_args(target: &str) -> Vec<String> {
-    let mut args = vec![format!("-target={target}")];
-    if target.contains("-linux-gnu")
-        && slate_parser::target_info::TargetInfo::for_triple(target)
-            .is_ok_and(|info| info.pointer_width == 32)
-    {
-        args.extend(["-D_FILE_OFFSET_BITS=64".into(), "-D_TIME_BITS=64".into()]);
-    }
-    args
+    vec![format!("-target={target}")]
 }

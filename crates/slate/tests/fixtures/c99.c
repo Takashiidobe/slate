@@ -163,8 +163,6 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn feclearexcept([[ARG_0:arg[0-9]+]]: i32) -> i32;
 // CHECK-NEXT:     fn fetestexcept([[ARG_0]]: i32) -> i32;
-// CHECK-NEXT:     fn malloc([[ARG_0]]: u64) -> *mut ();
-// CHECK-NEXT:     fn free([[ARG_0]]: *mut ());
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
@@ -189,6 +187,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: ///
 // CHECK-NEXT: static mut slash_comment_value: i32 = 3;
+// CHECK-EMPTY:
+// CHECK-NEXT: use slate_support::free;
+// CHECK-NEXT: use slate_support::malloc;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn c99_inline_square(value: i32) -> i32 {
 // CHECK-NEXT:     value * value
@@ -352,7 +353,8 @@ int main(void) {
 // CHECK-NEXT:                 }) as i32);
 // CHECK-NEXT:     let mut flexible_total: i32 = 0;
 // CHECK-NEXT:     let flexible: *mut C99Flexible = (unsafe {
-// CHECK-NEXT:         malloc(8u64.wrapping_add(3u64.wrapping_mul(std::mem::size_of::<i32>() as u64)))
+// CHECK-NEXT:         malloc(8u64.wrapping_add(3u64.wrapping_mul(std::mem::size_of::<i32>() as u64)) as usize)
+// CHECK-NEXT:             as *mut ()
 // CHECK-NEXT:     }) as *mut C99Flexible;
 // CHECK-NEXT:     if flexible.is_null() {
 // CHECK-NEXT:         return 2;
@@ -365,7 +367,7 @@ int main(void) {
 // CHECK-NEXT:         while index < unsafe { (*flexible).count } {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 *(std::ptr::addr_of_mut!((*flexible).values) as *mut i32).add(index as usize) =
-// CHECK-NEXT:                     ((index as u32) as i32) + 1;
+// CHECK-NEXT:                     (index as i32) + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = flexible_total
 // CHECK-NEXT:                 + unsafe {
@@ -375,9 +377,9 @@ int main(void) {
 // CHECK-NEXT:             index = index.wrapping_add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { free(flexible as *mut ()) };
+// CHECK-NEXT:     unsafe { free((flexible as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     let length: i32 = 3;
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: u64 = (length as i64) as u64;
+// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: u64 = length as u64;
 // CHECK-NEXT:     let mut variable_length_array: Vec<i32> = {
 // CHECK-NEXT:         let mut __slate_vla: Vec<i32> = Vec::with_capacity([[V_1]] as usize);
 // CHECK-NEXT:         unsafe {

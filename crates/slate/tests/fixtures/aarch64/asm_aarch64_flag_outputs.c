@@ -257,7 +257,7 @@ int main(void) {
 // CHECK-NEXT:         minus = unsafe { std::mem::transmute::<u8, u8>([[T_0]] as u8) };
 // CHECK-NEXT:         nonzero = ([[T_1]] as u8) != 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     ((minus as u32) as i32) * 10 + (nonzero as i32)
+// CHECK-NEXT:     (minus as i32) * 10 + (nonzero as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut pairs: {{\[\[}}i32; 2]; 8] = [
 // CHECK-NEXT:     [5, 5],

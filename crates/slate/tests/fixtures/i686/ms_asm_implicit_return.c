@@ -90,7 +90,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!("mov eax, [{0}]\nadd eax, 1", in(reg) std::ptr::addr_of!(v), out("ax") [[T_0]]);
 // CHECK-NEXT:         [[V_0]] = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     ([[V_0]] as u16) as i16
+// CHECK-NEXT:     [[V_0]] as i16
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut global_value: i32 = 5;
@@ -122,7 +122,7 @@ int main(void) {
 // CHECK-NEXT:             c"%d %llx %u %d\n".as_ptr(),
 // CHECK-NEXT:             implicit_return(21i32),
 // CHECK-NEXT:             implicit_return64(),
-// CHECK-NEXT:             (narrow(511i32) as u32) as i32,
+// CHECK-NEXT:             narrow(511i32) as i32,
 // CHECK-NEXT:             narrow16(32767i32) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

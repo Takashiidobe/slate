@@ -278,10 +278,7 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", (loaded.a[0] as u32) as i32, (loaded.a[1] as u32) as i32, (loaded
-// CHECK-NEXT:         .a[2] as u32) as i32
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {} {}", loaded.a[0] as i32, loaded.a[1] as i32, loaded.a[2] as i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_libatomic::AtomicGeneric::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(small.0) as *mut Small,
@@ -300,10 +297,7 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", (loaded.a[0] as u32) as i32, (loaded.a[1] as u32) as i32, (loaded
-// CHECK-NEXT:         .a[2] as u32) as i32
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {} {}", loaded.a[0] as i32, loaded.a[1] as i32, loaded.a[2] as i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_libatomic::AtomicGeneric::from_ptr(
 // CHECK-NEXT:                 std::ptr::addr_of_mut!(large) as *mut Large,
@@ -367,11 +361,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%c %d %d %d %c\n".as_ptr(),
-// CHECK-NEXT:             (holder.head as u32) as i32,
-// CHECK-NEXT:             (inner.a[0] as u32) as i32,
-// CHECK-NEXT:             (inner.a[1] as u32) as i32,
-// CHECK-NEXT:             (inner.a[2] as u32) as i32,
-// CHECK-NEXT:             (holder.tail as u32) as i32,
+// CHECK-NEXT:             holder.head as i32,
+// CHECK-NEXT:             inner.a[0] as i32,
+// CHECK-NEXT:             inner.a[1] as i32,
+// CHECK-NEXT:             inner.a[2] as i32,
+// CHECK-NEXT:             holder.tail as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

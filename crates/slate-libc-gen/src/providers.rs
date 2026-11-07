@@ -3,8 +3,29 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 use std::process::Command;
 
+const GLIBC32_FILE_OFFSET_FUNCTIONS: &[&str] = &[
+    "fallocate",
+    "fseeko",
+    "ftello",
+    "ftruncate",
+    "lockf",
+    "lseek",
+    "mmap",
+    "posix_fadvise",
+    "posix_fallocate",
+    "pread",
+    "preadv",
+    "pwrite",
+    "pwritev",
+    "readahead",
+    "sendfile",
+    "sync_file_range",
+    "truncate",
+];
+
 #[derive(Default)]
 pub struct Inventory {
+    support_functions: BTreeSet<String>,
     paths: BTreeMap<String, BTreeSet<String>>,
     pub headers: BTreeSet<String>,
     system_functions: BTreeSet<String>,
@@ -20,7 +41,17 @@ impl Inventory {
         } else if target.ends_with("-windows-msvc") {
             ("windows-sys", "windows")
         } else {
-            return Ok(Self::default());
+            let mut inventory = Self::default();
+            if target.contains("-linux-gnu")
+                && slate_parser::target_info::TargetInfo::for_triple(target)
+                    .is_ok_and(|info| info.pointer_width == 32)
+            {
+                inventory.support_functions = GLIBC32_FILE_OFFSET_FUNCTIONS
+                    .iter()
+                    .map(|name| name.to_string())
+                    .collect();
+            }
+            return Ok(inventory);
         };
         let directory = work.join(format!("{package}-doc-{target}"));
         std::fs::create_dir_all(&directory)?;
@@ -170,6 +201,9 @@ impl Inventory {
         match self.paths.get(name) {
             Some(paths) if paths.len() == 1 => paths.first().cloned(),
             Some(_) => None,
+            None if self.support_functions.contains(name) => {
+                Some(format!("slate_support::{}", crate::rust_side::ident(name)))
+            }
             None => Some(format!("libc::{}", crate::rust_side::ident(name))),
         }
     }
