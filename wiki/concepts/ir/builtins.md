@@ -193,7 +193,10 @@ that list, scalar or record, through `__slate_i386_va::arg`. A 16-aligned
 type (`__float128`) first rounds the cursor up to 16, as gcc's caller and
 `va_arg` do; clang's i386 `va_arg` reads it at 4-byte alignment and
 disagrees with its own caller, so `gcc/i686/float128_va_arg.c` uses gcc as
-its oracle. On AAPCS64 a scalar binary128 (`long double`)
+its oracle. On AAPCS32 (armv7, soft or hard float) every record is also
+`memory`: the `void *` list holds 4-byte slots, rounded up to 8 for an
+8-aligned type, and slate lowers records and `_Float16` (a `half` in its
+own slot) through `__slate_arm_va::arg`. On AAPCS64 a scalar binary128 (`long double`)
 takes one vector register slot, lowered as a one-member
 `__slate_aapcs_va::hfa`. On AAPCS64 a
 homogeneous float aggregate is `hfa=<count>x<bytes>` (one 16-byte vector
@@ -202,7 +205,7 @@ pointer in one GP slot), and the rest are `regs=[int, ...]`; slate lowers
 them to `__slate_aapcs_va::{hfa, indirect, gp}`, following clang's
 `EmitAAPCSVAArg` (offset bumped before the stack fallback, 16-byte
 alignment for over-aligned types). Records containing vectors stay a
-barrier on i386 and AAPCS64, as do other conventions.
+barrier on i386, AAPCS32 and AAPCS64, as do other conventions.
 Slate lowers `win64` `va_arg` on x86-64 to `__slate_win64_va::arg`
 (8-byte slots; larger or non-power-of-two types by reference), `va_copy`
 to a pointer copy, and `va_end` to nothing. `va_start<win64>` only

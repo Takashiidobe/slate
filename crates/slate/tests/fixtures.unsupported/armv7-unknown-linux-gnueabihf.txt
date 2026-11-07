@@ -22,7 +22,6 @@ flag_openmp_macros_gcc
 flag_rounding_math
 flag_trivial_auto_var_init_pattern_layout
 float128
-float16
 gnu_libc_platform
 goto_into_later_switch_case_bitint
 int128_arith
@@ -36,5 +35,3 @@ saturating_arith
 shift_contracts
 switch_case_wide_bitint
 switch_case_wide_bitint_range
-va_arg_records
-variadic_definitions

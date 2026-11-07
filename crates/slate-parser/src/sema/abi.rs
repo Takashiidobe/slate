@@ -104,7 +104,11 @@ impl<'a> AbiClassifier<'a> {
         let convention = self.abi_convention(true, CallConv::C);
         if !matches!(
             convention,
-            AbiConvention::SysV64 | AbiConvention::X86Cdecl | AbiConvention::Aapcs64
+            AbiConvention::SysV64
+                | AbiConvention::X86Cdecl
+                | AbiConvention::Aapcs64
+                | AbiConvention::Aapcs32
+                | AbiConvention::Aapcs32HardFloat
         ) || !self.is_record_or_complex(ty)
             || matches!(self.types.unaliased(ty), Type::Complex(_))
             || (convention != AbiConvention::SysV64 && self.contains_vector(ty))
@@ -112,7 +116,10 @@ impl<'a> AbiClassifier<'a> {
             return Ok(VaPassing::Scalar);
         }
         let layout = self.layout(&operand)?;
-        if convention == AbiConvention::X86Cdecl {
+        if matches!(
+            convention,
+            AbiConvention::X86Cdecl | AbiConvention::Aapcs32 | AbiConvention::Aapcs32HardFloat
+        ) {
             return Ok(VaPassing::Memory);
         }
         if convention == AbiConvention::Aapcs64 {

@@ -82,7 +82,7 @@ int main(void) {
   printf("%.3f\n", promoted(2, f, 2.5, c, s));
   printf("%s %s\n", pick(0, "zero", "one", "two"), pick(2, "zero", "one", "two"));
   printf("%d\n", dot(3, 1, 2, 3, 4, 5, 6));
-  printf("%ld\n", chain(5, 1000000000000L, 0x1234UL));
+  printf("%ld\n", chain(5, 1000000000L, 0x1234UL));
   printf("%d\n", *(int *)same_pointer(&value, &value));
   return dot(1, 6, 7) % 40;
 }
@@ -234,7 +234,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", unsafe { dot(3i32, 1i32, 2i32, 3i32, 4i32, 5i32, 6i32) });
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"%ld\n".as_ptr(), chain(5i32, 1000000000000i64, 4660u64))
+// CHECK-NEXT:         slate_support::printf(c"%ld\n".as_ptr(), chain(5i32, 1000000000i64, 4660u64))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     println!(

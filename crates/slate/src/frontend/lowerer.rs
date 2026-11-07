@@ -120,6 +120,7 @@ struct Dependencies {
     win64_va: bool,
     sysv_va: bool,
     i386_va: bool,
+    arm_va: bool,
     aapcs_va: bool,
     builtin_setjmp: bool,
     atomic_volatile: bool,
@@ -1203,6 +1204,11 @@ impl<'m> ModuleLowerer<'m> {
                 dependencies.i386_va,
                 "__slate_i386_va",
                 include_str!("support/i386_va.rs"),
+            ),
+            (
+                dependencies.arm_va,
+                "__slate_arm_va",
+                include_str!("support/arm_va.rs"),
             ),
             (
                 dependencies.aapcs_va,
