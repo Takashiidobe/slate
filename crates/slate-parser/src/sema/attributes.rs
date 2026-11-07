@@ -117,6 +117,7 @@ fn general_use(attribute: &Attribute) -> Use {
         | Attribute::AlignAs(_)
         | Attribute::VectorSize(_)
         | Attribute::ExtVectorType(_)
+        | Attribute::NeonVectorType(_)
         | Attribute::Packed
         | Attribute::MsStruct
         | Attribute::GccStruct

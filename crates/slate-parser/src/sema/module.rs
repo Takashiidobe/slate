@@ -932,6 +932,9 @@ impl Lowerer {
             ast::Attribute::ExtVectorType(expression) => {
                 ast::Attribute::ExtVectorType(fold(self, expression)?)
             }
+            ast::Attribute::NeonVectorType(expression) => {
+                ast::Attribute::NeonVectorType(fold(self, expression)?)
+            }
             ast::Attribute::CallingConvention(ast::CallingConvention::RegParm(expression)) => {
                 ast::Attribute::CallingConvention(ast::CallingConvention::RegParm(fold(
                     self, expression,

@@ -383,6 +383,8 @@ def neon_scalar(code, signed, unsigned, width):
     if code in ("s", "i"):
         if width == "W":
             return "uint64_t" if unsigned else "int64_t"
+        if width == 3:
+            return "__uint128_t" if unsigned else "__int128_t"
         base = {"s": "short", "i": "int"}[code] if not width else f"{'long ' * width}int"
         return f"unsigned {base}" if unsigned else base
     if signed or unsigned or width:

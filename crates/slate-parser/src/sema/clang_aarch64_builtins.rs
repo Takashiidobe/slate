@@ -1210,6 +1210,35 @@ static AARCH64_PROTOTYPE_0106: BuiltinPrototype = BuiltinPrototype {
 };
 
 static AARCH64_PROTOTYPE_0107: BuiltinPrototype = BuiltinPrototype {
+    spelling: "__uint128_t (__uint128_t, __uint128_t)",
+    ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int128, signed: false }, quals: Qualifiers::NONE, constant: false },
+    params: &[
+        BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int128, signed: false }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int128, signed: false }, quals: Qualifiers::NONE, constant: false },
+    ],
+    variadic: false,
+};
+
+static AARCH64_PROTOTYPE_0108: BuiltinPrototype = BuiltinPrototype {
+    spelling: "__uint128_t (uint64_t, uint64_t)",
+    ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int128, signed: false }, quals: Qualifiers::NONE, constant: false },
+    params: &[
+        BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
+    ],
+    variadic: false,
+};
+
+static AARCH64_PROTOTYPE_0109: BuiltinPrototype = BuiltinPrototype {
+    spelling: "__uint128_t (void const *)",
+    ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int128, signed: false }, quals: Qualifiers::NONE, constant: false },
+    params: &[
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
+    ],
+    variadic: false,
+};
+
+static AARCH64_PROTOTYPE_0110: BuiltinPrototype = BuiltinPrototype {
     spelling: "char (char volatile *, char)",
     ret: BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1219,7 +1248,7 @@ static AARCH64_PROTOTYPE_0107: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0108: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0111: BuiltinPrototype = BuiltinPrototype {
     spelling: "char (char volatile *, char, char)",
     ret: BuiltinParam { ty: &BuiltinType::Char, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1230,7 +1259,7 @@ static AARCH64_PROTOTYPE_0108: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0109: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0112: BuiltinPrototype = BuiltinPrototype {
     spelling: "double (_Vector<1, double>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1240,7 +1269,7 @@ static AARCH64_PROTOTYPE_0109: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0110: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0113: BuiltinPrototype = BuiltinPrototype {
     spelling: "double (_Vector<2, double>)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1249,7 +1278,7 @@ static AARCH64_PROTOTYPE_0110: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0111: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0114: BuiltinPrototype = BuiltinPrototype {
     spelling: "double (_Vector<2, double>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1259,7 +1288,7 @@ static AARCH64_PROTOTYPE_0111: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0112: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0115: BuiltinPrototype = BuiltinPrototype {
     spelling: "double (double)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1268,7 +1297,7 @@ static AARCH64_PROTOTYPE_0112: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0113: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0116: BuiltinPrototype = BuiltinPrototype {
     spelling: "double (double, double)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1278,7 +1307,7 @@ static AARCH64_PROTOTYPE_0113: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0114: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0117: BuiltinPrototype = BuiltinPrototype {
     spelling: "double (double, double, _Vector<1, double>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1290,7 +1319,7 @@ static AARCH64_PROTOTYPE_0114: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0115: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0118: BuiltinPrototype = BuiltinPrototype {
     spelling: "double (double, double, _Vector<2, double>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1302,7 +1331,7 @@ static AARCH64_PROTOTYPE_0115: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0116: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0119: BuiltinPrototype = BuiltinPrototype {
     spelling: "double (int)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1311,7 +1340,7 @@ static AARCH64_PROTOTYPE_0116: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0117: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0120: BuiltinPrototype = BuiltinPrototype {
     spelling: "double (int64_t)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1320,7 +1349,7 @@ static AARCH64_PROTOTYPE_0117: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0118: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0121: BuiltinPrototype = BuiltinPrototype {
     spelling: "double (int64_t, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1330,7 +1359,7 @@ static AARCH64_PROTOTYPE_0118: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0119: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0122: BuiltinPrototype = BuiltinPrototype {
     spelling: "double (signed long long int)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1339,7 +1368,7 @@ static AARCH64_PROTOTYPE_0119: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0120: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0123: BuiltinPrototype = BuiltinPrototype {
     spelling: "double (uint64_t)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1348,7 +1377,7 @@ static AARCH64_PROTOTYPE_0120: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0121: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0124: BuiltinPrototype = BuiltinPrototype {
     spelling: "double (uint64_t, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Double), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1358,7 +1387,7 @@ static AARCH64_PROTOTYPE_0121: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0122: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0125: BuiltinPrototype = BuiltinPrototype {
     spelling: "float (_Vector<2, float>)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1367,7 +1396,7 @@ static AARCH64_PROTOTYPE_0122: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0123: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0126: BuiltinPrototype = BuiltinPrototype {
     spelling: "float (_Vector<2, float>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1377,7 +1406,7 @@ static AARCH64_PROTOTYPE_0123: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0124: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0127: BuiltinPrototype = BuiltinPrototype {
     spelling: "float (_Vector<4, float>)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1386,7 +1415,7 @@ static AARCH64_PROTOTYPE_0124: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0125: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0128: BuiltinPrototype = BuiltinPrototype {
     spelling: "float (_Vector<4, float>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1396,7 +1425,7 @@ static AARCH64_PROTOTYPE_0125: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0126: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0129: BuiltinPrototype = BuiltinPrototype {
     spelling: "float (double)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1405,7 +1434,7 @@ static AARCH64_PROTOTYPE_0126: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0127: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0130: BuiltinPrototype = BuiltinPrototype {
     spelling: "float (float)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1414,7 +1443,7 @@ static AARCH64_PROTOTYPE_0127: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0128: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0131: BuiltinPrototype = BuiltinPrototype {
     spelling: "float (float, float)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1424,7 +1453,7 @@ static AARCH64_PROTOTYPE_0128: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0129: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0132: BuiltinPrototype = BuiltinPrototype {
     spelling: "float (float, float, _Vector<2, float>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1436,7 +1465,7 @@ static AARCH64_PROTOTYPE_0129: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0130: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0133: BuiltinPrototype = BuiltinPrototype {
     spelling: "float (float, float, _Vector<4, float>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1448,7 +1477,7 @@ static AARCH64_PROTOTYPE_0130: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0131: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0134: BuiltinPrototype = BuiltinPrototype {
     spelling: "float (int)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1457,7 +1486,7 @@ static AARCH64_PROTOTYPE_0131: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0132: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0135: BuiltinPrototype = BuiltinPrototype {
     spelling: "float (int, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1467,7 +1496,7 @@ static AARCH64_PROTOTYPE_0132: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0133: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0136: BuiltinPrototype = BuiltinPrototype {
     spelling: "float (signed int)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1476,7 +1505,7 @@ static AARCH64_PROTOTYPE_0133: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0134: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0137: BuiltinPrototype = BuiltinPrototype {
     spelling: "float (unsigned int)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1485,7 +1514,7 @@ static AARCH64_PROTOTYPE_0134: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0135: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0138: BuiltinPrototype = BuiltinPrototype {
     spelling: "float (unsigned int, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Float(FloatKind::Float), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1495,14 +1524,14 @@ static AARCH64_PROTOTYPE_0135: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0136: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0139: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (...)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[],
     variadic: true,
 };
 
-static AARCH64_PROTOTYPE_0137: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0140: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (_Vector<2, int>)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1511,7 +1540,7 @@ static AARCH64_PROTOTYPE_0137: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0138: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0141: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (_Vector<4, int>)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1520,7 +1549,7 @@ static AARCH64_PROTOTYPE_0138: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0139: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0142: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (_Vector<4, short>)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1529,7 +1558,7 @@ static AARCH64_PROTOTYPE_0139: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0140: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0143: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (_Vector<8, short>)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1538,7 +1567,7 @@ static AARCH64_PROTOTYPE_0140: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0141: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0144: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (__fp16)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1547,7 +1576,7 @@ static AARCH64_PROTOTYPE_0141: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0142: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0145: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (__fp16, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1557,7 +1586,7 @@ static AARCH64_PROTOTYPE_0142: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0143: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0146: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (double)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1566,7 +1595,7 @@ static AARCH64_PROTOTYPE_0143: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0144: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0147: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (float)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1575,7 +1604,7 @@ static AARCH64_PROTOTYPE_0144: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0145: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0148: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (float, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1585,7 +1614,7 @@ static AARCH64_PROTOTYPE_0145: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0146: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0149: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1594,7 +1623,7 @@ static AARCH64_PROTOTYPE_0146: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0147: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0150: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (int, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1604,7 +1633,7 @@ static AARCH64_PROTOTYPE_0147: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0148: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0151: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (int, int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1614,7 +1643,7 @@ static AARCH64_PROTOTYPE_0148: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0149: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0152: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (int, int, int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1625,7 +1654,7 @@ static AARCH64_PROTOTYPE_0149: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0150: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0153: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (int, short, _Vector<4, short>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1637,7 +1666,7 @@ static AARCH64_PROTOTYPE_0150: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0151: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0154: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (int, short, _Vector<8, short>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1649,7 +1678,7 @@ static AARCH64_PROTOTYPE_0151: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0152: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0155: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (int, short, short)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1660,7 +1689,7 @@ static AARCH64_PROTOTYPE_0152: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0153: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0156: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (int, unsigned int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1670,7 +1699,7 @@ static AARCH64_PROTOTYPE_0153: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0154: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0157: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (int64_t)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1679,7 +1708,7 @@ static AARCH64_PROTOTYPE_0154: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0155: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0158: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (int64_t, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1689,7 +1718,7 @@ static AARCH64_PROTOTYPE_0155: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0156: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0159: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (short, short)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1699,7 +1728,7 @@ static AARCH64_PROTOTYPE_0156: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0157: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0160: BuiltinPrototype = BuiltinPrototype {
     spelling: "int (uint64_t *)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1708,7 +1737,7 @@ static AARCH64_PROTOTYPE_0157: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0158: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0161: BuiltinPrototype = BuiltinPrototype {
     spelling: "int32_t (double)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 32, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1717,7 +1746,7 @@ static AARCH64_PROTOTYPE_0158: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0159: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0162: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (_Vector<2, int64_t>)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1726,7 +1755,7 @@ static AARCH64_PROTOTYPE_0159: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0160: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0163: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (_Vector<2, int>)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1735,7 +1764,7 @@ static AARCH64_PROTOTYPE_0160: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0161: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0164: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (_Vector<4, int>)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1744,7 +1773,7 @@ static AARCH64_PROTOTYPE_0161: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0162: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0165: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (__fp16)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1753,7 +1782,7 @@ static AARCH64_PROTOTYPE_0162: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0163: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0166: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (__fp16, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1763,7 +1792,7 @@ static AARCH64_PROTOTYPE_0163: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0164: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0167: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (double)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1772,7 +1801,7 @@ static AARCH64_PROTOTYPE_0164: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0165: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0168: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (double, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1782,7 +1811,7 @@ static AARCH64_PROTOTYPE_0165: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0166: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0169: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (float)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1791,7 +1820,7 @@ static AARCH64_PROTOTYPE_0166: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0167: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0170: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (int, int)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1801,7 +1830,7 @@ static AARCH64_PROTOTYPE_0167: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0168: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0171: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (int64_t)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1810,7 +1839,7 @@ static AARCH64_PROTOTYPE_0168: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0169: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0172: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (int64_t, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1820,7 +1849,7 @@ static AARCH64_PROTOTYPE_0169: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0170: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0173: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (int64_t, int, _Vector<2, int>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1832,7 +1861,7 @@ static AARCH64_PROTOTYPE_0170: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0171: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0174: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (int64_t, int, _Vector<4, int>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1844,7 +1873,7 @@ static AARCH64_PROTOTYPE_0171: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0172: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0175: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (int64_t, int, int)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1855,7 +1884,7 @@ static AARCH64_PROTOTYPE_0172: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0173: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0176: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (int64_t, int64_t)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1865,7 +1894,7 @@ static AARCH64_PROTOTYPE_0173: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0174: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0177: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (int64_t, int64_t, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1876,7 +1905,7 @@ static AARCH64_PROTOTYPE_0174: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0175: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0178: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (int64_t, uint64_t)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1886,7 +1915,7 @@ static AARCH64_PROTOTYPE_0175: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0176: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0179: BuiltinPrototype = BuiltinPrototype {
     spelling: "int64_t (void *, void *)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1896,7 +1925,7 @@ static AARCH64_PROTOTYPE_0176: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0177: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0180: BuiltinPrototype = BuiltinPrototype {
     spelling: "long long int (int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1905,7 +1934,7 @@ static AARCH64_PROTOTYPE_0177: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0178: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0181: BuiltinPrototype = BuiltinPrototype {
     spelling: "long long int (long long int volatile *)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1914,7 +1943,7 @@ static AARCH64_PROTOTYPE_0178: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0179: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0182: BuiltinPrototype = BuiltinPrototype {
     spelling: "long long int (long long int volatile *, long long int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1924,7 +1953,7 @@ static AARCH64_PROTOTYPE_0179: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0180: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0183: BuiltinPrototype = BuiltinPrototype {
     spelling: "long long int (long long int volatile *, long long int, long long int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1935,7 +1964,7 @@ static AARCH64_PROTOTYPE_0180: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0181: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0184: BuiltinPrototype = BuiltinPrototype {
     spelling: "msint32_t (msint32_t volatile *)",
     ret: BuiltinParam { ty: &BuiltinType::Opaque("msint32_t"), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1944,7 +1973,7 @@ static AARCH64_PROTOTYPE_0181: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0182: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0185: BuiltinPrototype = BuiltinPrototype {
     spelling: "msint32_t (msint32_t volatile *, msint32_t)",
     ret: BuiltinParam { ty: &BuiltinType::Opaque("msint32_t"), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1954,7 +1983,7 @@ static AARCH64_PROTOTYPE_0182: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0183: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0186: BuiltinPrototype = BuiltinPrototype {
     spelling: "msint32_t (msint32_t volatile *, msint32_t, msint32_t)",
     ret: BuiltinParam { ty: &BuiltinType::Opaque("msint32_t"), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1965,7 +1994,7 @@ static AARCH64_PROTOTYPE_0183: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0184: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0187: BuiltinPrototype = BuiltinPrototype {
     spelling: "msuint32_t (msuint32_t)",
     ret: BuiltinParam { ty: &BuiltinType::Opaque("msuint32_t"), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1974,7 +2003,7 @@ static AARCH64_PROTOTYPE_0184: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0185: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0188: BuiltinPrototype = BuiltinPrototype {
     spelling: "short (_Vector<16, signed char>)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1983,7 +2012,7 @@ static AARCH64_PROTOTYPE_0185: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0186: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0189: BuiltinPrototype = BuiltinPrototype {
     spelling: "short (_Vector<4, short>)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -1992,7 +2021,7 @@ static AARCH64_PROTOTYPE_0186: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0187: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0190: BuiltinPrototype = BuiltinPrototype {
     spelling: "short (_Vector<8, short>)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2001,7 +2030,7 @@ static AARCH64_PROTOTYPE_0187: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0188: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0191: BuiltinPrototype = BuiltinPrototype {
     spelling: "short (_Vector<8, signed char>)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2010,7 +2039,7 @@ static AARCH64_PROTOTYPE_0188: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0189: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0192: BuiltinPrototype = BuiltinPrototype {
     spelling: "short (__fp16)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2019,7 +2048,7 @@ static AARCH64_PROTOTYPE_0189: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0190: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0193: BuiltinPrototype = BuiltinPrototype {
     spelling: "short (__fp16, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2029,7 +2058,7 @@ static AARCH64_PROTOTYPE_0190: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0191: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0194: BuiltinPrototype = BuiltinPrototype {
     spelling: "short (int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2038,7 +2067,7 @@ static AARCH64_PROTOTYPE_0191: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0192: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0195: BuiltinPrototype = BuiltinPrototype {
     spelling: "short (int, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2048,7 +2077,7 @@ static AARCH64_PROTOTYPE_0192: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0193: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0196: BuiltinPrototype = BuiltinPrototype {
     spelling: "short (short volatile *)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2057,7 +2086,7 @@ static AARCH64_PROTOTYPE_0193: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0194: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0197: BuiltinPrototype = BuiltinPrototype {
     spelling: "short (short volatile *, short)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2067,7 +2096,7 @@ static AARCH64_PROTOTYPE_0194: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0195: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0198: BuiltinPrototype = BuiltinPrototype {
     spelling: "short (short volatile *, short, short)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2078,7 +2107,7 @@ static AARCH64_PROTOTYPE_0195: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0196: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0199: BuiltinPrototype = BuiltinPrototype {
     spelling: "short (short)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2087,7 +2116,7 @@ static AARCH64_PROTOTYPE_0196: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0197: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0200: BuiltinPrototype = BuiltinPrototype {
     spelling: "short (short, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2097,7 +2126,7 @@ static AARCH64_PROTOTYPE_0197: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0198: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0201: BuiltinPrototype = BuiltinPrototype {
     spelling: "short (short, short)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2107,7 +2136,7 @@ static AARCH64_PROTOTYPE_0198: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0199: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0202: BuiltinPrototype = BuiltinPrototype {
     spelling: "short (short, short, short)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2118,7 +2147,7 @@ static AARCH64_PROTOTYPE_0199: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0200: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0203: BuiltinPrototype = BuiltinPrototype {
     spelling: "short (short, unsigned short)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Short, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2128,7 +2157,7 @@ static AARCH64_PROTOTYPE_0200: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0201: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0204: BuiltinPrototype = BuiltinPrototype {
     spelling: "signed char (_Vector<16, signed char>)",
     ret: BuiltinParam { ty: &BuiltinType::SChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2137,7 +2166,7 @@ static AARCH64_PROTOTYPE_0201: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0202: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0205: BuiltinPrototype = BuiltinPrototype {
     spelling: "signed char (_Vector<8, signed char>)",
     ret: BuiltinParam { ty: &BuiltinType::SChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2146,7 +2175,7 @@ static AARCH64_PROTOTYPE_0202: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0203: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0206: BuiltinPrototype = BuiltinPrototype {
     spelling: "signed char (short)",
     ret: BuiltinParam { ty: &BuiltinType::SChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2155,7 +2184,7 @@ static AARCH64_PROTOTYPE_0203: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0204: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0207: BuiltinPrototype = BuiltinPrototype {
     spelling: "signed char (short, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::SChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2165,7 +2194,7 @@ static AARCH64_PROTOTYPE_0204: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0205: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0208: BuiltinPrototype = BuiltinPrototype {
     spelling: "signed char (signed char)",
     ret: BuiltinParam { ty: &BuiltinType::SChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2174,7 +2203,7 @@ static AARCH64_PROTOTYPE_0205: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0206: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0209: BuiltinPrototype = BuiltinPrototype {
     spelling: "signed char (signed char, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::SChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2184,7 +2213,7 @@ static AARCH64_PROTOTYPE_0206: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0207: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0210: BuiltinPrototype = BuiltinPrototype {
     spelling: "signed char (signed char, signed char)",
     ret: BuiltinParam { ty: &BuiltinType::SChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2194,7 +2223,7 @@ static AARCH64_PROTOTYPE_0207: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0208: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0211: BuiltinPrototype = BuiltinPrototype {
     spelling: "signed char (signed char, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::SChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2204,7 +2233,7 @@ static AARCH64_PROTOTYPE_0208: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0209: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0212: BuiltinPrototype = BuiltinPrototype {
     spelling: "signed int (float)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2213,7 +2242,7 @@ static AARCH64_PROTOTYPE_0209: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0210: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0213: BuiltinPrototype = BuiltinPrototype {
     spelling: "signed long long int (double)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2222,7 +2251,7 @@ static AARCH64_PROTOTYPE_0210: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0211: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0214: BuiltinPrototype = BuiltinPrototype {
     spelling: "signed long long int (signed long long int, signed long long int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: true }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2232,7 +2261,7 @@ static AARCH64_PROTOTYPE_0211: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0212: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0215: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (_Vector<1, int64_t>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2242,7 +2271,7 @@ static AARCH64_PROTOTYPE_0212: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0213: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0216: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (_Vector<2, int64_t>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2252,7 +2281,7 @@ static AARCH64_PROTOTYPE_0213: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0214: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0217: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (_Vector<2, uint64_t>)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2261,7 +2290,7 @@ static AARCH64_PROTOTYPE_0214: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0215: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0218: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (_Vector<2, unsigned int>)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2270,7 +2299,7 @@ static AARCH64_PROTOTYPE_0215: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0216: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0219: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (_Vector<4, unsigned int>)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2279,7 +2308,7 @@ static AARCH64_PROTOTYPE_0216: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0217: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0220: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (__fp16)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2288,7 +2317,7 @@ static AARCH64_PROTOTYPE_0217: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0218: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0221: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (__fp16, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2298,7 +2327,7 @@ static AARCH64_PROTOTYPE_0218: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0219: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0222: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (char const *)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2307,7 +2336,7 @@ static AARCH64_PROTOTYPE_0219: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0220: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0223: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (double)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2316,7 +2345,7 @@ static AARCH64_PROTOTYPE_0220: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0221: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0224: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (double, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2326,7 +2355,7 @@ static AARCH64_PROTOTYPE_0221: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0222: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0225: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (double, double)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2336,7 +2365,7 @@ static AARCH64_PROTOTYPE_0222: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0223: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0226: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (float)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2345,7 +2374,7 @@ static AARCH64_PROTOTYPE_0223: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0224: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0227: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (int64_t)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2354,7 +2383,7 @@ static AARCH64_PROTOTYPE_0224: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0225: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0228: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (int64_t, int64_t)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2364,7 +2393,7 @@ static AARCH64_PROTOTYPE_0225: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0226: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0229: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (uint64_t)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2373,7 +2402,7 @@ static AARCH64_PROTOTYPE_0226: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0227: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0230: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (uint64_t, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2383,7 +2412,7 @@ static AARCH64_PROTOTYPE_0227: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0228: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0231: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (uint64_t, int64_t)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2393,7 +2422,7 @@ static AARCH64_PROTOTYPE_0228: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0229: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0232: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (uint64_t, uint64_t)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2403,7 +2432,7 @@ static AARCH64_PROTOTYPE_0229: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0230: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0233: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (uint64_t, uint64_t, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2414,7 +2443,7 @@ static AARCH64_PROTOTYPE_0230: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0231: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0234: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (void *, uint64_t const *)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2424,7 +2453,7 @@ static AARCH64_PROTOTYPE_0231: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0232: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0235: BuiltinPrototype = BuiltinPrototype {
     spelling: "uint64_t (void *, uint64_t)",
     ret: BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2434,7 +2463,7 @@ static AARCH64_PROTOTYPE_0232: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0233: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0236: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned __int128_t (char const *)",
     ret: BuiltinParam { ty: &BuiltinType::Opaque("unsigned __int128_t"), quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2443,7 +2472,7 @@ static AARCH64_PROTOTYPE_0233: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0234: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0237: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char (_Vector<16, signed char>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2453,7 +2482,7 @@ static AARCH64_PROTOTYPE_0234: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0235: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0238: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char (_Vector<16, unsigned char>)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2462,7 +2491,7 @@ static AARCH64_PROTOTYPE_0235: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0236: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0239: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char (_Vector<16, unsigned char>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2472,7 +2501,7 @@ static AARCH64_PROTOTYPE_0236: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0237: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0240: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char (_Vector<8, signed char>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2482,7 +2511,7 @@ static AARCH64_PROTOTYPE_0237: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0238: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0241: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char (_Vector<8, unsigned char>)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2491,7 +2520,7 @@ static AARCH64_PROTOTYPE_0238: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0239: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0242: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char (_Vector<8, unsigned char>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2501,7 +2530,7 @@ static AARCH64_PROTOTYPE_0239: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0240: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0243: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char (long long int volatile *, long long int, long long int, long long int *)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2513,7 +2542,7 @@ static AARCH64_PROTOTYPE_0240: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0241: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0244: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char (msuint32_t *, msuint32_t)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2523,7 +2552,7 @@ static AARCH64_PROTOTYPE_0241: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0242: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0245: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char (msuint32_t *, unsigned long long int)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2533,7 +2562,7 @@ static AARCH64_PROTOTYPE_0242: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0243: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0246: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char (msuint32_t)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2542,7 +2571,7 @@ static AARCH64_PROTOTYPE_0243: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0244: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0247: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char (short)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2551,7 +2580,7 @@ static AARCH64_PROTOTYPE_0244: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0245: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0248: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char (short, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2561,7 +2590,7 @@ static AARCH64_PROTOTYPE_0245: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0246: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0249: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char (unsigned char, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2571,7 +2600,7 @@ static AARCH64_PROTOTYPE_0246: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0247: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0250: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char (unsigned char, signed char)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2581,7 +2610,7 @@ static AARCH64_PROTOTYPE_0247: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0248: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0251: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char (unsigned char, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2591,7 +2620,7 @@ static AARCH64_PROTOTYPE_0248: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0249: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0252: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char (unsigned short)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2600,7 +2629,7 @@ static AARCH64_PROTOTYPE_0249: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0250: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0253: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned char (unsigned short, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::UChar, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2610,7 +2639,7 @@ static AARCH64_PROTOTYPE_0250: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0251: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0254: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (_Vector<2, int>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2620,7 +2649,7 @@ static AARCH64_PROTOTYPE_0251: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0252: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0255: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (_Vector<2, unsigned int>)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2629,7 +2658,7 @@ static AARCH64_PROTOTYPE_0252: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0253: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0256: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (_Vector<4, int>, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2639,7 +2668,7 @@ static AARCH64_PROTOTYPE_0253: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0254: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0257: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (_Vector<4, unsigned int>)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2648,7 +2677,7 @@ static AARCH64_PROTOTYPE_0254: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0255: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0258: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (_Vector<4, unsigned short>)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2657,7 +2686,7 @@ static AARCH64_PROTOTYPE_0255: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0256: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0259: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (_Vector<8, unsigned short>)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2666,7 +2695,7 @@ static AARCH64_PROTOTYPE_0256: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0257: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0260: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (__fp16)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2675,7 +2704,7 @@ static AARCH64_PROTOTYPE_0257: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0258: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0261: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (__fp16, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2685,7 +2714,7 @@ static AARCH64_PROTOTYPE_0258: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0259: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0262: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (char const *)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2694,7 +2723,7 @@ static AARCH64_PROTOTYPE_0259: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0260: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0263: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (double)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2703,7 +2732,7 @@ static AARCH64_PROTOTYPE_0260: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0261: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0264: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (float)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2712,7 +2741,7 @@ static AARCH64_PROTOTYPE_0261: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0262: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0265: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (float, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2722,7 +2751,7 @@ static AARCH64_PROTOTYPE_0262: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0263: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0266: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (float, float)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2732,7 +2761,7 @@ static AARCH64_PROTOTYPE_0263: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0264: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0267: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (int, long long int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2742,7 +2771,7 @@ static AARCH64_PROTOTYPE_0264: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0265: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0268: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (int64_t)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2751,7 +2780,7 @@ static AARCH64_PROTOTYPE_0265: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0266: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0269: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (int64_t, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2761,7 +2790,7 @@ static AARCH64_PROTOTYPE_0266: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0267: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0270: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (msuint32_t)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2770,7 +2799,7 @@ static AARCH64_PROTOTYPE_0267: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0268: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0271: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (signed long long int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2779,7 +2808,7 @@ static AARCH64_PROTOTYPE_0268: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0269: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0272: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (signed msint32_t)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2788,7 +2817,7 @@ static AARCH64_PROTOTYPE_0269: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0270: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0273: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (uint32_t)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2797,7 +2826,7 @@ static AARCH64_PROTOTYPE_0270: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0271: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0274: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (uint64_t)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2806,7 +2835,7 @@ static AARCH64_PROTOTYPE_0271: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0272: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0275: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (uint64_t, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2816,7 +2845,7 @@ static AARCH64_PROTOTYPE_0272: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0273: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0276: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (unsigned int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2825,7 +2854,7 @@ static AARCH64_PROTOTYPE_0273: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0274: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0277: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (unsigned int, ...)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2834,7 +2863,7 @@ static AARCH64_PROTOTYPE_0274: BuiltinPrototype = BuiltinPrototype {
     variadic: true,
 };
 
-static AARCH64_PROTOTYPE_0275: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0278: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (unsigned int, _Constant int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2844,7 +2873,7 @@ static AARCH64_PROTOTYPE_0275: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0276: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0279: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (unsigned int, int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2854,7 +2883,7 @@ static AARCH64_PROTOTYPE_0276: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0277: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0280: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (unsigned int, uint64_t)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2864,7 +2893,7 @@ static AARCH64_PROTOTYPE_0277: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0278: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0281: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (unsigned int, unsigned char)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2874,7 +2903,7 @@ static AARCH64_PROTOTYPE_0278: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0279: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0282: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (unsigned int, unsigned int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2884,7 +2913,7 @@ static AARCH64_PROTOTYPE_0279: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0280: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0283: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (unsigned int, unsigned short)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2894,7 +2923,7 @@ static AARCH64_PROTOTYPE_0280: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0281: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0284: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned int (unsigned long long int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2903,7 +2932,7 @@ static AARCH64_PROTOTYPE_0281: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0282: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0285: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned long long int (int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2912,7 +2941,7 @@ static AARCH64_PROTOTYPE_0282: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0283: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0286: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned long long int (msuint32_t)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
@@ -2921,41 +2950,12 @@ static AARCH64_PROTOTYPE_0283: BuiltinPrototype = BuiltinPrototype {
     variadic: false,
 };
 
-static AARCH64_PROTOTYPE_0284: BuiltinPrototype = BuiltinPrototype {
+static AARCH64_PROTOTYPE_0287: BuiltinPrototype = BuiltinPrototype {
     spelling: "unsigned long long int (unsigned long long int, unsigned long long int)",
     ret: BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: false }, quals: Qualifiers::NONE, constant: false },
     params: &[
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: false }, quals: Qualifiers::NONE, constant: false },
         BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::LongLong, signed: false }, quals: Qualifiers::NONE, constant: false },
-    ],
-    variadic: false,
-};
-
-static AARCH64_PROTOTYPE_0285: BuiltinPrototype = BuiltinPrototype {
-    spelling: "unsigned long long long int (uint64_t, uint64_t)",
-    ret: BuiltinParam { ty: &BuiltinType::Opaque("unsigned long long long int"), quals: Qualifiers::NONE, constant: false },
-    params: &[
-        BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
-        BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::NONE, constant: false },
-    ],
-    variadic: false,
-};
-
-static AARCH64_PROTOTYPE_0286: BuiltinPrototype = BuiltinPrototype {
-    spelling: "unsigned long long long int (unsigned long long long int, unsigned long long long int)",
-    ret: BuiltinParam { ty: &BuiltinType::Opaque("unsigned long long long int"), quals: Qualifiers::NONE, constant: false },
-    params: &[
-        BuiltinParam { ty: &BuiltinType::Opaque("unsigned long long long int"), quals: Qualifiers::NONE, constant: false },
-        BuiltinParam { ty: &BuiltinType::Opaque("unsigned long long long int"), quals: Qualifiers::NONE, constant: false },
-    ],
-    variadic: false,
-};
-
-static AARCH64_PROTOTYPE_0287: BuiltinPrototype = BuiltinPrototype {
-    spelling: "unsigned long long long int (void const *)",
-    ret: BuiltinParam { ty: &BuiltinType::Opaque("unsigned long long long int"), quals: Qualifiers::NONE, constant: false },
-    params: &[
-        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -3510,21 +3510,21 @@ static AARCH64_PROTOTYPE_0339: BuiltinPrototype = BuiltinPrototype {
 };
 
 static AARCH64_PROTOTYPE_0340: BuiltinPrototype = BuiltinPrototype {
-    spelling: "void (void *, uint64_t const *)",
+    spelling: "void (void *, __uint128_t)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
         BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
-        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Int { rank: IntRank::Int128, signed: false }, quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
 
 static AARCH64_PROTOTYPE_0341: BuiltinPrototype = BuiltinPrototype {
-    spelling: "void (void *, unsigned long long long int)",
+    spelling: "void (void *, uint64_t const *)",
     ret: BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false },
     params: &[
         BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::Void, quals: Qualifiers::NONE, constant: false }), quals: Qualifiers::NONE, constant: false },
-        BuiltinParam { ty: &BuiltinType::Opaque("unsigned long long long int"), quals: Qualifiers::NONE, constant: false },
+        BuiltinParam { ty: &BuiltinType::Pointer(&BuiltinParam { ty: &BuiltinType::FixedInt { bits: 64, signed: false }, quals: Qualifiers::CONST, constant: false }), quals: Qualifiers::NONE, constant: false },
     ],
     variadic: false,
 };
@@ -3800,7 +3800,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_BitScanForward",
         record: "_BitScanForward",
-        prototype: Some(&AARCH64_PROTOTYPE_0241),
+        prototype: Some(&AARCH64_PROTOTYPE_0244),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3810,7 +3810,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_BitScanForward64",
         record: "_BitScanForward64",
-        prototype: Some(&AARCH64_PROTOTYPE_0242),
+        prototype: Some(&AARCH64_PROTOTYPE_0245),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3820,7 +3820,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_BitScanReverse",
         record: "_BitScanReverse",
-        prototype: Some(&AARCH64_PROTOTYPE_0241),
+        prototype: Some(&AARCH64_PROTOTYPE_0244),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3830,7 +3830,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_BitScanReverse64",
         record: "_BitScanReverse64",
-        prototype: Some(&AARCH64_PROTOTYPE_0242),
+        prototype: Some(&AARCH64_PROTOTYPE_0245),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3840,7 +3840,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_CopyDoubleFromInt64",
         record: "_CopyDoubleFromInt64",
-        prototype: Some(&AARCH64_PROTOTYPE_0119),
+        prototype: Some(&AARCH64_PROTOTYPE_0122),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3850,7 +3850,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_CopyFloatFromInt32",
         record: "_CopyFloatFromInt32",
-        prototype: Some(&AARCH64_PROTOTYPE_0133),
+        prototype: Some(&AARCH64_PROTOTYPE_0136),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3860,7 +3860,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_CopyInt32FromFloat",
         record: "_CopyInt32FromFloat",
-        prototype: Some(&AARCH64_PROTOTYPE_0209),
+        prototype: Some(&AARCH64_PROTOTYPE_0212),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3870,7 +3870,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_CopyInt64FromDouble",
         record: "_CopyInt64FromDouble",
-        prototype: Some(&AARCH64_PROTOTYPE_0210),
+        prototype: Some(&AARCH64_PROTOTYPE_0213),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3880,7 +3880,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_CountLeadingOnes",
         record: "_CountLeadingOnes",
-        prototype: Some(&AARCH64_PROTOTYPE_0267),
+        prototype: Some(&AARCH64_PROTOTYPE_0270),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3890,7 +3890,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_CountLeadingOnes64",
         record: "_CountLeadingOnes64",
-        prototype: Some(&AARCH64_PROTOTYPE_0281),
+        prototype: Some(&AARCH64_PROTOTYPE_0284),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3900,7 +3900,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_CountLeadingSigns",
         record: "_CountLeadingSigns",
-        prototype: Some(&AARCH64_PROTOTYPE_0269),
+        prototype: Some(&AARCH64_PROTOTYPE_0272),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3910,7 +3910,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_CountLeadingSigns64",
         record: "_CountLeadingSigns64",
-        prototype: Some(&AARCH64_PROTOTYPE_0268),
+        prototype: Some(&AARCH64_PROTOTYPE_0271),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3920,7 +3920,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_CountLeadingZeros",
         record: "_CountLeadingZeros",
-        prototype: Some(&AARCH64_PROTOTYPE_0267),
+        prototype: Some(&AARCH64_PROTOTYPE_0270),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3930,7 +3930,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_CountLeadingZeros64",
         record: "_CountLeadingZeros64",
-        prototype: Some(&AARCH64_PROTOTYPE_0281),
+        prototype: Some(&AARCH64_PROTOTYPE_0284),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3940,7 +3940,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_CountOneBits",
         record: "_CountOneBits",
-        prototype: Some(&AARCH64_PROTOTYPE_0267),
+        prototype: Some(&AARCH64_PROTOTYPE_0270),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3950,7 +3950,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_CountOneBits64",
         record: "_CountOneBits64",
-        prototype: Some(&AARCH64_PROTOTYPE_0281),
+        prototype: Some(&AARCH64_PROTOTYPE_0284),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3960,7 +3960,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_CountTrailingZeros",
         record: "_CountTrailingZeros",
-        prototype: Some(&AARCH64_PROTOTYPE_0267),
+        prototype: Some(&AARCH64_PROTOTYPE_0270),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3970,7 +3970,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_CountTrailingZeros64",
         record: "_CountTrailingZeros64",
-        prototype: Some(&AARCH64_PROTOTYPE_0281),
+        prototype: Some(&AARCH64_PROTOTYPE_0284),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3980,7 +3980,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAdd",
         record: "_InterlockedAdd",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -3990,7 +3990,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAdd64",
         record: "_InterlockedAdd64",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4000,7 +4000,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAdd64_acq",
         record: "_InterlockedAdd64_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4010,7 +4010,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAdd64_nf",
         record: "_InterlockedAdd64_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4020,7 +4020,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAdd64_rel",
         record: "_InterlockedAdd64_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4030,7 +4030,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAdd_acq",
         record: "_InterlockedAdd_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4040,7 +4040,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAdd_nf",
         record: "_InterlockedAdd_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4050,7 +4050,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAdd_rel",
         record: "_InterlockedAdd_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4060,7 +4060,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAnd16_acq",
         record: "_InterlockedAnd16_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0194),
+        prototype: Some(&AARCH64_PROTOTYPE_0197),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4070,7 +4070,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAnd16_nf",
         record: "_InterlockedAnd16_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0194),
+        prototype: Some(&AARCH64_PROTOTYPE_0197),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4080,7 +4080,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAnd16_rel",
         record: "_InterlockedAnd16_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0194),
+        prototype: Some(&AARCH64_PROTOTYPE_0197),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4090,7 +4090,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAnd64",
         record: "_InterlockedAnd64",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4100,7 +4100,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAnd64_acq",
         record: "_InterlockedAnd64_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4110,7 +4110,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAnd64_nf",
         record: "_InterlockedAnd64_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4120,7 +4120,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAnd64_rel",
         record: "_InterlockedAnd64_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4130,7 +4130,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAnd8_acq",
         record: "_InterlockedAnd8_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0107),
+        prototype: Some(&AARCH64_PROTOTYPE_0110),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4140,7 +4140,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAnd8_nf",
         record: "_InterlockedAnd8_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0107),
+        prototype: Some(&AARCH64_PROTOTYPE_0110),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4150,7 +4150,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAnd8_rel",
         record: "_InterlockedAnd8_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0107),
+        prototype: Some(&AARCH64_PROTOTYPE_0110),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4160,7 +4160,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAnd_acq",
         record: "_InterlockedAnd_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4170,7 +4170,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAnd_nf",
         record: "_InterlockedAnd_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4180,7 +4180,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedAnd_rel",
         record: "_InterlockedAnd_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4190,7 +4190,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedCompareExchange128",
         record: "_InterlockedCompareExchange128",
-        prototype: Some(&AARCH64_PROTOTYPE_0240),
+        prototype: Some(&AARCH64_PROTOTYPE_0243),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4200,7 +4200,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedCompareExchange128_acq",
         record: "_InterlockedCompareExchange128_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0240),
+        prototype: Some(&AARCH64_PROTOTYPE_0243),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4210,7 +4210,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedCompareExchange128_nf",
         record: "_InterlockedCompareExchange128_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0240),
+        prototype: Some(&AARCH64_PROTOTYPE_0243),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4220,7 +4220,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedCompareExchange128_rel",
         record: "_InterlockedCompareExchange128_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0240),
+        prototype: Some(&AARCH64_PROTOTYPE_0243),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4230,7 +4230,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedCompareExchange16_acq",
         record: "_InterlockedCompareExchange16_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0195),
+        prototype: Some(&AARCH64_PROTOTYPE_0198),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4240,7 +4240,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedCompareExchange16_nf",
         record: "_InterlockedCompareExchange16_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0195),
+        prototype: Some(&AARCH64_PROTOTYPE_0198),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4250,7 +4250,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedCompareExchange16_rel",
         record: "_InterlockedCompareExchange16_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0195),
+        prototype: Some(&AARCH64_PROTOTYPE_0198),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4260,7 +4260,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedCompareExchange64_acq",
         record: "_InterlockedCompareExchange64_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0180),
+        prototype: Some(&AARCH64_PROTOTYPE_0183),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4270,7 +4270,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedCompareExchange64_nf",
         record: "_InterlockedCompareExchange64_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0180),
+        prototype: Some(&AARCH64_PROTOTYPE_0183),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4280,7 +4280,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedCompareExchange64_rel",
         record: "_InterlockedCompareExchange64_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0180),
+        prototype: Some(&AARCH64_PROTOTYPE_0183),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4290,7 +4290,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedCompareExchange8_acq",
         record: "_InterlockedCompareExchange8_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0108),
+        prototype: Some(&AARCH64_PROTOTYPE_0111),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4300,7 +4300,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedCompareExchange8_nf",
         record: "_InterlockedCompareExchange8_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0108),
+        prototype: Some(&AARCH64_PROTOTYPE_0111),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4310,7 +4310,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedCompareExchange8_rel",
         record: "_InterlockedCompareExchange8_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0108),
+        prototype: Some(&AARCH64_PROTOTYPE_0111),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4340,7 +4340,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedCompareExchange_acq",
         record: "_InterlockedCompareExchange_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0183),
+        prototype: Some(&AARCH64_PROTOTYPE_0186),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4350,7 +4350,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedCompareExchange_nf",
         record: "_InterlockedCompareExchange_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0183),
+        prototype: Some(&AARCH64_PROTOTYPE_0186),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4360,7 +4360,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedCompareExchange_rel",
         record: "_InterlockedCompareExchange_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0183),
+        prototype: Some(&AARCH64_PROTOTYPE_0186),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4370,7 +4370,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedDecrement16_acq",
         record: "_InterlockedDecrement16_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0193),
+        prototype: Some(&AARCH64_PROTOTYPE_0196),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4380,7 +4380,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedDecrement16_nf",
         record: "_InterlockedDecrement16_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0193),
+        prototype: Some(&AARCH64_PROTOTYPE_0196),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4390,7 +4390,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedDecrement16_rel",
         record: "_InterlockedDecrement16_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0193),
+        prototype: Some(&AARCH64_PROTOTYPE_0196),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4400,7 +4400,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedDecrement64",
         record: "_InterlockedDecrement64",
-        prototype: Some(&AARCH64_PROTOTYPE_0178),
+        prototype: Some(&AARCH64_PROTOTYPE_0181),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4410,7 +4410,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedDecrement64_acq",
         record: "_InterlockedDecrement64_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0178),
+        prototype: Some(&AARCH64_PROTOTYPE_0181),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4420,7 +4420,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedDecrement64_nf",
         record: "_InterlockedDecrement64_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0178),
+        prototype: Some(&AARCH64_PROTOTYPE_0181),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4430,7 +4430,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedDecrement64_rel",
         record: "_InterlockedDecrement64_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0178),
+        prototype: Some(&AARCH64_PROTOTYPE_0181),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4440,7 +4440,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedDecrement_acq",
         record: "_InterlockedDecrement_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0181),
+        prototype: Some(&AARCH64_PROTOTYPE_0184),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4450,7 +4450,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedDecrement_nf",
         record: "_InterlockedDecrement_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0181),
+        prototype: Some(&AARCH64_PROTOTYPE_0184),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4460,7 +4460,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedDecrement_rel",
         record: "_InterlockedDecrement_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0181),
+        prototype: Some(&AARCH64_PROTOTYPE_0184),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4470,7 +4470,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchange16_acq",
         record: "_InterlockedExchange16_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0194),
+        prototype: Some(&AARCH64_PROTOTYPE_0197),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4480,7 +4480,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchange16_nf",
         record: "_InterlockedExchange16_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0194),
+        prototype: Some(&AARCH64_PROTOTYPE_0197),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4490,7 +4490,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchange16_rel",
         record: "_InterlockedExchange16_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0194),
+        prototype: Some(&AARCH64_PROTOTYPE_0197),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4500,7 +4500,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchange64",
         record: "_InterlockedExchange64",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4510,7 +4510,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchange64_acq",
         record: "_InterlockedExchange64_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4520,7 +4520,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchange64_nf",
         record: "_InterlockedExchange64_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4530,7 +4530,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchange64_rel",
         record: "_InterlockedExchange64_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4540,7 +4540,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchange8_acq",
         record: "_InterlockedExchange8_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0107),
+        prototype: Some(&AARCH64_PROTOTYPE_0110),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4550,7 +4550,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchange8_nf",
         record: "_InterlockedExchange8_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0107),
+        prototype: Some(&AARCH64_PROTOTYPE_0110),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4560,7 +4560,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchange8_rel",
         record: "_InterlockedExchange8_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0107),
+        prototype: Some(&AARCH64_PROTOTYPE_0110),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4570,7 +4570,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchangeAdd16_acq",
         record: "_InterlockedExchangeAdd16_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0194),
+        prototype: Some(&AARCH64_PROTOTYPE_0197),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4580,7 +4580,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchangeAdd16_nf",
         record: "_InterlockedExchangeAdd16_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0194),
+        prototype: Some(&AARCH64_PROTOTYPE_0197),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4590,7 +4590,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchangeAdd16_rel",
         record: "_InterlockedExchangeAdd16_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0194),
+        prototype: Some(&AARCH64_PROTOTYPE_0197),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4600,7 +4600,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchangeAdd64",
         record: "_InterlockedExchangeAdd64",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4610,7 +4610,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchangeAdd64_acq",
         record: "_InterlockedExchangeAdd64_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4620,7 +4620,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchangeAdd64_nf",
         record: "_InterlockedExchangeAdd64_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4630,7 +4630,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchangeAdd64_rel",
         record: "_InterlockedExchangeAdd64_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4640,7 +4640,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchangeAdd8_acq",
         record: "_InterlockedExchangeAdd8_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0107),
+        prototype: Some(&AARCH64_PROTOTYPE_0110),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4650,7 +4650,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchangeAdd8_nf",
         record: "_InterlockedExchangeAdd8_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0107),
+        prototype: Some(&AARCH64_PROTOTYPE_0110),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4660,7 +4660,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchangeAdd8_rel",
         record: "_InterlockedExchangeAdd8_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0107),
+        prototype: Some(&AARCH64_PROTOTYPE_0110),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4670,7 +4670,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchangeAdd_acq",
         record: "_InterlockedExchangeAdd_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4680,7 +4680,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchangeAdd_nf",
         record: "_InterlockedExchangeAdd_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4690,7 +4690,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchangeAdd_rel",
         record: "_InterlockedExchangeAdd_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4730,7 +4730,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchangeSub64",
         record: "_InterlockedExchangeSub64",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4740,7 +4740,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchange_acq",
         record: "_InterlockedExchange_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4750,7 +4750,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchange_nf",
         record: "_InterlockedExchange_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4760,7 +4760,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedExchange_rel",
         record: "_InterlockedExchange_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4770,7 +4770,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedIncrement16_acq",
         record: "_InterlockedIncrement16_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0193),
+        prototype: Some(&AARCH64_PROTOTYPE_0196),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4780,7 +4780,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedIncrement16_nf",
         record: "_InterlockedIncrement16_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0193),
+        prototype: Some(&AARCH64_PROTOTYPE_0196),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4790,7 +4790,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedIncrement16_rel",
         record: "_InterlockedIncrement16_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0193),
+        prototype: Some(&AARCH64_PROTOTYPE_0196),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4800,7 +4800,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedIncrement64",
         record: "_InterlockedIncrement64",
-        prototype: Some(&AARCH64_PROTOTYPE_0178),
+        prototype: Some(&AARCH64_PROTOTYPE_0181),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4810,7 +4810,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedIncrement64_acq",
         record: "_InterlockedIncrement64_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0178),
+        prototype: Some(&AARCH64_PROTOTYPE_0181),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4820,7 +4820,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedIncrement64_nf",
         record: "_InterlockedIncrement64_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0178),
+        prototype: Some(&AARCH64_PROTOTYPE_0181),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4830,7 +4830,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedIncrement64_rel",
         record: "_InterlockedIncrement64_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0178),
+        prototype: Some(&AARCH64_PROTOTYPE_0181),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4840,7 +4840,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedIncrement_acq",
         record: "_InterlockedIncrement_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0181),
+        prototype: Some(&AARCH64_PROTOTYPE_0184),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4850,7 +4850,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedIncrement_nf",
         record: "_InterlockedIncrement_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0181),
+        prototype: Some(&AARCH64_PROTOTYPE_0184),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4860,7 +4860,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedIncrement_rel",
         record: "_InterlockedIncrement_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0181),
+        prototype: Some(&AARCH64_PROTOTYPE_0184),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4870,7 +4870,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedOr16_acq",
         record: "_InterlockedOr16_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0194),
+        prototype: Some(&AARCH64_PROTOTYPE_0197),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4880,7 +4880,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedOr16_nf",
         record: "_InterlockedOr16_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0194),
+        prototype: Some(&AARCH64_PROTOTYPE_0197),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4890,7 +4890,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedOr16_rel",
         record: "_InterlockedOr16_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0194),
+        prototype: Some(&AARCH64_PROTOTYPE_0197),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4900,7 +4900,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedOr64",
         record: "_InterlockedOr64",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4910,7 +4910,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedOr64_acq",
         record: "_InterlockedOr64_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4920,7 +4920,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedOr64_nf",
         record: "_InterlockedOr64_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4930,7 +4930,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedOr64_rel",
         record: "_InterlockedOr64_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4940,7 +4940,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedOr8_acq",
         record: "_InterlockedOr8_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0107),
+        prototype: Some(&AARCH64_PROTOTYPE_0110),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4950,7 +4950,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedOr8_nf",
         record: "_InterlockedOr8_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0107),
+        prototype: Some(&AARCH64_PROTOTYPE_0110),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4960,7 +4960,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedOr8_rel",
         record: "_InterlockedOr8_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0107),
+        prototype: Some(&AARCH64_PROTOTYPE_0110),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4970,7 +4970,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedOr_acq",
         record: "_InterlockedOr_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4980,7 +4980,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedOr_nf",
         record: "_InterlockedOr_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -4990,7 +4990,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedOr_rel",
         record: "_InterlockedOr_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -5000,7 +5000,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedXor16_acq",
         record: "_InterlockedXor16_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0194),
+        prototype: Some(&AARCH64_PROTOTYPE_0197),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -5010,7 +5010,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedXor16_nf",
         record: "_InterlockedXor16_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0194),
+        prototype: Some(&AARCH64_PROTOTYPE_0197),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -5020,7 +5020,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedXor16_rel",
         record: "_InterlockedXor16_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0194),
+        prototype: Some(&AARCH64_PROTOTYPE_0197),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -5030,7 +5030,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedXor64",
         record: "_InterlockedXor64",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -5040,7 +5040,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedXor64_acq",
         record: "_InterlockedXor64_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -5050,7 +5050,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedXor64_nf",
         record: "_InterlockedXor64_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -5060,7 +5060,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedXor64_rel",
         record: "_InterlockedXor64_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0179),
+        prototype: Some(&AARCH64_PROTOTYPE_0182),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -5070,7 +5070,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedXor8_acq",
         record: "_InterlockedXor8_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0107),
+        prototype: Some(&AARCH64_PROTOTYPE_0110),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -5080,7 +5080,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedXor8_nf",
         record: "_InterlockedXor8_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0107),
+        prototype: Some(&AARCH64_PROTOTYPE_0110),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -5090,7 +5090,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedXor8_rel",
         record: "_InterlockedXor8_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0107),
+        prototype: Some(&AARCH64_PROTOTYPE_0110),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -5100,7 +5100,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedXor_acq",
         record: "_InterlockedXor_acq",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -5110,7 +5110,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedXor_nf",
         record: "_InterlockedXor_nf",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -5120,7 +5120,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_InterlockedXor_rel",
         record: "_InterlockedXor_rel",
-        prototype: Some(&AARCH64_PROTOTYPE_0182),
+        prototype: Some(&AARCH64_PROTOTYPE_0185),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -5130,7 +5130,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "_ReadStatusReg",
         record: "_ReadStatusReg",
-        prototype: Some(&AARCH64_PROTOTYPE_0177),
+        prototype: Some(&AARCH64_PROTOTYPE_0180),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -5220,7 +5220,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_chkfeat",
         record: "chkfeat",
-        prototype: Some(&AARCH64_PROTOTYPE_0226),
+        prototype: Some(&AARCH64_PROTOTYPE_0229),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[],
         languages: None,
@@ -5240,7 +5240,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_cls",
         record: "cls",
-        prototype: Some(&AARCH64_PROTOTYPE_0270),
+        prototype: Some(&AARCH64_PROTOTYPE_0273),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5250,7 +5250,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_cls64",
         record: "cls64",
-        prototype: Some(&AARCH64_PROTOTYPE_0271),
+        prototype: Some(&AARCH64_PROTOTYPE_0274),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5260,7 +5260,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_clz",
         record: "clz",
-        prototype: Some(&AARCH64_PROTOTYPE_0270),
+        prototype: Some(&AARCH64_PROTOTYPE_0273),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5270,7 +5270,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_clz64",
         record: "clz64",
-        prototype: Some(&AARCH64_PROTOTYPE_0271),
+        prototype: Some(&AARCH64_PROTOTYPE_0274),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5280,7 +5280,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_crc32b",
         record: "crc32b",
-        prototype: Some(&AARCH64_PROTOTYPE_0278),
+        prototype: Some(&AARCH64_PROTOTYPE_0281),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5290,7 +5290,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_crc32cb",
         record: "crc32cb",
-        prototype: Some(&AARCH64_PROTOTYPE_0278),
+        prototype: Some(&AARCH64_PROTOTYPE_0281),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5300,7 +5300,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_crc32cd",
         record: "crc32cd",
-        prototype: Some(&AARCH64_PROTOTYPE_0277),
+        prototype: Some(&AARCH64_PROTOTYPE_0280),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5310,7 +5310,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_crc32ch",
         record: "crc32ch",
-        prototype: Some(&AARCH64_PROTOTYPE_0280),
+        prototype: Some(&AARCH64_PROTOTYPE_0283),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5320,7 +5320,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_crc32cw",
         record: "crc32cw",
-        prototype: Some(&AARCH64_PROTOTYPE_0279),
+        prototype: Some(&AARCH64_PROTOTYPE_0282),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5330,7 +5330,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_crc32d",
         record: "crc32d",
-        prototype: Some(&AARCH64_PROTOTYPE_0277),
+        prototype: Some(&AARCH64_PROTOTYPE_0280),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5340,7 +5340,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_crc32h",
         record: "crc32h",
-        prototype: Some(&AARCH64_PROTOTYPE_0280),
+        prototype: Some(&AARCH64_PROTOTYPE_0283),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5350,7 +5350,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_crc32w",
         record: "crc32w",
-        prototype: Some(&AARCH64_PROTOTYPE_0279),
+        prototype: Some(&AARCH64_PROTOTYPE_0282),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5380,7 +5380,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_gcspopm",
         record: "gcspopm",
-        prototype: Some(&AARCH64_PROTOTYPE_0226),
+        prototype: Some(&AARCH64_PROTOTYPE_0229),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -5410,7 +5410,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_gmi",
         record: "gmi",
-        prototype: Some(&AARCH64_PROTOTYPE_0232),
+        prototype: Some(&AARCH64_PROTOTYPE_0235),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::CustomTypeChecking],
         languages: None,
@@ -5440,7 +5440,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_jcvt",
         record: "jcvt",
-        prototype: Some(&AARCH64_PROTOTYPE_0158),
+        prototype: Some(&AARCH64_PROTOTYPE_0161),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5550,7 +5550,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_rbit",
         record: "rbit",
-        prototype: Some(&AARCH64_PROTOTYPE_0273),
+        prototype: Some(&AARCH64_PROTOTYPE_0276),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5560,7 +5560,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_rbit64",
         record: "rbit64",
-        prototype: Some(&AARCH64_PROTOTYPE_0226),
+        prototype: Some(&AARCH64_PROTOTYPE_0229),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5570,7 +5570,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_rint32x",
         record: "rint32x",
-        prototype: Some(&AARCH64_PROTOTYPE_0112),
+        prototype: Some(&AARCH64_PROTOTYPE_0115),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[],
         languages: None,
@@ -5580,7 +5580,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_rint32xf",
         record: "rint32xf",
-        prototype: Some(&AARCH64_PROTOTYPE_0127),
+        prototype: Some(&AARCH64_PROTOTYPE_0130),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[],
         languages: None,
@@ -5590,7 +5590,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_rint32z",
         record: "rint32z",
-        prototype: Some(&AARCH64_PROTOTYPE_0112),
+        prototype: Some(&AARCH64_PROTOTYPE_0115),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[],
         languages: None,
@@ -5600,7 +5600,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_rint32zf",
         record: "rint32zf",
-        prototype: Some(&AARCH64_PROTOTYPE_0127),
+        prototype: Some(&AARCH64_PROTOTYPE_0130),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[],
         languages: None,
@@ -5610,7 +5610,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_rint64x",
         record: "rint64x",
-        prototype: Some(&AARCH64_PROTOTYPE_0112),
+        prototype: Some(&AARCH64_PROTOTYPE_0115),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[],
         languages: None,
@@ -5620,7 +5620,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_rint64xf",
         record: "rint64xf",
-        prototype: Some(&AARCH64_PROTOTYPE_0127),
+        prototype: Some(&AARCH64_PROTOTYPE_0130),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[],
         languages: None,
@@ -5630,7 +5630,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_rint64z",
         record: "rint64z",
-        prototype: Some(&AARCH64_PROTOTYPE_0112),
+        prototype: Some(&AARCH64_PROTOTYPE_0115),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[],
         languages: None,
@@ -5640,7 +5640,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_rint64zf",
         record: "rint64zf",
-        prototype: Some(&AARCH64_PROTOTYPE_0127),
+        prototype: Some(&AARCH64_PROTOTYPE_0130),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[],
         languages: None,
@@ -5650,7 +5650,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_rndr",
         record: "rndr",
-        prototype: Some(&AARCH64_PROTOTYPE_0157),
+        prototype: Some(&AARCH64_PROTOTYPE_0160),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -5660,7 +5660,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_rndrrs",
         record: "rndrrs",
-        prototype: Some(&AARCH64_PROTOTYPE_0157),
+        prototype: Some(&AARCH64_PROTOTYPE_0160),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -5670,7 +5670,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_rsr",
         record: "rsr",
-        prototype: Some(&AARCH64_PROTOTYPE_0259),
+        prototype: Some(&AARCH64_PROTOTYPE_0262),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5680,7 +5680,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_rsr128",
         record: "rsr128",
-        prototype: Some(&AARCH64_PROTOTYPE_0233),
+        prototype: Some(&AARCH64_PROTOTYPE_0236),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5690,7 +5690,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_rsr64",
         record: "rsr64",
-        prototype: Some(&AARCH64_PROTOTYPE_0219),
+        prototype: Some(&AARCH64_PROTOTYPE_0222),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::Const],
         languages: None,
@@ -5730,7 +5730,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_st64b",
         record: "st64b",
-        prototype: Some(&AARCH64_PROTOTYPE_0340),
+        prototype: Some(&AARCH64_PROTOTYPE_0341),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -5740,7 +5740,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_st64bv",
         record: "st64bv",
-        prototype: Some(&AARCH64_PROTOTYPE_0231),
+        prototype: Some(&AARCH64_PROTOTYPE_0234),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -5750,7 +5750,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_st64bv0",
         record: "st64bv0",
-        prototype: Some(&AARCH64_PROTOTYPE_0231),
+        prototype: Some(&AARCH64_PROTOTYPE_0234),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -5770,7 +5770,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_stlex",
         record: "stlex",
-        prototype: Some(&AARCH64_PROTOTYPE_0136),
+        prototype: Some(&AARCH64_PROTOTYPE_0139),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::CustomTypeChecking],
         languages: None,
@@ -5780,7 +5780,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_strex",
         record: "strex",
-        prototype: Some(&AARCH64_PROTOTYPE_0136),
+        prototype: Some(&AARCH64_PROTOTYPE_0139),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::CustomTypeChecking],
         languages: None,
@@ -5790,7 +5790,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_arm_subp",
         record: "subp",
-        prototype: Some(&AARCH64_PROTOTYPE_0176),
+        prototype: Some(&AARCH64_PROTOTYPE_0179),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::CustomTypeChecking],
         languages: None,
@@ -5920,7 +5920,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__getReg",
         record: "__getReg",
-        prototype: Some(&AARCH64_PROTOTYPE_0282),
+        prototype: Some(&AARCH64_PROTOTYPE_0285),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -5930,7 +5930,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__getRegFp",
         record: "__getRegFp",
-        prototype: Some(&AARCH64_PROTOTYPE_0116),
+        prototype: Some(&AARCH64_PROTOTYPE_0119),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -5940,7 +5940,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__hlt",
         record: "__hlt",
-        prototype: Some(&AARCH64_PROTOTYPE_0274),
+        prototype: Some(&AARCH64_PROTOTYPE_0277),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -6000,7 +6000,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__mulh",
         record: "__mulh",
-        prototype: Some(&AARCH64_PROTOTYPE_0211),
+        prototype: Some(&AARCH64_PROTOTYPE_0214),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -6030,7 +6030,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__readx18byte",
         record: "__readx18byte",
-        prototype: Some(&AARCH64_PROTOTYPE_0243),
+        prototype: Some(&AARCH64_PROTOTYPE_0246),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -6040,7 +6040,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__readx18dword",
         record: "__readx18dword",
-        prototype: Some(&AARCH64_PROTOTYPE_0184),
+        prototype: Some(&AARCH64_PROTOTYPE_0187),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -6050,7 +6050,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__readx18qword",
         record: "__readx18qword",
-        prototype: Some(&AARCH64_PROTOTYPE_0283),
+        prototype: Some(&AARCH64_PROTOTYPE_0286),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -6110,7 +6110,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__sys",
         record: "__sys",
-        prototype: Some(&AARCH64_PROTOTYPE_0264),
+        prototype: Some(&AARCH64_PROTOTYPE_0267),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -6120,7 +6120,7 @@ pub(super) static CLANG_AARCH64_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__umulh",
         record: "__umulh",
-        prototype: Some(&AARCH64_PROTOTYPE_0284),
+        prototype: Some(&AARCH64_PROTOTYPE_0287),
         kind: ClangBuiltinKind::Library,
         attributes: &[BuiltinAttribute::NoThrow, BuiltinAttribute::RequireDeclaration],
         languages: Some(BuiltinLanguage::AllMsLanguages),
@@ -6272,7 +6272,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vabdd_f64",
         record: "__builtin_neon_vabdd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0113),
+        prototype: Some(&AARCH64_PROTOTYPE_0116),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6312,7 +6312,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vabds_f32",
         record: "__builtin_neon_vabds_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0128),
+        prototype: Some(&AARCH64_PROTOTYPE_0131),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6342,7 +6342,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vabsd_s64",
         record: "__builtin_neon_vabsd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0168),
+        prototype: Some(&AARCH64_PROTOTYPE_0171),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6392,7 +6392,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddd_s64",
         record: "__builtin_neon_vaddd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0173),
+        prototype: Some(&AARCH64_PROTOTYPE_0176),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6402,7 +6402,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddd_u64",
         record: "__builtin_neon_vaddd_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0229),
+        prototype: Some(&AARCH64_PROTOTYPE_0232),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6432,7 +6432,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddlv_s16",
         record: "__builtin_neon_vaddlv_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0139),
+        prototype: Some(&AARCH64_PROTOTYPE_0142),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6442,7 +6442,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddlv_s32",
         record: "__builtin_neon_vaddlv_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0160),
+        prototype: Some(&AARCH64_PROTOTYPE_0163),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6452,7 +6452,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddlv_s8",
         record: "__builtin_neon_vaddlv_s8",
-        prototype: Some(&AARCH64_PROTOTYPE_0188),
+        prototype: Some(&AARCH64_PROTOTYPE_0191),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6462,7 +6462,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddlv_u16",
         record: "__builtin_neon_vaddlv_u16",
-        prototype: Some(&AARCH64_PROTOTYPE_0255),
+        prototype: Some(&AARCH64_PROTOTYPE_0258),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6472,7 +6472,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddlv_u32",
         record: "__builtin_neon_vaddlv_u32",
-        prototype: Some(&AARCH64_PROTOTYPE_0215),
+        prototype: Some(&AARCH64_PROTOTYPE_0218),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6492,7 +6492,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddlvq_s16",
         record: "__builtin_neon_vaddlvq_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0140),
+        prototype: Some(&AARCH64_PROTOTYPE_0143),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6502,7 +6502,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddlvq_s32",
         record: "__builtin_neon_vaddlvq_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0161),
+        prototype: Some(&AARCH64_PROTOTYPE_0164),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6512,7 +6512,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddlvq_s8",
         record: "__builtin_neon_vaddlvq_s8",
-        prototype: Some(&AARCH64_PROTOTYPE_0185),
+        prototype: Some(&AARCH64_PROTOTYPE_0188),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6522,7 +6522,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddlvq_u16",
         record: "__builtin_neon_vaddlvq_u16",
-        prototype: Some(&AARCH64_PROTOTYPE_0256),
+        prototype: Some(&AARCH64_PROTOTYPE_0259),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6532,7 +6532,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddlvq_u32",
         record: "__builtin_neon_vaddlvq_u32",
-        prototype: Some(&AARCH64_PROTOTYPE_0216),
+        prototype: Some(&AARCH64_PROTOTYPE_0219),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6552,7 +6552,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddq_p128",
         record: "__builtin_neon_vaddq_p128",
-        prototype: Some(&AARCH64_PROTOTYPE_0286),
+        prototype: Some(&AARCH64_PROTOTYPE_0107),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6572,7 +6572,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddv_f32",
         record: "__builtin_neon_vaddv_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0122),
+        prototype: Some(&AARCH64_PROTOTYPE_0125),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6582,7 +6582,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddv_s16",
         record: "__builtin_neon_vaddv_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0186),
+        prototype: Some(&AARCH64_PROTOTYPE_0189),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6592,7 +6592,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddv_s32",
         record: "__builtin_neon_vaddv_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0137),
+        prototype: Some(&AARCH64_PROTOTYPE_0140),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6602,7 +6602,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddv_s8",
         record: "__builtin_neon_vaddv_s8",
-        prototype: Some(&AARCH64_PROTOTYPE_0202),
+        prototype: Some(&AARCH64_PROTOTYPE_0205),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6622,7 +6622,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddv_u32",
         record: "__builtin_neon_vaddv_u32",
-        prototype: Some(&AARCH64_PROTOTYPE_0252),
+        prototype: Some(&AARCH64_PROTOTYPE_0255),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6632,7 +6632,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddv_u8",
         record: "__builtin_neon_vaddv_u8",
-        prototype: Some(&AARCH64_PROTOTYPE_0238),
+        prototype: Some(&AARCH64_PROTOTYPE_0241),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6642,7 +6642,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddvq_f32",
         record: "__builtin_neon_vaddvq_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0124),
+        prototype: Some(&AARCH64_PROTOTYPE_0127),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6652,7 +6652,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddvq_f64",
         record: "__builtin_neon_vaddvq_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0110),
+        prototype: Some(&AARCH64_PROTOTYPE_0113),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6662,7 +6662,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddvq_s16",
         record: "__builtin_neon_vaddvq_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0187),
+        prototype: Some(&AARCH64_PROTOTYPE_0190),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6672,7 +6672,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddvq_s32",
         record: "__builtin_neon_vaddvq_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0138),
+        prototype: Some(&AARCH64_PROTOTYPE_0141),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6682,7 +6682,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddvq_s64",
         record: "__builtin_neon_vaddvq_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0159),
+        prototype: Some(&AARCH64_PROTOTYPE_0162),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6692,7 +6692,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddvq_s8",
         record: "__builtin_neon_vaddvq_s8",
-        prototype: Some(&AARCH64_PROTOTYPE_0201),
+        prototype: Some(&AARCH64_PROTOTYPE_0204),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6712,7 +6712,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddvq_u32",
         record: "__builtin_neon_vaddvq_u32",
-        prototype: Some(&AARCH64_PROTOTYPE_0254),
+        prototype: Some(&AARCH64_PROTOTYPE_0257),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6722,7 +6722,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddvq_u64",
         record: "__builtin_neon_vaddvq_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0214),
+        prototype: Some(&AARCH64_PROTOTYPE_0217),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -6732,7 +6732,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vaddvq_u8",
         record: "__builtin_neon_vaddvq_u8",
-        prototype: Some(&AARCH64_PROTOTYPE_0235),
+        prototype: Some(&AARCH64_PROTOTYPE_0238),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7152,7 +7152,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcaged_f64",
         record: "__builtin_neon_vcaged_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0222),
+        prototype: Some(&AARCH64_PROTOTYPE_0225),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7192,7 +7192,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcages_f32",
         record: "__builtin_neon_vcages_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0263),
+        prototype: Some(&AARCH64_PROTOTYPE_0266),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7222,7 +7222,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcagtd_f64",
         record: "__builtin_neon_vcagtd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0222),
+        prototype: Some(&AARCH64_PROTOTYPE_0225),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7262,7 +7262,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcagts_f32",
         record: "__builtin_neon_vcagts_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0263),
+        prototype: Some(&AARCH64_PROTOTYPE_0266),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7292,7 +7292,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcaled_f64",
         record: "__builtin_neon_vcaled_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0222),
+        prototype: Some(&AARCH64_PROTOTYPE_0225),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7332,7 +7332,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcales_f32",
         record: "__builtin_neon_vcales_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0263),
+        prototype: Some(&AARCH64_PROTOTYPE_0266),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7362,7 +7362,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcaltd_f64",
         record: "__builtin_neon_vcaltd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0222),
+        prototype: Some(&AARCH64_PROTOTYPE_0225),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7402,7 +7402,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcalts_f32",
         record: "__builtin_neon_vcalts_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0263),
+        prototype: Some(&AARCH64_PROTOTYPE_0266),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7412,7 +7412,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vceqd_f64",
         record: "__builtin_neon_vceqd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0222),
+        prototype: Some(&AARCH64_PROTOTYPE_0225),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7422,7 +7422,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vceqd_s64",
         record: "__builtin_neon_vceqd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0225),
+        prototype: Some(&AARCH64_PROTOTYPE_0228),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7432,7 +7432,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vceqd_u64",
         record: "__builtin_neon_vceqd_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0229),
+        prototype: Some(&AARCH64_PROTOTYPE_0232),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7452,7 +7452,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vceqs_f32",
         record: "__builtin_neon_vceqs_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0263),
+        prototype: Some(&AARCH64_PROTOTYPE_0266),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7482,7 +7482,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vceqzd_f64",
         record: "__builtin_neon_vceqzd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0220),
+        prototype: Some(&AARCH64_PROTOTYPE_0223),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7492,7 +7492,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vceqzd_s64",
         record: "__builtin_neon_vceqzd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0224),
+        prototype: Some(&AARCH64_PROTOTYPE_0227),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7502,7 +7502,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vceqzd_u64",
         record: "__builtin_neon_vceqzd_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0226),
+        prototype: Some(&AARCH64_PROTOTYPE_0229),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7542,7 +7542,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vceqzs_f32",
         record: "__builtin_neon_vceqzs_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0261),
+        prototype: Some(&AARCH64_PROTOTYPE_0264),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7552,7 +7552,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcged_f64",
         record: "__builtin_neon_vcged_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0222),
+        prototype: Some(&AARCH64_PROTOTYPE_0225),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7562,7 +7562,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcged_s64",
         record: "__builtin_neon_vcged_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0225),
+        prototype: Some(&AARCH64_PROTOTYPE_0228),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7572,7 +7572,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcged_u64",
         record: "__builtin_neon_vcged_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0229),
+        prototype: Some(&AARCH64_PROTOTYPE_0232),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7592,7 +7592,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcges_f32",
         record: "__builtin_neon_vcges_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0263),
+        prototype: Some(&AARCH64_PROTOTYPE_0266),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7622,7 +7622,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcgezd_f64",
         record: "__builtin_neon_vcgezd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0220),
+        prototype: Some(&AARCH64_PROTOTYPE_0223),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7632,7 +7632,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcgezd_s64",
         record: "__builtin_neon_vcgezd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0224),
+        prototype: Some(&AARCH64_PROTOTYPE_0227),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7672,7 +7672,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcgezs_f32",
         record: "__builtin_neon_vcgezs_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0261),
+        prototype: Some(&AARCH64_PROTOTYPE_0264),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7682,7 +7682,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcgtd_f64",
         record: "__builtin_neon_vcgtd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0222),
+        prototype: Some(&AARCH64_PROTOTYPE_0225),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7692,7 +7692,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcgtd_s64",
         record: "__builtin_neon_vcgtd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0225),
+        prototype: Some(&AARCH64_PROTOTYPE_0228),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7702,7 +7702,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcgtd_u64",
         record: "__builtin_neon_vcgtd_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0229),
+        prototype: Some(&AARCH64_PROTOTYPE_0232),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7722,7 +7722,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcgts_f32",
         record: "__builtin_neon_vcgts_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0263),
+        prototype: Some(&AARCH64_PROTOTYPE_0266),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7752,7 +7752,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcgtzd_f64",
         record: "__builtin_neon_vcgtzd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0220),
+        prototype: Some(&AARCH64_PROTOTYPE_0223),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7762,7 +7762,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcgtzd_s64",
         record: "__builtin_neon_vcgtzd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0224),
+        prototype: Some(&AARCH64_PROTOTYPE_0227),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7802,7 +7802,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcgtzs_f32",
         record: "__builtin_neon_vcgtzs_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0261),
+        prototype: Some(&AARCH64_PROTOTYPE_0264),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7812,7 +7812,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcled_f64",
         record: "__builtin_neon_vcled_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0222),
+        prototype: Some(&AARCH64_PROTOTYPE_0225),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7822,7 +7822,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcled_s64",
         record: "__builtin_neon_vcled_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0225),
+        prototype: Some(&AARCH64_PROTOTYPE_0228),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7832,7 +7832,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcled_u64",
         record: "__builtin_neon_vcled_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0229),
+        prototype: Some(&AARCH64_PROTOTYPE_0232),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7852,7 +7852,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcles_f32",
         record: "__builtin_neon_vcles_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0263),
+        prototype: Some(&AARCH64_PROTOTYPE_0266),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7882,7 +7882,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vclezd_f64",
         record: "__builtin_neon_vclezd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0220),
+        prototype: Some(&AARCH64_PROTOTYPE_0223),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7892,7 +7892,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vclezd_s64",
         record: "__builtin_neon_vclezd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0224),
+        prototype: Some(&AARCH64_PROTOTYPE_0227),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7932,7 +7932,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vclezs_f32",
         record: "__builtin_neon_vclezs_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0261),
+        prototype: Some(&AARCH64_PROTOTYPE_0264),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7962,7 +7962,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcltd_f64",
         record: "__builtin_neon_vcltd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0222),
+        prototype: Some(&AARCH64_PROTOTYPE_0225),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7972,7 +7972,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcltd_s64",
         record: "__builtin_neon_vcltd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0225),
+        prototype: Some(&AARCH64_PROTOTYPE_0228),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -7982,7 +7982,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcltd_u64",
         record: "__builtin_neon_vcltd_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0229),
+        prototype: Some(&AARCH64_PROTOTYPE_0232),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8002,7 +8002,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vclts_f32",
         record: "__builtin_neon_vclts_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0263),
+        prototype: Some(&AARCH64_PROTOTYPE_0266),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8032,7 +8032,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcltzd_f64",
         record: "__builtin_neon_vcltzd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0220),
+        prototype: Some(&AARCH64_PROTOTYPE_0223),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8042,7 +8042,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcltzd_s64",
         record: "__builtin_neon_vcltzd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0224),
+        prototype: Some(&AARCH64_PROTOTYPE_0227),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8082,7 +8082,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcltzs_f32",
         record: "__builtin_neon_vcltzs_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0261),
+        prototype: Some(&AARCH64_PROTOTYPE_0264),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8792,7 +8792,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtad_s32_f64",
         record: "__builtin_neon_vcvtad_s32_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0143),
+        prototype: Some(&AARCH64_PROTOTYPE_0146),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8802,7 +8802,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtad_s64_f64",
         record: "__builtin_neon_vcvtad_s64_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0164),
+        prototype: Some(&AARCH64_PROTOTYPE_0167),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8812,7 +8812,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtad_u32_f64",
         record: "__builtin_neon_vcvtad_u32_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0260),
+        prototype: Some(&AARCH64_PROTOTYPE_0263),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8822,7 +8822,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtad_u64_f64",
         record: "__builtin_neon_vcvtad_u64_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0220),
+        prototype: Some(&AARCH64_PROTOTYPE_0223),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8832,7 +8832,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtah_s16_f16",
         record: "__builtin_neon_vcvtah_s16_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0189),
+        prototype: Some(&AARCH64_PROTOTYPE_0192),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8842,7 +8842,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtah_s32_f16",
         record: "__builtin_neon_vcvtah_s32_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0141),
+        prototype: Some(&AARCH64_PROTOTYPE_0144),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8852,7 +8852,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtah_s64_f16",
         record: "__builtin_neon_vcvtah_s64_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0162),
+        prototype: Some(&AARCH64_PROTOTYPE_0165),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8872,7 +8872,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtah_u32_f16",
         record: "__builtin_neon_vcvtah_u32_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0257),
+        prototype: Some(&AARCH64_PROTOTYPE_0260),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8882,7 +8882,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtah_u64_f16",
         record: "__builtin_neon_vcvtah_u64_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0217),
+        prototype: Some(&AARCH64_PROTOTYPE_0220),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8952,7 +8952,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtas_s32_f32",
         record: "__builtin_neon_vcvtas_s32_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0144),
+        prototype: Some(&AARCH64_PROTOTYPE_0147),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8962,7 +8962,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtas_s64_f32",
         record: "__builtin_neon_vcvtas_s64_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0166),
+        prototype: Some(&AARCH64_PROTOTYPE_0169),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8972,7 +8972,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtas_u32_f32",
         record: "__builtin_neon_vcvtas_u32_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0261),
+        prototype: Some(&AARCH64_PROTOTYPE_0264),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8982,7 +8982,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtas_u64_f32",
         record: "__builtin_neon_vcvtas_u64_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0223),
+        prototype: Some(&AARCH64_PROTOTYPE_0226),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -8992,7 +8992,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtd_f64_s64",
         record: "__builtin_neon_vcvtd_f64_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0117),
+        prototype: Some(&AARCH64_PROTOTYPE_0120),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9002,7 +9002,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtd_f64_u64",
         record: "__builtin_neon_vcvtd_f64_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0120),
+        prototype: Some(&AARCH64_PROTOTYPE_0123),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9012,7 +9012,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtd_n_f64_s64",
         record: "__builtin_neon_vcvtd_n_f64_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0118),
+        prototype: Some(&AARCH64_PROTOTYPE_0121),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9022,7 +9022,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtd_n_f64_u64",
         record: "__builtin_neon_vcvtd_n_f64_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0121),
+        prototype: Some(&AARCH64_PROTOTYPE_0124),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9032,7 +9032,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtd_n_s64_f64",
         record: "__builtin_neon_vcvtd_n_s64_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0165),
+        prototype: Some(&AARCH64_PROTOTYPE_0168),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9042,7 +9042,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtd_n_u64_f64",
         record: "__builtin_neon_vcvtd_n_u64_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0221),
+        prototype: Some(&AARCH64_PROTOTYPE_0224),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9052,7 +9052,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtd_s32_f64",
         record: "__builtin_neon_vcvtd_s32_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0143),
+        prototype: Some(&AARCH64_PROTOTYPE_0146),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9062,7 +9062,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtd_s64_f64",
         record: "__builtin_neon_vcvtd_s64_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0164),
+        prototype: Some(&AARCH64_PROTOTYPE_0167),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9072,7 +9072,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtd_u32_f64",
         record: "__builtin_neon_vcvtd_u32_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0260),
+        prototype: Some(&AARCH64_PROTOTYPE_0263),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9082,7 +9082,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtd_u64_f64",
         record: "__builtin_neon_vcvtd_u64_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0220),
+        prototype: Some(&AARCH64_PROTOTYPE_0223),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9222,7 +9222,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvth_n_s16_f16",
         record: "__builtin_neon_vcvth_n_s16_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0190),
+        prototype: Some(&AARCH64_PROTOTYPE_0193),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9232,7 +9232,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvth_n_s32_f16",
         record: "__builtin_neon_vcvth_n_s32_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0142),
+        prototype: Some(&AARCH64_PROTOTYPE_0145),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9242,7 +9242,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvth_n_s64_f16",
         record: "__builtin_neon_vcvth_n_s64_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0163),
+        prototype: Some(&AARCH64_PROTOTYPE_0166),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9262,7 +9262,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvth_n_u32_f16",
         record: "__builtin_neon_vcvth_n_u32_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0258),
+        prototype: Some(&AARCH64_PROTOTYPE_0261),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9272,7 +9272,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvth_n_u64_f16",
         record: "__builtin_neon_vcvth_n_u64_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0218),
+        prototype: Some(&AARCH64_PROTOTYPE_0221),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9282,7 +9282,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvth_s16_f16",
         record: "__builtin_neon_vcvth_s16_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0189),
+        prototype: Some(&AARCH64_PROTOTYPE_0192),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9292,7 +9292,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvth_s32_f16",
         record: "__builtin_neon_vcvth_s32_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0141),
+        prototype: Some(&AARCH64_PROTOTYPE_0144),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9302,7 +9302,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvth_s64_f16",
         record: "__builtin_neon_vcvth_s64_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0162),
+        prototype: Some(&AARCH64_PROTOTYPE_0165),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9322,7 +9322,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvth_u32_f16",
         record: "__builtin_neon_vcvth_u32_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0257),
+        prototype: Some(&AARCH64_PROTOTYPE_0260),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9332,7 +9332,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvth_u64_f16",
         record: "__builtin_neon_vcvth_u64_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0217),
+        prototype: Some(&AARCH64_PROTOTYPE_0220),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9402,7 +9402,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtmd_s32_f64",
         record: "__builtin_neon_vcvtmd_s32_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0143),
+        prototype: Some(&AARCH64_PROTOTYPE_0146),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9412,7 +9412,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtmd_s64_f64",
         record: "__builtin_neon_vcvtmd_s64_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0164),
+        prototype: Some(&AARCH64_PROTOTYPE_0167),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9422,7 +9422,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtmd_u32_f64",
         record: "__builtin_neon_vcvtmd_u32_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0260),
+        prototype: Some(&AARCH64_PROTOTYPE_0263),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9432,7 +9432,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtmd_u64_f64",
         record: "__builtin_neon_vcvtmd_u64_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0220),
+        prototype: Some(&AARCH64_PROTOTYPE_0223),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9442,7 +9442,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtmh_s16_f16",
         record: "__builtin_neon_vcvtmh_s16_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0189),
+        prototype: Some(&AARCH64_PROTOTYPE_0192),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9452,7 +9452,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtmh_s32_f16",
         record: "__builtin_neon_vcvtmh_s32_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0141),
+        prototype: Some(&AARCH64_PROTOTYPE_0144),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9462,7 +9462,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtmh_s64_f16",
         record: "__builtin_neon_vcvtmh_s64_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0162),
+        prototype: Some(&AARCH64_PROTOTYPE_0165),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9482,7 +9482,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtmh_u32_f16",
         record: "__builtin_neon_vcvtmh_u32_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0257),
+        prototype: Some(&AARCH64_PROTOTYPE_0260),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9492,7 +9492,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtmh_u64_f16",
         record: "__builtin_neon_vcvtmh_u64_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0217),
+        prototype: Some(&AARCH64_PROTOTYPE_0220),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9562,7 +9562,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtms_s32_f32",
         record: "__builtin_neon_vcvtms_s32_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0144),
+        prototype: Some(&AARCH64_PROTOTYPE_0147),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9572,7 +9572,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtms_s64_f32",
         record: "__builtin_neon_vcvtms_s64_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0166),
+        prototype: Some(&AARCH64_PROTOTYPE_0169),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9582,7 +9582,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtms_u32_f32",
         record: "__builtin_neon_vcvtms_u32_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0261),
+        prototype: Some(&AARCH64_PROTOTYPE_0264),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9592,7 +9592,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtms_u64_f32",
         record: "__builtin_neon_vcvtms_u64_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0223),
+        prototype: Some(&AARCH64_PROTOTYPE_0226),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9662,7 +9662,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtnd_s32_f64",
         record: "__builtin_neon_vcvtnd_s32_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0143),
+        prototype: Some(&AARCH64_PROTOTYPE_0146),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9672,7 +9672,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtnd_s64_f64",
         record: "__builtin_neon_vcvtnd_s64_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0164),
+        prototype: Some(&AARCH64_PROTOTYPE_0167),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9682,7 +9682,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtnd_u32_f64",
         record: "__builtin_neon_vcvtnd_u32_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0260),
+        prototype: Some(&AARCH64_PROTOTYPE_0263),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9692,7 +9692,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtnd_u64_f64",
         record: "__builtin_neon_vcvtnd_u64_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0220),
+        prototype: Some(&AARCH64_PROTOTYPE_0223),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9702,7 +9702,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtnh_s16_f16",
         record: "__builtin_neon_vcvtnh_s16_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0189),
+        prototype: Some(&AARCH64_PROTOTYPE_0192),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9712,7 +9712,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtnh_s32_f16",
         record: "__builtin_neon_vcvtnh_s32_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0141),
+        prototype: Some(&AARCH64_PROTOTYPE_0144),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9722,7 +9722,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtnh_s64_f16",
         record: "__builtin_neon_vcvtnh_s64_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0162),
+        prototype: Some(&AARCH64_PROTOTYPE_0165),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9742,7 +9742,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtnh_u32_f16",
         record: "__builtin_neon_vcvtnh_u32_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0257),
+        prototype: Some(&AARCH64_PROTOTYPE_0260),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9752,7 +9752,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtnh_u64_f16",
         record: "__builtin_neon_vcvtnh_u64_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0217),
+        prototype: Some(&AARCH64_PROTOTYPE_0220),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9822,7 +9822,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtns_s32_f32",
         record: "__builtin_neon_vcvtns_s32_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0144),
+        prototype: Some(&AARCH64_PROTOTYPE_0147),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9832,7 +9832,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtns_s64_f32",
         record: "__builtin_neon_vcvtns_s64_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0166),
+        prototype: Some(&AARCH64_PROTOTYPE_0169),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9842,7 +9842,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtns_u32_f32",
         record: "__builtin_neon_vcvtns_u32_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0261),
+        prototype: Some(&AARCH64_PROTOTYPE_0264),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9852,7 +9852,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtns_u64_f32",
         record: "__builtin_neon_vcvtns_u64_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0223),
+        prototype: Some(&AARCH64_PROTOTYPE_0226),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9922,7 +9922,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtpd_s32_f64",
         record: "__builtin_neon_vcvtpd_s32_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0143),
+        prototype: Some(&AARCH64_PROTOTYPE_0146),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9932,7 +9932,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtpd_s64_f64",
         record: "__builtin_neon_vcvtpd_s64_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0164),
+        prototype: Some(&AARCH64_PROTOTYPE_0167),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9942,7 +9942,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtpd_u32_f64",
         record: "__builtin_neon_vcvtpd_u32_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0260),
+        prototype: Some(&AARCH64_PROTOTYPE_0263),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9952,7 +9952,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtpd_u64_f64",
         record: "__builtin_neon_vcvtpd_u64_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0220),
+        prototype: Some(&AARCH64_PROTOTYPE_0223),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9962,7 +9962,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtph_s16_f16",
         record: "__builtin_neon_vcvtph_s16_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0189),
+        prototype: Some(&AARCH64_PROTOTYPE_0192),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9972,7 +9972,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtph_s32_f16",
         record: "__builtin_neon_vcvtph_s32_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0141),
+        prototype: Some(&AARCH64_PROTOTYPE_0144),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -9982,7 +9982,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtph_s64_f16",
         record: "__builtin_neon_vcvtph_s64_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0162),
+        prototype: Some(&AARCH64_PROTOTYPE_0165),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10002,7 +10002,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtph_u32_f16",
         record: "__builtin_neon_vcvtph_u32_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0257),
+        prototype: Some(&AARCH64_PROTOTYPE_0260),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10012,7 +10012,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtph_u64_f16",
         record: "__builtin_neon_vcvtph_u64_f16",
-        prototype: Some(&AARCH64_PROTOTYPE_0217),
+        prototype: Some(&AARCH64_PROTOTYPE_0220),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10082,7 +10082,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtps_s32_f32",
         record: "__builtin_neon_vcvtps_s32_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0144),
+        prototype: Some(&AARCH64_PROTOTYPE_0147),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10092,7 +10092,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtps_s64_f32",
         record: "__builtin_neon_vcvtps_s64_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0166),
+        prototype: Some(&AARCH64_PROTOTYPE_0169),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10102,7 +10102,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtps_u32_f32",
         record: "__builtin_neon_vcvtps_u32_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0261),
+        prototype: Some(&AARCH64_PROTOTYPE_0264),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10112,7 +10112,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtps_u64_f32",
         record: "__builtin_neon_vcvtps_u64_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0223),
+        prototype: Some(&AARCH64_PROTOTYPE_0226),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10352,7 +10352,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvts_f32_s32",
         record: "__builtin_neon_vcvts_f32_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0131),
+        prototype: Some(&AARCH64_PROTOTYPE_0134),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10362,7 +10362,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvts_f32_u32",
         record: "__builtin_neon_vcvts_f32_u32",
-        prototype: Some(&AARCH64_PROTOTYPE_0134),
+        prototype: Some(&AARCH64_PROTOTYPE_0137),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10372,7 +10372,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvts_n_f32_s32",
         record: "__builtin_neon_vcvts_n_f32_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0132),
+        prototype: Some(&AARCH64_PROTOTYPE_0135),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10382,7 +10382,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvts_n_f32_u32",
         record: "__builtin_neon_vcvts_n_f32_u32",
-        prototype: Some(&AARCH64_PROTOTYPE_0135),
+        prototype: Some(&AARCH64_PROTOTYPE_0138),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10392,7 +10392,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvts_n_s32_f32",
         record: "__builtin_neon_vcvts_n_s32_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0145),
+        prototype: Some(&AARCH64_PROTOTYPE_0148),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10402,7 +10402,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvts_n_u32_f32",
         record: "__builtin_neon_vcvts_n_u32_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0262),
+        prototype: Some(&AARCH64_PROTOTYPE_0265),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10412,7 +10412,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvts_s32_f32",
         record: "__builtin_neon_vcvts_s32_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0144),
+        prototype: Some(&AARCH64_PROTOTYPE_0147),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10422,7 +10422,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvts_s64_f32",
         record: "__builtin_neon_vcvts_s64_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0166),
+        prototype: Some(&AARCH64_PROTOTYPE_0169),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10432,7 +10432,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvts_u32_f32",
         record: "__builtin_neon_vcvts_u32_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0261),
+        prototype: Some(&AARCH64_PROTOTYPE_0264),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10442,7 +10442,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvts_u64_f32",
         record: "__builtin_neon_vcvts_u64_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0223),
+        prototype: Some(&AARCH64_PROTOTYPE_0226),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10462,7 +10462,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vcvtxd_f32_f64",
         record: "__builtin_neon_vcvtxd_f32_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0126),
+        prototype: Some(&AARCH64_PROTOTYPE_0129),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10702,7 +10702,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vdupb_lane_i8",
         record: "__builtin_neon_vdupb_lane_i8",
-        prototype: Some(&AARCH64_PROTOTYPE_0237),
+        prototype: Some(&AARCH64_PROTOTYPE_0240),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10712,7 +10712,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vdupb_lane_mf8",
         record: "__builtin_neon_vdupb_lane_mf8",
-        prototype: Some(&AARCH64_PROTOTYPE_0239),
+        prototype: Some(&AARCH64_PROTOTYPE_0242),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10722,7 +10722,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vdupb_laneq_i8",
         record: "__builtin_neon_vdupb_laneq_i8",
-        prototype: Some(&AARCH64_PROTOTYPE_0234),
+        prototype: Some(&AARCH64_PROTOTYPE_0237),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10732,7 +10732,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vdupb_laneq_mf8",
         record: "__builtin_neon_vdupb_laneq_mf8",
-        prototype: Some(&AARCH64_PROTOTYPE_0236),
+        prototype: Some(&AARCH64_PROTOTYPE_0239),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10742,7 +10742,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vdupd_lane_f64",
         record: "__builtin_neon_vdupd_lane_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0109),
+        prototype: Some(&AARCH64_PROTOTYPE_0112),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10752,7 +10752,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vdupd_lane_i64",
         record: "__builtin_neon_vdupd_lane_i64",
-        prototype: Some(&AARCH64_PROTOTYPE_0212),
+        prototype: Some(&AARCH64_PROTOTYPE_0215),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10762,7 +10762,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vdupd_laneq_f64",
         record: "__builtin_neon_vdupd_laneq_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0111),
+        prototype: Some(&AARCH64_PROTOTYPE_0114),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10772,7 +10772,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vdupd_laneq_i64",
         record: "__builtin_neon_vdupd_laneq_i64",
-        prototype: Some(&AARCH64_PROTOTYPE_0213),
+        prototype: Some(&AARCH64_PROTOTYPE_0216),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10842,7 +10842,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vdups_lane_f32",
         record: "__builtin_neon_vdups_lane_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0123),
+        prototype: Some(&AARCH64_PROTOTYPE_0126),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10852,7 +10852,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vdups_lane_i32",
         record: "__builtin_neon_vdups_lane_i32",
-        prototype: Some(&AARCH64_PROTOTYPE_0251),
+        prototype: Some(&AARCH64_PROTOTYPE_0254),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10862,7 +10862,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vdups_laneq_f32",
         record: "__builtin_neon_vdups_laneq_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0125),
+        prototype: Some(&AARCH64_PROTOTYPE_0128),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -10872,7 +10872,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vdups_laneq_i32",
         record: "__builtin_neon_vdups_laneq_i32",
-        prototype: Some(&AARCH64_PROTOTYPE_0253),
+        prototype: Some(&AARCH64_PROTOTYPE_0256),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -11042,7 +11042,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vfmad_lane_f64",
         record: "__builtin_neon_vfmad_lane_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0114),
+        prototype: Some(&AARCH64_PROTOTYPE_0117),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -11052,7 +11052,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vfmad_laneq_f64",
         record: "__builtin_neon_vfmad_laneq_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0115),
+        prototype: Some(&AARCH64_PROTOTYPE_0118),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -11152,7 +11152,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vfmas_lane_f32",
         record: "__builtin_neon_vfmas_lane_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0129),
+        prototype: Some(&AARCH64_PROTOTYPE_0132),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -11162,7 +11162,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vfmas_laneq_f32",
         record: "__builtin_neon_vfmas_laneq_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0130),
+        prototype: Some(&AARCH64_PROTOTYPE_0133),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -11272,7 +11272,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vget_lane_f32",
         record: "__builtin_neon_vget_lane_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0123),
+        prototype: Some(&AARCH64_PROTOTYPE_0126),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -11282,7 +11282,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vget_lane_f64",
         record: "__builtin_neon_vget_lane_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0109),
+        prototype: Some(&AARCH64_PROTOTYPE_0112),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -11302,7 +11302,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vget_lane_i32",
         record: "__builtin_neon_vget_lane_i32",
-        prototype: Some(&AARCH64_PROTOTYPE_0251),
+        prototype: Some(&AARCH64_PROTOTYPE_0254),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -11312,7 +11312,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vget_lane_i64",
         record: "__builtin_neon_vget_lane_i64",
-        prototype: Some(&AARCH64_PROTOTYPE_0212),
+        prototype: Some(&AARCH64_PROTOTYPE_0215),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -11322,7 +11322,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vget_lane_i8",
         record: "__builtin_neon_vget_lane_i8",
-        prototype: Some(&AARCH64_PROTOTYPE_0237),
+        prototype: Some(&AARCH64_PROTOTYPE_0240),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -11332,7 +11332,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vget_lane_mf8",
         record: "__builtin_neon_vget_lane_mf8",
-        prototype: Some(&AARCH64_PROTOTYPE_0239),
+        prototype: Some(&AARCH64_PROTOTYPE_0242),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -11352,7 +11352,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vgetq_lane_f32",
         record: "__builtin_neon_vgetq_lane_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0125),
+        prototype: Some(&AARCH64_PROTOTYPE_0128),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -11362,7 +11362,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vgetq_lane_f64",
         record: "__builtin_neon_vgetq_lane_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0111),
+        prototype: Some(&AARCH64_PROTOTYPE_0114),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -11382,7 +11382,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vgetq_lane_i32",
         record: "__builtin_neon_vgetq_lane_i32",
-        prototype: Some(&AARCH64_PROTOTYPE_0253),
+        prototype: Some(&AARCH64_PROTOTYPE_0256),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -11392,7 +11392,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vgetq_lane_i64",
         record: "__builtin_neon_vgetq_lane_i64",
-        prototype: Some(&AARCH64_PROTOTYPE_0213),
+        prototype: Some(&AARCH64_PROTOTYPE_0216),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -11402,7 +11402,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vgetq_lane_i8",
         record: "__builtin_neon_vgetq_lane_i8",
-        prototype: Some(&AARCH64_PROTOTYPE_0234),
+        prototype: Some(&AARCH64_PROTOTYPE_0237),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -11412,7 +11412,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vgetq_lane_mf8",
         record: "__builtin_neon_vgetq_lane_mf8",
-        prototype: Some(&AARCH64_PROTOTYPE_0236),
+        prototype: Some(&AARCH64_PROTOTYPE_0239),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -11842,7 +11842,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vldrq_p128",
         record: "__builtin_neon_vldrq_p128",
-        prototype: Some(&AARCH64_PROTOTYPE_0287),
+        prototype: Some(&AARCH64_PROTOTYPE_0109),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12482,7 +12482,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmaxnmv_f32",
         record: "__builtin_neon_vmaxnmv_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0122),
+        prototype: Some(&AARCH64_PROTOTYPE_0125),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12502,7 +12502,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmaxnmvq_f32",
         record: "__builtin_neon_vmaxnmvq_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0124),
+        prototype: Some(&AARCH64_PROTOTYPE_0127),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12512,7 +12512,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmaxnmvq_f64",
         record: "__builtin_neon_vmaxnmvq_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0110),
+        prototype: Some(&AARCH64_PROTOTYPE_0113),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12552,7 +12552,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmaxv_f32",
         record: "__builtin_neon_vmaxv_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0122),
+        prototype: Some(&AARCH64_PROTOTYPE_0125),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12562,7 +12562,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmaxv_s16",
         record: "__builtin_neon_vmaxv_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0186),
+        prototype: Some(&AARCH64_PROTOTYPE_0189),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12572,7 +12572,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmaxv_s32",
         record: "__builtin_neon_vmaxv_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0137),
+        prototype: Some(&AARCH64_PROTOTYPE_0140),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12582,7 +12582,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmaxv_s8",
         record: "__builtin_neon_vmaxv_s8",
-        prototype: Some(&AARCH64_PROTOTYPE_0202),
+        prototype: Some(&AARCH64_PROTOTYPE_0205),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12602,7 +12602,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmaxv_u32",
         record: "__builtin_neon_vmaxv_u32",
-        prototype: Some(&AARCH64_PROTOTYPE_0252),
+        prototype: Some(&AARCH64_PROTOTYPE_0255),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12612,7 +12612,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmaxv_u8",
         record: "__builtin_neon_vmaxv_u8",
-        prototype: Some(&AARCH64_PROTOTYPE_0238),
+        prototype: Some(&AARCH64_PROTOTYPE_0241),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12632,7 +12632,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmaxvq_f32",
         record: "__builtin_neon_vmaxvq_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0124),
+        prototype: Some(&AARCH64_PROTOTYPE_0127),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12642,7 +12642,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmaxvq_f64",
         record: "__builtin_neon_vmaxvq_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0110),
+        prototype: Some(&AARCH64_PROTOTYPE_0113),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12652,7 +12652,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmaxvq_s16",
         record: "__builtin_neon_vmaxvq_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0187),
+        prototype: Some(&AARCH64_PROTOTYPE_0190),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12662,7 +12662,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmaxvq_s32",
         record: "__builtin_neon_vmaxvq_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0138),
+        prototype: Some(&AARCH64_PROTOTYPE_0141),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12672,7 +12672,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmaxvq_s8",
         record: "__builtin_neon_vmaxvq_s8",
-        prototype: Some(&AARCH64_PROTOTYPE_0201),
+        prototype: Some(&AARCH64_PROTOTYPE_0204),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12692,7 +12692,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmaxvq_u32",
         record: "__builtin_neon_vmaxvq_u32",
-        prototype: Some(&AARCH64_PROTOTYPE_0254),
+        prototype: Some(&AARCH64_PROTOTYPE_0257),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12702,7 +12702,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmaxvq_u8",
         record: "__builtin_neon_vmaxvq_u8",
-        prototype: Some(&AARCH64_PROTOTYPE_0235),
+        prototype: Some(&AARCH64_PROTOTYPE_0238),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12802,7 +12802,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vminnmv_f32",
         record: "__builtin_neon_vminnmv_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0122),
+        prototype: Some(&AARCH64_PROTOTYPE_0125),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12822,7 +12822,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vminnmvq_f32",
         record: "__builtin_neon_vminnmvq_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0124),
+        prototype: Some(&AARCH64_PROTOTYPE_0127),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12832,7 +12832,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vminnmvq_f64",
         record: "__builtin_neon_vminnmvq_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0110),
+        prototype: Some(&AARCH64_PROTOTYPE_0113),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12872,7 +12872,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vminv_f32",
         record: "__builtin_neon_vminv_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0122),
+        prototype: Some(&AARCH64_PROTOTYPE_0125),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12882,7 +12882,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vminv_s16",
         record: "__builtin_neon_vminv_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0186),
+        prototype: Some(&AARCH64_PROTOTYPE_0189),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12892,7 +12892,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vminv_s32",
         record: "__builtin_neon_vminv_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0137),
+        prototype: Some(&AARCH64_PROTOTYPE_0140),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12902,7 +12902,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vminv_s8",
         record: "__builtin_neon_vminv_s8",
-        prototype: Some(&AARCH64_PROTOTYPE_0202),
+        prototype: Some(&AARCH64_PROTOTYPE_0205),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12922,7 +12922,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vminv_u32",
         record: "__builtin_neon_vminv_u32",
-        prototype: Some(&AARCH64_PROTOTYPE_0252),
+        prototype: Some(&AARCH64_PROTOTYPE_0255),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12932,7 +12932,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vminv_u8",
         record: "__builtin_neon_vminv_u8",
-        prototype: Some(&AARCH64_PROTOTYPE_0238),
+        prototype: Some(&AARCH64_PROTOTYPE_0241),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12952,7 +12952,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vminvq_f32",
         record: "__builtin_neon_vminvq_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0124),
+        prototype: Some(&AARCH64_PROTOTYPE_0127),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12962,7 +12962,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vminvq_f64",
         record: "__builtin_neon_vminvq_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0110),
+        prototype: Some(&AARCH64_PROTOTYPE_0113),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12972,7 +12972,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vminvq_s16",
         record: "__builtin_neon_vminvq_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0187),
+        prototype: Some(&AARCH64_PROTOTYPE_0190),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12982,7 +12982,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vminvq_s32",
         record: "__builtin_neon_vminvq_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0138),
+        prototype: Some(&AARCH64_PROTOTYPE_0141),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -12992,7 +12992,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vminvq_s8",
         record: "__builtin_neon_vminvq_s8",
-        prototype: Some(&AARCH64_PROTOTYPE_0201),
+        prototype: Some(&AARCH64_PROTOTYPE_0204),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13012,7 +13012,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vminvq_u32",
         record: "__builtin_neon_vminvq_u32",
-        prototype: Some(&AARCH64_PROTOTYPE_0254),
+        prototype: Some(&AARCH64_PROTOTYPE_0257),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13022,7 +13022,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vminvq_u8",
         record: "__builtin_neon_vminvq_u8",
-        prototype: Some(&AARCH64_PROTOTYPE_0235),
+        prototype: Some(&AARCH64_PROTOTYPE_0238),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13342,7 +13342,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmull_p64",
         record: "__builtin_neon_vmull_p64",
-        prototype: Some(&AARCH64_PROTOTYPE_0285),
+        prototype: Some(&AARCH64_PROTOTYPE_0108),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13392,7 +13392,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmulxd_f64",
         record: "__builtin_neon_vmulxd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0113),
+        prototype: Some(&AARCH64_PROTOTYPE_0116),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13452,7 +13452,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vmulxs_f32",
         record: "__builtin_neon_vmulxs_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0128),
+        prototype: Some(&AARCH64_PROTOTYPE_0131),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13462,7 +13462,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vnegd_s64",
         record: "__builtin_neon_vnegd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0168),
+        prototype: Some(&AARCH64_PROTOTYPE_0171),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13522,7 +13522,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vpaddd_f64",
         record: "__builtin_neon_vpaddd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0110),
+        prototype: Some(&AARCH64_PROTOTYPE_0113),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13532,7 +13532,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vpaddd_s64",
         record: "__builtin_neon_vpaddd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0159),
+        prototype: Some(&AARCH64_PROTOTYPE_0162),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13542,7 +13542,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vpaddd_u64",
         record: "__builtin_neon_vpaddd_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0214),
+        prototype: Some(&AARCH64_PROTOTYPE_0217),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13592,7 +13592,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vpadds_f32",
         record: "__builtin_neon_vpadds_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0122),
+        prototype: Some(&AARCH64_PROTOTYPE_0125),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13662,7 +13662,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vpmaxnmqd_f64",
         record: "__builtin_neon_vpmaxnmqd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0110),
+        prototype: Some(&AARCH64_PROTOTYPE_0113),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13672,7 +13672,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vpmaxnms_f32",
         record: "__builtin_neon_vpmaxnms_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0122),
+        prototype: Some(&AARCH64_PROTOTYPE_0125),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13702,7 +13702,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vpmaxqd_f64",
         record: "__builtin_neon_vpmaxqd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0110),
+        prototype: Some(&AARCH64_PROTOTYPE_0113),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13712,7 +13712,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vpmaxs_f32",
         record: "__builtin_neon_vpmaxs_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0122),
+        prototype: Some(&AARCH64_PROTOTYPE_0125),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13782,7 +13782,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vpminnmqd_f64",
         record: "__builtin_neon_vpminnmqd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0110),
+        prototype: Some(&AARCH64_PROTOTYPE_0113),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13792,7 +13792,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vpminnms_f32",
         record: "__builtin_neon_vpminnms_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0122),
+        prototype: Some(&AARCH64_PROTOTYPE_0125),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13822,7 +13822,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vpminqd_f64",
         record: "__builtin_neon_vpminqd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0110),
+        prototype: Some(&AARCH64_PROTOTYPE_0113),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13832,7 +13832,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vpmins_f32",
         record: "__builtin_neon_vpmins_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0122),
+        prototype: Some(&AARCH64_PROTOTYPE_0125),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13852,7 +13852,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqabsb_s8",
         record: "__builtin_neon_vqabsb_s8",
-        prototype: Some(&AARCH64_PROTOTYPE_0205),
+        prototype: Some(&AARCH64_PROTOTYPE_0208),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13862,7 +13862,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqabsd_s64",
         record: "__builtin_neon_vqabsd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0168),
+        prototype: Some(&AARCH64_PROTOTYPE_0171),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13872,7 +13872,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqabsh_s16",
         record: "__builtin_neon_vqabsh_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0196),
+        prototype: Some(&AARCH64_PROTOTYPE_0199),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13892,7 +13892,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqabss_s32",
         record: "__builtin_neon_vqabss_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0146),
+        prototype: Some(&AARCH64_PROTOTYPE_0149),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13912,7 +13912,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqaddb_s8",
         record: "__builtin_neon_vqaddb_s8",
-        prototype: Some(&AARCH64_PROTOTYPE_0207),
+        prototype: Some(&AARCH64_PROTOTYPE_0210),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13922,7 +13922,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqaddb_u8",
         record: "__builtin_neon_vqaddb_u8",
-        prototype: Some(&AARCH64_PROTOTYPE_0248),
+        prototype: Some(&AARCH64_PROTOTYPE_0251),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13932,7 +13932,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqaddd_s64",
         record: "__builtin_neon_vqaddd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0173),
+        prototype: Some(&AARCH64_PROTOTYPE_0176),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13942,7 +13942,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqaddd_u64",
         record: "__builtin_neon_vqaddd_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0229),
+        prototype: Some(&AARCH64_PROTOTYPE_0232),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13952,7 +13952,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqaddh_s16",
         record: "__builtin_neon_vqaddh_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0198),
+        prototype: Some(&AARCH64_PROTOTYPE_0201),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13982,7 +13982,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqadds_s32",
         record: "__builtin_neon_vqadds_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0148),
+        prototype: Some(&AARCH64_PROTOTYPE_0151),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -13992,7 +13992,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqadds_u32",
         record: "__builtin_neon_vqadds_u32",
-        prototype: Some(&AARCH64_PROTOTYPE_0279),
+        prototype: Some(&AARCH64_PROTOTYPE_0282),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14012,7 +14012,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqdmlalh_lane_s16",
         record: "__builtin_neon_vqdmlalh_lane_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0150),
+        prototype: Some(&AARCH64_PROTOTYPE_0153),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14022,7 +14022,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqdmlalh_laneq_s16",
         record: "__builtin_neon_vqdmlalh_laneq_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0151),
+        prototype: Some(&AARCH64_PROTOTYPE_0154),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14032,7 +14032,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqdmlalh_s16",
         record: "__builtin_neon_vqdmlalh_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0152),
+        prototype: Some(&AARCH64_PROTOTYPE_0155),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14042,7 +14042,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqdmlals_lane_s32",
         record: "__builtin_neon_vqdmlals_lane_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0170),
+        prototype: Some(&AARCH64_PROTOTYPE_0173),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14052,7 +14052,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqdmlals_laneq_s32",
         record: "__builtin_neon_vqdmlals_laneq_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0171),
+        prototype: Some(&AARCH64_PROTOTYPE_0174),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14062,7 +14062,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqdmlals_s32",
         record: "__builtin_neon_vqdmlals_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0172),
+        prototype: Some(&AARCH64_PROTOTYPE_0175),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14082,7 +14082,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqdmlslh_lane_s16",
         record: "__builtin_neon_vqdmlslh_lane_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0150),
+        prototype: Some(&AARCH64_PROTOTYPE_0153),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14092,7 +14092,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqdmlslh_laneq_s16",
         record: "__builtin_neon_vqdmlslh_laneq_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0151),
+        prototype: Some(&AARCH64_PROTOTYPE_0154),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14102,7 +14102,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqdmlslh_s16",
         record: "__builtin_neon_vqdmlslh_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0152),
+        prototype: Some(&AARCH64_PROTOTYPE_0155),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14112,7 +14112,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqdmlsls_lane_s32",
         record: "__builtin_neon_vqdmlsls_lane_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0170),
+        prototype: Some(&AARCH64_PROTOTYPE_0173),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14122,7 +14122,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqdmlsls_laneq_s32",
         record: "__builtin_neon_vqdmlsls_laneq_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0171),
+        prototype: Some(&AARCH64_PROTOTYPE_0174),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14132,7 +14132,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqdmlsls_s32",
         record: "__builtin_neon_vqdmlsls_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0172),
+        prototype: Some(&AARCH64_PROTOTYPE_0175),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14172,7 +14172,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqdmulhh_s16",
         record: "__builtin_neon_vqdmulhh_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0198),
+        prototype: Some(&AARCH64_PROTOTYPE_0201),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14212,7 +14212,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqdmulhs_s32",
         record: "__builtin_neon_vqdmulhs_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0148),
+        prototype: Some(&AARCH64_PROTOTYPE_0151),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14232,7 +14232,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqdmullh_s16",
         record: "__builtin_neon_vqdmullh_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0156),
+        prototype: Some(&AARCH64_PROTOTYPE_0159),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14242,7 +14242,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqdmulls_s32",
         record: "__builtin_neon_vqdmulls_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0167),
+        prototype: Some(&AARCH64_PROTOTYPE_0170),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14262,7 +14262,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqmovnd_s64",
         record: "__builtin_neon_vqmovnd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0154),
+        prototype: Some(&AARCH64_PROTOTYPE_0157),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14272,7 +14272,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqmovnd_u64",
         record: "__builtin_neon_vqmovnd_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0271),
+        prototype: Some(&AARCH64_PROTOTYPE_0274),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14282,7 +14282,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqmovnh_s16",
         record: "__builtin_neon_vqmovnh_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0203),
+        prototype: Some(&AARCH64_PROTOTYPE_0206),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14292,7 +14292,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqmovnh_u16",
         record: "__builtin_neon_vqmovnh_u16",
-        prototype: Some(&AARCH64_PROTOTYPE_0249),
+        prototype: Some(&AARCH64_PROTOTYPE_0252),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14302,7 +14302,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqmovns_s32",
         record: "__builtin_neon_vqmovns_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0191),
+        prototype: Some(&AARCH64_PROTOTYPE_0194),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14332,7 +14332,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqmovund_s64",
         record: "__builtin_neon_vqmovund_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0265),
+        prototype: Some(&AARCH64_PROTOTYPE_0268),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14342,7 +14342,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqmovunh_s16",
         record: "__builtin_neon_vqmovunh_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0244),
+        prototype: Some(&AARCH64_PROTOTYPE_0247),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14372,7 +14372,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqnegb_s8",
         record: "__builtin_neon_vqnegb_s8",
-        prototype: Some(&AARCH64_PROTOTYPE_0205),
+        prototype: Some(&AARCH64_PROTOTYPE_0208),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14382,7 +14382,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqnegd_s64",
         record: "__builtin_neon_vqnegd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0168),
+        prototype: Some(&AARCH64_PROTOTYPE_0171),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14392,7 +14392,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqnegh_s16",
         record: "__builtin_neon_vqnegh_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0196),
+        prototype: Some(&AARCH64_PROTOTYPE_0199),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14412,7 +14412,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqnegs_s32",
         record: "__builtin_neon_vqnegs_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0146),
+        prototype: Some(&AARCH64_PROTOTYPE_0149),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14442,7 +14442,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrdmlahh_s16",
         record: "__builtin_neon_vqrdmlahh_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0199),
+        prototype: Some(&AARCH64_PROTOTYPE_0202),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14472,7 +14472,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrdmlahs_s32",
         record: "__builtin_neon_vqrdmlahs_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0149),
+        prototype: Some(&AARCH64_PROTOTYPE_0152),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14502,7 +14502,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrdmlshh_s16",
         record: "__builtin_neon_vqrdmlshh_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0199),
+        prototype: Some(&AARCH64_PROTOTYPE_0202),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14532,7 +14532,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrdmlshs_s32",
         record: "__builtin_neon_vqrdmlshs_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0149),
+        prototype: Some(&AARCH64_PROTOTYPE_0152),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14572,7 +14572,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrdmulhh_s16",
         record: "__builtin_neon_vqrdmulhh_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0198),
+        prototype: Some(&AARCH64_PROTOTYPE_0201),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14612,7 +14612,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrdmulhs_s32",
         record: "__builtin_neon_vqrdmulhs_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0148),
+        prototype: Some(&AARCH64_PROTOTYPE_0151),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14632,7 +14632,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrshlb_s8",
         record: "__builtin_neon_vqrshlb_s8",
-        prototype: Some(&AARCH64_PROTOTYPE_0207),
+        prototype: Some(&AARCH64_PROTOTYPE_0210),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14642,7 +14642,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrshlb_u8",
         record: "__builtin_neon_vqrshlb_u8",
-        prototype: Some(&AARCH64_PROTOTYPE_0247),
+        prototype: Some(&AARCH64_PROTOTYPE_0250),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14652,7 +14652,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrshld_s64",
         record: "__builtin_neon_vqrshld_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0173),
+        prototype: Some(&AARCH64_PROTOTYPE_0176),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14662,7 +14662,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrshld_u64",
         record: "__builtin_neon_vqrshld_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0228),
+        prototype: Some(&AARCH64_PROTOTYPE_0231),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14672,7 +14672,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrshlh_s16",
         record: "__builtin_neon_vqrshlh_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0198),
+        prototype: Some(&AARCH64_PROTOTYPE_0201),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14702,7 +14702,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrshls_s32",
         record: "__builtin_neon_vqrshls_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0148),
+        prototype: Some(&AARCH64_PROTOTYPE_0151),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14712,7 +14712,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrshls_u32",
         record: "__builtin_neon_vqrshls_u32",
-        prototype: Some(&AARCH64_PROTOTYPE_0276),
+        prototype: Some(&AARCH64_PROTOTYPE_0279),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14732,7 +14732,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrshrnd_n_s64",
         record: "__builtin_neon_vqrshrnd_n_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0155),
+        prototype: Some(&AARCH64_PROTOTYPE_0158),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14742,7 +14742,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrshrnd_n_u64",
         record: "__builtin_neon_vqrshrnd_n_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0272),
+        prototype: Some(&AARCH64_PROTOTYPE_0275),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14752,7 +14752,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrshrnh_n_s16",
         record: "__builtin_neon_vqrshrnh_n_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0204),
+        prototype: Some(&AARCH64_PROTOTYPE_0207),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14762,7 +14762,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrshrnh_n_u16",
         record: "__builtin_neon_vqrshrnh_n_u16",
-        prototype: Some(&AARCH64_PROTOTYPE_0250),
+        prototype: Some(&AARCH64_PROTOTYPE_0253),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14772,7 +14772,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrshrns_n_s32",
         record: "__builtin_neon_vqrshrns_n_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0192),
+        prototype: Some(&AARCH64_PROTOTYPE_0195),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14802,7 +14802,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrshrund_n_s64",
         record: "__builtin_neon_vqrshrund_n_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0266),
+        prototype: Some(&AARCH64_PROTOTYPE_0269),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14812,7 +14812,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqrshrunh_n_s16",
         record: "__builtin_neon_vqrshrunh_n_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0245),
+        prototype: Some(&AARCH64_PROTOTYPE_0248),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14852,7 +14852,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshlb_n_s8",
         record: "__builtin_neon_vqshlb_n_s8",
-        prototype: Some(&AARCH64_PROTOTYPE_0206),
+        prototype: Some(&AARCH64_PROTOTYPE_0209),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14862,7 +14862,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshlb_n_u8",
         record: "__builtin_neon_vqshlb_n_u8",
-        prototype: Some(&AARCH64_PROTOTYPE_0246),
+        prototype: Some(&AARCH64_PROTOTYPE_0249),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14872,7 +14872,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshlb_s8",
         record: "__builtin_neon_vqshlb_s8",
-        prototype: Some(&AARCH64_PROTOTYPE_0207),
+        prototype: Some(&AARCH64_PROTOTYPE_0210),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14882,7 +14882,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshlb_u8",
         record: "__builtin_neon_vqshlb_u8",
-        prototype: Some(&AARCH64_PROTOTYPE_0247),
+        prototype: Some(&AARCH64_PROTOTYPE_0250),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14892,7 +14892,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshld_n_s64",
         record: "__builtin_neon_vqshld_n_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0169),
+        prototype: Some(&AARCH64_PROTOTYPE_0172),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14902,7 +14902,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshld_n_u64",
         record: "__builtin_neon_vqshld_n_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0227),
+        prototype: Some(&AARCH64_PROTOTYPE_0230),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14912,7 +14912,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshld_s64",
         record: "__builtin_neon_vqshld_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0173),
+        prototype: Some(&AARCH64_PROTOTYPE_0176),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14922,7 +14922,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshld_u64",
         record: "__builtin_neon_vqshld_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0228),
+        prototype: Some(&AARCH64_PROTOTYPE_0231),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14932,7 +14932,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshlh_n_s16",
         record: "__builtin_neon_vqshlh_n_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0197),
+        prototype: Some(&AARCH64_PROTOTYPE_0200),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14952,7 +14952,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshlh_s16",
         record: "__builtin_neon_vqshlh_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0198),
+        prototype: Some(&AARCH64_PROTOTYPE_0201),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -14992,7 +14992,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshls_n_s32",
         record: "__builtin_neon_vqshls_n_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0147),
+        prototype: Some(&AARCH64_PROTOTYPE_0150),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15002,7 +15002,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshls_n_u32",
         record: "__builtin_neon_vqshls_n_u32",
-        prototype: Some(&AARCH64_PROTOTYPE_0275),
+        prototype: Some(&AARCH64_PROTOTYPE_0278),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15012,7 +15012,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshls_s32",
         record: "__builtin_neon_vqshls_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0148),
+        prototype: Some(&AARCH64_PROTOTYPE_0151),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15022,7 +15022,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshls_u32",
         record: "__builtin_neon_vqshls_u32",
-        prototype: Some(&AARCH64_PROTOTYPE_0276),
+        prototype: Some(&AARCH64_PROTOTYPE_0279),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15042,7 +15042,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshlub_n_s8",
         record: "__builtin_neon_vqshlub_n_s8",
-        prototype: Some(&AARCH64_PROTOTYPE_0206),
+        prototype: Some(&AARCH64_PROTOTYPE_0209),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15052,7 +15052,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshlud_n_s64",
         record: "__builtin_neon_vqshlud_n_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0169),
+        prototype: Some(&AARCH64_PROTOTYPE_0172),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15062,7 +15062,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshluh_n_s16",
         record: "__builtin_neon_vqshluh_n_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0197),
+        prototype: Some(&AARCH64_PROTOTYPE_0200),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15082,7 +15082,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshlus_n_s32",
         record: "__builtin_neon_vqshlus_n_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0147),
+        prototype: Some(&AARCH64_PROTOTYPE_0150),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15102,7 +15102,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshrnd_n_s64",
         record: "__builtin_neon_vqshrnd_n_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0155),
+        prototype: Some(&AARCH64_PROTOTYPE_0158),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15112,7 +15112,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshrnd_n_u64",
         record: "__builtin_neon_vqshrnd_n_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0272),
+        prototype: Some(&AARCH64_PROTOTYPE_0275),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15122,7 +15122,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshrnh_n_s16",
         record: "__builtin_neon_vqshrnh_n_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0204),
+        prototype: Some(&AARCH64_PROTOTYPE_0207),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15132,7 +15132,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshrnh_n_u16",
         record: "__builtin_neon_vqshrnh_n_u16",
-        prototype: Some(&AARCH64_PROTOTYPE_0250),
+        prototype: Some(&AARCH64_PROTOTYPE_0253),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15142,7 +15142,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshrns_n_s32",
         record: "__builtin_neon_vqshrns_n_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0192),
+        prototype: Some(&AARCH64_PROTOTYPE_0195),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15172,7 +15172,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshrund_n_s64",
         record: "__builtin_neon_vqshrund_n_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0266),
+        prototype: Some(&AARCH64_PROTOTYPE_0269),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15182,7 +15182,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqshrunh_n_s16",
         record: "__builtin_neon_vqshrunh_n_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0245),
+        prototype: Some(&AARCH64_PROTOTYPE_0248),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15212,7 +15212,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqsubb_s8",
         record: "__builtin_neon_vqsubb_s8",
-        prototype: Some(&AARCH64_PROTOTYPE_0207),
+        prototype: Some(&AARCH64_PROTOTYPE_0210),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15222,7 +15222,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqsubb_u8",
         record: "__builtin_neon_vqsubb_u8",
-        prototype: Some(&AARCH64_PROTOTYPE_0248),
+        prototype: Some(&AARCH64_PROTOTYPE_0251),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15232,7 +15232,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqsubd_s64",
         record: "__builtin_neon_vqsubd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0173),
+        prototype: Some(&AARCH64_PROTOTYPE_0176),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15242,7 +15242,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqsubd_u64",
         record: "__builtin_neon_vqsubd_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0229),
+        prototype: Some(&AARCH64_PROTOTYPE_0232),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15252,7 +15252,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqsubh_s16",
         record: "__builtin_neon_vqsubh_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0198),
+        prototype: Some(&AARCH64_PROTOTYPE_0201),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15282,7 +15282,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqsubs_s32",
         record: "__builtin_neon_vqsubs_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0148),
+        prototype: Some(&AARCH64_PROTOTYPE_0151),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15292,7 +15292,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vqsubs_u32",
         record: "__builtin_neon_vqsubs_u32",
-        prototype: Some(&AARCH64_PROTOTYPE_0279),
+        prototype: Some(&AARCH64_PROTOTYPE_0282),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15522,7 +15522,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vrecped_f64",
         record: "__builtin_neon_vrecped_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0112),
+        prototype: Some(&AARCH64_PROTOTYPE_0115),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15562,7 +15562,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vrecpes_f32",
         record: "__builtin_neon_vrecpes_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0127),
+        prototype: Some(&AARCH64_PROTOTYPE_0130),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15592,7 +15592,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vrecpsd_f64",
         record: "__builtin_neon_vrecpsd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0113),
+        prototype: Some(&AARCH64_PROTOTYPE_0116),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15632,7 +15632,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vrecpss_f32",
         record: "__builtin_neon_vrecpss_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0128),
+        prototype: Some(&AARCH64_PROTOTYPE_0131),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15642,7 +15642,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vrecpxd_f64",
         record: "__builtin_neon_vrecpxd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0112),
+        prototype: Some(&AARCH64_PROTOTYPE_0115),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -15662,7 +15662,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vrecpxs_f32",
         record: "__builtin_neon_vrecpxs_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0127),
+        prototype: Some(&AARCH64_PROTOTYPE_0130),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16082,7 +16082,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vrndns_f32",
         record: "__builtin_neon_vrndns_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0127),
+        prototype: Some(&AARCH64_PROTOTYPE_0130),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16222,7 +16222,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vrshld_s64",
         record: "__builtin_neon_vrshld_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0173),
+        prototype: Some(&AARCH64_PROTOTYPE_0176),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16232,7 +16232,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vrshld_u64",
         record: "__builtin_neon_vrshld_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0228),
+        prototype: Some(&AARCH64_PROTOTYPE_0231),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16262,7 +16262,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vrshrd_n_s64",
         record: "__builtin_neon_vrshrd_n_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0169),
+        prototype: Some(&AARCH64_PROTOTYPE_0172),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16272,7 +16272,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vrshrd_n_u64",
         record: "__builtin_neon_vrshrd_n_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0227),
+        prototype: Some(&AARCH64_PROTOTYPE_0230),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16322,7 +16322,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vrsqrted_f64",
         record: "__builtin_neon_vrsqrted_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0112),
+        prototype: Some(&AARCH64_PROTOTYPE_0115),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16362,7 +16362,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vrsqrtes_f32",
         record: "__builtin_neon_vrsqrtes_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0127),
+        prototype: Some(&AARCH64_PROTOTYPE_0130),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16392,7 +16392,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vrsqrtsd_f64",
         record: "__builtin_neon_vrsqrtsd_f64",
-        prototype: Some(&AARCH64_PROTOTYPE_0113),
+        prototype: Some(&AARCH64_PROTOTYPE_0116),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16432,7 +16432,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vrsqrtss_f32",
         record: "__builtin_neon_vrsqrtss_f32",
-        prototype: Some(&AARCH64_PROTOTYPE_0128),
+        prototype: Some(&AARCH64_PROTOTYPE_0131),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16452,7 +16452,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vrsrad_n_s64",
         record: "__builtin_neon_vrsrad_n_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0174),
+        prototype: Some(&AARCH64_PROTOTYPE_0177),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16462,7 +16462,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vrsrad_n_u64",
         record: "__builtin_neon_vrsrad_n_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0230),
+        prototype: Some(&AARCH64_PROTOTYPE_0233),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16712,7 +16712,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vsha1h_u32",
         record: "__builtin_neon_vsha1h_u32",
-        prototype: Some(&AARCH64_PROTOTYPE_0273),
+        prototype: Some(&AARCH64_PROTOTYPE_0276),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16862,7 +16862,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vshld_n_s64",
         record: "__builtin_neon_vshld_n_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0169),
+        prototype: Some(&AARCH64_PROTOTYPE_0172),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16872,7 +16872,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vshld_n_u64",
         record: "__builtin_neon_vshld_n_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0227),
+        prototype: Some(&AARCH64_PROTOTYPE_0230),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16882,7 +16882,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vshld_s64",
         record: "__builtin_neon_vshld_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0173),
+        prototype: Some(&AARCH64_PROTOTYPE_0176),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16892,7 +16892,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vshld_u64",
         record: "__builtin_neon_vshld_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0228),
+        prototype: Some(&AARCH64_PROTOTYPE_0231),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16942,7 +16942,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vshrd_n_s64",
         record: "__builtin_neon_vshrd_n_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0169),
+        prototype: Some(&AARCH64_PROTOTYPE_0172),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16952,7 +16952,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vshrd_n_u64",
         record: "__builtin_neon_vshrd_n_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0227),
+        prototype: Some(&AARCH64_PROTOTYPE_0230),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -16992,7 +16992,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vslid_n_s64",
         record: "__builtin_neon_vslid_n_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0174),
+        prototype: Some(&AARCH64_PROTOTYPE_0177),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -17002,7 +17002,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vslid_n_u64",
         record: "__builtin_neon_vslid_n_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0230),
+        prototype: Some(&AARCH64_PROTOTYPE_0233),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -17122,7 +17122,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vsqaddb_u8",
         record: "__builtin_neon_vsqaddb_u8",
-        prototype: Some(&AARCH64_PROTOTYPE_0247),
+        prototype: Some(&AARCH64_PROTOTYPE_0250),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -17132,7 +17132,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vsqaddd_u64",
         record: "__builtin_neon_vsqaddd_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0228),
+        prototype: Some(&AARCH64_PROTOTYPE_0231),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -17162,7 +17162,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vsqadds_u32",
         record: "__builtin_neon_vsqadds_u32",
-        prototype: Some(&AARCH64_PROTOTYPE_0276),
+        prototype: Some(&AARCH64_PROTOTYPE_0279),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -17232,7 +17232,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vsrad_n_s64",
         record: "__builtin_neon_vsrad_n_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0174),
+        prototype: Some(&AARCH64_PROTOTYPE_0177),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -17242,7 +17242,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vsrad_n_u64",
         record: "__builtin_neon_vsrad_n_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0230),
+        prototype: Some(&AARCH64_PROTOTYPE_0233),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -17272,7 +17272,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vsrid_n_s64",
         record: "__builtin_neon_vsrid_n_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0174),
+        prototype: Some(&AARCH64_PROTOTYPE_0177),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -17282,7 +17282,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vsrid_n_u64",
         record: "__builtin_neon_vsrid_n_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0230),
+        prototype: Some(&AARCH64_PROTOTYPE_0233),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -17602,7 +17602,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vstrq_p128",
         record: "__builtin_neon_vstrq_p128",
-        prototype: Some(&AARCH64_PROTOTYPE_0341),
+        prototype: Some(&AARCH64_PROTOTYPE_0340),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -17612,7 +17612,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vsubd_s64",
         record: "__builtin_neon_vsubd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0173),
+        prototype: Some(&AARCH64_PROTOTYPE_0176),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -17622,7 +17622,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vsubd_u64",
         record: "__builtin_neon_vsubd_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0229),
+        prototype: Some(&AARCH64_PROTOTYPE_0232),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -17762,7 +17762,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vtstd_s64",
         record: "__builtin_neon_vtstd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0225),
+        prototype: Some(&AARCH64_PROTOTYPE_0228),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -17772,7 +17772,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vtstd_u64",
         record: "__builtin_neon_vtstd_u64",
-        prototype: Some(&AARCH64_PROTOTYPE_0229),
+        prototype: Some(&AARCH64_PROTOTYPE_0232),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -17802,7 +17802,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vuqaddb_s8",
         record: "__builtin_neon_vuqaddb_s8",
-        prototype: Some(&AARCH64_PROTOTYPE_0208),
+        prototype: Some(&AARCH64_PROTOTYPE_0211),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -17812,7 +17812,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vuqaddd_s64",
         record: "__builtin_neon_vuqaddd_s64",
-        prototype: Some(&AARCH64_PROTOTYPE_0175),
+        prototype: Some(&AARCH64_PROTOTYPE_0178),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -17822,7 +17822,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vuqaddh_s16",
         record: "__builtin_neon_vuqaddh_s16",
-        prototype: Some(&AARCH64_PROTOTYPE_0200),
+        prototype: Some(&AARCH64_PROTOTYPE_0203),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,
@@ -17842,7 +17842,7 @@ pub(super) static CLANG_NEON_BUILTINS: &[ClangBuiltin] = &[
     ClangBuiltin {
         name: "__builtin_neon_vuqadds_s32",
         record: "__builtin_neon_vuqadds_s32",
-        prototype: Some(&AARCH64_PROTOTYPE_0153),
+        prototype: Some(&AARCH64_PROTOTYPE_0156),
         kind: ClangBuiltinKind::Builtin,
         attributes: &[BuiltinAttribute::NoThrow],
         languages: None,

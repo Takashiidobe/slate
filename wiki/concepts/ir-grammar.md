@@ -114,8 +114,9 @@ fn_params     = "unprototyped" | type { ", " type } [ ", ..." ] | "..." ;
 - `b` marks a bit-precise integer (`_BitInt(N)`), distinct from the standard
   integer of the same width: `i128b` is not `i128`.
 - `d32`/`d64`/`d128` are decimal floating types, never converted to binary.
-- `vector<T, N>` is a GNU `vector_size` or Clang `ext_vector_type` type with `N`
-  lanes of the scalar `T`; both source forms print the same way.
+- `vector<T, N>` is a GNU `vector_size` or Clang `ext_vector_type` or
+  `neon_vector_type` type with `N` lanes of the scalar `T`; all source forms
+  print the same way.
 - `fixed<iW, S>` is an N1169 fixed-point type: a two's-complement `iW`/`uW`
   storage word with `S` fractional bits, leaving `W - S - signed` integral bits.
   `sat_fixed<..>` is the `_Sat` form, whose operations saturate where the plain

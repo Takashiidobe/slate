@@ -72,7 +72,9 @@ text with no oracle.
 
 - `Type::Vector { element, lanes }` prints `vector<i32, 4>`.
   `vector_size(N)` divides by the element size (must be a positive
-  multiple); `ext_vector_type(N)` is the lane count. Elements are integers
+  multiple); `ext_vector_type(N)`, `neon_vector_type(N)` and
+  `neon_polyvector_type(N)` are the lane count (clang flavor; the NEON forms
+  are accepted on every target, as clang does). Elements are integers
   (`_BitInt` included) or binary floats; `_Bool` and decimal are rejected.
 - Storage is `next_power_of_two(lanes * element_size)` for both size and
   alignment (clang's rounding), so lanes can't be recovered from `sizeof`.

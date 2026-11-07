@@ -151,6 +151,8 @@ const GNU_ATTRIBUTES: &[Support] = &[
     support("nomips16", Gate::Never, Gate::Never),
     clang_only("availability"),
     clang_only("ext_vector_type"),
+    clang_only("neon_vector_type"),
+    clang_only("neon_polyvector_type"),
     gcc_only("scalar_storage_order"),
     both("transparent_union"),
     both("format"),

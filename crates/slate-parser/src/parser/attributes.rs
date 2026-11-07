@@ -589,6 +589,10 @@ fn parse_attribute_value(
             Ok(value) => Attribute::ExtVectorType(value),
             Err(_) => invalid_attribute(name, arguments),
         }),
+        "neon_vector_type" | "neon_polyvector_type" => Ok(match parse_expression(arguments) {
+            Ok(value) => Attribute::NeonVectorType(value),
+            Err(_) => invalid_attribute(name, arguments),
+        }),
         "scalar_storage_order" => Ok(string_argument()
             .map(Attribute::ScalarStorageOrder)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),

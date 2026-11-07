@@ -1433,6 +1433,7 @@ pub enum Attribute {
     Sme(SmeAttribute),
     Availability(Vec<String>),
     ExtVectorType(Expr),
+    NeonVectorType(Expr),
     ScalarStorageOrder(String),
     TransparentUnion,
     Format(Vec<String>),
@@ -1744,7 +1745,7 @@ impl Attribute {
     pub fn is_type_attribute(&self) -> bool {
         matches!(
             self,
-            Self::VectorSize(_) | Self::ExtVectorType(_) | Self::Mode(_)
+            Self::VectorSize(_) | Self::ExtVectorType(_) | Self::NeonVectorType(_) | Self::Mode(_)
         )
     }
 }
@@ -1757,7 +1758,9 @@ impl TypeSpecifier {
         for attribute in attributes {
             let size = match &attribute.value {
                 Attribute::VectorSize(size) => VectorSize::Bytes(size.clone()),
-                Attribute::ExtVectorType(size) => VectorSize::Lanes(size.clone()),
+                Attribute::ExtVectorType(size) | Attribute::NeonVectorType(size) => {
+                    VectorSize::Lanes(size.clone())
+                }
                 Attribute::Mode(mode) => {
                     self = Self::Mode(ModeType {
                         base: Box::new(self),

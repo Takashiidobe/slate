@@ -51,8 +51,8 @@ How an attribute gets from source to the IR. AST shape:
   (`biggest_alignment`).
 - Every attribute keeps its span and placement (specifiers, declarator,
   init-declarator, tag, enumerator, statement, file-scope attribute
-  declaration). `vector_size`,
-  `ext_vector_type`, and `mode` in specifier position wrap the type
+  declaration). `vector_size`, `ext_vector_type`,
+  `neon_vector_type`/`neon_polyvector_type`, and `mode` in specifier position wrap the type
   specifier ([ast-spec](ast-spec.md#vector_size-and-mode)).
 - Which syntax was used is not kept.
 

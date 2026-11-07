@@ -275,8 +275,8 @@ gnu modes only, or wherever `-fasm` forces them, and identifiers under
 
 ### `vector_size` and `mode`
 
-- Not written as specifiers. Each `vector_size`, `ext_vector_type`, or
-  `mode` attribute in specifier position wraps the specifier, in attribute
+- Not written as specifiers. Each `vector_size`, `ext_vector_type`,
+  `neon_vector_type`, `neon_polyvector_type`, or `mode` attribute in specifier position wraps the specifier, in attribute
   order, for all declarators.
 - On or inside a declarator (`int (__attribute__((mode(QI))) x)`) it stays
   in the declarator's attributes and sema wraps a copy for that declarator

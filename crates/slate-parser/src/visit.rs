@@ -516,6 +516,7 @@ pub fn walk_attribute<V: Visitor + ?Sized>(
         | Attribute::AllocAlign(value)
         | Attribute::Cleanup(value)
         | Attribute::ExtVectorType(value)
+        | Attribute::NeonVectorType(value)
         | Attribute::PassObjectSize {
             size_type: value, ..
         } => visitor.visit_expr(value),

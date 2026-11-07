@@ -730,6 +730,7 @@ impl<'a> Reachability<'a> {
                 | Attribute::AllocAlign(value)
                 | Attribute::Cleanup(value)
                 | Attribute::ExtVectorType(value)
+                | Attribute::NeonVectorType(value)
                 | Attribute::CallingConvention(CallingConvention::RegParm(value))
                 | Attribute::AlignAs(AlignAsOperand::Expr(value)) => self.mark_expr(value),
                 Attribute::AlignAs(AlignAsOperand::Type { ty }) => self.mark_type_name(ty),
