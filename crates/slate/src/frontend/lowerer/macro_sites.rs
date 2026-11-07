@@ -338,13 +338,41 @@ impl FunctionLowerer<'_, '_> {
             })
     }
 
-    pub(super) fn lower_promoted_list_hole(&mut self, value: &ir::Value) -> Option<Result<Expr>> {
-        let (expansion, argument) = vararg_promoted_hole(value)?;
-        if !self.is_call_list_argument(expansion, argument)
-            || !self
-                .macro_sites
-                .iter()
-                .any(|site| site.expansion == expansion)
+    fn is_single_use_argument(&self, expansion: MacroExpansionId, argument: usize) -> bool {
+        self.tables
+            .macros
+            .expansion(expansion)
+            .argument_uses
+            .iter()
+            .filter(|using| using.argument == argument)
+            .count()
+            == 1
+    }
+
+    pub(super) fn lower_promoted_hole(&mut self, value: &ir::Value) -> Option<Result<Expr>> {
+        if let ir::ValueKind::Unary {
+            op: ir::UnaryArithOp::Not,
+            operand,
+            ..
+        } = &value.node.value
+            && implicit_truthiness_hole(operand).is_some()
+        {
+            self.negated_macro_conditions.insert(operand.node.id);
+            return None;
+        }
+        if self.negated_macro_conditions.contains(&value.node.id) {
+            return None;
+        }
+        let (expansion, argument) = match vararg_promoted_hole(value) {
+            Some(found) if self.is_call_list_argument(found.0, found.1) => found,
+            Some(_) => return None,
+            None => implicit_truthiness_hole(value)
+                .filter(|found| self.is_single_use_argument(found.0, found.1))?,
+        };
+        if !self
+            .macro_sites
+            .iter()
+            .any(|site| site.expansion == expansion)
         {
             return None;
         }
@@ -492,9 +520,42 @@ fn vararg_promoted_hole(value: &ir::Value) -> Option<(MacroExpansionId, usize)> 
     }
 }
 
+fn implicit_truthiness_hole(value: &ir::Value) -> Option<(MacroExpansionId, usize)> {
+    let ir::ValueKind::Compare {
+        op: ir::CompareOp::Ne,
+        left,
+        right,
+        ..
+    } = &value.node.value
+    else {
+        return None;
+    };
+    let ir::ValueKind::MacroArg {
+        expansion,
+        argument,
+        ..
+    } = &left.node.value
+    else {
+        return None;
+    };
+    let derived_from_argument = value
+        .node
+        .macro_nesting
+        .as_deref()
+        .and_then(|nesting| nesting.iter().find(|link| link.expansion == *expansion))
+        .is_some_and(|link| link.argument == Some(*argument));
+    (derived_from_argument
+        && matches!(
+            right.node.value,
+            ir::ValueKind::Constant(_) | ir::ValueKind::Null
+        ))
+    .then_some((*expansion, *argument))
+}
+
 fn strip_promoted_hole(value: &mut ir::Value) {
-    let (ir::ValueKind::Convert { operand, .. } | ir::ValueKind::Copy { operand, .. }) =
-        &mut value.node.value
+    let (ir::ValueKind::Convert { operand, .. }
+    | ir::ValueKind::Copy { operand, .. }
+    | ir::ValueKind::Compare { left: operand, .. }) = &mut value.node.value
     else {
         return;
     };

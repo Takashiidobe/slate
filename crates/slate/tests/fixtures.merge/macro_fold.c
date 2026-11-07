@@ -451,7 +451,7 @@ int main(void) {
 // CHECK-NEXT:     EARLY_LIST!(
 // CHECK-NEXT:         slate_support::stdout(),
 // CHECK-NEXT:         c"early list\n".as_ptr() as *mut c_char,
-// CHECK-NEXT:         count
+// CHECK-NEXT:         count != 0
 // CHECK-NEXT:     );
 // CHECK-NEXT:     TWICE!(count + 1);
 // CHECK-NEXT:     DROPS!(count);
@@ -716,7 +716,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! EARLY_LIST {
 // CHECK-NEXT:     ($x__0:expr, $x__1:expr, $c:expr $(, $x:expr)*) => {
-// CHECK-NEXT:         if ($c) != 0 {
+// CHECK-NEXT:         if $c {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 slate_support::fprintf($x__0, ($x__1) as *const c_char, $($x),*)

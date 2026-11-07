@@ -502,7 +502,7 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             println!("{} {}", chosen, hit);
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let inner: i32 = PICK!(TWICE!(hit), note(7i32), note(8i32));
+// CHECK-NEXT:         let inner: i32 = PICK!(TWICE!(hit) != 0, note(7i32), note(8i32));
 // CHECK-NEXT:         #[cfg(windows)]
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         #[cfg(windows)]
@@ -991,7 +991,8 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d\n".as_ptr(),
-// CHECK-NEXT:                 (BOTH!(note(1i32), note(0i32)) as i32) + (EITHER!(note(0i32), note(2i32)) as i32),
+// CHECK-NEXT:                 (BOTH!(note(1i32) != 0, note(0i32) != 0) as i32)
+// CHECK-NEXT:                     + (EITHER!(note(0i32) != 0, note(2i32) != 0) as i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
@@ -1005,7 +1006,8 @@ int main(void) {
 // CHECK-NEXT:         println!("{}", hit);
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{}",
-// CHECK-NEXT:             (BOTH!(note(1i32), note(0i32)) as i32) + (EITHER!(note(0i32), note(2i32)) as i32)
+// CHECK-NEXT:             (BOTH!(note(1i32) != 0, note(0i32) != 0) as i32)
+// CHECK-NEXT:                 + (EITHER!(note(0i32) != 0, note(2i32) != 0) as i32)
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     show_trace(c"logic".as_ptr());
@@ -1201,7 +1203,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! BOTH {
 // CHECK-NEXT:     ($a:expr, $b:expr) => {{[{][{]}}
-// CHECK-NEXT:         let __v: bool = ($a) != 0 && ($b) != 0;
+// CHECK-NEXT:         let __v: bool = ($a) && $b;
 // CHECK-NEXT:         __v
 // CHECK-NEXT:     }};
 // CHECK-NEXT: }
@@ -1229,7 +1231,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! EITHER {
 // CHECK-NEXT:     ($a:expr, $b:expr) => {{[{][{]}}
-// CHECK-NEXT:         let __v: bool = ($a) != 0 || ($b) != 0;
+// CHECK-NEXT:         let __v: bool = ($a) || $b;
 // CHECK-NEXT:         __v
 // CHECK-NEXT:     }};
 // CHECK-NEXT: }
@@ -1303,7 +1305,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! PICK {
 // CHECK-NEXT:     ($c:expr, $a:expr, $b:expr) => {{[{][{]}}
-// CHECK-NEXT:         let __v: i32 = if ($c) != 0 { $a } else { $b };
+// CHECK-NEXT:         let __v: i32 = if $c { $a } else { $b };
 // CHECK-NEXT:         __v
 // CHECK-NEXT:     }};
 // CHECK-NEXT: }

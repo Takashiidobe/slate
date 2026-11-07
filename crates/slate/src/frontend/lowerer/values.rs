@@ -438,7 +438,7 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_value_node(&mut self, value: &ir::Value) -> Result<Expr> {
-        if let Some(promoted) = self.lower_promoted_list_hole(value) {
+        if let Some(promoted) = self.lower_promoted_hole(value) {
             return promoted;
         }
         if let ValueKind::MacroArg {

@@ -130,8 +130,13 @@ other expansion stays inline, and `macro_keep.rs` records why in the merge repor
   One exception to keeping conversions in the template: a list element's
   `reason=vararg` conversions (default argument promotions at a variadic position)
   are lowered into the caller's argument (`narrow as i32`, `f as f64`), since they
-  depend on the argument's type, not the macro. Other parameters keep them in the
-  template, because a plain hole can occur more than once with one argument value.
+  depend on the argument's type, not the macro. The same goes for an implicit
+  truthiness test (`c != 0`, `!p.is_null()`) of a parameter used once, so int, bool
+  and pointer conditions share a template. Sema derives that compare from the
+  argument, so its macro nesting says `argN`, while a written `(c) != 0` says
+  `body` and stays in the template. A test under `!` also stays, so `!(p)` keeps
+  printing `$p.is_null()`. Other conversions stay in the template, because a plain
+  hole can occur more than once with one argument value.
   Codegen prints the repetition as `__slate_macro_list_<name>`, which `format.rs`
   turns back into `$($name),*`, or `$($name,)*` before a comma. Writes to bit-fields
   stay inline.

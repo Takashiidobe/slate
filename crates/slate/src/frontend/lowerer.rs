@@ -182,6 +182,7 @@ struct FunctionLowerer<'a, 'm> {
     counted_loops: HashSet<BindingId>,
     non_index_names: HashSet<String>,
     macro_sites: Vec<macro_sites::MacroSite>,
+    negated_macro_conditions: HashSet<slate_parser::ast::NodeId>,
     macro_template_check: bool,
     old_value: Option<Expr>,
     declaring: std::cell::Cell<Option<(BindingId, bool)>>,

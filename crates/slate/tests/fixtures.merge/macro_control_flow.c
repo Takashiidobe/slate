@@ -350,7 +350,7 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("bails {}", a);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     BAIL_IF!(a);
+// CHECK-NEXT:     BAIL_IF!(a != 0);
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
@@ -429,7 +429,7 @@ int main(void) {
 // CHECK-NEXT: fn in_switch(m: i32) -> i32 {
 // CHECK-NEXT:     match m {
 // CHECK-NEXT:         0 => {
-// CHECK-NEXT:             PICK!(m);
+// CHECK-NEXT:             PICK!(m != 0);
 // CHECK-NEXT:             return 7;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         1 => {
@@ -479,7 +479,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! BAIL_IF {
 // CHECK-NEXT:     ($c:expr) => {{[{][{]}}
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             if ($c) != 0 {
+// CHECK-NEXT:             if $c {
 // CHECK-NEXT:                 return;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {
@@ -562,7 +562,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! PICK {
 // CHECK-NEXT:     ($x:expr) => {{[{][{]}}
-// CHECK-NEXT:         if ($x) != 0 {
+// CHECK-NEXT:         if $x {
 // CHECK-NEXT:             return 1;
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             return 2;

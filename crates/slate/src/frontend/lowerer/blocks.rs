@@ -48,6 +48,7 @@ impl<'a, 'm> FunctionLowerer<'a, 'm> {
             counted_loops: HashSet::new(),
             non_index_names: HashSet::new(),
             macro_sites: Vec::new(),
+            negated_macro_conditions: HashSet::new(),
             macro_template_check: false,
             old_value: None,
             declaring: std::cell::Cell::new(None),
