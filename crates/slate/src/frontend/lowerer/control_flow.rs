@@ -1,3 +1,4 @@
+use super::switch::has_nested_switch_label;
 use super::*;
 
 type Statement = Span<ir::Statement>;
@@ -162,6 +163,9 @@ pub(super) fn needs_dispatch(statements: &[Statement]) -> bool {
         ) || matches!(&statement.value, ir::Statement::Asm(asm) if !asm.labels.is_empty())
             || children(statement).into_iter().any(needs_dispatch)
             || match &statement.value {
+                ir::Statement::Switch { id, body, .. } if has_nested_switch_label(*id, body) => {
+                    true
+                }
                 ir::Statement::Switch { body, .. } => {
                     let body = match body.as_slice() {
                         [single] => match &single.value {

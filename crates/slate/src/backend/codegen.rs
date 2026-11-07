@@ -1087,7 +1087,9 @@ impl<W: Write> Codegen<W> {
                 if let Some(label) = label {
                     write!(self.out, "'{}: ", label.as_str())?;
                 }
-                write!(self.out, "for {pat} in ")?;
+                self.out.write_str("for ")?;
+                self.ident(pat)?;
+                self.out.write_str(" in ")?;
                 self.cond_expr(iter)?;
                 self.out.write_str(" {\n")?;
                 self.stmts(body)?;

@@ -110,6 +110,56 @@ pub(super) fn contains_switch_label(statements: &[&ir::Statement], switch: Bindi
     })
 }
 
+fn switch_arms(
+    id: BindingId,
+    body: &[slate_parser::ast::Span<ir::Statement>],
+) -> Result<Vec<SwitchArm<'_>>> {
+    let statements = match body {
+        [single] => match &**single {
+            ir::Statement::Block(inner) => inner.as_slice(),
+            _ => body,
+        },
+        _ => body,
+    };
+    let mut arms: Vec<SwitchArm> = Vec::new();
+    let mut leading_comments = Vec::new();
+    for statement in statements {
+        match switch_label(statement, id)? {
+            Some(mut arm) => {
+                arm.body.splice(0..0, leading_comments.drain(..));
+                arms.push(arm);
+            }
+            None => match arms.last_mut() {
+                Some(arm) => arm.body.push(statement),
+                None if matches!(statement.value, ir::Statement::Comment(_)) => {
+                    leading_comments.push(statement);
+                }
+                None => {
+                    return Err(unsupported_switch("statement before first case"));
+                }
+            },
+        }
+    }
+    Ok(arms)
+}
+
+fn nests_switch_label(arm: &SwitchArm, id: BindingId) -> bool {
+    contains_switch_label(
+        &arm.body
+            .iter()
+            .map(|statement| &statement.value)
+            .collect::<Vec<_>>(),
+        id,
+    )
+}
+
+pub(super) fn has_nested_switch_label(
+    id: BindingId,
+    body: &[slate_parser::ast::Span<ir::Statement>],
+) -> bool {
+    switch_arms(id, body).is_ok_and(|arms| arms.iter().any(|arm| nests_switch_label(arm, id)))
+}
+
 pub(super) fn ends_in_jump(statement: &ir::Statement) -> bool {
     match statement {
         ir::Statement::Break(_) | ir::Statement::Continue(_) | ir::Statement::Return(_) => true,
@@ -129,45 +179,12 @@ impl FunctionLowerer<'_, '_> {
         discriminant: &ir::Value,
         body: &[slate_parser::ast::Span<ir::Statement>],
     ) -> Result<Stmt> {
-        let statements = match body {
-            [single] => match &**single {
-                ir::Statement::Block(inner) => inner.as_slice(),
-                _ => body,
-            },
-            _ => body,
-        };
-        let mut arms: Vec<SwitchArm> = Vec::new();
-        let mut leading_comments = Vec::new();
-        for statement in statements {
-            match switch_label(statement, id)? {
-                Some(mut arm) => {
-                    arm.body.splice(0..0, leading_comments.drain(..));
-                    arms.push(arm);
-                }
-                None => match arms.last_mut() {
-                    Some(arm) => arm.body.push(statement),
-                    None if matches!(statement.value, ir::Statement::Comment(_)) => {
-                        leading_comments.push(statement);
-                    }
-                    None => {
-                        return Err(unsupported_switch("statement before first case"));
-                    }
-                },
-            }
-        }
-        for arm in &arms {
-            if contains_switch_label(
-                &arm.body
-                    .iter()
-                    .map(|statement| &statement.value)
-                    .collect::<Vec<_>>(),
-                id,
-            ) {
-                return Err(at_arm(
-                    unsupported_switch("nested case label"),
-                    arm.body.first(),
-                ));
-            }
+        let arms = switch_arms(id, body)?;
+        if let Some(arm) = arms.iter().find(|arm| nests_switch_label(arm, id)) {
+            return Err(at_arm(
+                unsupported_switch("nested case label"),
+                arm.body.first(),
+            ));
         }
         let arms = merge_empty_arms(arms);
         if self
