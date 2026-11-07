@@ -1909,7 +1909,9 @@ fn apply_view(f: &mut FnDef, ptr_name: &str, elem_ty: &Type, pairing: &Pairing) 
     let view_name = format!("__{}_view", ptr_name.trim_start_matches("r#"));
     let insert_at = 0;
 
-    let view_elem_ty = if matches!(elem_ty, Type::CLib(clib) if *clib == CLibType::VOID) {
+    let view_elem_ty = if matches!(elem_ty, Type::Unit)
+        || matches!(elem_ty, Type::CLib(clib) if *clib == CLibType::VOID)
+    {
         matched
             .iter()
             .find_map(|(_, ty)| ty.clone())
