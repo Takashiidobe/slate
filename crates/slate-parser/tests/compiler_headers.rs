@@ -38,7 +38,7 @@ fn apple_clang_current_overrides_versions_and_falls_back() -> io::Result<()> {
     for (bundle, version) in [
         ("apple-clang-17.0.0", 17),
         ("apple-clang-18.0.0", 18),
-        ("clang-22.1.8", 22),
+        ("clang-23.1.4", 23),
     ] {
         let include = root.join(bundle).join("include");
         fs::create_dir_all(&include)?;
@@ -52,7 +52,7 @@ fn apple_clang_current_overrides_versions_and_falls_back() -> io::Result<()> {
     for target in ["x86_64-apple-darwin", "aarch64-apple-darwin"] {
         check_headers(root, target, 17)?;
     }
-    check_headers(root, "x86_64-unknown-linux-gnu", 22)?;
+    check_headers(root, "x86_64-unknown-linux-gnu", 23)?;
     fs::remove_file(&current)?;
     for target in ["x86_64-apple-darwin", "aarch64-apple-darwin"] {
         check_headers(root, target, 18)?;
@@ -64,7 +64,7 @@ fn apple_clang_current_overrides_versions_and_falls_back() -> io::Result<()> {
     fs::remove_dir_all(root.join("apple-clang-17.0.0"))?;
     fs::remove_dir_all(root.join("apple-clang-18.0.0"))?;
     for target in ["x86_64-apple-darwin", "aarch64-apple-darwin"] {
-        check_headers(root, target, 22)?;
+        check_headers(root, target, 23)?;
     }
     Ok(())
 }

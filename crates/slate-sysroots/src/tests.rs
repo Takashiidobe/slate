@@ -667,19 +667,19 @@ fn clang_package_extracts_built_headers_and_license_only() {
     let mut tar = tar::Builder::new(Vec::new());
     for (name, contents) in [
         (
-            "./usr/lib/llvm-22/lib/clang/22/include/arm_neon.h",
+            "./usr/lib/llvm-23/lib/clang/23/include/arm_neon.h",
             "generated neon",
         ),
         (
-            "./usr/lib/llvm-22/lib/clang/22/include/arm_sve.h",
+            "./usr/lib/llvm-23/lib/clang/23/include/arm_sve.h",
             "generated sve",
         ),
         (
-            "./usr/lib/llvm-22/lib/clang/22/include/subdir/header.h",
+            "./usr/lib/llvm-23/lib/clang/23/include/subdir/header.h",
             "nested",
         ),
         (
-            "./usr/share/doc/libclang-common-22-dev/copyright",
+            "./usr/share/doc/libclang-common-23-dev/copyright",
             "license",
         ),
         ("./usr/bin/unwanted", "executable"),

@@ -40,7 +40,7 @@ struct pair record(struct pair value) { return value; }
 // ARMV7-LINUX-GNUEABI-MSVC-NEXT:         field0 a: i32;
 // ARMV7-LINUX-GNUEABI-MSVC-NEXT:         field1 b: i32;
 // ARMV7-LINUX-GNUEABI-MSVC-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// ARMV7-LINUX-GNUEABI-MSVC-NEXT:     global %[[VALUE_clang_major:[0-9]+]] clang_major: i32 [storage=static] = const<i32>(22) [linkage=external];
+// ARMV7-LINUX-GNUEABI-MSVC-NEXT:     global %[[VALUE_clang_major:[0-9]+]] clang_major: i32 [storage=static] = const<i32>(23) [linkage=external];
 // ARMV7-LINUX-GNUEABI-MSVC-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u32 [storage=static] = reinterpret<u32>(size_of<u32, i32>(4) [c="__size_t"]) [linkage=external];
 // ARMV7-LINUX-GNUEABI-MSVC-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u32 [storage=static] = reinterpret<u32>(size_of<u32, f64>(8) [c="__size_t"]) [linkage=external];
 // ARMV7-LINUX-GNUEABI-MSVC-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u32 [storage=static] = reinterpret<u32>(size_of<u32, va_list>(4) [c="__size_t"]) [linkage=external];

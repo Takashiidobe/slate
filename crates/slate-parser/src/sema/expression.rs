@@ -590,6 +590,33 @@ impl Lowerer {
                 let c = self.result(e)?;
                 Ok(self.operand(e, c, ValueKind::Constant(Number::Integer(0u32.into()))))
             }
+            CustomBuiltin::NontemporalLoad => {
+                let [pointer] = arguments else {
+                    return Err(ResolveError::Internal("nontemporal builtin arity"));
+                };
+                let pointer = self.expr(pointer)?;
+                let lvalue = self.deref(pointer)?;
+                self.read(e, lvalue)
+            }
+            CustomBuiltin::NontemporalStore => {
+                let [value, pointer] = arguments else {
+                    return Err(ResolveError::Internal("nontemporal builtin arity"));
+                };
+                let value = self.expr(value)?;
+                let value = self.converted(e, Slot::Argument(0), value)?;
+                let pointer = self.expr(pointer)?;
+                let place = self.deref(pointer)?.place;
+                let store = self.operand(
+                    e,
+                    value.c,
+                    ValueKind::Store {
+                        ordering: place.implicit_ordering(),
+                        place,
+                        value: Box::new(value.value),
+                    },
+                );
+                Ok(self.voided(e, store))
+            }
         }
     }
 

@@ -1347,7 +1347,7 @@ impl Context {
     ) -> Result<Value, ResolveError> {
         let probe = Value {
             ty: from,
-            node: value.node.clone(),
+            node: value.node.clone().with_value(ValueKind::Void),
         };
         let converted = self.emit_arithmetic_conversion(probe, to, reason)?;
         per_lane(converted, value, lanes)

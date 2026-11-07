@@ -58,7 +58,7 @@ All four compiler names support `install`, `path`, and `doctor`.
 
 | Compiler      | Header source                                                                                             | Target use                                                         | Optional selector                                            |
 | ------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------ |
-| `clang`       | Built Clang 22.1.8 resource headers from a pinned Debian package, verified by SHA-256                     | Shared bundle for all supported targets                            | None                                                         |
+| `clang`       | Built Clang 23.1.4 resource headers from a pinned Debian package, verified by SHA-256                     | Shared bundle for all supported targets                            | None                                                         |
 | `apple-clang` | Resource headers copied from the active Xcode or Command Line Tools compiler; installation requires macOS | The two macOS targets                                              | None                                                         |
 | `gcc`         | GCC 16.2.0 release archive, verified by SHA-256; assembled as Linux compiler headers                      | Linux targets with the matching architecture family                | `x86`, `aarch64`, or `arm`; omitted means all families       |
 | `msvc`        | CRT headers from the pinned Microsoft packages                                                            | The four Windows MSVC targets; headers must match the exact target | A Windows MSVC target triple; omitted means all four targets |
@@ -228,7 +228,7 @@ Paths relative to that directory:
 | Path                                              | Contents                                     |
 | ------------------------------------------------- | -------------------------------------------- |
 | `sysroots/<target>/`                              | Target sysroot                               |
-| `compiler-headers/clang-22.1.8/include/`          | Clang resource headers                       |
+| `compiler-headers/clang-23.1.4/include/`          | Clang resource headers                       |
 | `compiler-headers/gcc-16.2.0/<family>/include/`   | GCC headers for one architecture family      |
 | `compiler-headers/apple-clang-<version>/include/` | Locally copied Apple Clang resource headers  |
 | `compiler-headers/apple-clang-current/include/`   | Stable path to the active Apple Clang bundle |

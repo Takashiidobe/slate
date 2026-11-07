@@ -1,7 +1,29 @@
 #define _LP64 1
-#define __ANDROID_API__ __ANDROID_MIN_SDK_VERSION__
-#define __ANDROID_MIN_SDK_VERSION__ 21
-#define __ANDROID__ 1
+#define __AARCH64EL__ 1
+#define __AARCH64_CMODEL_SMALL__ 1
+#define __ARM_64BIT_STATE 1
+#define __ARM_ACLE 202420
+#define __ARM_ACLE_VERSION(year,quarter,patch) (100 * (year) + 10 * (quarter) + (patch))
+#define __ARM_ALIGN_MAX_STACK_PWR 4
+#define __ARM_ARCH_ISA_A64 1
+#define __ARM_ARCH_PROFILE 'A'
+#define __ARM_FEATURE_CLZ 1
+#define __ARM_FEATURE_DIRECTED_ROUNDING 1
+#define __ARM_FEATURE_DIV 1
+#define __ARM_FEATURE_FMA 1
+#define __ARM_FEATURE_IDIV 1
+#define __ARM_FEATURE_LDREX 0xF
+#define __ARM_FEATURE_NUMERIC_MAXMIN 1
+#define __ARM_FEATURE_UNALIGNED 1
+#define __ARM_FP16_ARGS 1
+#define __ARM_FP16_FORMAT_IEEE 1
+#define __ARM_NEON_SVE_BRIDGE 1
+#define __ARM_PCS_AAPCS64 1
+#define __ARM_PREFETCH_RANGE 1
+#define __ARM_SIZEOF_MINIMAL_ENUM 4
+#define __ARM_SIZEOF_WCHAR_T 4
+#define __ARM_STATE_ZA 1
+#define __ARM_STATE_ZT0 1
 #define __ATOMIC_ACQUIRE 2
 #define __ATOMIC_ACQ_REL 4
 #define __ATOMIC_CONSUME 1
@@ -9,12 +31,13 @@
 #define __ATOMIC_RELEASE 3
 #define __ATOMIC_SEQ_CST 5
 #define __BIGGEST_ALIGNMENT__ 16
-#define __BITINT_MAXWIDTH__ 8388608
+#define __BITINT_MAXWIDTH__ 128
 #define __BOOL_WIDTH__ 1
 #define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__
 #define __CHAR16_TYPE__ unsigned short
 #define __CHAR32_TYPE__ unsigned int
 #define __CHAR_BIT__ 8
+#define __CHAR_UNSIGNED__ 1
 #define __CLANG_ATOMIC_BOOL_LOCK_FREE 2
 #define __CLANG_ATOMIC_CHAR16_T_LOCK_FREE 2
 #define __CLANG_ATOMIC_CHAR32_T_LOCK_FREE 2
@@ -26,7 +49,6 @@
 #define __CLANG_ATOMIC_SHORT_LOCK_FREE 2
 #define __CLANG_ATOMIC_WCHAR_T_LOCK_FREE 2
 #define __CONSTANT_CFSTRINGS__ 1
-#define __CRC32__ 1
 #define __DBL_DECIMAL_DIG__ 17
 #define __DBL_DENORM_MIN__ 4.9406564584124654e-324
 #define __DBL_DIG__ 15
@@ -45,7 +67,6 @@
 #define __DECIMAL_DIG__ __LDBL_DECIMAL_DIG__
 #define __ELF__ 1
 #define __FINITE_MATH_ONLY__ 0
-#define __FLOAT128__ 1
 #define __FLT16_DECIMAL_DIG__ 5
 #define __FLT16_DENORM_MIN__ 5.9604644775390625e-8F16
 #define __FLT16_DIG__ 3
@@ -87,7 +108,9 @@
 #define __FPCLASS_POSZERO 0x0040
 #define __FPCLASS_QNAN 0x0002
 #define __FPCLASS_SNAN 0x0001
-#define __FXSR__ 1
+#define __FP_FAST_FMA 1
+#define __FP_FAST_FMAF 1
+#define __FUNCTION_MULTI_VERSIONING_SUPPORT_LEVEL 202430
 #define __GCC_ASM_FLAG_OUTPUTS__ 1
 #define __GCC_ATOMIC_BOOL_LOCK_FREE 2
 #define __GCC_ATOMIC_CHAR16_T_LOCK_FREE 2
@@ -101,7 +124,7 @@
 #define __GCC_ATOMIC_TEST_AND_SET_TRUEVAL 1
 #define __GCC_ATOMIC_WCHAR_T_LOCK_FREE 2
 #define __GCC_CONSTRUCTIVE_SIZE 64
-#define __GCC_DESTRUCTIVE_SIZE 64
+#define __GCC_DESTRUCTIVE_SIZE 256
 #define __GCC_HAVE_DWARF2_CFI_ASM 1
 #define __GCC_HAVE_SYNC_COMPARE_AND_SWAP_1 1
 #define __GCC_HAVE_SYNC_COMPARE_AND_SWAP_16 1
@@ -218,10 +241,7 @@
 #define __MEMORY_SCOPE_SYSTEM 0
 #define __MEMORY_SCOPE_WRKGRP 2
 #define __MEMORY_SCOPE_WVFRNT 3
-#define __MMX__ 1
 #define __NO_INLINE__ 1
-#define __NO_MATH_ERRNO__ 1
-#define __NO_MATH_INLINES 1
 #define __OBJC_BOOL_IS_BOOL 0
 #define __OPENCL_MEMORY_SCOPE_ALL_SVM_DEVICES 3
 #define __OPENCL_MEMORY_SCOPE_DEVICE 2
@@ -234,23 +254,18 @@
 #define __PIC__ 2
 #define __PIE__ 2
 #define __POINTER_WIDTH__ 64
-#define __POPCNT__ 1
 #define __PRAGMA_REDEFINE_EXTNAME 1
 #define __PTRDIFF_FMTd__ "ld"
 #define __PTRDIFF_FMTi__ "li"
 #define __PTRDIFF_MAX__ 9223372036854775807L
 #define __PTRDIFF_TYPE__ long int
 #define __PTRDIFF_WIDTH__ 64
-#define __REGISTER_PREFIX__ 
 #define __SCHAR_MAX__ 127
-#define __SEG_FS 1
-#define __SEG_GS 1
 #define __SHRT_MAX__ 32767
 #define __SHRT_WIDTH__ 16
 #define __SIG_ATOMIC_MAX__ 2147483647
 #define __SIG_ATOMIC_WIDTH__ 32
 #define __SIZEOF_DOUBLE__ 8
-#define __SIZEOF_FLOAT128__ 16
 #define __SIZEOF_FLOAT__ 4
 #define __SIZEOF_INT128__ 16
 #define __SIZEOF_INT__ 4
@@ -270,15 +285,7 @@
 #define __SIZE_MAX__ 18446744073709551615UL
 #define __SIZE_TYPE__ long unsigned int
 #define __SIZE_WIDTH__ 64
-#define __SSE2_MATH__ 1
-#define __SSE2__ 1
-#define __SSE3__ 1
-#define __SSE4_1__ 1
-#define __SSE4_2__ 1
-#define __SSE_MATH__ 1
-#define __SSE__ 1
 #define __SSP_STRONG__ 2
-#define __SSSE3__ 1
 #define __STDC_EMBED_EMPTY__ 2
 #define __STDC_EMBED_FOUND__ 1
 #define __STDC_EMBED_NOT_FOUND__ 0
@@ -384,37 +391,32 @@
 #define __UINT_LEAST8_MAX__ 255
 #define __UINT_LEAST8_TYPE__ unsigned char
 #define __USER_LABEL_PREFIX__ 
-#define __VERSION__ "Clang 22.1.8"
-#define __WCHAR_MAX__ 2147483647
-#define __WCHAR_TYPE__ int
+#define __VERSION__ "Clang 23.1.4"
+#define __WCHAR_MAX__ 4294967295U
+#define __WCHAR_TYPE__ unsigned int
+#define __WCHAR_UNSIGNED__ 1
 #define __WCHAR_WIDTH__ 32
 #define __WINT_MAX__ 4294967295U
 #define __WINT_TYPE__ unsigned int
 #define __WINT_UNSIGNED__ 1
 #define __WINT_WIDTH__ 32
-#define __amd64 1
-#define __amd64__ 1
+#define __aarch64__ 1
 #define __clang__ 1
 #define __clang_literal_encoding__ "UTF-8"
-#define __clang_major__ 22
+#define __clang_major__ 23
 #define __clang_minor__ 1
-#define __clang_patchlevel__ 8
-#define __clang_version__ "22.1.8 "
+#define __clang_patchlevel__ 4
+#define __clang_version__ "23.1.4 "
 #define __clang_wide_literal_encoding__ "UTF-32"
-#define __code_model_small__ 1
-#define __k8 1
-#define __k8__ 1
+#define __gnu_linux__ 1
 #define __linux 1
 #define __linux__ 1
 #define __llvm__ 1
 #define __pic__ 2
 #define __pie__ 2
-#define __seg_fs __attribute__((address_space(257)))
-#define __seg_gs __attribute__((address_space(256)))
-#define __tune_k8__ 1
 #define __unix 1
 #define __unix__ 1
-#define __x86_64 1
-#define __x86_64__ 1
-#define linux 1
-#define unix 1
+#define __SIG_ATOMIC_MIN__ (-__SIG_ATOMIC_MAX__ - 1)
+#define __SIG_ATOMIC_TYPE__ int
+#define __WCHAR_MIN__ 0U
+#define __WINT_MIN__ 0U

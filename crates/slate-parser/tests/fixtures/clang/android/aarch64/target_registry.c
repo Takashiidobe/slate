@@ -41,7 +41,7 @@ struct pair record(struct pair value) { return value; }
 // AARCH64-ANDROID-CLANG-NEXT:         field0 a: i32;
 // AARCH64-ANDROID-CLANG-NEXT:         field1 b: i32;
 // AARCH64-ANDROID-CLANG-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// AARCH64-ANDROID-CLANG-NEXT:     global %[[VALUE_clang_major:[0-9]+]] clang_major: i32 [storage=static] = const<i32>(22) [linkage=external];
+// AARCH64-ANDROID-CLANG-NEXT:     global %[[VALUE_clang_major:[0-9]+]] clang_major: i32 [storage=static] = const<i32>(23) [linkage=external];
 // AARCH64-ANDROID-CLANG-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u64 [storage=static] = reinterpret<u64>(size_of<u64, i64>(8) [c="__size_t"]) [linkage=external];
 // AARCH64-ANDROID-CLANG-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u64 [storage=static] = reinterpret<u64>(size_of<u64, f128>(16) [c="__size_t"]) [linkage=external];
 // AARCH64-ANDROID-CLANG-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u64 [storage=static] = reinterpret<u64>(size_of<u64, va_list>(32) [c="__size_t"]) [linkage=external];

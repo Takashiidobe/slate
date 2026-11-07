@@ -1444,6 +1444,24 @@ impl TypeResolver {
                     AlignBuiltin::Up | AlignBuiltin::Down => self.ctypes.unqualified(value),
                 }
             }
+            CustomBuiltin::NontemporalLoad => {
+                let [pointer] = arguments else {
+                    return Err(ResolveError::Rejected("nontemporal builtin arity"));
+                };
+                let pointee = self.nontemporal_pointee(pointer)?;
+                self.ctypes.unqualified(pointee)
+            }
+            CustomBuiltin::NontemporalStore => {
+                let [value, pointer] = arguments else {
+                    return Err(ResolveError::Rejected("nontemporal builtin arity"));
+                };
+                let pointee = self.nontemporal_pointee(pointer)?;
+                let target = self.ctypes.unqualified(pointee);
+                let from = self.operand_type(value)?;
+                let reason = ConversionReason::Assign;
+                self.record_casts(e, Slot::Argument(0), value, from, &[target], reason)?;
+                self.ctypes.qual(CTypeKind::Void)
+            }
             CustomBuiltin::ObjectSize { .. } => {
                 let [pointer, kind] = arguments else {
                     return Err(ResolveError::Rejected("object size builtin arity"));
@@ -2229,6 +2247,28 @@ impl TypeResolver {
         self.real_floating_operand(e, 0, left_expr, &[common])?;
         self.real_floating_operand(e, 1, right_expr, &[common])?;
         Ok(common)
+    }
+
+    fn nontemporal_pointee(&mut self, pointer: &Expr) -> Result<QualType, ResolveError> {
+        let pointer = self.operand_type(pointer)?;
+        let pointer = self.ctypes.lvalue_conversion(pointer);
+        let pointee = self
+            .ctypes
+            .pointee(pointer)
+            .filter(|_| self.ctypes.is_pointer(pointer))
+            .ok_or(ResolveError::Rejected(
+                "address argument to nontemporal builtin must be a pointer",
+            ))?;
+        if !(self.ctypes.is_integer(pointee)
+            || self.ctypes.is_floating(pointee)
+            || self.ctypes.is_pointer(pointee)
+            || self.ctypes.is_vector(pointee))
+        {
+            return Err(ResolveError::Rejected(
+                "address argument to nontemporal builtin must be a pointer to integer, float, pointer, or a vector of such types",
+            ));
+        }
+        Ok(pointee)
     }
 
     fn real_floating_operand(

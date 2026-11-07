@@ -352,6 +352,8 @@ pub(super) enum CustomBuiltin {
     Noop,
     Align(AlignBuiltin),
     ObjectSize { dynamic: bool },
+    NontemporalLoad,
+    NontemporalStore,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -399,6 +401,8 @@ pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
         "IsAligned" => CustomBuiltin::Align(AlignBuiltin::IsAligned),
         "ObjectSize" => CustomBuiltin::ObjectSize { dynamic: false },
         "DynamicObjectSize" => CustomBuiltin::ObjectSize { dynamic: true },
+        "NontemporalLoad" => CustomBuiltin::NontemporalLoad,
+        "NontemporalStore" => CustomBuiltin::NontemporalStore,
         _ => return None,
     })
 }

@@ -381,7 +381,7 @@
 #define __UINT_LEAST8_MAX__ 255
 #define __UINT_LEAST8_TYPE__ unsigned char
 #define __USER_LABEL_PREFIX__ 
-#define __VERSION__ "Clang 22.1.8"
+#define __VERSION__ "Clang 23.1.4"
 #define __VFP_FP__ 1
 #define __WCHAR_MAX__ 4294967295U
 #define __WCHAR_TYPE__ unsigned int
@@ -395,10 +395,10 @@
 #define __arm__ 1
 #define __clang__ 1
 #define __clang_literal_encoding__ "UTF-8"
-#define __clang_major__ 22
+#define __clang_major__ 23
 #define __clang_minor__ 1
-#define __clang_patchlevel__ 8
-#define __clang_version__ "22.1.8 "
+#define __clang_patchlevel__ 4
+#define __clang_version__ "23.1.4 "
 #define __clang_wide_literal_encoding__ "UTF-32"
 #define __gnu_linux__ 1
 #define __linux 1
@@ -408,3 +408,7 @@
 #define __pie__ 2
 #define __unix 1
 #define __unix__ 1
+#define __SIG_ATOMIC_MIN__ (-__SIG_ATOMIC_MAX__ - 1)
+#define __SIG_ATOMIC_TYPE__ int
+#define __WCHAR_MIN__ 0U
+#define __WINT_MIN__ 0U

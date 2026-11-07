@@ -8,12 +8,12 @@ use std::io::{self, Read};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-pub const CLANG_VERSION: &str = "22.1.8";
-const CLANG_PACKAGE: &str = "libclang-common-22-dev_22.1.8-3_amd64.deb";
-const CLANG_URL: &str = "https://snapshot.debian.org/archive/debian/20261030T000000Z/pool/main/l/llvm-toolchain-22/libclang-common-22-dev_22.1.8-3_amd64.deb";
-const CLANG_SHA256: &str = "97adf643384de951222f04b3b250e50850e952cb678190689c1ea0d2ec236611";
-const CLANG_INCLUDE: &str = "usr/lib/llvm-22/lib/clang/22/include";
-const CLANG_COPYRIGHT: &str = "usr/share/doc/libclang-common-22-dev/copyright";
+pub const CLANG_VERSION: &str = "23.1.4";
+const CLANG_PACKAGE: &str = "libclang-common-23-dev_23.1.4-2_amd64.deb";
+const CLANG_URL: &str = "https://snapshot.debian.org/archive/debian/20261025T202701Z/pool/main/l/llvm-toolchain-23/libclang-common-23-dev_23.1.4-2_amd64.deb";
+const CLANG_SHA256: &str = "7181ee2aa77864cd4746653bef0221b439956fc0ee91c9de937ae74516d75b3e";
+const CLANG_INCLUDE: &str = "usr/lib/llvm-23/lib/clang/23/include";
+const CLANG_COPYRIGHT: &str = "usr/share/doc/libclang-common-23-dev/copyright";
 const CLANG_MANIFEST: &str = "SYSROOT-MANIFEST.txt";
 pub(crate) const CLANG_REQUIRED_HEADERS: &[&str] = &[
     "stdarg.h",

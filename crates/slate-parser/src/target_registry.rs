@@ -163,7 +163,7 @@ const LINUX_GNU_NAMESPACE: &str = include_str!("predefines/slate_gnu_namespace_l
 const X86_64_LINUX_GNU: Predefines = Predefines {
     flavors: CLANG_AND_MSVC,
     name: "<clang-x86_64-linux-gnu-predefines>",
-    source: include_str!("predefines/clang-22.1.8_x86_64_linux_gnu.h"),
+    source: include_str!("predefines/clang-23.1.4_x86_64_linux_gnu.h"),
     defaults: include_str!("predefines/slate_target_defaults.h"),
     gnu_namespace: LINUX_GNU_NAMESPACE,
 };
@@ -171,7 +171,7 @@ const X86_64_LINUX_GNU: Predefines = Predefines {
 const I686_LINUX_GNU: Predefines = Predefines {
     flavors: CLANG_AND_MSVC,
     name: "<clang-i686-linux-gnu-predefines>",
-    source: include_str!("predefines/clang-22.1.8_i686_linux_gnu.h"),
+    source: include_str!("predefines/clang-23.1.4_i686_linux_gnu.h"),
     defaults: include_str!("predefines/slate_x86_linux_defaults.h"),
     gnu_namespace: include_str!("predefines/slate_gnu_namespace_i686_linux.h"),
 };
@@ -193,7 +193,7 @@ const I686_LINUX_GNU_GCC: Predefines = Predefines {
 const AARCH64_LINUX_GNU: Predefines = Predefines {
     flavors: CLANG_AND_MSVC,
     name: "<clang-aarch64-linux-gnu-predefines>",
-    source: include_str!("predefines/clang-22.1.8_aarch64_linux_gnu.h"),
+    source: include_str!("predefines/clang-23.1.4_aarch64_linux_gnu.h"),
     defaults: include_str!("predefines/slate_aarch64_linux_defaults.h"),
     gnu_namespace: LINUX_GNU_NAMESPACE,
 };
@@ -287,7 +287,7 @@ pub const TARGETS: &[TargetSpec] = &[
             predefines: &[Predefines {
                 flavors: CLANG,
                 name: "<clang-x86_64-linux-musl-predefines>",
-                source: include_str!("predefines/clang-23.1.1_x86_64_linux_musl.h"),
+                source: include_str!("predefines/clang-23.1.4_x86_64_linux_musl.h"),
                 defaults: "",
                 gnu_namespace: LINUX_GNU_NAMESPACE,
             }],
@@ -303,7 +303,7 @@ pub const TARGETS: &[TargetSpec] = &[
             &[Predefines {
                 flavors: CLANG,
                 name: "<clang-aarch64-linux-musl-predefines>",
-                source: include_str!("predefines/clang-23.1.1_aarch64_linux_musl.h"),
+                source: include_str!("predefines/clang-23.1.4_aarch64_linux_musl.h"),
                 defaults: "",
                 gnu_namespace: LINUX_GNU_NAMESPACE,
             }],
@@ -343,7 +343,7 @@ pub const TARGETS: &[TargetSpec] = &[
             ..clang_unix(
                 &[clang_only(
                     "<clang-aarch64-apple-darwin-predefines>",
-                    include_str!("predefines/clang-22.1.8_aarch64_apple_darwin.h"),
+                    include_str!("predefines/clang-23.1.4_aarch64_apple_darwin.h"),
                 )],
                 VaListKind::CharPointer,
                 AbiConvention::Aapcs64,
@@ -358,7 +358,7 @@ pub const TARGETS: &[TargetSpec] = &[
             ..clang_unix(
                 &[clang_only(
                     "<clang-x86_64-apple-darwin-predefines>",
-                    include_str!("predefines/clang-22.1.8_x86_64_apple_darwin.h"),
+                    include_str!("predefines/clang-23.1.4_x86_64_apple_darwin.h"),
                 )],
                 VaListKind::X86_64Sysv,
                 AbiConvention::SysV64,
@@ -373,7 +373,7 @@ pub const TARGETS: &[TargetSpec] = &[
             ..clang_unix(
                 &[clang_only(
                     "<clang-aarch64-linux-android-predefines>",
-                    include_str!("predefines/clang-22.1.8_aarch64_linux_android.h"),
+                    include_str!("predefines/clang-23.1.4_aarch64_linux_android.h"),
                 )],
                 VaListKind::AArch64Aapcs,
                 AbiConvention::Aapcs64,
@@ -388,7 +388,7 @@ pub const TARGETS: &[TargetSpec] = &[
             ..clang_unix(
                 &[clang_only(
                     "<clang-x86_64-linux-android-predefines>",
-                    include_str!("predefines/clang-22.1.8_x86_64_linux_android.h"),
+                    include_str!("predefines/clang-23.1.4_x86_64_linux_android.h"),
                 )],
                 VaListKind::X86_64Sysv,
                 AbiConvention::SysV64,
@@ -401,7 +401,7 @@ pub const TARGETS: &[TargetSpec] = &[
         profile: clang_unix(
             &[clang_only(
                 "<clang-aarch64-unknown-freebsd-predefines>",
-                include_str!("predefines/clang-22.1.8_aarch64_unknown_freebsd.h"),
+                include_str!("predefines/clang-23.1.4_aarch64_unknown_freebsd.h"),
             )],
             VaListKind::AArch64Aapcs,
             AbiConvention::Aapcs64,
@@ -413,7 +413,7 @@ pub const TARGETS: &[TargetSpec] = &[
         profile: clang_unix(
             &[clang_only(
                 "<clang-x86_64-unknown-freebsd-predefines>",
-                include_str!("predefines/clang-22.1.8_x86_64_unknown_freebsd.h"),
+                include_str!("predefines/clang-23.1.4_x86_64_unknown_freebsd.h"),
             )],
             VaListKind::X86_64Sysv,
             AbiConvention::SysV64,
@@ -427,7 +427,7 @@ pub const TARGETS: &[TargetSpec] = &[
                 Predefines {
                     flavors: CLANG_AND_MSVC,
                     name: "<clang-armv7-linux-gnueabi-predefines>",
-                    source: include_str!("predefines/clang-22.1.8_armv7_linux_gnueabi.h"),
+                    source: include_str!("predefines/clang-23.1.4_armv7_linux_gnueabi.h"),
                     defaults: ARM32_LINUX_DEFAULTS,
                     gnu_namespace: LINUX_GNU_NAMESPACE,
                 },
@@ -444,7 +444,7 @@ pub const TARGETS: &[TargetSpec] = &[
                 Predefines {
                     flavors: CLANG_AND_MSVC,
                     name: "<clang-armv7-linux-gnueabihf-predefines>",
-                    source: include_str!("predefines/clang-22.1.8_armv7_linux_gnueabihf.h"),
+                    source: include_str!("predefines/clang-23.1.4_armv7_linux_gnueabihf.h"),
                     defaults: ARM32_LINUX_DEFAULTS,
                     gnu_namespace: LINUX_GNU_NAMESPACE,
                 },
@@ -467,7 +467,7 @@ pub const TARGETS: &[TargetSpec] = &[
                 },
                 clang_only(
                     "<clang-x86_64-windows-msvc-predefines>",
-                    include_str!("predefines/clang-22.1.8_x86_64_windows_msvc.h"),
+                    include_str!("predefines/clang-23.1.4_x86_64_windows_msvc.h"),
                 ),
             ],
             AbiConvention::Win64,
@@ -489,7 +489,7 @@ pub const TARGETS: &[TargetSpec] = &[
                     gnu_namespace: include_str!("predefines/slate_gnu_namespace_i686_windows.h"),
                     ..clang_only(
                         "<clang-i686-windows-msvc-predefines>",
-                        include_str!("predefines/clang-22.1.8_i686_windows_msvc.h"),
+                        include_str!("predefines/clang-23.1.4_i686_windows_msvc.h"),
                     )
                 },
             ],
@@ -510,7 +510,7 @@ pub const TARGETS: &[TargetSpec] = &[
                 },
                 clang_only(
                     "<clang-aarch64-windows-msvc-predefines>",
-                    include_str!("predefines/clang-22.1.8_aarch64_windows_msvc.h"),
+                    include_str!("predefines/clang-23.1.4_aarch64_windows_msvc.h"),
                 ),
             ],
             AbiConvention::WinArm64,
@@ -530,7 +530,7 @@ pub const TARGETS: &[TargetSpec] = &[
                 },
                 clang_only(
                     "<clang-thumbv7a-windows-msvc-predefines>",
-                    include_str!("predefines/clang-22.1.8_thumbv7a_windows_msvc.h"),
+                    include_str!("predefines/clang-23.1.4_thumbv7a_windows_msvc.h"),
                 ),
             ],
             AbiConvention::Aapcs32,
