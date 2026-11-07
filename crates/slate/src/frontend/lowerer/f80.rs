@@ -105,6 +105,18 @@ impl Tables<'_> {
         )
     }
 
+    pub(super) fn bridges_long_double(&self, ty: &ir::Type) -> bool {
+        self.holds_long_double(ty) || self.is_complex_long_double(ty)
+    }
+
+    pub(super) fn extern_bridges_long_double(&self, function: &ir::Function) -> bool {
+        types::fixed_parameters(&function.parameters)
+            .iter()
+            .map(|parameter| &parameter.ty)
+            .chain(&function.return_type)
+            .any(|ty| self.bridges_long_double(ty))
+    }
+
     pub(super) fn holds_long_double(&self, ty: &ir::Type) -> bool {
         self.is_long_double(ty)
             || match self.resolve_type(ty) {

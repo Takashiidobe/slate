@@ -812,7 +812,7 @@ impl<'m> ModuleLowerer<'m> {
                 || self.tables.stdio.functions.contains_key(&function.value.id)
                 || self.tables.stdio.unreachable.contains(&function.value.id)
                 || self.tables.intrinsics.contains_key(&function.value.id)
-                || self.tables.passes_long_double(function)
+                || self.tables.extern_bridges_long_double(function)
                     && function
                         .abi
                         .as_ref()

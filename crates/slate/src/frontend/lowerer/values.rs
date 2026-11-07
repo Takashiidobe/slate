@@ -1921,7 +1921,7 @@ impl FunctionLowerer<'_, '_> {
             } if self.tables.names.get(id).is_some_and(|name| name.is_extern)
                 && std::iter::once(&value.ty)
                     .chain(arguments.iter().map(|argument| &argument.ty))
-                    .any(|ty| self.tables.holds_long_double(ty)) =>
+                    .any(|ty| self.tables.bridges_long_double(ty)) =>
             {
                 self.lower_long_double_bridge(&self.tables.names[id], arguments, &value.ty)?
             }
