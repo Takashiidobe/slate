@@ -295,15 +295,23 @@ impl<W: Write> Codegen<W> {
                 }
                 writeln!(self.out, "macro_rules! {name} {{")?;
                 self.macro_params = params.iter().map(|param| param.name.to_string()).collect();
-                let matcher = params
-                    .iter()
-                    .map(|param| match param.shape {
-                        MacroParamShape::Ident => format!("${}:ident", param.name),
-                        MacroParamShape::Type => format!("${}:ty", param.name),
-                        _ => format!("${}:expr", param.name),
-                    })
-                    .collect::<Vec<_>>()
-                    .join(", ");
+                let mut matcher = String::new();
+                for (index, param) in params.iter().enumerate() {
+                    let separator = if index == 0 { "" } else { ", " };
+                    match param.shape {
+                        MacroParamShape::Ident => {
+                            write!(matcher, "{separator}${}:ident", param.name)?;
+                        }
+                        MacroParamShape::Type => write!(matcher, "{separator}${}:ty", param.name)?,
+                        MacroParamShape::Expr => {
+                            write!(matcher, "{separator}${}:expr", param.name)?;
+                        }
+                        MacroParamShape::Repeat if index == 0 => {
+                            write!(matcher, "$(${}:expr),*", param.name)?;
+                        }
+                        MacroParamShape::Repeat => write!(matcher, " $(, ${}:expr)*", param.name)?,
+                    }
+                }
                 writeln!(self.out, "({matcher}) => {{")?;
                 match body.split_last() {
                     Some((Stmt::Return(Some(value)), [])) if *is_value => {

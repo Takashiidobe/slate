@@ -125,6 +125,7 @@ pub enum MacroParamShape {
     Expr,
     Ident,
     Type,
+    Repeat,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

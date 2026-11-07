@@ -180,10 +180,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! TRACE {
-// CHECK-NEXT:     ($x__0:expr, $x__1:expr, $x__2:expr) => {
+// CHECK-NEXT:     ($x__0:expr, $x__1:expr $(, $x:expr)*) => {
 // CHECK-NEXT:         if (unsafe { verbose }) > 0 {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::fprintf($x__0, ($x__1) as *const c_char, $x__2) };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 slate_support::fprintf($x__0, ($x__1) as *const c_char, $($x),*)
+// CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };

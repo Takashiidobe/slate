@@ -121,9 +121,15 @@ other expansion stays inline, and `macro_keep.rs` records why in the merge repor
   accesses with `$f:ident`. Filling the parameter gives back that site's own body, so
   this is sound even when an occurrence did not come from the argument. A parameter
   with no occurrence is dropped, leaving the concrete spelling in the body:
-  `sizeof(T)`, a struct tag, a bit-field, or a callee naming a function. Each element
-  of a `f args` list is a separate `$args__N`, so a different argument count is a
-  different template. Writes to bit-fields stay inline.
+  `sizeof(T)`, a struct tag, a bit-field, or a callee naming a function. In a
+  `f args` list, the trailing run of elements passed unconverted as one call's last
+  arguments, each used once, becomes one repetition `$(, $args:expr)*` (or
+  `$($args:expr),*` when it is the only parameter), always the last parameter, so
+  every argument count shares a template. Earlier elements, and any element with a
+  conversion, stay separate `$args__N`; at most one list per template repeats.
+  Codegen prints the repetition as `__slate_macro_list_<name>`, which `format.rs`
+  turns back into `$($name),*`, or `$($name,)*` before a comma. Writes to bit-fields
+  stay inline.
 - **Analyses**: `remove_mut` treats a template's plain arguments as reads.
   `inline_temps` will not inline into a template argument. `string_params` and
   `pointer_lattice` keep any pointer a template argument names raw, so lifting

@@ -135,7 +135,7 @@ int main(void) {
 // CHECK-NEXT:   macro_fold.c: [] 1 compiled
 // CHECK-NEXT:   units/macro_fold_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit macro_fold: 41 items, 18 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_fold: 40 items, 18 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: unit macro_fold_helper: 8 items, 4 gated, 0 duplicated functions
 // CHECK-NEXT: macros: 25 function-like, 18 lifted at least once (expansions counted per distinct compile)
@@ -174,9 +174,9 @@ int main(void) {
 // CHECK-NEXT: exit: 0
 // CHECK-NEXT: file __slate_macros.rs
 // CHECK-NEXT: macro_rules! LOG {
-// CHECK-NEXT:     ($x__0:expr, $x__1:expr, $x__2:expr) => {
+// CHECK-NEXT:     ($x__0:expr, $x__1:expr $(, $x:expr)*) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::fprintf($x__0, ($x__1) as *const c_char, $x__2) };
+// CHECK-NEXT:         unsafe { slate_support::fprintf($x__0, ($x__1) as *const c_char, $($x),*) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -432,7 +432,7 @@ int main(void) {
 // CHECK-NEXT:         c"start %d\n".as_ptr() as *mut c_char,
 // CHECK-NEXT:         count
 // CHECK-NEXT:     );
-// CHECK-NEXT:     LOG__2!(
+// CHECK-NEXT:     LOG!(
 // CHECK-NEXT:         slate_support::stdout(),
 // CHECK-NEXT:         c"no args\n".as_ptr() as *mut c_char
 // CHECK-NEXT:     );
@@ -637,7 +637,7 @@ int main(void) {
 // CHECK-NEXT:     let mut i: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         i = 0;
-// CHECK-NEXT:         LOG__2!(
+// CHECK-NEXT:         LOG!(
 // CHECK-NEXT:             slate_support::stdout(),
 // CHECK-NEXT:             c"goto entry\n".as_ptr() as *mut c_char
 // CHECK-NEXT:         );
@@ -688,7 +688,7 @@ int main(void) {
 // CHECK-NEXT:             );
 // CHECK-NEXT:         }
 // CHECK-NEXT:         _ => {
-// CHECK-NEXT:             LOG__2!(
+// CHECK-NEXT:             LOG!(
 // CHECK-NEXT:                 slate_support::stdout(),
 // CHECK-NEXT:                 c"default\n".as_ptr() as *mut c_char
 // CHECK-NEXT:             );
@@ -715,28 +715,24 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! EARLY_LIST {
-// CHECK-NEXT:     ($x__0:expr, $x__1:expr, $c:expr) => {
+// CHECK-NEXT:     ($x__0:expr, $x__1:expr, $c:expr $(, $x:expr)*) => {
 // CHECK-NEXT:         if ($c) != 0 {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::fprintf($x__0, ($x__1) as *const c_char) };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 slate_support::fprintf($x__0, ($x__1) as *const c_char, $($x),*)
+// CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! LOG__2 {
-// CHECK-NEXT:     ($x__0:expr, $x__1:expr) => {
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::fprintf($x__0, ($x__1) as *const c_char) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! NOTE {
-// CHECK-NEXT:     ($c:expr, $x__0:expr, $x__1:expr, $x__2:expr) => {
+// CHECK-NEXT:     ($c:expr, $x__0:expr, $x__1:expr $(, $x:expr)*) => {
 // CHECK-NEXT:         if (unsafe { verbose }) > 0 && $c {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::fprintf($x__0, ($x__1) as *const c_char, $x__2) };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 slate_support::fprintf($x__0, ($x__1) as *const c_char, $($x),*)
+// CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };

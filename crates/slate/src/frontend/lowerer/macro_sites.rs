@@ -204,6 +204,7 @@ impl FunctionLowerer<'_, '_> {
         macro_templates::normalize_locals(&mut template);
         let mut params = Vec::new();
         let mut args = Vec::new();
+        let mut repeated: Option<(String, Vec<Expr>)> = None;
         for (index, ((name, argument), place)) in site
             .parameters
             .iter()
@@ -211,7 +212,18 @@ impl FunctionLowerer<'_, '_> {
             .zip(site.place_arguments)
             .enumerate()
         {
-            for (element, value) in site.call_arguments[index].iter().enumerate() {
+            let elements = &site.call_arguments[index];
+            let mut fixed = elements.len();
+            if repeated.is_none()
+                && argument.is_none()
+                && place.is_none()
+                && let Some(start) =
+                    macro_templates::make_repeat_parameter(&mut template, name, elements.len())
+            {
+                fixed = start;
+                repeated = Some((name.clone(), elements[start..].to_vec()));
+            }
+            for (element, value) in elements[..fixed].iter().enumerate() {
                 let element = macro_templates::call_argument_parameter(name, element);
                 if macro_templates::mentions_hole(&mut template, &element) {
                     params.push(rust::MacroParam {
@@ -277,6 +289,13 @@ impl FunctionLowerer<'_, '_> {
                 shape: rust::MacroParamShape::Expr,
             });
             args.push(value);
+        }
+        if let Some((name, values)) = repeated {
+            params.push(rust::MacroParam {
+                name,
+                shape: rust::MacroParamShape::Repeat,
+            });
+            args.extend(values);
         }
         if std::env::var_os("SLATE_CHECK_MACRO_TEMPLATES").is_some() {
             check(self, &template, &params, &args)?;

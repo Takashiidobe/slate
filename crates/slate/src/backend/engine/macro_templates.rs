@@ -3,6 +3,7 @@ use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use super::rules::walk::{child_exprs, child_exprs_mut, stmt_exprs, stmt_exprs_mut};
 use super::shadow::visit_names;
 use crate::backend::codegen::is_rust_keyword;
+use crate::backend::format::MACRO_LIST_HOLE;
 use crate::backend::rust_ast::{
     Block, Expr, Ident, ImplItem, Item, Label, LayoutQuery, MacroParam, Program, Stmt, Type,
     UnaryOp, macro_template_base,
@@ -93,6 +94,68 @@ pub fn place_hole(parameter: &str) -> Expr {
 
 pub fn call_argument_parameter(parameter: &str, element: usize) -> String {
     format!("{parameter}__{element}")
+}
+
+fn repeat_hole_parameter(expr: &Expr) -> Option<&str> {
+    hole_parameter(expr)?.strip_prefix("..")
+}
+
+fn expr_mentions_hole(expr: &Expr, parameter: &str) -> bool {
+    hole_parameter(expr) == Some(parameter)
+        || child_exprs(expr)
+            .into_iter()
+            .any(|child| expr_mentions_hole(child, parameter))
+}
+
+pub fn make_repeat_parameter(
+    template: &mut [Stmt],
+    parameter: &str,
+    count: usize,
+) -> Option<usize> {
+    let last = call_argument_parameter(parameter, count.checked_sub(1)?);
+    let mut mentions: HashMap<String, usize> = HashMap::new();
+    visit_exprs_mut(template, &mut |expr| {
+        if let Some(name) = hole_parameter(expr) {
+            *mentions.entry(name.to_string()).or_default() += 1;
+        }
+    });
+    let element = |index: usize| call_argument_parameter(parameter, index);
+    for bare in [true, false] {
+        let mut first = None;
+        visit_exprs_mut(template, &mut |expr| {
+            let Expr::Call { args, .. } = expr else {
+                return;
+            };
+            let Some(tail) = args.last() else {
+                return;
+            };
+            let found = if bare {
+                hole_parameter(tail) == Some(last.as_str())
+            } else {
+                expr_mentions_hole(tail, &last)
+            };
+            if first.is_some() || !found {
+                return;
+            }
+            let mut start = count;
+            let mut position = args.len();
+            while start > 0
+                && position > 0
+                && hole_parameter(&args[position - 1]) == Some(element(start - 1).as_str())
+                && mentions.get(&element(start - 1)) == Some(&1)
+            {
+                start -= 1;
+                position -= 1;
+            }
+            args.truncate(position);
+            args.push(hole(&format!("..{parameter}")));
+            first = Some(start);
+        });
+        if first.is_some() {
+            return first;
+        }
+    }
+    None
 }
 
 pub fn mentions_hole(template: &mut [Stmt], parameter: &str) -> bool {
@@ -360,6 +423,13 @@ pub fn fill_holes(template: &mut [Stmt], params: &[MacroParam], args: &[Expr]) {
     };
     each_template_type(template, &mut |ty| fill_type(ty, params, args));
     visit_exprs_mut(template, &mut |expr| {
+        if let Expr::Call { args: values, .. } = expr
+            && let Some(parameter) = values.last().and_then(repeat_hole_parameter)
+            && let Some(index) = params.iter().position(|param| param.name == parameter)
+        {
+            values.pop();
+            values.extend(args.get(index..).unwrap_or_default().iter().cloned());
+        }
         match expr {
             Expr::Field { field, .. } | Expr::MacroName(field) => fill_field(field, params, args),
             _ => {}
@@ -579,7 +649,9 @@ fn place_parameter_indices(params: &[MacroParam], body: &mut [Stmt]) -> Vec<usiz
 }
 
 fn finish_expr(expr: &mut Expr) {
-    let finished = if let Some(parameter) = place_hole_parameter(expr) {
+    let finished = if let Some(parameter) = repeat_hole_parameter(expr) {
+        Some(Expr::Var(format!("{MACRO_LIST_HOLE}{parameter}").into()))
+    } else if let Some(parameter) = place_hole_parameter(expr) {
         Some(Expr::Var(format!("${parameter}").into()))
     } else if let Some(parameter) = place_pointer_parameter(expr) {
         Some(Expr::AddrOf {

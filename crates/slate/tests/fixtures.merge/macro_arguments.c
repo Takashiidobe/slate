@@ -92,7 +92,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_arguments.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_arguments: 34 items, 2 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_arguments: 33 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced record:odd_fields: 2 variants
 // CHECK-NEXT:   spliced fn:thrice: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
@@ -311,7 +311,7 @@ int main(void) {
 // CHECK-NEXT:             FIELD__3!(op, inner_value)
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
-// CHECK-NEXT:     TRACE__2!(c"plain\n".as_ptr() as *mut c_char);
+// CHECK-NEXT:     TRACE!(c"plain\n".as_ptr() as *mut c_char);
 // CHECK-NEXT:     TRACE!(c"%d %d\n".as_ptr() as *mut c_char, i, j);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -368,8 +368,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ARGS_OF {
-// CHECK-NEXT:     ($args__0:expr, $args__1:expr) => {
-// CHECK-NEXT:         add($args__0, $args__1)
+// CHECK-NEXT:     ($($args:expr),*) => {
+// CHECK-NEXT:         add($($args),*)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -467,23 +467,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! TRACE {
-// CHECK-NEXT:     ($x__0:expr, $x__1:expr, $x__2:expr) => {
+// CHECK-NEXT:     ($x__0:expr $(, $x:expr)*) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $x__1, $x__2) };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! TRACE__2 {
-// CHECK-NEXT:     ($x__0:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char) };
+// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $($x),*) };
 // CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
