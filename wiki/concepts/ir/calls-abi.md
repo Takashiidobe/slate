@@ -176,7 +176,12 @@ first member it matches (`TypeResolver::transparent_member`) and lowers as
 `aggregate<U, zero_fill=false>(fieldN = value)`. The attribute is dropped
 when the first member is float or vector, or a member differs in size or
 needs more alignment. Rust's `repr(C)` union doesn't pass like its first
-member, so Slate must pass that member's type at the boundary
+member in general, but since the attribute requires every member to match
+the first in size and not be float or vector, Slate's union classifies the
+same as the member on x86_64, i686, aarch64 and armv7 (INTEGER class or a
+stack slot). The only remaining gap is a `char`/`short` first member: clang
+marks it `signext`/`zeroext` and the union is passed unextended, which only
+matters to an optimized clang callee across an extern boundary
 (`transparent_union_call.c`).
 
 ## Calling conventions
