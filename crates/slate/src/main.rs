@@ -955,23 +955,9 @@ fn slate_job_count() -> usize {
 fn parse_slate_units(
     commands: Vec<compile_commands::CompileCommand>,
 ) -> Result<Vec<SlateUnit>, String> {
-    let mut by_stem: BTreeMap<String, compile_commands::CompileCommand> = BTreeMap::new();
-    for command in commands {
-        let stem = command
-            .file
-            .file_stem()
-            .and_then(|stem| stem.to_str())
-            .map(rust_ident)
-            .ok_or_else(|| format!("bad file stem: {}", command.file.display()))?;
-        if let Some(previous) = by_stem.get(&stem) {
-            return Err(format!(
-                "compile commands map both {} and {} to module {stem}",
-                previous.file.display(),
-                command.file.display()
-            ));
-        }
-        by_stem.insert(stem, command);
-    }
+    let names = unit_names(&commands)?;
+    let by_stem: BTreeMap<String, compile_commands::CompileCommand> =
+        names.into_iter().zip(commands).collect();
     if by_stem.is_empty() {
         return Err("translate-project: no C translation units in compile commands".into());
     }
@@ -991,6 +977,65 @@ fn parse_slate_units(
             .collect()
     });
     collect_all_errors(results)
+}
+
+fn unit_names(commands: &[compile_commands::CompileCommand]) -> Result<Vec<String>, String> {
+    let components: Vec<Vec<&str>> = commands
+        .iter()
+        .map(|command| {
+            let stem = command
+                .file
+                .file_stem()
+                .and_then(|stem| stem.to_str())
+                .ok_or_else(|| format!("bad file stem: {}", command.file.display()))?;
+            let parents = command
+                .file
+                .parent()
+                .into_iter()
+                .flat_map(Path::components)
+                .rev()
+                .filter_map(|component| match component {
+                    std::path::Component::Normal(name) => name.to_str(),
+                    _ => None,
+                });
+            Ok(std::iter::once(stem).chain(parents).collect())
+        })
+        .collect::<Result<_, String>>()?;
+    let mut depths = vec![1; commands.len()];
+    loop {
+        let names: Vec<String> = components
+            .iter()
+            .zip(&depths)
+            .map(|(parts, &depth)| {
+                let mut used = parts[..depth].to_vec();
+                used.reverse();
+                rust_ident(&used.join("_"))
+            })
+            .collect();
+        let mut owners: BTreeMap<&str, Vec<usize>> = BTreeMap::new();
+        for (index, name) in names.iter().enumerate() {
+            owners.entry(name).or_default().push(index);
+        }
+        let mut grew = false;
+        for indices in owners.values().filter(|indices| indices.len() > 1) {
+            for &index in indices {
+                if depths[index] < components[index].len() {
+                    depths[index] += 1;
+                    grew = true;
+                }
+            }
+        }
+        if !grew {
+            if let Some((name, indices)) = owners.iter().find(|(_, indices)| indices.len() > 1) {
+                return Err(format!(
+                    "compile commands map both {} and {} to module {name}",
+                    commands[indices[0]].file.display(),
+                    commands[indices[1]].file.display()
+                ));
+            }
+            return Ok(names);
+        }
+    }
 }
 
 const WORKER_STACK_BYTES: usize = 64 << 20;

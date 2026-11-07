@@ -1,0 +1,38 @@
+[
+  {
+    "file": "api.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "api.c",
+      "-o",
+      "api.o"
+    ],
+    "directory": "."
+  },
+  {
+    "file": "malloc/free.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "malloc/free.c",
+      "-o",
+      "malloc_free.o"
+    ],
+    "directory": "."
+  },
+  {
+    "file": "malloc/ng/free.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "malloc/ng/free.c",
+      "-o",
+      "malloc_ng_free.o"
+    ],
+    "directory": "."
+  }
+]

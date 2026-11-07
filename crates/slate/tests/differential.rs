@@ -440,6 +440,21 @@ fn c_sources_in(dir: &Path) -> Vec<PathBuf> {
     sources
 }
 
+fn c_sources_under(dir: &Path) -> Vec<PathBuf> {
+    let mut sources = c_sources_in(dir);
+    let mut subdirs: Vec<PathBuf> = std::fs::read_dir(dir)
+        .into_iter()
+        .flatten()
+        .filter_map(|entry| entry.ok().map(|entry| entry.path()))
+        .filter(|path| path.is_dir())
+        .collect();
+    subdirs.sort();
+    for subdir in subdirs {
+        sources.extend(c_sources_under(&subdir));
+    }
+    sources
+}
+
 fn library_projects(bucket: &str) -> Vec<(String, PathBuf)> {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests")
@@ -461,7 +476,7 @@ fn library_projects(bucket: &str) -> Vec<(String, PathBuf)> {
 
 fn run_library_project(work: &Path, name: &str, project: &Path) -> Result<(), String> {
     let src = project.join("src");
-    let sources = c_sources_in(&src);
+    let sources = c_sources_under(&src);
     let options = support::fixture_dg_options(&sources[0]);
     let crate_dir = work.join(name);
     translate_fixture_project(
