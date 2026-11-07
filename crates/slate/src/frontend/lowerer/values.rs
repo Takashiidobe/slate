@@ -640,6 +640,32 @@ impl FunctionLowerer<'_, '_> {
                     })),
                 }))
             }
+            ValueKind::VaArg { list, .. }
+                if self.tables.target.family == TargetFamily::X86
+                    && self.tables.is_long_double(&value.ty) =>
+            {
+                self.dependencies.long_double = true;
+                self.dependencies.i386_va = true;
+                Expr::Unsafe(Box::new(rust::Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(Expr::Call {
+                        func: Box::new(Expr::GenericPath {
+                            path: rust::Path::new(
+                                ["__slate_i386_va", "arg"].map(rust::Ident::from),
+                            ),
+                            type_args: vec![
+                                rust::Type::Custom("_".into()),
+                                self.lower_type(&value.ty)?,
+                            ],
+                        }),
+                        args: vec![Expr::AddrOf {
+                            mutable: true,
+                            expr: Box::new(self.lower_place(list)?),
+                        }],
+                        binding: CallBinding::Generated,
+                    })),
+                }))
+            }
             ValueKind::VaArg { list, .. } if self.tables.is_long_double(&value.ty) => {
                 self.dependencies.long_double = true;
                 Expr::Unsafe(Box::new(rust::Block {
