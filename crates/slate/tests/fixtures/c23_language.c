@@ -218,6 +218,26 @@ int main(void) {
 // CHECK-NEXT: #[deprecated(note = "C23 warning directive probe")]
 // CHECK-NEXT: const __SLATE_WARNING_0: () = {};
 // CHECK-NEXT: const _: () = __SLATE_WARNING_0;
+// CHECK-NEXT: macro_rules! C23_TYPE_KIND {
+// CHECK-NEXT:     () => {
+// CHECK-NEXT:         3
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! C23_TYPE_KIND__2 {
+// CHECK-NEXT:     () => {
+// CHECK-NEXT:         2
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! C23_TYPE_KIND__3 {
+// CHECK-NEXT:     () => {
+// CHECK-NEXT:         1
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! C23_TYPE_KIND__4 {
+// CHECK-NEXT:     () => {
+// CHECK-NEXT:         4
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
 // CHECK-NEXT: static mut c23_embedded: [u8; 3] = [67, 50, 51];
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: struct __SlateAlign32<T>(T);
@@ -324,10 +344,10 @@ int main(void) {
 // CHECK-NEXT:         .wrapping_add(static_compound_value as u64)
 // CHECK-NEXT:         .wrapping_add(7)
 // CHECK-NEXT:         .wrapping_add(24u64)
-// CHECK-NEXT:         .wrapping_add(1)
-// CHECK-NEXT:         .wrapping_add(2)
-// CHECK-NEXT:         .wrapping_add(3)
-// CHECK-NEXT:         .wrapping_add(4) as i32;
+// CHECK-NEXT:         .wrapping_add(C23_TYPE_KIND__3!() as u64)
+// CHECK-NEXT:         .wrapping_add(C23_TYPE_KIND__2!() as u64)
+// CHECK-NEXT:         .wrapping_add(C23_TYPE_KIND!() as u64)
+// CHECK-NEXT:         .wrapping_add(C23_TYPE_KIND__4!() as u64) as i32;
 // CHECK-NEXT:     let attribute_total: i32 = c23_nodiscard_value();
 // CHECK-NEXT:     let preprocessor_total: i32 = 23 + 29 + 1 + 1 + 0 + 0 + 0 + 0
 // CHECK-NEXT:         + ((unsafe { c23_embedded[0] }) as i32) + ((unsafe { c23_embedded[1] }) as i32)

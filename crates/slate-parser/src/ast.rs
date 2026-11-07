@@ -924,6 +924,7 @@ pub struct MacroDefinition {
     pub variadic: bool,
     pub replacement: String,
     pub provenance: Provenance,
+    pub comments: Vec<Loc>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

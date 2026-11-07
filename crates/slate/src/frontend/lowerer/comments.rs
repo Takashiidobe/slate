@@ -1,5 +1,5 @@
 use super::*;
-use slate_parser::ast::{CommentAttach, FileId, NodeId};
+use slate_parser::ast::{CommentAttach, FileId, Loc, NodeId};
 
 pub(super) fn comment(source: &ir::Comment) -> rust::Comment {
     lowered(source, false)
@@ -51,6 +51,25 @@ impl FunctionLowerer<'_, '_> {
             .collect()
     }
 
+    pub(super) fn claim_definition_comments(&mut self, owned: &[Loc]) -> Vec<rust::Comment> {
+        let promote = self.tables.promote_docs;
+        let mut claimed = Vec::new();
+        for (index, detached) in self.tables.comments.detached.iter().enumerate() {
+            if owned
+                .iter()
+                .any(|loc| detached.comment.expansion.contains(*loc))
+            {
+                self.dependencies.emitted_detached.insert(index);
+                claimed.push(rust::Comment {
+                    attach: rust::CommentAttach::Leading,
+                    ..lowered(&detached.comment.value, promote)
+                });
+            }
+        }
+        claimed.retain(|comment| !comment.lines.is_empty());
+        claimed
+    }
+
     pub(super) fn claim_inner_comments(&self, owner: NodeId) -> Vec<rust::Comment> {
         self.tables
             .comments
@@ -72,6 +91,7 @@ pub(super) fn module_comments(
     module: &ir::Module,
     tables: &Tables<'_>,
     emitted: &HashSet<NodeId>,
+    emitted_detached: &HashSet<usize>,
     items: Vec<Item>,
 ) -> Vec<Item> {
     let nodes: Vec<Option<NodeId>> = items
@@ -163,7 +183,10 @@ pub(super) fn module_comments(
     }
     let mut prologue = Vec::new();
     let mut placed = BTreeMap::<usize, Vec<rust::Comment>>::new();
-    for detached in &module.comments.detached {
+    for (index, detached) in module.comments.detached.iter().enumerate() {
+        if emitted_detached.contains(&index) {
+            continue;
+        }
         let loc = detached.comment.expansion;
         let lowered = comment(&detached.comment.value);
         if first_offsets.get(&loc.file) == Some(&loc.offset)

@@ -26,9 +26,9 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let value: i32 = 7;
 // CHECK-NEXT:     let mut array: [i32; 2] = [5, 6];
-// CHECK-NEXT:     let first: i32 = int_score(value);
-// CHECK-NEXT:     let second: i32 = long_score(8i64);
-// CHECK-NEXT:     let third: i32 = pointer_score(array.as_mut_ptr() as *const i32);
+// CHECK-NEXT:     let first: i32 = SCORE__2!(value);
+// CHECK-NEXT:     let second: i32 = SCORE!(8i64);
+// CHECK-NEXT:     let third: i32 = SCORE__3!(array.as_mut_ptr() as * const i32);
 // CHECK-NEXT:     println!("{} {} {}", first, second, third);
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

@@ -140,8 +140,7 @@ pub fn translate_directives_with_args(
     path: &Path,
     extra_args: &[String],
 ) -> Result<String, DirectiveError> {
-    let program = translate_directives_program_with_args(path, extra_args)?;
-    format_program(&program)
+    format_program(translate_directives_program_with_args(path, extra_args)?)
 }
 
 fn translate_directives_program_with_args(
@@ -254,7 +253,7 @@ pub fn translate_targets_with_args(
             })
         })
         .collect::<Result<_, DirectiveError>>()?;
-    format_program(&merge_target_variants(&variants))
+    format_program(merge_target_variants(&variants))
 }
 
 pub fn translate_with_diagnostics(
@@ -323,8 +322,8 @@ pub fn translate_with_diagnostics(
     }
     let result = match failure {
         Some(error) => Err(error),
-        None if targets.is_empty() => format_program(&variants[0].program),
-        None => format_program(&merge_target_variants(&variants)),
+        None if targets.is_empty() => format_program(variants.swap_remove(0).program),
+        None => format_program(merge_target_variants(&variants)),
     };
     if let Err(error) = &result
         && !diagnostics
@@ -487,7 +486,8 @@ pub fn should_auto_expand(source: &str) -> bool {
     })
 }
 
-fn format_program(program: &Program) -> Result<String, DirectiveError> {
+fn format_program(mut program: Program) -> Result<String, DirectiveError> {
+    backend::assign_template_names(std::iter::once(&mut program));
     backend::pretty_rust(&program.emit()).map_err(|message| DirectiveError::Format { message })
 }
 

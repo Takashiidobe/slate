@@ -61,7 +61,7 @@ int main(void) {
 // CHECK-NEXT:         result -= 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     // a small result is already final
-// CHECK-NEXT:     while false {}
+// CHECK-NEXT:     CHECK!();
 // CHECK-NEXT:     bump();
 // CHECK-NEXT:     result
 // CHECK: {{^}}}

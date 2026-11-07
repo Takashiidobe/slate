@@ -344,8 +344,7 @@ impl PreprocessedUnit {
                 path: path.clone(),
                 source: Box::new(error),
             })?;
-        let (module, files, diagnostics) =
-            lower_parsed(&path, &parser, parsed, &mut Vec::new(), true)?;
+        let (module, files, diagnostics) = lower_parsed(&path, &parser, parsed, &mut Vec::new())?;
         reject_directive_errors(&path, &diagnostics)?;
         Ok((module, files))
     }
@@ -384,7 +383,7 @@ fn parse_module_from_args(
             source: Box::new(error),
         }
     })?;
-    lower_parsed(path, &parser, parsed, diagnostics, false)
+    lower_parsed(path, &parser, parsed, diagnostics)
 }
 
 fn lower_parsed(
@@ -392,14 +391,10 @@ fn lower_parsed(
     parser: &Parser,
     (unit, files): (TranslationUnit, Files),
     diagnostics: &mut Vec<serde_json::Value>,
-    macro_structure: bool,
 ) -> Result<(Module, Files, Vec<DirectiveDiagnostic>), Error> {
-    let mut sema = Sema::new(&unit).with_macro_structure(true);
-    sema = sema.with_macro_keep(if macro_structure {
-        macro_keep::kept_expansions
-    } else {
-        macro_keep::kept_constants
-    });
+    let mut sema = Sema::new(&unit)
+        .with_macro_structure(true)
+        .with_macro_keep(macro_keep::kept_expansions);
     let warnings = sema.analyze(&files).map_err(|error| {
         crate::diagnostics::collect(&error, diagnostics);
         Error::Analyze {
@@ -423,9 +418,7 @@ fn lower_parsed(
     for warning in warnings {
         crate::diagnostics::collect(&warning, diagnostics);
     }
-    if macro_structure {
-        macro_keep::pass_caller_locals(&mut module);
-    }
+    macro_keep::pass_caller_locals(&mut module);
     Ok((module, files, parser.directive_diagnostics().to_vec()))
 }
 

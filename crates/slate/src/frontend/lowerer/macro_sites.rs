@@ -285,19 +285,24 @@ impl FunctionLowerer<'_, '_> {
         let mut printed = format!("{params:?}{}", if ends_in_return { "return" } else { "" });
         printed.extend(template.iter().map(codegen::stmt_to_string));
         let name = rust::macro_template_name(&definition.name, &printed);
-        self.dependencies
-            .macro_templates
-            .entry(name.clone())
-            .or_insert_with(|| Item::MacroRules {
-                name: name.clone(),
-                params,
-                body: template,
-                value,
-                returns,
-            });
+        let definition_name = definition.name.to_string();
+        if !self.dependencies.macro_templates.contains_key(&name) {
+            let comments = self.claim_definition_comments(&definition.comments.clone());
+            self.dependencies.macro_templates.insert(
+                name.clone(),
+                Item::MacroRules {
+                    comments,
+                    name: name.clone(),
+                    params,
+                    body: template,
+                    value,
+                    returns,
+                },
+            );
+        }
         self.dependencies.macro_expansions_seen.insert(expansion);
         self.dependencies.macro_outcomes.push(MacroOutcome {
-            name: definition.name.to_string(),
+            name: definition_name,
             inline: None,
         });
         Ok(Expr::Macro { name, args })

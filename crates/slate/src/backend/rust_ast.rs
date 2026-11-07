@@ -101,6 +101,7 @@ pub enum Item {
         name: Ident,
     },
     MacroRules {
+        comments: Vec<Comment>,
         name: String,
         params: Vec<MacroParam>,
         body: Vec<Stmt>,

@@ -107,6 +107,16 @@ int main(void) {
 // CHECK-NEXT: #![feature(portable_simd)]
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
+// CHECK-NEXT: macro_rules! PRINT {
+// CHECK-NEXT:     ($label:expr, $v:expr, $n:expr) => {
+// CHECK-NEXT:         loop { let mut lanes : __SlateAlign16 < [i64; 4] > = __SlateAlign16([0i64; 4]);
+// CHECK-NEXT:         let mut i : i32 = 0; while i < $n { lanes.0[i as usize] = $v [i as usize] as i64;
+// CHECK-NEXT:         let __v : i32 = i; i = __v + 1; } let _ = std::io::Write::flush(& mut
+// CHECK-NEXT:         std::io::stdout()); unsafe { slate_support::printf(c"%s %lld\n".as_ptr(), $label,
+// CHECK-NEXT:         fold(lanes.0.as_mut_ptr() as * const i64, $n)) }; unsafe {
+// CHECK-NEXT:         fflush(std::ptr::null_mut()) }; if true { break; } }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __builtin_cpu_init();
 // CHECK-NEXT:     fn __builtin_cpu_supports([[ARG_0:arg[0-9]+]]: *const i8) -> bool;
@@ -762,12 +772,9 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn fold(lanes: *const i64, count: i32) -> i64 {
-// CHECK-NEXT:     let __lanes_view = unsafe {
-// CHECK-NEXT:         std::slice::from_raw_parts(lanes as *const i64, count as usize)
-// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut h: i64 = 17;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         h = h * 1000003 + unsafe { __lanes_view[i as usize] };
+// CHECK-NEXT:         h = h * 1000003 + unsafe { *lanes.offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     h
 // CHECK-NEXT: }
@@ -814,29 +821,14 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         for i in 0i32..4i32 {
-// CHECK-NEXT:             lanes.0[i as usize] = unsafe {
-// CHECK-NEXT:                 __slate_intrinsic_ea593a52181dce5d(u)
-// CHECK-NEXT:             }[i as usize] as i64;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
-// CHECK-NEXT:                 c"popcount".as_ptr() as *mut i8,
-// CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 4i32),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
+// CHECK-NEXT:     PRINT!(
+// CHECK-NEXT:         c"popcount".as_ptr() as * mut i8, unsafe { __slate_intrinsic_ea593a52181dce5d(u)
+// CHECK-NEXT:         }, 4i32
+// CHECK-NEXT:     );
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: for i in 0i32..4i32 {
+// CHECK-NEXT:         let mut i: i32 = 0;
+// CHECK-NEXT:         '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: while i < 4 {
 // CHECK-NEXT:             lanes.0[i as usize] = unsafe {
 // CHECK-NEXT:                 __slate_intrinsic_e3673729f976a086(
 // CHECK-NEXT:                     a,
@@ -848,6 +840,7 @@ int main(void) {
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             }[i as usize] as i64;
+// CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
@@ -864,7 +857,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_2:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         '[[SLATE_BREAK_3:__slate_break_[0-9]+]]: for i in 0i32..4i32 {
+// CHECK-NEXT:         let mut i: i32 = 0;
+// CHECK-NEXT:         '[[SLATE_BREAK_3:__slate_break_[0-9]+]]: while i < 4 {
 // CHECK-NEXT:             lanes.0[i as usize] = unsafe {
 // CHECK-NEXT:                 __slate_intrinsic_909e0aaaa733917e(
 // CHECK-NEXT:                     u,
@@ -876,6 +870,7 @@ int main(void) {
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             }[i as usize] as i64;
+// CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
@@ -892,7 +887,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_4:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         '[[SLATE_BREAK_5:__slate_break_[0-9]+]]: for i in 0i32..4i32 {
+// CHECK-NEXT:         let mut i: i32 = 0;
+// CHECK-NEXT:         '[[SLATE_BREAK_5:__slate_break_[0-9]+]]: while i < 4 {
 // CHECK-NEXT:             lanes.0[i as usize] = unsafe {
 // CHECK-NEXT:                 __slate_intrinsic_37cf22be76d4abf7(
 // CHECK-NEXT:                     a,
@@ -904,6 +900,7 @@ int main(void) {
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             }[i as usize] as i64;
+// CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
@@ -924,7 +921,8 @@ int main(void) {
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     '[[SLATE_BREAK_6:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 16]> = __SlateAlign16([0i64; 16]);
-// CHECK-NEXT:         '[[SLATE_BREAK_7:__slate_break_[0-9]+]]: for i in 0i32..16i32 {
+// CHECK-NEXT:         let mut i: i32 = 0;
+// CHECK-NEXT:         '[[SLATE_BREAK_7:__slate_break_[0-9]+]]: while i < 16 {
 // CHECK-NEXT:             lanes.0[i as usize] = unsafe {
 // CHECK-NEXT:                 __slate_intrinsic_d5c5fa99040dca20(
 // CHECK-NEXT:                     bytes,
@@ -937,6 +935,7 @@ int main(void) {
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             }[i as usize] as i64;
+// CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {

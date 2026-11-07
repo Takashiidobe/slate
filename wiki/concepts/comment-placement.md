@@ -14,6 +14,7 @@
   - [Rendering status](#rendering-status)
   - [Crate settings](#crate-settings)
 - [Declarations and definitions](#declarations-and-definitions)
+- [Macro definitions](#macro-definitions)
 - [Item order](#item-order)
 <!-- /toc -->
 
@@ -151,6 +152,19 @@ record replaces the leading comments only when it has its own), `Forward` (a
 `struct S;` or `typedef struct S S;` parks its comments under the tag name),
 and `Record` (the tag's definition takes them as a fallback). Unused forward
 comments become detached at their position.
+
+## Macro definitions
+
+A `#define` owns the comment run directly above it (own line, no blank line)
+and the comments on its directive line. The preprocessor records their
+locations on `MacroDefinition.comments`; the parser still emits them as
+detached file-scope comments. When an expansion lifts to a `macro_rules!`,
+`claim_definition_comments` takes the matching detached comments, makes them
+leading (a trailing comment moves above, like a `#define`→`const`) and stores
+them on `Item::MacroRules`, which carries them through cfg merging and
+`__slate_macros` sharing. A macro that stays inline leaves its comments
+detached, so they are placed by position. Comments at an invocation site are
+statement comments and stay there. `#define`s in system headers own none.
 
 ## Item order
 

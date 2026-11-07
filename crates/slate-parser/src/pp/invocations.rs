@@ -173,6 +173,7 @@ impl InvocationRecorder {
             variadic: recorded.definition.variadic,
             replacement: tokens_source(recorded.definition.replacement.values()),
             provenance: recorded.provenance,
+            comments: recorded.definition.comments.clone(),
         });
         self.definitions
             .insert(key, (id, recorded.definition.clone()));

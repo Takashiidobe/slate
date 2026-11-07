@@ -37,6 +37,13 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
+// CHECK-NEXT: macro_rules! THROW {
+// CHECK-NEXT:     ($v:expr) => {
+// CHECK-NEXT:         let __v : i32 = unsafe { jb_top }; let [[V_0:__v[0-9]+]] : i32 = __v - 1; unsafe { jb_top =
+// CHECK-NEXT:         [[V_0]]; } unsafe { longjmp((* unsafe { jb_stack } .offset([[V_0]] as isize))
+// CHECK-NEXT:         .as_mut_ptr() as * mut __jmp_buf_tag, $v) };
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn _setjmp([[ARG_0:arg[0-9]+]]: *mut __jmp_buf_tag) -> i32;
 // CHECK-NEXT:     fn longjmp([[ARG_0]]: *mut __jmp_buf_tag, [[ARG_1:arg[0-9]+]]: i32);
@@ -59,17 +66,7 @@ int main(void) {
 // CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: fn inner(fail: i32) {
 // CHECK-NEXT:     if fail != 0 {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = (unsafe { jb_top }) - 1;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             jb_top = [[V_0]];
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             longjmp(
-// CHECK-NEXT:                 (*unsafe { jb_stack }.offset([[V_0]] as isize)).as_mut_ptr()
-// CHECK-NEXT:                     as *mut __jmp_buf_tag,
-// CHECK-NEXT:                 42i32,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
+// CHECK-NEXT:         THROW!(42i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn run_case(id: i32, fail: i32) {

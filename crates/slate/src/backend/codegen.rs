@@ -283,12 +283,16 @@ impl<W: Write> Codegen<W> {
                 self.out.write_str(");\n")?;
             }
             Item::MacroRules {
+                comments,
                 name,
                 params,
                 body,
                 value: is_value,
                 returns,
             } => {
+                for comment in comments {
+                    self.comment(comment, 0)?;
+                }
                 writeln!(self.out, "macro_rules! {name} {{")?;
                 self.macro_params = params.iter().map(|param| param.name.to_string()).collect();
                 let matcher = params

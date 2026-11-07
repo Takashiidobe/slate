@@ -1062,7 +1062,7 @@ impl Preprocessor<'_> {
                     output.push(left);
                     output.extend(right_tokens);
                 } else {
-                    output.extend(self.paste(left, right_tokens)?);
+                    output.extend(self.paste(left, right_tokens, stamp)?);
                 }
                 i += 2;
                 continue;
@@ -1115,7 +1115,7 @@ impl Preprocessor<'_> {
                 && let Some(right) = tokens.next()
                 && let Some(left) = output.pop()
             {
-                output.extend(self.paste(left, vec![stamp.token(right)])?);
+                output.extend(self.paste(left, vec![stamp.token(right)], stamp)?);
                 continue;
             }
             output.push(stamp.token(token));
@@ -1127,6 +1127,7 @@ impl Preprocessor<'_> {
         &mut self,
         left: PPToken,
         right_tokens: Vec<PPToken>,
+        stamp: &Stamp,
     ) -> Result<Vec<PPToken>, PPFailure> {
         let Some(right) = right_tokens.first() else {
             return Ok(vec![left]);
@@ -1161,7 +1162,7 @@ impl Preprocessor<'_> {
             left.token.expansion.through(right.token.expansion),
         )
         .with_leading_space(left.token.leading_space)
-        .with_macro_nesting(left.token.macro_nesting.clone());
+        .with_macro_nesting(stamp.nesting.clone());
         joined.digraph = pasted.digraph;
         let trace = self.trace_merged([&left, right]);
         Ok(std::iter::once(PPToken::from(joined).with_trace(trace))

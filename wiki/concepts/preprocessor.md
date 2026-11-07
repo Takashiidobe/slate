@@ -203,8 +203,13 @@ in user code, so Slate can fold an expansion back into a macro call. It reaches
 `PreprocessTrace.expansions`, which only `translate-project`'s planner enables
 and which has no argument ranges.
 
-- `MacroDefinition`: name, parameters, `variadic`, replacement text and
-  provenance, one per `#define` that was invoked.
+- `MacroDefinition`: name, parameters, `variadic`, replacement text,
+  provenance and `comments`, one per `#define` that was invoked. `comments`
+  holds the locations of the comment run directly above the `#define` (own
+  line, no blank line between) and of the comments on its directive line. It
+  is empty for a `#define` in a system header. Reachability keeps those
+  comment declarations even in a header, and Slate places them on the macro's
+  `macro_rules!` ([comment placement](comment-placement.md#macro-definitions)).
 - `MacroExpansion`: `definition`, `parent`, `empty` (the replacement list
   substituted to no tokens) and `spelled`. `parent` is the expansion whose body
   holds the call, or failing that the one whose argument is being prescanned.
@@ -230,7 +235,10 @@ Nodes join the table by label. `Span.macro_nesting` holds one link per expansion
 containing the token: the `MacroExpansionId` and whether the token is its body or
 which argument, with `enclosing` holding the labels the token already had. Body
 tokens start from the call name's label, so tokens from an unrecorded macro stay
-in the enclosing body. `Span::cover` keeps an expansion only when every covered
+in the enclosing body. A `##` result is a new token labeled like the pasting
+macro's body, not like its operands, so `x0` from `CAT(N, 0)` with
+`#define CAT(N, I) N##I` is never an occurrence of an outer macro's `N`.
+`Span::cover` keeps an expansion only when every covered
 token is in it, and reports body when they disagree on the argument, so a node
 mixing two sibling calls (`M(1) + N(2)`) belongs to neither, and neither does
 `M(1);` when `;` is written after the call. Two calls in one body get separate

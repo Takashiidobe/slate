@@ -37,6 +37,16 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
+// CHECK-NEXT: macro_rules! likely {
+// CHECK-NEXT:     ($x:expr) => {
+// CHECK-NEXT:         (($x) != 0) as i64
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! unlikely {
+// CHECK-NEXT:     ($x:expr) => {
+// CHECK-NEXT:         ! (!$x) as i64
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __builtin_prefetch([[ARG_0:arg[0-9]+]]: *const (), ...);
 // CHECK-NEXT:     fn __builtin_expect([[ARG_0]]: i64, [[ARG_1:arg[0-9]+]]: i64) -> i64;
@@ -59,13 +69,13 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     for i in 0..words.len() as i32 {
 // CHECK-NEXT:         let word: u64 = unsafe { words[i as usize] };
-// CHECK-NEXT:         if word == 0 {
+// CHECK-NEXT:         if unlikely!(word == 0) != 0 {
 // CHECK-NEXT:             continue;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         total
 // CHECK-NEXT:             += ((word.count_ones() as i32) * 100 + (word.trailing_zeros() as i32))
 // CHECK-NEXT:                 as i64;
-// CHECK-NEXT:         if word & 1 != 0 {
+// CHECK-NEXT:         if likely!(word & 1) != 0 {
 // CHECK-NEXT:             total += ((word >> 32i32).count_ones() as i32) as i64;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         total

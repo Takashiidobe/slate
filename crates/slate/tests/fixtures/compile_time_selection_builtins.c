@@ -31,8 +31,8 @@ int main(void) {
 // CHECK-NEXT:     let chosen_false: i32 = b;
 // CHECK-NEXT:     let same_type: i32 = 1;
 // CHECK-NEXT:     let diff_type: i32 = 0;
-// CHECK-NEXT:     let i_name: *const i8 = c"int".as_ptr();
-// CHECK-NEXT:     let d_name: *const i8 = c"double".as_ptr();
+// CHECK-NEXT:     let i_name: *const i8 = TYPE_NAME!() as *const i8;
+// CHECK-NEXT:     let d_name: *const i8 = TYPE_NAME__2!() as *const i8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

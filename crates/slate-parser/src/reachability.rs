@@ -7,9 +7,11 @@ pub fn filter_translation_unit(
     tu: &TranslationUnit,
     root_file: FileId,
     forced_roots: &[FileId],
+    macros: &MacroInvocations,
 ) -> TranslationUnit {
     let mut reachability = Reachability::new(tu);
     reachability.mark_roots(root_file, forced_roots);
+    reachability.mark_macro_comments(macros);
     TranslationUnit {
         macro_type_arguments: tu.macro_type_arguments.clone(),
         dialect: tu.dialect.clone(),
@@ -141,6 +143,25 @@ impl<'a> Reachability<'a> {
         }));
         for id in roots {
             self.mark(id);
+        }
+    }
+
+    fn mark_macro_comments(&mut self, macros: &MacroInvocations) {
+        let owned: Vec<Loc> = macros
+            .definitions
+            .iter()
+            .flat_map(|definition| definition.comments.iter().copied())
+            .collect();
+        if owned.is_empty() {
+            return;
+        }
+        for (id, decl) in self.nodes.iter().enumerate() {
+            let DeclKind::Comment(group) = &decl.value else {
+                continue;
+            };
+            if owned.iter().any(|loc| group.comment.loc.contains(*loc)) {
+                self.reachable.insert(id);
+            }
         }
     }
 

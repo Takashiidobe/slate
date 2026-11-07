@@ -325,7 +325,7 @@ impl Parser {
         let unit = if self.all_declarations {
             unit
         } else {
-            filter_translation_unit(&unit, root_file, &self.forced_roots)
+            filter_translation_unit(&unit, root_file, &self.forced_roots, &macros)
         };
         let macro_type_arguments = super::macro_nodes::map_macro_nodes(&input, &unit, &mut macros);
         Ok(TranslationUnit {

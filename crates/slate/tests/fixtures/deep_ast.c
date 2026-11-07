@@ -17,8 +17,72 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
+// CHECK-NEXT: macro_rules! STEP_1 {
+// CHECK-NEXT:     ($value:expr) => {
+// CHECK-NEXT:         ($value) + 1
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! STEP_2__2 {
+// CHECK-NEXT:     ($value:expr) => {
+// CHECK-NEXT:         STEP_1!(($value) + 1)
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! STEP_2 {
+// CHECK-NEXT:     ($value:expr) => {
+// CHECK-NEXT:         STEP_1!(STEP_1!($value))
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! STEP_3__2 {
+// CHECK-NEXT:     ($value:expr) => {
+// CHECK-NEXT:         STEP_2!(STEP_2__2!($value))
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! STEP_3 {
+// CHECK-NEXT:     ($value:expr) => {
+// CHECK-NEXT:         STEP_2!(STEP_2!($value))
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! STEP_4__2 {
+// CHECK-NEXT:     ($value:expr) => {
+// CHECK-NEXT:         STEP_3!(STEP_3__2!($value))
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! STEP_4 {
+// CHECK-NEXT:     ($value:expr) => {
+// CHECK-NEXT:         STEP_3!(STEP_3!($value))
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! STEP_5 {
+// CHECK-NEXT:     ($value:expr) => {
+// CHECK-NEXT:         STEP_4!(STEP_4__2!($value))
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! STEP_5__2 {
+// CHECK-NEXT:     ($value:expr) => {
+// CHECK-NEXT:         STEP_4!(STEP_4!($value))
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! STEP_6 {
+// CHECK-NEXT:     ($value:expr) => {
+// CHECK-NEXT:         STEP_5__2!(STEP_5!($value))
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! STEP_7 {
+// CHECK-NEXT:     ($value:expr) => {
+// CHECK-NEXT:         STEP_6!(($value) + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+// CHECK-NEXT:         + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1)
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! STEP_8 {
+// CHECK-NEXT:     ($value:expr) => {
+// CHECK-NEXT:         STEP_7!(($value) + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+// CHECK-NEXT:         + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
+// CHECK-NEXT:         1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+// CHECK-NEXT:         + 1 + 1 + 1 + 1 + 1 + 1 + 1)
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", 128i32);
+// CHECK-NEXT:     println!("{}", STEP_8!(0i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

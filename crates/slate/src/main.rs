@@ -1039,7 +1039,7 @@ fn translate_slate_project(
         [] => None,
         _ => return Err(format!("multiple units define main: {}", roots.join(", "))),
     };
-    let translated = slate_worker_pool()?.install(|| {
+    let mut translated = slate_worker_pool()?.install(|| {
         merge::translate_units(
             &units,
             merge::imported_commons(&units),
@@ -1049,6 +1049,7 @@ fn translate_slate_project(
             false,
         )
     })?;
+    backend::assign_template_names(translated.programs.iter_mut().map(|(_, program)| program));
     write_project_crate(
         crate_dir,
         translated.programs,

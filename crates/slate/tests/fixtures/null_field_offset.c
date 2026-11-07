@@ -13,6 +13,26 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
+// CHECK-NEXT: macro_rules! OFFSET {
+// CHECK-NEXT:     () => {
+// CHECK-NEXT:         24
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! OFFSET__2 {
+// CHECK-NEXT:     () => {
+// CHECK-NEXT:         16
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! OFFSET__3 {
+// CHECK-NEXT:     () => {
+// CHECK-NEXT:         8
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! OFFSET__4 {
+// CHECK-NEXT:     () => {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Inner {
@@ -35,11 +55,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu %zu\n".as_ptr(),
-// CHECK-NEXT:             8u64,
-// CHECK-NEXT:             16u64,
+// CHECK-NEXT:             OFFSET__3!(),
+// CHECK-NEXT:             OFFSET__2!(),
 // CHECK-NEXT:             20u64,
-// CHECK-NEXT:             24u64,
-// CHECK-NEXT:             0u64,
+// CHECK-NEXT:             OFFSET!(),
+// CHECK-NEXT:             OFFSET__4!(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };

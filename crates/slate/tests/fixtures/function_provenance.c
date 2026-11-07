@@ -215,6 +215,29 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![no_main]
+// CHECK-NEXT: macro_rules! CHECK__2 {
+// CHECK-NEXT:     ($value:expr, $expected:expr, $code:expr) => {
+// CHECK-NEXT:         { loop { if ($value) != (($expected) as u64) { return $code; } if true { break; }
+// CHECK-NEXT:         } }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! CHECK__4 {
+// CHECK-NEXT:     ($value:expr, $expected:expr, $code:expr) => {
+// CHECK-NEXT:         { loop { if ($value) != (($expected) as * mut ()) { return $code; } if true {
+// CHECK-NEXT:         break; } } }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! CHECK__3 {
+// CHECK-NEXT:     ($value:expr, $expected:expr, $code:expr) => {
+// CHECK-NEXT:         { loop { if ($value) != (($expected) as i64) { return $code; } if true { break; }
+// CHECK-NEXT:         } }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! CHECK {
+// CHECK-NEXT:     ($value:expr, $expected:expr, $code:expr) => {
+// CHECK-NEXT:         { loop { if ($value) != $expected { return $code; } if true { break; } } }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
 // CHECK-NEXT: static mut project_state: i32 = unsafe { std::mem::zeroed() };
 // CHECK-NEXT: fn malloc(size: u64) -> *mut () {
 // CHECK-NEXT:     if size != 0 { 16i32 as *mut () } else { std::ptr::null_mut::<()>() }
@@ -483,589 +506,205 @@ int main(void) {
 // CHECK-NEXT:         strlen,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     ptr = malloc(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) });
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if ptr != (16i32 as *mut ()) {
-// CHECK-NEXT:             return 2;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if calloc(
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
-// CHECK-NEXT:         ) != (16i32 as *mut ())
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 3;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if realloc(ptr, unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) })
-// CHECK-NEXT:             != (16i32 as *mut ())
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 4;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
+// CHECK-NEXT:     CHECK!(ptr, 16i32 as * mut (), 2i32);
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         calloc(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) }, unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(count)) }), 16i32 as * mut (), 3i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         realloc(ptr, unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) }),
+// CHECK-NEXT:         16i32 as * mut (), 4i32
+// CHECK-NEXT:     );
 // CHECK-NEXT:     free(ptr);
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if (unsafe { project_state }) != 77 {
-// CHECK-NEXT:             return 5;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if memcpy(
-// CHECK-NEXT:             a.as_mut_ptr() as *mut (),
-// CHECK-NEXT:             b.as_mut_ptr() as *const (),
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
-// CHECK-NEXT:         ) != (a.as_mut_ptr() as *mut ())
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 6;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if memmove(
-// CHECK-NEXT:             a.as_mut_ptr() as *mut (),
-// CHECK-NEXT:             b.as_mut_ptr() as *const (),
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
-// CHECK-NEXT:         ) != (a.as_mut_ptr() as *mut ())
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 7;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if memset(
-// CHECK-NEXT:             a.as_mut_ptr() as *mut (),
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) },
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
-// CHECK-NEXT:         ) != (a.as_mut_ptr() as *mut ())
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 8;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if memchr(
-// CHECK-NEXT:             a.as_mut_ptr() as *const (),
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) },
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
-// CHECK-NEXT:         ) != (24i32 as *mut ())
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 9;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if strlen(a.as_mut_ptr() as *const i8) != 5 {
-// CHECK-NEXT:             return 10;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if (unsafe { strlen_call.unwrap()(a.as_mut_ptr() as *const i8) }) != 5 {
-// CHECK-NEXT:             return 10;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if strcpy(a.as_mut_ptr() as *mut i8, b.as_mut_ptr() as *const i8)
-// CHECK-NEXT:             != (a.as_mut_ptr() as *mut i8)
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 11;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if strcat(a.as_mut_ptr() as *mut i8, b.as_mut_ptr() as *const i8)
-// CHECK-NEXT:             != (a.as_mut_ptr() as *mut i8)
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 12;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if strncpy(
-// CHECK-NEXT:             a.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             b.as_mut_ptr() as *const i8,
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
-// CHECK-NEXT:         ) != (a.as_mut_ptr() as *mut i8)
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 13;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if strncat(
-// CHECK-NEXT:             a.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             b.as_mut_ptr() as *const i8,
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
-// CHECK-NEXT:         ) != (a.as_mut_ptr() as *mut i8)
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 14;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if strcmp(a.as_mut_ptr() as *const i8, b.as_mut_ptr() as *const i8) != 11 {
-// CHECK-NEXT:             return 15;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if strncmp(
-// CHECK-NEXT:             a.as_mut_ptr() as *const i8,
-// CHECK-NEXT:             b.as_mut_ptr() as *const i8,
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
-// CHECK-NEXT:         ) != 12
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 16;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if memcmp(
-// CHECK-NEXT:             a.as_mut_ptr() as *const (),
-// CHECK-NEXT:             b.as_mut_ptr() as *const (),
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
-// CHECK-NEXT:         ) != 13
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 17;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if strchr(
-// CHECK-NEXT:             a.as_mut_ptr() as *const i8,
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) },
-// CHECK-NEXT:         ) != (32i32 as *mut i8)
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 18;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if strrchr(
-// CHECK-NEXT:             a.as_mut_ptr() as *const i8,
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) },
-// CHECK-NEXT:         ) != (32i32 as *mut i8)
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 19;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if strstr(a.as_mut_ptr() as *const i8, b.as_mut_ptr() as *const i8)
-// CHECK-NEXT:             != (32i32 as *mut i8)
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 20;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if strpbrk(a.as_mut_ptr() as *const i8, b.as_mut_ptr() as *const i8)
-// CHECK-NEXT:             != (32i32 as *mut i8)
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 21;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if strspn(a.as_mut_ptr() as *const i8, b.as_mut_ptr() as *const i8) != 31 {
-// CHECK-NEXT:             return 22;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if strcspn(a.as_mut_ptr() as *const i8, b.as_mut_ptr() as *const i8) != 32 {
-// CHECK-NEXT:             return 23;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if atoi(a.as_mut_ptr() as *const i8) != 41 {
-// CHECK-NEXT:             return 24;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if atol(a.as_mut_ptr() as *const i8) != 42 {
-// CHECK-NEXT:             return 25;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if strtol(
-// CHECK-NEXT:             a.as_mut_ptr() as *const i8,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(end),
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) },
-// CHECK-NEXT:         ) != 43
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 26;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if strtoul(
-// CHECK-NEXT:             a.as_mut_ptr() as *const i8,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(end),
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) },
-// CHECK-NEXT:         ) != 44
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 27;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if strtod(a.as_mut_ptr() as *const i8, std::ptr::addr_of_mut!(end)) != 45.0f64 {
-// CHECK-NEXT:             return 28;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if printf(a.as_mut_ptr() as *const i8) != 51 {
-// CHECK-NEXT:             return 29;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if puts(a.as_mut_ptr() as *const i8) != 52 {
-// CHECK-NEXT:             return 30;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
+// CHECK-NEXT:     CHECK!(unsafe { project_state }, 77i32, 5i32);
+// CHECK-NEXT:     CHECK__4!(
+// CHECK-NEXT:         memcpy(a.as_mut_ptr() as * mut (), b.as_mut_ptr() as * const (), unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(count)) }), a.as_mut_ptr() as * mut
+// CHECK-NEXT:         i8, 6i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK__4!(
+// CHECK-NEXT:         memmove(a.as_mut_ptr() as * mut (), b.as_mut_ptr() as * const (), unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(count)) }), a.as_mut_ptr() as * mut
+// CHECK-NEXT:         i8, 7i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK__4!(
+// CHECK-NEXT:         memset(a.as_mut_ptr() as * mut (), unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(number)) }, unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(count)) }), a.as_mut_ptr() as * mut
+// CHECK-NEXT:         i8, 8i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         memchr(a.as_mut_ptr() as * const (), unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(number)) }, unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(count)) }), 24i32 as * mut (), 9i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK__2!(strlen(a.as_mut_ptr() as * const i8), 5i32, 10i32);
+// CHECK-NEXT:     CHECK__2!(
+// CHECK-NEXT:         unsafe { strlen_call.unwrap() (a.as_mut_ptr() as * const i8) }, 5i32, 10i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         strcpy(a.as_mut_ptr() as * mut i8, b.as_mut_ptr() as * const i8), a.as_mut_ptr()
+// CHECK-NEXT:         as * mut i8, 11i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         strcat(a.as_mut_ptr() as * mut i8, b.as_mut_ptr() as * const i8), a.as_mut_ptr()
+// CHECK-NEXT:         as * mut i8, 12i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         strncpy(a.as_mut_ptr() as * mut i8, b.as_mut_ptr() as * const i8, unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(count)) }), a.as_mut_ptr() as * mut
+// CHECK-NEXT:         i8, 13i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         strncat(a.as_mut_ptr() as * mut i8, b.as_mut_ptr() as * const i8, unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(count)) }), a.as_mut_ptr() as * mut
+// CHECK-NEXT:         i8, 14i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         strcmp(a.as_mut_ptr() as * const i8, b.as_mut_ptr() as * const i8), 11i32, 15i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         strncmp(a.as_mut_ptr() as * const i8, b.as_mut_ptr() as * const i8, unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(count)) }), 12i32, 16i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         memcmp(a.as_mut_ptr() as * const (), b.as_mut_ptr() as * const (), unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(count)) }), 13i32, 17i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         strchr(a.as_mut_ptr() as * const i8, unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(number)) }), 32i32 as * mut i8, 18i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         strrchr(a.as_mut_ptr() as * const i8, unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(number)) }), 32i32 as * mut i8, 19i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         strstr(a.as_mut_ptr() as * const i8, b.as_mut_ptr() as * const i8), 32i32 as *
+// CHECK-NEXT:         mut i8, 20i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         strpbrk(a.as_mut_ptr() as * const i8, b.as_mut_ptr() as * const i8), 32i32 as *
+// CHECK-NEXT:         mut i8, 21i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK__2!(
+// CHECK-NEXT:         strspn(a.as_mut_ptr() as * const i8, b.as_mut_ptr() as * const i8), 31i32, 22i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK__2!(
+// CHECK-NEXT:         strcspn(a.as_mut_ptr() as * const i8, b.as_mut_ptr() as * const i8), 32i32, 23i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(atoi(a.as_mut_ptr() as * const i8), 41i32, 24i32);
+// CHECK-NEXT:     CHECK__3!(atol(a.as_mut_ptr() as * const i8), 42i32, 25i32);
+// CHECK-NEXT:     CHECK__3!(
+// CHECK-NEXT:         strtol(a.as_mut_ptr() as * const i8, std::ptr::addr_of_mut!(end), unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(number)) }), 43i32, 26i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK__2!(
+// CHECK-NEXT:         strtoul(a.as_mut_ptr() as * const i8, std::ptr::addr_of_mut!(end), unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(number)) }), 44i32, 27i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         strtod(a.as_mut_ptr() as * const i8, std::ptr::addr_of_mut!(end)), 45.0f64, 28i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(printf(a.as_mut_ptr() as * const i8), 51i32, 29i32);
+// CHECK-NEXT:     CHECK!(puts(a.as_mut_ptr() as * const i8), 52i32, 30i32);
 // CHECK-NEXT:     let stream: *mut () = fopen(
 // CHECK-NEXT:         a.as_mut_ptr() as *const i8,
 // CHECK-NEXT:         b.as_mut_ptr() as *const i8,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if stream != (48i32 as *mut ()) {
-// CHECK-NEXT:             return 31;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if fputs(a.as_mut_ptr() as *const i8, stream) != 54 {
-// CHECK-NEXT:             return 32;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if fgets(
-// CHECK-NEXT:             a.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) },
-// CHECK-NEXT:             stream,
-// CHECK-NEXT:         ) != (40i32 as *mut i8)
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 33;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if fread(
-// CHECK-NEXT:             a.as_mut_ptr() as *mut (),
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
-// CHECK-NEXT:             stream,
-// CHECK-NEXT:         ) != 56
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 34;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if fwrite(
-// CHECK-NEXT:             a.as_mut_ptr() as *const (),
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
-// CHECK-NEXT:             stream,
-// CHECK-NEXT:         ) != 57
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 35;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if fclose(stream) != 58 {
-// CHECK-NEXT:             return 36;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if fflush(stream) != 59 {
-// CHECK-NEXT:             return 37;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if remove(a.as_mut_ptr() as *const i8) != 60 {
-// CHECK-NEXT:             return 38;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if toupper(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) }) != 61
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 39;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if tolower(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) }) != 62
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 40;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if sin(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 63.0f64 {
-// CHECK-NEXT:             return 41;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if cos(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 64.0f64 {
-// CHECK-NEXT:             return 42;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if tan(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 65.0f64 {
-// CHECK-NEXT:             return 43;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if log(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 66.0f64 {
-// CHECK-NEXT:             return 44;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if log10(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 67.0f64
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 45;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if log2(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 68.0f64
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 46;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if pow(
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) },
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) },
-// CHECK-NEXT:         ) != 69.0f64
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 47;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if sqrt(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 70.0f64
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 48;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if exp(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 71.0f64 {
-// CHECK-NEXT:             return 49;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if exp2(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 72.0f64
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 50;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if fmod(
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) },
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) },
-// CHECK-NEXT:         ) != 73.0f64
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 51;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if lround(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 74 {
-// CHECK-NEXT:             return 52;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if llround(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }) != 75 {
-// CHECK-NEXT:             return 53;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if pthread_create(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(thread),
-// CHECK-NEXT:             std::ptr::null::<()>(),
-// CHECK-NEXT:             Some(start),
-// CHECK-NEXT:             ptr,
-// CHECK-NEXT:         ) != 78
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 54;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if pthread_join(thread, std::ptr::addr_of_mut!(ptr)) != 79 {
-// CHECK-NEXT:             return 55;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
+// CHECK-NEXT:     CHECK!(stream, 48i32 as * mut (), 31i32);
+// CHECK-NEXT:     CHECK!(fputs(a.as_mut_ptr() as * const i8, stream), 54i32, 32i32);
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         fgets(a.as_mut_ptr() as * mut i8, unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(number)) }, stream), 40i32 as * mut
+// CHECK-NEXT:         i8, 33i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK__2!(
+// CHECK-NEXT:         fread(a.as_mut_ptr() as * mut (), unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(count)) }, unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(count)) }, stream), 56i32, 34i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK__2!(
+// CHECK-NEXT:         fwrite(a.as_mut_ptr() as * const (), unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(count)) }, unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(count)) }, stream), 57i32, 35i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(fclose(stream), 58i32, 36i32);
+// CHECK-NEXT:     CHECK!(fflush(stream), 59i32, 37i32);
+// CHECK-NEXT:     CHECK!(remove(a.as_mut_ptr() as * const i8), 60i32, 38i32);
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         toupper(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) }), 61i32,
+// CHECK-NEXT:         39i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         tolower(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) }), 62i32,
+// CHECK-NEXT:         40i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         sin(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }), 63.0f64, 41i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         cos(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }), 64.0f64, 42i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         tan(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }), 65.0f64, 43i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         log(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }), 66.0f64, 44i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         log10(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }), 67.0f64,
+// CHECK-NEXT:         45i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         log2(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }), 68.0f64,
+// CHECK-NEXT:         46i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         pow(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }, unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(real)) }), 69.0f64, 47i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         sqrt(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }), 70.0f64,
+// CHECK-NEXT:         48i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         exp(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }), 71.0f64, 49i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         exp2(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }), 72.0f64,
+// CHECK-NEXT:         50i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         fmod(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }, unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(real)) }), 73.0f64, 51i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK__3!(
+// CHECK-NEXT:         lround(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }), 74i32,
+// CHECK-NEXT:         52i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK__3!(
+// CHECK-NEXT:         llround(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) }), 75i32,
+// CHECK-NEXT:         53i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         pthread_create(std::ptr::addr_of_mut!(thread), std::ptr::null::< () > (),
+// CHECK-NEXT:         Some(start), ptr), 78i32, 54i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(pthread_join(thread, std::ptr::addr_of_mut!(ptr)), 79i32, 55i32);
 // CHECK-NEXT:     qsort(
 // CHECK-NEXT:         a.as_mut_ptr() as *mut (),
 // CHECK-NEXT:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
 // CHECK-NEXT:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
 // CHECK-NEXT:         Some(compare),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if (unsafe { project_state }) != 76 {
-// CHECK-NEXT:             return 56;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if bsearch(
-// CHECK-NEXT:             a.as_mut_ptr() as *const (),
-// CHECK-NEXT:             b.as_mut_ptr() as *const (),
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) },
-// CHECK-NEXT:             Some(compare),
-// CHECK-NEXT:         ) != (56i32 as *mut ())
-// CHECK-NEXT:         {
-// CHECK-NEXT:             return 57;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
+// CHECK-NEXT:     CHECK!(unsafe { project_state }, 76i32, 56i32);
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         bsearch(a.as_mut_ptr() as * const (), b.as_mut_ptr() as * const (), unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(count)) }, unsafe {
+// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(count)) }, Some(compare)), 56i32 as *
+// CHECK-NEXT:         mut (), 57i32
+// CHECK-NEXT:     );
 // CHECK-NEXT:     exit(0i32);
 // CHECK-NEXT:     if (unsafe { project_state }) == 80 { 1 } else { 58 }
 // CHECK-NEXT: }

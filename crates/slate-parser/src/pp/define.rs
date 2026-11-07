@@ -176,6 +176,7 @@ impl Preprocessor<'_> {
             variadic,
             replacement,
             builtin: false,
+            comments: std::mem::take(&mut self.define_comments),
         };
         if let Some((warning, message)) = self.redefinition_warning(&name, Some(&definition)) {
             self.warn(name_token.spelling, warning, message, true);

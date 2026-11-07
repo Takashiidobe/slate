@@ -147,6 +147,7 @@ struct Dependencies {
     address_taken: BTreeSet<String>,
     taken_functions: HashSet<BindingId>,
     emitted_comments: HashSet<slate_parser::ast::NodeId>,
+    emitted_detached: HashSet<usize>,
     macro_expansions_seen: HashSet<slate_parser::ast::MacroExpansionId>,
     macro_outcomes: Vec<rust::MacroOutcome>,
     macro_templates: BTreeMap<String, Item>,
@@ -1318,8 +1319,13 @@ impl<'m> ModuleLowerer<'m> {
         }
         items.splice(0..0, dependencies.macro_templates.into_values());
         items.insert(0, Item::CrateAttrs(features));
-        let items =
-            comments::module_comments(self.module, &tables, &dependencies.emitted_comments, items);
+        let items = comments::module_comments(
+            self.module,
+            &tables,
+            &dependencies.emitted_comments,
+            &dependencies.emitted_detached,
+            items,
+        );
         let mut macro_outcomes = dependencies.macro_outcomes;
         if tables.named_c_types {
             macro_outcomes.extend(macro_sites::unreached_expansions(

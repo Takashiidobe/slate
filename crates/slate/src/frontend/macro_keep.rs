@@ -8,6 +8,8 @@ use slate_parser::ir::{
 
 use crate::backend::rust_ast::is_valid_macro_template_base;
 
+const MAX_LIFTED_NESTING: usize = 64;
+
 #[derive(Default)]
 struct OpenExpansion {
     jump_targets: HashSet<BindingId>,
@@ -132,6 +134,9 @@ impl MacroStructureVisitor for Survey<'_> {
 
     fn enter_expansion(&mut self, expansion: MacroExpansionId) {
         self.seen.push(expansion);
+        if self.open.len() >= MAX_LIFTED_NESTING {
+            self.reject(expansion, "nesting_beyond_recursion_limit");
+        }
         self.open.push((expansion, OpenExpansion::default()));
     }
 

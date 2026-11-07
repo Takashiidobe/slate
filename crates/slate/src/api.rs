@@ -76,7 +76,9 @@ pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String,
             })
             .collect(),
     );
-    let source = backend::apply_with_target(program, &module.target).emit();
+    let mut program = backend::apply_with_target(program, &module.target);
+    backend::assign_template_names(std::iter::once(&mut program));
+    let source = program.emit();
     backend::pretty_rust(&source).map_err(|message| Error::Format { message })
 }
 

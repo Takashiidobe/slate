@@ -98,6 +98,136 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! PRINT__3 {
+// CHECK-NEXT:     ($label:expr, $v:expr, $n:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut lanes: __SlateAlign16<[i64; 2]> = __SlateAlign16([0i64; 2]);
+// CHECK-NEXT:             let mut i: i32 = 0;
+// CHECK-NEXT:             while i < $n {
+// CHECK-NEXT:                 lanes.0[i as usize] = $v[i as usize] as i64;
+// CHECK-NEXT:                 let __v: i32 = i;
+// CHECK-NEXT:                 i = __v + 1;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 slate_support::printf(
+// CHECK-NEXT:                     c"%s %lld\n".as_ptr(),
+// CHECK-NEXT:                     $label,
+// CHECK-NEXT:                     fold(lanes.0.as_mut_ptr() as *const i64, $n),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! PRINT__4 {
+// CHECK-NEXT:     ($label:expr, $v:expr, $n:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut lanes: __SlateAlign16<[i64; 8]> = __SlateAlign16([0i64; 8]);
+// CHECK-NEXT:             let mut i: i32 = 0;
+// CHECK-NEXT:             while i < $n {
+// CHECK-NEXT:                 lanes.0[i as usize] = $v[i as usize] as i64;
+// CHECK-NEXT:                 let __v: i32 = i;
+// CHECK-NEXT:                 i = __v + 1;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 slate_support::printf(
+// CHECK-NEXT:                     c"%s %lld\n".as_ptr(),
+// CHECK-NEXT:                     $label,
+// CHECK-NEXT:                     fold(lanes.0.as_mut_ptr() as *const i64, $n),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! PRINT__5 {
+// CHECK-NEXT:     ($label:expr, $v:expr, $n:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
+// CHECK-NEXT:             let mut i: i32 = 0;
+// CHECK-NEXT:             while i < $n {
+// CHECK-NEXT:                 lanes.0[i as usize] = $v[i as usize] as i64;
+// CHECK-NEXT:                 let __v: i32 = i;
+// CHECK-NEXT:                 i = __v + 1;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 slate_support::printf(
+// CHECK-NEXT:                     c"%s %lld\n".as_ptr(),
+// CHECK-NEXT:                     $label,
+// CHECK-NEXT:                     fold(lanes.0.as_mut_ptr() as *const i64, $n),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! PRINT__2 {
+// CHECK-NEXT:     ($label:expr, $v:expr, $n:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut lanes: __SlateAlign16<[i64; 16]> = __SlateAlign16([0i64; 16]);
+// CHECK-NEXT:             let mut i: i32 = 0;
+// CHECK-NEXT:             while i < $n {
+// CHECK-NEXT:                 lanes.0[i as usize] = $v[i as usize] as i64;
+// CHECK-NEXT:                 let __v: i32 = i;
+// CHECK-NEXT:                 i = __v + 1;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 slate_support::printf(
+// CHECK-NEXT:                     c"%s %lld\n".as_ptr(),
+// CHECK-NEXT:                     $label,
+// CHECK-NEXT:                     fold(lanes.0.as_mut_ptr() as *const i64, $n),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! PRINT {
+// CHECK-NEXT:     ($label:expr, $v:expr, $n:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
+// CHECK-NEXT:             let mut i: i32 = 0;
+// CHECK-NEXT:             while i < $n {
+// CHECK-NEXT:                 lanes.0[i as usize] = $v[i as usize] as i64;
+// CHECK-NEXT:                 let __v: i32 = i;
+// CHECK-NEXT:                 i = __v + 1;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 slate_support::printf(
+// CHECK-NEXT:                     c"%s %lld\n".as_ptr(),
+// CHECK-NEXT:                     $label,
+// CHECK-NEXT:                     fold(lanes.0.as_mut_ptr() as *const i64, $n),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             };
+// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __builtin_cpu_supports([[ARG_0:arg[0-9]+]]: *const i8) -> bool;
 // CHECK-NEXT: }
@@ -233,10 +363,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn fold(lanes: *const i64, count: i32) -> i64 {
-// CHECK-NEXT:     let __lanes_view = unsafe { std::slice::from_raw_parts(lanes as *const i64, count as usize) };
 // CHECK-NEXT:     let mut h: i64 = 17;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         h = h * 1000003 + unsafe { __lanes_view[i as usize] };
+// CHECK-NEXT:         h = h * 1000003 + unsafe { *lanes.offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     h
 // CHECK-NEXT: }
@@ -327,152 +456,16 @@ int main(void) {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: std::simd::Simd<f32, 4> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     let a: std::simd::Simd<i32, 4> = std::simd::Simd::from_array([1i32, -2i32, 3i32, -4i32]);
 // CHECK-NEXT:     let b: std::simd::Simd<i32, 4> = std::simd::Simd::from_array([100i32, 200i32, 300i32, 400i32]);
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 2]> = __SlateAlign16([0i64; 2]);
-// CHECK-NEXT:         for i in 0i32..2i32 {
-// CHECK-NEXT:             lanes.0[i as usize] = low_half(a)[i as usize] as i64;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
-// CHECK-NEXT:                 c"low".as_ptr() as *mut i8,
-// CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 2i32),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         for i in 0i32..4i32 {
-// CHECK-NEXT:             lanes.0[i as usize] = widen_undef(a)[i as usize] as i64;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
-// CHECK-NEXT:                 c"widen".as_ptr() as *mut i8,
-// CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 4i32),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         for i in 0i32..4i32 {
-// CHECK-NEXT:             lanes.0[i as usize] = interleave(a, b)[i as usize] as i64;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
-// CHECK-NEXT:                 c"interleave".as_ptr() as *mut i8,
-// CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 4i32),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 8]> = __SlateAlign16([0i64; 8]);
-// CHECK-NEXT:         for i in 0i32..8i32 {
-// CHECK-NEXT:             lanes.0[i as usize] = concat(a, b)[i as usize] as i64;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
-// CHECK-NEXT:                 c"concat".as_ptr() as *mut i8,
-// CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 8i32),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         for i in 0i32..4i32 {
-// CHECK-NEXT:             lanes.0[i as usize] = reverse(b)[i as usize] as i64;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
-// CHECK-NEXT:                 c"reverse".as_ptr() as *mut i8,
-// CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 4i32),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
+// CHECK-NEXT:     PRINT__3!(c"low".as_ptr() as *mut i8, low_half(a), 2i32);
+// CHECK-NEXT:     PRINT!(c"widen".as_ptr() as *mut i8, widen_undef(a), 4i32);
+// CHECK-NEXT:     PRINT!(c"interleave".as_ptr() as *mut i8, interleave(a, b), 4i32);
+// CHECK-NEXT:     PRINT__4!(c"concat".as_ptr() as *mut i8, concat(a, b), 8i32);
+// CHECK-NEXT:     PRINT!(c"reverse".as_ptr() as *mut i8, reverse(b), 4i32);
 // CHECK-NEXT:     let bits: std::simd::Simd<u64, 4> =
 // CHECK-NEXT:         std::simd::Simd::from_array([0u64, 1u64, 9223372036854775808u64, 18446744069414584320u64]);
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         for i in 0i32..4i32 {
-// CHECK-NEXT:             lanes.0[i as usize] = (!bits)[i as usize] as i64;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
-// CHECK-NEXT:                 c"not".as_ptr() as *mut i8,
-// CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 4i32),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         for i in 0i32..4i32 {
-// CHECK-NEXT:             lanes.0[i as usize] = (-a)[i as usize] as i64;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
-// CHECK-NEXT:                 c"neg".as_ptr() as *mut i8,
-// CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 4i32),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         for i in 0i32..4i32 {
-// CHECK-NEXT:             lanes.0[i as usize] = (!(-a))[i as usize] as i64;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
-// CHECK-NEXT:                 c"notneg".as_ptr() as *mut i8,
-// CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 4i32),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
+// CHECK-NEXT:     PRINT!(c"not".as_ptr() as *mut i8, !bits, 4i32);
+// CHECK-NEXT:     PRINT!(c"neg".as_ptr() as *mut i8, -a, 4i32);
+// CHECK-NEXT:     PRINT!(c"notneg".as_ptr() as *mut i8, !(-a), 4i32);
 // CHECK-NEXT:     let signed_bytes: std::simd::Simd<i8, 16> = std::simd::Simd::from_array([
 // CHECK-NEXT:         -128i8, -1i8, 0i8, 1i8, 127i8, 64i8, -64i8, 5i8, 6i8, 7i8, 8i8, 9i8, 10i8, 11i8, 12i8,
 // CHECK-NEXT:         -13i8,
@@ -480,47 +473,20 @@ int main(void) {
 // CHECK-NEXT:     let unsigned_bytes: std::simd::Simd<u8, 16> = unsafe {
 // CHECK-NEXT:         std::mem::transmute::<std::simd::Simd<i8, 16>, std::simd::Simd<u8, 16>>(signed_bytes)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 16]> = __SlateAlign16([0i64; 16]);
-// CHECK-NEXT:         for i in 0i32..16i32 {
-// CHECK-NEXT:             lanes.0[i as usize] =
-// CHECK-NEXT:                 std::simd::num::SimdInt::cast::<i16>(signed_bytes)[i as usize] as i64;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
-// CHECK-NEXT:                 c"sext".as_ptr() as *mut i8,
-// CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 16i32),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 16]> = __SlateAlign16([0i64; 16]);
-// CHECK-NEXT:         for i in 0i32..16i32 {
-// CHECK-NEXT:             lanes.0[i as usize] =
-// CHECK-NEXT:                 std::simd::num::SimdUint::cast::<u16>(unsigned_bytes)[i as usize] as i64;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
-// CHECK-NEXT:                 c"zext".as_ptr() as *mut i8,
-// CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 16i32),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
+// CHECK-NEXT:     PRINT__2!(
+// CHECK-NEXT:         c"sext".as_ptr() as *mut i8,
+// CHECK-NEXT:         std::simd::num::SimdInt::cast::<i16>(signed_bytes),
+// CHECK-NEXT:         16i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     PRINT__2!(
+// CHECK-NEXT:         c"zext".as_ptr() as *mut i8,
+// CHECK-NEXT:         std::simd::num::SimdUint::cast::<u16>(unsigned_bytes),
+// CHECK-NEXT:         16i32
+// CHECK-NEXT:     );
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: for i in 0i32..4i32 {
+// CHECK-NEXT:         let mut i: i32 = 0;
+// CHECK-NEXT:         '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: while i < 4 {
 // CHECK-NEXT:             lanes.0[i as usize] = std::simd::num::SimdInt::cast::<i16>(unsafe {
 // CHECK-NEXT:                 *{
 // CHECK-NEXT:                     [[SLATE_COMPOUND_1]] =
@@ -528,6 +494,7 @@ int main(void) {
 // CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             })[i as usize] as i64;
+// CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
@@ -565,24 +532,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         for i in 0i32..4i32 {
-// CHECK-NEXT:             lanes.0[i as usize] = back[i as usize] as i64;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
-// CHECK-NEXT:                 c"back".as_ptr() as *mut i8,
-// CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 4i32),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
+// CHECK-NEXT:     PRINT__5!(c"back".as_ptr() as *mut i8, back, 4i32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

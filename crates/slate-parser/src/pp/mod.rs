@@ -237,6 +237,7 @@ pub struct MacroDef {
     pub variadic: bool,
     pub replacement: Vec<Span<Token>>,
     pub builtin: bool,
+    pub comments: Vec<Loc>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -346,6 +347,7 @@ pub struct Preprocessor<'a> {
     dialect: &'a Dialect,
     trace: Option<Box<PreprocessTrace>>,
     invocations: invocations::InvocationRecorder,
+    define_comments: Vec<Loc>,
 }
 
 impl<'a> Preprocessor<'a> {
@@ -380,6 +382,7 @@ impl<'a> Preprocessor<'a> {
             hide_sets: HideSets::new(),
             trace: None,
             invocations: invocations::InvocationRecorder::default(),
+            define_comments: Vec::new(),
             build_time: build_time(),
             dialect,
         };
@@ -742,6 +745,7 @@ impl<'a> Preprocessor<'a> {
                 variadic: false,
                 replacement: Vec::new(),
                 builtin: true,
+                comments: Vec::new(),
             };
             self.macros.insert(
                 name.to_string(),
@@ -1392,6 +1396,13 @@ impl<'a> Preprocessor<'a> {
         while let Some(line) = file.source.next_line() {
             let line = match line {
                 Line::Directive(directive, comments) => {
+                    if directive.name == DirectiveName::Define
+                        && self.provenance(directive.loc).system_header.is_none()
+                    {
+                        self.define_comments = self.leading_comments(&nodes, directive.loc);
+                        self.define_comments
+                            .extend(comments.iter().map(|comment| comment.spelling));
+                    }
                     if !directive.name.is_conditional() {
                         self.push_comments(&mut nodes, comments, true);
                     }
@@ -1411,6 +1422,7 @@ impl<'a> Preprocessor<'a> {
                         directive,
                         &mut nodes,
                     )?;
+                    self.define_comments.clear();
                     guard = match guard {
                         GuardScan::Start if depth == 0 && file.conditionals.len() == 1 => {
                             guard_macro.map_or(GuardScan::Unguarded, GuardScan::Open)
@@ -1623,6 +1635,32 @@ impl<'a> Preprocessor<'a> {
             DirectiveName::Else => Ok(true),
             _ => self.evaluate_condition(directive, directive_spelling(directive.name)),
         }
+    }
+
+    fn leading_comments(&self, nodes: &[PPNode], directive: Loc) -> Vec<Loc> {
+        let source = self.source(directive.file);
+        let mut next = directive.offset;
+        let mut leading = Vec::new();
+        for node in nodes.iter().rev() {
+            let PPNodeKind::Comment { layout, .. } = &node.value else {
+                break;
+            };
+            let loc = node.spelling;
+            let end = loc.offset + loc.length;
+            let adjacent = loc.file == directive.file
+                && layout.placement == CommentPlacement::OwnLine
+                && source.get(end..next).is_some_and(|gap| {
+                    gap.chars().all(|c| c.is_whitespace() || c == '#')
+                        && gap.matches('\n').count() <= 1
+                });
+            if !adjacent {
+                break;
+            }
+            leading.push(loc);
+            next = loc.offset;
+        }
+        leading.reverse();
+        leading
     }
 
     fn push_comments(&self, nodes: &mut Vec<PPNode>, comments: Vec<Span<String>>, directive: bool) {

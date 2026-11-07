@@ -298,6 +298,21 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types)]
 // CHECK-NEXT: #![feature(thread_local)]
 // CHECK-NEXT: #![no_main]
+// CHECK-NEXT: macro_rules! C11_TYPE_KIND {
+// CHECK-NEXT:     () => {
+// CHECK-NEXT:         11
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! C11_TYPE_KIND__2 {
+// CHECK-NEXT:     () => {
+// CHECK-NEXT:         22
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! C11_TYPE_KIND__3 {
+// CHECK-NEXT:     () => {
+// CHECK-NEXT:         33
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn cimag([[ARG_0:arg[0-9]+]]: num_complex::Complex<f64>) -> f64;
 // CHECK-NEXT:     fn creal([[ARG_0]]: num_complex::Complex<f64>) -> f64;
@@ -704,7 +719,8 @@ int main(void) {
 // CHECK-NEXT:         + (((unsafe { utf8_text[1] }) as u8) as i32)
 // CHECK-NEXT:         + ((unsafe { utf16_text[0] }) as i32) + ((unsafe { utf32_text[0] }) as i32)
 // CHECK-NEXT:         + (utf16_character as i32) + (utf32_character as i32);
-// CHECK-NEXT:     let generic_total: i32 = 11 + 22 + 33;
+// CHECK-NEXT:     let generic_total: i32 = C11_TYPE_KIND!() + C11_TYPE_KIND__2!()
+// CHECK-NEXT:         + C11_TYPE_KIND__3!();
 // CHECK-NEXT:     let mut anonymous_total: i32 = 0;
 // CHECK-NEXT:     let mut evaluation_total: i32 = 0;
 // CHECK-NEXT:     let mut temporary_total: i32 = 0;
