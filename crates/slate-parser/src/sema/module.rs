@@ -2505,9 +2505,10 @@ impl Lowerer {
             StmtKind::Attribute(_) => Statement::Null,
             StmtKind::LocalLabelDecl(_) => return Ok(()),
             StmtKind::ComputedGoto(expr) => {
-                let value = self.expr(expr)?;
+                let mut value = self.expr(expr)?;
                 if !matches!(value.ty, Type::Pointer { .. }) {
-                    return Err(ResolveError::Internal("nonpointer computed goto"));
+                    let to = self.types.void_pointer();
+                    value = self.convert_recorded(expr, value, to, ConversionReason::Assign)?;
                 }
                 Statement::ComputedGoto(value.value)
             }

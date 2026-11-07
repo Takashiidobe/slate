@@ -1442,7 +1442,12 @@ impl Checker<'_> {
                 if let Ok(ty) = self.types.operand_type(expr)
                     && !self.types.ctypes.is_pointer(ty)
                 {
-                    self.reject(stmt, "nonpointer computed goto");
+                    if self.types.null_pointer_constant(expr) {
+                        let to = self.types.void_pointer();
+                        self.convert(expr, to, ConversionContext::Assign);
+                    } else {
+                        self.reject(stmt, "nonpointer computed goto");
+                    }
                 }
             }
             StmtKind::Expr(expr) => self.expression(expr),

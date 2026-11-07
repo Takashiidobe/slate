@@ -1357,6 +1357,11 @@ impl TypeResolver {
         self.ctypes.pointer(void)
     }
 
+    pub(super) fn void_pointer(&mut self) -> QualType {
+        let void = self.ctypes.qual(CTypeKind::Void);
+        self.ctypes.pointer(void)
+    }
+
     fn atomic_pointee(&mut self, pointer: &Expr) -> Result<QualType, ResolveError> {
         let pointer = self.operand_type(pointer)?;
         self.ctypes.pointee(pointer).ok_or(ResolveError::Rejected(
