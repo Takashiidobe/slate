@@ -178,7 +178,11 @@ similar rust.
 ### MSVC
 
 - [] [MinHook](https://github.com/TsudaKageyu/minhook)
-- [] [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/)
+- [x] [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/)
+  - Translates and links `plink`, `pscp` and `psftp` for
+    `x86_64-pc-windows-msvc`. The translated `testcrypt` passes all 90
+    `cryptsuite.py` tests, including the AES-NI, SHA-NI and CLMUL
+    implementations.
 - [] [ReactOS](https://github.com/reactos/reactos)
 
 ### In Progress
