@@ -79,8 +79,10 @@ pub fn shape(
                     name, underlying, ..
                 } => {
                     let pointer_integer = match name.as_str() {
-                        "size_t" | "uintptr_t" => Some("usize"),
-                        "ssize_t" | "__ssize_t" | "intptr_t" | "ptrdiff_t" => Some("isize"),
+                        "size_t" | "uintptr_t" | "SIZE_T" | "ULONG_PTR" | "UINT_PTR"
+                        | "DWORD_PTR" => Some("usize"),
+                        "ssize_t" | "__ssize_t" | "intptr_t" | "ptrdiff_t" | "SSIZE_T"
+                        | "LONG_PTR" | "INT_PTR" => Some("isize"),
                         _ => None,
                     };
                     if let Some(name) = pointer_integer
