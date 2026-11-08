@@ -160,6 +160,10 @@ impl FunctionLowerer<'_, '_> {
                             length: Some(length),
                         },
                     ) => match self.lower_type(element)? {
+                        rust::Type::Prim(Prim::Bool) => Some(Expr::ArrayRepeat {
+                            elem: Box::new(Expr::Value(rust::RustValue::Bool(false))),
+                            len: *length as usize,
+                        }),
                         ty @ (rust::Type::Prim(_) | rust::Type::Ptr { .. }) => {
                             Some(Expr::ArrayRepeat {
                                 elem: Box::new(Expr::Cast {
