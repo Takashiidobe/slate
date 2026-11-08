@@ -195,6 +195,9 @@ matters to an optimized clang callee across an extern boundary
 - Placement follows clang: a specifier or trailing attribute goes to the
   innermost function declarator (or a function typedef in the specifiers);
   one on a pointer or grouped declarator goes to the function type beneath.
+  One on a return-type pointer with no function beneath
+  (`const char *__stdcall f(int)`) goes to the function declarator that
+  pointer is the return type of.
 - Dropped as clang does: on variadic functions, the other three on x86-64,
   all four on other targets. On x86-64 an explicit `__stdcall`,
   `__fastcall` or `__thiscall` resolves to `cdecl` rather than nothing, so

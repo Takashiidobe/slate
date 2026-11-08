@@ -177,7 +177,11 @@ similar rust.
 
 ### MSVC
 
-- [] [MinHook](https://github.com/TsudaKageyu/minhook)
+- [x] [MinHook](https://github.com/TsudaKageyu/minhook)
+  - The translated static library hooks local functions and kernel32 APIs
+    with output identical to the native `minhook.lib` on
+    `x86_64-pc-windows-msvc` and `i686-pc-windows-msvc`
+    (`tools/corpus/msvc_library.py minhook`).
 - [x] [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/)
   - Translates and links `plink`, `pscp` and `psftp` for
     `x86_64-pc-windows-msvc`. The translated `testcrypt` passes all 90

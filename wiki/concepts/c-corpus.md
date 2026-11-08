@@ -9,6 +9,7 @@
   - [CMake libraries](#cmake-libraries)
   - [Translation-only projects](#translation-only-projects)
   - [Make libraries](#make-libraries)
+  - [MSVC libraries](#msvc-libraries)
 - [Missing dependencies](#missing-dependencies)
 - [Gotchas](#gotchas)
 <!-- /toc -->
@@ -275,6 +276,29 @@ product is a static library and a set of tools.
   (ignoring the `mapaddr=` header, which is address-dependent) and runs
   `mtest2`-`mtest5`. A dump with `mtest5`'s dupsort subdatabase does not
   round-trip natively either, so it is not compared.
+
+### MSVC libraries
+
+```bash
+python3 tools/corpus/msvc_library.py PROJECT [--arch x86_64|i686 ...]
+```
+
+`MsvcLibrary` recipes build a Windows library with msvc-wine's `cl.exe` and
+`lib.exe` (`MSVC_WINE_ROOT`) straight from the recipe's source globs, with no
+CMake. The same `cl.exe` arguments, plus `--target=<arch>-pc-windows-msvc`,
+go into a compile database for `translate-project --crate-type staticlib`,
+and the crate is built for that target with `+crt-static` to match `/MT`.
+Each driver under `tools/corpus/msvc/` is linked by `cl.exe` once against the
+native `.lib` and once against the translated one (plus the
+`native-static-libs` rustc prints), run under wine, and the stdout and exit
+code must match. Output lands in `target/corpus/<project>/msvc/<arch>/`.
+
+- minhook (2026-11-08): `src/*.c` and both hde decoders, x86_64 and i686.
+  `minhook_driver.c` hooks two local functions (one with a RIP-relative
+  prologue) and two kernel32 APIs, calls through the trampolines, uses the
+  queued enable/disable path, and checks every error status it can reach
+  (not initialized, already created, not executable, enabled/disabled,
+  module/function not found). 50 lines identical to native on both arches.
 
 ## Missing dependencies
 

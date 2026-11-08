@@ -2805,7 +2805,7 @@ impl TypeResolver {
                     });
                     core = inner;
                 }
-                let (core, mut q) = self.apply_pointers(core, q)?;
+                let (core, mut q, _) = self.apply_pointers(core, q)?;
                 for extent in extents {
                     if self.ctypes.is_void(q) {
                         return Err(ResolveError::Rejected("void array element"));
@@ -2848,7 +2848,7 @@ impl TypeResolver {
                     ParameterList::Empty => self.dialect.features().empty_parens_are_prototype,
                     ParameterList::Prototype { .. } | ParameterList::Void => true,
                 };
-                let (core, ret) = self.apply_pointers(inner, q)?;
+                let (core, ret, return_convention) = self.apply_pointers(inner, q)?;
                 let variadic = parameters.is_variadic();
                 let q = self.ctypes.qual(CTypeKind::Function {
                     ret,
@@ -2860,6 +2860,10 @@ impl TypeResolver {
                         false => self.default_convention(direct_name(core)),
                     },
                 });
+                let q = match return_convention {
+                    Some(convention) => self.ctypes.with_convention(q, convention).unwrap_or(q),
+                    None => q,
+                };
                 let q = match innermost {
                     Some(convention) if !has_function_declarator(core) => {
                         self.ctypes.with_convention(q, convention).unwrap_or(q)
@@ -2934,7 +2938,8 @@ impl TypeResolver {
         &mut self,
         mut core: &'d Declarator,
         mut q: QualType,
-    ) -> Result<(&'d Declarator, QualType), ResolveError> {
+    ) -> Result<(&'d Declarator, QualType, Option<CallConv>), ResolveError> {
+        let mut deferred = None;
         loop {
             let (inner, qualifiers, attributes, is_block) = match core {
                 Declarator::Pointer {
@@ -2949,7 +2954,12 @@ impl TypeResolver {
                 } => (inner, qualifiers, attributes, true),
                 _ => break,
             };
-            q = self.apply_convention(q, attributes);
+            if let Some(convention) = self.calling_convention(attributes) {
+                match self.ctypes.with_convention(q, convention) {
+                    Some(converted) => q = converted,
+                    None => deferred = Some(convention),
+                }
+            }
             let pointer = if is_block {
                 self.ctypes.block_pointer(q)
             } else {
@@ -2958,7 +2968,7 @@ impl TypeResolver {
             q = self.qualify(pointer, qualifiers)?;
             core = inner;
         }
-        Ok((core, q))
+        Ok((core, q, deferred))
     }
 
     fn qualify(
