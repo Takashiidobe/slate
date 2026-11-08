@@ -14,6 +14,7 @@ builtin_alloca
 builtin_generic_bit_counts
 c23_library
 c23_stdlib_memory_management
+conditional_global_initializers
 flag_fp_model_strict
 flag_msvc_fp_fast
 flag_msvc_fp_strict
