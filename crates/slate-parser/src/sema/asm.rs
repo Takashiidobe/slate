@@ -170,27 +170,40 @@ impl Lowerer {
             });
         }
         let gcc_arm = family == TargetFamily::Arm32 && self.types.flavor().is_gcc();
-        for piece in &mut lowered.pieces {
+        let mut pieces = Vec::with_capacity(lowered.pieces.len());
+        for mut piece in std::mem::take(&mut lowered.pieces) {
             if let AsmPiece::Operand {
                 index,
                 modifier,
                 view,
-            } = piece
+            } = &mut piece
             {
                 let (target, tied) = renumbered[*index];
                 *index = target;
                 *view = view.or(tied);
+                let operand = lowered.operands.get(target);
                 if gcc_arm
                     && modifier.is_none()
-                    && lowered
-                        .operands
-                        .get(target)
-                        .is_some_and(|operand| operand.width > Some(32) && vfp(operand))
+                    && operand.is_some_and(|operand| operand.width > Some(32) && vfp(operand))
                 {
                     *view = Some(AsmRegisterView::Bits(32));
                 }
+                if gcc_arm
+                    && modifier.is_none()
+                    && operand.is_some_and(|operand| {
+                        matches!(operand.selected, Some(AsmOperandClass::Symbol))
+                    })
+                {
+                    *modifier = Some('c');
+                    match pieces.last_mut() {
+                        Some(AsmPiece::Text(text)) => text.push('#'),
+                        _ => pieces.push(AsmPiece::Text("#".to_string())),
+                    }
+                }
             }
+            pieces.push(piece);
         }
+        lowered.pieces = pieces;
         lowered.clobbers = operands
             .clobbers
             .iter()
@@ -269,7 +282,7 @@ impl Lowerer {
             };
             for class in classes {
                 if let AsmOperandClass::Register(register) = class {
-                    *register = sized_class(*register, width);
+                    *register = sized_class(*register, width, self.context.target.family);
                 }
             }
         }
@@ -646,8 +659,15 @@ fn rank(
     }
 }
 
-fn sized_class(class: AsmRegisterClass, width: Option<u64>) -> AsmRegisterClass {
+fn sized_class(
+    class: AsmRegisterClass,
+    width: Option<u64>,
+    family: TargetFamily,
+) -> AsmRegisterClass {
     match (class, width) {
+        (AsmRegisterClass::Reg, Some(64)) if family == TargetFamily::Arm32 => {
+            AsmRegisterClass::RegPair
+        }
         (AsmRegisterClass::XmmReg, Some(256)) => AsmRegisterClass::YmmReg,
         (AsmRegisterClass::XmmReg, Some(512)) => AsmRegisterClass::ZmmReg,
         (AsmRegisterClass::DReg | AsmRegisterClass::DRegLow16, Some(32)) => AsmRegisterClass::SReg,
@@ -681,6 +701,7 @@ fn fits(register: AsmRegisterClass, width: Option<u64>, family: TargetFamily) ->
         AsmRegisterClass::VReg | AsmRegisterClass::VRegLow16 | AsmRegisterClass::VRegLow8 => {
             matches!(width, 8 | 16 | 32 | 64 | 128)
         }
+        AsmRegisterClass::RegPair => width == 64,
         AsmRegisterClass::SReg | AsmRegisterClass::SRegLow16 => width == 32,
         AsmRegisterClass::DReg | AsmRegisterClass::DRegLow16 | AsmRegisterClass::DRegLow8 => {
             width == 64

@@ -31,8 +31,8 @@ int main(void) {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "setffr\n\trdffr p2.b\n\tptrue p4.b\n\tcntp {0:x}, p4, p2.b\n\tcntp {1:x}, p4, p4.b",
-// CHECK-NEXT:             lateout(reg) [[T_0]], lateout(reg) [[T_1]], lateout("p2") _, lateout("p4") _,
-// CHECK-NEXT:             lateout("ffr") _, options(nomem, nostack, preserves_flags)
+// CHECK-NEXT:             lateout(reg) [[T_0]], lateout(reg) [[T_1]], out("p2") _, out("p4") _, out("ffr") _,
+// CHECK-NEXT:             options(nomem, nostack, preserves_flags)
 // CHECK-NEXT:         );
 // CHECK-NEXT:         active = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:         total = unsafe { std::mem::transmute::<u64, i64>([[T_1]] as u64) };

@@ -157,6 +157,21 @@ fn arm_clobbers(canonical: &'static str) -> Vec<&'static str> {
     }
 }
 
+fn arm_immediate(operand: &ir::AsmOperand) -> Result<i32> {
+    let ir::AsmOperandKind::In(value) = &operand.kind else {
+        return Err(unsupported_asm("arm immediate without a value"));
+    };
+    let number = match &value.node.value {
+        ValueKind::Constant(Number::Integer(number)) => number.to_string(),
+        ValueKind::Constant(Number::SignedInteger(number)) => number.to_string(),
+        _ => return Err(unsupported_asm("arm immediate is not an integer")),
+    };
+    number
+        .parse::<i128>()
+        .map(|number| number as i32)
+        .map_err(|_| unsupported_asm(format!("arm immediate {number}")))
+}
+
 fn memory_reference(
     asm: &ir::InlineAsm,
     family: TargetFamily,
@@ -207,6 +222,7 @@ enum Slot {
     Flags(usize, Option<usize>),
     Register(&'static str),
     PairLow(&'static str),
+    RegisterPair(&'static str, &'static str),
     Spill(SpillRegister),
     Zero,
 }
@@ -682,6 +698,18 @@ fn asm_template(
                             .push_str(&explicit_reference(asm, 64, canonical, *modifier, *view)?);
                         continue;
                     }
+                    Slot::RegisterPair(low, high) => {
+                        template.push_str(match (modifier, view) {
+                            (None | Some('Q'), None) => low,
+                            (Some('R' | 'H'), None) => high,
+                            _ => {
+                                return Err(unsupported_asm(format!(
+                                    "register pair modifier {modifier:?}"
+                                )));
+                            }
+                        });
+                        continue;
+                    }
                     Slot::Spill(register) => {
                         if modifier.is_some() || view.is_some() {
                             return Err(unsupported_asm(format!(
@@ -709,6 +737,10 @@ fn asm_template(
                     Some(ir::AsmOperandClass::Register(_)) if *modifier == Some('a') => {
                         used[*index] = true;
                         template.push_str(&memory_reference(asm, family, operand, slot, None)?);
+                    }
+                    Some(ir::AsmOperandClass::Memory) if arm && *modifier == Some('m') => {
+                        used[*index] = true;
+                        template.push_str(&format!("{{{slot}}}"));
                     }
                     Some(ir::AsmOperandClass::Memory) => {
                         let displacement = match modifier {
@@ -755,6 +787,15 @@ fn asm_template(
                         template.push_str(&register_reference(slot, operand, *view)?);
                     }
                     Some(ir::AsmOperandClass::Immediate) => match modifier {
+                        Some(modifier @ ('B' | 'L')) if arm => {
+                            let value = arm_immediate(operand)?;
+                            let printed = if *modifier == 'B' {
+                                i64::from(!value)
+                            } else {
+                                i64::from(value) & 0xffff
+                            };
+                            template.push_str(&printed.to_string());
+                        }
                         Some('P' | 'p') if arm => {
                             return Err(unsupported_asm(format!(
                                 "arm immediate modifier {modifier:?}"
@@ -796,7 +837,7 @@ fn asm_template(
                     },
                     Some(ir::AsmOperandClass::Symbol) => {
                         let allowed = if arm {
-                            *modifier == Some('c')
+                            matches!(modifier, None | Some('c'))
                         } else {
                             matches!(modifier, None | Some('c' | 'P' | 'p'))
                         };
@@ -1386,6 +1427,17 @@ impl FunctionLowerer<'_, '_> {
         Ok(lowered)
     }
 
+    fn asm_pair_input(&mut self, value: Expr, ty: &ir::Type, wide: &rust::Type) -> Result<Expr> {
+        if self.tables.target.family == TargetFamily::Arm32 {
+            return self.asm_encode(value, ty, wide);
+        }
+        self.asm_wide_integer(ty)?;
+        Ok(Expr::Cast {
+            expr: Box::new(value),
+            ty: wide.clone(),
+        })
+    }
+
     fn asm_pair(
         &mut self,
         statement: &Span<ir::Statement>,
@@ -1394,8 +1446,20 @@ impl FunctionLowerer<'_, '_> {
         prefix: &mut Vec<Stmt>,
         writebacks: &mut Vec<Stmt>,
     ) -> Result<Vec<rust::AsmOperand>> {
-        let wide = rust::Type::Prim(Prim::U128);
-        let half = rust::Type::Prim(Prim::U64);
+        let arm = self.tables.target.family == TargetFamily::Arm32;
+        let (wide, half, bits) = if arm {
+            (
+                rust::Type::Prim(Prim::U64),
+                rust::Type::Prim(Prim::U32),
+                32i64,
+            )
+        } else {
+            (
+                rust::Type::Prim(Prim::U128),
+                rust::Type::Prim(Prim::U64),
+                64i64,
+            )
+        };
         let cast = |expr: Expr, ty: &rust::Type| Expr::Cast {
             expr: Box::new(expr),
             ty: ty.clone(),
@@ -1403,7 +1467,7 @@ impl FunctionLowerer<'_, '_> {
         let shift = |op, expr: Expr| Expr::Binary {
             op,
             lhs: Box::new(expr),
-            rhs: Box::new(Expr::Value(64i64.into())),
+            rhs: Box::new(Expr::Value(bits.into())),
         };
         let input = match &operand.kind {
             ir::AsmOperandKind::In(value)
@@ -1411,14 +1475,14 @@ impl FunctionLowerer<'_, '_> {
                 input: Some(ir::AsmTiedInput { value, .. }),
                 ..
             } => {
-                self.asm_wide_integer(&value.ty)?;
-                Some(self.lower_value(value)?)
+                let lowered = self.lower_value(value)?;
+                Some(self.asm_pair_input(lowered, &value.ty, &wide)?)
             }
             ir::AsmOperandKind::InOut {
                 place, input: None, ..
             } => {
-                self.asm_wide_integer(&place.ty)?;
-                Some(self.asm_read(statement, place)?)
+                let lowered = self.asm_read(statement, place)?;
+                Some(self.asm_pair_input(lowered, &place.ty, &wide)?)
             }
             ir::AsmOperandKind::Out { .. } => None,
             _ => return Err(unsupported_asm("register pair operand kind")),
@@ -1430,7 +1494,7 @@ impl FunctionLowerer<'_, '_> {
                     name: temp.clone(),
                     mutable: false,
                     ty: Some(wide.clone()),
-                    init: Some(cast(input, &wide)),
+                    init: Some(input),
                 });
                 let whole = Expr::Var(temp.as_str().into());
                 Some([
@@ -1442,7 +1506,6 @@ impl FunctionLowerer<'_, '_> {
         };
         let outputs = match &operand.kind {
             ir::AsmOperandKind::Out { place, .. } | ir::AsmOperandKind::InOut { place, .. } => {
-                let target = self.asm_wide_integer(&place.ty)?;
                 let [low_temp, high_temp] = [self.next_temp(), self.next_temp()];
                 for temp in [&low_temp, &high_temp] {
                     prefix.push(Stmt::Let {
@@ -1459,7 +1522,12 @@ impl FunctionLowerer<'_, '_> {
                     lhs: Box::new(shift(BinOp::Shl, cast(high_value.clone(), &wide))),
                     rhs: Box::new(cast(low_value.clone(), &wide)),
                 };
-                writebacks.push(self.lower_assignment(place, cast(combined, &target))?);
+                let decoded = if arm {
+                    self.asm_decode(combined, &place.ty)?
+                } else {
+                    cast(combined, &self.asm_wide_integer(&place.ty)?)
+                };
+                writebacks.push(self.lower_assignment(place, decoded)?);
                 Some([low_value, high_value])
             }
             _ => None,
@@ -1601,10 +1669,6 @@ impl FunctionLowerer<'_, '_> {
             )));
         }
         let x86_32 = self.tables.target.family == TargetFamily::X86;
-        let unconstrained = asm
-            .operands
-            .iter()
-            .any(|operand| operand.constraint.alternatives.is_empty());
         let mut options = asm_options(asm)?;
         if asm
             .operands
@@ -1886,6 +1950,22 @@ impl FunctionLowerer<'_, '_> {
                         .ok_or_else(|| unsupported_asm("no free vreg_low8 register"))?;
                     pinned = Some(canonical);
                     rust::AsmReg::Explicit(canonical.into())
+                }
+                Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::RegPair)) if arm => {
+                    let [low, high] = [["r0", "r1"], ["r2", "r3"], ["r4", "r5"], ["r8", "r9"]]
+                        .into_iter()
+                        .find(|pair| pair.iter().all(|register| !taken.contains(register)))
+                        .ok_or_else(|| unsupported_asm("no free core register pair"))?;
+                    taken.extend([low, high]);
+                    slots.push(Slot::RegisterPair(low, high));
+                    explicit.extend(self.asm_pair(
+                        statement,
+                        operand,
+                        [low, high],
+                        &mut prefix,
+                        &mut writebacks,
+                    )?);
+                    continue;
                 }
                 Some(ir::AsmOperandClass::Register(class)) if arm => rust::AsmReg::Class(
                     match class {
@@ -2220,7 +2300,7 @@ impl FunctionLowerer<'_, '_> {
                         if clobbered.insert(name) {
                             explicit.push(rust::AsmOperand::Out {
                                 reg: rust::AsmReg::Explicit(name.into()),
-                                late: !unconstrained,
+                                late: false,
                                 value: Expr::Var("_".into()),
                             });
                         }
@@ -2289,7 +2369,7 @@ impl FunctionLowerer<'_, '_> {
                 }
                 explicit.push(rust::AsmOperand::Out {
                     reg: rust::AsmReg::Explicit(canonical.into()),
-                    late: !unconstrained,
+                    late: false,
                     value: Expr::Var("_".into()),
                 });
             }

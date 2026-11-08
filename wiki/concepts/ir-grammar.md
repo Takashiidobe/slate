@@ -348,7 +348,8 @@ asm_classes = "[" asm_alt { ", " asm_alt } "]" ;
 asm_alt    = "{" identifier "}" | integer
            | [ asm_class { " | " asm_class } ] ;
 asm_class  = "reg" | "reg_abcd" | "reg_legacy" | "vreg_low8" | "xmm_reg" | "ymm_reg" | "zmm_reg" | "kreg" | "x87_reg"
-           | "mmx_reg" | "vreg" | "vreg_low16" | "sreg" | "dreg"
+           | "mmx_reg" | "vreg" | "vreg_low16" | "sreg" | "sreg_low16" | "dreg" | "dreg_low16"
+           | "dreg_low8" | "qreg" | "qreg_low8" | "qreg_low4" | "reg_pair"
            | "mem" | "imm" | "sym" | "{" identifier "}" | "{" identifier ":" identifier "}"
            | "cc(" identifier ")" | "unresolved(" string ")" ;
 asm_place  = "place<" type [ ", volatile" ] ">(" place ")" ;
@@ -418,7 +419,7 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   hard register or explicit-register letter (`a` is `{ax}`) as its canonical
   name, a matching operand number, or the letters' classes joined by `|`. Class
   names are Rust's, except `reg_legacy` and `vreg_low8`, subsets that emission
-  pins to an explicit register. `{dx:ax}` is the register pair of x86 `A`, high
+  pins to an explicit register, and ARM32 `reg_pair`, a 64-bit core register pair. `{dx:ax}` is the register pair of x86 `A`, high
   half first; a letter we cannot resolve prints as `unresolved("<")`.
 - An `in` with an `asm_place` is a memory-capable input naming its object; the
   asm may address it in place, so no load precedes the statement.

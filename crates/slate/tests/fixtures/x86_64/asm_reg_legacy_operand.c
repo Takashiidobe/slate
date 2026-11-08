@@ -38,8 +38,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movb %sil, %dl", lateout("dx") [[T_0]], in ("si") x as u32, lateout("ax") _,
-// CHECK-NEXT:             lateout("cx") _, options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "movb %sil, %dl", lateout("dx") [[T_0]], in ("si") x as u32, out("ax") _,
+// CHECK-NEXT:             out("cx") _, options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
 // CHECK-NEXT:         r = unsafe { std::mem::transmute::<u8, u8>([[T_0]] as u8) };
 // CHECK-NEXT:     }

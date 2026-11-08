@@ -138,7 +138,11 @@ whole asm: the first where every operand has a usable class.
   `Uq`, `Ut`, `Um`, `Un`, `Us` are memory like `Q`. gcc prints an unmodified
   d or q register by its first s register (`s2` for `d1`) and needs `%P`/`%q`
   for the real name, so under gcc such a reference gets view `Bits(32)`;
-  `%P` and `%q` are views 64 and 128 (`armv7-*/ir_asm_classes.c`).
+  `%P` and `%q` are views 64 and 128 (`armv7-*/ir_asm_classes.c`). A 64-bit
+  `r`/`l` operand is `reg_pair`: both compilers put it in a core register pair
+  (clang an even/odd one) and print the halves with `%Q`/`%R` and the second
+  register with `%H`. gcc prints a symbol operand without `%c` as `#sym`, so under
+  gcc that reference becomes `#` text plus `%c` (`gcc/.../armv7-*/ir_asm_modifiers.c`).
 - `<`, `>` (clang's backend fails), `E`/`F`/`C`/`G`, and `Y0` (clang
   rejects their operands) stay `Unresolved`, never guessed.
 - `reg_legacy` and `vreg_low8` (AArch64 `y`) have no Rust class; emission
@@ -254,8 +258,14 @@ const int k = 2`, `table[1]`, `s.field`, string elements, `*ptr` to a
   bridges through `core::arch::arm::uint8x16_t` (`stdarch_arm_neon_intrinsics`).
   References print `{N}`; `%P` on a d register and `%q` on a q register are the same,
   `%e`/`%f` on a q register print `{N:e}`/`{N:f}`, and the gcc `Bits(32)` view is a barrier.
-  Immediates print `#{N}` (`%c` drops the `#`); symbols lower only under `%c` (gcc prints
-  `#sym`, clang `sym`). Memory prints `[{N}]`, unused operands go in `@` comments. Flags
+  Immediates print `#{N}` (`%c` drops the `#`); `%B` (bitwise inverse) and `%L` (low 16
+  bits) print the folded number without `#`. Symbols print `{N}` (the parser already added
+  gcc's `#`). Memory prints `[{N}]` and `%m` its base register `{N}`; unused operands go in
+  `@` comments. A `reg_pair` operand pins the first free even/odd pair of r0/r1, r2/r3,
+  r4/r5, r8/r9 as two explicit `u32` halves (`%Q`/unmodified print the low register,
+  `%R`/`%H` the high one), since Rust's `reg` takes no 64-bit value and `ldrexd`/`strexd`
+  need an even pair in ARM state (`arm/asm_arm_register_pairs.c`,
+  `gcc/arm/asm_arm_gcc_register_pairs.c`). Flags
   outputs append `mov {N}, #0` and `mov<cond> {N}, #1`, which leave the flags intact.
   Clobbers: `s`/`q` registers become the d registers covering them (Rust rejects overlapping
   clobbers such as `s31` with `d15`); `r6` (LLVM's base pointer) and `r11` (the frame
@@ -310,7 +320,7 @@ or `None` in a naked function. `template` is rebuilt from the AST.
   block runs from the label (two copies of the template, one per entry).
   Slate appends `return <Fallthrough::Return value>` to the function when its
   last statement is not already a `return` (inside `unsafe` under dispatch).
-  Register clobbers of an unconstrained asm are early (`out`), so no address
+  Register clobbers are early (`out`) like every GNU clobber, so no address
   input can land in a register the block writes.
 - Each C object is one `Memory { place, access }` operand however often it
   appears; the asm receives its address, and `AsmAccess::{Read, Write,
@@ -393,7 +403,8 @@ impossible.
 - Extended asm maps parser options directly. Basic asm escapes braces in its decoded
   template instead of using `raw`, so symbol references can become `{N}`.
 - `memory`/`cc`/`unwind` clobbers are represented by the computed options;
-  register clobbers become discarded `lateout` operands.
+  register clobbers become discarded early `out` operands: a GNU clobber never shares a
+  register with an input, while Rust lets an input take a `lateout("r1") _` register.
 - A GNU asm clobber or `register ... asm("name")` label that is not `memory`, `cc`, `unwind`, `redzone`, or a register of the target
   is a parse error (`unknown register name '...' in asm`). `redzone` has no Rust `asm!` equivalent and is dropped.
 - Explicit GPR operands become `in("ax")` and friends, ordered after every positional operand

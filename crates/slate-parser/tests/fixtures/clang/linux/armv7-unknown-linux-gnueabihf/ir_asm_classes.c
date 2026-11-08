@@ -23,6 +23,13 @@ void pinned(void) {
     asm("@ %0 %1" : "=r"(r), "=t"(s));
 }
 
+int global;
+
+void pairs(long long a, double d) {
+    asm("@ %0 %Q1 %R1 %H2" : "=&r"(a) : "r"(a), "r"(d));
+    asm("@ %B0 %L0 %m1 %0 %2" : : "i"(-16), "m"(a), "i"(&global));
+}
+
 void clobbers(void) {
     asm volatile("" ::: "r0", "a2", "v1", "sb", "sl", "fp", "ip", "lr", "s31", "d31", "q15");
 }
@@ -49,6 +56,7 @@ void clobbers(void) {
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     type @type[[TYPE_v4:[0-9]+]] v4 = vector<f32, 4>;
+// IR-NEXT:     global %[[VALUE_global:[0-9]+]] global: i32 [storage=static] [linkage=external];
 // IR-NEXT:     fn %[[VALUE_classes:[0-9]+]] @classes(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_f:[0-9]+]] f: f32, %[[VALUE_d:[0-9]+]] d: f64) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm "@ %0 %1 %2" [options=pure,nomem,nostack,preserves_flags] {
 // IR-NEXT:             template: "@ " %0 " " %1 " " %2;
@@ -93,6 +101,20 @@ void clobbers(void) {
 // IR-NEXT:             template: "@ " %0 " " %1;
 // IR-NEXT:             lateout 0 "r" [reg] -> {r4} width 32 place<i32>(%[[VALUE_r]]);
 // IR-NEXT:             lateout 1 "t" [sreg] -> {s3} width 32 place<f32>(%[[VALUE_s]]);
+// IR-NEXT:         }
+// IR-NEXT:     }
+// IR-NEXT:     fn %[[VALUE_pairs:[0-9]+]] @pairs(%[[VALUE_a:[0-9]+]] a: i64, %[[VALUE_d_3:[0-9]+]] d: f64) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         asm "@ %0 %Q1 %R1 %H2" [options=pure,nomem,nostack,preserves_flags] {
+// IR-NEXT:             template: "@ " %0 " " %Q1 " " %R1 " " %H2;
+// IR-NEXT:             out 0 "r" [reg_pair] width 64 place<i64>(%[[VALUE_a]]);
+// IR-NEXT:             in 1 "r" [reg_pair] width 64 read<i64>(%[[VALUE_a]]);
+// IR-NEXT:             in 2 "r" [reg_pair] width 64 read<f64>(%[[VALUE_d_3]]);
+// IR-NEXT:         }
+// IR-NEXT:         asm "@ %B0 %L0 %m1 %0 %2" [options=nostack,preserves_flags] {
+// IR-NEXT:             template: "@ " %B0 " " %L0 " " %m1 " " %0 " " %2;
+// IR-NEXT:             in 0 "i" [imm | sym] -> imm width 32 const<i32>(-16);
+// IR-NEXT:             in 1 "m" [mem] width 64 place<i64>(%[[VALUE_a]]);
+// IR-NEXT:             in 2 "i" [imm | sym] -> sym width 32 sym<offset=0>(%[[VALUE_global]]);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_clobbers:[0-9]+]] @clobbers() -> void [linkage=external] [fallthrough=ret_void] {

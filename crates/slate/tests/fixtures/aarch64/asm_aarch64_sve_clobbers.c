@@ -65,8 +65,8 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "mov x9, #0\n1:\n\twhilelo p1.d, x9, {3:x}\n\tb.none 2f\n\tld1d z1.d, p1/z, [{1:x}, x9, lsl #3]\n\tld1d z2.d, p1/z, [{2:x}, x9, lsl #3]\n\tadd z1.d, z1.d, z2.d\n\tst1d z1.d, p1, [{0:x}, x9, lsl #3]\n\tincd x9\n\tb 1b\n2:",
 // CHECK-NEXT:             in (reg) out as u64, in (reg) left as u64, in (reg) right as u64, in (reg)
-// CHECK-NEXT:             count as u64, lateout("x9") _, lateout("p1") _, lateout("v1") _,
-// CHECK-NEXT:             lateout("v2") _, options(nostack)
+// CHECK-NEXT:             count as u64, out("x9") _, out("p1") _, out("v1") _, out("v2") _,
+// CHECK-NEXT:             options(nostack)
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -76,7 +76,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "ptrue p3.d\n\tcntp {0:x}, p3, p3.d", lateout(reg) [[T_0]], lateout("p3") _,
+// CHECK-NEXT:             "ptrue p3.d\n\tcntp {0:x}, p3, p3.d", lateout(reg) [[T_0]], out("p3") _,
 // CHECK-NEXT:             options(nostack, preserves_flags)
 // CHECK-NEXT:         );
 // CHECK-NEXT:         lanes = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
@@ -88,8 +88,8 @@ int main(void) {
 // CHECK-NEXT:     let scaled: f64 = value * 2.0f64;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov z0.d, #0\n\tmov z31.d, #0", lateout("v0") _, lateout("v31") _,
-// CHECK-NEXT:             options(nostack, preserves_flags)
+// CHECK-NEXT:             "mov z0.d, #0\n\tmov z31.d, #0", out("v0") _, out("v31") _, options(nostack,
+// CHECK-NEXT:             preserves_flags)
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     scaled + value

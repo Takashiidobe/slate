@@ -108,7 +108,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_2]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movl $19, %eax; movl %eax, {0:e}", lateout(reg) [[T_2]], lateout("ax") _,
+// CHECK-NEXT:             "movl $19, %eax; movl %eax, {0:e}", lateout(reg) [[T_2]], out("ax") _,
 // CHECK-NEXT:             options(nostack, att_syntax)
 // CHECK-NEXT:         );
 // CHECK-NEXT:         x = unsafe { std::mem::transmute::<u32, i32>([[T_2]] as u32) };

@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-NEXT:     let r: i32 = 5;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!("mov ecx, 3\nmov edx, 4\nadd ecx, edx", lateout("ax") [[T_0]], lateout("cx") _, lateout("dx") _);
+// CHECK-NEXT:         core::arch::asm!("mov ecx, 3\nmov edx, 4\nadd ecx, edx", lateout("ax") [[T_0]], out("cx") _, out("dx") _);
 // CHECK-NEXT:         [[V_0]] = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r + 1
@@ -70,7 +70,7 @@ int main(void) {
 // CHECK-NEXT:     let r: i32 = 9;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!("push 7\npush 8\npop ecx\npop edx\nadd ecx, edx", lateout("ax") [[T_0]], lateout("cx") _, lateout("dx") _);
+// CHECK-NEXT:         core::arch::asm!("push 7\npush 8\npop ecx\npop edx\nadd ecx, edx", lateout("ax") [[T_0]], out("cx") _, out("dx") _);
 // CHECK-NEXT:         [[V_0]] = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r

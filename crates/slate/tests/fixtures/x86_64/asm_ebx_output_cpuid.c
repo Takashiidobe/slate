@@ -22,7 +22,7 @@ int main(void) { return cpuid_leaf7_ebx_nonzero(); }
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "xchg {0:r}, %rbx\ncpuid\nxchg {0:r}, %rbx", out(reg) [[T_1]], lateout("ax")
 // CHECK-NEXT:             [[T_0]], lateout("cx") [[T_2]], in ("ax") (7 as i32) as u32, in ("cx") (0 as i32)
-// CHECK-NEXT:             as u32, lateout("dx") _, options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             as u32, out("dx") _, options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
 // CHECK-NEXT:         f7a = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:         f7b = unsafe { std::mem::transmute::<u32, u32>([[T_1]] as u32) };

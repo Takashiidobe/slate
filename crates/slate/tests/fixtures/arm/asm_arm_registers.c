@@ -131,7 +131,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "mov r1, #7\n\tmov ip, #9\n\tadd {0}, {0}, r1\n\tadd {0}, {0}, ip",
-// CHECK-NEXT:             inlateout(reg) value as u32 => [[T_0]], lateout("r1") _, lateout("r12") _,
+// CHECK-NEXT:             inlateout(reg) value as u32 => [[T_0]], out("r1") _, out("r12") _,
 // CHECK-NEXT:             options(nostack, preserves_flags)
 // CHECK-NEXT:         );
 // CHECK-NEXT:         value = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
@@ -141,9 +141,8 @@ int main(void) {
 // CHECK-NEXT: fn vfp_clobbers(value: f64) -> f64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "vmov.f64 d0, #1.0\n\tvmov.f32 s5, #2.0\n\tvmov.f64 d7, #3.0", lateout("d0")
-// CHECK-NEXT:             _, lateout("d2") _, lateout("d6") _, lateout("d7") _, options(nostack,
-// CHECK-NEXT:             preserves_flags)
+// CHECK-NEXT:             "vmov.f64 d0, #1.0\n\tvmov.f32 s5, #2.0\n\tvmov.f64 d7, #3.0", out("d0") _,
+// CHECK-NEXT:             out("d2") _, out("d6") _, out("d7") _, options(nostack, preserves_flags)
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value * 2.0f64

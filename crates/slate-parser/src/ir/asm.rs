@@ -303,6 +303,7 @@ pub enum AsmRegisterClass {
     RegAbcd,
     // no rust class exists for these subsets; emission pins a free register from the set.
     RegLegacy,
+    RegPair,
     VRegLow8,
     XmmReg,
     YmmReg,
@@ -328,6 +329,7 @@ impl AsmRegisterClass {
             Self::Reg => "reg",
             Self::RegAbcd => "reg_abcd",
             Self::RegLegacy => "reg_legacy",
+            Self::RegPair => "reg_pair",
             Self::VRegLow8 => "vreg_low8",
             Self::XmmReg => "xmm_reg",
             Self::YmmReg => "ymm_reg",
