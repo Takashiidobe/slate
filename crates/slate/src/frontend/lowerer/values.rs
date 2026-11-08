@@ -1620,14 +1620,31 @@ impl FunctionLowerer<'_, '_> {
                     expr: Box::new(expr),
                     ty: rust::Type::Prim(Prim::Usize),
                 };
+                let layout = self.tables.alloca_layout;
+                let usize_value = |value: u64| Expr::Value(rust::RustValue::Usize(value as usize));
                 let (size, align) = match arguments.as_slice() {
-                    [size] => (size, Expr::Value(rust::RustValue::Usize(16))),
+                    [size] => {
+                        let size = as_usize(self.lower_value(size)?);
+                        let size = match layout.padding {
+                            0 => size,
+                            padding => Expr::Binary {
+                                op: BinOp::Add,
+                                lhs: Box::new(size),
+                                rhs: Box::new(usize_value(padding)),
+                            },
+                        };
+                        (size, usize_value(layout.alignment))
+                    }
                     [size, bits] => (
-                        size,
-                        Expr::Binary {
-                            op: BinOp::Div,
-                            lhs: Box::new(as_usize(self.lower_value(bits)?)),
-                            rhs: Box::new(Expr::Value(rust::RustValue::Usize(8))),
+                        as_usize(self.lower_value(size)?),
+                        Expr::MethodCall {
+                            recv: Box::new(Expr::Binary {
+                                op: BinOp::Div,
+                                lhs: Box::new(as_usize(self.lower_value(bits)?)),
+                                rhs: Box::new(usize_value(8)),
+                            }),
+                            method: "max".into(),
+                            args: vec![usize_value(layout.alignment)],
                         },
                     ),
                     _ => return Err(unsupported_value(value)),
@@ -1637,7 +1654,7 @@ impl FunctionLowerer<'_, '_> {
                 Expr::Cast {
                     expr: Box::new(Expr::Call {
                         func: Box::new(Expr::Var("__slate_alloca::alloca".into())),
-                        args: vec![as_usize(self.lower_value(size)?), align],
+                        args: vec![size, align],
                         binding: CallBinding::Generated,
                     }),
                     ty: self.lower_value_type(value)?,

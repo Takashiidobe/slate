@@ -10,7 +10,6 @@ bitint_rotate
 bitint_shift
 bitint_shift_widths
 bitint_va_wide
-builtin_alloca
 builtin_generic_bit_counts
 c23_library
 c23_stdlib_memory_management

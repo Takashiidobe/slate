@@ -13,6 +13,7 @@
 - [Atomic operations](#atomic-operations)
 - [Library and target intrinsic
   calls](#library-and-target-intrinsic-calls)
+- [alloca](#alloca)
 <!-- /toc -->
 
 Supported by slate-parser, grouped by category. Retained calls reach Slate's
@@ -290,3 +291,34 @@ looks a name up in this order:
   `lowerer/intrinsics.rs` plus `lowerer/intrinsics_table.rs`.
   `__rdtsc` expands in `sema/vector_builtins.rs`. See
   [intrinsic lowering](../intrinsic-lowering.md) for catalog and signature limits.
+
+## alloca
+
+`alloca`, `_alloca`, `__builtin_alloca` and the `_with_align` variants are
+retained calls. `Module::alloca` (`ir::AllocaLayout`, from
+`AllocaLayout::for_dialect`) records how the flavor's compiler spaces them,
+measured against gcc 15/16, clang 23 and cl.exe:
+
+| Flavor and target            | `padding` | `alignment`                          |
+| ---------------------------- | --------- | ------------------------------------ |
+| gcc x86_64                   | 8         | `__BIGGEST_ALIGNMENT__` (16/32/64)   |
+| gcc i686                     | 12        | `__BIGGEST_ALIGNMENT__`              |
+| any flavor, armv7            | 0         | 8                                    |
+| everything else              | 0         | 16 (clang ignores `-mavx` here)      |
+
+Each call takes `size + padding` bytes from the top of a downward-growing
+stack and rounds the new top down to `alignment`, so consecutive allocas are
+the same distance apart as in the C build (`alloca(16)` twice: 16 under
+clang and cl.exe, 32 under gcc x86_64). gcc with `-mavx` realigns the
+stack dynamically and its spacing varies with the incoming stack address;
+only the alignment matches there. `_with_align` uses
+`max(bits / 8, alignment)` and no padding.
+
+Slate does not put the memory on the real stack. The runtime
+(`crates/slate/src/frontend/support/alloca.rs`) is a thread-local `Vec` of
+heap blocks (1 MB, or larger for a bigger request) with a bump pointer that
+moves down. Each function that calls alloca holds a `Mark` that restores the
+pointer when the function returns, which gives alloca's function-scoped
+lifetime. Blocks stay allocated for the thread's lifetime. Code that compares
+alloca memory with real stack addresses, or relies on stack overflow to
+bound it, sees the difference; this is the accepted emulation.

@@ -25,6 +25,33 @@ pub struct Module {
     pub macro_rejections: HashMap<MacroExpansionId, &'static str>,
     pub macro_hidden_arguments: HashMap<MacroExpansionId, Vec<BindingId>>,
     pub zero_init_padding_bits: crate::compiler_options::ZeroInitPaddingBits,
+    pub alloca: AllocaLayout,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct AllocaLayout {
+    pub padding: u64,
+    pub alignment: u64,
+}
+
+impl AllocaLayout {
+    pub fn for_dialect(dialect: &crate::dialect::Dialect) -> Self {
+        use crate::compiler_args::CompilerFlavor;
+        use crate::target_info::TargetFamily;
+        let target = dialect.target();
+        let gcc = dialect.flavor() == CompilerFlavor::Gcc;
+        let alignment = match target.family {
+            TargetFamily::Arm32 => 8,
+            TargetFamily::X86 | TargetFamily::X86_64 if gcc => target.isa.vector_register_bytes(),
+            _ => 16,
+        };
+        let padding = match target.family {
+            TargetFamily::X86_64 if gcc => 8,
+            TargetFamily::X86 if gcc => 12,
+            _ => 0,
+        };
+        Self { padding, alignment }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -393,6 +420,10 @@ impl Module {
             macro_rejections: HashMap::new(),
             macro_hidden_arguments: HashMap::new(),
             zero_init_padding_bits: crate::compiler_options::ZeroInitPaddingBits::Standard,
+            alloca: AllocaLayout {
+                padding: 0,
+                alignment: 16,
+            },
         }
     }
 

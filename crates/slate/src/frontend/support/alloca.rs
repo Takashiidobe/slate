@@ -30,7 +30,7 @@ mod __slate_alloca {
     struct Stack {
         blocks: Vec<Block>,
         block: usize,
-        offset: usize,
+        used: usize,
     }
 
     impl Stack {
@@ -42,17 +42,19 @@ mod __slate_alloca {
             loop {
                 let block = &self.blocks[self.block];
                 let base = block.base as usize;
-                let start = (base + self.offset).next_multiple_of(align) - base;
-                if start <= block.size && block.size - start >= size {
-                    self.offset = start + size;
+                let top = base + block.size - self.used;
+                if let Some(start) = top.checked_sub(size).map(|start| start & !(align - 1))
+                    && start >= base
+                {
+                    self.used = base + block.size - start;
                     unsafe {
-                        let pointer = block.base.add(start);
+                        let pointer = block.base.add(start - base);
                         pointer.write_bytes(0, size);
                         return pointer;
                     }
                 }
                 self.block += 1;
-                self.offset = 0;
+                self.used = 0;
                 if self.block == self.blocks.len() || self.blocks[self.block].size < needed {
                     self.blocks.truncate(self.block);
                     self.blocks.push(Block::new(needed.next_multiple_of(ALIGN).max(BLOCK)));
@@ -63,13 +65,13 @@ mod __slate_alloca {
 
     thread_local! {
         static STACK: UnsafeCell<Stack> = const {
-            UnsafeCell::new(Stack { blocks: Vec::new(), block: 0, offset: 0 })
+            UnsafeCell::new(Stack { blocks: Vec::new(), block: 0, used: 0 })
         };
     }
 
     pub struct Mark {
         block: usize,
-        offset: usize,
+        used: usize,
     }
 
     impl Mark {
@@ -77,7 +79,7 @@ mod __slate_alloca {
         pub fn new() -> Self {
             STACK.with(|stack| {
                 let stack = unsafe { &*stack.get() };
-                Mark { block: stack.block, offset: stack.offset }
+                Mark { block: stack.block, used: stack.used }
             })
         }
     }
@@ -88,13 +90,13 @@ mod __slate_alloca {
             STACK.with(|stack| {
                 let stack = unsafe { &mut *stack.get() };
                 stack.block = self.block;
-                stack.offset = self.offset;
+                stack.used = self.used;
             })
         }
     }
 
     #[inline]
     pub fn alloca(size: usize, align: usize) -> *mut std::ffi::c_void {
-        STACK.with(|stack| unsafe { (*stack.get()).allocate(size, align.max(ALIGN)) }).cast()
+        STACK.with(|stack| unsafe { (*stack.get()).allocate(size, align.max(1).next_power_of_two()) }).cast()
     }
 }

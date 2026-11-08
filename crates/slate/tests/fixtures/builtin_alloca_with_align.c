@@ -79,7 +79,7 @@ int main(void) {
 // CHECK-NEXT:     struct Stack {
 // CHECK-NEXT:         blocks: Vec<Block>,
 // CHECK-NEXT:         block: usize,
-// CHECK-NEXT:         offset: usize,
+// CHECK-NEXT:         used: usize,
 // CHECK-NEXT:     }
 // CHECK-NEXT:     impl Stack {
 // CHECK-NEXT:         fn allocate(&mut self, size: usize, align: usize) -> *mut u8 {
@@ -90,17 +90,20 @@ int main(void) {
 // CHECK-NEXT:             loop {
 // CHECK-NEXT:                 let block = &self.blocks[self.block];
 // CHECK-NEXT:                 let base = block.base as usize;
-// CHECK-NEXT:                 let start = (base + self.offset).next_multiple_of(align) - base;
-// CHECK-NEXT:                 if start <= block.size && block.size - start >= size {
-// CHECK-NEXT:                     self.offset = start + size;
+// CHECK-NEXT:                 let top = base + block.size - self.used;
+// CHECK-NEXT:                 if let Some(start) = top
+// CHECK-NEXT:                     .checked_sub(size)
+// CHECK-NEXT:                     .map(|start| start & !(align - 1)) && start >= base
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     self.used = base + block.size - start;
 // CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         let pointer = block.base.add(start);
+// CHECK-NEXT:                         let pointer = block.base.add(start - base);
 // CHECK-NEXT:                         pointer.write_bytes(0, size);
 // CHECK-NEXT:                         return pointer;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 self.block += 1;
-// CHECK-NEXT:                 self.offset = 0;
+// CHECK-NEXT:                 self.used = 0;
 // CHECK-NEXT:                 if self.block == self.blocks.len()
 // CHECK-NEXT:                     || self.blocks[self.block].size < needed
 // CHECK-NEXT:                 {
@@ -113,11 +116,11 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     thread_local! {
 // CHECK-NEXT:         static STACK : UnsafeCell < Stack > = const { UnsafeCell::new(Stack { blocks :
-// CHECK-NEXT:         Vec::new(), block : 0, offset : 0 }) };
+// CHECK-NEXT:         Vec::new(), block : 0, used : 0 }) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     pub struct Mark {
 // CHECK-NEXT:         block: usize,
-// CHECK-NEXT:         offset: usize,
+// CHECK-NEXT:         used: usize,
 // CHECK-NEXT:     }
 // CHECK-NEXT:     impl Mark {
 // CHECK-NEXT:         #[inline]
@@ -127,7 +130,7 @@ int main(void) {
 // CHECK-NEXT:                     let stack = unsafe { &*stack.get() };
 // CHECK-NEXT:                     Mark {
 // CHECK-NEXT:                         block: stack.block,
-// CHECK-NEXT:                         offset: stack.offset,
+// CHECK-NEXT:                         used: stack.used,
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 })
 // CHECK-NEXT:         }
@@ -139,14 +142,16 @@ int main(void) {
 // CHECK-NEXT:                 .with(|stack| {
 // CHECK-NEXT:                     let stack = unsafe { &mut *stack.get() };
 // CHECK-NEXT:                     stack.block = self.block;
-// CHECK-NEXT:                     stack.offset = self.offset;
+// CHECK-NEXT:                     stack.used = self.used;
 // CHECK-NEXT:                 })
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[inline]
 // CHECK-NEXT:     pub fn alloca(size: usize, align: usize) -> *mut std::ffi::c_void {
 // CHECK-NEXT:         STACK
-// CHECK-NEXT:             .with(|stack| unsafe { (*stack.get()).allocate(size, align.max(ALIGN)) })
+// CHECK-NEXT:             .with(|stack| unsafe {
+// CHECK-NEXT:                 (*stack.get()).allocate(size, align.max(1).next_power_of_two())
+// CHECK-NEXT:             })
 // CHECK-NEXT:             .cast()
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -168,15 +173,17 @@ int main(void) {
 // CHECK-NEXT:     let mut ok: i32 = 1;
 // CHECK-NEXT:     let small: *mut i8 = (__slate_alloca::alloca(3 as usize, 16usize) as *mut ())
 // CHECK-NEXT:         as *mut i8;
-// CHECK-NEXT:     let a: *mut i8 = (__slate_alloca::alloca((n as u64) as usize, (64 as usize) / 8usize)
-// CHECK-NEXT:         as *mut ()) as *mut i8;
+// CHECK-NEXT:     let a: *mut i8 = (__slate_alloca::alloca(
+// CHECK-NEXT:         (n as u64) as usize,
+// CHECK-NEXT:         ((64 as usize) / 8usize).max(16usize),
+// CHECK-NEXT:     ) as *mut ()) as *mut i8;
 // CHECK-NEXT:     let b: *mut i8 = (__slate_alloca::alloca(
 // CHECK-NEXT:         (n as u64) as usize,
-// CHECK-NEXT:         (512 as usize) / 8usize,
+// CHECK-NEXT:         ((512 as usize) / 8usize).max(16usize),
 // CHECK-NEXT:     ) as *mut ()) as *mut i8;
 // CHECK-NEXT:     let c: *mut i8 = (__slate_alloca::alloca(
 // CHECK-NEXT:         (n as u64) as usize,
-// CHECK-NEXT:         (32768 as usize) / 8usize,
+// CHECK-NEXT:         ((32768 as usize) / 8usize).max(16usize),
 // CHECK-NEXT:     ) as *mut ()) as *mut i8;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = aligned_to(a as *mut (), 8u64) != 0
 // CHECK-NEXT:         && aligned_to(b as *mut (), 64u64) != 0;
@@ -221,7 +228,7 @@ int main(void) {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let p: *mut i32 = (__slate_alloca::alloca(
 // CHECK-NEXT:         (std::mem::size_of::<i32>() as u64).wrapping_mul(n as u64) as usize,
-// CHECK-NEXT:         (1024 as usize) / 8usize,
+// CHECK-NEXT:         ((1024 as usize) / 8usize).max(16usize),
 // CHECK-NEXT:     ) as *mut ()) as *mut i32;
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         unsafe {
@@ -240,7 +247,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         let p: *mut u8 = (__slate_alloca::alloca(
 // CHECK-NEXT:             1100000 as usize,
-// CHECK-NEXT:             (2048 as usize) / 8usize,
+// CHECK-NEXT:             ((2048 as usize) / 8usize).max(16usize),
 // CHECK-NEXT:         ) as *mut ()) as *mut u8;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             std::ptr::write_bytes(

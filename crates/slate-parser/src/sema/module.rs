@@ -68,6 +68,7 @@ fn resolve_module(
     types.entities = super::entity::Entities::default();
     let mut module = Module::new(context.target.clone());
     module.zero_init_padding_bits = types.dialect().options().codegen.zero_init_padding_bits;
+    module.alloca = crate::ir::AllocaLayout::for_dialect(types.dialect());
     let mut lower = Lowerer {
         types,
         module,

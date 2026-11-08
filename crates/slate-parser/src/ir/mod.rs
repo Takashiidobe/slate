@@ -33,7 +33,7 @@ pub use declarations::{
     TypeDefinitionKind, TypeId, Variable,
 };
 pub use module::{
-    Comment, CountedLoop, Deallocator, DllStorage, Evaluation, Fallthrough, Function,
+    AllocaLayout, Comment, CountedLoop, Deallocator, DllStorage, Evaluation, Fallthrough, Function,
     FunctionSemantics, Inlining, Linkage, MemoryEffects, Metadata, Module, NestedCapture,
     NestedFunction, OmpFor, OmpLoop, OmpParallel, OmpPrivate, OmpSchedule, OmpScheduleKind,
     OmpScheduleModifier, OmpShared, SehHandler, SehIntrinsic, Statement, SymbolAttributes,
