@@ -1015,7 +1015,8 @@ def test_sandbox(project_dir, recipe, binary, out, jobs, name="test-tree"):
     for link, kind in recipe.links.items():
         path = sandbox / link
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.symlink_to(binary if kind == "target" and binary else (project_dir / link).resolve())
+        native = project_dir / recipe.make_dir / recipe.target if kind == "target" else project_dir / link
+        path.symlink_to(binary if kind == "target" and binary else native.resolve())
     return sandbox
 
 
@@ -1037,7 +1038,25 @@ for test in mtest2 mtest3 mtest4 mtest5; do
 done
 """
 
+JQ_TEST = """fail=0
+for test in mantest jqtest shtest utf8test base64test uritest optionaltest onigtest manonigtest; do
+    if tests/$test; then echo "PASS: $test"; else echo "FAIL: $test"; fail=1; fi
+done
+exit $fail
+"""
+
 RECIPES = {
+    "jq": Recipe(
+        target="jq",
+        make_dir="build-clang",
+        objects=["jq_OBJECTS", "libjq_la_OBJECTS"],
+        archives=["vendor/oniguruma/src/.libs/libonig.a"],
+        libs="LIBS",
+        ldflags=["-lm"],
+        links={"jq": "target"},
+        test=["sh", "-c", JQ_TEST],
+        test_copy=["tests"],
+    ),
     "redis": Recipe(
         target="redis-server",
         make_dir="src",

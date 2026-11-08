@@ -169,6 +169,15 @@ written once translation units are known.
   too. The benchmark times five `lua -e` scripts (fib, table, string, sort,
   closure). 2026-10-05: `final OK`, 4.7s vs 4.5s native; benchmark geomean
   1.56x native (fib 2.8x).
+- jq: the target is `jq_OBJECTS` + `libjq_la_OBJECTS` (22 TUs, libtool
+  `.lo` names matched by stem), read from `build-clang`'s Makefile; the
+  vendored oniguruma stays native (`libonig.a`). The test runs the nine
+  `TESTS` scripts, which find the binary at `$JQBASEDIR/jq`, so the sandbox
+  links `jq` at its root. The native side of a `target` link is the recipe's
+  `make_dir/target` (here the libtool wrapper `build-clang/jq`).
+  2026-11-08: 0 barriers, 9/9 suites pass translated and native. Native
+  takes 6.9s vs 3.1s translated because each run goes through the libtool
+  wrapper script, so `test_over_native` is not meaningful.
 
 ### CMake libraries
 
