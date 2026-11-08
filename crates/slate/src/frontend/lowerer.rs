@@ -5,7 +5,7 @@ use crate::function_identity::{FunctionIdentity, classify_function};
 use slate_parser::ast::Span;
 use slate_parser::files::Files;
 use slate_parser::ir::{self, BindingId, Number, PlaceKind, TypeId, ValueKind};
-use slate_parser::target_info::TargetInfo;
+use slate_parser::target_info::{TargetFamily, TargetInfo};
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 
 mod arithmetic;
@@ -129,6 +129,7 @@ struct Dependencies {
     known_panics: bool,
     huge_stack: bool,
     asm_goto_with_outputs: bool,
+    arm_neon_asm: bool,
     asm_strings: BTreeMap<String, Item>,
     libatomic: bool,
     libgomp: bool,
@@ -1165,6 +1166,11 @@ impl<'m> ModuleLowerer<'m> {
         if dependencies.asm_goto_with_outputs {
             features.push(rust::CrateAttr::Feature(rust::Feature::AsmGotoWithOutputs));
         }
+        if dependencies.arm_neon_asm {
+            features.push(rust::CrateAttr::Feature(
+                rust::Feature::StdarchArmNeonIntrinsics,
+            ));
+        }
         if dependencies.libgcc {
             items.insert(
                 0,
@@ -1334,6 +1340,13 @@ impl<'m> ModuleLowerer<'m> {
             }))
         }) {
             features.push(rust::CrateAttr::Feature(rust::Feature::Aarch64UnstableTargetFeature));
+        }
+        if tables.target.family == TargetFamily::Arm32
+            && items.iter().any(|item| {
+                matches!(item, Item::Fn(definition) if definition.attrs.iter().any(|attr| matches!(attr, Attr::TargetFeature(_))))
+            })
+        {
+            features.push(rust::CrateAttr::Feature(rust::Feature::ArmTargetFeature));
         }
         if dependencies.simd {
             features.extend([

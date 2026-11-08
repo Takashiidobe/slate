@@ -169,11 +169,26 @@ impl Lowerer {
                 selected,
             });
         }
+        let gcc_arm = family == TargetFamily::Arm32 && self.types.flavor().is_gcc();
         for piece in &mut lowered.pieces {
-            if let AsmPiece::Operand { index, view, .. } = piece {
+            if let AsmPiece::Operand {
+                index,
+                modifier,
+                view,
+            } = piece
+            {
                 let (target, tied) = renumbered[*index];
                 *index = target;
                 *view = view.or(tied);
+                if gcc_arm
+                    && modifier.is_none()
+                    && lowered
+                        .operands
+                        .get(target)
+                        .is_some_and(|operand| operand.width > Some(32) && vfp(operand))
+                {
+                    *view = Some(AsmRegisterView::Bits(32));
+                }
             }
         }
         lowered.clobbers = operands
@@ -248,19 +263,13 @@ impl Lowerer {
                 FloatType::F32 | FloatType::F64 | FloatType::F80
             )))
         );
-        let wide = match width {
-            Some(256) => Some(AsmRegisterClass::YmmReg),
-            Some(512) => Some(AsmRegisterClass::ZmmReg),
-            _ => None,
-        };
         for alternative in &mut constraint.alternatives {
-            if let (Some(wide), AsmConstraintLocation::Letters { classes, .. }) =
-                (wide, &mut alternative.location)
-            {
-                for class in classes {
-                    if let AsmOperandClass::Register(register @ AsmRegisterClass::XmmReg) = class {
-                        *register = wide;
-                    }
+            let AsmConstraintLocation::Letters { classes, .. } = &mut alternative.location else {
+                continue;
+            };
+            for class in classes {
+                if let AsmOperandClass::Register(register) = class {
+                    *register = sized_class(*register, width);
                 }
             }
         }
@@ -637,6 +646,19 @@ fn rank(
     }
 }
 
+fn sized_class(class: AsmRegisterClass, width: Option<u64>) -> AsmRegisterClass {
+    match (class, width) {
+        (AsmRegisterClass::XmmReg, Some(256)) => AsmRegisterClass::YmmReg,
+        (AsmRegisterClass::XmmReg, Some(512)) => AsmRegisterClass::ZmmReg,
+        (AsmRegisterClass::DReg | AsmRegisterClass::DRegLow16, Some(32)) => AsmRegisterClass::SReg,
+        (AsmRegisterClass::DRegLow8, Some(32)) => AsmRegisterClass::SRegLow16,
+        (AsmRegisterClass::DReg, Some(128)) => AsmRegisterClass::QReg,
+        (AsmRegisterClass::DRegLow16, Some(128)) => AsmRegisterClass::QRegLow8,
+        (AsmRegisterClass::DRegLow8, Some(128)) => AsmRegisterClass::QRegLow4,
+        _ => class,
+    }
+}
+
 fn word(family: TargetFamily) -> u64 {
     match family {
         TargetFamily::X86_64 | TargetFamily::AArch64 => 64,
@@ -659,8 +681,13 @@ fn fits(register: AsmRegisterClass, width: Option<u64>, family: TargetFamily) ->
         AsmRegisterClass::VReg | AsmRegisterClass::VRegLow16 | AsmRegisterClass::VRegLow8 => {
             matches!(width, 8 | 16 | 32 | 64 | 128)
         }
-        AsmRegisterClass::SReg => width == 32,
-        AsmRegisterClass::DReg => width == 64,
+        AsmRegisterClass::SReg | AsmRegisterClass::SRegLow16 => width == 32,
+        AsmRegisterClass::DReg | AsmRegisterClass::DRegLow16 | AsmRegisterClass::DRegLow8 => {
+            width == 64
+        }
+        AsmRegisterClass::QReg | AsmRegisterClass::QRegLow8 | AsmRegisterClass::QRegLow4 => {
+            width == 128
+        }
         AsmRegisterClass::X87Reg => true,
         AsmRegisterClass::MmxReg => matches!(width, 32 | 64),
     }
@@ -681,10 +708,18 @@ fn holds(class: AsmRegisterClass, register: &AsmRegister) -> bool {
             .is_some_and(|number| number <= last)
     };
     match class {
-        AsmRegisterClass::Reg => legacy || numbered || aarch64('x', 30),
+        AsmRegisterClass::Reg => legacy || numbered || aarch64('x', 30) || aarch64('r', 15),
         AsmRegisterClass::VReg => aarch64('v', 31),
         AsmRegisterClass::VRegLow16 => aarch64('v', 15),
         AsmRegisterClass::VRegLow8 => aarch64('v', 7),
+        AsmRegisterClass::SReg => aarch64('s', 31),
+        AsmRegisterClass::SRegLow16 => aarch64('s', 15),
+        AsmRegisterClass::DReg => aarch64('d', 31),
+        AsmRegisterClass::DRegLow16 => aarch64('d', 15),
+        AsmRegisterClass::DRegLow8 => aarch64('d', 7),
+        AsmRegisterClass::QReg => aarch64('q', 15),
+        AsmRegisterClass::QRegLow8 => aarch64('q', 7),
+        AsmRegisterClass::QRegLow4 => aarch64('q', 3),
         AsmRegisterClass::RegLegacy => legacy,
         AsmRegisterClass::RegAbcd => matches!(name, "ax" | "bx" | "cx" | "dx"),
         AsmRegisterClass::XmmReg => name.starts_with("xmm"),
@@ -766,9 +801,31 @@ fn view(modifier: char, family: TargetFamily) -> Option<AsmRegisterView> {
         (TargetFamily::AArch64, 'w' | 's') => 32,
         (TargetFamily::AArch64, 'x' | 'd') => 64,
         (TargetFamily::AArch64, 'q') => 128,
+        (TargetFamily::Arm32, 'P') => 64,
+        (TargetFamily::Arm32, 'q') => 128,
         _ => return None,
     };
     Some(AsmRegisterView::Bits(bits))
+}
+
+fn vfp(operand: &AsmOperand) -> bool {
+    match &operand.selected {
+        Some(AsmOperandClass::Register(class)) => matches!(
+            class,
+            AsmRegisterClass::SReg
+                | AsmRegisterClass::SRegLow16
+                | AsmRegisterClass::DReg
+                | AsmRegisterClass::DRegLow16
+                | AsmRegisterClass::DRegLow8
+                | AsmRegisterClass::QReg
+                | AsmRegisterClass::QRegLow8
+                | AsmRegisterClass::QRegLow4
+        ),
+        Some(AsmOperandClass::Explicit(register)) => register
+            .canonical
+            .is_some_and(|name| name.starts_with(['s', 'd', 'q'])),
+        _ => false,
+    }
 }
 
 impl TypeResolver {
@@ -977,9 +1034,14 @@ fn classes(letters: &str, family: TargetFamily) -> Vec<AsmOperandClass> {
                 AsmOperandClass::Immediate
             }
             (TargetFamily::AArch64, "S") => AsmOperandClass::Symbol,
-            (TargetFamily::Arm32, "t") => AsmOperandClass::Register(AsmRegisterClass::SReg),
+            (TargetFamily::Arm32, "l") => AsmOperandClass::Register(AsmRegisterClass::Reg),
+            (TargetFamily::Arm32, "t") => AsmOperandClass::Register(AsmRegisterClass::DRegLow16),
             (TargetFamily::Arm32, "w") => AsmOperandClass::Register(AsmRegisterClass::DReg),
+            (TargetFamily::Arm32, "x") => AsmOperandClass::Register(AsmRegisterClass::DRegLow8),
             (TargetFamily::Arm32, "I" | "J" | "K" | "L" | "M") => AsmOperandClass::Immediate,
+            (TargetFamily::Arm32, "Uv" | "Uy" | "Uq" | "Ut" | "Um" | "Un" | "Us") => {
+                AsmOperandClass::Memory
+            }
             (TargetFamily::AArch64 | TargetFamily::Arm32, "Q") => AsmOperandClass::Memory,
             _ => AsmOperandClass::Unresolved(letter.to_string()),
         };
@@ -1016,6 +1078,10 @@ pub(super) fn register(register: &ast::Register) -> AsmRegister {
             canonical: Some(info.canonical),
         },
         ast::Register::Aarch64(info) => AsmRegister {
+            spelling: info.spelling.clone(),
+            canonical: Some(info.canonical),
+        },
+        ast::Register::Arm(info) => AsmRegister {
             spelling: info.spelling.clone(),
             canonical: Some(info.canonical),
         },

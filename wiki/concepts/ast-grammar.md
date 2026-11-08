@@ -522,12 +522,14 @@ AsmLabel   = "Symbol(" string ")" | "Register(" Register ")" ;
 
 Register     = "X86(" RegisterInfo<X86Width> ")"
              | "Aarch64(" RegisterInfo<AArch64Width> ")"
+             | "Arm(" RegisterInfo<ArmWidth> ")"
              | "Other(" string ")" ;
 RegisterInfo<w> = RegisterInfo { spelling: string, number: int,
                                  canonical: string, width: opt<w> } ;
 X86Width     = "Low8" | "High8" | "Bits16" | "Bits32" | "Bits64" ;
 AArch64Width = "Bits8" | "Bits16" | "Bits32" | "Bits64" | "Bits128"
              | "ScalableVector" | "ScalablePredicate" ;
+ArmWidth     = "Bits32" | "Bits64" | "Bits128" ;
 ```
 
 - `operands` is absent for basic asm (`asm("...")` without colons).

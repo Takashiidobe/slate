@@ -801,6 +801,7 @@ fn register_spelling(register: &Register) -> &str {
     match register {
         Register::X86(info) => &info.spelling,
         Register::Aarch64(info) => &info.spelling,
+        Register::Arm(info) => &info.spelling,
         Register::Other(spelling) => spelling,
     }
 }

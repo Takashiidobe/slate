@@ -126,8 +126,19 @@ whole asm: the first where every operand has a usable class.
   both). The parser rejects it on an input, with an unknown condition, or
   beside `,` alternatives, as both compilers do. clang alone accepts `+`,
   floats, and a template reference to the operand; those parse and
-  Slate barriers on them. `@` on other targets stays `Unresolved`
-  (`ir_asm_flag_outputs.c`, `error/asm-flag-output-*.c`).
+  Slate barriers on them. AArch64 and ARM32 take the 16 Arm conditions.
+  On ARM32 only gcc accepts `=@cc`: clang rejects every `@` constraint
+  there, and gcc rejects `+@cc` (`gcc/.../armv7-*/ir_asm_flag_outputs.c`,
+  `error/*/linux/armv7-*/asm-flag-output*.c`).
+- ARM32 (ARM state): `l` is `reg` (both compilers alias it to `r` outside
+  Thumb; `h`, `N`, `O` are Thumb-only and stay `Unresolved`). `t`, `w`, `x`
+  resolve to `dreg_low16`, `dreg`, `dreg_low8`, and the operand width
+  narrows them to `sreg`/`sreg`/`sreg_low16` at 32 bits or widens them to
+  `qreg_low8`/`qreg`/`qreg_low4` at 128, as clang allocates. `Uv`, `Uy`,
+  `Uq`, `Ut`, `Um`, `Un`, `Us` are memory like `Q`. gcc prints an unmodified
+  d or q register by its first s register (`s2` for `d1`) and needs `%P`/`%q`
+  for the real name, so under gcc such a reference gets view `Bits(32)`;
+  `%P` and `%q` are views 64 and 128 (`armv7-*/ir_asm_classes.c`).
 - `<`, `>` (clang's backend fails), `E`/`F`/`C`/`G`, and `Y0` (clang
   rejects their operands) stay `Unresolved`, never guessed.
 - `reg_legacy` and `vreg_low8` (AArch64 `y`) have no Rust class; emission
@@ -235,15 +246,32 @@ const int k = 2`, `table[1]`, `s.field`, string elements, `*ptr` to a
   `sp` clobbers, a `vg` clobber in a function that enables sve/sve2/sme or in a module whose
   `-march` enables sve,
   and memory modifiers. `za`/`zt0`/`fpmr` clobbers and a `vg` clobber elsewhere are dropped
-  (no Rust equivalent; clang rejects `vg`, so `gcc/aarch64/asm_aarch64_vg_clobber.c`). ARM32 is not lowered yet.
+  (no Rust equivalent; clang rejects `vg`, so `gcc/aarch64/asm_aarch64_vg_clobber.c`).
+- ARM32 (`tests/fixtures/arm/asm_arm_*.c`): `reg`, `sreg`, `sreg_low16`, `dreg_low8`;
+  `dreg` lowers to `dreg_low16` (the armv7 Rust target has no d32, and clang's default
+  vfpv3-d16 allocates the same set). `qreg*` needs `target("neon")` on the function, which
+  lowers to `#[target_feature(enable = "neon")]` with `arm_target_feature`, and the value
+  bridges through `core::arch::arm::uint8x16_t` (`stdarch_arm_neon_intrinsics`).
+  References print `{N}`; `%P` on a d register and `%q` on a q register are the same,
+  `%e`/`%f` on a q register print `{N:e}`/`{N:f}`, and the gcc `Bits(32)` view is a barrier.
+  Immediates print `#{N}` (`%c` drops the `#`); symbols lower only under `%c` (gcc prints
+  `#sym`, clang `sym`). Memory prints `[{N}]`, unused operands go in `@` comments. Flags
+  outputs append `mov {N}, #0` and `mov<cond> {N}, #1`, which leave the flags intact.
+  Clobbers: `s`/`q` registers become the d registers covering them (Rust rejects overlapping
+  clobbers such as `s31` with `d15`); `r6` (LLVM's base pointer) and `r11` (the frame
+  pointer) are saved and restored around the template through a `reg` scratch, as are
+  register-variable operands on them; `r13`, `r15` and `vfpcc` are barriers.
 - A tied input keeps its own width at its reference sites on x86 (gcc
   prints `"=r"(char) : "0"(int)` as `%dil` and `%edi`); clang rejects the
   mismatch (`ir_asm_widths.c`).
 - Clobbers and explicit registers carry the source spelling and, when
   recognized by the target's register table, the canonical name; width is
   dropped. AArch64 names canonicalize to GCC's (`w1`/`r1` to `x1`,
-  `d3`/`s3` to `v3`, `lr` to `x30`, `fp` to `x29`); ARM32 names stay
-  unrecognized (`ir_asm_clobbers.c`).
+  `d3`/`s3` to `v3`, `lr` to `x30`, `fp` to `x29`). ARM32 core names
+  canonicalize to `r0`-`r15` (`a1`-`a4`, `v1`-`v7`, `sb`, `sl`, `fp`, `ip`,
+  `sp`, `lr`, `pc`, and gcc's numbers); `s0`-`s31`, `d0`-`d31`, `q0`-`q15`
+  and gcc's `vfpcc` keep their names. Both compilers' sets are accepted
+  (`ir_asm_clobbers.c`, `armv7-*/ir_asm_classes.c`).
 
 ## Rust options
 
@@ -367,8 +395,7 @@ impossible.
 - `memory`/`cc`/`unwind` clobbers are represented by the computed options;
   register clobbers become discarded `lateout` operands.
 - A GNU asm clobber or `register ... asm("name")` label that is not `memory`, `cc`, `unwind`, `redzone`, or a register of the target
-  is a parse error (`unknown register name '...' in asm`); Arm32 has no register table and
-  accepts any name. `redzone` has no Rust `asm!` equivalent and is dropped.
+  is a parse error (`unknown register name '...' in asm`). `redzone` has no Rust `asm!` equivalent and is dropped.
 - Explicit GPR operands become `in("ax")` and friends, ordered after every positional operand
   (Rust rejects positional operands after explicit ones). Rust forbids template references to
   explicit registers, so references print the register name at the view or operand width

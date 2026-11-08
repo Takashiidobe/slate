@@ -222,6 +222,6 @@ pub(super) fn clobbered(register: &Register) -> Option<&'static str> {
         Register::X86(info) if info.number < GENERAL.len() => Some(GENERAL[info.number]),
         Register::X86(info) if info.number == 7 => None,
         Register::X86(info) => Some(info.canonical),
-        Register::Aarch64(_) | Register::Other(_) => None,
+        Register::Aarch64(_) | Register::Arm(_) | Register::Other(_) => None,
     }
 }

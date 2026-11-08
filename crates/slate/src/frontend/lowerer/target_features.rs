@@ -99,6 +99,7 @@ impl Tables<'_> {
     fn rustc_feature(&self, name: &str) -> Option<&'static str> {
         match self.target.family {
             TargetFamily::AArch64 => rustc_aarch64_feature(name.strip_prefix('+').unwrap_or(name)),
+            TargetFamily::Arm32 => (name == "neon").then_some("neon"),
             family if family.is_x86() => rustc_x86_feature(name),
             _ => None,
         }

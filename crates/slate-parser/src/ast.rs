@@ -1052,6 +1052,7 @@ pub enum AsmLabel {
 pub enum Register {
     X86(RegisterInfo<X86RegisterWidth>),
     Aarch64(RegisterInfo<AArch64RegisterWidth>),
+    Arm(RegisterInfo<ArmRegisterWidth>),
     Other(String),
 }
 
@@ -1310,6 +1311,13 @@ pub enum AArch64RegisterWidth {
     Bits128,
     ScalableVector,
     ScalablePredicate,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ArmRegisterWidth {
+    Bits32,
+    Bits64,
+    Bits128,
 }
 
 #[derive(Debug, Clone, PartialEq)]

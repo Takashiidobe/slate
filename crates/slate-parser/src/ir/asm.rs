@@ -313,7 +313,13 @@ pub enum AsmRegisterClass {
     VReg,
     VRegLow16,
     SReg,
+    SRegLow16,
     DReg,
+    DRegLow16,
+    DRegLow8,
+    QReg,
+    QRegLow8,
+    QRegLow4,
 }
 
 impl AsmRegisterClass {
@@ -332,7 +338,13 @@ impl AsmRegisterClass {
             Self::VReg => "vreg",
             Self::VRegLow16 => "vreg_low16",
             Self::SReg => "sreg",
+            Self::SRegLow16 => "sreg_low16",
             Self::DReg => "dreg",
+            Self::DRegLow16 => "dreg_low16",
+            Self::DRegLow8 => "dreg_low8",
+            Self::QReg => "qreg",
+            Self::QRegLow8 => "qreg_low8",
+            Self::QRegLow4 => "qreg_low4",
         }
     }
 }

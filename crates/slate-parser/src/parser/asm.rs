@@ -313,9 +313,14 @@ impl Parser {
             let flags = constraint.alternatives.iter().any(|alternative| {
                 matches!(&alternative.location, AsmConstraintLocation::Letters(letters) if letters.starts_with('@'))
             });
+            let arm = family == TargetFamily::Arm32;
+            let unsupported_flags = arm
+                && (self.flavor().is_clang()
+                    || constraint.write_modifier() == Some(AsmConstraintModifier::ReadWrite));
             if flags
-                && dialects
-                && (direction == "input"
+                && (dialects || arm)
+                && (unsupported_flags
+                    || direction == "input"
                     || constraint.alternatives.len() > 1
                     || constraint.alternatives.iter().any(|alternative| {
                         !matches!(&alternative.location, AsmConstraintLocation::Letters(letters) if flag_condition(family, letters).is_some())
@@ -484,9 +489,7 @@ fn decode_clobber(family: TargetFamily, name: &str) -> Result<AsmClobber, String
 
 fn known_register(family: TargetFamily, name: &str) -> Result<Register, String> {
     match decode_register(family, name) {
-        Register::Other(_) if family != TargetFamily::Arm32 => {
-            Err(format!("unknown register name '{name}' in asm"))
-        }
+        Register::Other(_) => Err(format!("unknown register name '{name}' in asm")),
         register => Ok(register),
     }
 }
