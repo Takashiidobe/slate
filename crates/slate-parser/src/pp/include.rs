@@ -2,6 +2,7 @@ use super::error::{PPErrorKind, PPFailure};
 use super::syntax::{Directive, DirectiveName};
 use super::{PPNode, Preprocessor};
 use crate::ast::{FileId, HeaderKind, Loc, Span};
+use crate::compiler_args::CompilerFlavor;
 use crate::files::{decode_source_bytes, display_path};
 use crate::lexer::Token;
 use std::fmt;
@@ -176,13 +177,21 @@ impl Preprocessor<'_> {
                 .map(|dir| dir.join(name))
                 .find(|candidate| candidate.is_file())
         };
+        let separators = |name: &str| match self.dialect.flavor() {
+            CompilerFlavor::Msvc => name.replace('\\', "/"),
+            _ => name.to_owned(),
+        };
         match include {
-            IncludeDirective::Angled(name) => find_in(&self.search.user, name)
-                .map(|path| (path, HeaderKind::User))
-                .or_else(|| {
-                    find_in(&self.search.system, name).map(|path| (path, HeaderKind::System))
-                }),
+            IncludeDirective::Angled(name) => {
+                let name = &separators(name);
+                find_in(&self.search.user, name)
+                    .map(|path| (path, HeaderKind::User))
+                    .or_else(|| {
+                        find_in(&self.search.system, name).map(|path| (path, HeaderKind::System))
+                    })
+            }
             IncludeDirective::Next(name, angled) => {
+                let name = &separators(name);
                 let directories = self
                     .search
                     .quote
@@ -210,22 +219,28 @@ impl Preprocessor<'_> {
                     path.is_file().then_some((path, *kind))
                 })
             }
-            IncludeDirective::Quoted(name) => self
-                .files
-                .path(from)
-                .parent()
-                .map(|dir| dir.join(name))
-                .filter(|candidate| candidate.is_file())
-                .map(|path| (path, self.files.kind(from)))
-                .or_else(|| find_in(&self.search.quote, name).map(|path| (path, HeaderKind::User)))
-                .or_else(|| find_in(&self.search.user, name).map(|path| (path, HeaderKind::User)))
-                .or_else(|| {
-                    find_in(&self.search.system, name).map(|path| (path, HeaderKind::System))
-                })
-                .or_else(|| {
-                    let candidate = PathBuf::from(name);
-                    candidate.is_file().then_some((candidate, HeaderKind::User))
-                }),
+            IncludeDirective::Quoted(name) => {
+                let name = &separators(name);
+                self.files
+                    .path(from)
+                    .parent()
+                    .map(|dir| dir.join(name))
+                    .filter(|candidate| candidate.is_file())
+                    .map(|path| (path, self.files.kind(from)))
+                    .or_else(|| {
+                        find_in(&self.search.quote, name).map(|path| (path, HeaderKind::User))
+                    })
+                    .or_else(|| {
+                        find_in(&self.search.user, name).map(|path| (path, HeaderKind::User))
+                    })
+                    .or_else(|| {
+                        find_in(&self.search.system, name).map(|path| (path, HeaderKind::System))
+                    })
+                    .or_else(|| {
+                        let candidate = PathBuf::from(name);
+                        candidate.is_file().then_some((candidate, HeaderKind::User))
+                    })
+            }
         }
     }
 }
