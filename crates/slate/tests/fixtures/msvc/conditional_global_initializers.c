@@ -1,7 +1,16 @@
 /* { dg-options "/Zc:preprocessor" } */
-#include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
+#if defined(_WIN64)
+typedef unsigned long long size_t;
+#elif defined(_WIN32)
+typedef unsigned int size_t;
+#else
+typedef unsigned long size_t;
+#endif
+#define NULL ((void *)0)
+void abort(void);
+size_t strlen(const char *);
+int memcmp(const void *, const void *, size_t);
+int strcmp(const char *, const char *);
 
 #define TYPECHECK(to_check, to_return) (sizeof(to_check) ? (to_return) : (to_return))
 #define PTRLEN_DECL_LITERAL(s) {TYPECHECK("" s "", s), sizeof(s) - 1}
@@ -89,12 +98,11 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: //! { dg-options "/Zc:preprocessor" }
 // CHECK-NEXT: macro_rules! CHECK__2 {
 // CHECK-NEXT:     ($c:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             if ($c) == 0 {
-// CHECK-NEXT:                 unsafe { std::process::abort() };
+// CHECK-NEXT:                 unsafe { abort() };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
@@ -107,7 +115,7 @@ int main(void) {
 // CHECK-NEXT:     ($c:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             if !$c {
-// CHECK-NEXT:                 unsafe { std::process::abort() };
+// CHECK-NEXT:                 unsafe { abort() };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
@@ -116,6 +124,18 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn abort();
+// X86_64-PC-WINDOWS-MSVC-NEXT:     fn strlen([[ARG_0:arg[0-9]+]]: *const i8) -> u64;
+// X86_64-PC-WINDOWS-MSVC-NEXT:     fn memcmp([[ARG_0]]: *const (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> i32;
+// I686-PC-WINDOWS-MSVC-NEXT:     fn strlen([[ARG_0:arg[0-9]+]]: *const i8) -> u32;
+// I686-PC-WINDOWS-MSVC-NEXT:     fn memcmp([[ARG_0]]: *const (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u32) -> i32;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     fn strlen([[ARG_0:arg[0-9]+]]: *const i8) -> u64;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     fn memcmp([[ARG_0]]: *const (), [[ARG_1:arg[0-9]+]]: *const (), [[ARG_2:arg[0-9]+]]: u64) -> i32;
+// CHECK-NEXT:     fn strcmp([[ARG_0]]: *const i8, [[ARG_1]]: *const i8) -> i32;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: // { dg-options "/Zc:preprocessor" }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct ptrlen {
@@ -1013,22 +1033,9 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT: ];
 // AARCH64-PC-WINDOWS-MSVC-NEXT: ];
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::abort;
-// CHECK-NEXT: use slate_support::memcmp;
-// CHECK-NEXT: use slate_support::strcmp;
-// CHECK-NEXT: use slate_support::strlen;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn same(p: ptrlen, s: *const i8) -> i32 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_0:__v[0-9]+]]: bool = p.len == unsafe { strlen(s as *const core::ffi::c_char) as u64 }
-// I686-PC-WINDOWS-MSVC-NEXT:     let [[V_0:__v[0-9]+]]: bool = p.len == unsafe { strlen(s as *const core::ffi::c_char) as u32 }
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     let [[V_0:__v[0-9]+]]: bool = p.len == unsafe { strlen(s as *const core::ffi::c_char) as u64 }
-// CHECK-NEXT:         && (unsafe {
-// CHECK-NEXT:             memcmp(
-// CHECK-NEXT:                 p.ptr as *const core::ffi::c_void,
-// CHECK-NEXT:                 (s as *const ()) as *const core::ffi::c_void,
-// CHECK-NEXT:                 p.len as usize,
-// CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool =
+// CHECK-NEXT:         p.len == unsafe { strlen(s) } && (unsafe { memcmp(p.ptr, s as *const (), p.len) }) == 0;
 // CHECK-NEXT:     [[V_0]] as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -1064,7 +1071,7 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:             [[V_1]] && same(unsafe { names[2] }, c"session-bind@openssh.com".as_ptr()) != 0;
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             [[V_1]] && same(unsafe { names[2] }, c"session-bind@openssh.com".as_ptr()) != 0;
 // CHECK-NEXT:         if ![[V_2]] {
-// CHECK-NEXT:             unsafe { std::process::abort() };
+// CHECK-NEXT:             unsafe { abort() };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
@@ -1075,22 +1082,17 @@ int main(void) {
 // CHECK-NEXT:             && (unsafe { unsafe { (*extra.hash).r#fn }.unwrap()(5i32) }) == 15;
 // CHECK-NEXT:         let [[V_4:__v[0-9]+]]: bool = [[V_3]] && (unsafe { unsafe { extra.fallback }.unwrap()(5i32) }) == 12;
 // CHECK-NEXT:         if ![[V_4]] {
-// CHECK-NEXT:             unsafe { std::process::abort() };
+// CHECK-NEXT:             unsafe { abort() };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     loop {
-// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: bool = (unsafe {
-// CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 extra.alg as *const core::ffi::c_char,
-// CHECK-NEXT:                 c"Ed25519".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0
+// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: bool = (unsafe { strcmp(extra.alg, c"Ed25519".as_ptr()) }) == 0
 // CHECK-NEXT:             && same(unsafe { extra.prefix }, c"".as_ptr()) != 0;
 // CHECK-NEXT:         if ![[V_5]] {
-// CHECK-NEXT:             unsafe { std::process::abort() };
+// CHECK-NEXT:             unsafe { abort() };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
@@ -1112,31 +1114,29 @@ int main(void) {
 // CHECK-NEXT:     CHECK!(
 // CHECK-NEXT:         (unsafe {
 // CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 ((std::ptr::addr_of_mut!(buffer_a) as *mut i8) as *const i8)
-// CHECK-NEXT:                     as *const core::ffi::c_char,
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 ((if (std::mem::size_of::<*mut ()>() as u64) == 8 {
-// I686-PC-WINDOWS-MSVC-NEXT:                 ((if (std::mem::size_of::<*mut ()>() as u32) == 8 {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:                 ((if (std::mem::size_of::<*mut ()>() as u64) == 8 {
+// CHECK-NEXT:                 (std::ptr::addr_of_mut!(buffer_a) as *mut i8) as *const i8,
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 (if (std::mem::size_of::<*mut ()>() as u64) == 8 {
+// I686-PC-WINDOWS-MSVC-NEXT:                 (if (std::mem::size_of::<*mut ()>() as u32) == 8 {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 (if (std::mem::size_of::<*mut ()>() as u64) == 8 {
 // CHECK-NEXT:                     c"First".as_ptr() as *mut i8
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     c"first".as_ptr() as *mut i8
-// CHECK-NEXT:                 }) as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:                 }) as *const i8,
+// CHECK-NEXT:             )
 // CHECK-NEXT:         }) == 0
 // CHECK-NEXT:     );
 // CHECK-NEXT:     CHECK!(
 // CHECK-NEXT:         (unsafe {
 // CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 ((std::ptr::addr_of_mut!(buffer_b) as *mut i8) as *const i8)
-// CHECK-NEXT:                     as *const core::ffi::c_char,
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 ((if (std::mem::size_of::<*mut ()>() as u64) == 8 {
-// I686-PC-WINDOWS-MSVC-NEXT:                 ((if (std::mem::size_of::<*mut ()>() as u32) == 8 {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:                 ((if (std::mem::size_of::<*mut ()>() as u64) == 8 {
+// CHECK-NEXT:                 (std::ptr::addr_of_mut!(buffer_b) as *mut i8) as *const i8,
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 (if (std::mem::size_of::<*mut ()>() as u64) == 8 {
+// I686-PC-WINDOWS-MSVC-NEXT:                 (if (std::mem::size_of::<*mut ()>() as u32) == 8 {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 (if (std::mem::size_of::<*mut ()>() as u64) == 8 {
 // CHECK-NEXT:                     c"second".as_ptr() as *mut i8
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     c"sFcond".as_ptr() as *mut i8
-// CHECK-NEXT:                 }) as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:                 }) as *const i8,
+// CHECK-NEXT:             )
 // CHECK-NEXT:         }) == 0
 // CHECK-NEXT:     );
 // X86_64-PC-WINDOWS-MSVC-NEXT:     CHECK!(((unsafe { *picks.0[0] }) as u32) == 3 && ((unsafe { *picks.0[1] }) as u32) == 1);
