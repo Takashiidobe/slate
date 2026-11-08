@@ -173,6 +173,7 @@ similar rust.
 - [curl](https://curl.se)
   - Translates libcurl and the `curl` tool. Passes all 1690 `runtests.pl` tests,
     and benchmarks within 5% of native over file:// and HTTP transfers.
+- [jq](https://jqlang.org)
 
 ### MSVC
 
