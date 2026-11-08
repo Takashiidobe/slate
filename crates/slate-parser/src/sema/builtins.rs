@@ -643,7 +643,12 @@ pub(super) fn clang_builtin(name: &str, dialect: &Dialect) -> Option<&'static Cl
                 .or_else(|| gcc_target_builtin(name, dialect.target().family)),
         },
         CompilerFlavor::Clang => clang.or_else(|| target_builtin(name, dialect.target().family)),
-        CompilerFlavor::Msvc => clang,
+        CompilerFlavor::Msvc => clang.or_else(|| {
+            target_builtin(name, dialect.target().family).filter(|builtin| {
+                builtin.languages == Some(BuiltinLanguage::AllMsLanguages)
+                    && (builtin.kind != ClangBuiltinKind::Library || library.recognizes(name))
+            })
+        }),
     }
 }
 

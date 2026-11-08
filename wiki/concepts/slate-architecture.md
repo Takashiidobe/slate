@@ -186,6 +186,17 @@ cargo nextest r --release --profile slate
   record field types clashed with the C types slate lowers field writes to.
 - COFF import prefixes and i686 stdcall decoration are normalized only after
   signature checking.
+- MSVC compiler intrinsics are declared but not defined by MSVC headers.
+  - x86 and x64 `_mm*` names import from `core::arch::{x86,x86_64}`.
+  - The table `src/msvc_simd_table.rs` is generated from the toolchain's
+    stdarch sources by `crates/slate/tools/gen_msvc_simd_table.py`. It covers
+    SSE through AVX2, AES, PCLMUL, SHA, FMA and F16C, and skips unstable
+    functions and those that take references.
+  - The header's `__m128`/`__m128i`/`__m128d`/`__m256*` unions shape as the
+    `core::arch` types. Arguments and returns are transmuted at the call.
+  - Intrinsics whose Rust signature differs from MSVC's are `slate_support`
+    helpers instead: `__movs*`/`__stos*`, `__cpuid`/`__cpuidex`,
+    `_addcarry_u32/u64`, `_subborrow_u32/u64` and `_umul128`.
 - The catalogs contain names, destinations and translation-target eligibility.
   Layouts, signatures, linker names and values stay in the generator report.
 - Lookup uses the translation target, never the host compiler cfg. Unknown or

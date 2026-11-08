@@ -36,8 +36,13 @@ impl Tables<'_> {
             )
         };
         for function in &module.functions {
+            let intrinsic = module.metadata.get(&function.id).is_some_and(|entries| {
+                entries
+                    .iter()
+                    .any(|(key, value)| key == "c_builtin_header" && value.ends_with("intrin.h"))
+            });
             if function.body.is_some()
-                || function.provenance.system_header.is_none()
+                || (function.provenance.system_header.is_none() && !intrinsic)
                 || self.stdio.functions.contains_key(&function.value.id)
                 || self.intrinsics.contains_key(&function.value.id)
                 || !matches!(function.linkage, ir::Linkage::External)
@@ -133,8 +138,10 @@ impl FunctionLowerer<'_, '_> {
         expected: &str,
     ) -> Result<Expr> {
         let ty = self.tables.resolve_type(&argument.ty);
+        let vector = libc_catalog::is_vector_path(expected);
         let expected = rust::Type::Custom(expected.replace("libc::", "slate_support::"));
-        if matches!(ty, ir::Type::Pointer { pointee, .. } if matches!(self.tables.resolve_type(pointee), ir::Type::Function { .. }))
+        if vector
+            || matches!(ty, ir::Type::Pointer { pointee, .. } if matches!(self.tables.resolve_type(pointee), ir::Type::Function { .. }))
         {
             return Ok(Expr::Transmute {
                 from: self.lower_type(&argument.ty)?,

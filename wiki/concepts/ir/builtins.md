@@ -276,7 +276,15 @@ come from `clang_aarch64_builtins.rs`, selected in `target_builtin`.
 `sema/expression.rs` emits calls with `c_builtin` metadata. `clang_builtin`
 looks a name up in this order:
 
-- clang and MSVC flavors: the clang table, then (clang only) the target table.
+- clang flavor: the clang table, then the target table.
+- MSVC flavor: the clang table, then the target table's `ALL_MS_LANGUAGES`
+  entries only (`__cpuid`, `_umul128`, `_BitScanForward`, ...).
+  - `__builtin_ia32_*` stays unknown.
+  - cl.exe accepts these intrinsics with no declaration and no C4013 warning.
+    So an undeclared call gets the builtin's prototype, not an implicit
+    `int()`.
+  - Slate binds such declarations through the libc catalog (`slate_support`)
+    even though they have no system-header provenance.
 - gcc flavor: the clang entry, unless its prototype names a header type
   (`FILE *`, `jmp_buf`) that gcc spells as a plain pointer; then the gcc entry,
   then for `__builtin_X` the library entry `X` (clang's, or gcc's when clang's

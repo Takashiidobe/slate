@@ -59,6 +59,7 @@ impl FunctionLowerer<'_, '_> {
                 if name.is_extern
                     && (name.codegen_builtin || name.rust.starts_with("__builtin_"))
                     && name.library.is_none()
+                    && !self.tables.support_functions.contains_key(id)
                 {
                     return Err(Construct::Function {
                         name: name.rust.clone(),
@@ -160,7 +161,26 @@ impl FunctionLowerer<'_, '_> {
         };
         let call = if matches!(callee, ir::Callee::Direct(id) if self.tables.support_functions.contains_key(id))
         {
-            if let ir::Type::Function {
+            let ir::Callee::Direct(id) = callee else {
+                unreachable!()
+            };
+            let vector_return = self.tables.support_functions[id]
+                .shape
+                .rsplit_once(" -> ")
+                .map(|(_, ret)| ret.to_string())
+                .filter(|ret| crate::libc_catalog::is_vector_path(ret));
+            if let Some(vector) = vector_return
+                && let ir::Type::Function {
+                    return_type: Some(ret),
+                    ..
+                } = self.tables.resolve_type(signature)
+            {
+                Expr::Transmute {
+                    from: rust::Type::Custom(vector),
+                    to: self.lower_type(ret)?,
+                    expr: Box::new(call),
+                }
+            } else if let ir::Type::Function {
                 return_type: Some(ret),
                 ..
             } = self.tables.resolve_type(signature)

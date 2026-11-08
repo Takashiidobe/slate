@@ -20,6 +20,7 @@ include!("libc_symbols_table.rs");
 
 const MSVC_X86: &[&str] = &["i686-pc-windows-msvc", "x86_64-pc-windows-msvc"];
 const MSVC_X64: &[&str] = &["x86_64-pc-windows-msvc"];
+const MSVC_IA32: &[&str] = &["i686-pc-windows-msvc"];
 
 const fn msvc_intrinsic(
     name: &'static str,
@@ -43,12 +44,33 @@ const MSVC_INTRINSICS: &[Symbol] = &[
     msvc_intrinsic("__stosw", "slate_support::__stosw", MSVC_X86),
     msvc_intrinsic("__stosd", "slate_support::__stosd", MSVC_X86),
     msvc_intrinsic("__stosq", "slate_support::__stosq", MSVC_X64),
+    msvc_intrinsic("__cpuid", "slate_support::__cpuid", MSVC_X86),
+    msvc_intrinsic("__cpuidex", "slate_support::__cpuidex", MSVC_X86),
+    msvc_intrinsic("_addcarry_u32", "slate_support::_addcarry_u32", MSVC_X86),
+    msvc_intrinsic("_subborrow_u32", "slate_support::_subborrow_u32", MSVC_X86),
+    msvc_intrinsic("_addcarry_u64", "slate_support::_addcarry_u64", MSVC_X64),
+    msvc_intrinsic("_subborrow_u64", "slate_support::_subborrow_u64", MSVC_X64),
+    msvc_intrinsic("_umul128", "slate_support::_umul128", MSVC_X64),
 ];
 
+include!("msvc_simd_table.rs");
+
+const MSVC_VECTOR_TYPES: &[&str] = &[
+    "__m128", "__m128i", "__m128d", "__m256", "__m256i", "__m256d",
+];
+
+pub fn is_vector_path(rust_type: &str) -> bool {
+    rust_type.starts_with("core::arch::")
+}
+
 pub fn lookup(name: &str, target: &str, kind: Kind) -> Option<&'static Symbol> {
-    SYMBOLS.iter().chain(MSVC_INTRINSICS).find(|symbol| {
-        symbol.name == name && symbol.kind == kind && symbol.targets.contains(&target)
-    })
+    SYMBOLS
+        .iter()
+        .chain(MSVC_INTRINSICS)
+        .chain(MSVC_SIMD)
+        .find(|symbol| {
+            symbol.name == name && symbol.kind == kind && symbol.targets.contains(&target)
+        })
 }
 
 pub fn shape(
@@ -79,8 +101,8 @@ pub fn shape(
                     name, underlying, ..
                 } => {
                     let pointer_integer = match name.as_str() {
-                        "size_t" | "uintptr_t" | "SIZE_T" | "ULONG_PTR" | "UINT_PTR"
-                        | "DWORD_PTR" => Some("usize"),
+                        "size_t" | "__size_t" | "uintptr_t" | "SIZE_T" | "ULONG_PTR"
+                        | "UINT_PTR" | "DWORD_PTR" => Some("usize"),
                         "ssize_t" | "__ssize_t" | "intptr_t" | "ptrdiff_t" | "SSIZE_T"
                         | "LONG_PTR" | "INT_PTR" => Some("isize"),
                         _ => None,
@@ -90,6 +112,11 @@ pub fn shape(
                             if *width == pointer_width && *signed == (name == "isize"))
                     {
                         return Some(name.into());
+                    }
+                    if MSVC_VECTOR_TYPES.contains(&name.as_str()) && matches!(ty, Type::Defined(_))
+                    {
+                        let arch = if pointer_width == 64 { "x86_64" } else { "x86" };
+                        return Some(format!("core::arch::{arch}::{name}"));
                     }
                     c = Some(*underlying);
                 }

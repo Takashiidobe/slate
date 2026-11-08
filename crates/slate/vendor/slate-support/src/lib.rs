@@ -203,6 +203,69 @@ mod string_intrinsics {
 #[cfg(all(windows, any(target_arch = "x86", target_arch = "x86_64")))]
 pub use string_intrinsics::*;
 
+#[cfg(all(windows, any(target_arch = "x86", target_arch = "x86_64")))]
+mod machine_intrinsics {
+    #[cfg(target_arch = "x86")]
+    use core::arch::x86 as arch;
+    #[cfg(target_arch = "x86_64")]
+    use core::arch::x86_64 as arch;
+
+    #[inline]
+    pub unsafe fn __cpuidex(regs: *mut i32, leaf: i32, subleaf: i32) {
+        let result = arch::__cpuid_count(leaf as u32, subleaf as u32);
+        let values = [result.eax, result.ebx, result.ecx, result.edx];
+        for (index, value) in values.into_iter().enumerate() {
+            unsafe { regs.add(index).write(value as i32) };
+        }
+    }
+
+    #[inline]
+    pub unsafe fn __cpuid(regs: *mut i32, leaf: i32) {
+        unsafe { __cpuidex(regs, leaf, 0) }
+    }
+
+    #[inline]
+    pub unsafe fn _addcarry_u32(carry: u8, a: u32, b: u32, out: *mut u32) -> u8 {
+        let sum = a as u64 + b as u64 + (carry != 0) as u64;
+        unsafe { out.write(sum as u32) };
+        (sum >> 32) as u8
+    }
+
+    #[inline]
+    pub unsafe fn _subborrow_u32(borrow: u8, a: u32, b: u32, out: *mut u32) -> u8 {
+        let diff = a as i64 - b as i64 - (borrow != 0) as i64;
+        unsafe { out.write(diff as u32) };
+        (diff < 0) as u8
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    #[inline]
+    pub unsafe fn _addcarry_u64(carry: u8, a: u64, b: u64, out: *mut u64) -> u8 {
+        let sum = a as u128 + b as u128 + (carry != 0) as u128;
+        unsafe { out.write(sum as u64) };
+        (sum >> 64) as u8
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    #[inline]
+    pub unsafe fn _subborrow_u64(borrow: u8, a: u64, b: u64, out: *mut u64) -> u8 {
+        let diff = a as i128 - b as i128 - (borrow != 0) as i128;
+        unsafe { out.write(diff as u64) };
+        (diff < 0) as u8
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    #[inline]
+    pub unsafe fn _umul128(a: u64, b: u64, high: *mut u64) -> u64 {
+        let product = a as u128 * b as u128;
+        unsafe { high.write((product >> 64) as u64) };
+        product as u64
+    }
+}
+
+#[cfg(all(windows, any(target_arch = "x86", target_arch = "x86_64")))]
+pub use machine_intrinsics::*;
+
 #[cfg(target_pointer_width = "64")]
 pub type size_t = u64;
 #[cfg(target_pointer_width = "32")]
