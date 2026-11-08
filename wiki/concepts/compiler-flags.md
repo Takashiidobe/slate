@@ -29,6 +29,9 @@ each stage is in [configuration-threading](configuration-threading.md).
   `ALL_FLAVORS` (`-fomit-frame-pointer`, `-flto`, `-fvisibility=`, ...).
   Its own `/` spellings (the rest of the cl.exe options are tracked in
   slate-3amj.5):
+  - Any `/d2…` option (cl's undocumented backend switches, such as
+    `/d2FH4-` from ReactOS's toolchain) is a codegen-only row and ignored;
+    the backend can't change macros or the IR.
   - Slate always uses cl's conforming preprocessor (`_MSVC_TRADITIONAL 0`),
     even without `/Zc:preprocessor` or `/std:c11` and later, where cl falls
     back to its traditional one. `/Zc:preprocessor` is accepted with no

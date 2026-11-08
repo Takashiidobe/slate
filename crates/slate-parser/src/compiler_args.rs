@@ -1298,7 +1298,7 @@ const GCC_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Gcc];
 const CLANG_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Clang];
 const MSVC_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Msvc];
 
-const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 171] = [
+const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 172] = [
     CodegenOnlyFlag::switch("-fomit-frame-pointer", ALL_FLAVORS),
     CodegenOnlyFlag::switch("-flto", ALL_FLAVORS),
     CodegenOnlyFlag::switch("-ffunction-sections", ALL_FLAVORS),
@@ -1451,6 +1451,7 @@ const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 171] = [
     CodegenOnlyFlag::value("/EH", MSVC_ONLY),
     CodegenOnlyFlag::toggle("/permissive", MSVC_ONLY),
     CodegenOnlyFlag::exact("/presetPadding", MSVC_ONLY),
+    CodegenOnlyFlag::value("/d2", MSVC_ONLY),
     CodegenOnlyFlag::toggle("/Zc:wchar_t", MSVC_ONLY),
     CodegenOnlyFlag::toggle("/Zc:forScope", MSVC_ONLY),
     CodegenOnlyFlag::toggle("/Zc:inline", MSVC_ONLY),
