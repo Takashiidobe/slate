@@ -1078,6 +1078,7 @@ fn translate_slate_project(
             root.as_deref(),
             merge::Sections::ByProject,
             false,
+            &merge::comdat_owners(&units),
         )
     })?;
     backend::assign_template_names(translated.programs.iter_mut().map(|(_, program)| program));
