@@ -432,7 +432,11 @@ EnumItem = Enumerator { name, value: Option<Expr>, attributes, provenance } | Co
 
 - A stray `;` in a record body (`struct { int x; ; }`) is an `ExtraSemi`
   item, one per `;`, spanning the token. It declares nothing; sema raises
-  `extra-semi` from it. gcc and clang accept it; msvc rejects it.
+  `extra-semi` from it. gcc and clang accept it; msvc rejects it. A member
+  of only qualifiers and attributes (`const;`, `__attribute__((x));`) is
+  also an `ExtraSemi` spanning those tokens, since gcc and clang ignore it.
+- Outside msvc, the last member may omit its `;` (`union { int i; short s }`);
+  gcc and clang only warn.
 - Definitions are stored once in `TranslationUnit.tags` and referenced by
   `TagId`, so anonymous tags have identity (`struct { int y; } g1, g2;`
   share one). Nested, block, and parameter-list definitions get their own

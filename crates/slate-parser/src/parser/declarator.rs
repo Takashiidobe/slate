@@ -327,11 +327,24 @@ impl<'a> DeclaratorParser<'a> {
                 continue;
             }
             let start = self.pos;
-            let end = start
-                + super::decl::top_level_semi(&self.tokens[start..]).ok_or(
-                    DeclaratorError::ExpectedToken(Token::Semi, "in struct/union body"),
-                )?
-                + 1;
+            if !parser.flavor().is_msvc() && self.skip_empty_member()? {
+                fields.push(span_tokens(
+                    FieldItemKind::ExtraSemi,
+                    &self.tokens[start..self.pos],
+                    self.context,
+                ));
+                continue;
+            }
+            let end = match super::decl::member_end(&self.tokens[start..]) {
+                Some((offset, Token::Semi)) => start + offset + 1,
+                Some((offset, _)) if !parser.flavor().is_msvc() => start + offset,
+                _ => {
+                    return Err(DeclaratorError::ExpectedToken(
+                        Token::Semi,
+                        "in struct/union body",
+                    ));
+                }
+            };
             let item =
                 if self.tokens.value_at(start) == Some(&Token::Keyword(Keyword::StaticAssert)) {
                     FieldItemKind::StaticAssert(
@@ -366,6 +379,31 @@ impl<'a> DeclaratorParser<'a> {
             );
         }
         Ok(fields)
+    }
+
+    fn skip_empty_member(&mut self) -> Result<bool, DeclaratorError> {
+        let start = self.pos;
+        loop {
+            let before = self.pos;
+            self.parse_attributes()?;
+            let qualifier = matches!(
+                self.peek(),
+                Some(Token::Keyword(
+                    Keyword::Const | Keyword::Volatile | Keyword::Restrict | Keyword::Atomic
+                ))
+            ) && self.tokens.value_at(self.pos + 1) != Some(&Token::LParen);
+            if qualifier {
+                self.pos += 1;
+            }
+            if self.pos == before {
+                break;
+            }
+        }
+        if self.pos > start && self.matches(Token::Semi) {
+            return Ok(true);
+        }
+        self.pos = start;
+        Ok(false)
     }
 
     pub(super) fn parse_enumerator_list(&mut self) -> Result<Vec<EnumItem>, DeclaratorError> {

@@ -136,7 +136,8 @@ impl Parser {
         context: DeclarationContext,
     ) -> Result<Vec<Span<ParsedDeclarator>>, ParseError> {
         let mut declarators = Vec::new();
-        if parser.peek() != Some(&Token::Semi) {
+        let unterminated_member = context == DeclarationContext::Field && parser.peek().is_none();
+        if parser.peek() != Some(&Token::Semi) && !unterminated_member {
             declarators.push(self.parse_one_declarator(parser, specifiers, context)?);
         }
         self.finish_declaration(parser, specifiers, context, &mut declarators)?;
@@ -160,7 +161,8 @@ impl Parser {
         while !declarators.is_empty() && parser.matches(Token::Comma) {
             declarators.push(self.parse_one_declarator(parser, specifiers, context)?);
         }
-        if !parser.matches(Token::Semi) {
+        let unterminated_member = context == DeclarationContext::Field && parser.peek().is_none();
+        if !parser.matches(Token::Semi) && !unterminated_member {
             return Err(self.error_at_tokens(parser.tokens, parser.pos, "expected `;`"));
         }
         let ty = std::mem::replace(&mut specifiers.ty, TypeSpecifier::Void);
@@ -754,6 +756,20 @@ pub(super) fn matching_paren(tokens: &[Span<Token>], open: usize) -> Option<usiz
 
 pub(super) fn top_level_semi(tokens: &[Span<Token>]) -> Option<usize> {
     top_level_token(tokens, &Token::Semi)
+}
+
+pub(super) fn member_end(tokens: &[Span<Token>]) -> Option<(usize, &Token)> {
+    let mut depth = 0i32;
+    for (offset, token) in tokens.iter().enumerate() {
+        match token.value {
+            Token::Semi if depth == 0 => return Some((offset, &token.value)),
+            Token::RBrace if depth == 0 => return Some((offset, &token.value)),
+            Token::LParen | Token::LBrace | Token::LBracket => depth += 1,
+            Token::RParen | Token::RBrace | Token::RBracket => depth -= 1,
+            _ => {}
+        }
+    }
+    None
 }
 
 pub(super) fn top_level_token(tokens: &[Span<Token>], target: &Token) -> Option<usize> {
