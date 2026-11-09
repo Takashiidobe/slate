@@ -536,6 +536,36 @@ impl FunctionLowerer<'_, '_> {
                     })),
                 }))
             }
+            ValueKind::VaArg { list, passing, .. }
+                if self.tables.target.family == TargetFamily::AArch64
+                    && matches!(self.tables.resolve_type(&list.ty), ir::Type::Pointer { .. }) =>
+            {
+                self.dependencies.darwin_arm64_va = true;
+                let function = if *passing == ir::VaPassing::Indirect {
+                    "indirect"
+                } else {
+                    "arg"
+                };
+                Expr::Unsafe(Box::new(rust::Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(Expr::Call {
+                        func: Box::new(Expr::GenericPath {
+                            path: rust::Path::new(
+                                ["__slate_darwin_arm64_va", function].map(rust::Ident::from),
+                            ),
+                            type_args: vec![
+                                rust::Type::Custom("_".into()),
+                                self.lower_type(&value.ty)?,
+                            ],
+                        }),
+                        args: vec![Expr::AddrOf {
+                            mutable: true,
+                            expr: Box::new(self.lower_place(list)?),
+                        }],
+                        binding: CallBinding::Generated,
+                    })),
+                }))
+            }
             ValueKind::VaArg { list, passing, .. } if *passing != ir::VaPassing::Scalar => {
                 let usize_arg = |n: u8| Expr::Value(rust::RustValue::Usize(usize::from(n)));
                 let (module, function, extra) = match (self.tables.target.family, passing) {

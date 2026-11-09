@@ -28,6 +28,14 @@
         "-D_CRT_NONSTDC_NO_DEPRECATE",
         "-D_CRT_SECURE_NO_DEPRECATE"
       ]
+    },
+    {
+      "name": "darwin-aarch64",
+      "triple": "aarch64-apple-darwin",
+      "flavor": "clang",
+      "args": [
+        "-DTCC_TARGET_ARM64"
+      ]
     }
   ]
 }

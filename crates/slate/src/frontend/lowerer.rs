@@ -118,6 +118,7 @@ struct Dependencies {
     x86_interrupt: bool,
     vectorcall: bool,
     win64_va: bool,
+    darwin_arm64_va: bool,
     sysv_va: bool,
     i386_va: bool,
     arm_va: bool,
@@ -1312,6 +1313,11 @@ impl<'m> ModuleLowerer<'m> {
                 dependencies.i386_va,
                 "__slate_i386_va",
                 include_str!("support/i386_va.rs"),
+            ),
+            (
+                dependencies.darwin_arm64_va,
+                "__slate_darwin_arm64_va",
+                include_str!("support/darwin_arm64_va.rs"),
             ),
             (
                 dependencies.arm_va,
