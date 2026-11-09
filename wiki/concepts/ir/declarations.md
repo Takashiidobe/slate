@@ -202,7 +202,9 @@ linkage and merged across redeclarations (first value wins, flags OR):
   `/defaultlib`, ...) is kept verbatim in `Module.linker_options` (printed
   `linker "...";`). Slate emits one `.drectve` `global_asm!` with the options
   space-separated, which is what cl.exe writes, so lld-link applies them.
-  `/export:name[=internal][,DATA]` also marks the internal symbol `include`.
+  `/export:name[=internal][,DATA]` and `/entry:sym` also mark the internal
+  symbol `include`. A custom `/entry` still needs the CRT: Rust's std does not
+  link without the startup objects, so fixtures call `mainCRTStartup`.
   Fixtures: `msvc/windows/x86_64/pragma_{export,defaultlib}.c`,
   `crates/slate/tests/fixtures/msvc/{x86_64,i686}/pragma_{export,defaultlib}.c`.
 

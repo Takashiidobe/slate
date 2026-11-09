@@ -460,6 +460,13 @@ impl Walk<'_> {
                         } else if let Some(symbol) = option.strip_prefix("/include:") {
                             self.pragmas.include.insert(undecorated(symbol));
                         } else {
+                            if let Some(entry) = option
+                                .get(.."/entry:".len())
+                                .filter(|prefix| prefix.eq_ignore_ascii_case("/entry:"))
+                                .map(|_| &option["/entry:".len()..])
+                            {
+                                self.pragmas.include.insert(undecorated(entry));
+                            }
                             if let Some(export) = option.strip_prefix("/export:") {
                                 let name = export.split(',').next().unwrap_or(export);
                                 let internal =
