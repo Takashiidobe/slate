@@ -174,7 +174,173 @@ pub struct X86IsaRequest {
     flags: Vec<(X86Feature, bool)>,
     clang_only: Vec<usize>,
     general_regs_only: Vec<usize>,
+    apx: Vec<ApxFlag>,
     pub fpmath: Option<FpMath>,
+}
+
+const APX_FEATURES: [(&str, &str); 9] = [
+    ("egpr", "__EGPR__"),
+    ("push2pop2", "__PUSH2POP2__"),
+    ("ppx", "__PPX__"),
+    ("ndd", "__NDD__"),
+    ("ccmp", "__CCMP__"),
+    ("nf", "__NF__"),
+    ("cf", "__CF__"),
+    ("zu", "__ZU__"),
+    ("jmpabs", "__JMPABS__"),
+];
+const GCC_APX_FEATURES: [&str; 9] = [
+    "none",
+    "all",
+    "egpr",
+    "push2pop2",
+    "ppx",
+    "ndd",
+    "ccmp",
+    "nf",
+    "zu",
+];
+const APX_F_MACRO: &str = "__APX_F__";
+const APX_INLINE_ASM_USE_GPR32_MACRO: &str = "__APX_INLINE_ASM_USE_GPR32__";
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ApxFlag {
+    Apxf(bool),
+    Features { names: Vec<String>, enabled: bool },
+    InlineAsmUseGpr32(bool),
+}
+
+impl ApxFlag {
+    pub fn parse(argument: &str) -> Option<Self> {
+        let name = argument.strip_prefix("-m")?;
+        let (name, enabled) = match name.strip_prefix("no-") {
+            Some(name) => (name, false),
+            None => (name, true),
+        };
+        match name {
+            "apxf" => Some(Self::Apxf(enabled)),
+            "apx-inline-asm-use-gpr32" => Some(Self::InlineAsmUseGpr32(enabled)),
+            _ => name
+                .strip_prefix("apx-features=")
+                .map(|names| Self::Features {
+                    names: names.split(',').map(String::from).collect(),
+                    enabled,
+                }),
+        }
+    }
+
+    fn check(&self, family: TargetFamily, flavor: CompilerFlavor) -> Result<(), String> {
+        match self {
+            Self::Apxf(true) if family == TargetFamily::X86 => {
+                Err("-mapxf is not supported for 32-bit code".into())
+            }
+            Self::Features { enabled: true, .. } if family == TargetFamily::X86 => {
+                Err("-mapx-features= is not supported for 32-bit code".into())
+            }
+            Self::Features { names, .. } => match names.iter().find(|name| {
+                if flavor.is_gcc() {
+                    !GCC_APX_FEATURES.contains(&name.as_str())
+                } else {
+                    !name.is_empty() && apx_bit(name).is_none()
+                }
+            }) {
+                Some(name) => Err(format!("unsupported APX feature '{name}'")),
+                None => Ok(()),
+            },
+            Self::InlineAsmUseGpr32(false) if !flavor.is_gcc() => {
+                Err("unknown option -mno-apx-inline-asm-use-gpr32".into())
+            }
+            _ => Ok(()),
+        }
+    }
+}
+
+fn apx_bit(name: &str) -> Option<u16> {
+    APX_FEATURES
+        .iter()
+        .position(|(spelling, _)| *spelling == name)
+        .map(|index| 1 << index)
+}
+
+fn apx_f_features() -> u16 {
+    APX_FEATURES
+        .iter()
+        .filter(|(spelling, _)| *spelling != "cf")
+        .filter_map(|(spelling, _)| apx_bit(spelling))
+        .fold(0, |bits, bit| bits | bit)
+}
+
+fn is_apx_macro(name: &str) -> bool {
+    name == APX_F_MACRO || APX_FEATURES.iter().any(|(_, apx)| *apx == name)
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub struct Apx {
+    features: u16,
+    apx_f: bool,
+    inline_asm_use_gpr32: bool,
+}
+
+impl Apx {
+    fn resolve(cpu: &X86Cpu, flags: &[ApxFlag], rules: Rules) -> Self {
+        let mut features = APX_FEATURES
+            .iter()
+            .filter(|(_, name)| cpu.macros.contains(name))
+            .filter_map(|(spelling, _)| apx_bit(spelling))
+            .fold(0, |bits, bit| bits | bit);
+        let mut apx_f = false;
+        let mut inline_asm_use_gpr32 = false;
+        for flag in flags {
+            let (bits, enabled) = match flag {
+                ApxFlag::Apxf(enabled) => {
+                    apx_f = *enabled;
+                    (apx_f_features(), *enabled)
+                }
+                ApxFlag::Features { names, enabled } => (
+                    names
+                        .iter()
+                        .filter_map(|name| apx_bit(name))
+                        .fold(0, |bits, bit| bits | bit),
+                    *enabled,
+                ),
+                ApxFlag::InlineAsmUseGpr32(enabled) => {
+                    inline_asm_use_gpr32 = *enabled;
+                    continue;
+                }
+            };
+            features = if enabled {
+                features | bits
+            } else {
+                features & !bits
+            };
+        }
+        match rules {
+            Rules::Clang => Self {
+                features,
+                apx_f: features & apx_f_features() == apx_f_features(),
+                inline_asm_use_gpr32: inline_asm_use_gpr32
+                    && apx_bit("egpr").is_some_and(|egpr| features & egpr != 0),
+            },
+            Rules::Gcc => Self {
+                features: 0,
+                apx_f,
+                inline_asm_use_gpr32,
+            },
+        }
+    }
+
+    fn macros(self) -> impl Iterator<Item = &'static str> {
+        APX_FEATURES
+            .iter()
+            .enumerate()
+            .filter(move |(index, _)| self.features & (1 << index) != 0)
+            .map(|(_, (_, name))| *name)
+            .chain(self.apx_f.then_some(APX_F_MACRO))
+            .chain(
+                self.inline_asm_use_gpr32
+                    .then_some(APX_INLINE_ASM_USE_GPR32_MACRO),
+            )
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -215,6 +381,10 @@ impl X86IsaRequest {
         self.flags.push((feature, enabled));
     }
 
+    pub fn set_apx(&mut self, flag: ApxFlag) {
+        self.apx.push(flag);
+    }
+
     pub fn set_for_clang(&mut self, feature: X86Feature, enabled: bool) {
         self.clang_only.push(self.flags.len());
         self.set(feature, enabled);
@@ -239,6 +409,9 @@ impl X86IsaRequest {
         arch: Option<X86Arch>,
         flavor: CompilerFlavor,
     ) -> Result<(), String> {
+        for flag in &self.apx {
+            flag.check(family, flavor)?;
+        }
         if let Some(arch) = arch {
             if family == TargetFamily::X86_64 && !arch.long_mode() {
                 return Err(format!(
@@ -347,6 +520,7 @@ pub struct X86Isa {
     pub features: X86Features,
     pub disabled: X86Features,
     pub fpmath: Option<FpMath>,
+    apx: Apx,
 }
 
 impl X86Isa {
@@ -384,6 +558,7 @@ impl X86Isa {
             features,
             disabled: disabled.without(features),
             fpmath: request.fpmath,
+            apx: Apx::resolve(arch.cpu(), &request.apx, rules),
         }
     }
 
@@ -476,7 +651,10 @@ impl X86Isa {
         };
         let mut defines: Vec<String> = cpu_macros
             .iter()
+            .copied()
             .filter(|name| !gcc || !name.starts_with("__tune_"))
+            .filter(|name| !is_apx_macro(name))
+            .chain(self.apx.macros())
             .map(|name| format!("{name}=1"))
             .collect();
         for feature in ALL_FEATURES {

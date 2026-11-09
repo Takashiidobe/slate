@@ -323,12 +323,29 @@ or not yet modeled:
 
 - clang-only CPU aliases (`corei7`, `skx`, `core-avx2`, `atom`, `slm`,
   `athlon64`, ...), which live in `X86TargetParser.cpp`, not `X86.td`;
-- `-mapxf` and `-mvzeroupper`, which have no `X86.td` feature;
 - 32-bit CPUs without SSE2 (no CPU table entries; `-mno-sse2` itself works);
 - gcc flavor: `-march=` other than the `x86-64` levels, and gcc-only
   features with no `X86.td` entry;
 - `-march=<cpu>` without 64-bit support on x86_64, and 64-bit-only
   features such as `-muintr` on i686, as clang rejects them.
+
+APX is modeled by hand in `x86_isa.rs` (`ApxFlag`, `Apx`), outside the
+generated tables, because its features have no `-m` flag of their own.
+`-mapxf`/`-mno-apxf`, `-mapx-features=`/`-mno-apx-features=` and
+`-mapx-inline-asm-use-gpr32` apply in order; the positive forms are
+rejected on i686, as both compilers do.
+
+- clang: the features are `egpr`, `push2pop2`, `ppx`, `ndd`, `ccmp`, `nf`,
+  `cf`, `zu`, `jmpabs`, each with its own macro (`__EGPR__`, ...). `-mapxf`
+  toggles all but `cf`, and `__APX_F__` is defined when those eight are all
+  on, however they were set. `-march=diamondrapids` starts with the eight.
+  `__APX_INLINE_ASM_USE_GPR32__` needs EGPR. Empty list items are allowed.
+- gcc: only `-mapxf` (last one wins) defines `__APX_F__`; `-mapx-features=`
+  accepts `none`, `all` and the clang names but `cf`/`jmpabs`, and defines
+  nothing. `-mapx-inline-asm-use-gpr32` defines its macro on its own, and
+  `-mno-` turns it off.
+
+`-mvzeroupper`/`-mno-vzeroupper` are codegen-only in both flavors.
 
 ## ISA gotchas
 

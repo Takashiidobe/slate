@@ -12,7 +12,7 @@ use crate::pp::{MacroOption, PreprocessorInputs};
 use crate::rules::{Rule, Rules};
 use crate::target::aarch64_isa::{AArch64Feature, ArmMarch};
 use crate::target::isa::{IsaRequest, March, TargetIsa};
-use crate::target::x86_isa::{X86Feature, X86IsaRequest};
+use crate::target::x86_isa::{ApxFlag, X86Feature, X86IsaRequest};
 use crate::target_info::{LongDoubleFormat, TargetEnvironment, TargetFamily, TargetInfo, TargetOs};
 use crate::target_registry::{ArchMode, arch_variant};
 use crate::{compiler_headers, native_headers, sysroot};
@@ -1303,7 +1303,7 @@ const GCC_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Gcc];
 const CLANG_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Clang];
 const MSVC_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Msvc];
 
-const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 172] = [
+const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 173] = [
     CodegenOnlyFlag::switch("-fomit-frame-pointer", ALL_FLAVORS),
     CodegenOnlyFlag::switch("-flto", ALL_FLAVORS),
     CodegenOnlyFlag::switch("-ffunction-sections", ALL_FLAVORS),
@@ -1351,6 +1351,7 @@ const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 172] = [
     CodegenOnlyFlag::switch("-coverage", GNU_FLAVORS).negated_by(&[]),
     CodegenOnlyFlag::switch("-mred-zone", GNU_FLAVORS),
     CodegenOnlyFlag::switch("-mskip-rax-setup", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-mvzeroupper", GNU_FLAVORS),
     CodegenOnlyFlag::switch("-mindirect-branch-cs-prefix", GNU_FLAVORS).negated_by(GCC_ONLY),
     CodegenOnlyFlag::value("-mtune=", GNU_FLAVORS),
     CodegenOnlyFlag::value("-mfunction-return=", GNU_FLAVORS).one_of(&[
@@ -2555,6 +2556,9 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if let Some((feature, enabled)) = X86Feature::parse_flag(argument) {
             parsed.saw(Opt::IsaFeature, argument);
             parsed.isa.x86.set(feature, enabled);
+        } else if let Some(flag) = ApxFlag::parse(argument) {
+            parsed.saw(Opt::IsaFeature, argument);
+            parsed.isa.x86.set_apx(flag);
         } else if parse_pedantic(argument, &mut parsed.diagnostics) {
             parsed.saw(Opt::Pedantic, argument);
         } else if let Some(name) = argument.strip_prefix("-W") {
