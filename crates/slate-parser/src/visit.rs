@@ -613,6 +613,7 @@ pub fn walk_attribute<V: Visitor + ?Sized>(
         | Attribute::Uninitialized
         | Attribute::Unknown { .. }
         | Attribute::IgnoredDeclspec { .. }
+        | Attribute::IgnoredMode { .. }
         | Attribute::Invalid { .. } => Ok(()),
     }
 }

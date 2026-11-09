@@ -125,7 +125,7 @@ fn general_use(attribute: &Attribute) -> Use {
         | Attribute::Common
         | Attribute::NoCommon => Use::Layout,
 
-        Attribute::Mode(_) => Use::Ignored,
+        Attribute::Mode(_) | Attribute::IgnoredMode { .. } => Use::Ignored,
         Attribute::AddressSpace(_) => Use::Ignored,
         Attribute::Cleanup(_) => Use::Ignored,
         Attribute::CountedBy(_) | Attribute::BoundedBy(_) => Use::Ignored,
@@ -231,6 +231,7 @@ fn inapplicable(
         return record.then_some((spelling, Some(applies_to)));
     }
     match attribute {
+        Attribute::IgnoredMode { .. } => Some(("mode", None)),
         Attribute::Packed => (!record && subject != Subject::Field).then_some(("packed", None)),
         Attribute::TransparentUnion => {
             (!matches!(subject, Subject::Record { union: true } | Subject::Typedef))

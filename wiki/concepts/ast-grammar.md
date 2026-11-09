@@ -625,6 +625,7 @@ Attribute = (* no arguments *)
           | "CallingConvention(" CallingConvention ")"
           | Unknown { name: string, arguments: vec<string> }
           | IgnoredDeclspec { name: string, arguments: vec<string> }
+          | IgnoredMode { arguments: vec<string> }
           | Invalid { name: string, arguments: vec<string> } ;
 
 AlignAsOperand    = Type { ty: TypeName } | "Expr(" expr ")" ;
@@ -643,5 +644,7 @@ CallingConvention = "Cdecl" | "Stdcall" | "Fastcall" | "Vectorcall"
   name with its argument token spellings. `IgnoredDeclspec` is a
   `__declspec` entry the flavor does not register for the target, which
   clang ignores as "not supported" even when the name is a GNU attribute.
+  `IgnoredMode` is a gcc-flavor `mode` whose single argument is not an
+  identifier, which gcc ignores with a warning.
   `Invalid` is a known attribute whose
   arguments did not fit its form.

@@ -299,6 +299,11 @@ Mode resolution (as clang):
 - Errors: integer mode on a floating base or vice versa; mode on a
   pointer, array, or function declarator. Complex, vector (`V4SI`), `HF`
   modes are unsupported.
+- gcc flavor: a single argument that is not an identifier (`mode(1)`,
+  `mode(vector_size(8))`) parses as `IgnoredMode { arguments }` and sema
+  warns "'mode' attribute ignored" (`-Wignored-attributes`). The argument
+  is not checked as an expression, unlike gcc. Other flavors, and a missing
+  or second argument, give `Invalid`.
 
 ### Floating keywords
 

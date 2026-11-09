@@ -147,6 +147,8 @@ position without resolving names:
 - Order: `inapplicable` first, then per-subject rules (`parameter_use`,
   `member_use`), then `general_use`.
 - `general_use` is exhaustive over `Attribute`.
+- `IgnoredMode` (gcc `mode` with a non-identifier argument) is
+  `Inapplicable` on every subject: "'mode' attribute ignored".
 - `Ignored` includes `mode`, `address_space`, `cleanup`,
   `scalar_storage_order`, `transparent_union` (the calling convention is
   not modeled; a call needing it fails in argument conversion). `Ignored`

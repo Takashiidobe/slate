@@ -1465,6 +1465,9 @@ pub enum Attribute {
         name: String,
         arguments: Vec<String>,
     },
+    IgnoredMode {
+        arguments: Vec<String>,
+    },
     Invalid {
         name: String,
         arguments: Vec<String>,

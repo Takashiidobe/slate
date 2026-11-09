@@ -1,6 +1,7 @@
 use super::{ParseContext, Parser, string_literal_content};
 use crate::ast::*;
 use crate::attribute_support;
+use crate::compiler_args::CompilerFlavor;
 use crate::const_expr;
 use crate::lexer::{Token, TokenSpanExt};
 use crate::target_info::TargetFamily;
@@ -396,9 +397,17 @@ fn parse_attribute_value(
             None if !arguments.is_empty() => Attribute::VectorSize(parse_expression(arguments)?),
             None => invalid_attribute(name, arguments),
         }),
-        "mode" => Ok(single_ident()
-            .map(Attribute::Mode)
-            .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "mode" => Ok(match single_ident() {
+            Some(mode) => Attribute::Mode(mode),
+            None if context.dialect().flavor() == CompilerFlavor::Gcc
+                && is_single_argument(arguments) =>
+            {
+                Attribute::IgnoredMode {
+                    arguments: arguments.values().map(String::from).collect(),
+                }
+            }
+            None => invalid_attribute(name, arguments),
+        }),
         "visibility" => Ok(string_argument()
             .map(Attribute::Visibility)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
@@ -628,6 +637,19 @@ pub(super) fn invalid_attribute(name: &str, arguments: &[Span<Token>]) -> Attrib
         name: name.into(),
         arguments: arguments.values().map(String::from).collect(),
     }
+}
+
+fn is_single_argument(arguments: &[Span<Token>]) -> bool {
+    let mut depth = 0usize;
+    for token in arguments {
+        match token.value {
+            Token::LParen | Token::LBracket | Token::LBrace => depth += 1,
+            Token::RParen | Token::RBracket | Token::RBrace => depth = depth.saturating_sub(1),
+            Token::Comma if depth == 0 => return false,
+            _ => {}
+        }
+    }
+    !arguments.is_empty()
 }
 
 pub(super) fn attribute_arguments(arguments: &[Span<Token>]) -> Vec<String> {
