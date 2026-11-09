@@ -100,10 +100,10 @@ int main(void) {
 // CHECK-NEXT:   macro_calls.c: [] 1 compiled
 // CHECK-NEXT:   units/macro_calls_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit macro_calls: 38 items, 15 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_calls: 39 items, 16 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:twice: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit macro_calls_helper: 8 items, 3 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_calls_helper: 9 items, 4 gated, 0 duplicated functions
 // CHECK-NEXT: macros: 12 function-like, 12 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   macro CALL_AND_WRITE: 2 lifted, inline:
 // CHECK-NEXT:   macro CALL_BUFFER: 2 lifted, inline:
@@ -137,6 +137,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: file macro_calls_helper.rs
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
@@ -274,6 +280,12 @@ int main(void) {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), r#fn.unwrap()($a)) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]

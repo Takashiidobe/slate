@@ -92,7 +92,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_arguments.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_arguments: 33 items, 2 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_arguments: 34 items, 3 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced record:odd_fields: 2 variants
 // CHECK-NEXT:   spliced fn:thrice: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
@@ -166,6 +166,12 @@ int main(void) {
 // CHECK-NEXT:         #[bits(30, access = na)]
 // CHECK-NEXT:         pub __slate_pad_1: u32,
 // CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg_attr(

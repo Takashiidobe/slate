@@ -24,9 +24,9 @@ int main(void) {
 // CHECK-NEXT:     6 assignments preprocess like a compiled one
 // CHECK-NEXT:   units/unseen_signature_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 6 compiles across 2 targets
-// CHECK-NEXT: unit unseen_signature: 8 items, 4 gated, 0 duplicated functions
+// CHECK-NEXT: unit unseen_signature: 9 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 4 variants
-// CHECK-NEXT: unit unseen_signature_helper: 1 items, 0 gated, 0 duplicated functions
+// CHECK-NEXT: unit unseen_signature_helper: 2 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 16 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 2 shared symbols, 1 mismatches
@@ -44,6 +44,12 @@ int main(void) {
 // CHECK-NEXT: #[cfg(any(not(feature = "alpha"), not(feature = "beta"), feature = "gamma"))]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn widen([[ARG_0]]: i32) -> i32;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -110,6 +116,12 @@ int main(void) {
 // CHECK-NEXT: #[cfg(all(feature = "alpha", feature = "beta", not(feature = "gamma")))]
 // CHECK-NEXT: use core::ffi::c_long;
 // CHECK-NEXT: file unseen_signature_helper.rs
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn widen(x: i32) -> i32 {
 // CHECK-NEXT:     x + 1

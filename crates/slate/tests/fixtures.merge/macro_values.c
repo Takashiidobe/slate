@@ -231,7 +231,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_values.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_values: 55 items, 2 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_values: 56 items, 3 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:double_it: 2 variants
 // CHECK-NEXT:   spliced fn:show_trace: 2 variants
 // CHECK-NEXT:   spliced fn:plain_values: 2 variants
@@ -295,6 +295,12 @@ int main(void) {
 // CHECK-NEXT:     ($s:expr) => {
 // CHECK-NEXT:         unsafe { strlen((($s) as *const c_char) as *const core::ffi::c_char) as u64 }
 // CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg_attr(

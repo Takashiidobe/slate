@@ -23,9 +23,9 @@ int main(void) {
 // CHECK-NEXT:   signature_mismatch.c: [] 1 compiled
 // CHECK-NEXT:   units/signature_mismatch_helper.c: [alpha,beta,gamma] 6 compiled
 // CHECK-NEXT: total: 14 compiles across 2 targets
-// CHECK-NEXT: unit signature_mismatch: 9 items, 1 gated, 0 duplicated functions
+// CHECK-NEXT: unit signature_mismatch: 10 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit signature_mismatch_helper: 8 items, 5 gated, 0 duplicated functions
+// CHECK-NEXT: unit signature_mismatch_helper: 9 items, 6 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:widen: 2 variants
 // CHECK-NEXT:   spliced record:pair: 2 variants
 // CHECK-NEXT:   spliced fn:make_pair: 2 variants
@@ -40,6 +40,12 @@ int main(void) {
 // CHECK-NEXT: exit: 1
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {
@@ -135,6 +141,12 @@ int main(void) {
 // CHECK-NEXT: #[cfg(not(feature = "gamma"))]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut table_size: i32 = 4;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]

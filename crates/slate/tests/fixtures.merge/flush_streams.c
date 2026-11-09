@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT: target android-x86_64: 1 compiles
 // CHECK-NEXT:   flush_streams.c: [] 1 compiled
 // CHECK-NEXT: total: 3 compiles across 3 targets
-// CHECK-NEXT: unit flush_streams: 11 items, 0 gated, 0 duplicated functions
+// CHECK-NEXT: unit flush_streams: 12 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 2 function-like, 2 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   macro CHECK: 3 lifted, inline:
@@ -47,6 +47,12 @@ int main(void) {
 // CHECK-NEXT: exit: 0
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(

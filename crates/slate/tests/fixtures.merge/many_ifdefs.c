@@ -25,7 +25,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 6 compiles
 // CHECK-NEXT:   many_ifdefs.c: [alpha,beta,gamma] 6 compiled
 // CHECK-NEXT: total: 12 compiles across 2 targets
-// CHECK-NEXT: unit many_ifdefs: 5 items, 1 gated, 0 duplicated functions
+// CHECK-NEXT: unit many_ifdefs: 6 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:flags: 6 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
@@ -40,6 +40,12 @@ int main(void) {
 // CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {

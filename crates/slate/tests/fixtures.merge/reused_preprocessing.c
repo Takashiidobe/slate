@@ -34,7 +34,7 @@ int main(void) {
 // CHECK-NEXT:     2 assignments preprocess like a compiled one
 // CHECK-NEXT:     infeasible [alpha,gamma]: {{.*}}tests/fixtures.merge/reused_preprocessing.c: analyze {{.*}}tests/fixtures.merge/reused_preprocessing.c: #error "alpha and gamma preprocess like gamma but must stay infeasible"
 // CHECK-NEXT: total: 8 compiles across 2 targets
-// CHECK-NEXT: unit reused_preprocessing: 7 items, 3 gated, 0 duplicated functions
+// CHECK-NEXT: unit reused_preprocessing: 8 items, 4 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:value: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 4 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
@@ -55,6 +55,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(not(feature = "beta"))]
 // CHECK-NEXT: const __SLATE_HOIST_value: i32 = 1;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {

@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT: target linux-musl-x86_64: 1 compiles
 // CHECK-NEXT:   target_properties.c: [] 1 compiled
 // CHECK-NEXT: total: 6 compiles across 6 targets
-// CHECK-NEXT: unit target_properties: 12 items, 5 gated, 0 duplicated functions
+// CHECK-NEXT: unit target_properties: 13 items, 6 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:family: 2 variants
 // CHECK-NEXT:   hoisted fn:model: 2 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
@@ -62,6 +62,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: const __SLATE_HOIST_family: &core::ffi::CStr = c"windows";
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn family() -> *const c_char {

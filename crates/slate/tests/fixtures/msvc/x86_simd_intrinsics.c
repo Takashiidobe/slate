@@ -130,6 +130,11 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "/Zc:preprocessor" }
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: #[repr(C, align(16))]
 // I686-PC-WINDOWS-MSVC-NEXT: #[repr(C, align(16))]
 // X86_64-PC-WINDOWS-MSVC-NEXT: #[derive(Clone, Copy)]

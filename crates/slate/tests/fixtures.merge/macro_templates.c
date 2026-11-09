@@ -80,9 +80,9 @@ int main(void) {
 // CHECK-NEXT:   macro_templates.c: [] 1 compiled
 // CHECK-NEXT:   units/macro_templates_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit macro_templates: 40 items, 22 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_templates: 41 items, 23 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit macro_templates_helper: 9 items, 4 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_templates_helper: 10 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT: macros: 15 function-like, 15 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   macro AFTER: 4 lifted, inline:
 // CHECK-NEXT:   macro BUMP: 4 lifted, inline:
@@ -133,6 +133,12 @@ int main(void) {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"helper %d\n".as_ptr(), ($a) as i32) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -343,6 +349,12 @@ int main(void) {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), ($a) as i32) };
 // CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[macro_use]

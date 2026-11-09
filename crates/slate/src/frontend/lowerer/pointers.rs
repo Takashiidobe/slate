@@ -1,7 +1,7 @@
 use super::*;
 
 impl Tables<'_> {
-    fn null_address_offset(&self, value: &ir::Value) -> Option<u64> {
+    pub(super) fn null_address_offset(&self, value: &ir::Value) -> Option<u64> {
         match &value.node.value {
             ValueKind::Null => Some(0),
             ValueKind::Convert { operand, .. }
@@ -10,7 +10,26 @@ impl Tables<'_> {
             {
                 self.null_address_offset(operand)
             }
-            ValueKind::AddressOf(place) => self.null_place_offset(place),
+            ValueKind::AddressOf(place) | ValueKind::ArrayDecay { place, .. } => {
+                self.null_place_offset(place)
+            }
+            ValueKind::PointerOffset {
+                pointer,
+                amount,
+                subtract,
+                element,
+                ..
+            } => {
+                let base = i128::from(self.null_address_offset(pointer)?);
+                let (size, _) = self.storage_of(element)?;
+                let delta = self.fold_integer(amount)?.checked_mul(i128::from(size))?;
+                let offset = if *subtract {
+                    base.checked_sub(delta)?
+                } else {
+                    base.checked_add(delta)?
+                };
+                u64::try_from(offset).ok()
+            }
             _ => None,
         }
     }

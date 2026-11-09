@@ -1,4 +1,4 @@
-use crate::backend::rust_ast::{Attr, ExternDecl, Item, Program};
+use crate::backend::rust_ast::{Attr, Cfg, ExternDecl, Item, Program};
 use std::collections::BTreeSet;
 
 fn c_type_for_tag(tag: &str) -> String {
@@ -340,13 +340,30 @@ fn render_trampoline(name: &str) -> Option<String> {
 pub(crate) const F80_SHIMS: &str = include_str!("./shims/long_double.c");
 pub(crate) const FENV_SHIMS: &str = include_str!("./shims/fenv.c");
 
-pub fn collect_program_shim_names(program: &Program) -> Vec<String> {
+pub fn collect_program_shim_names(program: &Program) -> Vec<(String, Option<Cfg>)> {
     let mut names = Vec::new();
-    for item in &program.items {
+    collect_item_shim_names(&program.items, None, &mut names);
+    names
+}
+
+fn collect_item_shim_names(
+    items: &[Item],
+    gate: Option<&Cfg>,
+    names: &mut Vec<(String, Option<Cfg>)>,
+) {
+    for item in items {
         match item {
+            Item::Cfg { cfg, item } => {
+                let nested = match gate {
+                    Some(outer) => Cfg::All(vec![outer.clone(), cfg.clone()]),
+                    None => cfg.clone(),
+                };
+                collect_item_shim_names(std::slice::from_ref(item), Some(&nested), names);
+            }
+            Item::InlineMod { items, .. } => collect_item_shim_names(items, gate, names),
             Item::ExternBlock { decls, .. } => {
                 names.extend(decls.iter().filter_map(|decl| match decl {
-                    ExternDecl::Fn(shim) => Some(shim.name.clone()),
+                    ExternDecl::Fn(shim) => Some((shim.name.clone(), gate.cloned())),
                     ExternDecl::Static { .. } => None,
                 }))
             }
@@ -356,7 +373,7 @@ pub fn collect_program_shim_names(program: &Program) -> Vec<String> {
                         if name.starts_with("__slate_ld__")
                             || name.starts_with("__slate_ldv__") =>
                     {
-                        Some(name.clone())
+                        Some((name.clone(), gate.cloned()))
                     }
                     _ => None,
                 }))
@@ -364,7 +381,63 @@ pub fn collect_program_shim_names(program: &Program) -> Vec<String> {
             _ => {}
         }
     }
-    names
+}
+
+fn build_script_condition(cfg: &Cfg) -> String {
+    let env_name = |name: &str| name.to_uppercase().replace('-', "_");
+    match cfg {
+        Cfg::Flag(flag) => format!(
+            "std::env::var_os(\"CARGO_CFG_{}\").is_some()",
+            env_name(flag)
+        ),
+        Cfg::Opt { key, value } if key == "feature" => format!(
+            "std::env::var_os(\"CARGO_FEATURE_{}\").is_some()",
+            env_name(value)
+        ),
+        Cfg::Opt { key, value } => format!(
+            "std::env::var(\"CARGO_CFG_{}\").is_ok_and(|v| v.split(',').any(|v| v == {value:?}))",
+            env_name(key)
+        ),
+        Cfg::Not(inner) => format!("!({})", build_script_condition(inner)),
+        Cfg::Any(items) if items.is_empty() => "false".into(),
+        Cfg::All(items) if items.is_empty() => "true".into(),
+        Cfg::Any(items) => format!(
+            "({})",
+            items
+                .iter()
+                .map(build_script_condition)
+                .collect::<Vec<_>>()
+                .join(" || ")
+        ),
+        Cfg::All(items) => format!(
+            "({})",
+            items
+                .iter()
+                .map(build_script_condition)
+                .collect::<Vec<_>>()
+                .join(" && ")
+        ),
+    }
+}
+
+pub fn shim_build_script(gates: &[Option<Cfg>]) -> String {
+    let compile =
+        "cc::Build::new().file(\"src/slate_long_double.c\").compile(\"slate_long_double\");";
+    let rerun = "println!(\"cargo:rerun-if-changed=src/slate_long_double.c\");";
+    if gates.iter().any(Option::is_none) {
+        return format!("fn main() {{\n    {rerun}\n    {compile}\n}}\n");
+    }
+    let mut unique: Vec<Cfg> = Vec::new();
+    for gate in gates.iter().flatten() {
+        if !unique.contains(gate) {
+            unique.push(gate.clone());
+        }
+    }
+    let condition = match unique.as_slice() {
+        [only] => build_script_condition(only),
+        _ => build_script_condition(&Cfg::Any(unique)),
+    };
+    format!("fn main() {{\n    {rerun}\n    if {condition} {{\n        {compile}\n    }}\n}}\n")
 }
 
 fn header_for_shim_name(name: &str) -> Option<&'static str> {

@@ -19,9 +19,9 @@ int main(void) {
 // CHECK-NEXT:   two_units.c: [] 1 compiled
 // CHECK-NEXT:   units/two_units_helper.c: [alpha] 2 compiled
 // CHECK-NEXT: total: 6 compiles across 2 targets
-// CHECK-NEXT: unit two_units: 7 items, 1 gated, 0 duplicated functions
+// CHECK-NEXT: unit two_units: 8 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit two_units_helper: 3 items, 2 gated, 0 duplicated functions
+// CHECK-NEXT: unit two_units_helper: 4 items, 3 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:helper: 2 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
@@ -29,6 +29,12 @@ int main(void) {
 // CHECK-NEXT: exit: 0
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {
@@ -91,6 +97,12 @@ int main(void) {
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut shared_common: i32 = unsafe { std::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn helper(mut x: i32) -> i32 {

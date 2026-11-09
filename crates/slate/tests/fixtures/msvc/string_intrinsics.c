@@ -102,6 +102,11 @@ int main(void) { return 0; }
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "/Zc:preprocessor" }
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: #[repr(C, align(16))]
 // X86_64-PC-WINDOWS-MSVC-NEXT: struct __SlateAlign16<T>(T);
 // I686-PC-WINDOWS-MSVC-NEXT: static mut bytes: [u8; 16] = unsafe { std::mem::zeroed() };

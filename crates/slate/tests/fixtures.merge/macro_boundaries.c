@@ -54,7 +54,7 @@ int main(void) {
 // CHECK-NEXT: target linux-i686: 1 compiles
 // CHECK-NEXT:   macro_boundaries.c: [] 1 compiled
 // CHECK-NEXT: total: 3 compiles across 3 targets
-// CHECK-NEXT: unit macro_boundaries: 14 items, 0 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_boundaries: 15 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:checked: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 6 function-like, 5 lifted at least once (expansions counted per distinct compile)
@@ -70,6 +70,12 @@ int main(void) {
 // CHECK-NEXT: exit: 0
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
@@ -177,7 +183,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! GUARD {
 // CHECK-NEXT:     ($x:expr) => {{[{][{]}}
 // CHECK-NEXT:         if !$x {
-// CHECK-NEXT:             return -1;
+// CHECK-NEXT:             return -1i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }};
 // CHECK-NEXT: }

@@ -132,7 +132,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_places.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_places: 41 items, 15 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_places: 42 items, 16 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced record:state: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 15 function-like, 15 lifted at least once (expansions counted per distinct compile)
@@ -309,6 +309,12 @@ int main(void) {
 // CHECK-NEXT:         #[bits(29, access = na)]
 // CHECK-NEXT:         pub __slate_pad_1: u32,
 // CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]

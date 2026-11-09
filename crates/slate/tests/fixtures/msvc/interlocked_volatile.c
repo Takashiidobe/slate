@@ -60,6 +60,11 @@ int main(void) { return 0; }
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "/Zc:preprocessor" }
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // X86_64-PC-WINDOWS-MSVC-NEXT:     fn _interlockedbittestandset([[ARG_0:arg[0-9]+]]: *mut i32, [[ARG_1:arg[0-9]+]]: i32) -> u8;
 // I686-PC-WINDOWS-MSVC-NEXT:     fn _interlockedbittestandset([[ARG_0:arg[0-9]+]]: *mut i32, [[ARG_1:arg[0-9]+]]: i32) -> u8;

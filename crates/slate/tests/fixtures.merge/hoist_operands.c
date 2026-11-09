@@ -41,7 +41,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 2 compiles
 // CHECK-NEXT:   hoist_operands.c: [alpha] 2 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit hoist_operands: 20 items, 11 gated, 1 duplicated functions
+// CHECK-NEXT: unit hoist_operands: 21 items, 12 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:repeated: 2 variants
 // CHECK-NEXT:   hoisted fn:number: 2 variants
 // CHECK-NEXT:   hoisted fn:in_cast: 2 variants
@@ -102,6 +102,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: const __SLATE_HOIST_number: i32 = 387;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn in_cast() -> i32 {

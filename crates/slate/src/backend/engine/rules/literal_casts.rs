@@ -218,7 +218,7 @@ fn rewrite(expr: &mut Expr, typed: bool) -> bool {
     }
 }
 
-fn rewrite_kind(kind: &mut NodeKind, tail: bool) -> bool {
+fn rewrite_kind(kind: &mut NodeKind, tail: bool, returns_typed: bool) -> bool {
     match kind {
         NodeKind::Let {
             ty,
@@ -233,7 +233,7 @@ fn rewrite_kind(kind: &mut NodeKind, tail: bool) -> bool {
             let target_changed = rewrite(target, false);
             rewrite(value, !matches!(op, BinOp::Shl | BinOp::Shr)) || target_changed
         }
-        NodeKind::Return(Some(expr)) => rewrite(expr, true),
+        NodeKind::Return(Some(expr)) => rewrite(expr, returns_typed),
         NodeKind::Expr(expr) if tail => rewrite(expr, true),
         NodeKind::LetIf {
             ty,
@@ -302,10 +302,11 @@ impl NodeRule for LiteralCasts {
 
     fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let tail = function_tail(arena, id);
+        let returns_typed = arena.return_type().is_some();
         let Some(kind) = arena.get_mut(id) else {
             return false;
         };
-        if !rewrite_kind(kind, tail) {
+        if !rewrite_kind(kind, tail, returns_typed) {
             return false;
         }
         arena.touch(id);

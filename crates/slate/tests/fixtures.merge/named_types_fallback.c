@@ -23,7 +23,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   named_types_fallback.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit named_types_fallback: 10 items, 3 gated, 0 duplicated functions
+// CHECK-NEXT: unit named_types_fallback: 11 items, 4 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
@@ -38,6 +38,12 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: use slate_support::printf;
 // CHECK-NEXT: use slate_support::size_t;
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: use core::ffi::c_char;

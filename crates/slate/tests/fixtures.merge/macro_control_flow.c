@@ -128,7 +128,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_control_flow.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_control_flow: 31 items, 0 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_control_flow: 32 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:bails: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 12 function-like, 10 lifted at least once (expansions counted per distinct compile)
@@ -156,6 +156,12 @@ int main(void) {
 // CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
@@ -492,7 +498,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! CHECK {
 // CHECK-NEXT:     ($x:expr) => {{[{][{]}}
 // CHECK-NEXT:         if ($x) < 0 {
-// CHECK-NEXT:             return -1;
+// CHECK-NEXT:             return -1i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }};
 // CHECK-NEXT: }
@@ -563,9 +569,9 @@ int main(void) {
 // CHECK-NEXT: macro_rules! PICK {
 // CHECK-NEXT:     ($x:expr) => {{[{][{]}}
 // CHECK-NEXT:         if $x {
-// CHECK-NEXT:             return 1;
+// CHECK-NEXT:             return 1i32;
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             return 2;
+// CHECK-NEXT:             return 2i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }};
 // CHECK-NEXT: }
@@ -574,7 +580,7 @@ int main(void) {
 // CHECK-NEXT:     ($x:expr) => {{[{][{]}}
 // CHECK-NEXT:         let mut __v: i32;
 // CHECK-NEXT:         if ($x) < 0 {
-// CHECK-NEXT:             return -2;
+// CHECK-NEXT:             return -2i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         __v = ($x) + 1;
 // CHECK-NEXT:         __v

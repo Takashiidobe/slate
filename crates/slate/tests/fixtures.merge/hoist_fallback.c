@@ -31,7 +31,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   hoist_fallback.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit hoist_fallback: 7 items, 4 gated, 2 duplicated functions
+// CHECK-NEXT: unit hoist_fallback: 8 items, 5 gated, 2 duplicated functions
 // CHECK-NEXT:   duplicated fn:two_values: 2 variants
 // CHECK-NEXT:   duplicated fn:mixed_types: 2 variants
 // CHECK-NEXT:   spliced fn:two_statements: 2 variants
@@ -70,6 +70,12 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn two_values() -> i32 {
 // CHECK-NEXT:     1 * 10 + 2
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

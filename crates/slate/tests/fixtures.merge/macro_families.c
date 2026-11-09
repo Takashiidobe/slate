@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 2 compiles
 // CHECK-NEXT:   macro_families.c: [alpha] 2 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit macro_families: 16 items, 6 gated, 1 duplicated functions
+// CHECK-NEXT: unit macro_families: 17 items, 7 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:coexisting: 2 variants
 // CHECK-NEXT: macros: 4 function-like, 4 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   macro ADD_ONE: 8 lifted, inline:
@@ -119,6 +119,12 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

@@ -151,6 +151,11 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn _alloca([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     fn abort();

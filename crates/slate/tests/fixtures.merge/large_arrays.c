@@ -58,7 +58,7 @@ int main(void) {
 // CHECK-NEXT: target linux-aarch64: 1 compiles
 // CHECK-NEXT:   large_arrays.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 4 targets
-// CHECK-NEXT: unit large_arrays: 30 items, 15 gated, 1 duplicated functions
+// CHECK-NEXT: unit large_arrays: 31 items, 16 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:read_crossing: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 3 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
@@ -146,6 +146,12 @@ int main(void) {
 // CHECK-NEXT:     111i8, 112i8, 116i8, 101i8, 100i8, 32i8, 111i8, 117i8, 116i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
 // CHECK-NEXT:     0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
 // CHECK-NEXT: ];
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]

@@ -1173,6 +1173,16 @@ impl<'m> ModuleLowerer<'m> {
                 rust::Feature::StdarchArmNeonIntrinsics,
             ));
         }
+        if tables.target.environment == slate_parser::target_info::TargetEnvironment::Msvc {
+            items.insert(
+                0,
+                Item::SupportModule(rust::SupportModule {
+                    name: "__slate_oldnames".into(),
+                    source: include_str!("support/oldnames.rs").into(),
+                    exports: Vec::new(),
+                }),
+            );
+        }
         if dependencies.libgcc {
             items.insert(
                 0,

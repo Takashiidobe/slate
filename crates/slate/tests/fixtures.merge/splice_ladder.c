@@ -61,7 +61,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 4 compiles
 // CHECK-NEXT:   splice_ladder.c: [alpha,beta] 4 compiled
 // CHECK-NEXT: total: 8 compiles across 2 targets
-// CHECK-NEXT: unit splice_ladder: 5 items, 0 gated, 0 duplicated functions
+// CHECK-NEXT: unit splice_ladder: 6 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:run: 4 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
@@ -75,6 +75,12 @@ int main(void) {
 // CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn run(mut mode: i32, mut n: i32) -> i32 {

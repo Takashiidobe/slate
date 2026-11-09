@@ -41,7 +41,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   spelled_conversions.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit spelled_conversions: 16 items, 2 gated, 1 duplicated functions
+// CHECK-NEXT: unit spelled_conversions: 17 items, 3 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:keeps_arms: 2 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
@@ -64,6 +64,12 @@ int main(void) {
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: fn keeps_arms(left: c_long, right: u32) -> c_long {
 // CHECK-NEXT:     (left as c_ulong).wrapping_add(right as c_ulong) as c_long
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

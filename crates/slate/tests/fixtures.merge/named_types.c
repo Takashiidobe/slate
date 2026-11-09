@@ -76,16 +76,22 @@ int main(void) {
 // CHECK-NEXT:   named_types.c: [] 1 compiled
 // CHECK-NEXT:   units/named_types_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit named_types: 19 items, 0 gated, 0 duplicated functions
+// CHECK-NEXT: unit named_types: 20 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:add_total: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit named_types_helper: 5 items, 0 gated, 0 duplicated functions
+// CHECK-NEXT: unit named_types_helper: 6 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 2 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[path = "named_types_helper.rs"]
 // CHECK-NEXT: mod __slate_unit_named_types_helper;
@@ -265,6 +271,12 @@ int main(void) {
 // CHECK-NEXT: use core::ffi::c_ulong;
 // CHECK-NEXT: use slate_support::size_t;
 // CHECK-NEXT: file named_types_helper.rs
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct tally {

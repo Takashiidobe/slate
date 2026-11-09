@@ -124,6 +124,11 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:     fn strlen([[ARG_0:arg[0-9]+]]: *const i8) -> u64;

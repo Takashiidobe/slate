@@ -39,9 +39,9 @@ int main(void) {
 // CHECK-NEXT:   stdio_bindings.c: [] 1 compiled
 // CHECK-NEXT:   units/stdio_bindings_layout.c: [] 1 compiled
 // CHECK-NEXT: total: 6 compiles across 3 targets
-// CHECK-NEXT: unit stdio_bindings: 9 items, 1 gated, 0 duplicated functions
+// CHECK-NEXT: unit stdio_bindings: 10 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 3 variants
-// CHECK-NEXT: unit stdio_bindings_layout: 16 items, 15 gated, 0 duplicated functions
+// CHECK-NEXT: unit stdio_bindings_layout: 17 items, 16 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:stream_layout: 3 variants
 // CHECK-NEXT: macros: 1 function-like, 1 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   macro LOG: 3 lifted, inline:
@@ -54,6 +54,12 @@ int main(void) {
 // CHECK-NEXT: #[cfg(target_env = "gnu")]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut stderr: *mut slate_support::FILE;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[path = "stdio_bindings_layout.rs"]
@@ -237,6 +243,12 @@ int main(void) {
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct _iobuf {
 // CHECK-NEXT:     _Placeholder: *mut (),
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]

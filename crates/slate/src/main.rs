@@ -1127,6 +1127,7 @@ fn write_project_crate(
         .map_err(|e| format!("create {}: {e}", crate_src.display()))?;
     let mut cargo_features = declared_features.clone();
     let mut shim_names = BTreeSet::new();
+    let mut shim_gates = Vec::new();
     let shared_module = shared_types.as_ref().map(|_| rust_ast::Item::Mod {
         name: rust_ast::Ident::new(slate::backend::SHARED_TYPES_MODULE),
         path: None,
@@ -1192,11 +1193,12 @@ fn write_project_crate(
             }
         }
         program.cargo_features(&mut cargo_features);
-        shim_names.extend(
-            c_shim::collect_program_shim_names(&program)
-                .into_iter()
-                .filter(|name| name.starts_with("__slate_")),
-        );
+        for (name, gate) in c_shim::collect_program_shim_names(&program) {
+            if name.starts_with("__slate_") {
+                shim_names.insert(name);
+                shim_gates.push(gate);
+            }
+        }
         let file = if root.as_ref() == Some(&stem) {
             let mut crate_attrs: Vec<_> = rust_features
                 .iter()
@@ -1272,11 +1274,7 @@ fn write_project_crate(
     if has_shims {
         write_file(
             &crate_dir.join("build.rs"),
-            r#"fn main() {
-    println!("cargo:rerun-if-changed=src/slate_long_double.c");
-    cc::Build::new().file("src/slate_long_double.c").compile("slate_long_double");
-}
-"#,
+            &c_shim::shim_build_script(&shim_gates),
         )?;
         let shim_path = crate_src.join("slate_long_double.c");
         std::fs::write(

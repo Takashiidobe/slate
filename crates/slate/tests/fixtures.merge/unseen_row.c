@@ -22,7 +22,7 @@ int main(void) {
 // CHECK-NEXT:   unseen_row.c: [alpha,beta,gamma] 8 compiled
 // CHECK-NEXT:     6 assignments preprocess like a compiled one
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit unseen_row: 7 items, 0 gated, 0 duplicated functions
+// CHECK-NEXT: unit unseen_row: 8 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:first: 2 variants
 // CHECK-NEXT:   spliced fn:second: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 4 variants
@@ -32,6 +32,12 @@ int main(void) {
 // CHECK-NEXT: exit: 0
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: #[cfg_attr(unix, unsafe(link_section = ".text.slate_distinct.unseen_row.first"))]

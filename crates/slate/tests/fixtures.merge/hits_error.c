@@ -27,7 +27,7 @@ int main(void) {
 // CHECK-NEXT:   hits_error.c: [alpha,beta] 3 compiled
 // CHECK-NEXT:     infeasible [alpha,beta]: {{.*}}tests/fixtures.merge/hits_error.c: analyze {{.*}}tests/fixtures.merge/hits_error.c: #error alpha and beta cannot be combined here
 // CHECK-NEXT: total: 8 compiles across 2 targets
-// CHECK-NEXT: unit hits_error: 8 items, 4 gated, 0 duplicated functions
+// CHECK-NEXT: unit hits_error: 9 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:value: 3 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
@@ -51,6 +51,12 @@ int main(void) {
 // CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {

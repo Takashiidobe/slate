@@ -65,7 +65,7 @@ int main(void) {
 // CHECK-NEXT:   cover_refine.c: [alpha,beta,gamma,delta,epsilon] 32 compiled
 // CHECK-NEXT:     8 assignments preprocess like a compiled one
 // CHECK-NEXT: total: 48 compiles across 2 targets
-// CHECK-NEXT: unit cover_refine: 12 items, 2 gated, 0 duplicated functions
+// CHECK-NEXT: unit cover_refine: 13 items, 3 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced record:state: 4 variants
 // CHECK-NEXT:   spliced fn:nested: 5 variants
 // CHECK-NEXT:   spliced fn:joint: 4 variants
@@ -77,6 +77,12 @@ int main(void) {
 // CHECK-NEXT: exit: 0
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {

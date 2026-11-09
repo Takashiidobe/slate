@@ -31,7 +31,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_conditions.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_conditions: 14 items, 0 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_conditions: 15 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 5 function-like, 5 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   macro EXPLICIT: 4 lifted, inline:
@@ -50,6 +50,12 @@ int main(void) {
 // CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
@@ -143,13 +149,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! TWICE {
 // CHECK-NEXT:     ($c:expr) => {
-// CHECK-NEXT:         if ($c) != 0 { ($c) + 1 } else { 0 }
+// CHECK-NEXT:         if ($c) != 0 { ($c) + 1 } else { (0 as c_long) }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! TWICE__2 {
 // CHECK-NEXT:     ($c:expr) => {
-// CHECK-NEXT:         if ($c) != 0 { ($c) + 1 } else { 0 }
+// CHECK-NEXT:         if ($c) != 0 { ($c) + 1 } else { 0i32 }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

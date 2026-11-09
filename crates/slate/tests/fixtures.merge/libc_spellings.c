@@ -72,12 +72,12 @@ int main(void) {
 // CHECK-NEXT:   libc_spellings.c: [] 1 compiled
 // CHECK-NEXT:   units/libc_spellings_address.c: [] 1 compiled
 // CHECK-NEXT: total: 12 compiles across 6 targets
-// CHECK-NEXT: unit libc_spellings: 13 items, 7 gated, 2 duplicated functions
+// CHECK-NEXT: unit libc_spellings: 14 items, 8 gated, 2 duplicated functions
 // CHECK-NEXT:   duplicated fn:graph_at: 2 variants
 // CHECK-NEXT:   duplicated fn:hand_written: 3 variants
 // CHECK-NEXT:   spliced fn:classify: 4 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit libc_spellings_address: 36 items, 34 gated, 2 duplicated functions
+// CHECK-NEXT: unit libc_spellings_address: 37 items, 35 gated, 2 duplicated functions
 // CHECK-NEXT:   duplicated fn:isdigit: 2 variants
 // CHECK-NEXT:   duplicated fn:isgraph: 2 variants
 // CHECK-NEXT:   spliced fn:count_digits: 6 variants
@@ -291,6 +291,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn _errno() -> *mut i32;
 // CHECK-NEXT: }
@@ -461,6 +467,12 @@ int main(void) {
 // CHECK-NEXT:         (((unsafe { *text.offset([[V_3]] as isize) }) as u32).wrapping_sub(33) < 94) as i32
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if [[V_0]] != 0 { 1 } else { 0 }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]

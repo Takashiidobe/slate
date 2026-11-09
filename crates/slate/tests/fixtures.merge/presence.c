@@ -24,7 +24,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 4 compiles
 // CHECK-NEXT:   presence.c: [alpha,beta] 4 compiled
 // CHECK-NEXT: total: 8 compiles across 2 targets
-// CHECK-NEXT: unit presence: 8 items, 4 gated, 0 duplicated functions
+// CHECK-NEXT: unit presence: 9 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 8 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
@@ -51,6 +51,12 @@ int main(void) {
 // CHECK-NEXT: #[cfg(not(feature = "beta"))]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut table: [i32; 3] = [1, 2, 3];
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {

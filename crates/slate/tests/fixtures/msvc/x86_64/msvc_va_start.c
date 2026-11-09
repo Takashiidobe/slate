@@ -60,6 +60,11 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "/Zc:preprocessor" }
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __stdio_common_vsprintf(
 // CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: u64,

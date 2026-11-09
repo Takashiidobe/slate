@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 2 compiles
 // CHECK-NEXT:   by_target.c: [alpha] 2 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
-// CHECK-NEXT: unit by_target: 10 items, 5 gated, 0 duplicated functions
+// CHECK-NEXT: unit by_target: 11 items, 6 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:platform: 2 variants
 // CHECK-NEXT:   hoisted fn:platform_alpha: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
@@ -60,6 +60,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: const __SLATE_HOIST_platform: &core::ffi::CStr = c"windows";
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn platform() -> *const c_char {

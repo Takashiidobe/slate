@@ -40,9 +40,9 @@ int main(void) {
 // CHECK-NEXT:   signature_compatible.c: [alpha] 2 compiled
 // CHECK-NEXT:   units/signature_compatible_helper.c: [alpha,beta] 4 compiled
 // CHECK-NEXT: total: 12 compiles across 2 targets
-// CHECK-NEXT: unit signature_compatible: 20 items, 2 gated, 0 duplicated functions
+// CHECK-NEXT: unit signature_compatible: 21 items, 3 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit signature_compatible_helper: 22 items, 4 gated, 0 duplicated functions
+// CHECK-NEXT: unit signature_compatible_helper: 23 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:scale: 2 variants
 // CHECK-NEXT:   spliced record:opaque: 2 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
@@ -60,6 +60,12 @@ int main(void) {
 // CHECK-NEXT: #[cfg(not(feature = "alpha"))]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn scale([[ARG_0]]: i32) -> i32;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[path = "signature_compatible_helper.rs"]
@@ -164,6 +170,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(not(feature = "beta"))]
 // CHECK-NEXT: static mut shared: opaque = opaque { value: 7i32 };
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]

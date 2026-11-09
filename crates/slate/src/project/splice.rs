@@ -705,6 +705,32 @@ pub struct Spliced {
     pub bindings: Vec<(Variants, Item)>,
 }
 
+fn borrows(ty: &Type) -> bool {
+    match ty {
+        Type::Ref { .. } => true,
+        Type::Complex(inner)
+        | Type::Slice(inner)
+        | Type::Ptr { inner, .. }
+        | Type::Array { elem: inner, .. } => borrows(inner),
+        Type::Generic { args, .. } => args.iter().any(borrows),
+        Type::FnPtr { params, ret, .. } => params.iter().any(borrows) || borrows(ret),
+        _ => false,
+    }
+}
+
+fn differs_with_borrow<'a>(mut types: impl Iterator<Item = &'a Type>) -> bool {
+    let Some(first) = types.next() else {
+        return false;
+    };
+    let mut differs = false;
+    let mut borrowed = borrows(first);
+    for ty in types {
+        differs |= ty != first;
+        borrowed |= borrows(ty);
+    }
+    differs && borrowed
+}
+
 fn bind_position<'a>(
     name: String,
     types: impl Iterator<Item = &'a Type>,
@@ -823,7 +849,12 @@ pub fn splice_function(
         }
         .apply(&mut merged, variant);
     }
-    if !shares_statement(&merged) {
+    if !shares_statement(&merged)
+        || differs_with_borrow(variants.iter().filter_map(|variant| variant.ret.as_ref()))
+        || (0..variants[0].params.len()).any(|position| {
+            differs_with_borrow(variants.iter().map(|variant| &variant.params[position].ty))
+        })
+    {
         return None;
     }
     let all: Variants = (0..variants.len()).collect();

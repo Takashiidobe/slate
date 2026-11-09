@@ -16,7 +16,7 @@ pub(super) fn builtin_intrinsic(
         return None;
     }
     let explicit = match function.name.as_str() {
-        "__builtin___clear_cache" => Some("llvm.clear_cache"),
+        "__builtin___clear_cache" | "__clear_cache" => Some("llvm.clear_cache"),
         "__builtin_fabs" | "__builtin_fabsf" | "__builtin_fabsl" => Some("llvm.fabs"),
         "__builtin_copysign" | "__builtin_copysignf" | "__builtin_copysignl" => {
             Some("llvm.copysign")

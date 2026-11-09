@@ -40,13 +40,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![allow(arithmetic_overflow, unconditional_panic)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: #[repr(C)]
-// CHECK-NEXT: #[derive(Clone, Copy)]
-// CHECK-NEXT: struct record {
-// CHECK-NEXT:     head: [i32; 3],
-// CHECK-NEXT:     tag: i8,
-// CHECK-NEXT:     tail: [i8; 2],
-// CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
@@ -83,8 +76,8 @@ int main(void) {
 // CHECK-NEXT:     let mut other: i32 = 0;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = (a != 0 || b < 0) as i32;
 // CHECK-NEXT:     other = if [[V_1]] != 0 { [[V_1]] } else { c };
-// CHECK-NEXT:     let tail: u64 = (13usize as *mut [i8; 2]) as u64;
-// CHECK-NEXT:     let tag: u64 = (12usize as *mut i8) as u64;
+// CHECK-NEXT:     let tail: u64 = 13;
+// CHECK-NEXT:     let tag: u64 = 12;
 // CHECK-NEXT:     println!("{} {}", self_(4i32), crate_());
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}", shifted(5i32), divided(20i32), (({ let __slate_function : Option <

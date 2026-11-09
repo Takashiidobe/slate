@@ -12,6 +12,11 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn abort();
 // CHECK-NEXT: }

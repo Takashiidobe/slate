@@ -18,7 +18,7 @@ int main(void) {
 // CHECK-NEXT: target freebsd-x86_64: 1 compiles
 // CHECK-NEXT:   flush_value_writers.c: [] 1 compiled
 // CHECK-NEXT: total: 3 compiles across 3 targets
-// CHECK-NEXT: unit flush_value_writers: 8 items, 3 gated, 0 duplicated functions
+// CHECK-NEXT: unit flush_value_writers: 9 items, 4 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 3 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
@@ -35,6 +35,12 @@ int main(void) {
 // CHECK-NEXT: #[cfg(target_os = "freebsd")]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut __isthreaded: i32;
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(windows)]
+// CHECK-NEXT: mod __slate_oldnames {
+// CHECK-NEXT:     #[link(name = "oldnames")]
+// CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]

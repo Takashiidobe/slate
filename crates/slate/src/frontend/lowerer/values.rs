@@ -1052,6 +1052,18 @@ impl FunctionLowerer<'_, '_> {
                     ty: self.lower_value_type(value)?,
                 }
             }
+            ValueKind::Convert {
+                kind: ir::ConversionKind::PtrToInt,
+                operand,
+                ..
+            } if self.tables.wide_int(&value.ty).is_none()
+                && let Some(offset) = self.tables.null_address_offset(operand) =>
+            {
+                Expr::Cast {
+                    expr: Box::new(Expr::Value(rust::RustValue::Usize(offset as usize))),
+                    ty: self.lower_value_type(value)?,
+                }
+            }
             ValueKind::Convert { operand, .. }
                 if self.tables.wide_int(&operand.ty).is_some()
                     || self.tables.wide_int(&value.ty).is_some() =>
