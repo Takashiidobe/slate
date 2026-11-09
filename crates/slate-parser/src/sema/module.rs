@@ -1162,6 +1162,22 @@ impl Lowerer {
         {
             return Ok(Parameters::Unprototyped);
         }
+        if prologue.is_some() {
+            for parameter in params.forward_parameters() {
+                let Some(name) = parameter.declarator.name() else {
+                    continue;
+                };
+                let resolved =
+                    self.resolve_parameter_type(&parameter.specifiers, &parameter.declarator)?;
+                let declared_array = parameter.declarator.array_parameter().unwrap_or_default();
+                let adjusted = self
+                    .types
+                    .parameter_shape(resolved, declared_array)?
+                    .adjusted;
+                let id = self.declaration_id(parameter.id, name)?;
+                self.types.entities.declare(id, adjusted, false);
+            }
+        }
         let mut fixed = Vec::new();
         for parameter in params.parameters() {
             let attributes = || {

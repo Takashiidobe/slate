@@ -463,7 +463,9 @@ impl Checker<'_> {
     }
 
     fn declare_parameters(&mut self, parameters: Option<&ParameterList>, identifier_list: bool) {
-        for parameter in parameters.map_or(&[][..], ParameterList::parameters) {
+        let forward = parameters.map_or(&[][..], ParameterList::forward_parameters);
+        let declared = parameters.map_or(&[][..], ParameterList::parameters);
+        for parameter in forward.iter().chain(declared) {
             self.parameter_rules(parameter);
             self.specifier(&parameter.specifiers.ty);
             self.declarator(&parameter.declarator);

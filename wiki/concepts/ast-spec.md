@@ -337,7 +337,7 @@ Declarator =
 ArraySize = Unspecified | Expr(Expr) | Star      // [], [n], [*]
 
 ParameterList =
-    | Prototype { parameters: Vec<ParameterDeclaration>, variadic: bool }
+    | Prototype { forward: Vec<ParameterDeclaration>, parameters: Vec<ParameterDeclaration>, variadic: bool }
     | IdentifierList { parameters: Vec<ParameterDeclaration> }   // K&R definition
     | Void                                        // (void)
     | Empty                                       // (); meaning per standard, decided by sema
@@ -347,6 +347,13 @@ ParameterDeclaration { specifiers, declarator: Declarator, attributes, comments:
 
 `int (*fp)(int)` is
 `Function { inner: Grouped(Pointer { inner: Name("fp") }), parameters: [int] }`.
+
+GNU forward parameter declarations (gcc flavor only;
+`int f(int n; int (*a)[n], int n)`) keep every `;`-terminated list, in
+order, in `forward`; `parameters` is the list after the last `;`. Sema
+binds forward names first and gives a later parameter of the same name
+the forward declaration's binding, so bounds such as `[n]` read the real
+parameter.
 
 `Attributed` holds attributes written inside a declarator:
 

@@ -238,7 +238,8 @@ Declarator = "Abstract"
            | Function { inner: Declarator, parameters: ParameterList } ;
 ArraySize  = "Unspecified" | "Expression(" expr ")" | "Star" ;
 
-ParameterList            = Prototype { parameters: vec<span<ParameterDeclarationKind>>,
+ParameterList            = Prototype { forward?: vec<span<ParameterDeclarationKind>>,
+                                       parameters: vec<span<ParameterDeclarationKind>>,
                                        variadic?: true }
                          | IdentifierList { parameters: vec<span<ParameterDeclarationKind>> }
                          | "Void" | "Empty" ;

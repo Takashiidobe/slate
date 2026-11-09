@@ -164,13 +164,7 @@ impl Resolver {
                 self.collect_labels(&function.body)?;
                 self.push_scope();
                 if let Some(parameters) = definition_parameters {
-                    for parameter in parameters.parameters() {
-                        self.type_specifier(&parameter.specifiers.ty, parameter)?;
-                        self.visit_declarator(&parameter.declarator)?;
-                        if let Some(name) = parameter.declarator.name() {
-                            self.bind_ordinary(name, BindingKind::Parameter, false, parameter)?;
-                        }
-                    }
+                    self.bind_parameters(parameters)?;
                 }
                 for statement in &function.body {
                     self.visit_stmt(statement)?;
@@ -557,13 +551,7 @@ impl Resolver {
         self.collect_labels(&block.body)?;
         self.push_scope();
         if let Some(parameters) = parameters {
-            for parameter in parameters.parameters() {
-                self.type_specifier(&parameter.specifiers.ty, parameter)?;
-                self.visit_declarator(&parameter.declarator)?;
-                if let Some(name) = parameter.declarator.name() {
-                    self.bind_ordinary(name, BindingKind::Parameter, false, parameter)?;
-                }
-            }
+            self.bind_parameters(parameters)?;
         }
         for statement in &block.body {
             self.visit_stmt(statement)?;
@@ -679,19 +667,9 @@ impl Resolver {
                 if definition.is_some_and(|definition| std::ptr::eq(definition, parameters)) {
                     return Ok(());
                 }
-                let parameters = parameters.parameters();
-                if !parameters.is_empty() {
+                if !parameters.parameters().is_empty() {
                     self.push_scope();
-                    let result = parameters.iter().try_for_each(|parameter| {
-                        self.type_specifier(&parameter.specifiers.ty, parameter)?;
-                        self.visit_declarator(&parameter.declarator)?;
-                        if !self.collecting_labels
-                            && let Some(name) = parameter.declarator.name()
-                        {
-                            self.bind_ordinary(name, BindingKind::Parameter, false, parameter)?;
-                        }
-                        Ok(())
-                    });
+                    let result = self.bind_parameters(parameters);
                     self.pop_scope();
                     result?;
                 }
@@ -874,6 +852,57 @@ impl Resolver {
             .unwrap()
             .insert(label.value.clone(), entry);
         Ok(())
+    }
+
+    fn bind_parameters(&mut self, parameters: &ParameterList) -> Result<(), ResolveError> {
+        let mut forward = Vec::new();
+        for parameter in parameters.forward_parameters() {
+            self.type_specifier(&parameter.specifiers.ty, parameter)?;
+            self.visit_declarator(&parameter.declarator)?;
+            if self.collecting_labels {
+                continue;
+            }
+            let Some(name) = parameter.declarator.name() else {
+                continue;
+            };
+            match self.forward_parameter(&forward, name) {
+                Some(index) => {
+                    let id = forward[index].id;
+                    self.resolution.declarations.insert(parameter.id, id);
+                }
+                None => forward.push(self.bind_ordinary(
+                    name,
+                    BindingKind::Parameter,
+                    false,
+                    parameter,
+                )?),
+            }
+        }
+        for parameter in parameters.parameters() {
+            self.type_specifier(&parameter.specifiers.ty, parameter)?;
+            self.visit_declarator(&parameter.declarator)?;
+            if self.collecting_labels {
+                continue;
+            }
+            let Some(name) = parameter.declarator.name() else {
+                continue;
+            };
+            match self.forward_parameter(&forward, name) {
+                Some(index) => {
+                    let entry = forward.swap_remove(index);
+                    self.resolution.declarations.insert(parameter.id, entry.id);
+                }
+                None => {
+                    self.bind_ordinary(name, BindingKind::Parameter, false, parameter)?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn forward_parameter(&self, forward: &[Entry], name: &str) -> Option<usize> {
+        let current = self.ordinary.last()?.get(name)?;
+        forward.iter().position(|entry| entry.id == current.id)
     }
 
     fn bind_ordinary<T>(

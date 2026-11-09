@@ -1018,6 +1018,7 @@ impl<'a> DeclaratorParser<'a> {
             return Ok(ParameterList::Empty);
         }
 
+        let mut forward = Vec::new();
         let mut parameters = Vec::new();
         let mut bounds = Vec::new();
         let mut variadic = false;
@@ -1033,7 +1034,7 @@ impl<'a> DeclaratorParser<'a> {
             let parameter_start = self.pos;
             let mut specifiers = self.parse_specifiers(false)?;
             let declarator = match self.peek() {
-                Some(Token::Comma) | Some(Token::RParen) => Declarator::Abstract,
+                Some(Token::Comma | Token::RParen | Token::Semi) => Declarator::Abstract,
                 _ => self.parse_declarator(true)?,
             };
             if let Some(parser) = self.context.parser()
@@ -1064,6 +1065,16 @@ impl<'a> DeclaratorParser<'a> {
             if self.matches(Token::RParen) {
                 break;
             }
+            if self
+                .context
+                .parser()
+                .is_some_and(|parser| parser.flavor().is_gcc())
+                && self.matches(Token::Semi)
+            {
+                forward.append(&mut parameters);
+                bounds.clear();
+                continue;
+            }
             self.expect(
                 Token::Comma,
                 DeclaratorError::ExpectedToken(Token::Comma, "between parameters"),
@@ -1080,6 +1091,7 @@ impl<'a> DeclaratorParser<'a> {
                 .unwrap_or_default();
         }
         Ok(ParameterList::Prototype {
+            forward,
             parameters,
             variadic,
         })

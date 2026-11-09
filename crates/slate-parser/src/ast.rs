@@ -1966,6 +1966,8 @@ impl Declarator {
 #[derive(CustomDebug, Clone, PartialEq)]
 pub enum ParameterList {
     Prototype {
+        #[debug(skip_if = Vec::is_empty)]
+        forward: Vec<ParameterDeclaration>,
         parameters: Vec<ParameterDeclaration>,
         #[debug(skip_if = is_false)]
         variadic: bool,
@@ -1982,6 +1984,13 @@ impl ParameterList {
         match self {
             Self::Prototype { parameters, .. } | Self::IdentifierList { parameters } => parameters,
             Self::Void | Self::Empty => &[],
+        }
+    }
+
+    pub fn forward_parameters(&self) -> &[ParameterDeclaration] {
+        match self {
+            Self::Prototype { forward, .. } => forward,
+            _ => &[],
         }
     }
 
