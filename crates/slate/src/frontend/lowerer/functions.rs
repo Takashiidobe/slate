@@ -129,7 +129,7 @@ impl Tables<'_> {
             (ir::CallConv::C, _) => Some(rust::Abi::CUnwind),
             (ir::CallConv::Win64, TargetFamily::X86_64) => Some(rust::Abi::Win64Unwind),
             (ir::CallConv::SysV64, TargetFamily::X86_64) => Some(rust::Abi::SysV64Unwind),
-            (ir::CallConv::X86Vectorcall, TargetFamily::X86_64) => {
+            (ir::CallConv::X86Vectorcall, TargetFamily::X86_64 | TargetFamily::X86) => {
                 Some(rust::Abi::VectorcallUnwind)
             }
             (ir::CallConv::X86Stdcall, TargetFamily::X86) => Some(rust::Abi::StdcallUnwind),
@@ -137,6 +137,11 @@ impl Tables<'_> {
             (ir::CallConv::X86Thiscall, TargetFamily::X86) => Some(rust::Abi::ThiscallUnwind),
             _ => None,
         }
+    }
+
+    pub(super) fn uses_fastcall_registers(&self, abi: rust::Abi) -> bool {
+        abi == rust::Abi::FastcallUnwind
+            || (abi == rust::Abi::VectorcallUnwind && self.target.family == TargetFamily::X86)
     }
 
     pub(super) fn fastcall_matches_rustc<'a>(
@@ -228,7 +233,7 @@ impl Tables<'_> {
                 | rust::Abi::ThiscallUnwind
                 | rust::Abi::VectorcallUnwind
         );
-        if abi == rust::Abi::FastcallUnwind
+        if self.uses_fastcall_registers(abi)
             && !self.fastcall_matches_rustc(
                 types::fixed_parameters(&function.parameters)
                     .iter()

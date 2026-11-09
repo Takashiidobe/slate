@@ -6,6 +6,7 @@
   - [`native_c` means trust rustc](#native_c-means-trust-rustc)
   - [`x86_win32`](#x86_win32)
   - [x86-64 `vectorcall`](#x86-64-vectorcall)
+  - [i686 `vectorcall`](#i686-vectorcall)
   - [Vectors](#vectors)
   - [Transparent unions](#transparent-unions)
 - [Calling conventions](#calling-conventions)
@@ -135,9 +136,30 @@ the C compiler (`AbiClassifier::x64_vectorcall_parts`):
   per member if enough remain (`coerce<f64, f64>`,
   `coerce<vector<f32, 4>, ...>`) and is `byref` otherwise.
 - Not modelled: a SysV record of 16 bytes or less with a vector member stays
-  `native_c` (the eightbyte classifier has no vector leaves), and i686
-  `vectorcall` keeps the cdecl shapes.
+  `native_c` (the eightbyte classifier has no vector leaves).
 - Fixtures: `clang/{linux,windows}/x86_64/abi_vectorcall.c`.
+
+### i686 `vectorcall`
+
+The convention stays `x86_win32`/`x86_cdecl`, and `native_c` on a
+`vectorcall` signature means rustc's i686 `extern "vectorcall"` agrees with
+clang's `X86_32ABIInfo` (`AbiClassifier::x86_vectorcall_parts`). Both
+compilers hand LLVM float, double and vector arguments that LLVM assigns to
+XMM0-5 in order, so those stay `scalar`/`direct`. Clang then differs:
+
+- Six XMM registers are shared in two passes: every non-atomic float or
+  16/32/64-byte vector argument takes one while any remain, regardless of
+  position; then each HVA (as on x86-64 Windows, complex counting as two)
+  takes one per member if enough remain (`coerce<f64, f64>`) and is
+  `byref` otherwise. A vector argument left without a register is `byref`
+  (rustc passes it on the stack). An HVA result is `coerce<...>` on both
+  OSes.
+- On Windows, a record with a required alignment above 4 is `byref`: clang
+  puts the pointer in `ecx`/`edx`, rustc on the stack.
+- Other shapes are the cdecl ones. Integer `inreg` assignment follows the
+  `fastcall` rules and is not recorded, as for `fastcall` (see
+  [Calling conventions](#calling-conventions)).
+- Fixtures: `clang/{linux,windows}/i686/abi_vectorcall.c`.
 
 ### Vectors
 
@@ -226,8 +248,8 @@ matters to an optimized clang callee across an extern boundary
   x86-64 and rejects what rustc cannot express: variadic definitions,
   `long double`, and `win64` on AArch64. Slate lowers the x86 conventions
   to `extern "stdcall-unwind"`, `"fastcall-unwind"`, `"thiscall-unwind"`
-  (i686) and `"vectorcall-unwind"` (x86-64) only where rustc passes the
-  shapes like clang, and rejects the rest (no shims, no rustc work).
+  (i686) and `"vectorcall-unwind"` (x86-64 and i686) only where rustc passes
+  the shapes like clang, and rejects the rest (no shims, no rustc work).
 - `-mregparm=N` on 32-bit x86 puts `regparm=N` on every non-variadic
   `cdecl` or `stdcall` `AbiSignature` (`x86_cdecl regparm=3(scalar) ->
 scalar`): the first N integer-class registers (`eax`, `edx`, `ecx`) carry
@@ -241,14 +263,17 @@ scalar`): the first N integer-class registers (`eax`, `edx`, `ecx`) carry
 - The convention is recorded, not modeled: stack cleanup, `inreg`
   registers, vectorcall XMM/HVA assignment, and decoration (`_f@8`,
   `@f@8`, `f@@8`) are left to rustc's `extern "stdcall"` etc. Pass shapes
-  are the platform's cdecl ones, except x86-64 `vectorcall` (see
-  [x86-64 `vectorcall`](#x86-64-vectorcall)).
+  are the platform's cdecl ones, except `vectorcall` (see
+  [x86-64 `vectorcall`](#x86-64-vectorcall) and
+  [i686 `vectorcall`](#i686-vectorcall)).
 - rustc matches clang for `stdcall` and `thiscall` (records, `sret`,
   decoration) but not for all `fastcall` `inreg` assignment, which the IR
   does not record: an integer of at most 32 bits after a `long long` that
   found a register free goes in a register for clang and on the stack for
   rustc, and off MSVC clang (like gcc) puts small records in registers
-  while rustc passes them `byval`. Slate rejects those signatures by type
+  while rustc passes them `byval`. Each compiler assigns i686 `vectorcall`
+  integer registers by its own `fastcall` rules, so the same gaps apply.
+  Slate rejects those signatures by type for both conventions
   (`Tables::fastcall_matches_rustc`).
 - Fixtures: `clang/{windows,linux}/i686/calling_conventions.c`,
   `clang/linux/x86_64/calling_conventions_ignored.c`,

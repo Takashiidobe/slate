@@ -290,11 +290,13 @@ impl<'a> AbiClassifier<'a> {
                     .unwrap_or_else(|| operand.clone())
             })
             .collect();
-        if calling == CallConv::X86Vectorcall
-            && matches!(convention, AbiConvention::SysV64 | AbiConvention::Win64)
-        {
-            let (arguments, result) =
-                self.x64_vectorcall_parts(return_type, &operands, convention)?;
+        if calling == CallConv::X86Vectorcall {
+            let (arguments, result) = match convention {
+                AbiConvention::SysV64 | AbiConvention::Win64 => {
+                    self.x64_vectorcall_parts(return_type, &operands, convention)?
+                }
+                _ => self.x86_vectorcall_parts(return_type, &operands, convention)?,
+            };
             return Ok(AbiSignature {
                 convention,
                 calling,
@@ -398,11 +400,11 @@ impl<'a> AbiClassifier<'a> {
             .iter()
             .map(|operand| self.vectorcall_hva(operand))
             .collect::<Result<Vec<_>, _>>()?;
-        let mut free_vector_registers = VECTORCALL_X64_VECTOR_REGISTERS;
+        let mut free_vector_registers = VECTORCALL_VECTOR_REGISTERS;
         for (operand, hva) in arguments
             .iter()
             .zip(&hvas)
-            .take(VECTORCALL_X64_VECTOR_REGISTERS)
+            .take(VECTORCALL_VECTOR_REGISTERS)
         {
             if hva.is_none()
                 && free_vector_registers > 0
@@ -430,6 +432,72 @@ impl<'a> AbiClassifier<'a> {
                 } else {
                     pass
                 })
+            })
+            .collect::<Result<_, _>>()?;
+        Ok((arguments, result))
+    }
+
+    fn x86_vectorcall_parts(
+        &self,
+        return_type: Option<&AbiOperand>,
+        arguments: &[AbiOperand],
+        convention: AbiConvention,
+    ) -> Result<(Vec<AbiPass>, AbiPass), ResolveError> {
+        let result = match return_type {
+            Some(operand) => match self.vectorcall_hva(operand)? {
+                Some(chunks) => AbiPass::Coerce(chunks),
+                None => self.abi_pass(operand, true, convention)?,
+            },
+            None => AbiPass::Void,
+        };
+        let mut free_vector_registers = VECTORCALL_VECTOR_REGISTERS;
+        let mut preassigned = Vec::with_capacity(arguments.len());
+        for operand in arguments {
+            let takes_register = free_vector_registers > 0
+                && !operand.atomic
+                && self.vectorcall_register_type(&operand.ty)?.is_some();
+            free_vector_registers -= usize::from(takes_register);
+            preassigned.push(takes_register);
+        }
+        let arguments = arguments
+            .iter()
+            .zip(preassigned)
+            .map(|(operand, preassigned)| -> Result<AbiPass, ResolveError> {
+                let by_reference = || -> Result<AbiPass, ResolveError> {
+                    Ok(AbiPass::ByReference {
+                        align: self.layout(operand)?.alignment_bytes,
+                    })
+                };
+                if preassigned {
+                    return self.abi_pass(operand, false, convention);
+                }
+                if let Some(chunks) = self.vectorcall_hva(operand)? {
+                    if free_vector_registers < chunks.len() {
+                        return by_reference();
+                    }
+                    free_vector_registers -= chunks.len();
+                    return Ok(AbiPass::Coerce(chunks));
+                }
+                if !operand.atomic
+                    && self.is_vector(&operand.ty)
+                    && self.vectorcall_register_type(&operand.ty)?.is_some()
+                {
+                    return by_reference();
+                }
+                let pass = self.abi_pass(operand, false, convention)?;
+                if convention == AbiConvention::X86Win32 {
+                    if pass == AbiPass::NativeC
+                        && self
+                            .types
+                            .required_alignment(&operand.ty)
+                            .is_some_and(|align| align > 4)
+                    {
+                        return by_reference();
+                    }
+                    self.win32_argument(operand, pass, true, &mut free_vector_registers)
+                } else {
+                    Ok(pass)
+                }
             })
             .collect::<Result<_, _>>()?;
         Ok((arguments, result))
@@ -1539,7 +1607,7 @@ fn sysv_pass(shape: SysvShape, align: u32, result: bool) -> AbiPass {
 }
 
 const WIN32_VECTOR_REGISTERS: usize = 3;
-const VECTORCALL_X64_VECTOR_REGISTERS: usize = 6;
+const VECTORCALL_VECTOR_REGISTERS: usize = 6;
 
 fn integer_chunks(size: u64, width: u32) -> AbiPass {
     let bytes = u64::from(width / 8);

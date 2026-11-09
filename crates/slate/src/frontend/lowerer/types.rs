@@ -1033,6 +1033,8 @@ impl FunctionLowerer<'_, '_> {
                                     .iter()
                                     .chain(return_type.as_deref())
                                     .all(|ty| self.tables.vectorcall_scalar(ty))
+                                && (!self.tables.uses_fastcall_registers(*abi)
+                                    || self.tables.fastcall_matches_rustc(parameters))
                         }
                         rust::Abi::FastcallUnwind => {
                             self.tables.fastcall_matches_rustc(parameters)
