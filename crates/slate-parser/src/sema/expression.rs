@@ -1836,9 +1836,16 @@ impl Lowerer {
             } => {
                 let base = self.place(operand)?;
                 let Type::Complex(component) = base.ty else {
-                    return Err(ResolveError::Unimplemented(
-                        "complex component of non-complex place",
-                    ));
+                    if matches!(
+                        &e.value,
+                        ExprKind::Unary {
+                            op: UnaryOp::Real,
+                            ..
+                        }
+                    ) {
+                        return Ok(base);
+                    }
+                    return Err(ResolveError::Rejected("__imag__ of a non-complex place"));
                 };
                 let c = self.lvalue_result(e)?;
                 Ok(Lvalue {

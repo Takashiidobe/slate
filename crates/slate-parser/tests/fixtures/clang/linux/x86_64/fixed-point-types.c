@@ -11,6 +11,7 @@ signed long long _Fract signed_long_long_fract_value;
 _Sat unsigned long _Accum saturated_unsigned_long_accum_value;
 
 // SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-ARGS -ffixed-point
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: module {

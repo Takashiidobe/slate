@@ -1,5 +1,5 @@
 // SLATE-FILECHECK-DEFINES IR
-// SLATE-FILECHECK-ARGS --dump-ir
+// SLATE-FILECHECK-ARGS --dump-ir -ffixed-point
 
 _Fract half_fract = 0.5r;
 _Accum one_and_half_accum = 1.5k;

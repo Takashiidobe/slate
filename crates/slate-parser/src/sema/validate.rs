@@ -924,6 +924,16 @@ fn check_literal_expr(expr: &Expr, context: LiteralContext<'_>) -> Vec<(Option<W
         }
         ExprKind::FloatLiteral(literal) => {
             if literal.fixed_suffix.is_some() {
+                if context.flavor.is_clang() && !context.features.fixed_point_keywords {
+                    let suffix = literal
+                        .spelling
+                        .trim_end_matches(|c: char| c.is_ascii_alphabetic());
+                    let suffix = &literal.spelling[suffix.len()..];
+                    return vec![(
+                        None,
+                        format!("invalid suffix '{suffix}' on floating constant"),
+                    )];
+                }
                 return Vec::new();
             }
             super::numeric::resolve_float_literal(literal, context.target)
@@ -1349,7 +1359,11 @@ fn output_lvalue(expr: &Expr) -> OutputLvalue {
         | ExprKind::Member { arrow: true, .. }
         | ExprKind::CompoundLiteral { .. }
         | ExprKind::Generic { .. } => OutputLvalue::Valid,
-        ExprKind::Paren(inner) => output_lvalue(inner),
+        ExprKind::Paren(inner)
+        | ExprKind::Unary {
+            op: UnaryOp::Real | UnaryOp::Imag,
+            operand: inner,
+        } => output_lvalue(inner),
         ExprKind::Member { base, .. } => match output_lvalue(base) {
             OutputLvalue::Valid => OutputLvalue::Valid,
             OutputLvalue::Cast | OutputLvalue::Invalid => OutputLvalue::Invalid,
@@ -1377,6 +1391,10 @@ fn is_gcc_output_lvalue(expr: &Expr) -> bool {
         | ExprKind::Generic { .. }
         | ExprKind::StatementExpression(_) => true,
         ExprKind::Paren(inner)
+        | ExprKind::Unary {
+            op: UnaryOp::Real | UnaryOp::Imag,
+            operand: inner,
+        }
         | ExprKind::Member { base: inner, .. }
         | ExprKind::Cast { value: inner, .. }
         | ExprKind::BitCast { value: inner, .. }

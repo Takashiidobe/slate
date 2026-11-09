@@ -44,6 +44,13 @@ impl Lowerer {
         let mut sources = Vec::new();
         for output in &operands.outputs {
             let constraint = constraint(&output.constraint.value, family);
+            if !self.types.typed(&output.expr)?.lvalue {
+                return Err(ResolveError::Rejected(if self.types.flavor().is_gcc() {
+                    "lvalue required in 'asm' statement"
+                } else {
+                    "invalid lvalue in asm output"
+                }));
+            }
             let place = self.place(&output.expr)?.place;
             self.memory_place(&place, constraint.memory_only())?;
             let early_clobber = output.constraint.value.early_clobber();

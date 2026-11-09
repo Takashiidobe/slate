@@ -168,6 +168,69 @@ const GNU_COMPATIBILITY_MACROS: [(&str, &str); 4] = [
     ("__GXX_ABI_VERSION", "1002"),
 ];
 
+const CLANG_FIXED_POINT_MACROS: [(&str, &str); 48] = [
+    ("__ACCUM_EPSILON__", "0.000030517578125K"),
+    ("__ACCUM_FBIT__", "15"),
+    ("__ACCUM_IBIT__", "16"),
+    ("__ACCUM_MAX__", "65535.999969482421875K"),
+    ("__ACCUM_MIN__", "(-32768.0K-32768.0K)"),
+    ("__FRACT_EPSILON__", "0.000030517578125R"),
+    ("__FRACT_FBIT__", "15"),
+    ("__FRACT_MAX__", "0.999969482421875R"),
+    ("__FRACT_MIN__", "(-0.5R-0.5R)"),
+    ("__LACCUM_EPSILON__", "0.0000000004656612873077392578125LK"),
+    ("__LACCUM_FBIT__", "31"),
+    ("__LACCUM_IBIT__", "32"),
+    (
+        "__LACCUM_MAX__",
+        "4294967295.9999999995343387126922607421875LK",
+    ),
+    ("__LACCUM_MIN__", "(-2147483648.0LK-2147483648.0LK)"),
+    ("__LFRACT_EPSILON__", "0.0000000004656612873077392578125LR"),
+    ("__LFRACT_FBIT__", "31"),
+    ("__LFRACT_MAX__", "0.9999999995343387126922607421875LR"),
+    ("__LFRACT_MIN__", "(-0.5LR-0.5LR)"),
+    ("__SACCUM_EPSILON__", "0.0078125HK"),
+    ("__SACCUM_FBIT__", "7"),
+    ("__SACCUM_IBIT__", "8"),
+    ("__SACCUM_MAX__", "255.9921875HK"),
+    ("__SACCUM_MIN__", "(-128.0HK-128.0HK)"),
+    ("__SFRACT_EPSILON__", "0.0078125HR"),
+    ("__SFRACT_FBIT__", "7"),
+    ("__SFRACT_MAX__", "0.9921875HR"),
+    ("__SFRACT_MIN__", "(-0.5HR-0.5HR)"),
+    ("__UACCUM_EPSILON__", "0.0000152587890625UK"),
+    ("__UACCUM_FBIT__", "16"),
+    ("__UACCUM_IBIT__", "16"),
+    ("__UACCUM_MAX__", "65535.9999847412109375UK"),
+    ("__UFRACT_EPSILON__", "0.0000152587890625UR"),
+    ("__UFRACT_FBIT__", "16"),
+    ("__UFRACT_MAX__", "0.9999847412109375UR"),
+    (
+        "__ULACCUM_EPSILON__",
+        "0.00000000023283064365386962890625ULK",
+    ),
+    ("__ULACCUM_FBIT__", "32"),
+    ("__ULACCUM_IBIT__", "32"),
+    (
+        "__ULACCUM_MAX__",
+        "4294967295.99999999976716935634613037109375ULK",
+    ),
+    (
+        "__ULFRACT_EPSILON__",
+        "0.00000000023283064365386962890625ULR",
+    ),
+    ("__ULFRACT_FBIT__", "32"),
+    ("__ULFRACT_MAX__", "0.99999999976716935634613037109375ULR"),
+    ("__USACCUM_EPSILON__", "0.00390625UHK"),
+    ("__USACCUM_FBIT__", "8"),
+    ("__USACCUM_IBIT__", "8"),
+    ("__USACCUM_MAX__", "255.99609375UHK"),
+    ("__USFRACT_EPSILON__", "0.00390625UHR"),
+    ("__USFRACT_FBIT__", "8"),
+    ("__USFRACT_MAX__", "0.99609375UHR"),
+];
+
 // expanded by expand_builtin_macro; msvc lacks the gnu-only ones
 const BUILTIN_MACROS: [&str; 6] = [
     "__LINE__",
@@ -846,6 +909,13 @@ impl<'a> Preprocessor<'a> {
         }
         if self.dialect.features().blocks {
             defines.push("__BLOCKS__=1".to_owned());
+        }
+        if flavor.is_clang() && self.dialect.features().fixed_point_keywords {
+            defines.extend(
+                CLANG_FIXED_POINT_MACROS
+                    .iter()
+                    .map(|(name, value)| format!("{name}={value}")),
+            );
         }
         if flavor.is_msvc() && options.layout.char_signed == Some(false) {
             defines.push("_CHAR_UNSIGNED=1".to_owned());

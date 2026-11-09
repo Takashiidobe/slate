@@ -1,5 +1,5 @@
 // SLATE-FILECHECK-DEFINES IR
-// SLATE-FILECHECK-ARGS --dump-ir
+// SLATE-FILECHECK-ARGS --dump-ir -ffixed-point
 
 _Fract fract;
 _Accum accum;

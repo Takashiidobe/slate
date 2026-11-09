@@ -1918,7 +1918,7 @@ impl<'a> Parser<'a> {
                 UnaryOp::Imag
             };
             self.take();
-            let operand = self.parse_unary()?;
+            let operand = self.parse_cast()?;
             return Ok(self.node(ExprKind::Unary { op, operand }, start));
         }
         let op = match self.peek() {

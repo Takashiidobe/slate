@@ -362,6 +362,7 @@ struct ParsedCompilerArgs {
     digraphs: Option<bool>,
     dollars_in_identifiers: Option<bool>,
     blocks: Option<bool>,
+    fixed_point: Option<bool>,
     ms_extensions: Option<bool>,
     ms_compatibility: Option<bool>,
     asm_blocks: Option<bool>,
@@ -640,6 +641,7 @@ enum Opt {
     ClangDigraphs,
     DollarsInIdentifiers,
     Blocks,
+    FixedPoint,
     MsExtensions,
     MsCompatibility,
     AsmBlocks,
@@ -802,6 +804,7 @@ impl std::fmt::Display for Opt {
             Self::ClangDigraphs => "fdigraphs",
             Self::DollarsInIdentifiers => "fdollars-in-identifiers",
             Self::Blocks => "fblocks",
+            Self::FixedPoint => "ffixed-point",
             Self::MsExtensions => "ms-extensions",
             Self::MsCompatibility => "ms-compatibility",
             Self::AsmBlocks => "asm-blocks",
@@ -987,6 +990,7 @@ impl Opt {
             | Self::ClangTrigraphs
             | Self::ClangDigraphs
             | Self::Blocks
+            | Self::FixedPoint
             | Self::MsAnonymousStructs
             | Self::LateParseAttributes
             | Self::InlineHintFunctions
@@ -1076,6 +1080,7 @@ impl Opt {
             Self::ClangDigraphs => "-fdigraphs",
             Self::DollarsInIdentifiers => "-fdollars-in-identifiers",
             Self::Blocks => "-fblocks",
+            Self::FixedPoint => "-ffixed-point",
             Self::MsExtensions => "-fms-extensions",
             Self::MsCompatibility => "-fms-compatibility",
             Self::AsmBlocks => "-fasm-blocks",
@@ -1507,7 +1512,7 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 62] = [
+const SWITCH_OPTS: [Opt; 63] = [
     Opt::FloatStore,
     Opt::SinglePrecisionConstant,
     Opt::Asm,
@@ -1519,6 +1524,7 @@ const SWITCH_OPTS: [Opt; 62] = [
     Opt::ClangDigraphs,
     Opt::DollarsInIdentifiers,
     Opt::Blocks,
+    Opt::FixedPoint,
     Opt::DeleteNullPointerChecks,
     Opt::SmallPic,
     Opt::LargePic,
@@ -1671,6 +1677,7 @@ impl CompilerArgParser {
             digraphs: raw.digraphs,
             dollars: raw.dollars_in_identifiers,
             blocks: raw.blocks,
+            fixed_point: raw.fixed_point,
         };
         options.microsoft = MicrosoftFlags {
             extensions: raw.ms_extensions,
@@ -1867,6 +1874,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::ClangDigraphs => parsed.digraphs = Some(value),
                 Opt::DollarsInIdentifiers => parsed.dollars_in_identifiers = Some(value),
                 Opt::Blocks => parsed.blocks = Some(value),
+                Opt::FixedPoint => parsed.fixed_point = Some(value),
                 Opt::MsExtensions => {
                     parsed.ms_extensions = Some(value);
                     parsed.ms_anonymous_structs = Some(value);

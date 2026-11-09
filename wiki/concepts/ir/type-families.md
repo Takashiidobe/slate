@@ -30,8 +30,11 @@ Their ABI passing is in [calls and ABI](calls-abi.md).
 - GNU `~` on complex is conjugation for float and integer components (gcc
   and clang agree), printed `not<complex<..>>`
   (`ir_complex_conjugate.c`).
-- `__real__`/`__imag__` accept a real operand, as gcc does: `__imag__ x` is
-  zero of the promoted type.
+- `__real__`/`__imag__` accept a real arithmetic operand without promoting
+  it (gcc and clang): `__imag__ x` is zero of `x`'s type, and `__real__` of a
+  real lvalue is that lvalue, so it is assignable and an asm output.
+  `__imag__` of a real value is never an lvalue. The operand is a cast
+  expression (`__imag__ (short)3`).
 - `{re, im}` initializes as `aggregate<complex<T>>(index0 = re, index1 =
 im)`; `{x}` and a bare scalar stay `real_to_complex`. Brace elision into
   the pair is not modeled. `__builtin_complex(re, im)` gives the same
@@ -108,6 +111,11 @@ text with no oracle.
 
 ## Fixed-point (N1169)
 
+- The clang flavor reserves `_Fract`, `_Accum` and `_Sat` and accepts
+  fixed-point literal suffixes only with `-ffixed-point`, which also
+  predefines the `__FRACT_*`/`__ACCUM_*` limit macros (the same on every
+  clang target). Without it they are identifiers and `0.5r` is an invalid
+  suffix. gcc reserves them in GNU modes.
 - `Type::FixedPoint` prints `fixed<i32, 15>` (`sat_fixed<..>` for `_Sat`):
   a `width`-bit two's-complement word with `scale` fractional bits. Widths
   are not target-varying: `_Fract` is 8 bits at `short` rank and doubles per

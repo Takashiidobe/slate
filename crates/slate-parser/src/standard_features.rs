@@ -193,6 +193,9 @@ impl StandardFeatures {
         features.digraphs = graphs.digraphs.unwrap_or(features.digraphs);
         features.dollars_in_identifiers = graphs.dollars.unwrap_or(true);
         features.blocks = flavor.is_clang() && graphs.blocks.unwrap_or(false);
+        if flavor.is_clang() {
+            features.fixed_point_keywords = graphs.fixed_point.unwrap_or(false);
+        }
         features.scope_token = !flavor.is_gcc() || standard.is_gnu() || standard.at_least_c23();
         features.elifdef_directives = match flavor {
             CompilerFlavor::Gcc => features.elifdef_directives,

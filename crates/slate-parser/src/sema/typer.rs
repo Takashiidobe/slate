@@ -890,7 +890,7 @@ impl TypeResolver {
                 Typed::rvalue(to)
             }
             ExprKind::Unary {
-                op: UnaryOp::Real | UnaryOp::Imag,
+                op: op @ (UnaryOp::Real | UnaryOp::Imag),
                 operand,
             } => {
                 let typed = self.typed(operand)?;
@@ -898,14 +898,16 @@ impl TypeResolver {
                 if typed.lvalue && complex {
                     let quals = self.ctypes.quals(typed.c);
                     Typed::lvalue(self.ctypes.arithmetic_component(typed.c).with(quals))
+                } else if typed.lvalue && *op == UnaryOp::Real && self.ctypes.is_arithmetic(typed.c)
+                {
+                    typed
                 } else {
                     let c = self.rvalue_type(typed);
                     if complex {
                         Typed::rvalue(self.ctypes.arithmetic_component(c))
                     } else if self.ctypes.is_arithmetic(c) {
-                        let promotion = self.promotion(c);
-                        self.record_steps(e, Slot::Operand, vec![promotion]);
-                        Typed::rvalue(promotion.to)
+                        self.record_steps(e, Slot::Operand, Vec::new());
+                        Typed::rvalue(c)
                     } else {
                         return Err(ResolveError::Rejected("non-numeric operand"));
                     }
