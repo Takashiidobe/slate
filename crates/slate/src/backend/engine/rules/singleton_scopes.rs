@@ -1,6 +1,8 @@
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 
+use super::dead_store::is_drop_guard;
+
 fn later_siblings(arena: &Arena, id: NodeId) -> Option<(NodeId, Vec<NodeId>)> {
     let parent = arena.parent(id)?;
     let lists = arena.get(parent)?.child_lists();
@@ -39,6 +41,38 @@ fn shadow_outlives_scope(arena: &FunctionOptimizer, id: NodeId) -> bool {
         })
 }
 
+fn guard_outlives_scope(arena: &FunctionOptimizer, id: NodeId) -> bool {
+    let Some(NodeKind::Scope { body, .. }) = arena.get(id) else {
+        return false;
+    };
+    let binds_guard = body.iter().any(|&child| {
+        matches!(
+            arena.get(child),
+            Some(NodeKind::Let { init: Some(init), .. }) if is_drop_guard(init)
+        )
+    });
+    if !binds_guard {
+        return false;
+    }
+    let Some((parent, later)) = later_siblings(arena, id) else {
+        return true;
+    };
+    let ends_statement_body = matches!(
+        arena.get(parent),
+        Some(
+            NodeKind::Loop { .. }
+                | NodeKind::For { .. }
+                | NodeKind::Scope { .. }
+                | NodeKind::LabeledBlock { .. }
+                | NodeKind::If { .. }
+        )
+    );
+    !ends_statement_body
+        || later
+            .iter()
+            .any(|&sibling| !matches!(arena.get(sibling), Some(NodeKind::Comment(_))))
+}
+
 pub(in crate::backend::engine) struct ScopeFlatten;
 
 impl NodeRule for ScopeFlatten {
@@ -59,11 +93,13 @@ impl NodeRule for ScopeFlatten {
     }
 
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
-        arena.parent(id).is_some() && !shadow_outlives_scope(arena, id)
+        arena.parent(id).is_some()
+            && !shadow_outlives_scope(arena, id)
+            && !guard_outlives_scope(arena, id)
     }
 
     fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
-        if shadow_outlives_scope(arena, id) {
+        if shadow_outlives_scope(arena, id) || guard_outlives_scope(arena, id) {
             return false;
         }
         let Some(parent_id) = arena.parent(id) else {
