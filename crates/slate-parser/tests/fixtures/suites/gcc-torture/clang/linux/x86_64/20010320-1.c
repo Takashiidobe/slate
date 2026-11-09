@@ -34,8 +34,8 @@ static void pe_print_pdata (asection *section)
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
-// DEFAULT: Error:
-// DEFAULT:   × unresolved ordinary name `f`
+// DEFAULT: Error: -Wimplicit-function-declaration
+// DEFAULT:   × call to undeclared function 'f'; ISO C99 and later do not support implicit
 // DEFAULT:     ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20010320-1.c:28:7]
 // DEFAULT:  27 │
 // DEFAULT:  28 │       f (((unsigned long) (((   i + section->vma  ) >> 32) & 0xffffffff)) , ((unsigned long) (((   i + section->vma  ) & 0xffffffff))) ) ;

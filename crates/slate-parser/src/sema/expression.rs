@@ -3241,7 +3241,8 @@ impl Lowerer {
             }
             ExprKind::Call { callee, arguments } => {
                 let (lowered, signature) = self.callee(callee)?;
-                if !arguments.is_empty() {
+                let implicit = matches!(&lowered, Callee::Direct(id) if self.names.implicit_functions.contains(id));
+                if !arguments.is_empty() && !implicit {
                     let direct = matches!(lowered, Callee::Direct(_));
                     self.warn_arguments_without_prototype(e, callee, direct, signature);
                 }

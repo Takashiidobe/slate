@@ -779,7 +779,17 @@ impl<'a> DeclaratorParser<'a> {
 
     pub(crate) fn parse_type_name(&mut self) -> Result<TypeName, DeclaratorError> {
         let start = self.pos;
-        let mut specifiers = self.parse_specifiers(false)?;
+        let mut specifiers = if self.qualifier_only_type_name() {
+            let mut specifiers =
+                specifiers_with_type(TypeSpecifier::Integer(IntegerType::Ranked {
+                    rank: IntegerRank::Int,
+                    signed: None,
+                }));
+            self.parse_specifier_keywords(&mut specifiers)?;
+            specifiers
+        } else {
+            self.parse_specifiers(false)?
+        };
         self.note_type_range(start, self.pos);
         let ty = std::mem::replace(&mut specifiers.ty, TypeSpecifier::Void);
         specifiers.ty = ty.with_type_attributes(&specifiers.attributes);
@@ -791,6 +801,26 @@ impl<'a> DeclaratorParser<'a> {
         };
         self.note_type_name(start, self.pos, || type_name.clone());
         Ok(type_name)
+    }
+
+    fn qualifier_only_type_name(&self) -> bool {
+        if !self.context.features().implicit_int.is_accepted() {
+            return false;
+        }
+        let mut position = self.pos;
+        while matches!(
+            self.tokens.value_at(position),
+            Some(Token::Keyword(
+                Keyword::Const | Keyword::Volatile | Keyword::Restrict
+            ))
+        ) {
+            position += 1;
+        }
+        position > self.pos
+            && matches!(
+                self.tokens.value_at(position),
+                Some(Token::RParen | Token::Star | Token::LBracket)
+            )
     }
 
     fn parse_pointer_qualifiers(

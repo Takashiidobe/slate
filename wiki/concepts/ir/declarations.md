@@ -3,6 +3,7 @@
 <!-- toc -->
 - [Globals, statics, and linkage](#globals-statics-and-linkage)
 - [Redeclaration conflicts](#redeclaration-conflicts)
+- [Implicit declarations](#implicit-declarations)
 - [Overloadable functions](#overloadable-functions)
 - [Symbol attributes](#symbol-attributes)
 - [Object properties](#object-properties)
@@ -82,6 +83,31 @@ reject; where one only warns (always MSVC), accept with
 - Fixtures: `ir_redeclaration_conflicts.c`, `ir_redeclaration_compatible.c`,
   `array_redeclaration_composite_extent.c`,
   `x86_64-pc-windows-msvc/ir_redeclaration_layout.c`.
+
+## Implicit declarations
+
+- A call whose callee is an undeclared identifier declares `extern int
+  name()` (unprototyped, `c_implicit` metadata) at file scope, reused by
+  later calls (`names.rs` `declare_implicit_function`, `module.rs`
+  `declare_implicit_function`). This holds for every flavor and standard
+  except clang C23, where the name stays unresolved ("use of undeclared
+  identifier"). Calls through it skip clang's `deprecated-non-prototype`
+  warning, as clang does.
+- Whether it is an error is the `implicit-function-declaration` diagnostic
+  ([severities](../diagnostic-severity.md#warnings)): silent in C89, error
+  by default from C99 for gcc and clang, ignored for msvc. Messages follow
+  each compiler: gcc `implicit declaration of function 'f'`, clang C99+
+  `call to undeclared function 'f'; ISO C99 and later do not support
+  implicit function declarations`. A clang `__builtin_*` name that is not
+  a builtin is `use of unknown builtin` and an error by default in every
+  mode before C23.
+- Implicit `int` (`static x;`, `f(a) {}`, a qualifier-only type name such as
+  `(const) 0`) follows the `implicit-int` diagnostic the same way: the
+  parser accepts it unless its severity is error
+  (`Dialect::new` sets `StandardFeatures::implicit_int`), and clang C23
+  never accepts it.
+- Not modelled: gcc accepts a later declaration that conflicts with the
+  implicit one with only a warning; slate rejects it as clang does.
 
 ## Overloadable functions
 

@@ -1,6 +1,7 @@
 use crate::charset::Charset;
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::compiler_options::{CompilerOptions, InlineSemantics};
+use crate::diagnostics::{DiagnosticContext, Warning};
 use crate::standard_features::{Availability, StandardFeatures};
 use crate::target_info::TargetInfo;
 
@@ -37,7 +38,18 @@ impl Dialect {
         if flavor.is_gcc() && options.diagnostics.permissive {
             features.valueless_return_in_nonvoid = true;
             features.value_return_in_void = true;
-            if !features.implicit_int.is_accepted() {
+        }
+        if !flavor.is_msvc() {
+            let diagnostics = DiagnosticContext {
+                options: &options.diagnostics,
+                standard,
+                flavor,
+            };
+            if diagnostics.severity(Warning::ImplicitInt) == Some(miette::Severity::Error) {
+                features.implicit_int = Availability::Rejected;
+            } else if !features.implicit_int.is_accepted()
+                && !(flavor.is_clang() && standard.at_least_c23())
+            {
                 features.implicit_int = Availability::Extension;
             }
         }

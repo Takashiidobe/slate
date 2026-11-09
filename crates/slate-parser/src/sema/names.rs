@@ -475,9 +475,8 @@ impl Resolver {
                 if !implicit_builtin && !super::expression::specially_lowered(callee, arguments) {
                     match &callee.value {
                         ExprKind::Identifier(name)
-                            if (self.flavor.is_msvc()
-                                || (self.flavor.is_gcc()
-                                    && self.dialect.options().diagnostics.permissive))
+                            if (!self.flavor.is_clang()
+                                || !self.dialect.standard().at_least_c23())
                                 && !self.collecting_labels
                                 && self.lookup_ordinary(name).is_none()
                                 && !super::expression::predefined_function_name(name) =>

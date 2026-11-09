@@ -38,8 +38,8 @@ int f(X x, X y)
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
-// DEFAULT: Error:
-// DEFAULT:   × unresolved ordinary name `f`
+// DEFAULT: Error: -Wimplicit-function-declaration
+// DEFAULT:   × implicit declaration of function 'f'
 // DEFAULT:     ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20000511-1.c:15:10]
 // DEFAULT:  14 │   xxx.y = 0xf;
 // DEFAULT:  15 │   return f (xxx, xxx);

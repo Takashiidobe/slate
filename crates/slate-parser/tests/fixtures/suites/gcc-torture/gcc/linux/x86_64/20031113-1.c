@@ -27,20 +27,12 @@ simple_cst_equal ()
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
-// DEFAULT: Error:
-// DEFAULT:   × unresolved ordinary name `simple_cst_equal`
+// DEFAULT: Error: -Wimplicit-function-declaration
+// DEFAULT:   × implicit declaration of function 'simple_cst_equal'
 // DEFAULT:     ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20031113-1.c:10:11]
 // DEFAULT:   9 │ {
 // DEFAULT:  10 │   return (simple_cst_equal ());
 // DEFAULT:     ·           ────────────────
 // DEFAULT:  11 │ }
-// DEFAULT:     ╰────
-// DEFAULT: Error:
-// DEFAULT:   × unresolved ordinary name `simple_cst_equal`
-// DEFAULT:     ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20031113-1.c:15:11]
-// DEFAULT:  14 │ {
-// DEFAULT:  15 │   return (simple_cst_equal ());
-// DEFAULT:     ·           ────────────────
-// DEFAULT:  16 │ }
 // DEFAULT:     ╰────
 // SLATE-FILECHECK-END DEFAULT

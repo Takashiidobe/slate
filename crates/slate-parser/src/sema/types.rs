@@ -510,17 +510,36 @@ impl TypeResolver {
     }
 
     pub(super) fn warn<T>(&mut self, warning: Warning, message: &str, node: &Span<T>) {
-        let diagnostics = DiagnosticContext {
-            options: &self.dialect.options().diagnostics,
-            standard: self.dialect.standard(),
-            flavor: self.dialect.flavor(),
-        };
-        self.diagnostics.extend(warning.diagnose(
+        let severity = self.diagnostic_context().severity(warning);
+        self.diagnostics.extend(warning.diagnose_with(
+            severity,
             message,
-            diagnostics,
             node.provenance,
             node.expansion,
         ));
+    }
+
+    pub(super) fn warn_error_by_default<T>(
+        &mut self,
+        warning: Warning,
+        message: &str,
+        node: &Span<T>,
+    ) {
+        let severity = self.diagnostic_context().severity_error_by_default(warning);
+        self.diagnostics.extend(warning.diagnose_with(
+            severity,
+            message,
+            node.provenance,
+            node.expansion,
+        ));
+    }
+
+    fn diagnostic_context(&self) -> DiagnosticContext<'_> {
+        DiagnosticContext {
+            options: &self.dialect.options().diagnostics,
+            standard: self.dialect.standard(),
+            flavor: self.dialect.flavor(),
+        }
     }
 
     pub(super) fn attribute_error<'a>(

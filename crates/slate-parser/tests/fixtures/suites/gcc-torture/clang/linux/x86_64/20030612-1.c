@@ -18,8 +18,8 @@ test (void)
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
-// DEFAULT: Error:
-// DEFAULT:   × unresolved ordinary name `bar`
+// DEFAULT: Error: -Wimplicit-function-declaration
+// DEFAULT:   × call to undeclared function 'bar'; ISO C99 and later do not support
 // DEFAULT:    ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20030612-1.c:7:3]
 // DEFAULT:  6 │ {
 // DEFAULT:  7 │   bar (v0 == v1);

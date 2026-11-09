@@ -1819,19 +1819,26 @@ fn apply_warning_flag(name: &str, diagnostics: &mut DiagnosticOptions) {
     } else if name == "no-error" {
         diagnostics.werror = false;
     } else if let Some(name) = name.strip_prefix("error=") {
-        if let Some(warning) = Warning::from_name(name) {
+        for warning in Warning::group(name) {
             diagnostics.set_error(warning, true);
         }
     } else if let Some(name) = name.strip_prefix("no-error=") {
-        if let Some(warning) = Warning::from_name(name) {
-            diagnostics.set_error(warning, false);
+        match Warning::from_name(name) {
+            Some(warning) => diagnostics.set_error(warning, false),
+            None => {
+                for warning in Warning::group(name) {
+                    diagnostics.set_no_error_from_group(warning);
+                }
+            }
         }
     } else if let Some(name) = name.strip_prefix("no-") {
-        if let Some(warning) = Warning::from_name(name) {
+        for warning in Warning::group(name) {
             diagnostics.set_enabled(warning, false);
         }
-    } else if let Some(warning) = Warning::from_name(name) {
-        diagnostics.set_enabled(warning, true);
+    } else {
+        for warning in Warning::group(name) {
+            diagnostics.set_enabled(warning, true);
+        }
     }
 }
 

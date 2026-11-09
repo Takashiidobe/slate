@@ -560,7 +560,17 @@ impl Warning {
         provenance: Provenance,
         loc: Loc,
     ) -> Option<SemaError> {
-        let severity = diagnostics.severity(self)?;
+        self.diagnose_with(diagnostics.severity(self), message, provenance, loc)
+    }
+
+    pub(super) fn diagnose_with(
+        self,
+        severity: Option<Severity>,
+        message: impl Into<String>,
+        provenance: Provenance,
+        loc: Loc,
+    ) -> Option<SemaError> {
+        let severity = severity?;
         let mut diagnostic = error(provenance, loc, message);
         diagnostic.severity = severity;
         diagnostic.warning = Some(self);

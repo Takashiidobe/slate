@@ -144,7 +144,7 @@ def migration_blocker(result, text):
 
 def fixture_text(result, text):
     defines = [flag[2:] for flag in result["flags"] if flag.startswith("-D")]
-    args = [flag for flag in result["flags"] if flag.startswith("-f")]
+    args = [flag for flag in result["flags"] if flag.startswith(("-f", "-Wno-"))]
     lines = [f"// SLATE-FILECHECK-STD DEFAULT {result['std'].removeprefix('-std=')}"]
     if args:
         lines.append(f"// SLATE-FILECHECK-ARGS {' '.join(args)}")

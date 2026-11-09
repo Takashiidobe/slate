@@ -514,11 +514,30 @@ impl Lowerer {
             body: None,
             fallthrough: None,
         });
-        let message = format!(
-            "implicit declaration of function '{}'; assuming extern returning int",
-            binding.name
-        );
-        self.warn(Warning::ImplicitFunctionDeclaration, &message, &function);
+        let name = &binding.name;
+        let unknown_builtin =
+            self.types.dialect().flavor().is_clang() && name.starts_with("__builtin_");
+        let message = match self.types.dialect().flavor() {
+            CompilerFlavor::Clang if unknown_builtin => format!("use of unknown builtin '{name}'"),
+            CompilerFlavor::Msvc => {
+                format!("implicit declaration of function '{name}'; assuming extern returning int")
+            }
+            CompilerFlavor::Clang if self.types.dialect().standard().at_least_c99() => format!(
+                "call to undeclared function '{name}'; ISO C99 and later do not support implicit function declarations"
+            ),
+            CompilerFlavor::Clang | CompilerFlavor::Gcc => {
+                format!("implicit declaration of function '{name}'")
+            }
+        };
+        if unknown_builtin {
+            self.types.warn_error_by_default(
+                Warning::ImplicitFunctionDeclaration,
+                &message,
+                &function,
+            );
+        } else {
+            self.warn(Warning::ImplicitFunctionDeclaration, &message, &function);
+        }
         let mut metadata = vec![("c_implicit".into(), "true".into())];
         metadata.extend(self.types.render(resolved).entries());
         self.module.annotate(&function, metadata);

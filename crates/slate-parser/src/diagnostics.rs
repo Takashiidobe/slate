@@ -23,6 +23,7 @@ pub enum Warning {
     UnknownAttributes,
     DeprecatedNonPrototype,
     ImplicitFunctionDeclaration,
+    ImplicitInt,
     MacroRedefined,
     BuiltinMacroRedefined,
     Deprecated,
@@ -36,7 +37,7 @@ pub enum Warning {
 }
 
 impl Warning {
-    pub const ALL: [Self; 29] = [
+    pub const ALL: [Self; 30] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
@@ -56,6 +57,7 @@ impl Warning {
         Self::UnknownAttributes,
         Self::DeprecatedNonPrototype,
         Self::ImplicitFunctionDeclaration,
+        Self::ImplicitInt,
         Self::MacroRedefined,
         Self::BuiltinMacroRedefined,
         Self::Deprecated,
@@ -92,6 +94,7 @@ impl Warning {
             Self::UnknownAttributes => "unknown-attributes",
             Self::DeprecatedNonPrototype => "deprecated-non-prototype",
             Self::ImplicitFunctionDeclaration => "implicit-function-declaration",
+            Self::ImplicitInt => "implicit-int",
             Self::MacroRedefined => "macro-redefined",
             Self::BuiltinMacroRedefined => "builtin-macro-redefined",
             Self::Deprecated => "deprecated",
@@ -106,6 +109,13 @@ impl Warning {
 
     pub fn from_name(name: &str) -> Option<Self> {
         Self::ALL.into_iter().find(|warning| warning.name() == name)
+    }
+
+    pub fn group(name: &str) -> Vec<Self> {
+        match name {
+            "implicit" => vec![Self::ImplicitFunctionDeclaration, Self::ImplicitInt],
+            _ => Self::from_name(name).into_iter().collect(),
+        }
     }
 
     fn is_pedantic(self) -> bool {
@@ -133,7 +143,13 @@ impl Warning {
                 DefaultSeverity::Ignored
             }
             Self::DeprecatedNonPrototype if !flavor.is_clang() => DefaultSeverity::Ignored,
-            Self::ImplicitFunctionDeclaration if flavor.is_msvc() => DefaultSeverity::Ignored,
+            Self::ImplicitFunctionDeclaration | Self::ImplicitInt => {
+                if flavor.is_msvc() || !standard.at_least_c99() {
+                    DefaultSeverity::Ignored
+                } else {
+                    DefaultSeverity::Error
+                }
+            }
             Self::C99Compat if standard.at_least_c99() => DefaultSeverity::Ignored,
             Self::IncompatiblePointerTypes | Self::IntConversion => match flavor {
                 CompilerFlavor::Msvc => DefaultSeverity::Warning,
@@ -174,6 +190,7 @@ impl std::fmt::Display for Warning {
 struct WarningSetting {
     enabled: Option<bool>,
     error: Option<bool>,
+    no_error_from_group: bool,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
@@ -192,7 +209,16 @@ impl DiagnosticOptions {
     }
 
     pub fn set_error(&mut self, warning: Warning, error: bool) {
-        self.settings.entry(warning).or_default().error = Some(error);
+        let setting = self.settings.entry(warning).or_default();
+        setting.error = Some(error);
+        setting.no_error_from_group = false;
+    }
+
+    // gcc's -Wno-error=<group> leaves the group's members alone; clang's reaches them
+    pub fn set_no_error_from_group(&mut self, warning: Warning) {
+        let setting = self.settings.entry(warning).or_default();
+        setting.error = Some(false);
+        setting.no_error_from_group = true;
     }
 }
 
@@ -211,9 +237,28 @@ impl DiagnosticContext<'_> {
     }
 
     pub fn severity_as(&self, warning: Warning, pedantic: bool) -> Option<Severity> {
+        self.resolve(
+            warning,
+            warning.default_severity(self.standard, self.flavor),
+            pedantic,
+        )
+    }
+
+    pub fn severity_error_by_default(&self, warning: Warning) -> Option<Severity> {
+        self.resolve(warning, DefaultSeverity::Error, warning.is_pedantic())
+    }
+
+    fn resolve(
+        &self,
+        warning: Warning,
+        default: DefaultSeverity,
+        pedantic: bool,
+    ) -> Option<Severity> {
         let options = self.options;
-        let setting = options.settings.get(&warning).copied().unwrap_or_default();
-        let default = warning.default_severity(self.standard, self.flavor);
+        let mut setting = options.settings.get(&warning).copied().unwrap_or_default();
+        if setting.no_error_from_group && self.flavor.is_gcc() {
+            setting.error = None;
+        }
         let pedantic_group = pedantic && (options.pedantic || options.pedantic_errors);
         if !setting
             .enabled
