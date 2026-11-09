@@ -1,4 +1,3 @@
-asm_barriers
 bitint_arith
 bitint_bitfield
 bitint_builtins

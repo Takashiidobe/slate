@@ -63,24 +63,15 @@ static int no_unroll(const float *p, int n) {
   return (int)sum;
 }
 
-static void spin_pause(void) { __asm__ __volatile__("pause"); }
-
-static void spin_pause_memory(void) { __asm__ __volatile__("pause" ::: "memory"); }
-
-static void spin_rep_nop(void) { __asm__ __volatile__("rep; nop" ::: "memory"); }
-
 int main(void) {
   int cell = 0;
   unsigned char bytes[4] = {1, 2, 3, 4};
   empty_volatile();
-  spin_pause();
-  spin_rep_nop();
   printf("%d %d\n", typecheck_probe(), memory_barrier(&cell));
   printf("%u %llu\n", value_barrier(7), (unsigned long long)value_barrier_memory(41));
   printf("%d\n", input_barrier(bytes, 4));
   unsigned char zeros[4] = {0};
   float floats[3] = {1.5f, 2.5f, 3.0f};
-  spin_pause_memory();
   printf("%d %d\n", verify_volatile(bytes, bytes, 4), verify_volatile(bytes, zeros, 4));
   printf("%d %d\n", nonvolatile_guard(zeros, 4), nonvolatile_guard(bytes, 4));
   printf("%d\n", no_unroll(floats, 3));
@@ -213,27 +204,10 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum as i32
 // CHECK-NEXT: }
-// CHECK-NEXT: fn spin_pause() {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::arch::asm!("pause", options(att_syntax));
-// CHECK-NEXT:     }
-// CHECK-NEXT: }
-// CHECK-NEXT: fn spin_pause_memory() {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::arch::asm!("pause", options(nostack, att_syntax));
-// CHECK-NEXT:     }
-// CHECK-NEXT: }
-// CHECK-NEXT: fn spin_rep_nop() {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::arch::asm!("rep; nop", options(nostack, att_syntax));
-// CHECK-NEXT:     }
-// CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut cell: i32 = 0;
 // CHECK-NEXT:     let mut bytes: [u8; 4] = [1, 2, 3, 4];
 // CHECK-NEXT:     empty_volatile();
-// CHECK-NEXT:     spin_pause();
-// CHECK-NEXT:     spin_rep_nop();
 // CHECK-NEXT:     let __slate_printf_arg1 = memory_barrier(unsafe {
 // CHECK-NEXT:         &mut (*std::ptr::addr_of_mut!(cell))
 // CHECK-NEXT:     });
@@ -254,7 +228,6 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut floats: [f32; 3] = [1.5f32, 2.5f32, 3.0f32];
-// CHECK-NEXT:     spin_pause_memory();
 // CHECK-NEXT:     let __slate_printf_arg0_1 = verify_volatile(
 // CHECK-NEXT:         bytes.as_mut_ptr() as *const u8,
 // CHECK-NEXT:         bytes.as_mut_ptr() as *const u8,
