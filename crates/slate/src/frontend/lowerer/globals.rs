@@ -305,6 +305,7 @@ impl FunctionLowerer<'_, '_> {
             used: false,
             include: false,
             section: None,
+            retain: false,
             weak: global.symbol.weak && global.definition,
             ..global.symbol.clone()
         };

@@ -795,12 +795,14 @@ impl<'m> ModuleLowerer<'m> {
                                 Some(name) => Attr::ExportName(name),
                                 None => Attr::NoMangle,
                             }))
-                            .chain(
+                            .chain(if global.symbol.retain {
+                                Some(Attr::Used(rust::UsedKind::Linker))
+                            } else {
                                 global
                                     .symbol
                                     .used
-                                    .then_some(Attr::Used(rust::UsedKind::Plain)),
-                            )
+                                    .then_some(Attr::Used(rust::UsedKind::Plain))
+                            })
                             .chain(global.symbol.section.clone().map(Attr::LinkSection))
                             .collect(),
                         vis: rust::Visibility::Private,
@@ -1317,6 +1319,14 @@ impl<'m> ModuleLowerer<'m> {
             _ => false,
         }) {
             features.push(rust::CrateAttr::Feature(rust::Feature::ThreadLocal));
+        }
+        if items.iter().any(|item| {
+            matches!(item, Item::Static { attrs, .. } if attrs.iter().any(|attr| matches!(
+                attr,
+                Attr::Used(rust::UsedKind::Linker | rust::UsedKind::Compiler)
+            )))
+        }) {
+            features.push(rust::CrateAttr::Feature(rust::Feature::UsedWithArg));
         }
         if items.iter().any(|item| match item {
             Item::ExternBlock { decls, .. } => decls.iter().any(|decl| {
