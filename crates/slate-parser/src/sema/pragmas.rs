@@ -679,16 +679,17 @@ impl Visitor for TagCollector<'_, '_> {
     }
 }
 
-const PASSTHROUGH_LINKER_OPTIONS: [&str; 6] = [
+const PASSTHROUGH_LINKER_OPTIONS: [&str; 7] = [
     "/export:",
     "/defaultlib:",
     "/nodefaultlib:",
     "/merge:",
     "/section:",
     "/entry:",
+    "/manifestdependency:",
 ];
 
-fn linker_comment(text: &str) -> Vec<&str> {
+fn linker_comment(text: &str) -> Vec<String> {
     let Some(rest) = text
         .strip_prefix("comment")
         .map(str::trim_start)
@@ -701,9 +702,42 @@ fn linker_comment(text: &str) -> Vec<&str> {
     else {
         return Vec::new();
     };
-    rest.trim_end_matches(')')
+    let body = rest
+        .trim_end_matches(')')
         .trim()
-        .trim_matches('"')
-        .split_whitespace()
-        .collect()
+        .strip_prefix('"')
+        .and_then(|body| body.strip_suffix('"'))
+        .unwrap_or(rest);
+    let mut unescaped = String::new();
+    let mut chars = body.chars();
+    while let Some(c) = chars.next() {
+        match (c, chars.clone().next()) {
+            ('\\', Some(escaped @ ('"' | '\\'))) => {
+                unescaped.push(escaped);
+                chars.next();
+            }
+            _ => unescaped.push(c),
+        }
+    }
+    let mut options = Vec::new();
+    let mut current = String::new();
+    let mut quoted = false;
+    for c in unescaped.chars() {
+        match c {
+            '"' => {
+                quoted = !quoted;
+                current.push(c);
+            }
+            c if c.is_whitespace() && !quoted => {
+                if !current.is_empty() {
+                    options.push(std::mem::take(&mut current));
+                }
+            }
+            c => current.push(c),
+        }
+    }
+    if !current.is_empty() {
+        options.push(current);
+    }
+    options
 }
