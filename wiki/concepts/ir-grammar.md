@@ -63,10 +63,10 @@ before its declaration (a function called before its definition, a loop ID in
 ## Module
 
 ```ebnf
-module     = "module" "{" target { asm } { linker_export } { type_def } { global } { function }
+module     = "module" "{" target { asm } { linker_option } { type_def } { global } { function }
              { macro_definition } { macro_expansion } "}" ;
 
-linker_export = "export" string ";" ;
+linker_option = "linker" string ";" ;
 
 target     = "target" string "{"
                "endian" "=" ( "little" | "big" ) ";"
@@ -84,7 +84,7 @@ storage_of = "bool" | "i8, u8" | "i16, u16" | "i32, u32" | "i64, u64"
   integers, floats, in that order), only for formats the target supports.
   Bit-precise integers, pointers, `va_list`, and composites are derived at the
   use site.
-- A `linker_export` is the text after `/export:` of an MSVC `#pragma comment(linker, ...)`, verbatim, in source order after the module asm.
+- A `linker_option` is one option of an MSVC `#pragma comment(linker, ...)` other than `/alternatename` and `/include`, verbatim, in source order after the module asm.
 - A module-level [`asm`](#statements) is a file-scope `asm("...")`, in source
   order before the types. No qualifiers or goto labels; operands only under the
   GNU personality, so it is almost always the single-`;` form.

@@ -24,7 +24,7 @@ pub struct Pragmas {
     renamed: HashMap<String, String>,
     fallback: HashMap<String, String>,
     include: HashSet<String>,
-    exports: Vec<String>,
+    linker_options: Vec<String>,
     decimal64_literals: HashSet<NodeId>,
 }
 
@@ -37,8 +37,8 @@ impl Pragmas {
         self.pack.get(&tag).copied()
     }
 
-    pub fn exports(&self) -> &[String] {
-        &self.exports
+    pub fn linker_options(&self) -> &[String] {
+        &self.linker_options
     }
 
     pub fn is_ms_struct(&self, tag: TagId) -> bool {
@@ -459,12 +459,20 @@ impl Walk<'_> {
                                 .insert(undecorated(from), undecorated(to));
                         } else if let Some(symbol) = option.strip_prefix("/include:") {
                             self.pragmas.include.insert(undecorated(symbol));
-                        } else if let Some(export) = option.strip_prefix("/export:") {
-                            let name = export.split(',').next().unwrap_or(export);
-                            let internal =
-                                name.split_once('=').map_or(name, |(_, internal)| internal);
-                            self.pragmas.include.insert(undecorated(internal));
-                            self.pragmas.exports.push(export.to_string());
+                        } else {
+                            if let Some(export) = option.strip_prefix("/export:") {
+                                let name = export.split(',').next().unwrap_or(export);
+                                let internal =
+                                    name.split_once('=').map_or(name, |(_, internal)| internal);
+                                self.pragmas.include.insert(undecorated(internal));
+                            }
+                            if PASSTHROUGH_LINKER_OPTIONS.iter().any(|name| {
+                                option
+                                    .get(..name.len())
+                                    .is_some_and(|prefix| prefix.eq_ignore_ascii_case(name))
+                            }) {
+                                self.pragmas.linker_options.push(option.to_string());
+                            }
                         }
                     }
                 }
@@ -663,6 +671,15 @@ impl Visitor for TagCollector<'_, '_> {
         visit::walk_type_specifier(self, ty)
     }
 }
+
+const PASSTHROUGH_LINKER_OPTIONS: [&str; 6] = [
+    "/export:",
+    "/defaultlib:",
+    "/nodefaultlib:",
+    "/merge:",
+    "/section:",
+    "/entry:",
+];
 
 fn linker_comment(text: &str) -> Vec<&str> {
     let Some(rest) = text

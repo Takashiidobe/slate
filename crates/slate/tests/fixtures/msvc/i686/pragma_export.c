@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-NEXT: use slate_support::abort;
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
-// CHECK-NEXT:     ".section .drectve,\"yni\"\n.ascii \" /EXPORT:_exp_fn /EXPORT:alias_fn=_inner_fn /EXPORT:_exp_data,DATA\""
+// CHECK-NEXT:     ".section .drectve,\"yni\"\n.ascii \" /export:_exp_fn /export:alias_fn=_inner_fn /export:_exp_data,DATA\""
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

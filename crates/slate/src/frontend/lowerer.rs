@@ -907,11 +907,11 @@ impl<'m> ModuleLowerer<'m> {
                 );
             }
         }
-        if !module.linker_exports.is_empty() {
+        if !module.linker_options.is_empty() {
             let directives: String = module
-                .linker_exports
+                .linker_options
                 .iter()
-                .map(|export| format!(" /EXPORT:{export}"))
+                .map(|option| format!(" {option}"))
                 .collect();
             self.items.push(Item::GlobalAsm(rust::InlineAsm {
                 template: format!(".section .drectve,\"yni\"\n.ascii {directives:?}"),

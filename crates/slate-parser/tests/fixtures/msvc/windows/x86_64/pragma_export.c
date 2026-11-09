@@ -28,9 +28,9 @@ int exp_data = 5;
 // CHECK-NEXT:         storage d64 [size=8, align=8];
 // CHECK-NEXT:         storage d128 [size=16, align=16];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     export "exp_fn";
-// CHECK-NEXT:     export "alias_fn=inner_fn";
-// CHECK-NEXT:     export "exp_data,DATA";
+// CHECK-NEXT:     linker "/export:exp_fn";
+// CHECK-NEXT:     linker "/export:alias_fn=inner_fn";
+// CHECK-NEXT:     linker "/export:exp_data,DATA";
 // CHECK-NEXT:     global %[[VALUE_exp_data:[0-9]+]] exp_data: i32 [storage=static] = const<i32>(5) [linkage=external] [include];
 // CHECK-NEXT:     fn %[[VALUE_exp_fn:[0-9]+]] @exp_fn() -> i32 [linkage=external] [include] [fallthrough=ub_if_used] {
 // CHECK-NEXT:         return const<i32>(7);
