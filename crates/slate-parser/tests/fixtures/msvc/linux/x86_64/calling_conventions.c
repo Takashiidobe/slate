@@ -48,9 +48,9 @@ void __cdecl definition(void) { __declspec(align(16)) int local; }
 // DEFAULT-NEXT:     global %[[VALUE_fast_pointer:[0-9]+]] fast_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_vector_pointer:[0-9]+]] vector_pointer: ptr<fn vectorcall() -> void> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_method_pointer:[0-9]+]] method_pointer: ptr<fn(ptr<void>) -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_imported:[0-9]+]] imported: i32 [storage=static] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     extern %[[VALUE_imported:[0-9]+]] imported: i32 [storage=static] [linkage=external] [dllimport];
 // DEFAULT-NEXT:     global %[[VALUE_aligned:[0-9]+]] aligned: i32 [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_combined:[0-9]+]] combined: i32 [storage=static] [align=32] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     extern %[[VALUE_combined:[0-9]+]] combined: i32 [storage=static] [align=32] [linkage=external] [dllimport];
 // DEFAULT-NEXT:     fn %[[VALUE_caller:[0-9]+]] @caller() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_callee:[0-9]+]] @callee() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_fast:[0-9]+]] @fast() -> void [linkage=external];

@@ -135,7 +135,12 @@ impl SymbolAttributes {
         self.used |= later.used;
         self.retain |= later.retain;
         self.tls_model = self.tls_model.or(later.tls_model);
-        self.dll_storage = self.dll_storage.or(later.dll_storage);
+        self.dll_storage = match (self.dll_storage, later.dll_storage) {
+            (Some(DllStorage::Export), _) | (_, Some(DllStorage::Export)) => {
+                Some(DllStorage::Export)
+            }
+            (earlier, later) => earlier.or(later),
+        };
         self.selectany |= later.selectany;
         self.fallback = self.fallback.take().or(later.fallback);
         self.include |= later.include;

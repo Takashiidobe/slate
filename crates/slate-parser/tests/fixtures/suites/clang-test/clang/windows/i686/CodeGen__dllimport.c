@@ -123,13 +123,13 @@ USE(redecl5)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     extern %[[VALUE_ExternGlobalDecl:[0-9]+]] ExternGlobalDecl: i32 [storage=static] [linkage=external] [dllimport];
-// DEFAULT-NEXT:     global %[[VALUE_GlobalDecl:[0-9]+]] GlobalDecl: i32 [storage=static] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     extern %[[VALUE_GlobalDecl:[0-9]+]] GlobalDecl: i32 [storage=static] [linkage=external] [dllimport];
 // DEFAULT-NEXT:     extern %[[VALUE_GlobalRedecl1:[0-9]+]] GlobalRedecl1: i32 [storage=static] [linkage=external] [dllimport];
-// DEFAULT-NEXT:     global %[[VALUE_GlobalRedecl2:[0-9]+]] GlobalRedecl2: i32 [storage=static] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     extern %[[VALUE_GlobalRedecl2:[0-9]+]] GlobalRedecl2: i32 [storage=static] [linkage=external] [dllimport];
 // DEFAULT-NEXT:     extern %[[VALUE_GlobalRedecl3:[0-9]+]] GlobalRedecl3: i32 [storage=static] [linkage=external] [dllimport];
 // DEFAULT-NEXT:     global %[[VALUE_GlobalRedecl4:[0-9]+]] GlobalRedecl4: i32 [storage=static] [linkage=external] [dllimport];
 // DEFAULT-NEXT:     extern %[[VALUE_GlobalRedecl5:[0-9]+]] GlobalRedecl5: i32 [storage=static] [linkage=external] [dllimport];
-// DEFAULT-NEXT:     global %[[VALUE_GlobalRedecl6:[0-9]+]] GlobalRedecl6: i32 [storage=static] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     extern %[[VALUE_GlobalRedecl6:[0-9]+]] GlobalRedecl6: i32 [storage=static] [linkage=external] [dllimport];
 // DEFAULT-NEXT:     global %[[VALUE_use_decl:[0-9]+]] use_decl: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_decl:[0-9]+]]) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_use15:[0-9]+]] @use15() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_ExternGlobalDecl]]);

@@ -1,5 +1,5 @@
 use super::*;
-use slate_parser::target_info::{LARGE_ARRAY_BYTES, TargetFamily};
+use slate_parser::target_info::{LARGE_ARRAY_BYTES, TargetFamily, TargetOs};
 
 pub(super) fn lower_string_global(global: &ir::Global) -> Option<Result<Vec<u8>>> {
     if !global.variable.name.starts_with('.') {
@@ -106,6 +106,24 @@ impl AlignWrapper {
             Self::LargeArray => "__SlateAlignLargeArray".into(),
         }
     }
+}
+
+pub(super) fn dll_import_symbol(global: &ir::Global, target: &TargetInfo) -> Option<String> {
+    if global.definition
+        || global.symbol.dll_storage != Some(ir::DllStorage::Import)
+        || target.os != TargetOs::Windows
+    {
+        return None;
+    }
+    let symbol = global
+        .symbol
+        .asm_name
+        .as_deref()
+        .unwrap_or(&global.variable.name);
+    Some(match target.family {
+        TargetFamily::X86 => format!("_imp__{symbol}"),
+        _ => format!("__imp_{symbol}"),
+    })
 }
 
 impl Tables<'_> {
@@ -270,7 +288,7 @@ impl Tables<'_> {
 
     pub(super) fn is_constant_address(&self, place: &ir::Place) -> bool {
         match &place.kind {
-            PlaceKind::Binding(id) if self.weak_globals.contains(id) => false,
+            PlaceKind::Binding(id) if self.indirect_globals.contains(id) => false,
             PlaceKind::Binding(id) => {
                 self.statics.contains(id)
                     || self.strings.contains_key(id)
@@ -307,6 +325,10 @@ impl FunctionLowerer<'_, '_> {
             section: None,
             retain: false,
             weak: global.symbol.weak && global.definition,
+            dll_storage: global
+                .symbol
+                .dll_storage
+                .filter(|storage| global.definition || *storage != ir::DllStorage::Import),
             ..global.symbol.clone()
         };
         if matches!(variable.storage, ir::StorageDuration::Automatic)

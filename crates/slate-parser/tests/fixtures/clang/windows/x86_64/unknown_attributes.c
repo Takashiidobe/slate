@@ -83,7 +83,7 @@ int use(void) { return imported + exported + bogus + scoped_bogus; }
 // IR-WARN-NEXT:         storage d64 [size=8, align=8];
 // IR-WARN-NEXT:         storage d128 [size=16, align=16];
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     global %[[VALUE_imported:[0-9]+]] imported: i32 [storage=static] [linkage=external] [dllimport];
+// IR-WARN-NEXT:     extern %[[VALUE_imported:[0-9]+]] imported: i32 [storage=static] [linkage=external] [dllimport];
 // IR-WARN-NEXT:     global %[[VALUE_exported:[0-9]+]] exported: i32 [storage=static] = const<i32>(1) [linkage=external] [dllexport];
 // IR-WARN-NEXT:     global %[[VALUE_bogus:[0-9]+]] bogus: i32 [storage=static] [linkage=external];
 // IR-WARN-NEXT:     global %[[VALUE_scoped_bogus:[0-9]+]] scoped_bogus: i32 [storage=static] [linkage=external];

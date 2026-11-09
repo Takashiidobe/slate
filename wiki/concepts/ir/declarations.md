@@ -35,6 +35,11 @@ printing in the [grammar](../ir-grammar.md#globals).
   Fixture: `definition_spans.c`.
 - Tentative definitions and `extern`s merge into one global; an incomplete
   tentative array completes to one element.
+- A `dllimport` variable without an initializer is a declaration (`extern`)
+  even without `extern`, as in clang and cl.exe. Fixture:
+  `msvc/windows/x86_64/dllimport_tentative.c`.
+- `dllexport` beats `dllimport`, both on one declaration and across
+  redeclarations, as in clang.
 - A block-scope `static` is a module `Global` with `storage=static`,
   `linkage=internal`, and its own binding; no statement at the declaration.
   Same-named statics stay distinct.

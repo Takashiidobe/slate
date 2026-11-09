@@ -87,7 +87,7 @@ struct Tables<'m> {
     register_globals: HashMap<BindingId, &'static str>,
     over_aligned: HashMap<BindingId, AlignWrapper>,
     flexible_globals: HashMap<BindingId, String>,
-    weak_globals: HashSet<BindingId>,
+    indirect_globals: HashSet<BindingId>,
     target: &'m TargetInfo,
     zero_init_padding_bits: slate_parser::compiler_options::ZeroInitPaddingBits,
     alloca_layout: ir::AllocaLayout,
@@ -717,9 +717,12 @@ impl<'m> ModuleLowerer<'m> {
             register_globals,
             over_aligned: HashMap::new(),
             flexible_globals: HashMap::new(),
-            weak_globals: statics
+            indirect_globals: statics
                 .iter()
-                .filter(|global| !global.definition && global.symbol.weak)
+                .filter(|global| {
+                    !global.definition && global.symbol.weak
+                        || dll_import_symbol(global, &module.target).is_some()
+                })
                 .map(|global| global.variable.id)
                 .collect(),
             target: &module.target,
@@ -888,6 +891,19 @@ impl<'m> ModuleLowerer<'m> {
                         attrs: std::iter::once(Attr::ExternWeakLinkage)
                             .chain(linked)
                             .collect(),
+                        mutable: false,
+                        name,
+                        ty: rust::Type::Ptr {
+                            mutable: true,
+                            inner: Box::new(ty),
+                        },
+                    })
+                }
+                Ok((ty, None))
+                    if let Some(import) = dll_import_symbol(global, self.tables.target) =>
+                {
+                    self.externs.push(rust::ExternDecl::Static {
+                        attrs: vec![Attr::LinkName(import)],
                         mutable: false,
                         name,
                         ty: rust::Type::Ptr {

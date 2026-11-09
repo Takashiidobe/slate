@@ -783,7 +783,9 @@ pub(super) fn symbol_attributes<'a>(
             ast::Attribute::Section(name) => symbol.section = Some(name.clone()),
             ast::Attribute::Used => symbol.used = true,
             ast::Attribute::Retain => symbol.retain = true,
-            ast::Attribute::DllImport => symbol.dll_storage = Some(DllStorage::Import),
+            ast::Attribute::DllImport => {
+                symbol.dll_storage = symbol.dll_storage.or(Some(DllStorage::Import));
+            }
             ast::Attribute::DllExport => symbol.dll_storage = Some(DllStorage::Export),
             ast::Attribute::WeakRef(target) => {
                 weakref = true;
@@ -1785,6 +1787,7 @@ impl Lowerer {
                     return Err(ResolveError::Internal("selectany without external linkage"));
                 }
                 let definition = (storage_class != StorageClass::Extern
+                    && symbol.dll_storage != Some(DllStorage::Import)
                     || variable.initializer.is_some()
                     || symbol.alias.is_some())
                     && symbol.weakref.is_none();

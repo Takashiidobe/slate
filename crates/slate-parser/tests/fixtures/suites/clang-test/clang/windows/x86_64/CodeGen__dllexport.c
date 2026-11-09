@@ -118,12 +118,12 @@ void __declspec(dllimport) precedenceRedecl2(void) {}
 // DEFAULT-NEXT:     global %[[VALUE_GlobalRedecl2:[0-9]+]] GlobalRedecl2: i32 [storage=static] [linkage=external] [dllexport];
 // DEFAULT-NEXT:     global %[[VALUE_PrecedenceGlobal1A:[0-9]+]] PrecedenceGlobal1A: i32 [storage=static] [linkage=external] [dllexport];
 // DEFAULT-NEXT:     global %[[VALUE_PrecedenceGlobal1B:[0-9]+]] PrecedenceGlobal1B: i32 [storage=static] [linkage=external] [dllexport];
-// DEFAULT-NEXT:     global %[[VALUE_PrecedenceGlobal2A:[0-9]+]] PrecedenceGlobal2A: i32 [storage=static] [linkage=external] [dllimport];
-// DEFAULT-NEXT:     global %[[VALUE_PrecedenceGlobal2B:[0-9]+]] PrecedenceGlobal2B: i32 [storage=static] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     global %[[VALUE_PrecedenceGlobal2A:[0-9]+]] PrecedenceGlobal2A: i32 [storage=static] [linkage=external] [dllexport];
+// DEFAULT-NEXT:     global %[[VALUE_PrecedenceGlobal2B:[0-9]+]] PrecedenceGlobal2B: i32 [storage=static] [linkage=external] [dllexport];
 // DEFAULT-NEXT:     global %[[VALUE_PrecedenceGlobalRedecl1:[0-9]+]] PrecedenceGlobalRedecl1: i32 [storage=static] = const<i32>(0) [linkage=external] [dllexport];
-// DEFAULT-NEXT:     global %[[VALUE_PrecedenceGlobalRedecl2:[0-9]+]] PrecedenceGlobalRedecl2: i32 [storage=static] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     global %[[VALUE_PrecedenceGlobalRedecl2:[0-9]+]] PrecedenceGlobalRedecl2: i32 [storage=static] [linkage=external] [dllexport];
 // DEFAULT-NEXT:     global %[[VALUE_PrecedenceGlobalMixed1:[0-9]+]] PrecedenceGlobalMixed1: i32 [storage=static] = const<i32>(1) [linkage=external] [dllexport];
-// DEFAULT-NEXT:     global %[[VALUE_PrecedenceGlobalMixed2:[0-9]+]] PrecedenceGlobalMixed2: i32 [storage=static] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     global %[[VALUE_PrecedenceGlobalMixed2:[0-9]+]] PrecedenceGlobalMixed2: i32 [storage=static] [linkage=external] [dllexport];
 // DEFAULT-NEXT:     fn %[[VALUE_def:[0-9]+]] @def() -> void [linkage=external] [dllexport] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_inlineFunc:[0-9]+]] @inlineFunc() -> void [linkage=external] [dllexport] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
@@ -138,11 +138,11 @@ void __declspec(dllimport) precedenceRedecl2(void) {}
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_precedence1B:[0-9]+]] @precedence1B() -> void [linkage=external] [dllexport] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_precedence2A:[0-9]+]] @precedence2A() -> void [linkage=external] [dllimport] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_precedence2A:[0-9]+]] @precedence2A() -> void [linkage=external] [dllexport] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_precedence2B:[0-9]+]] @precedence2B() -> void [linkage=external] [dllimport] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_precedence2B:[0-9]+]] @precedence2B() -> void [linkage=external] [dllexport] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_precedenceRedecl1:[0-9]+]] @precedenceRedecl1() -> void [linkage=external] [dllimport] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_precedenceRedecl1:[0-9]+]] @precedenceRedecl1() -> void [linkage=external] [dllexport] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_precedenceRedecl2:[0-9]+]] @precedenceRedecl2() -> void [linkage=external] [dllexport] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
