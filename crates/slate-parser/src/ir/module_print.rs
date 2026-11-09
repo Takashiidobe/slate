@@ -142,6 +142,9 @@ impl fmt::Display for SymbolAttributes {
         if let Some(target) = &self.fallback {
             write!(f, " [fallback={target:?}]")?;
         }
+        if self.include {
+            f.write_str(" [include]")?;
+        }
         Ok(())
     }
 }

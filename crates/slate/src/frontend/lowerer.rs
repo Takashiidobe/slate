@@ -310,7 +310,7 @@ fn fallback_redirects(module: &ir::Module) -> HashMap<BindingId, BindingId> {
 }
 
 fn exports_symbol(options: &LowerOptions, function: &ir::Function) -> bool {
-    options.export_symbols
+    (options.export_symbols || function.symbol.include)
         && matches!(function.linkage, ir::Linkage::External)
         && !function.semantics.inline_only
         && !function.semantics.discardable
@@ -762,8 +762,8 @@ impl<'m> ModuleLowerer<'m> {
                     .options
                     .imported_commons
                     .contains(&global.variable.name);
-            let exported =
-                self.options.export_symbols && matches!(global.linkage, ir::Linkage::External);
+            let exported = (self.options.export_symbols || global.symbol.include)
+                && matches!(global.linkage, ir::Linkage::External);
             let thread_local: Vec<Attr> =
                 matches!(global.variable.storage, ir::StorageDuration::Thread)
                     .then_some(Attr::ThreadLocal)

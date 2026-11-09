@@ -23,6 +23,7 @@ pub struct Pragmas {
     weak: HashMap<String, Option<String>>,
     renamed: HashMap<String, String>,
     fallback: HashMap<String, String>,
+    include: HashSet<String>,
     decimal64_literals: HashSet<NodeId>,
 }
 
@@ -54,6 +55,9 @@ impl Pragmas {
         }
         if let Some(target) = self.fallback.get(name) {
             symbol.fallback = Some(target.clone());
+        }
+        if self.include.contains(name) {
+            symbol.include = true;
         }
     }
 }
@@ -433,21 +437,23 @@ impl Walk<'_> {
             }
             PragmaKind::Opaque(text) => {
                 if self.unit.dialect.flavor() == CompilerFlavor::Msvc {
+                    let undecorated = |symbol: &str| {
+                        if self.unit.dialect.target().family == TargetFamily::X86 {
+                            symbol.strip_prefix('_').unwrap_or(symbol).to_string()
+                        } else {
+                            symbol.to_string()
+                        }
+                    };
                     for option in linker_comment(text) {
                         if let Some((from, to)) = option
                             .strip_prefix("/alternatename:")
                             .and_then(|pair| pair.split_once('='))
                         {
-                            let undecorated = |symbol: &str| {
-                                if self.unit.dialect.target().family == TargetFamily::X86 {
-                                    symbol.strip_prefix('_').unwrap_or(symbol).to_string()
-                                } else {
-                                    symbol.to_string()
-                                }
-                            };
                             self.pragmas
                                 .fallback
                                 .insert(undecorated(from), undecorated(to));
+                        } else if let Some(symbol) = option.strip_prefix("/include:") {
+                            self.pragmas.include.insert(undecorated(symbol));
                         }
                     }
                 }

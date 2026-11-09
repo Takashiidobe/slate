@@ -119,6 +119,7 @@ pub struct SymbolAttributes {
     pub dll_storage: Option<DllStorage>,
     pub selectany: bool,
     pub fallback: Option<String>,
+    pub include: bool,
 }
 
 impl SymbolAttributes {
@@ -136,6 +137,7 @@ impl SymbolAttributes {
         self.dll_storage = self.dll_storage.or(later.dll_storage);
         self.selectany |= later.selectany;
         self.fallback = self.fallback.take().or(later.fallback);
+        self.include |= later.include;
     }
 }
 

@@ -161,7 +161,7 @@ on it.
 linkage and merged across redeclarations (first value wins, flags OR):
 `asm_name` (from `asm("sym")`), `visibility`, `weak`, `alias`, `section`,
 `used`, `retain`, `tls_model`, `dllimport`/`dllexport`, `weakref`,
-`ifunc`, `selectany`, `fallback`.
+`ifunc`, `selectany`, `fallback`, `include`.
 
 - An unknown `visibility("x")` argument is ignored on clang (it warns) and
   rejected on gcc. Fixtures: `ir_visibility_bogus.c`.
@@ -193,6 +193,11 @@ linkage and merged across redeclarations (first value wins, flags OR):
   otherwise it gets `#[link_name = "t"]`. A defined `a` ignores the pragma.
   Fixtures: `msvc/windows/x86_64/pragma_alternatename.c`,
   `crates/slate/tests/fixtures/msvc/{x86_64,i686}/pragma_alternatename.c`.
+- `include` comes from MSVC `#pragma comment(linker, "/include:sym")` (msvc
+  flavor only; one leading `_` stripped on 32-bit x86). Slate exports a
+  defined external `sym` like a project export (`#[unsafe(no_mangle)]`), so
+  the linker keeps it. Fixtures: `msvc/windows/x86_64/pragma_include.c`,
+  `crates/slate/tests/fixtures/msvc/{x86_64,i686}/pragma_include.c`.
 
 ## Object properties
 

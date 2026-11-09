@@ -303,6 +303,7 @@ impl FunctionLowerer<'_, '_> {
             asm_name: None,
             visibility: None,
             used: false,
+            include: false,
             weak: global.symbol.weak && global.definition,
             ..global.symbol.clone()
         };
