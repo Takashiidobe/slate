@@ -907,6 +907,19 @@ impl<'m> ModuleLowerer<'m> {
                 );
             }
         }
+        if !module.linker_exports.is_empty() {
+            let directives: String = module
+                .linker_exports
+                .iter()
+                .map(|export| format!(" /EXPORT:{export}"))
+                .collect();
+            self.items.push(Item::GlobalAsm(rust::InlineAsm {
+                template: format!(".section .drectve,\"yni\"\n.ascii {directives:?}"),
+                operands: Vec::new(),
+                options: Vec::new(),
+                kind: rust::AsmKind::Global,
+            }));
+        }
         if let Some(first) = module.asm.first() {
             let asms: Vec<_> = module.asm.iter().map(|asm| &asm.value).collect();
             match self.lowerer().lower_asm_block(&asms, rust::AsmKind::Global) {

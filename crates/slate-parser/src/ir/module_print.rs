@@ -1144,6 +1144,9 @@ impl fmt::Display for DisplayModule<'_> {
                 writeln!(f, ";")?;
             }
         }
+        for export in &self.module.linker_exports {
+            writeln!(f, "    export {export:?};")?;
+        }
         for definition in &self.module.types {
             printer.owned(f, definition.id, 4, None)?;
             write!(f, "    type @type{}", definition.value.id.0)?;

@@ -24,6 +24,7 @@ pub struct Pragmas {
     renamed: HashMap<String, String>,
     fallback: HashMap<String, String>,
     include: HashSet<String>,
+    exports: Vec<String>,
     decimal64_literals: HashSet<NodeId>,
 }
 
@@ -34,6 +35,10 @@ impl Pragmas {
 
     pub fn max_field_alignment(&self, tag: TagId) -> Option<u64> {
         self.pack.get(&tag).copied()
+    }
+
+    pub fn exports(&self) -> &[String] {
+        &self.exports
     }
 
     pub fn is_ms_struct(&self, tag: TagId) -> bool {
@@ -454,6 +459,12 @@ impl Walk<'_> {
                                 .insert(undecorated(from), undecorated(to));
                         } else if let Some(symbol) = option.strip_prefix("/include:") {
                             self.pragmas.include.insert(undecorated(symbol));
+                        } else if let Some(export) = option.strip_prefix("/export:") {
+                            let name = export.split(',').next().unwrap_or(export);
+                            let internal =
+                                name.split_once('=').map_or(name, |(_, internal)| internal);
+                            self.pragmas.include.insert(undecorated(internal));
+                            self.pragmas.exports.push(export.to_string());
                         }
                     }
                 }

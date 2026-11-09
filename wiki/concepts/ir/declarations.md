@@ -198,6 +198,12 @@ linkage and merged across redeclarations (first value wins, flags OR):
   defined external `sym` like a project export (`#[unsafe(no_mangle)]`), so
   the linker keeps it. Fixtures: `msvc/windows/x86_64/pragma_include.c`,
   `crates/slate/tests/fixtures/msvc/{x86_64,i686}/pragma_include.c`.
+- `/export:name[=internal][,DATA|,PRIVATE|...]` (msvc flavor) is kept
+  verbatim in `Module.linker_exports` (printed `export "...";`) and marks the
+  internal symbol `include`. Slate emits one `.drectve` `global_asm!` with
+  ` /EXPORT:...` per entry, which is what cl.exe writes. Fixtures:
+  `msvc/windows/x86_64/pragma_export.c`,
+  `crates/slate/tests/fixtures/msvc/{x86_64,i686}/pragma_export.c`.
 
 ## Object properties
 
