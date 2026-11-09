@@ -1,5 +1,5 @@
 // SLATE-FILECHECK-DEFINES IR
-// SLATE-FILECHECK-ARGS --dump-ir /Zp3
+// SLATE-FILECHECK-ARGS --dump-ir /Zp3 /std:c11
 #include <stddef.h>
 struct s { char c; double d; };
 _Static_assert(offsetof(struct s, d) == 8, "an invalid /Zp value is /Zp8");

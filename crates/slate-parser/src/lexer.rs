@@ -1425,9 +1425,10 @@ pub fn keyword_token(word: &str, features: &StandardFeatures) -> Option<Token> {
         "__int16" | "_int16" if features.microsoft_extensions => Token::Keyword(Keyword::Short),
         "__int32" | "_int32" if features.microsoft_extensions => Token::Keyword(Keyword::Int),
         "__int64" | "_int64" if features.microsoft_extensions => Token::Keyword(Keyword::Int64),
-        "_Noreturn" => Token::Keyword(Keyword::Noreturn),
+        "_Noreturn" if features.c11_keywords => Token::Keyword(Keyword::Noreturn),
         "__block" if features.blocks => Token::Keyword(Keyword::Block),
-        "_Thread_local" | "__thread" => Token::Keyword(Keyword::ThreadLocal),
+        "_Thread_local" if features.c11_keywords => Token::Keyword(Keyword::ThreadLocal),
+        "__thread" => Token::Keyword(Keyword::ThreadLocal),
         "thread_local" if features.keyword_thread_local.is_accepted() => {
             Token::Keyword(Keyword::ThreadLocal)
         }
@@ -1457,7 +1458,7 @@ pub fn keyword_token(word: &str, features: &StandardFeatures) -> Option<Token> {
         "break" => Token::Keyword(Keyword::Break),
         "continue" => Token::Keyword(Keyword::Continue),
         "goto" => Token::Keyword(Keyword::Goto),
-        "_Static_assert" => Token::Keyword(Keyword::StaticAssert),
+        "_Static_assert" if features.c11_keywords => Token::Keyword(Keyword::StaticAssert),
         "static_assert" if features.keyword_static_assert.is_accepted() => {
             Token::Keyword(Keyword::StaticAssert)
         }

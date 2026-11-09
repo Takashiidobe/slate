@@ -1,5 +1,5 @@
 // SLATE-FILECHECK-DEFINES IR
-// SLATE-FILECHECK-ARGS --dump-ir /Zp
+// SLATE-FILECHECK-ARGS --dump-ir /Zp /std:c11
 struct s { char c; double d; };
 _Static_assert(sizeof(struct s) == 9, "bare /Zp is /Zp1");
 

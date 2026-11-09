@@ -26,7 +26,7 @@ _Static_assert(sizeof(struct outer) == 20, "embedded records are members");
 int sum(struct outer *o) { return o->a + o->t + o->u + o->c + o->b; }
 
 // SLATE-FILECHECK-DEFINES IR
-// SLATE-FILECHECK-ARGS --dump-ir --compact-ir
+// SLATE-FILECHECK-ARGS --dump-ir --compact-ir /std:c11
 
 // SLATE-FILECHECK-BEGIN IR
 // IR: module {

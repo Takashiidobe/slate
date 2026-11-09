@@ -7,7 +7,7 @@ size_t twice(size_t n) {
     size_t local = (size_t)n;
     return local * 2;
 }
-// SLATE-FILECHECK-ARGS --dump-ir --compact-ir
+// SLATE-FILECHECK-ARGS --dump-ir --compact-ir /std:c11
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT

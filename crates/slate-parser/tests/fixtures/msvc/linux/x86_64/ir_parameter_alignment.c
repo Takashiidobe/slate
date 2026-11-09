@@ -1,5 +1,5 @@
 // SLATE-FILECHECK-DEFINES IR
-// SLATE-FILECHECK-ARGS --dump-ir --compact-ir
+// SLATE-FILECHECK-ARGS --dump-ir --compact-ir /std:c11
 
 // MSVC accepts _Alignas on a parameter and reports __alignof(p) raised to the
 // natural alignment, unlike clang, which reports the request as written.

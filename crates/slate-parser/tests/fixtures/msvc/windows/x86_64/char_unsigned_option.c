@@ -1,5 +1,5 @@
 // SLATE-FILECHECK-DEFINES IR
-// SLATE-FILECHECK-ARGS --dump-ir /J
+// SLATE-FILECHECK-ARGS --dump-ir /J /std:c11
 #ifndef _CHAR_UNSIGNED
 #error "/J defines _CHAR_UNSIGNED"
 #endif

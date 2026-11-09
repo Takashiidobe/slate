@@ -35,6 +35,7 @@ impl Dialect {
             options.microsoft,
             options.graphs,
         );
+        features.c11_keywords = !flavor.is_msvc() || options.explicit_standard;
         if flavor.is_gcc() && options.diagnostics.permissive {
             features.valueless_return_in_nonvoid = true;
             features.value_return_in_void = true;

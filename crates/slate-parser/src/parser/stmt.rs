@@ -323,15 +323,11 @@ impl Parser {
             Some(Token::LBracket) if tokens.value_at(pos + 1) == Some(&Token::LBracket) => true,
             Some(Token::Keyword(keyword)) if keyword.is_storage_class_or_specifier() => true,
             Some(Token::Ident(name))
-                if matches!(
-                    name.as_str(),
-                    "_Alignas"
-                        | "alignas"
-                        | "__auto_type"
-                        | "__attribute__"
-                        | "__attribute"
-                        | "__declspec"
-                ) =>
+                if self.features().is_alignas_spelling(name)
+                    || matches!(
+                        name.as_str(),
+                        "__auto_type" | "__attribute__" | "__attribute" | "__declspec"
+                    ) =>
             {
                 true
             }

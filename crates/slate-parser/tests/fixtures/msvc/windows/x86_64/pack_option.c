@@ -1,5 +1,5 @@
 // SLATE-FILECHECK-DEFINES IR
-// SLATE-FILECHECK-ARGS --dump-ir /Zp2
+// SLATE-FILECHECK-ARGS --dump-ir /Zp2 /std:c11
 #include <stddef.h>
 
 struct mixed { char c; int i; short h; double d; };

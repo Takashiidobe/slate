@@ -56,7 +56,10 @@ each stage is in [configuration-threading](configuration-threading.md).
     `__STDC_NO_COMPLEX__` and `__STDC_NO_VLA__`, which cl.exe leaves
     undefined without `/std`. `/experimental:c11atomics` drops
     `__STDC_NO_ATOMICS__` under any `/std` and does nothing without one
-    (`MicrosoftFlags::c11_atomics`). `/std:c++*` and other values are
+    (`MicrosoftFlags::c11_atomics`). Without a `/std`, `_Static_assert`,
+    `_Alignas`, `_Noreturn`, `_Generic` and `_Thread_local` are plain
+    identifiers (`StandardFeatures::c11_keywords`); `_Alignof`, `_Bool` and
+    lowercase `static_assert` are keywords in every cl mode. `/std:c++*` and other values are
     rejected; cl.exe only warns about `/std:c99` and `/std:c23` (D9002) and
     ignores them.
   - `/Zc:__STDC__` defines `__STDC__` 1, which cl.exe otherwise leaves

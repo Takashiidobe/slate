@@ -1,5 +1,5 @@
 // SLATE-FILECHECK-DEFINES TARGET
-// SLATE-FILECHECK-ARGS --dump-ir-types
+// SLATE-FILECHECK-ARGS --dump-ir-types /std:c11
 struct B1 { char a : 4; int b : 4; };
 struct B2 { char a : 3; char b : 5; char c : 1; };
 struct B3 { int a : 20; int b : 20; };

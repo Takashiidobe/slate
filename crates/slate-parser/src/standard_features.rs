@@ -23,6 +23,7 @@ pub enum MicrosoftIntegerLiterals {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct StandardFeatures {
+    pub c11_keywords: bool,
     pub keyword_alignof: Availability,
     pub keyword_bool_true_false: Availability,
     pub keyword_nullptr: Availability,
@@ -87,6 +88,10 @@ pub struct StandardFeatures {
 }
 
 impl StandardFeatures {
+    pub fn is_alignas_spelling(&self, name: &str) -> bool {
+        name == "alignas" || (name == "_Alignas" && self.c11_keywords)
+    }
+
     fn new(standard: LanguageStandard) -> Self {
         use Availability::{Extension, Rejected, Standard};
         let c89 = matches!(
@@ -97,6 +102,7 @@ impl StandardFeatures {
         let c23 = standard.at_least_c23();
         let c23_keyword = if c23 { Standard } else { Rejected };
         Self {
+            c11_keywords: true,
             keyword_alignof: c23_keyword,
             keyword_bool_true_false: c23_keyword,
             keyword_nullptr: c23_keyword,
@@ -247,6 +253,9 @@ impl StandardFeatures {
         features.whitespace_line_splice = !flavor.is_msvc();
         features.keyword_countof = !flavor.is_msvc();
         features.gnu_asm_keywords = !flavor.is_msvc();
+        if flavor.is_msvc() {
+            features.keyword_static_assert = Availability::Extension;
+        }
         features.nullability_keywords = matches!(flavor, CompilerFlavor::Clang);
         if flavor.is_gcc() {
             features.widest_integer_literal_fallback = true;

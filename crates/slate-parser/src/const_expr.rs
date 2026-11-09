@@ -1704,7 +1704,7 @@ impl<'a> Parser<'a> {
             return Ok(None);
         };
         let alignas =
-            matches!(next, Token::Ident(name) if matches!(name.as_str(), "_Alignas" | "alignas"));
+            matches!(next, Token::Ident(name) if self.features().is_alignas_spelling(name));
         let storage = matches!(
             next,
             Token::Keyword(
@@ -2120,7 +2120,9 @@ impl<'a> Parser<'a> {
             Some(Token::Ident(value)) if value == "__builtin_types_compatible_p" => {
                 return self.parse_types_compatible(start);
             }
-            Some(Token::Ident(value)) if value == "_Generic" => return self.parse_generic(start),
+            Some(Token::Ident(value)) if value == "_Generic" && self.features().c11_keywords => {
+                return self.parse_generic(start);
+            }
             Some(Token::Keyword(Keyword::StaticAssert))
                 if self.features().static_assert_expressions =>
             {

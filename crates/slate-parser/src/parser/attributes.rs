@@ -140,9 +140,9 @@ pub(super) fn parse_attribute_groups(
                 attributes.push(locate_attribute(tokens, start, end, attribute));
                 cursor.consume(&Token::Comma);
             }
-        } else if cursor.consume(&Token::Ident("_Alignas".into()))
-            || cursor.consume(&Token::Ident("alignas".into()))
+        } else if matches!(cursor.peek(), Some(Token::Ident(name)) if context.features().is_alignas_spelling(name))
         {
+            cursor.pos += 1;
             let end = cursor.pos;
             let start = end - 1;
             let arguments =

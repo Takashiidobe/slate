@@ -1,5 +1,5 @@
 // SLATE-FILECHECK-DEFINES IR
-// SLATE-FILECHECK-ARGS --dump-ir --compact-ir
+// SLATE-FILECHECK-ARGS --dump-ir --compact-ir /std:c11
 
 struct odd3 { char a[3]; };
 struct odd5 { char a[5]; };
