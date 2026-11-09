@@ -95,7 +95,10 @@ impl Tables<'_> {
         match &place.kind {
             PlaceKind::Binding(id) => self.statics.contains(id),
             PlaceKind::CompoundLiteral { storage, .. } => {
-                matches!(storage, ir::StorageDuration::Static)
+                matches!(
+                    storage,
+                    ir::StorageDuration::Static | ir::StorageDuration::Thread
+                )
             }
             PlaceKind::Field { base, .. }
             | PlaceKind::Lane { base, .. }
@@ -631,13 +634,17 @@ impl FunctionLowerer<'_, '_> {
         initializer: &ir::Value,
     ) -> Result<Expr> {
         let index = self.local_index(object);
-        let name = if matches!(storage, ir::StorageDuration::Static) {
+        let persistent = matches!(
+            storage,
+            ir::StorageDuration::Static | ir::StorageDuration::Thread
+        );
+        let name = if persistent {
             format!("__slate_compound_{}_{index}", self.owner)
         } else {
             format!("__slate_compound_{index}")
         };
         let ty = self.lower_type(&initializer.ty)?;
-        if !matches!(storage, ir::StorageDuration::Static)
+        if !persistent
             && let ValueKind::Aggregate { members, .. } = &initializer.node.value
             && self.zeroes_padding(&initializer.ty)
             && !matches!(
@@ -671,7 +678,7 @@ impl FunctionLowerer<'_, '_> {
             });
         }
         let init = self.lower_value(initializer)?;
-        if matches!(storage, ir::StorageDuration::Static) {
+        if persistent {
             let emitted =
                 self.dependencies.compound_literals.iter().any(
                     |item| matches!(item, Item::Static { name: emitted, .. } if *emitted == name),
@@ -681,7 +688,10 @@ impl FunctionLowerer<'_, '_> {
             }
             self.dependencies.compound_literals.push(Item::Static {
                 comments: Vec::new(),
-                attrs: Vec::new(),
+                attrs: matches!(storage, ir::StorageDuration::Thread)
+                    .then_some(rust::Attr::ThreadLocal)
+                    .into_iter()
+                    .collect(),
                 vis: rust::Visibility::Private,
                 mutable: true,
                 name: name.clone(),
