@@ -209,7 +209,7 @@ impl Parser {
         } else {
             None
         };
-        if is_field && is_asm_keyword(parser.peek(), self.features().keyword_asm.is_accepted()) {
+        if is_field && is_asm_keyword(parser.peek(), self.features()) {
             return Err(self.error_at_tokens(
                 tokens,
                 parser.pos,
@@ -402,10 +402,7 @@ impl Parser {
     ) -> Result<DeclKind, ParseError> {
         let start = *position;
         if tokens.value_at(start) == Some(&Token::Keyword(Keyword::StaticAssert))
-            || is_asm_keyword(
-                tokens.value_at(start),
-                self.features().keyword_asm.is_accepted(),
-            )
+            || is_asm_keyword(tokens.value_at(start), self.features())
         {
             let end = start
                 + top_level_semi(&tokens[start..])

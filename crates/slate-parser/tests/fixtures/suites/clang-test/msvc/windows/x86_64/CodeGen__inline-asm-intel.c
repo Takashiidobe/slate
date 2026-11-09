@@ -97,6 +97,9 @@ void f(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
 // DEFAULT-NEXT:     type @type[[TYPE_size_t_2:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([109, 111, 118, 32, 101, 97, 120, 44, 32, 101, 98, 120, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 28> [storage=static] = code_units<array<i8, 28>>([46, 97, 116, 116, 95, 115, 121, 110, 116, 97, 120, 10, 109, 111, 118, 108, 32, 37, 101, 98, 120, 44, 32, 37, 101, 97, 120, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([109, 111, 118, 32, 101, 97, 120, 44, 32, 101, 98, 120, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE__InterlockedExchange_HLEAcquire:[0-9]+]] @_InterlockedExchange_HLEAcquire(%[[VALUE0:[0-9]+]] <unnamed>: ptr<volatile i32>, %[[VALUE1:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE__InterlockedExchange_HLERelease:[0-9]+]] @_InterlockedExchange_HLERelease(%[[VALUE2:[0-9]+]] <unnamed>: ptr<volatile i32>, %[[VALUE3:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE__InterlockedCompareExchange_HLEAcquire:[0-9]+]] @_InterlockedCompareExchange_HLEAcquire(%[[VALUE4:[0-9]+]] <unnamed>: ptr<volatile i32>, %[[VALUE5:[0-9]+]] <unnamed>: i32, %[[VALUE6:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
@@ -120,6 +123,7 @@ void f(void) {
 // DEFAULT-NEXT:     fn %[[VALUE___stosw:[0-9]+]] @__stosw(%[[VALUE36:[0-9]+]] <unnamed>: ptr<u16>, %[[VALUE37:[0-9]+]] <unnamed>: u16, %[[VALUE38:[0-9]+]] <unnamed>: u64 [c="size_t"]) -> void [linkage=external] [c="void(unsigned short *, unsigned short, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE___writecr3:[0-9]+]] @__writecr3(%[[VALUE39:[0-9]+]] <unnamed>: u64) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___SSC_MARK:[0-9]+]] @__SSC_MARK(unprototyped) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___asm__:[0-9]+]] @__asm__(unprototyped) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE___SSC_MARK]], const<i32>(4));
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic];
@@ -145,9 +149,9 @@ void f(void) {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<volatile i32>, i32) -> i32>(%[[VALUE__InterlockedExchange_HLERelease]], null<ptr<volatile i32>>, reinterpret<i32, reason=arg>(const<i32>(0)));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<volatile i32>, i32, i32) -> i32>(%[[VALUE__InterlockedCompareExchange_HLEAcquire]], null<ptr<volatile i32>>, reinterpret<i32, reason=arg>(const<i32>(0)), reinterpret<i32, reason=arg>(const<i32>(0)));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<volatile i32>, i32, i32) -> i32>(%[[VALUE__InterlockedCompareExchange_HLERelease]], null<ptr<volatile i32>>, reinterpret<i32, reason=arg>(const<i32>(0)), reinterpret<i32, reason=arg>(const<i32>(0)));
-// DEFAULT-NEXT:         asm "mov eax, ebx" [dialect=att];
-// DEFAULT-NEXT:         asm ".att_syntax\nmovl %ebx, %eax" [dialect=att];
-// DEFAULT-NEXT:         asm "mov eax, ebx" [dialect=att];
+// DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE___asm__]], array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE___asm__]], array_decay<ptr<i8>, length=Some(28)>(%[[VALUE_str_2]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE___asm__]], array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

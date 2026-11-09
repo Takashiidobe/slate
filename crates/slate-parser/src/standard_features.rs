@@ -83,6 +83,7 @@ pub struct StandardFeatures {
     pub scope_token: bool,
     pub elifdef_directives: bool,
     pub gnu_inline_asm: bool,
+    pub gnu_asm_keywords: bool,
 }
 
 impl StandardFeatures {
@@ -178,6 +179,7 @@ impl StandardFeatures {
             scope_token: true,
             elifdef_directives: c23 || standard.is_gnu(),
             gnu_inline_asm: true,
+            gnu_asm_keywords: true,
         }
     }
 
@@ -244,6 +246,7 @@ impl StandardFeatures {
             !flavor.is_msvc() && graphs.raw_strings.unwrap_or(features.raw_string_literals);
         features.whitespace_line_splice = !flavor.is_msvc();
         features.keyword_countof = !flavor.is_msvc();
+        features.gnu_asm_keywords = !flavor.is_msvc();
         features.nullability_keywords = matches!(flavor, CompilerFlavor::Clang);
         if flavor.is_gcc() {
             features.widest_integer_literal_fallback = true;

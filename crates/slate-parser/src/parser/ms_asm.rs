@@ -17,19 +17,21 @@ fn is_ms_asm_keyword(token: Option<&Token>) -> bool {
     matches!(token, Some(Token::Ident(name)) if matches!(name.as_str(), "__asm" | "_asm"))
 }
 
-fn starts_ms_asm(tokens: &[Span<Token>], position: usize) -> bool {
-    is_ms_asm_keyword(tokens.get(position).map(|token| &token.value))
-        && !matches!(
-            tokens.get(position + 1).map(|token| &token.value),
-            None | Some(
-                Token::LParen | Token::Keyword(Keyword::Volatile | Keyword::Inline | Keyword::Goto)
-            )
-        )
+fn starts_ms_asm(tokens: &[Span<Token>], position: usize, msvc: bool) -> bool {
+    if !is_ms_asm_keyword(tokens.get(position).map(|token| &token.value)) {
+        return false;
+    }
+    match tokens.get(position + 1).map(|token| &token.value) {
+        None => false,
+        Some(
+            Token::LParen | Token::Keyword(Keyword::Volatile | Keyword::Inline | Keyword::Goto),
+        ) => msvc,
+        Some(_) => true,
+    }
 }
 
-// a single-line `__asm` swallows a following line's `__asm`, but not a following line's `__asm {`.
-fn continues_on_next_line(tokens: &[Span<Token>], position: usize) -> bool {
-    starts_ms_asm(tokens, position)
+fn continues_on_next_line(tokens: &[Span<Token>], position: usize, msvc: bool) -> bool {
+    starts_ms_asm(tokens, position, msvc)
         && tokens.get(position + 1).map(|token| &token.value) != Some(&Token::LBrace)
 }
 
@@ -109,8 +111,9 @@ impl Parser {
     }
 
     pub(super) fn mark_ms_asm_lines(&self, input: &mut ParserInput) {
+        let msvc = self.flavor().is_msvc();
         if !self.ms_asm_enabled()
-            || !(0..input.tokens.len()).any(|position| starts_ms_asm(&input.tokens, position))
+            || !(0..input.tokens.len()).any(|position| starts_ms_asm(&input.tokens, position, msvc))
         {
             return;
         }
@@ -119,7 +122,7 @@ impl Parser {
         let mut positions = Vec::with_capacity(tokens.len() + 1);
         let mut position = 0;
         while position < tokens.len() {
-            if starts_ms_asm(tokens, position) {
+            if starts_ms_asm(tokens, position, msvc) {
                 position =
                     self.mark_ms_asm_statement(tokens, position, &mut marked, &mut positions);
             } else {
@@ -151,7 +154,8 @@ impl Parser {
         while let Some(token) = tokens.get(position) {
             let token_line = self.token_line(token);
             if token_line != line {
-                if depth == 0 && !continues_on_next_line(tokens, position) {
+                if depth == 0 && !continues_on_next_line(tokens, position, self.flavor().is_msvc())
+                {
                     break;
                 }
                 marked.push(token.clone().with_value(Token::Newline));
@@ -205,7 +209,8 @@ impl Parser {
         cursor: &mut TokenCursor<'_, '_>,
     ) -> Result<Option<MsAsm>, ParseError> {
         let tokens = cursor.tokens;
-        if !starts_ms_asm(tokens, cursor.pos) {
+        let msvc = self.flavor().is_msvc();
+        if !starts_ms_asm(tokens, cursor.pos, msvc) {
             return Ok(None);
         }
         if !self.ms_asm_enabled() {
@@ -226,7 +231,7 @@ impl Parser {
                 None => break,
                 Some(Token::Newline) => {
                     cursor.pos += 1;
-                    if depth == 0 && !continues_on_next_line(tokens, cursor.pos) {
+                    if depth == 0 && !continues_on_next_line(tokens, cursor.pos, msvc) {
                         break;
                     }
                 }

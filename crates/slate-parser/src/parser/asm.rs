@@ -8,12 +8,14 @@ use crate::ast::{
 };
 use crate::error::ParseError;
 use crate::lexer::{Keyword, Lexer, Token};
+use crate::standard_features::StandardFeatures;
 use crate::target::decode_register;
 use crate::target::flag_condition;
 use crate::target_info::TargetFamily;
 
-pub(super) fn is_asm_keyword(token: Option<&Token>, plain_asm: bool) -> bool {
-    matches!(token, Some(Token::Ident(name)) if matches!(name.as_str(), "__asm" | "__asm__") || plain_asm && name == "asm")
+pub(super) fn is_asm_keyword(token: Option<&Token>, features: StandardFeatures) -> bool {
+    features.gnu_asm_keywords
+        && matches!(token, Some(Token::Ident(name)) if matches!(name.as_str(), "__asm" | "__asm__") || features.keyword_asm.is_accepted() && name == "asm")
 }
 
 fn asm_qualifier(token: Option<&Token>) -> Option<AsmQualifier> {
@@ -81,10 +83,7 @@ impl DeclaratorParser<'_> {
         &mut self,
         storage: StorageClass,
     ) -> Result<Option<Span<AsmLabel>>, String> {
-        if !is_asm_keyword(
-            self.peek(),
-            self.context.features().keyword_asm.is_accepted(),
-        ) {
+        if !is_asm_keyword(self.peek(), self.context.features()) {
             return Ok(None);
         }
         let start = self.pos;
@@ -153,7 +152,7 @@ impl Parser {
         cursor: &mut TokenCursor<'_, '_>,
         at_file_scope: bool,
     ) -> Result<Option<GnuAsm>, ParseError> {
-        if !is_asm_keyword(cursor.peek(), self.features().keyword_asm.is_accepted()) {
+        if !is_asm_keyword(cursor.peek(), self.features()) {
             return Ok(None);
         }
         let tokens = cursor.tokens;

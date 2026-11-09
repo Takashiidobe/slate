@@ -19,8 +19,15 @@ lowering of the IR is tracked under epic `slate-3f8g.4.17`.
 
 | Form                                              | gcc     | clang                                              | msvc                                                    |
 | ------------------------------------------------- | ------- | -------------------------------------------------- | ------------------------------------------------------- |
-| `asm`/`__asm`/`__asm__`, qualifiers, `(`          | GNU asm | GNU asm                                            | accepted, but cl.exe rejects it (`slate-parser-asmmsv`) |
+| `asm`/`__asm`/`__asm__`, qualifiers, `(`          | GNU asm | GNU asm                                            | `asm`, `__asm__` are identifiers; `__asm` is an MS block |
 | `__asm`/`_asm` not followed by `(` or a qualifier | never   | MS block on x86/x86_64 with `microsoft_extensions` | MS block, i686 only (x64 is C4235)                      |
+
+- msvc has no GNU asm (`StandardFeatures::gnu_asm_keywords` is off), matching
+  cl.exe: `__asm__("nop")` is an implicit call, operands fail at `:` (C2143),
+  and `__asm(`/`__asm volatile(` start an MS block, so x64 and arm64 reject
+  them (C4235) and i686 reports a block syntax error (C2400). Fixtures:
+  `msvc/windows/x86_64/gnu_asm_spellings_are_identifiers.c`,
+  `error/msvc/windows/*/gnu-asm-operands.c`, `ms-asm-paren*.c`.
 | `asm {`                                           | no      | not modeled                                        | not a keyword                                           |
 
 - Plain clang, not only clang-cl, accepts MS blocks: `-fms-extensions` or
