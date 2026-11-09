@@ -309,6 +309,9 @@ impl Parser {
         mut macros: MacroInvocations,
     ) -> Result<TranslationUnit, ParseError> {
         self.mark_ms_asm_lines(&mut input);
+        if self.flavor().is_gcc() {
+            input.drop_c23_va_start_extra_arguments();
+        }
         self.tags.borrow_mut().clear();
         self.input = Rc::new(input);
         let input = self.input.clone();

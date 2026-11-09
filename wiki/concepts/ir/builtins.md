@@ -158,6 +158,11 @@ default (objc) runtime ABI is modelled, not `-fcf-runtime-abi=swift`.
 
 - `__builtin_va_list`
 - `__builtin_va_arg`, `__builtin_va_start`, `__builtin_va_end`, `__builtin_va_copy`
+- `__builtin_c23_va_start` (C23 `va_start(ap, ...)`): `va_start` on its
+  first argument. In the gcc flavor the parser drops every token from the
+  first top-level comma to the closing parenthesis before parsing, since
+  gcc never evaluates them and they may be unbalanced brackets or braces
+  (`va_start (ap, ]]]{{{)`); clang parses them as expressions.
 
 - `__builtin_ms_va_list`, `__builtin_ms_va_start`, `__builtin_ms_va_end`,
   `__builtin_ms_va_copy` (x86-64 and AArch64 only)

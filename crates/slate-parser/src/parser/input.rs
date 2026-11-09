@@ -277,6 +277,52 @@ impl ParserInput {
         self.span_ranges = SpanRangeIndex::new(&self.tokens);
     }
 
+    pub fn drop_c23_va_start_extra_arguments(&mut self) {
+        let mut dropped = vec![false; self.tokens.len()];
+        let mut any = false;
+        for start in 0..self.tokens.len() {
+            let is_va_start = matches!(
+                &self.tokens[start].value,
+                Token::Ident(name) if name == "__builtin_c23_va_start"
+            );
+            if !is_va_start
+                || self.tokens.get(start + 1).map(|token| &token.value) != Some(&Token::LParen)
+            {
+                continue;
+            }
+            let mut depth = 0usize;
+            let mut comma = None;
+            for (position, token) in self.tokens.iter().enumerate().skip(start + 2) {
+                match token.value {
+                    Token::LParen => depth += 1,
+                    Token::RParen if depth == 0 => {
+                        if let Some(comma) = comma {
+                            dropped[comma..position].fill(true);
+                            any = true;
+                        }
+                        break;
+                    }
+                    Token::RParen => depth -= 1,
+                    Token::Comma if depth == 0 && comma.is_none() => comma = Some(position),
+                    _ => {}
+                }
+            }
+        }
+        if !any {
+            return;
+        }
+        let mut kept = Vec::with_capacity(self.tokens.len());
+        let mut positions = Vec::with_capacity(self.tokens.len() + 1);
+        for (token, dropped) in self.tokens.iter().zip(dropped) {
+            positions.push(kept.len());
+            if !dropped {
+                kept.push(token.clone());
+            }
+        }
+        positions.push(kept.len());
+        self.replace_tokens(kept, &positions);
+    }
+
     pub fn take_remaining(&self) -> Vec<Span<Annotation>> {
         std::mem::take(&mut *self.annotations.borrow_mut())
             .into_values()
