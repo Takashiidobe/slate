@@ -74,9 +74,17 @@ impl Parser {
     ) -> Result<(Vec<ParameterDeclaration>, usize), ParseError> {
         let mut declared: HashMap<String, Span<ParameterDeclarationKind>> = HashMap::new();
         while tokens.value_at(pos) != Some(&Token::LBrace) {
+            if let Some(semi) = top_level_semi(&tokens[pos..])
+                && tokens[pos..pos + semi]
+                    .iter()
+                    .all(|token| matches!(token.value, Token::Keyword(_)))
+            {
+                pos += semi + 1;
+                continue;
+            }
             let mut parser = self.declarator_parser(tokens, pos);
             let specifiers = parser
-                .parse_specifiers(false)
+                .parse_specifiers(self.features().implicit_int.is_accepted())
                 .map_err(|error| self.error_at_tokens(tokens, parser.pos, error.to_string()))?;
             loop {
                 let declarator_start = parser.pos;

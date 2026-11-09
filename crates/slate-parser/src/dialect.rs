@@ -39,6 +39,9 @@ impl Dialect {
             features.valueless_return_in_nonvoid = true;
             features.value_return_in_void = true;
         }
+        if flavor.is_gcc() && !standard.at_least_c99() {
+            features.value_return_in_void = true;
+        }
         if !flavor.is_msvc() {
             let diagnostics = DiagnosticContext {
                 options: &options.diagnostics,

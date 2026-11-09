@@ -369,6 +369,11 @@ K&R definitions (`f(a, b) int a; char b; { ... }`):
   the declared type converted from the slot.
 - Rejected in C23 (`identifier_list_definitions`); K&R fixtures pin
   `SLATE-FILECHECK-STD DEFAULT c17`.
+- Empty declarations in the parameter declaration list (`int;`,
+  `register;`) are skipped, as gcc does with a warning.
+- In the gcc flavor before C23, a non-definition with an identifier list
+  (`extern int f (i);`) is an unprototyped declaration with an `Empty`
+  parameter list (gcc's `-Wdeclaration-missing-parameter-type`).
 
 ### `TypeName`
 

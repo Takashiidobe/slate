@@ -217,13 +217,14 @@ reference.
 
 ### Materialized function ends
 
-| Case                                          | IR                                                                         |
-| --------------------------------------------- | -------------------------------------------------------------------------- |
-| C99+ `main` falling off the end               | `fallthrough=ret_zero`                                                     |
-| `void` function falling off the end           | `fallthrough=ret_void`                                                     |
-| non-void function reaching the end            | `fallthrough=ub_if_used`                                                   |
-| `noreturn` or naked function reaching the end | `fallthrough=ub`                                                           |
-| valueless `return` in a non-void function     | `return`, same meaning; accepted only under gcc C89/gnu89 and MSVC (C4033) |
+| Case                                          | IR                                                                                                  |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| C99+ `main` falling off the end               | `fallthrough=ret_zero`                                                                              |
+| `void` function falling off the end           | `fallthrough=ret_void`                                                                              |
+| non-void function reaching the end            | `fallthrough=ub_if_used`                                                                            |
+| `noreturn` or naked function reaching the end | `fallthrough=ub`                                                                                    |
+| valueless `return` in a non-void function     | `return`, same meaning; accepted only under gcc C89/gnu89 and MSVC (C4033)                          |
+| `return expr` in a `void` function            | `expr` evaluated as a statement, then `return`; accepted only under gcc C89/gnu89 or `-fpermissive` |
 
 ## Side-effect hoisting
 

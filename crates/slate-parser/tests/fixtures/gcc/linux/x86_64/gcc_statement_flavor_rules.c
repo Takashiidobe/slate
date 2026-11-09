@@ -34,6 +34,8 @@ int valueless(int x) {
     return;
   return g(x);
 }
+
+void valued(int x) { return g(x); }
 #endif
 
 #ifdef FALLTHROUGH
@@ -64,6 +66,14 @@ int outer(int x) {
 // C99_RETURN:  22 │     return;
 // C99_RETURN:     ·     ───────
 // C99_RETURN:  23 │   return g(x);
+// C99_RETURN:     ╰────
+// C99_RETURN: Error:
+// C99_RETURN:   × value return from void function
+// C99_RETURN:     ╭─[tests/fixtures/gcc/linux/x86_64/gcc_statement_flavor_rules.c:26:22]
+// C99_RETURN:  25 │
+// C99_RETURN:  26 │ void valued(int x) { return g(x); }
+// C99_RETURN:     ·                      ────────────
+// C99_RETURN:  27 │ #endif
 // C99_RETURN:     ╰────
 // SLATE-FILECHECK-END C99_RETURN
 // SLATE-FILECHECK-BEGIN VALID
@@ -154,6 +164,10 @@ int outer(int x) {
 // RETURN-NEXT:         if ne<i32>(read<i32>(%[[VALUE_x_2]]), const<i32>(0))
 // RETURN-NEXT:             return;
 // RETURN-NEXT:         return call<i32, signature=fn(i32) -> i32>(%[[VALUE_g]], read<i32>(%[[VALUE_x_2]]));
+// RETURN-NEXT:     }
+// RETURN-NEXT:     fn %[[VALUE_valued:[0-9]+]] @valued(%[[VALUE_x_3:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// RETURN-NEXT:         call<i32, signature=fn(i32) -> i32>(%[[VALUE_g]], read<i32>(%[[VALUE_x_3]]));
+// RETURN-NEXT:         return;
 // RETURN-NEXT:     }
 // RETURN-NEXT: }
 // SLATE-FILECHECK-END RETURN

@@ -441,7 +441,12 @@ impl Parser {
                 self.parse_one_declarator(&mut parser, &specifiers, DeclarationContext::Ordinary)?;
             let identifier_list =
                 std::mem::replace(&mut parser.identifier_list, IdentifierList::Rejected);
-            if let IdentifierList::Parsed(names) = identifier_list {
+            let untyped_parameter_declaration = self.flavor().is_gcc()
+                && self.features().identifier_list_definitions.is_accepted()
+                && matches!(parser.peek(), Some(Token::Semi | Token::Comma));
+            if let IdentifierList::Parsed(names) = identifier_list
+                && !untyped_parameter_declaration
+            {
                 if !self.features().identifier_list_definitions.is_accepted() {
                     return Err(self.error_at_tokens(
                         tokens,
