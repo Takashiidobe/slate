@@ -991,6 +991,13 @@ impl<'m> ModuleLowerer<'m> {
                 }
                 lowered => lowered,
             };
+            let lowered = lowered.map(|item| match (item, &function.symbol.section) {
+                (Item::Fn(mut definition), Some(section)) => {
+                    definition.attrs.push(Attr::LinkSection(section.clone()));
+                    Item::Fn(definition)
+                }
+                (item, _) => item,
+            });
             let nested = std::mem::take(&mut self.dependencies.nested_functions);
             let lowered = lowered.and_then(|item| {
                 self.items.push(item);
