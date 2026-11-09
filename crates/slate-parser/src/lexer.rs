@@ -861,6 +861,9 @@ impl Lexer {
                     self.emit(Token::FloatLit(spelling.into()));
                 }
             }
+        } else if let Some((prefix_len, value, end)) = self.raw_string_literal() {
+            self.pos = end;
+            self.emit(Self::string_token(c, prefix_len, value));
         } else if let Some(prefix_len) = self.string_prefix_len() {
             let start = i + prefix_len;
             self.pos = self.literal_end(start, '"');
@@ -868,14 +871,7 @@ impl Lexer {
                 .iter()
                 .collect();
             self.pos = self.past_literal(self.pos);
-            let token = match prefix_len {
-                0 => Token::StringLit(value.into()),
-                1 if c == 'u' => Token::Utf16StringLit(value.into()),
-                1 if c == 'U' => Token::Utf32StringLit(value.into()),
-                1 => Token::WideStringLit(value.into()),
-                _ => Token::Utf8StringLit(value.into()),
-            };
-            self.emit(token);
+            self.emit(Self::string_token(c, prefix_len, value));
         } else if let Some(prefix_len) = self.char_prefix_len() {
             let start = i + prefix_len;
             let literal_close = self.literal_end(start, '\'').min(self.chars.len());
@@ -975,6 +971,63 @@ impl Lexer {
 
     fn string_prefix_len(&self) -> Option<usize> {
         self.literal_prefix_len('"')
+    }
+
+    fn string_token(first: char, prefix_len: usize, value: String) -> Token {
+        match prefix_len {
+            0 => Token::StringLit(value.into()),
+            1 if first == 'u' => Token::Utf16StringLit(value.into()),
+            1 if first == 'U' => Token::Utf32StringLit(value.into()),
+            1 => Token::WideStringLit(value.into()),
+            _ => Token::Utf8StringLit(value.into()),
+        }
+    }
+
+    fn raw_string_literal(&self) -> Option<(usize, String, usize)> {
+        if !self.features.raw_string_literals {
+            return None;
+        }
+        let unicode = self.features.unicode_literal_prefixes.is_accepted();
+        let prefix_len = [
+            ("u8", unicode),
+            ("u", unicode),
+            ("U", unicode),
+            ("L", true),
+            ("", true),
+        ]
+        .into_iter()
+        .find(|(prefix, accepted)| *accepted && self.peek_str(&format!("{prefix}R\"")))?
+        .0
+        .len();
+        let open = self.pos + prefix_len + 2;
+        let delimiter_len = (open..)
+            .take_while(|&i| {
+                self.char_at(i)
+                    .is_some_and(|c| !matches!(c, '(' | ')' | '\\' | '"') && !c.is_whitespace())
+            })
+            .count();
+        if delimiter_len > 16 || self.char_at(open + delimiter_len) != Some('(') {
+            return None;
+        }
+        let delimiter = &self.chars[open..open + delimiter_len];
+        let body = open + delimiter_len + 1;
+        let close = (body..self.chars.len()).find(|&i| {
+            self.chars[i] == ')'
+                && self.chars.get(i + 1..i + 1 + delimiter_len) == Some(delimiter)
+                && self.char_at(i + 1 + delimiter_len) == Some('"')
+        })?;
+        let value = self.chars[body..close]
+            .iter()
+            .fold(String::new(), |mut value, &c| {
+                match c {
+                    '\\' => value.push_str("\\\\"),
+                    '"' => value.push_str("\\\""),
+                    '\n' => value.push_str("\\n"),
+                    c => value.push(c),
+                }
+                value
+            });
+        Some((prefix_len, value, close + delimiter_len + 2))
     }
 
     fn char_prefix_len(&self) -> Option<usize> {

@@ -45,6 +45,7 @@ pub struct StandardFeatures {
     pub u8_character_constant: Availability,
     pub u8_literals_are_unsigned: bool,
     pub digit_separators: bool,
+    pub raw_string_literals: bool,
     pub identifier_ucns: bool,
     pub identifier_utf8: bool,
     pub octal_prefix: bool,
@@ -129,6 +130,7 @@ impl StandardFeatures {
             u8_character_constant: c23_keyword,
             u8_literals_are_unsigned: c23,
             digit_separators: c23,
+            raw_string_literals: standard.is_gnu() && !c89,
             identifier_ucns: !c89,
             identifier_utf8: true,
             octal_prefix: true,
@@ -238,6 +240,7 @@ impl StandardFeatures {
             CompilerFlavor::Gcc => false,
         };
         features.octal_prefix = !flavor.is_msvc();
+        features.raw_string_literals &= !flavor.is_msvc();
         features.whitespace_line_splice = !flavor.is_msvc();
         features.keyword_countof = !flavor.is_msvc();
         features.nullability_keywords = matches!(flavor, CompilerFlavor::Clang);
