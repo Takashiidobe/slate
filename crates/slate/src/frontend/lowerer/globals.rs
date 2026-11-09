@@ -324,6 +324,7 @@ impl FunctionLowerer<'_, '_> {
             include: false,
             section: None,
             retain: false,
+            fallback: None,
             weak: global.symbol.weak && global.definition,
             dll_storage: global
                 .symbol

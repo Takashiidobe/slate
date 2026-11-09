@@ -66,6 +66,7 @@ impl FunctionLowerer<'_, '_> {
         let rest = ir::SymbolAttributes {
             asm_name: None,
             selectany: false,
+            include: false,
             ..global.symbol.clone()
         };
         if tables.target.os != TargetOs::Windows {
@@ -102,8 +103,13 @@ impl FunctionLowerer<'_, '_> {
         } else {
             (".data", "dw")
         };
+        let include = if global.symbol.include {
+            format!(".section .drectve,\"yni\"\n.ascii \" /include:{symbol}\"\n")
+        } else {
+            String::new()
+        };
         let template = format!(
-            ".section {section}${symbol},\"{flags}\",discard,{symbol}\n.globl {symbol}\n.p2align {}\n{symbol}:\n{}.text",
+            ".section {section}${symbol},\"{flags}\",discard,{symbol}\n.globl {symbol}\n.p2align {}\n{symbol}:\n{}{include}.text",
             align.trailing_zeros(),
             data.directives,
         );
