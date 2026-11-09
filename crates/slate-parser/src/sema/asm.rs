@@ -672,7 +672,9 @@ fn sized_class(
     family: TargetFamily,
 ) -> AsmRegisterClass {
     match (class, width) {
-        (AsmRegisterClass::Reg, Some(64)) if family == TargetFamily::Arm32 => {
+        (AsmRegisterClass::Reg, Some(64))
+            if matches!(family, TargetFamily::Arm32 | TargetFamily::X86) =>
+        {
             AsmRegisterClass::RegPair
         }
         (AsmRegisterClass::XmmReg, Some(256)) => AsmRegisterClass::YmmReg,

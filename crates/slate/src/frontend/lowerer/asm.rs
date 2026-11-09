@@ -698,6 +698,9 @@ fn asm_template(
                             .push_str(&explicit_reference(asm, 64, canonical, *modifier, *view)?);
                         continue;
                     }
+                    Slot::RegisterPair(..) if x86 => {
+                        return Err(unsupported_asm("register pair operand in x86 template"));
+                    }
                     Slot::RegisterPair(low, high) => {
                         template.push_str(match (modifier, view) {
                             (None | Some('Q'), None) => low,
@@ -1427,8 +1430,15 @@ impl FunctionLowerer<'_, '_> {
         Ok(lowered)
     }
 
+    fn asm_narrow_pair(&self) -> bool {
+        matches!(
+            self.tables.target.family,
+            TargetFamily::Arm32 | TargetFamily::X86
+        )
+    }
+
     fn asm_pair_input(&mut self, value: Expr, ty: &ir::Type, wide: &rust::Type) -> Result<Expr> {
-        if self.tables.target.family == TargetFamily::Arm32 {
+        if self.asm_narrow_pair() {
             return self.asm_encode(value, ty, wide);
         }
         self.asm_wide_integer(ty)?;
@@ -1446,8 +1456,8 @@ impl FunctionLowerer<'_, '_> {
         prefix: &mut Vec<Stmt>,
         writebacks: &mut Vec<Stmt>,
     ) -> Result<Vec<rust::AsmOperand>> {
-        let arm = self.tables.target.family == TargetFamily::Arm32;
-        let (wide, half, bits) = if arm {
+        let narrow = self.asm_narrow_pair();
+        let (wide, half, bits) = if narrow {
             (
                 rust::Type::Prim(Prim::U64),
                 rust::Type::Prim(Prim::U32),
@@ -1522,7 +1532,7 @@ impl FunctionLowerer<'_, '_> {
                     lhs: Box::new(shift(BinOp::Shl, cast(high_value.clone(), &wide))),
                     rhs: Box::new(cast(low_value.clone(), &wide)),
                 };
-                let decoded = if arm {
+                let decoded = if narrow {
                     self.asm_decode(combined, &place.ty)?
                 } else {
                     cast(combined, &self.asm_wide_integer(&place.ty)?)
@@ -1951,9 +1961,17 @@ impl FunctionLowerer<'_, '_> {
                     pinned = Some(canonical);
                     rust::AsmReg::Explicit(canonical.into())
                 }
-                Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::RegPair)) if arm => {
-                    let [low, high] = [["r0", "r1"], ["r2", "r3"], ["r4", "r5"], ["r8", "r9"]]
-                        .into_iter()
+                Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::RegPair))
+                    if arm || x86_32 =>
+                {
+                    let pairs: &[[&'static str; 2]] = if arm {
+                        &[["r0", "r1"], ["r2", "r3"], ["r4", "r5"], ["r8", "r9"]]
+                    } else {
+                        &[["eax", "edx"], ["ecx", "esi"]]
+                    };
+                    let [low, high] = pairs
+                        .iter()
+                        .copied()
                         .find(|pair| pair.iter().all(|register| !taken.contains(register)))
                         .ok_or_else(|| unsupported_asm("no free core register pair"))?;
                     taken.extend([low, high]);
