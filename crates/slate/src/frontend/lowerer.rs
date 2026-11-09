@@ -100,6 +100,7 @@ struct Tables<'m> {
     macros: &'m slate_parser::ast::MacroInvocations,
     macro_hidden_arguments: &'m HashMap<slate_parser::ast::MacroExpansionId, Vec<BindingId>>,
     unit: &'m str,
+    odr_symbols: &'m BTreeMap<String, String>,
     types: HashMap<TypeId, &'m Span<ir::TypeDefinition>>,
     record_names: HashMap<TypeId, String>,
     stdio: stdio::StdioBindings,
@@ -229,6 +230,7 @@ pub struct LowerOptions {
     pub imported_commons: BTreeSet<String>,
     pub unit: String,
     pub named_c_types: bool,
+    pub odr_symbols: BTreeMap<String, String>,
 }
 
 pub struct Lowered {
@@ -295,7 +297,7 @@ fn exports_symbol(options: &LowerOptions, function: &ir::Function) -> bool {
     (options.export_symbols || function.symbol.include)
         && matches!(function.linkage, ir::Linkage::External)
         && !function.semantics.inline_only
-        && !function.semantics.discardable
+        && (!function.semantics.discardable || options.odr_symbols.contains_key(&function.name))
         && function.name != "main"
 }
 
@@ -739,6 +741,7 @@ impl<'m> ModuleLowerer<'m> {
             macros: &module.macros,
             macro_hidden_arguments: &module.macro_hidden_arguments,
             unit: &options.unit,
+            odr_symbols: &options.odr_symbols,
             types: module
                 .types
                 .iter()
@@ -1041,7 +1044,10 @@ impl<'m> ModuleLowerer<'m> {
                     })
                 }
                 Ok(Item::Fn(mut definition)) if exported => {
-                    let export = if self.tables.passes_long_double(function) {
+                    let export = if let Some(symbol) = self.options.odr_symbols.get(&function.name)
+                    {
+                        Ok(Attr::ExportName(symbol.clone()))
+                    } else if self.tables.passes_long_double(function) {
                         long_double_entry_export_name(&function.name, &definition)
                             .map(Attr::ExportName)
                     } else if definition.name != function.name {

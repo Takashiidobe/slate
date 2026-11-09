@@ -115,7 +115,7 @@ inline void testC();
 // DEFAULT-NEXT:     fn %[[VALUE__Exit:[0-9]+]] @_Exit(%[[VALUE_status:[0-9]+]] status: i32) -> void [linkage=external] [inline=hint] [definition=discardable] [noreturn] [fallthrough=ub] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE__exit]], read<i32>(%[[VALUE_status]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_ei:[0-9]+]] @ei(unprototyped) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_ei:[0-9]+]] @ei(unprototyped) -> i32 [linkage=external] [inline=hint] [definition=weak_odr] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(123);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> i32 [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ub_if_used] {
@@ -126,7 +126,7 @@ inline void testC();
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_unreferenced1:[0-9]+]] @unreferenced1(unprototyped) -> void [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_unreferenced2:[0-9]+]] @unreferenced2(unprototyped) -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_unreferenced2:[0-9]+]] @unreferenced2(unprototyped) -> void [linkage=external] [inline=hint] [definition=weak_odr] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_gnu_inline]] @gnu_inline(unprototyped) -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
@@ -158,7 +158,7 @@ inline void testC();
 // DEFAULT-NEXT:     fn %[[VALUE_test_test5:[0-9]+]] @test_test5(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_test5]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_test6:[0-9]+]] @test6(unprototyped) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_test6:[0-9]+]] @test6(unprototyped) -> i32 [linkage=external] [inline=hint] [definition=weak_odr] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test7:[0-9]+]] @test7(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
@@ -169,13 +169,13 @@ inline void testC();
 // DEFAULT-NEXT:     fn %[[VALUE_test8:[0-9]+]] @test8(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<u32, signature=fn(ptr<i8>, ptr<const i8>, u32) -> u32>(%[[VALUE_strlcpy]], null<ptr<i8>>, null<ptr<const i8>>, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)) [c="__size_t"]) [c="__size_t"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_test9:[0-9]+]] @test9(unprototyped) -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_test9:[0-9]+]] @test9(unprototyped) -> void [linkage=external] [inline=hint] [definition=weak_odr] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_testA:[0-9]+]] @testA(unprototyped) -> void [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_testB:[0-9]+]] @testB(unprototyped) -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_testB:[0-9]+]] @testB(unprototyped) -> void [linkage=external] [inline=hint] [definition=weak_odr] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_testC:[0-9]+]] @testC(unprototyped) -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_testC:[0-9]+]] @testC(unprototyped) -> void [linkage=external] [inline=hint] [definition=weak_odr] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

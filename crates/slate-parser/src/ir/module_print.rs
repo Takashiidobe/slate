@@ -1314,6 +1314,8 @@ impl fmt::Display for DisplayModule<'_> {
                         "inline_only"
                     } else if function.semantics.discardable {
                         "discardable"
+                    } else if function.semantics.weak_odr {
+                        "weak_odr"
                     } else {
                         "emitted"
                     }

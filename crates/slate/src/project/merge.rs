@@ -16,6 +16,7 @@ use rayon::prelude::*;
 use slate_parser::files::Files;
 use slate_parser::ir::{Linkage, Module};
 use slate_parser::target_info::TargetInfo;
+use std::borrow::Cow;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::fmt::Write;
 use std::path::{Path, PathBuf};
@@ -174,6 +175,66 @@ pub fn imported_commons(units: &[Unit]) -> BTreeMap<String, BTreeSet<String>> {
         .collect()
 }
 
+struct SharedComdats {
+    defined_elsewhere: Vec<BTreeSet<String>>,
+    symbols: BTreeMap<String, String>,
+}
+
+fn shared_comdats(units: &[Unit]) -> SharedComdats {
+    let mut definitions: BTreeMap<&str, Vec<(usize, bool)>> = BTreeMap::new();
+    for (index, unit) in units.iter().enumerate() {
+        for function in &unit.module.functions {
+            let semantics = &function.semantics;
+            if function.body.is_some()
+                && matches!(function.linkage, Linkage::External)
+                && (semantics.discardable || semantics.weak_odr)
+            {
+                definitions
+                    .entry(function.name.as_str())
+                    .or_default()
+                    .push((index, semantics.discardable));
+            }
+        }
+    }
+    let mut defined_elsewhere = vec![BTreeSet::new(); units.len()];
+    let mut symbols = BTreeMap::new();
+    for (name, units) in definitions {
+        if units.len() < 2 {
+            continue;
+        }
+        let kept = units
+            .iter()
+            .find(|(_, discardable)| !discardable)
+            .unwrap_or(&units[0])
+            .0;
+        for (unit, _) in &units {
+            if *unit != kept {
+                defined_elsewhere[*unit].insert(name.to_owned());
+            }
+        }
+        if units.iter().all(|(_, discardable)| *discardable) {
+            symbols.insert(name.to_owned(), format!("__slate_odr_{name}"));
+        }
+    }
+    SharedComdats {
+        defined_elsewhere,
+        symbols,
+    }
+}
+
+fn without_bodies<'a>(module: &'a Module, names: &BTreeSet<String>) -> Cow<'a, Module> {
+    if names.is_empty() {
+        return Cow::Borrowed(module);
+    }
+    let mut module = module.clone();
+    for function in &mut module.functions {
+        if matches!(function.linkage, Linkage::External) && names.contains(&function.name) {
+            function.value.body = None;
+        }
+    }
+    Cow::Owned(module)
+}
+
 pub fn translate_units(
     units: &[Unit],
     mut imported: BTreeMap<String, BTreeSet<String>>,
@@ -182,32 +243,40 @@ pub fn translate_units(
     sections: Sections,
     named_c_types: bool,
 ) -> Result<Translated, String> {
+    let comdats = shared_comdats(units);
+    let modules: Vec<_> = units
+        .iter()
+        .zip(&comdats.defined_elsewhere)
+        .map(|(unit, names)| without_bodies(&unit.module, names))
+        .collect();
     let jobs: Vec<_> = units
         .iter()
-        .map(|unit| {
+        .zip(&modules)
+        .map(|(unit, module)| {
             let options = lowerer::LowerOptions {
                 export_symbols: true,
                 explicit_docs_only,
                 imported_commons: imported.remove(&unit.stem).unwrap_or_default(),
                 unit: unit.stem.clone(),
                 named_c_types,
+                odr_symbols: comdats.symbols.clone(),
             };
-            (unit, options)
+            (unit, module, options)
         })
         .collect();
     let results: Vec<Result<_, String>> = jobs
         .into_par_iter()
-        .map(|(unit, options)| {
-            frontend::lower_module(&unit.module, &unit.files, &options)
+        .map(|(unit, module, options)| {
+            frontend::lower_module(module, &unit.files, &options)
                 .map_err(|error| format!("{}: {error}", unit.path.display()))
         })
         .collect();
     let lowered = collect_all_errors(results)?;
-    let address_taken: Vec<_> = units
+    let address_taken: Vec<_> = modules
         .iter()
         .zip(&lowered)
-        .map(|(unit, lowered)| distinct_functions::Unit {
-            module: &unit.module,
+        .map(|(module, lowered)| distinct_functions::Unit {
+            module,
             address_taken: &lowered.address_taken,
         })
         .collect();

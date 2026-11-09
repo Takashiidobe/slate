@@ -277,11 +277,14 @@ control-flow facts:
 - windows-msvc (any flavor): neither mode applies unless `gnu_inline`;
   clang gives every inline definition its own comdat, so none is inline-only
   (`clang/windows/x86_64/ir_inline.c`). `weak_odr`, with `dllexport` or an
-  explicit `extern` on any declaration, prints `[definition=emitted]`.
-  Otherwise `linkonce_odr` prints `[definition=discardable]`: every unit that
-  uses the function supplies it, and no other unit can need its symbol, so
-  Slate keeps it private to the unit. A `static` local in a discardable
-  function is therefore per unit in Slate and shared in clang.
+  explicit `extern` on any declaration, prints `[definition=weak_odr]`: the
+  symbol is exported, and several units may define it. Otherwise
+  `linkonce_odr` prints `[definition=discardable]`: every unit that uses the
+  function supplies it, and no other unit can need its symbol, so Slate
+  keeps it private. In a project Slate keeps the first unit's definition of
+  either kind and imports it into the other units, so `static` locals are
+  shared as in clang; a unit whose signature types differ from the first
+  keeps a private copy.
 - `noreturn` merges `_Noreturn`, `[[noreturn]]`, and the GNU attribute
   across declarations. GNU `const`/`pure` become `[memory=none]`/
   `[memory=read]` (`const` wins).

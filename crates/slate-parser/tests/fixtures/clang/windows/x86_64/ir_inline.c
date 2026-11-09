@@ -52,16 +52,16 @@ int macro_mode(void) { return 2; }
 // GNU-NEXT:     fn %[[VALUE_plain:[0-9]+]] @plain() -> i32 [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ub_if_used] {
 // GNU-NEXT:         return const<i32>(1);
 // GNU-NEXT:     }
-// GNU-NEXT:     fn %[[VALUE_external:[0-9]+]] @external() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// GNU-NEXT:     fn %[[VALUE_external:[0-9]+]] @external() -> i32 [linkage=external] [inline=hint] [definition=weak_odr] [fallthrough=ub_if_used] {
 // GNU-NEXT:         return const<i32>(2);
 // GNU-NEXT:     }
 // GNU-NEXT:     fn %[[VALUE_local:[0-9]+]] @local() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // GNU-NEXT:         return const<i32>(3);
 // GNU-NEXT:     }
-// GNU-NEXT:     fn %[[VALUE_before:[0-9]+]] @before() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// GNU-NEXT:     fn %[[VALUE_before:[0-9]+]] @before() -> i32 [linkage=external] [inline=hint] [definition=weak_odr] [fallthrough=ub_if_used] {
 // GNU-NEXT:         return const<i32>(4);
 // GNU-NEXT:     }
-// GNU-NEXT:     fn %[[VALUE_after:[0-9]+]] @after() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// GNU-NEXT:     fn %[[VALUE_after:[0-9]+]] @after() -> i32 [linkage=external] [inline=hint] [definition=weak_odr] [fallthrough=ub_if_used] {
 // GNU-NEXT:         return const<i32>(5);
 // GNU-NEXT:     }
 // GNU-NEXT:     fn %[[VALUE_pinned:[0-9]+]] @pinned() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
@@ -73,7 +73,7 @@ int macro_mode(void) { return 2; }
 // GNU-NEXT:     fn %[[VALUE_never:[0-9]+]] @never() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // GNU-NEXT:         return const<i32>(8);
 // GNU-NEXT:     }
-// GNU-NEXT:     fn %[[VALUE_exported:[0-9]+]] @exported() -> i32 [linkage=external] [dllexport] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// GNU-NEXT:     fn %[[VALUE_exported:[0-9]+]] @exported() -> i32 [linkage=external] [dllexport] [inline=hint] [definition=weak_odr] [fallthrough=ub_if_used] {
 // GNU-NEXT:         return const<i32>(9);
 // GNU-NEXT:     }
 // GNU-NEXT:     fn %[[VALUE_undecorated:[0-9]+]] @undecorated() -> i32 [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ub_if_used] {
@@ -115,16 +115,16 @@ int macro_mode(void) { return 2; }
 // ISO-NEXT:     fn %[[VALUE_plain:[0-9]+]] @plain() -> i32 [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ub_if_used] {
 // ISO-NEXT:         return const<i32>(1);
 // ISO-NEXT:     }
-// ISO-NEXT:     fn %[[VALUE_external:[0-9]+]] @external() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// ISO-NEXT:     fn %[[VALUE_external:[0-9]+]] @external() -> i32 [linkage=external] [inline=hint] [definition=weak_odr] [fallthrough=ub_if_used] {
 // ISO-NEXT:         return const<i32>(2);
 // ISO-NEXT:     }
 // ISO-NEXT:     fn %[[VALUE_local:[0-9]+]] @local() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // ISO-NEXT:         return const<i32>(3);
 // ISO-NEXT:     }
-// ISO-NEXT:     fn %[[VALUE_before:[0-9]+]] @before() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// ISO-NEXT:     fn %[[VALUE_before:[0-9]+]] @before() -> i32 [linkage=external] [inline=hint] [definition=weak_odr] [fallthrough=ub_if_used] {
 // ISO-NEXT:         return const<i32>(4);
 // ISO-NEXT:     }
-// ISO-NEXT:     fn %[[VALUE_after:[0-9]+]] @after() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// ISO-NEXT:     fn %[[VALUE_after:[0-9]+]] @after() -> i32 [linkage=external] [inline=hint] [definition=weak_odr] [fallthrough=ub_if_used] {
 // ISO-NEXT:         return const<i32>(5);
 // ISO-NEXT:     }
 // ISO-NEXT:     fn %[[VALUE_pinned:[0-9]+]] @pinned() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
@@ -136,7 +136,7 @@ int macro_mode(void) { return 2; }
 // ISO-NEXT:     fn %[[VALUE_never:[0-9]+]] @never() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // ISO-NEXT:         return const<i32>(8);
 // ISO-NEXT:     }
-// ISO-NEXT:     fn %[[VALUE_exported:[0-9]+]] @exported() -> i32 [linkage=external] [dllexport] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// ISO-NEXT:     fn %[[VALUE_exported:[0-9]+]] @exported() -> i32 [linkage=external] [dllexport] [inline=hint] [definition=weak_odr] [fallthrough=ub_if_used] {
 // ISO-NEXT:         return const<i32>(9);
 // ISO-NEXT:     }
 // ISO-NEXT:     fn %[[VALUE_undecorated:[0-9]+]] @undecorated() -> i32 [linkage=external] [inline=hint] [definition=discardable] [fallthrough=ub_if_used] {

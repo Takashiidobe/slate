@@ -166,6 +166,7 @@ pub struct FunctionSemantics {
     pub inlining: Option<Inlining>,
     pub inline_only: bool,
     pub discardable: bool,
+    pub weak_odr: bool,
     pub noreturn: bool,
     pub naked: bool,
     pub interrupt: bool,

@@ -289,6 +289,13 @@ impl Lowerer {
                 None if microsoft_abi => None,
                 semantics => Some(semantics.unwrap_or(mode)),
             };
+            let comdat = function.body.is_some()
+                && matches!(function.linkage, Linkage::External)
+                && mode.is_none()
+                && state.declared_inline;
+            let discardable = comdat
+                && !state.declared_extern
+                && function.symbol.dll_storage != Some(DllStorage::Export);
             function.value.semantics = FunctionSemantics {
                 inlining: state.inlining,
                 inline_only: function.body.is_some()
@@ -303,12 +310,8 @@ impl Lowerer {
                         }
                         _ => false,
                     },
-                discardable: function.body.is_some()
-                    && matches!(function.linkage, Linkage::External)
-                    && mode.is_none()
-                    && state.declared_inline
-                    && !state.declared_extern
-                    && function.symbol.dll_storage != Some(DllStorage::Export),
+                discardable,
+                weak_odr: comdat && !discardable,
                 noreturn: state.noreturn,
                 naked: state.naked,
                 interrupt: state.interrupt,
