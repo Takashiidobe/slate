@@ -404,6 +404,54 @@ impl<'m> ModuleLowerer<'m> {
         Ok(())
     }
 
+    fn lower_function_alias(&mut self, function: &ir::Function) {
+        if function.body.is_some()
+            || function.symbol.alias.is_none()
+            || !exports_symbol(self.options, function)
+            || !matches!(
+                self.tables.target.os,
+                slate_parser::target_info::TargetOs::Linux
+                    | slate_parser::target_info::TargetOs::Android
+                    | slate_parser::target_info::TargetOs::FreeBsd
+            )
+        {
+            return;
+        }
+        let Some(target) = self
+            .tables
+            .names
+            .get(&function.id)
+            .filter(|name| !name.is_extern)
+        else {
+            return;
+        };
+        let symbol = function
+            .symbol
+            .asm_name
+            .clone()
+            .unwrap_or_else(|| function.name.clone());
+        let binding = if function.symbol.weak {
+            "weak"
+        } else {
+            "globl"
+        };
+        let visibility = match function.symbol.visibility {
+            Some(ir::Visibility::Hidden | ir::Visibility::Internal) => {
+                format!("\n.hidden {symbol}")
+            }
+            Some(ir::Visibility::Protected) => format!("\n.protected {symbol}"),
+            Some(ir::Visibility::Default) | None => String::new(),
+        };
+        self.items.push(Item::GlobalAsm(rust::InlineAsm {
+            template: format!(".{binding} {symbol}{visibility}\n.set {symbol}, {{}}"),
+            operands: vec![rust::AsmOperand::Sym(Expr::Var(
+                target.rust.as_str().into(),
+            ))],
+            options: Vec::new(),
+            kind: rust::AsmKind::Global,
+        }));
+    }
+
     fn lower_init_hooks(&mut self, function: &ir::Function) -> Result<()> {
         use slate_parser::target_info::TargetOs;
         let os = self.tables.target.os;
@@ -903,6 +951,7 @@ impl<'m> ModuleLowerer<'m> {
             }
         }
         for function in &module.functions {
+            self.lower_function_alias(function);
             if let Err(error) = self.lower_ifunc(function) {
                 self.barriers.push(
                     error
