@@ -31,12 +31,15 @@ int present(void) { return 1; }
 // CHECK-NEXT:         storage d64 [size=8, align=8];
 // CHECK-NEXT:         storage d128 [size=16, align=16];
 // CHECK-NEXT:     }
+// CHECK-NEXT:     linker "/alternatename:missing_defined=fallback_defined";
+// CHECK-NEXT:     linker "/alternatename:missing_other=elsewhere";
+// CHECK-NEXT:     linker "/alternatename:present=fallback_defined";
 // CHECK-NEXT:     fn %[[VALUE_missing_defined:[0-9]+]] @missing_defined() -> i32 [linkage=external] [fallback="fallback_defined"];
 // CHECK-NEXT:     fn %[[VALUE_missing_other:[0-9]+]] @missing_other(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external] [fallback="elsewhere"];
 // CHECK-NEXT:     fn %[[VALUE_present:[0-9]+]] @present() -> i32 [linkage=external] [fallback="fallback_defined"] [fallthrough=ub_if_used] {
 // CHECK-NEXT:         return const<i32>(1);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     fn %[[VALUE_fallback_defined:[0-9]+]] @fallback_defined() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// CHECK-NEXT:     fn %[[VALUE_fallback_defined:[0-9]+]] @fallback_defined() -> i32 [linkage=external] [include] [fallthrough=ub_if_used] {
 // CHECK-NEXT:         return const<i32>(7);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

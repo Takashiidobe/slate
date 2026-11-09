@@ -188,9 +188,10 @@ linkage and merged across redeclarations (first value wins, flags OR):
 - `selectany` (clang: `weak_odr` + COMDAT) needs external linkage.
 - `fallback("t")` comes from MSVC `#pragma comment(linker,
   "/alternatename:a=t")` (msvc flavor only; on 32-bit x86 one leading `_` is
-  stripped from both names). Slate links an undefined `a` to `t`: a
-  bodiless `a` whose `t` is defined in the module resolves to that function,
-  otherwise it gets `#[link_name = "t"]`. A defined `a` ignores the pragma.
+  stripped from both names). Slate passes the option through `.drectve`, so
+  link.exe resolves it: a strong `a` in any object or library wins, otherwise
+  `a` links to `t`. `t` is marked `include`, so a defined external `t` is
+  exported. Not handled: stdcall/fastcall decorated names on i686.
   Fixtures: `msvc/windows/x86_64/pragma_alternatename.c`,
   `crates/slate/tests/fixtures/msvc/{x86_64,i686}/pragma_alternatename.c`.
 - `include` comes from MSVC `#pragma comment(linker, "/include:sym")` (msvc

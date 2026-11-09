@@ -457,6 +457,8 @@ impl Walk<'_> {
                             self.pragmas
                                 .fallback
                                 .insert(undecorated(from), undecorated(to));
+                            self.pragmas.include.insert(undecorated(to));
+                            self.pragmas.linker_options.push(option.to_string());
                         } else if let Some(symbol) = option.strip_prefix("/include:") {
                             self.pragmas.include.insert(undecorated(symbol));
                         } else {

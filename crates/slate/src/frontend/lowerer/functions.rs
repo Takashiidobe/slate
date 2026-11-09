@@ -297,7 +297,6 @@ impl FunctionLowerer<'_, '_> {
             .map(str::to_owned)
             .or_else(|| ifunc_symbol(function))
             .or_else(|| function.symbol.asm_name.clone())
-            .or_else(|| function.symbol.fallback.clone())
             .or_else(|| {
                 (function_rust_name(function) != function.name).then(|| function.name.clone())
             })

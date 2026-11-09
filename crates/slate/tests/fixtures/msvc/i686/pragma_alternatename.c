@@ -37,11 +37,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn abort();
-// CHECK-NEXT:     #[link_name = "strlen"]
+// CHECK-NEXT:     fn missing_defined() -> i32;
 // CHECK-NEXT:     fn missing_libc([[ARG_0:arg[0-9]+]]: *const i8) -> u32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn fallback_defined() -> i32 {
+// CHECK-NEXT: core::arch::global_asm!(
+// CHECK-NEXT:     ".section .drectve,\"yni\"\n.ascii \" /alternatename:_missing_defined=_fallback_defined /alternatename:_missing_libc=_strlen /alternatename:_present=_fallback_unused\""
+// CHECK-NEXT: );
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: extern "C-unwind" fn fallback_defined() -> i32 {
 // CHECK-NEXT:     7
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -49,12 +54,13 @@ int main(void) {
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn fallback_unused() -> i32 {
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: extern "C-unwind" fn fallback_unused() -> i32 {
 // CHECK-NEXT:     99
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     if fallback_defined() != 7 {
+// CHECK-NEXT:     if (unsafe { missing_defined() }) != 7 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { missing_libc(c"four".as_ptr()) }) != 4 {
