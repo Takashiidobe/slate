@@ -282,7 +282,7 @@ impl Preprocessor<'_> {
     }
 }
 
-const GCC_NAMED_BUILTIN_MACROS: [&str; 6] = [
+const GCC_NAMED_BUILTIN_MACROS: &[&str] = &[
     "__TIME__",
     "__DATE__",
     "__FILE__",

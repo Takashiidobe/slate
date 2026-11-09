@@ -37,7 +37,7 @@ pub enum Warning {
 }
 
 impl Warning {
-    pub const ALL: [Self; 30] = [
+    pub const ALL: &[Self] = &[
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
@@ -108,7 +108,10 @@ impl Warning {
     }
 
     pub fn from_name(name: &str) -> Option<Self> {
-        Self::ALL.into_iter().find(|warning| warning.name() == name)
+        Self::ALL
+            .iter()
+            .copied()
+            .find(|warning| warning.name() == name)
     }
 
     pub fn group(name: &str) -> Vec<Self> {

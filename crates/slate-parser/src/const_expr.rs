@@ -490,7 +490,7 @@ pub enum FloatValue {
 }
 
 // scanned in order by ends_with, so bf16 must precede f16
-const FLOAT_SUFFIXES: [&str; 19] = [
+const FLOAT_SUFFIXES: &[&str] = &[
     "bf16", "f128", "f64x", "f32x", "f16", "f32", "f64", "d128", "d64x", "d64", "d32", "df", "dd",
     "dl", "d", "f", "l", "q", "w",
 ];
@@ -528,7 +528,8 @@ fn split_float_spelling(spelling: &str) -> (String, &'static str, bool) {
         None => (spelling.as_str(), false),
     };
     let suffix = FLOAT_SUFFIXES
-        .into_iter()
+        .iter()
+        .copied()
         .find(|suffix| {
             digits.ends_with(suffix)
                 || digits.ends_with(&suffix.to_ascii_uppercase())

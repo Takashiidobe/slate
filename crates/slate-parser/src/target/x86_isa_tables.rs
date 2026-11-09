@@ -110,7 +110,7 @@ pub enum X86Feature {
     Xsaves,
 }
 
-pub(super) const ALL_FEATURES: [X86Feature; 105] = [
+pub(super) const ALL_FEATURES: &[X86Feature] = &[
     X86Feature::Adx,
     X86Feature::Aes,
     X86Feature::AmxAvx512,
@@ -561,7 +561,7 @@ pub(super) struct X86Cpu {
     pub(super) macros: &'static [&'static str],
 }
 
-pub(super) const CPUS: [X86Cpu; 84] = [
+pub(super) const CPUS: &[X86Cpu] = &[
     X86Cpu {
         name: "alderlake",
         long_mode: true,

@@ -176,8 +176,8 @@ Put a rule in the narrowest bucket that owns the constraint.
    - the `Opt` variant, its `Display` arm, and its `accepted_by` arm
      (exhaustive). Add a `negation_accepted_by` arm when only some flavors
      accept the opposite.
-   - On/off: an `Opt::switch` arm plus an entry in `SWITCH_OPTS` (bump the
-     length) and a `match opt` arm in `parse_arguments`. Valued: an
+   - On/off: an `Opt::switch` arm plus an entry in `SWITCH_OPTS` and a
+     `match opt` arm in `parse_arguments`. Valued: an
      `else if` arm in `parse_arguments`, placed before the broad matchers
      ([Option parsing](#option-parsing)). `option_value` accepts `=` and
      separate forms, but `next_value` refuses a separate value that starts

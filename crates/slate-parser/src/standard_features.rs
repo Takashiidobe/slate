@@ -240,7 +240,8 @@ impl StandardFeatures {
             CompilerFlavor::Gcc => false,
         };
         features.octal_prefix = !flavor.is_msvc();
-        features.raw_string_literals &= !flavor.is_msvc();
+        features.raw_string_literals =
+            !flavor.is_msvc() && graphs.raw_strings.unwrap_or(features.raw_string_literals);
         features.whitespace_line_splice = !flavor.is_msvc();
         features.keyword_countof = !flavor.is_msvc();
         features.nullability_keywords = matches!(flavor, CompilerFlavor::Clang);

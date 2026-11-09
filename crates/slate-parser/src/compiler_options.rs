@@ -150,6 +150,7 @@ pub struct SourceGraphs {
     pub trigraphs: Option<bool>,
     pub digraphs: Option<bool>,
     pub dollars: Option<bool>,
+    pub raw_strings: Option<bool>,
     pub blocks: Option<bool>,
     pub fixed_point: Option<bool>,
 }

@@ -46,7 +46,8 @@ impl X86Feature {
             "sse4" if enabled => Self::Sse42,
             "sse4" => Self::Sse41,
             _ => ALL_FEATURES
-                .into_iter()
+                .iter()
+                .copied()
                 .find(|feature| feature.spelling() == name)?,
         };
         Some((feature, enabled))
@@ -81,7 +82,8 @@ impl X86Features {
         let mut closed = self;
         loop {
             let next = ALL_FEATURES
-                .into_iter()
+                .iter()
+                .copied()
                 .filter(|feature| closed.contains(*feature))
                 .fold(closed, |set, feature| {
                     set.union(Self(feature.clang_implies()))
@@ -95,7 +97,8 @@ impl X86Features {
 
     fn dependents(feature: X86Feature) -> Self {
         ALL_FEATURES
-            .into_iter()
+            .iter()
+            .copied()
             .filter(|candidate| Self::of(&[*candidate]).closure().contains(feature))
             .fold(Self::default(), |set, candidate| {
                 set.union(Self::of(&[candidate]))
@@ -178,7 +181,7 @@ pub struct X86IsaRequest {
     pub fpmath: Option<FpMath>,
 }
 
-const APX_FEATURES: [(&str, &str); 9] = [
+const APX_FEATURES: &[(&str, &str)] = &[
     ("egpr", "__EGPR__"),
     ("push2pop2", "__PUSH2POP2__"),
     ("ppx", "__PPX__"),
@@ -189,7 +192,7 @@ const APX_FEATURES: [(&str, &str); 9] = [
     ("zu", "__ZU__"),
     ("jmpabs", "__JMPABS__"),
 ];
-const GCC_APX_FEATURES: [&str; 9] = [
+const GCC_APX_FEATURES: &[&str] = &[
     "none",
     "all",
     "egpr",
@@ -632,7 +635,8 @@ impl X86Isa {
                 TargetFeature::Tune(_) | TargetFeature::BranchProtection(_) => continue,
             };
             if let Some(feature) = ALL_FEATURES
-                .into_iter()
+                .iter()
+                .copied()
                 .find(|feature| feature.spelling() == name)
             {
                 request.set(feature, enabled);
@@ -657,7 +661,7 @@ impl X86Isa {
             .chain(self.apx.macros())
             .map(|name| format!("{name}=1"))
             .collect();
-        for feature in ALL_FEATURES {
+        for feature in ALL_FEATURES.iter().copied() {
             let present = match feature {
                 X86Feature::Sahf if family == TargetFamily::X86 => true,
                 X86Feature::Cx16 if family == TargetFamily::X86 => false,
@@ -739,7 +743,8 @@ impl X86Isa {
 
     pub fn disabled_macros(self, flavor: CompilerFlavor) -> Vec<&'static str> {
         let mut names: Vec<&'static str> = ALL_FEATURES
-            .into_iter()
+            .iter()
+            .copied()
             .filter(|feature| self.disabled.contains(*feature))
             .flat_map(|feature| feature.macros_for(flavor).iter().copied())
             .collect();

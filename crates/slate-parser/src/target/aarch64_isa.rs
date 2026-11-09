@@ -31,7 +31,7 @@ pub enum AArch64Feature {
     Frintts,
 }
 
-const ALL_FEATURES: [AArch64Feature; 26] = [
+const ALL_FEATURES: &[AArch64Feature] = &[
     AArch64Feature::Fp,
     AArch64Feature::Simd,
     AArch64Feature::Fp16,
@@ -76,7 +76,7 @@ impl From<CompilerFlavor> for Rules {
     }
 }
 
-const MODIFIERS: [(&str, AArch64Feature); 13] = [
+const MODIFIERS: &[(&str, AArch64Feature)] = &[
     ("simd", AArch64Feature::Simd),
     ("fp", AArch64Feature::Fp),
     ("fp16", AArch64Feature::Fp16),
@@ -170,7 +170,7 @@ impl AArch64Features {
         let mut pending = vec![feature];
         while let Some(next) = pending.pop() {
             let reached = step(next);
-            for candidate in ALL_FEATURES {
+            for candidate in ALL_FEATURES.iter().copied() {
                 if reached.contains(candidate) && !closed.contains(candidate) {
                     closed = closed.union(Self::of(&[candidate]));
                     pending.push(candidate);

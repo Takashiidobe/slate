@@ -1,6 +1,6 @@
 use crate::charset::CodePage;
 
-pub(crate) static CODE_PAGES: [&CodePage; 40] = [
+pub(crate) static CODE_PAGES: &[&CodePage] = &[
     &CP437, &CP737, &CP775, &CP850, &CP852, &CP855, &CP857, &CP860, &CP861, &CP862, &CP863, &CP864,
     &CP865, &CP866, &CP869, &CP874, &CP1250, &CP1251, &CP1252, &CP1253, &CP1254, &CP1255, &CP1256,
     &CP1257, &CP1258, &CP10000, &CP20127, &CP20866, &CP21866, &CP28591, &CP28592, &CP28593,

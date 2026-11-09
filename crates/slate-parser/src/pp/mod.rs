@@ -161,14 +161,14 @@ fn conditional_directive(rest: &str) -> bool {
     DirectiveName::from_spelling(name).is_conditional()
 }
 
-const GNU_COMPATIBILITY_MACROS: [(&str, &str); 4] = [
+const GNU_COMPATIBILITY_MACROS: &[(&str, &str)] = &[
     ("__GNUC__", "4"),
     ("__GNUC_MINOR__", "2"),
     ("__GNUC_PATCHLEVEL__", "1"),
     ("__GXX_ABI_VERSION", "1002"),
 ];
 
-const CLANG_FIXED_POINT_MACROS: [(&str, &str); 48] = [
+const CLANG_FIXED_POINT_MACROS: &[(&str, &str)] = &[
     ("__ACCUM_EPSILON__", "0.000030517578125K"),
     ("__ACCUM_FBIT__", "15"),
     ("__ACCUM_IBIT__", "16"),
@@ -232,7 +232,7 @@ const CLANG_FIXED_POINT_MACROS: [(&str, &str); 48] = [
 ];
 
 // expanded by expand_builtin_macro; msvc lacks the gnu-only ones
-const BUILTIN_MACROS: [&str; 6] = [
+const BUILTIN_MACROS: &[&str] = &[
     "__LINE__",
     "__FILE__",
     "__COUNTER__",
@@ -240,10 +240,10 @@ const BUILTIN_MACROS: [&str; 6] = [
     "__TIME__",
     "__TIMESTAMP__",
 ];
-const GNU_BUILTIN_MACROS: [&str; 3] = ["__FILE_NAME__", "__BASE_FILE__", "__INCLUDE_LEVEL__"];
-const MSVC_BUILTIN_MACROS: [&str; 1] = ["__FUNCTION__"];
+const GNU_BUILTIN_MACROS: &[&str] = &["__FILE_NAME__", "__BASE_FILE__", "__INCLUDE_LEVEL__"];
+const MSVC_BUILTIN_MACROS: &[&str] = &["__FUNCTION__"];
 
-const STDC_PREDEF_MACROS: [&str; 6] = [
+const STDC_PREDEF_MACROS: &[&str] = &[
     "_STDC_PREDEF_H",
     "__STDC_IEC_559__",
     "__STDC_IEC_559_COMPLEX__",
@@ -252,7 +252,7 @@ const STDC_PREDEF_MACROS: [&str; 6] = [
     "__STDC_ISO_10646__",
 ];
 
-const MSC_VERSION_MACROS: [&str; 5] = [
+const MSC_VERSION_MACROS: &[&str] = &[
     "_MSC_VER",
     "_MSC_FULL_VER",
     "_MSC_BUILD",
@@ -260,7 +260,7 @@ const MSC_VERSION_MACROS: [&str; 5] = [
     "_CRT_USE_BUILTIN_OFFSETOF",
 ];
 
-const MSVC_UNDEFINABLE_PREDEFINES: [&str; 23] = [
+const MSVC_UNDEFINABLE_PREDEFINES: &[&str] = &[
     "_MSC_VER",
     "_MSC_FULL_VER",
     "_MSC_BUILD",
@@ -511,7 +511,11 @@ impl<'a> Preprocessor<'a> {
         }
         match (gnu, captured) {
             (false, false) => {
-                removed.extend(GNU_COMPATIBILITY_MACROS.map(|(name, _)| name.to_string()));
+                removed.extend(
+                    GNU_COMPATIBILITY_MACROS
+                        .iter()
+                        .map(|(name, _)| name.to_string()),
+                );
                 removed.extend(
                     self.macros
                         .keys()
@@ -521,7 +525,9 @@ impl<'a> Preprocessor<'a> {
             }
             (true, true) => {
                 defines.extend(
-                    GNU_COMPATIBILITY_MACROS.map(|(name, value)| (name.into(), value.into())),
+                    GNU_COMPATIBILITY_MACROS
+                        .iter()
+                        .map(|&(name, value)| (name.into(), value.into())),
                 );
                 defines.push(("__GCC_ATOMIC_TEST_AND_SET_TRUEVAL".into(), "1".into()));
                 for name in self.macros.keys() {
@@ -551,7 +557,7 @@ impl<'a> Preprocessor<'a> {
             _ => {}
         }
         if captured && self.dialect.options().microsoft.extensions == Some(false) {
-            removed.extend(MSC_VERSION_MACROS.map(String::from));
+            removed.extend(MSC_VERSION_MACROS.iter().copied().map(String::from));
         }
         for name in &removed {
             self.macros.remove(name);
@@ -799,8 +805,8 @@ impl<'a> Preprocessor<'a> {
             .intern(PathBuf::from("<built-in>"), HeaderKind::System);
         let provenance = self.provenance(Loc::new(file, 0, 0));
         let gnu = match flavor {
-            CompilerFlavor::Msvc => &MSVC_BUILTIN_MACROS[..],
-            CompilerFlavor::Clang | CompilerFlavor::Gcc => &GNU_BUILTIN_MACROS[..],
+            CompilerFlavor::Msvc => MSVC_BUILTIN_MACROS,
+            CompilerFlavor::Clang | CompilerFlavor::Gcc => GNU_BUILTIN_MACROS,
         };
         for name in BUILTIN_MACROS.iter().chain(gnu) {
             let definition = MacroDef {

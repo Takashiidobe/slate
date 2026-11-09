@@ -681,7 +681,7 @@ impl Visitor for TagCollector<'_, '_> {
     }
 }
 
-const PASSTHROUGH_LINKER_OPTIONS: [&str; 7] = [
+const PASSTHROUGH_LINKER_OPTIONS: &[&str] = &[
     "/export:",
     "/defaultlib:",
     "/nodefaultlib:",

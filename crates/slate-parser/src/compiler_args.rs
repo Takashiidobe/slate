@@ -361,6 +361,7 @@ struct ParsedCompilerArgs {
     trigraphs: Option<bool>,
     digraphs: Option<bool>,
     dollars_in_identifiers: Option<bool>,
+    raw_string_literals: Option<bool>,
     blocks: Option<bool>,
     fixed_point: Option<bool>,
     ms_extensions: Option<bool>,
@@ -640,6 +641,7 @@ enum Opt {
     ClangTrigraphs,
     ClangDigraphs,
     DollarsInIdentifiers,
+    RawStringLiterals,
     Blocks,
     FixedPoint,
     MsExtensions,
@@ -803,6 +805,7 @@ impl std::fmt::Display for Opt {
             Self::ClangTrigraphs => "ftrigraphs",
             Self::ClangDigraphs => "fdigraphs",
             Self::DollarsInIdentifiers => "fdollars-in-identifiers",
+            Self::RawStringLiterals => "fraw-string-literals",
             Self::Blocks => "fblocks",
             Self::FixedPoint => "ffixed-point",
             Self::MsExtensions => "ms-extensions",
@@ -989,6 +992,7 @@ impl Opt {
             | Self::AsmBlocks
             | Self::ClangTrigraphs
             | Self::ClangDigraphs
+            | Self::RawStringLiterals
             | Self::Blocks
             | Self::FixedPoint
             | Self::MsAnonymousStructs
@@ -1079,6 +1083,7 @@ impl Opt {
             Self::ClangTrigraphs => "-ftrigraphs",
             Self::ClangDigraphs => "-fdigraphs",
             Self::DollarsInIdentifiers => "-fdollars-in-identifiers",
+            Self::RawStringLiterals => "-fraw-string-literals",
             Self::Blocks => "-fblocks",
             Self::FixedPoint => "-ffixed-point",
             Self::MsExtensions => "-fms-extensions",
@@ -1180,11 +1185,11 @@ enum IgnoredOption {
     TakesValue,
 }
 
-const IGNORED_DRIVER_FLAGS: [&str; 9] = [
+const IGNORED_DRIVER_FLAGS: &[&str] = &[
     "-c", "-S", "-MD", "-MMD", "-MP", "-MG", "-M", "-MM", "-pipe",
 ];
 
-const IGNORED_VALUE_OPTIONS: [&str; 5] = ["-o", "-MF", "-MT", "-MQ", "-MJ"];
+const IGNORED_VALUE_OPTIONS: &[&str] = &["-o", "-MF", "-MT", "-MQ", "-MJ"];
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum CodegenOnlyForm {
@@ -1303,7 +1308,7 @@ const GCC_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Gcc];
 const CLANG_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Clang];
 const MSVC_ONLY: &[CompilerFlavor] = &[CompilerFlavor::Msvc];
 
-const CODEGEN_ONLY_FLAGS: [CodegenOnlyFlag; 173] = [
+const CODEGEN_ONLY_FLAGS: &[CodegenOnlyFlag] = &[
     CodegenOnlyFlag::switch("-fomit-frame-pointer", ALL_FLAVORS),
     CodegenOnlyFlag::switch("-flto", ALL_FLAVORS),
     CodegenOnlyFlag::switch("-ffunction-sections", ALL_FLAVORS),
@@ -1513,7 +1518,7 @@ fn ignored_option(argument: &str) -> Option<IgnoredOption> {
         .then_some(IgnoredOption::Alone)
 }
 
-const SWITCH_OPTS: [Opt; 63] = [
+const SWITCH_OPTS: &[Opt] = &[
     Opt::FloatStore,
     Opt::SinglePrecisionConstant,
     Opt::Asm,
@@ -1524,6 +1529,7 @@ const SWITCH_OPTS: [Opt; 63] = [
     Opt::ClangTrigraphs,
     Opt::ClangDigraphs,
     Opt::DollarsInIdentifiers,
+    Opt::RawStringLiterals,
     Opt::Blocks,
     Opt::FixedPoint,
     Opt::DeleteNullPointerChecks,
@@ -1677,6 +1683,7 @@ impl CompilerArgParser {
             trigraphs: raw.trigraphs,
             digraphs: raw.digraphs,
             dollars: raw.dollars_in_identifiers,
+            raw_strings: raw.raw_string_literals,
             blocks: raw.blocks,
             fixed_point: raw.fixed_point,
         };
@@ -1881,6 +1888,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::ClangTrigraphs => parsed.trigraphs = Some(value),
                 Opt::ClangDigraphs => parsed.digraphs = Some(value),
                 Opt::DollarsInIdentifiers => parsed.dollars_in_identifiers = Some(value),
+                Opt::RawStringLiterals => parsed.raw_string_literals = Some(value),
                 Opt::Blocks => parsed.blocks = Some(value),
                 Opt::FixedPoint => parsed.fixed_point = Some(value),
                 Opt::MsExtensions => {

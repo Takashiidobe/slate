@@ -44,7 +44,8 @@ impl Charset {
             return Some(Self::Utf8);
         }
         CODE_PAGES
-            .into_iter()
+            .iter()
+            .copied()
             .find(|page| {
                 page.names.contains(&name.as_str())
                     || name.strip_prefix('.') == Some(page.number.to_string().as_str())
