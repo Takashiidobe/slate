@@ -801,6 +801,7 @@ impl<'m> ModuleLowerer<'m> {
                                     .used
                                     .then_some(Attr::Used(rust::UsedKind::Plain)),
                             )
+                            .chain(global.symbol.section.clone().map(Attr::LinkSection))
                             .collect(),
                         vis: rust::Visibility::Private,
                         mutable: true,
