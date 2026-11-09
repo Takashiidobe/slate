@@ -561,6 +561,29 @@ impl<'m> ModuleLowerer<'m> {
                 )
             })
             .collect();
+        let defined: HashMap<&str, BindingId> = module
+            .functions
+            .iter()
+            .filter(|function| function.body.is_some())
+            .map(|function| (function.name.as_str(), function.value.id))
+            .collect();
+        for function in &module.functions {
+            let target = function
+                .symbol
+                .alias
+                .as_deref()
+                .or(function.symbol.weakref.as_deref());
+            if function.body.is_some() {
+                continue;
+            }
+            if let Some(name) = target
+                .and_then(|target| defined.get(target))
+                .and_then(|id| names.get(id))
+                .cloned()
+            {
+                names.insert(function.value.id, name);
+            }
+        }
         let mut nested = HashMap::new();
         let mut taken: HashSet<String> = names.values().map(|name| name.rust.clone()).collect();
         for function in &module.functions {
@@ -843,6 +866,11 @@ impl<'m> ModuleLowerer<'m> {
         }
         for function in &module.functions {
             if function.body.is_some()
+                || self
+                    .tables
+                    .names
+                    .get(&function.value.id)
+                    .is_some_and(|name| !name.is_extern)
                 || self.tables.stdio.functions.contains_key(&function.value.id)
                 || self.tables.stdio.unreachable.contains(&function.value.id)
                 || self.tables.intrinsics.contains_key(&function.value.id)
