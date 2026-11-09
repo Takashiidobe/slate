@@ -505,10 +505,11 @@ impl FunctionLowerer<'_, '_> {
                 )
             }
             ValueKind::VaArg {
-                list,
-                convention: ir::VaConvention::Win64,
-                ..
-            } => {
+                list, convention, ..
+            } if *convention == ir::VaConvention::Win64
+                || (self.tables.target.family == TargetFamily::X86_64
+                    && matches!(self.tables.resolve_type(&list.ty), ir::Type::Pointer { .. })) =>
+            {
                 if self.tables.target.family != TargetFamily::X86_64
                     || self.tables.is_long_double(&value.ty)
                 {

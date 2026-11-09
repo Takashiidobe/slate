@@ -18,7 +18,6 @@ static void dump(const char *name, long double value) {
 
 static long double fused(long double a, long double b) { return a * b + a; }
 
-#ifndef _WIN32
 static long double scaled_sum(long double scale, int count, ...) {
   va_list ap;
   va_start(ap, count);
@@ -27,7 +26,6 @@ static long double scaled_sum(long double scale, int count, ...) {
   va_end(ap);
   return total;
 }
-#endif
 
 // @check-fn-begin
 int main(void) {
@@ -89,9 +87,7 @@ int main(void) {
   dump("call", call(fused, a, b));
 
   dump("vsum", vsum(0x1.8p0L, 3, a, 7.5L, b));
-#ifndef _WIN32
   dump("vcall", vcall(scaled_sum, a, b));
-#endif
 
   size_t x = 0;
   size_t tail = 0;
@@ -676,10 +672,9 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             b,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         )
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         vsum.unwrap()(1.5f128, 3i32, a, 7.5f128, b)
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     });
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     });
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     dump(c"vcall".as_ptr(), unsafe {
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     dump(c"vcall".as_ptr(), unsafe {
+// X86_64-PC-WINDOWS-MSVC-NEXT:         vsum.unwrap()(1.5f64, 3i32, a, 7.5f64, b)
+// CHECK-NEXT:     });
+// CHECK-NEXT:     dump(c"vcall".as_ptr(), unsafe {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         __slate_icall__rf80_fp_f80_f80(
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             unsafe {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 std::mem::transmute::<
@@ -708,7 +703,7 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             b,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         )
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         vcall.unwrap()(Some(scaled_sum), a, b)
-// X86_64-PC-WINDOWS-MSVC-NEXT:         vsum.unwrap()(1.5f64, 3i32, a, 7.5f64, b)
+// X86_64-PC-WINDOWS-MSVC-NEXT:         vcall.unwrap()(Some(scaled_sum), a, b)
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut x: u64 = 0;
 // CHECK-NEXT:     let mut tail: u64 = 0;
