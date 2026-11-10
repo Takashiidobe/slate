@@ -126,7 +126,15 @@ The shell is fish: write Python scripts instead of bash scripts.
 `wiki/` is shared by both crates: `wiki/concepts/` holds durable design and
 decision docs, and `wiki/log/` holds point-in-time entries. Use
 `llog search "<query>"` before re-deriving a decision that may already be
-recorded.
+recorded. Results are file paths, ranked concept pages first, then recent
+logs, then `wiki/historical/` (superseded). A query matches a page's title,
+metadata, and body. Metadata is `-k <key> -v <value>` pairs given to
+`llog new`; filter on them exactly with the same flags:
+
+```bash
+llog search "" -k bead -v slate-j3by.21
+llog search "comdat" -k kind -v bug -k area -v crates/slate/src/backend/link
+```
 
 ## Session Completion
 
@@ -138,13 +146,50 @@ recorded.
    - `cargo fmt`
    - the nextest profile for each changed crate
 3. **Update issue status** - Close finished work, update in-progress items.
-4. **Log every change** - `llog new "<title>" "<entry>"`, summarizing the change
-   in no more than 30 lines. Required before closing a bead. No need for
-   `llog --help`:
+4. **Log every change** - `llog new "<title>" @<path> -k bead -v <id> -k kind
+   -v <kind> -k area -v <paths>`. Search returns only file paths, so the
+   title, metadata, and first lines decide whether a future agent opens the
+   entry. Write for someone who will not reread the code or run `bd show`.
 
-   ```bash
-   llog new "Name missing #embed resources" "slate-rpkp: #embed of a missing resource reported 'header not found'. Added PPErrorKind::EmbedResourceNotFound (pp/error.rs), used by expand_embed (pp/embed.rs), message matches clang. Fixture: error/clang/linux/x86_64/embed-missing-resource.c."
-   ```
+   Metadata (`-k`/`-v` pairs, written under the date line and searchable):
+   - `bead`: the bead id (required).
+   - `kind`: `bug`, `feature`, `rewrite`, `parser`, or `bookkeeping`
+     (required).
+   - `area`: crate and paths touched, for example
+     `crates/slate/src/backend/link` (required; repeat the pair for several
+     paths).
+   - Add others when they help later searches, such as `flavor` (`msvc`) or
+     `target` (`aarch64`).
+
+   Title: `<bead-id> <component>: <symptom or capability>`, using the words a
+   future search would use
+   (`slate-j3by.21 msvc merge: comdat inline defined in two units kept a body in each`).
+   Name the component with the Rust item, flag, or construct involved
+   (`ComdatOwners`, `/Zc:preprocessor`, `va_arg`).
+
+   Write multiline entries to a file with the Write tool (fish has no heredoc)
+   and pass `@<path>`. Keep the entry around 40 lines, excluding code snippets.
+   Start it with `Outcome: <one sentence: what is true now that was not
+   before>`, then use the sections for the kind, skipping any that do not
+   apply:
+   - **bug**: Symptom, Reproducer (minimal C), Cause (verified, with the Rust
+     item), Fix, Regression test (fixture path).
+   - **feature**: Gap and why it mattered, Before, After, Implementation,
+     Fixture.
+   - **rewrite**: Before and After generated Rust for the same minimal C, the
+     Rule that fires and the conditions that block it, Fixture. For
+     optimizations add the measured result.
+   - **parser**: Diagnostic or IR fact that was wrong, Before and After (error
+     or printed IR), Fix, Fixture.
+   - **bookkeeping**: a few lines, no sections.
+
+   Before/After use the same short source program. Before is the error, failure
+   to translate, or old output; After is the success or new output. End with
+   `Limits:` when the fix is partial or leaves a known gap, and `See:` for
+   related beads or logs.
+
+   Update a `wiki/concepts/` page only when the change establishes or changes a
+   durable rule or design, not for every fix.
 
 5. **Commit** - `git commit -m ...` with a one-line message summarizing the
    task.
