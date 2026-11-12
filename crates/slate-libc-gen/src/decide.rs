@@ -29,6 +29,11 @@ pub struct Entry {
     pub notes: Vec<String>,
 }
 
+fn flexible_array(shape: &str) -> bool {
+    let shape = shape.trim();
+    shape.starts_with("array<") && shape.ends_with(", incomplete>")
+}
+
 fn reserved(name: &str) -> bool {
     name.starts_with('_')
 }
@@ -113,11 +118,19 @@ fn decide_one(
                     offset,
                     aggregate,
                     bitfield,
+                    shape,
                     ..
                 } in fields
                 {
                     let matches = !*bitfield && rust.offsets.get(field) == Some(offset);
                     if field == "<anonymous>" {
+                        if *aggregate && !bitfield && !opaque_candidate && !incomplete_in_libc {
+                            bad_fields.insert(field.clone());
+                            notes.push(format!(
+                                "{target}: anonymous aggregate member; its fields are reached by \
+                                 name through the record and the provider cannot mirror them"
+                            ));
+                        }
                         continue;
                     }
                     if !reserved(field) {
@@ -132,7 +145,7 @@ fn decide_one(
                             notes.push(format!("{target}: field `{field}`: {detail}"));
                         }
                     } else if !matches && !incomplete_in_libc {
-                        if *aggregate && !opaque_candidate {
+                        if (*aggregate || flexible_array(shape)) && !opaque_candidate {
                             bad_fields.insert(field.clone());
                             notes.push(format!(
                                 "{target}: reserved aggregate `{field}` not mirrored by provider; \

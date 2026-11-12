@@ -138,7 +138,16 @@ pub fn collect(
     let mut merged = CMap::new();
     for dump in &dumps {
         for (name, ty) in parse_ir(dump) {
-            merged.entry(name).or_insert(ty);
+            match merged.entry(name) {
+                std::collections::btree_map::Entry::Vacant(slot) => {
+                    slot.insert(ty);
+                }
+                std::collections::btree_map::Entry::Occupied(mut slot) => {
+                    if slot.get().incomplete && !ty.incomplete {
+                        slot.insert(ty);
+                    }
+                }
+            }
         }
     }
     if merged.is_empty() {

@@ -1152,6 +1152,7 @@ RECIPES = {
         compare_stdout=False,
     ),
     "yyjson": CMakeLibrary(library="libyyjson.a"),
+    "libuv": CMakeLibrary(library="libuv.a", tools=["uv_run_tests_a"], compare_stdout=False),
     "curl": CMakeLibrary(library="lib/libcurl.so", tools=["src/curl"], translate_tests=True, suite=curl_suite,
                          benchmark=curl_benchmark),
     "pcre2": CMakeLibrary(

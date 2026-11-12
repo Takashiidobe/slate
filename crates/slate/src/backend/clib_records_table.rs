@@ -81,7 +81,7 @@ pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[
         CLibAliases { names: &["cmsgcred"], targets: &["aarch64-unknown-freebsd", "x86_64-unknown-freebsd"] },
     ] },
     CLibRecord { rust_path: "slate_support::cmsghdr", aliases: &[
-        CLibAliases { names: &["cmsghdr"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
+        CLibAliases { names: &["cmsghdr"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-musl", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-musl"] },
     ] },
     CLibRecord { rust_path: "slate_support::cpu_set_t", aliases: &[
         CLibAliases { names: &["cpu_set_t"], targets: &["aarch64-unknown-linux-gnu", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-unknown-linux-gnu"] },
@@ -748,9 +748,6 @@ pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[
     CLibRecord { rust_path: "slate_support::mach::port::mach_port_limits_t", aliases: &[
         CLibAliases { names: &["mach_port_limits", "mach_port_limits_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
     ] },
-    CLibRecord { rust_path: "slate_support::mach::port::mach_port_options_t", aliases: &[
-        CLibAliases { names: &["mach_port_options", "mach_port_options_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
-    ] },
     CLibRecord { rust_path: "slate_support::mach::structs::arm_thread_state64_t", aliases: &[
         CLibAliases { names: &["arm_thread_state64_t"], targets: &["aarch64-apple-darwin"] },
     ] },
@@ -1269,12 +1266,6 @@ pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[
     CLibRecord { rust_path: "slate_support::posix_spawnattr_t", aliases: &[
         CLibAliases { names: &["posix_spawnattr_t"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
     ] },
-    CLibRecord { rust_path: "slate_support::processor_basic_info", aliases: &[
-        CLibAliases { names: &["processor_basic_info"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
-    ] },
-    CLibRecord { rust_path: "slate_support::processor_basic_info_data_t", aliases: &[
-        CLibAliases { names: &["processor_basic_info_data_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
-    ] },
     CLibRecord { rust_path: "slate_support::processor_basic_info_t", aliases: &[
         CLibAliases { names: &["processor_basic_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
     ] },
@@ -1373,7 +1364,7 @@ pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[
         CLibAliases { names: &["rlimit64"], targets: &["aarch64-linux-android", "x86_64-linux-android"] },
     ] },
     CLibRecord { rust_path: "slate_support::rusage", aliases: &[
-        CLibAliases { names: &["rusage"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
+        CLibAliases { names: &["rusage"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-musl", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-musl"] },
     ] },
     CLibRecord { rust_path: "slate_support::rusage_info_t", aliases: &[
         CLibAliases { names: &["rusage_info_t"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
@@ -1429,17 +1420,8 @@ pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[
     CLibRecord { rust_path: "slate_support::shmid_ds", aliases: &[
         CLibAliases { names: &["shmid_ds"], targets: &["aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "i686-unknown-linux-gnu", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
     ] },
-    CLibRecord { rust_path: "slate_support::sigaction", aliases: &[
-        CLibAliases { names: &["sigaction"], targets: &["aarch64-linux-android", "x86_64-linux-android"] },
-    ] },
-    CLibRecord { rust_path: "slate_support::sigevent", aliases: &[
-        CLibAliases { names: &["sigevent"], targets: &["aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
-    ] },
     CLibRecord { rust_path: "slate_support::sighandler_t", aliases: &[
         CLibAliases { names: &["sighandler_t"], targets: &["aarch64-linux-android", "x86_64-linux-android"] },
-    ] },
-    CLibRecord { rust_path: "slate_support::siginfo_t", aliases: &[
-        CLibAliases { names: &["siginfo", "siginfo_t"], targets: &["aarch64-linux-android", "x86_64-linux-android"] },
     ] },
     CLibRecord { rust_path: "slate_support::sigset_t", aliases: &[
         CLibAliases { names: &["sigset_t"], targets: &["aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
@@ -1456,7 +1438,7 @@ pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[
         CLibAliases { names: &["sockaddr_in6"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
     ] },
     CLibRecord { rust_path: "slate_support::sockaddr_storage", aliases: &[
-        CLibAliases { names: &["sockaddr_storage"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
+        CLibAliases { names: &["sockaddr_storage"], targets: &["aarch64-apple-darwin", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-apple-darwin", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
     ] },
     CLibRecord { rust_path: "slate_support::sockaddr_un", aliases: &[
         CLibAliases { names: &["sockaddr_un"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
@@ -1477,9 +1459,6 @@ pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[
         CLibAliases { names: &["stack_t"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
         CLibAliases { names: &["__darwin_sigaltstack"], targets: &["aarch64-apple-darwin", "x86_64-apple-darwin"] },
         CLibAliases { names: &["sigaltstack"], targets: &["aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-musl", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-musl"] },
-    ] },
-    CLibRecord { rust_path: "slate_support::stat", aliases: &[
-        CLibAliases { names: &["stat"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd"] },
     ] },
     CLibRecord { rust_path: "slate_support::statvfs", aliases: &[
         CLibAliases { names: &["statvfs"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu"] },
@@ -1506,7 +1485,7 @@ pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[
         CLibAliases { names: &["tcp_function_set"], targets: &["aarch64-unknown-freebsd", "x86_64-unknown-freebsd"] },
     ] },
     CLibRecord { rust_path: "slate_support::termios", aliases: &[
-        CLibAliases { names: &["termios"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
+        CLibAliases { names: &["termios"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-musl", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-musl"] },
     ] },
     CLibRecord { rust_path: "slate_support::termios2", aliases: &[
         CLibAliases { names: &["termios2"], targets: &["aarch64-linux-android", "x86_64-linux-android"] },
@@ -1584,8 +1563,7 @@ pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[
         CLibAliases { names: &["tms"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "i686-unknown-linux-gnu", "x86_64-apple-darwin", "x86_64-linux-android", "x86_64-unknown-freebsd", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"] },
     ] },
     CLibRecord { rust_path: "slate_support::ucontext_t", aliases: &[
-        CLibAliases { names: &["ucontext_t"], targets: &["aarch64-apple-darwin", "aarch64-linux-android", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "x86_64-apple-darwin", "x86_64-unknown-freebsd", "x86_64-unknown-linux-musl"] },
-        CLibAliases { names: &["ucontext"], targets: &["aarch64-linux-android"] },
+        CLibAliases { names: &["ucontext_t"], targets: &["aarch64-apple-darwin", "aarch64-unknown-freebsd", "aarch64-unknown-linux-gnu", "aarch64-unknown-linux-musl", "armv7-unknown-linux-gnueabihf", "x86_64-apple-darwin", "x86_64-unknown-freebsd", "x86_64-unknown-linux-musl"] },
         CLibAliases { names: &["__ucontext"], targets: &["aarch64-unknown-freebsd", "aarch64-unknown-linux-musl", "x86_64-unknown-freebsd", "x86_64-unknown-linux-musl"] },
     ] },
     CLibRecord { rust_path: "slate_support::ucred", aliases: &[
