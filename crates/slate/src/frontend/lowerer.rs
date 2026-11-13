@@ -87,6 +87,7 @@ struct Tables<'m> {
     register_globals: HashMap<BindingId, &'static str>,
     over_aligned: HashMap<BindingId, AlignWrapper>,
     flexible_globals: HashMap<BindingId, String>,
+    address_images: HashSet<BindingId>,
     indirect_globals: HashSet<BindingId>,
     target: &'m TargetInfo,
     zero_init_padding_bits: slate_parser::compiler_options::ZeroInitPaddingBits,
@@ -149,6 +150,7 @@ struct Dependencies {
     records: BTreeMap<u32, Record>,
     erased_fields: BTreeSet<(u32, usize)>,
     flexible_records: Vec<Item>,
+    image_aliases: Vec<Item>,
     compound_literals: Vec<Item>,
     address_taken: BTreeSet<String>,
     taken_functions: HashSet<BindingId>,
@@ -192,6 +194,7 @@ struct FunctionLowerer<'a, 'm> {
     after_declaration: Option<Stmt>,
     uses_alloca: bool,
     in_static_initializer: bool,
+    address_image_fill: bool,
     target_features: Vec<&'static str>,
     shared_pointers: HashMap<BindingId, String>,
     captured: HashSet<BindingId>,
@@ -720,6 +723,7 @@ impl<'m> ModuleLowerer<'m> {
             register_globals,
             over_aligned: HashMap::new(),
             flexible_globals: HashMap::new(),
+            address_images: HashSet::new(),
             indirect_globals: statics
                 .iter()
                 .filter(|global| {
@@ -774,6 +778,17 @@ impl<'m> ModuleLowerer<'m> {
                 };
                 Some((global.variable.id, tables.record_names.get(id)?.clone()))
             })
+            .collect();
+        tables.address_images = statics
+            .iter()
+            .filter(|global| {
+                global.definition
+                    && !global.symbol.selectany
+                    && global.variable.initializer.as_ref().is_some_and(|value| {
+                        tables.is_constant_initializer(value) && tables.holds_address_integer(value)
+                    })
+            })
+            .map(|global| global.variable.id)
             .collect();
         if stdio_bindings {
             tables.bind_stdio(module);
@@ -1147,6 +1162,7 @@ impl<'m> ModuleLowerer<'m> {
             0..0,
             records
                 .chain(dependencies.flexible_records)
+                .chain(dependencies.image_aliases)
                 .chain(wrappers)
                 .chain(bit_units)
                 .chain(dependencies.bit_unit_impls),

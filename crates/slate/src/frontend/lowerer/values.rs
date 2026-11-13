@@ -2132,6 +2132,15 @@ impl FunctionLowerer<'_, '_> {
             _ => BTreeSet::new(),
         };
         for member in members {
+            let address_leaf =
+                self.address_image_fill && self.tables.is_address_integer(&member.value);
+            if address_leaf
+                && (matches!(member.target, ir::AggregateTarget::Range { .. })
+                    || matches!(member.target, ir::AggregateTarget::Field(index)
+                        if self.tables.bit_unit_of(ty, index).is_some() || erased.contains(&index)))
+            {
+                return Err(unsupported());
+            }
             if let ir::AggregateTarget::Field(index) = member.target
                 && let Some(unit) = self.tables.bit_unit_of(ty, index)
             {
@@ -2246,6 +2255,10 @@ impl FunctionLowerer<'_, '_> {
                 )
             {
                 self.fill_aggregate(&member.value.ty, inner, &place, true, stmts)?;
+                continue;
+            }
+            if address_leaf {
+                stmts.push(self.address_integer_write(place, &member.value)?);
                 continue;
             }
             stmts.push(Stmt::Assign {

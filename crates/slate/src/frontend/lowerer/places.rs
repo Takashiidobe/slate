@@ -539,7 +539,24 @@ impl FunctionLowerer<'_, '_> {
         if self.dispatch_vlas.contains(&id) {
             return self.vla_storage(id);
         }
-        let binding = Expr::Var(self.binding_name(id).as_str().into());
+        let mut binding = Expr::Var(self.binding_name(id).as_str().into());
+        if self.tables.address_images.contains(&id) {
+            binding = Expr::Unary {
+                op: rust::UnaryOp::Deref,
+                expr: Box::new(Expr::Cast {
+                    expr: Box::new(Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(binding),
+                    }),
+                    ty: rust::Type::Ptr {
+                        mutable: true,
+                        inner: Box::new(rust::Type::Custom(super::globals::image_name(
+                            &self.binding_name(id),
+                        ))),
+                    },
+                }),
+            };
+        }
         if self.tables.indirect_globals.contains(&id) {
             return Expr::Unary {
                 op: rust::UnaryOp::Deref,

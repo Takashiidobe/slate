@@ -55,6 +55,7 @@ impl<'a, 'm> FunctionLowerer<'a, 'm> {
             after_declaration: None,
             uses_alloca: false,
             in_static_initializer: false,
+            address_image_fill: false,
             target_features: Vec::new(),
             shared_pointers: HashMap::new(),
             captured: HashSet::new(),

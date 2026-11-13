@@ -307,9 +307,179 @@ impl Tables<'_> {
             _ => false,
         }
     }
+
+    pub(super) fn holds_address_integer(&self, value: &ir::Value) -> bool {
+        match &value.node.value {
+            ValueKind::Aggregate { members, .. } => members
+                .iter()
+                .any(|member| self.holds_address_integer(&member.value)),
+            _ => self.is_address_integer(value),
+        }
+    }
+
+    pub(super) fn is_address_integer(&self, value: &ir::Value) -> bool {
+        let pointer_sized = |ty: &ir::Type| {
+            matches!(
+                self.resolve_type(ty),
+                ir::Type::Numeric(ir::NumericType::Integer { .. })
+            ) && self
+                .storage_of(ty)
+                .is_some_and(|(size, _)| size * 8 == u64::from(self.target.pointer_width))
+        };
+        if !pointer_sized(&value.ty) {
+            return false;
+        }
+        match &value.node.value {
+            ValueKind::Convert {
+                kind: ir::ConversionKind::PtrToInt,
+                operand,
+                ..
+            } => {
+                self.null_address_offset(operand).is_none() && self.is_constant_initializer(operand)
+            }
+            ValueKind::Convert { operand, .. } => {
+                pointer_sized(&operand.ty) && self.is_address_integer(operand)
+            }
+            ValueKind::Arith {
+                op: ir::ArithOp::Add,
+                left,
+                right,
+                ..
+            } => {
+                (self.is_address_integer(left) && self.fold_integer(right).is_some())
+                    || (self.fold_integer(left).is_some() && self.is_address_integer(right))
+            }
+            ValueKind::Arith {
+                op: ir::ArithOp::Sub,
+                left,
+                right,
+                ..
+            } => self.is_address_integer(left) && self.fold_integer(right).is_some(),
+            _ => false,
+        }
+    }
 }
 
 impl FunctionLowerer<'_, '_> {
+    fn address_image(
+        &mut self,
+        value: &ir::Value,
+        image: rust::Type,
+        wrapped: bool,
+    ) -> Result<Expr> {
+        let storage = self.next_temp();
+        let pointer = self.next_temp();
+        let mut stmts = vec![
+            Stmt::Let {
+                name: storage.clone(),
+                mutable: true,
+                ty: Some(maybe_uninit(image)),
+                init: Some(Expr::Call {
+                    func: Box::new(Expr::Var("std::mem::MaybeUninit::zeroed".into())),
+                    args: Vec::new(),
+                    binding: CallBinding::Generated,
+                }),
+            },
+            Stmt::Let {
+                name: pointer.clone(),
+                mutable: false,
+                ty: None,
+                init: Some(Expr::MethodCall {
+                    recv: Box::new(Expr::Var(storage.as_str().into())),
+                    method: "as_mut_ptr".into(),
+                    args: Vec::new(),
+                }),
+            },
+        ];
+        let mut base = Expr::Unary {
+            op: rust::UnaryOp::Deref,
+            expr: Box::new(Expr::Var(pointer.as_str().into())),
+        };
+        if wrapped {
+            base = Expr::TupleField {
+                base: Box::new(base),
+                index: 0,
+            };
+        }
+        self.in_static_initializer = true;
+        self.address_image_fill = true;
+        let filled = match &value.node.value {
+            ValueKind::Aggregate { members, .. } => {
+                self.fill_aggregate(&value.ty, members, &base, true, &mut stmts)
+            }
+            _ => self
+                .address_integer_write(base, value)
+                .map(|write| stmts.push(write)),
+        };
+        self.in_static_initializer = false;
+        self.address_image_fill = false;
+        filled?;
+        Ok(Expr::Unsafe(Box::new(rust::Block {
+            stmts,
+            tail: Some(Box::new(Expr::Var(storage.as_str().into()))),
+        })))
+    }
+
+    pub(super) fn address_integer_write(&mut self, place: Expr, value: &ir::Value) -> Result<Stmt> {
+        let opaque = rust::Type::Ptr {
+            mutable: false,
+            inner: Box::new(rust::Type::Unit),
+        };
+        Ok(Stmt::Expr(Expr::MethodCall {
+            recv: Box::new(Expr::Cast {
+                expr: Box::new(Expr::AddrOf {
+                    mutable: true,
+                    expr: Box::new(place),
+                }),
+                ty: rust::Type::Ptr {
+                    mutable: true,
+                    inner: Box::new(opaque),
+                },
+            }),
+            method: "write".into(),
+            args: vec![self.lower_address_integer(value)?],
+        }))
+    }
+
+    fn lower_address_integer(&mut self, value: &ir::Value) -> Result<Expr> {
+        let offset = |address: Expr, amount: i128| Expr::MethodCall {
+            recv: Box::new(address),
+            method: "wrapping_byte_offset".into(),
+            args: vec![Expr::Value(rust::RustValue::TypedInt(amount, Prim::Isize))],
+        };
+        let tables = self.tables;
+        match &value.node.value {
+            ValueKind::Convert {
+                kind: ir::ConversionKind::PtrToInt,
+                operand,
+                ..
+            } => Ok(Expr::Transmute {
+                from: self.lower_value_type(operand)?,
+                to: rust::Type::Ptr {
+                    mutable: false,
+                    inner: Box::new(rust::Type::Unit),
+                },
+                expr: Box::new(self.lower_value(operand)?),
+            }),
+            ValueKind::Convert { operand, .. } => self.lower_address_integer(operand),
+            ValueKind::Arith {
+                op, left, right, ..
+            } => {
+                let (address, amount) = match tables.fold_integer(right) {
+                    Some(amount) if tables.is_address_integer(left) => (left, amount),
+                    _ => (right, tables.fold_integer(left).unwrap_or_default()),
+                };
+                let amount = if *op == ir::ArithOp::Sub {
+                    -amount
+                } else {
+                    amount
+                };
+                Ok(offset(self.lower_address_integer(address)?, amount))
+            }
+            _ => Err(unsupported_value(value)),
+        }
+    }
+
     pub(super) fn lower_static(
         &mut self,
         global: &ir::Global,
@@ -354,6 +524,23 @@ impl FunctionLowerer<'_, '_> {
             Some((index, sized)) => self.flexible_storage(global, index, sized)?,
             None => ty,
         };
+        if tables.address_images.contains(&variable.id)
+            && let Some(value) = &variable.initializer
+        {
+            let wrapper = tables.over_aligned.get(&variable.id).copied();
+            let storage = match wrapper {
+                Some(wrapper) => self.align_wrapped(&variable.name, wrapper, ty)?,
+                None => ty,
+            };
+            let image = image_name(&binding_name(variable.id, &tables.bindings));
+            self.dependencies.image_aliases.push(Item::TypeAlias {
+                name: image.clone(),
+                ty: storage,
+            });
+            let image = rust::Type::Custom(image);
+            let init = self.address_image(value, image.clone(), wrapper.is_some())?;
+            return Ok((maybe_uninit(image), Some(init)));
+        }
         let init = match &variable.initializer {
             None => zeroed(),
             Some(value) if tables.is_constant_initializer(value) => {
@@ -465,6 +652,17 @@ impl FunctionLowerer<'_, '_> {
             name: wrapper.name(),
             args: vec![ty],
         })
+    }
+}
+
+pub(super) fn image_name(binding: &str) -> String {
+    format!("__SlateImage_{binding}")
+}
+
+fn maybe_uninit(ty: rust::Type) -> rust::Type {
+    rust::Type::Generic {
+        name: "std::mem::MaybeUninit".into(),
+        args: vec![ty],
     }
 }
 

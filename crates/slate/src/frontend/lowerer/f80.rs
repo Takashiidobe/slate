@@ -573,7 +573,12 @@ impl Tables<'_> {
                 kind: ir::ConversionKind::Reinterpret,
                 operand,
                 ..
-            } if operand.ty == value.ty => self.fold_integer(operand)?,
+            } if operand.ty == value.ty
+                || matches!(*self.resolve_type(&operand.ty),
+                    ir::Type::Numeric(ir::NumericType::Integer { width: source, .. }) if source == width) =>
+            {
+                self.fold_integer(operand)?
+            }
             ValueKind::Convert {
                 kind: ir::ConversionKind::FloatToInt,
                 operand,
