@@ -143,7 +143,7 @@ RECIPES = {
     ),
     "redis": InTree(make=["CC={cc}"], clean=["make", "distclean"]),
     "lua": InTree(make=["CC={cc}"]),
-    "quickjs": InTree(make=["CC={cc}"]),
+    "quickjs": InTree(make=["CC={cc}", "qjs", "qjsc", "run-test262", "libquickjs.a"]),
     "chibicc": InTree(make=["CC={cc}"]),
     "giflib": InTree(make=["CC={cc}", "MAKE=true"]),
     "lmdb": InTree(make=["-C", "libraries/liblmdb", "CC={cc}"], clean=["make", "-C", "libraries/liblmdb", "clean"]),

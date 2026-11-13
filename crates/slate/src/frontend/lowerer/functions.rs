@@ -425,7 +425,7 @@ impl FunctionLowerer<'_, '_> {
         }
         self.non_index_names = self.non_index_names(&params, body);
         let mut statements = if control_flow::needs_dispatch(body) {
-            self.lower_dispatch(body)?
+            self.lower_dispatch(body, &params)?
         } else {
             self.lower_statement_list(body)?
         };

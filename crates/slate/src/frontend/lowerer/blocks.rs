@@ -421,7 +421,7 @@ impl FunctionLowerer<'_, '_> {
         }];
         statements.extend(loads);
         let lowered = if control_flow::needs_dispatch(body) {
-            self.lower_dispatch(body)?
+            self.lower_dispatch(body, &params)?
         } else {
             self.lower_statement_list(body)?
         };

@@ -1,3 +1,4 @@
+use super::for_range::subtree_ids;
 use super::walk;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
@@ -155,6 +156,66 @@ fn all_uses_deref_transitively(
     })
 }
 
+fn source_stable_through_uses(arena: &Arena, id: NodeId, name: Ident, source: Ident) -> bool {
+    let rebinds: Vec<NodeId> = arena
+        .def_use_neighbors(source)
+        .iter()
+        .copied()
+        .filter(|&user| {
+            arena
+                .get(user)
+                .is_some_and(|kind| is_bare_rebind_of(kind, source))
+        })
+        .collect();
+    if rebinds.is_empty() {
+        return true;
+    }
+    let uses: Vec<NodeId> = arena
+        .def_use_neighbors(name)
+        .iter()
+        .copied()
+        .filter(|&user| user != id)
+        .collect();
+    if !uses.iter().all(|&user| {
+        arena
+            .get(user)
+            .is_some_and(|kind| kind_only_deref_uses(kind, name))
+    }) {
+        return false;
+    }
+    let Some(parent) = arena.parent(id) else {
+        return false;
+    };
+    let Some(later) = arena.get(parent).and_then(|kind| {
+        kind.child_lists().into_iter().find_map(|list| {
+            let pos = list.iter().position(|&child| child == id)?;
+            Some(list[pos + 1..].to_vec())
+        })
+    }) else {
+        return false;
+    };
+    let regions: Vec<Vec<NodeId>> = later
+        .iter()
+        .map(|&sibling| {
+            let mut region = Vec::new();
+            subtree_ids(arena, sibling, &mut region);
+            region
+        })
+        .collect();
+    let index_of = |node: NodeId| regions.iter().position(|region| region.contains(&node));
+    let Some(indices) = uses
+        .iter()
+        .map(|&user| index_of(user))
+        .collect::<Option<Vec<_>>>()
+    else {
+        return false;
+    };
+    let last_use = indices.into_iter().max().unwrap_or(0);
+    rebinds
+        .iter()
+        .all(|&rebind| index_of(rebind).is_none_or(|index| index > last_use))
+}
+
 fn kind_own_substitute_var(kind: &mut NodeKind, name: &str, replacement: &Expr) -> bool {
     match kind {
         NodeKind::Comment(_) => false,
@@ -250,6 +311,10 @@ impl NodeRule for RawPtrAliasElide {
             return false;
         }
         let replacement = bare_replacement(arena, source, ty).unwrap_or_else(|| init.clone());
+
+        if !source_stable_through_uses(arena, id, name, source) {
+            return false;
+        }
 
         if !all_uses_deref_transitively(arena, name, None, &mut Vec::new()) {
             return false;

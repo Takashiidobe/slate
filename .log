@@ -1,0 +1,34 @@
+$ cargo build --release -p slate-c2rust
+$ /usr/bin/python3 /home/takashi/Projects/slate/crates/slate-parser/tools/c_corpus_setup.py quickjs --flavor clang
+== native: ok {"missing": [], "units": 8}
+== barriers: ok {"blocked": 0, "report": "barriers.md"}
+$ /home/takashi/Projects/slate/target/test-cache/release/slate translate-project --compile-commands /home/takashi/Projects/slate/target/corpus/quickjs/clang/compile_commands.json /home/takashi/c-corpus/quickjs /home/takashi/Projects/slate/target/corpus/quickjs/clang/qjs
+== translate: ok {"log": "translate.log", "translate_seconds": 8.4, "native_compile_seconds": 7.2, "translate_over_compile": 1.17, "native_compile_failures": []}
+$ cargo check --profile release --message-format=short
+== check: ok {"errors": 0, "log": "check.log"}
+$ cargo build --profile release
+== build: ok {"log": "build.log", "binary": "/home/takashi/Projects/slate/target/corpus/quickjs/clang/cargo-target/release/qjs"}
+$ sh -c 'fail=0
+for test in test_closure test_language test_loop test_bigint test_cyclic_import test_worker test_std test_rw_handler; do
+    if ./qjs tests/$test.js; then echo "PASS: $test"; else echo "FAIL: $test"; fail=1; fi
+done
+if ./qjs --std tests/test_builtin.js; then echo "PASS: test_builtin"; else echo "FAIL: test_builtin"; fail=1; fi
+exit $fail
+'
+FAIL: test_closure
+FAIL: test_language
+FAIL: test_loop
+FAIL: test_bigint
+FAIL: test_cyclic_import
+FAIL: test_worker
+FAIL: test_std
+FAIL: test_rw_handler
+FAIL: test_builtin
+$ sh -c 'fail=0
+for test in test_closure test_language test_loop test_bigint test_cyclic_import test_worker test_std test_rw_handler; do
+    if ./qjs tests/$test.js; then echo "PASS: $test"; else echo "FAIL: $test"; fail=1; fi
+done
+if ./qjs --std tests/test_builtin.js; then echo "PASS: test_builtin"; else echo "FAIL: test_builtin"; fail=1; fi
+exit $fail
+'
+== test: failed {"seconds": 0.8, "log": "test.log", "exit": 1, "native_seconds": 0.1, "native_exit": 0, "native_log": "test-native.log", "test_over_native": 8.0}

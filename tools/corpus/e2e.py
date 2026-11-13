@@ -1073,7 +1073,26 @@ done
 exit $fail
 """
 
+QUICKJS_TEST = """fail=0
+for test in test_closure test_language test_loop test_bigint test_cyclic_import test_worker test_std test_rw_handler; do
+    if ./qjs tests/$test.js; then echo "PASS: $test"; else echo "FAIL: $test"; fail=1; fi
+done
+if ./qjs --std tests/test_builtin.js; then echo "PASS: test_builtin"; else echo "FAIL: test_builtin"; fail=1; fi
+exit $fail
+"""
+
 RECIPES = {
+    "quickjs": Recipe(
+        target="qjs",
+        make_dir=".",
+        objects=["QJS_OBJS"],
+        archives=[],
+        libs="LIBS",
+        ldflags=["-Wl,-E", "-lm", "-lpthread", "-ldl"],
+        links={"qjs": "target"},
+        test=["sh", "-c", QUICKJS_TEST],
+        test_copy=["tests"],
+    ),
     "jq": Recipe(
         target="jq",
         make_dir="build-clang",

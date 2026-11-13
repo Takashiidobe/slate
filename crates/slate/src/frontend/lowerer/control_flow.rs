@@ -97,6 +97,17 @@ fn entry_labels(asm: &ir::InlineAsm) -> impl Iterator<Item = BindingId> + '_ {
     })
 }
 
+fn parameter_free_name(name: String, params: &[rust::FnParam]) -> String {
+    let taken = |candidate: &str| params.iter().any(|param| param.name.as_str() == candidate);
+    if !taken(&name) {
+        return name;
+    }
+    (1..)
+        .map(|n| format!("{name}__{n}"))
+        .find(|candidate| !taken(candidate))
+        .expect("unbounded range")
+}
+
 pub(super) fn label_code(id: BindingId) -> usize {
     id.0 as usize + 1
 }
@@ -496,7 +507,11 @@ impl FunctionLowerer<'_, '_> {
         Expr::Var(self.vla_name(id).into())
     }
 
-    pub(super) fn lower_dispatch(&mut self, statements: &[Statement]) -> Result<Vec<Stmt>> {
+    pub(super) fn lower_dispatch(
+        &mut self,
+        statements: &[Statement],
+        params: &[rust::FnParam],
+    ) -> Result<Vec<Stmt>> {
         let mut graph = Graph::default();
         collect_labels(statements, &mut graph.targets);
         let end = graph.push(Node::End);
@@ -543,7 +558,7 @@ impl FunctionLowerer<'_, '_> {
                 }
                 None => ty.clone(),
             };
-            let storage = self.binding_name(id).to_string();
+            let storage = parameter_free_name(self.binding_name(id), params);
             storage_positions.insert(id, lowered.len());
             lowered.push(Stmt::Let {
                 name: storage.clone(),
