@@ -749,9 +749,18 @@ def ctest_cases(build_dir):
     return cases
 
 
+CMAKE_TEST_COMMAND = "-DTEST_COMMAND="
+
+
 def ctest_executable(command, build_dir):
     index = 2 if Path(command[0]).name in {"bash", "sh"} and len(command) > 2 else 0
-    path = Path(command[index]).resolve()
+    if Path(command[0]).name == "cmake":
+        index = next((i for i, word in enumerate(command) if word.startswith(CMAKE_TEST_COMMAND)), None)
+        if index is None:
+            return None
+        path = Path(command[index].removeprefix(CMAKE_TEST_COMMAND)).resolve()
+    else:
+        path = Path(command[index]).resolve()
     if not path.is_relative_to(build_dir.resolve()):
         return None
     return index, str(path.relative_to(build_dir.resolve()))
@@ -880,7 +889,8 @@ def library_tests(project_dir, build_dir, recipe, archive, database, args, out):
             copy = translated_script(case["script"], build_dir, relinked, sandbox)
             return run_case(command, case["cwd"], env=env), run_case([command[0], str(copy)], copy.parent, env=env)
         index = case["index"]
-        translated = [*command[:index], str(relinked[case["executable"]]), *command[index + 1:]]
+        prefix = CMAKE_TEST_COMMAND if command[index].startswith(CMAKE_TEST_COMMAND) else ""
+        translated = [*command[:index], prefix + str(relinked[case["executable"]]), *command[index + 1:]]
         return run_case(command, case["cwd"], env=env), run_case(translated, case["cwd"], env=env)
 
     with concurrent.futures.ThreadPoolExecutor(args.jobs) as pool:
@@ -1241,6 +1251,9 @@ RECIPES = {
         compare_stdout=False,
     ),
     "yyjson": CMakeLibrary(library="libyyjson.a"),
+    "libpng": CMakeLibrary(library="libpng18.so", variants=["libpng18.a"],
+                           tools=["pngtest", "pngvalid", "pngstest", "pngunknown", "pngimage", "pnggetset"],
+                           translate_tests=True, compare_stdout=False),
     "libuv": CMakeLibrary(library="libuv.a", variants=["libuv.so"], tools=["uv_run_tests_a"], ctest=False,
                          translate_tests=True, compare_stdout=False,
                          suite=libuv_suite),

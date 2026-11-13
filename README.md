@@ -175,6 +175,9 @@ similar rust.
     `tcctest.c` and itself and the 129 `tests2` programs.
 - [Oniguruma](https://github.com/kkos/oniguruma)
   - Translates libonig and passes its 7 upstream test programs (4565 checks).
+- [libpng](http://www.libpng.org/pub/png/libpng.html)
+  - Translates libpng, including its SSE2 filters, and passes all 37 upstream
+    ctest cases (`pngtest`, `pngvalid`, `pngstest`, `pngunknown`, `pngimage`).
 - [curl](https://curl.se)
   - Translates libcurl and the `curl` tool. Passes all 1690 `runtests.pl` tests,
     and benchmarks within 5% of native over file:// and HTTP transfers.

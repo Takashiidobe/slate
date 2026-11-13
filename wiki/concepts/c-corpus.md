@@ -247,6 +247,15 @@ stage, against the relinked tools in `test-tree/`.
   pipes a 64 MiB input built from the sources and `zlib.3.pdf` through
   `minigzip`, `minigzip -9`, and `minigzip -d`, and requires identical
   output: geomean 1.04x native.
+- libpng (2026-11-13): 16 TUs from `libpng18.so`, 0 barriers (the SSE2 filter
+  code and the `row_mask`/`display_mask` tables from the October probe now
+  translate). 37/37 ctest (`pngtest`, `pngvalid`, `pngstest`, `pngunknown`,
+  `pngimage`, `pnggetset`), each translated as its own crate
+  (`translate_tests`). Its cases run `cmake -DTEST_COMMAND=<exe> -P
+  <case>.cmake`, so `ctest_executable` swaps the path inside the
+  `-DTEST_COMMAND=` argument; `compare_stdout=False` because cmake echoes
+  that path. 70.9s translated vs 81.1s native.
+
 - `test_env` adds environment to every ctest case (c-ares sets
   `GTEST_PRINT_TIME=0`, since gtest's per-test timings differ run to
   run). `compare_stdout=False` judges cases by exit code alone, for
