@@ -263,6 +263,15 @@ stage, against the relinked tools in `test-tree/`.
   file and noise. The `zstd` CLI crate needed the pointer-lattice fixes in
   slate-dghn.51.1. 1.38x native time over the test stage.
 
+- xxHash (2026-11-13): 2 TUs (`xxhash.c`, `xxh_x86dispatch.c`) of
+  `libxxhash.so` and `xxhsum`, 0 barriers after sema expanded
+  `pmuludq`/`pmuldq`, `pshufd` and the `select*` lane selects (the dispatch TU
+  carries SSE2, AVX2 and AVX-512 bodies). 53 differential hashes
+  (`-H0`..`-H3` over sources) and `xxhsum_suite`: 12 checksum-file round trips
+  (`-H0`..`-H3` with plain, `--tag`, `--little-endian`; native cannot `-c` its
+  own `--little-endian` output, so that format is compared only), stdin
+  hashing, and a `-b -i1` exit-code match. No ctest in this build.
+
 - `test_env` adds environment to every ctest case (c-ares sets
   `GTEST_PRINT_TIME=0`, since gtest's per-test timings differ run to
   run). `compare_stdout=False` judges cases by exit code alone, for

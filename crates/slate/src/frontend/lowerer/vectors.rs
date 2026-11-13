@@ -376,4 +376,62 @@ impl FunctionLowerer<'_, '_> {
             binding: CallBinding::Generated,
         })
     }
+
+    pub(super) fn lower_vector_select(
+        &mut self,
+        value: &ir::Value,
+        arguments: &[ir::Value],
+    ) -> Result<Expr> {
+        let [mask, left, right] = arguments else {
+            return Err(unsupported_value(value));
+        };
+        let (
+            ir::Type::Vector { element, lanes },
+            ir::Type::Numeric(ir::NumericType::Integer { width, .. }),
+        ) = (
+            self.tables.resolve_type(&value.ty).clone(),
+            self.tables.resolve_type(&mask.ty).clone(),
+        )
+        else {
+            return Err(unsupported_value(value));
+        };
+        let lane_width = match element {
+            ir::NumericType::Integer { width, .. } => width,
+            ir::NumericType::Float(ir::FloatType::F32) => 32,
+            ir::NumericType::Float(ir::FloatType::F64) => 64,
+            ir::NumericType::Float(_) => return Err(unsupported_value(value)),
+        };
+        if !matches!(lane_width, 8 | 16 | 32 | 64) {
+            return Err(unsupported_value(value));
+        }
+        let unsigned = match width {
+            8 => Prim::U8,
+            16 => Prim::U16,
+            32 => Prim::U32,
+            64 => Prim::U64,
+            _ => return Err(unsupported_value(value)),
+        };
+        if is_slate_vector(&self.lower_type(&value.ty)?) {
+            return Err(unsupported_value(value));
+        }
+        let bits = Expr::Cast {
+            expr: Box::new(Expr::Cast {
+                expr: Box::new(self.lower_value(mask)?),
+                ty: rust::Type::Prim(unsigned),
+            }),
+            ty: rust::Type::Prim(Prim::U64),
+        };
+        let mask = Expr::Call {
+            func: Box::new(Expr::Var(
+                format!("std::simd::Mask::<i{lane_width}, {lanes}>::from_bitmask").into(),
+            )),
+            args: vec![bits],
+            binding: CallBinding::Generated,
+        };
+        Ok(Expr::Call {
+            func: Box::new(Expr::Var("std::simd::Select::select".into())),
+            args: vec![mask, self.lower_value(left)?, self.lower_value(right)?],
+            binding: CallBinding::Generated,
+        })
+    }
 }

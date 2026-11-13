@@ -2016,6 +2016,9 @@ impl FunctionLowerer<'_, '_> {
                 };
                 self.lower_clear_padding(value, pointer)?
             }
+            ValueKind::Intrinsic { name, arguments } if name == "slate.vector_select" => {
+                self.lower_vector_select(value, arguments)?
+            }
             ValueKind::Intrinsic { name, arguments } => {
                 let intrinsic = intrinsics::named_intrinsic(self.tables.target.family, name)
                     .ok_or_else(|| unsupported_value(value))?;

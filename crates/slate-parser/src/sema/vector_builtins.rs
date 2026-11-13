@@ -1,7 +1,7 @@
 use super::builtins::{Expansion, Reduction};
 use super::ctype::{CTypeKind, QualType};
 use super::expression::Lowerer;
-use super::numeric::ResolveError;
+use super::numeric::{ResolveError, conversion};
 use super::operand::Operand;
 use crate::ast::Expr;
 use crate::ir::*;
@@ -154,6 +154,71 @@ impl Lowerer {
                     arguments: operands,
                 }
             }
+            Expansion::WidenMultiply { signed } => {
+                let Type::Vector {
+                    element: NumericType::Integer { width: 64, .. },
+                    lanes,
+                } = result_type
+                else {
+                    return Err(ResolveError::Internal("widening multiply result"));
+                };
+                let wide = Type::Vector {
+                    element: NumericType::integer(64, signed),
+                    lanes,
+                };
+                let [left, right]: [Value; 2] = arguments
+                    .try_into()
+                    .map_err(|_| ResolveError::Internal("widening multiply argument count"))?;
+                let left = self.low_half_lanes(e, left, &wide, signed)?;
+                let right = self.low_half_lanes(e, right, &wide, signed)?;
+                let product = ValueKind::Arith {
+                    op: ArithOp::Mul,
+                    left: Box::new(left),
+                    right: Box::new(right),
+                    semantics: ArithSema::Integer {
+                        overflow: Overflow::Wrap,
+                    },
+                };
+                if wide == result_type {
+                    product
+                } else {
+                    let product = self.value(e, wide, product);
+                    let converted = self.context.vector_convert(
+                        product,
+                        result_type,
+                        ConversionReason::Explicit,
+                    )?;
+                    return Ok(Ok(Operand {
+                        c: returned,
+                        value: converted,
+                    }));
+                }
+            }
+            Expansion::LaneSelect => intrinsic("slate.vector_select", arguments),
+            Expansion::ShuffleDwords => {
+                let lanes = vector_lanes(&result_type)
+                    .ok_or(ResolveError::Internal("dword shuffle operand"))?;
+                let Some(immediate) = arguments
+                    .get(1)
+                    .and_then(|immediate| self.constant(immediate))
+                    .and_then(|immediate| u32::try_from(immediate & BigInt::from(0xff)).ok())
+                else {
+                    return Ok(Err((returned, ty, arguments)));
+                };
+                let vector = arguments
+                    .into_iter()
+                    .next()
+                    .ok_or(ResolveError::Internal("dword shuffle operand"))?;
+                ValueKind::Shuffle {
+                    left: Box::new(vector),
+                    right: None,
+                    mask: ShuffleMask::Lanes(
+                        (0..lanes)
+                            .map(|lane| Some(lane / 4 * 4 + (immediate >> (2 * (lane % 4)) & 3)))
+                            .collect(),
+                    ),
+                }
+            }
             Expansion::FloatReduce(op) => {
                 let params = self
                     .types
@@ -171,6 +236,64 @@ impl Lowerer {
             }
         };
         Ok(Ok(self.operand(e, returned, kind)))
+    }
+
+    fn low_half_lanes(
+        &mut self,
+        e: &Expr,
+        vector: Value,
+        wide: &Type,
+        signed: bool,
+    ) -> Result<Value, ResolveError> {
+        let Type::Vector { element, .. } = wide else {
+            return Err(ResolveError::Internal("widening multiply lane type"));
+        };
+        let wide_vector =
+            self.context
+                .vector_convert(vector, wide.clone(), ConversionReason::Explicit)?;
+        let count = self.value(
+            e,
+            Type::Numeric(*element),
+            ValueKind::Constant(Number::Integer(32u32.into())),
+        );
+        let count = conversion(
+            count,
+            wide.clone(),
+            ConversionKind::VectorSplat,
+            ConversionReason::UsualArith,
+            ConversionSema::Exact,
+        );
+        let shifted = self.value(
+            e,
+            wide.clone(),
+            ValueKind::Arith {
+                op: ArithOp::Shl,
+                left: Box::new(wide_vector),
+                right: Box::new(count.clone()),
+                semantics: ArithSema::ShiftLeft {
+                    overflow: Overflow::Wrap,
+                    amount_out_of_range: UbPolicy::Undefined,
+                    negative_left: None,
+                },
+            },
+        );
+        Ok(self.value(
+            e,
+            wide.clone(),
+            ValueKind::Arith {
+                op: ArithOp::Shr,
+                left: Box::new(shifted),
+                right: Box::new(count),
+                semantics: ArithSema::ShiftRight {
+                    fill: if signed {
+                        ShiftFill::SignExtend
+                    } else {
+                        ShiftFill::ZeroExtend
+                    },
+                    amount_out_of_range: UbPolicy::Undefined,
+                },
+            },
+        ))
     }
 
     fn float_reduce_tree(

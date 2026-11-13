@@ -31,6 +31,18 @@ __attribute__((target("avx512f"))) float fadd(v16sf v) {
 
 unsigned long long ticks(void) { return __rdtsc(); }
 
+v2di widen_unsigned(v4si a, v4si b) { return __builtin_ia32_pmuludq128(a, b); }
+
+__attribute__((target("sse4.1"))) v2di widen_signed(v4si a, v4si b) {
+    return __builtin_ia32_pmuldq128(a, b);
+}
+
+v4si dwords(v4si v) { return __builtin_ia32_pshufd(v, 0x1b); }
+
+__attribute__((target("avx512f,avx512vl"))) v2di select_lanes(unsigned char k, v2di a, v2di b) {
+    return __builtin_ia32_selectq_128(k, a, b);
+}
+
 // SLATE-FILECHECK-BEGIN IR
 // IR: module {
 // IR-NEXT:     target "x86_64-unknown-linux-gnu" {
@@ -85,6 +97,18 @@ unsigned long long ticks(void) { return __rdtsc(); }
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_ticks:[0-9]+]] @ticks() -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return intrinsic<u64, llvm.x86.rdtsc>();
+// IR-NEXT:     }
+// IR-NEXT:     fn %[[VALUE_widen_unsigned:[0-9]+]] @widen_unsigned(%[[VALUE_a_3:[0-9]+]] a: vector<i32, 4> [c="v4si"], %[[VALUE_b_3:[0-9]+]] b: vector<i32, 4> [c="v4si"]) -> vector<i64, 2> [linkage=external] [abi=sysv64(direct, direct) -> direct] [fallthrough=ub_if_used] [c="v2di(v4si, v4si)"] {
+// IR-NEXT:         return vector_bit_cast<vector<i64, 2>, reason=explicit>(mul<vector<u64, 2>, elementwise=true, overflow=wrap>(shr<vector<u64, 2>, elementwise=true, amount_out_of_range=ub, fill=zero_extend>(shl<vector<u64, 2>, elementwise=true, overflow=wrap, amount_out_of_range=ub>(vector_bit_cast<vector<u64, 2>, reason=explicit>(read<vector<i32, 4>>(%[[VALUE_a_3]])), vector_splat<vector<u64, 2>, reason=usual_arith>(const<u64>(32))), vector_splat<vector<u64, 2>, reason=usual_arith>(const<u64>(32))), shr<vector<u64, 2>, elementwise=true, amount_out_of_range=ub, fill=zero_extend>(shl<vector<u64, 2>, elementwise=true, overflow=wrap, amount_out_of_range=ub>(vector_bit_cast<vector<u64, 2>, reason=explicit>(read<vector<i32, 4>>(%[[VALUE_b_3]])), vector_splat<vector<u64, 2>, reason=usual_arith>(const<u64>(32))), vector_splat<vector<u64, 2>, reason=usual_arith>(const<u64>(32))))) [c="v2di"];
+// IR-NEXT:     }
+// IR-NEXT:     fn %[[VALUE_widen_signed:[0-9]+]] @widen_signed(%[[VALUE_a_4:[0-9]+]] a: vector<i32, 4> [c="v4si"], %[[VALUE_b_4:[0-9]+]] b: vector<i32, 4> [c="v4si"]) -> vector<i64, 2> [linkage=external] [target=+sse4.1] [abi=sysv64(direct, direct) -> direct] [fallthrough=ub_if_used] [c="v2di(v4si, v4si)"] {
+// IR-NEXT:         return mul<vector<i64, 2>, elementwise=true, overflow=wrap>(shr<vector<i64, 2>, elementwise=true, amount_out_of_range=ub, fill=sign_extend>(shl<vector<i64, 2>, elementwise=true, overflow=wrap, amount_out_of_range=ub>(vector_bit_cast<vector<i64, 2>, reason=explicit>(read<vector<i32, 4>>(%[[VALUE_a_4]])), vector_splat<vector<i64, 2>, reason=usual_arith>(const<i64>(32))), vector_splat<vector<i64, 2>, reason=usual_arith>(const<i64>(32))), shr<vector<i64, 2>, elementwise=true, amount_out_of_range=ub, fill=sign_extend>(shl<vector<i64, 2>, elementwise=true, overflow=wrap, amount_out_of_range=ub>(vector_bit_cast<vector<i64, 2>, reason=explicit>(read<vector<i32, 4>>(%[[VALUE_b_4]])), vector_splat<vector<i64, 2>, reason=usual_arith>(const<i64>(32))), vector_splat<vector<i64, 2>, reason=usual_arith>(const<i64>(32)))) [c="v2di"];
+// IR-NEXT:     }
+// IR-NEXT:     fn %[[VALUE_dwords:[0-9]+]] @dwords(%[[VALUE_v_5:[0-9]+]] v: vector<i32, 4> [c="v4si"]) -> vector<i32, 4> [linkage=external] [abi=sysv64(direct) -> direct] [fallthrough=ub_if_used] [c="v4si(v4si)"] {
+// IR-NEXT:         return shuffle<vector<i32, 4>, mask=[3, 2, 1, 0]>(read<vector<i32, 4>>(%[[VALUE_v_5]])) [c="v4si"];
+// IR-NEXT:     }
+// IR-NEXT:     fn %[[VALUE_select_lanes:[0-9]+]] @select_lanes(%[[VALUE_k_2:[0-9]+]] k: u8, %[[VALUE_a_5:[0-9]+]] a: vector<i64, 2> [c="v2di"], %[[VALUE_b_5:[0-9]+]] b: vector<i64, 2> [c="v2di"]) -> vector<i64, 2> [linkage=external] [target=+avx512f,+avx512vl] [abi=sysv64(scalar, direct, direct) -> direct] [fallthrough=ub_if_used] [c="v2di(unsigned char, v2di, v2di)"] {
+// IR-NEXT:         return intrinsic<vector<i64, 2>, slate.vector_select>(read<u8>(%[[VALUE_k_2]]), read<vector<i64, 2>>(%[[VALUE_a_5]]), read<vector<i64, 2>>(%[[VALUE_b_5]])) [c="v2di"];
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

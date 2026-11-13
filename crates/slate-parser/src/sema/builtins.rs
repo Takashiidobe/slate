@@ -417,6 +417,11 @@ pub(super) enum Expansion {
     Fma,
     Extract,
     TernaryLogic,
+    WidenMultiply {
+        signed: bool,
+    },
+    ShuffleDwords,
+    LaneSelect,
     FloatReduce(ArithOp),
     Intrinsic(&'static str),
     Ms {
@@ -474,6 +479,13 @@ pub(super) fn expansion(builtin: &ClangBuiltin) -> Option<Expansion> {
         | "pternlogq256_mask" | "pternlogq512_mask" | "pternlogd128_maskz"
         | "pternlogd256_maskz" | "pternlogd512_maskz" | "pternlogq128_maskz"
         | "pternlogq256_maskz" | "pternlogq512_maskz" => Expansion::TernaryLogic,
+        "selectb_128" | "selectb_256" | "selectb_512" | "selectw_128" | "selectw_256"
+        | "selectw_512" | "selectd_128" | "selectd_256" | "selectd_512" | "selectq_128"
+        | "selectq_256" | "selectq_512" | "selectps_128" | "selectps_256" | "selectps_512"
+        | "selectpd_128" | "selectpd_256" | "selectpd_512" => Expansion::LaneSelect,
+        "pshufd" | "pshufd256" | "pshufd512" => Expansion::ShuffleDwords,
+        "pmuludq128" | "pmuludq256" | "pmuludq512" => Expansion::WidenMultiply { signed: false },
+        "pmuldq128" | "pmuldq256" | "pmuldq512" => Expansion::WidenMultiply { signed: true },
         "reduce_fadd_ps512" | "reduce_fadd_pd512" => Expansion::FloatReduce(ArithOp::Add),
         "reduce_fmul_ps512" | "reduce_fmul_pd512" => Expansion::FloatReduce(ArithOp::Mul),
         "__rdtsc" => Expansion::Intrinsic("llvm.x86.rdtsc"),

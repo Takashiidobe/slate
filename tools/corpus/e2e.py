@@ -425,6 +425,70 @@ def zstd_suite(project_dir, build_dir, relinked, archive, out, args):
             "seconds": round(sum(row[4] for row in results), 2), "log": "suite.log"}
 
 
+XXHSUM_ALGORITHMS = ["-H0", "-H1", "-H2", "-H3"]
+XXHSUM_FORMATS = [[], ["--tag"], ["--little-endian"]]
+
+
+def xxhsum_suite(project_dir, build_dir, relinked, archive, out, args):
+    native, translated = build_dir / "xxhsum", relinked["xxhsum"]
+    inputs_dir = out / "suite-inputs"
+    shutil.rmtree(inputs_dir, ignore_errors=True)
+    inputs_dir.mkdir()
+    state, noise = 0x2545F491, bytearray()
+    for _ in range(1 << 16):
+        state = (state * 1103515245 + 12345) & 0xFFFFFFFF
+        noise.append(state >> 24)
+    (inputs_dir / "empty").write_bytes(b"")
+    (inputs_dir / "noise").write_bytes(bytes(noise))
+    (inputs_dir / "one-byte").write_bytes(b"x")
+    (inputs_dir / "short").write_bytes(bytes(noise[:240]))
+    inputs = sorted(inputs_dir.iterdir())
+
+    def xxhsum(tool, arguments, data=None):
+        start = time.perf_counter()
+        result = subprocess.run([str(tool), *arguments], input=data, capture_output=True, timeout=120,
+                                cwd=inputs_dir)
+        return result.returncode, result.stdout, time.perf_counter() - start
+
+    def case(item):
+        algorithm, output_format = item
+        problems, native_seconds, seconds = [], 0.0, 0.0
+        names = [path.name for path in inputs]
+        native_code, native_sums, native_time = xxhsum(native, [algorithm, *output_format, *names])
+        code, sums, seconds = xxhsum(translated, [algorithm, *output_format, *names])
+        native_seconds += native_time
+        if (code, sums) != (native_code, native_sums):
+            problems.append("hash")
+        checksum_file = inputs_dir / f"sums{algorithm[2:]}{''.join(output_format).replace('-', '_')}.xxh"
+        checksum_file.write_bytes(native_sums)
+        for name, tool in [("check", translated), ("native-check", native)][: 0 if "--little-endian" in output_format else 2]:
+            result = xxhsum(tool, ["-c", checksum_file.name])
+            seconds += result[2] if tool == translated else 0
+            if result[0]:
+                problems.append(name)
+        for path in inputs:
+            data = path.read_bytes()
+            if xxhsum(translated, [algorithm, *output_format], data)[:2] != xxhsum(native, [algorithm, *output_format], data)[:2]:
+                problems.append(f"stdin {path.name}")
+        return f"{algorithm} {' '.join(output_format)}".strip(), native_code == 0, problems, native_seconds, seconds
+
+    with concurrent.futures.ThreadPoolExecutor(args.jobs) as pool:
+        results = list(pool.map(case, [(algorithm, output_format) for algorithm in XXHSUM_ALGORITHMS
+                                       for output_format in XXHSUM_FORMATS]))
+    benchmark = xxhsum(translated, ["-b", "-i1"])
+    native_benchmark = xxhsum(native, ["-b", "-i1"])
+    if benchmark[0] != native_benchmark[0]:
+        results.append(("benchmark", native_benchmark[0] == 0, ["exit"], native_benchmark[2], benchmark[2]))
+    lines = [f"{label}: {'ok' if not problems else 'FAIL ' + ','.join(problems)}"
+             for label, _, problems, _, _ in results]
+    (out / "suite.log").write_text("\n".join(lines) + "\n")
+    return {"native_ok": sum(ok for _, ok, _, _, _ in results), "native_total": len(results),
+            "ok": sum(not problems for _, _, problems, _, _ in results), "total": len(results),
+            "regressions": [label for label, _, problems, _, _ in results if problems],
+            "native_seconds": round(sum(row[3] for row in results), 2),
+            "seconds": round(sum(row[4] for row in results), 2), "log": "suite.log"}
+
+
 ONIGURUMA_TESTS = ["test_utf8", "test_syntax", "test_options", "testc", "testcu", "test_regset", "test_back"]
 
 
@@ -1313,6 +1377,14 @@ RECIPES = {
         inputs=["lib/*/*.c", "lib/*.h", "doc/*.md", "programs/*.c"],
         translate_tests=True,
         suite=zstd_suite,
+    ),
+    "xxHash": CMakeLibrary(
+        library="libxxhash.so",
+        tools=["xxhsum"],
+        differential=[Differential("xxhsum", [*algo, "{input}"]) for algo in (["-H0"], ["-H1"], ["-H2"], ["-H3"])],
+        inputs=["*.c", "*.h", "cli/*.c", "doc/*.md"],
+        translate_tests=True,
+        suite=xxhsum_suite,
     ),
     "libpng": CMakeLibrary(library="libpng18.so", variants=["libpng18.a"],
                            tools=["pngtest", "pngvalid", "pngstest", "pngunknown", "pngimage", "pnggetset"],

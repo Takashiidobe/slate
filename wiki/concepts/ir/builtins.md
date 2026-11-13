@@ -225,11 +225,24 @@ appears in variadic `ms_abi` definitions, which slate rejects.
 - `__builtin_ia32_extract*`, `__builtin_ia32_vextractf128_*`
 - `__builtin_ia32_pternlog{d,q}{128,256,512}_mask[z]`
 - `__builtin_ia32_reduce_f{add,mul}_p{s,d}512`
+- `__builtin_ia32_pmul{u,}dq{128,256,512}`
+- `__builtin_ia32_pshufd{,256,512}`
+- `__builtin_ia32_select{b,w,d,q,ps,pd}_{128,256,512}`
 
 `sema/expression.rs` handles shuffle and conversion;
 `sema/vector_builtins.rs` expands reductions and target operations into vector
 IR or LLVM intrinsics. Masked extract and ternary-logic forms require all-ones
 masks. Slate consumes these in `lowerer/vectors.rs` and `lowerer/intrinsics.rs`.
+
+`pmuludq`/`pmuldq` bit-cast both operands to 64-bit lanes (unsigned or signed),
+shift each lane left then right by 32 (zero or sign fill) and multiply with
+wrapping. `pshufd` with a constant immediate is a lane shuffle that repeats the
+immediate per 128-bit group; a non-constant immediate stays a call. The
+`select*` builtins (runtime-mask lane select, unlike the constant-mask forms
+above) become `intrinsic<T, slate.vector_select>(mask, a, b)`: lane `i` is `a`
+when bit `i` of the integer mask is set, else `b`. Slate lowers it to
+`std::simd::Select::select(Mask::<iN, L>::from_bitmask(mask), a, b)`; slate
+vectors (`__SlateVector`) are not supported.
 See [vector types](type-families.md#vector) for supported shapes.
 
 ## Atomic operations
