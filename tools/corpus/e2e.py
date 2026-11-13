@@ -670,11 +670,11 @@ def library_units(build_dir, recipe, database, flavor):
 def executable_units(build_dir, executable, recipe, database, flavor, shared_library):
     objects = target_objects(build_dir, executable)
     command = link_command(build_dir, executable)
-    library = (build_dir / recipe.library).resolve()
+    project_libraries = {(build_dir / name).resolve() for name in [recipe.library, *recipe.variants]}
     libraries = []
     for token in command[1:]:
         path = (build_dir / token).resolve()
-        if path == library:
+        if path in project_libraries:
             libraries += [str(shared_library), f"-Wl,-rpath,{shared_library.parent}"]
         elif path.suffix in {".a", ".so"} or ".so." in path.name:
             if path.is_relative_to(build_dir.resolve()) and path.exists():
@@ -1152,7 +1152,7 @@ RECIPES = {
         compare_stdout=False,
     ),
     "yyjson": CMakeLibrary(library="libyyjson.a"),
-    "libuv": CMakeLibrary(library="libuv.a", tools=["uv_run_tests_a"], translate_tests=True, compare_stdout=False),
+    "libuv": CMakeLibrary(library="libuv.a", variants=["libuv.so"], translate_tests=True, compare_stdout=False),
     "curl": CMakeLibrary(library="lib/libcurl.so", tools=["src/curl"], translate_tests=True, suite=curl_suite,
                          benchmark=curl_benchmark),
     "pcre2": CMakeLibrary(
