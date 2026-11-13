@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-use slate_parser::ast::{MacroDefinition, MacroExpansionId, MacroInvocations};
+use slate_parser::ast::{MacroCover, MacroDefinition, MacroExpansionId, MacroInvocations};
 use slate_parser::ir::{
     BindingId, MacroStructureVisitor, Module, Place, PlaceKind, Statement, Type, ValueKind,
     walk_macro_structure,
@@ -19,6 +19,7 @@ struct OpenExpansion {
 
 struct Survey<'a> {
     globals: &'a HashSet<BindingId>,
+    macros: &'a MacroInvocations,
     open: Vec<(MacroExpansionId, OpenExpansion)>,
     declared: HashMap<BindingId, Vec<MacroExpansionId>>,
     seen: Vec<MacroExpansionId>,
@@ -134,6 +135,25 @@ impl MacroStructureVisitor for Survey<'_> {
 
     fn enter_expansion(&mut self, expansion: MacroExpansionId) {
         self.seen.push(expansion);
+        if !self.open.is_empty()
+            && self
+                .macros
+                .expansion(expansion)
+                .argument_uses
+                .iter()
+                .any(|using| match &using.cover {
+                    MacroCover::Name(spelled) => !self.open.iter().any(|(outer, _)| {
+                        self.macros
+                            .expansion(*outer)
+                            .argument_uses
+                            .iter()
+                            .any(|outer_use| matches!(&outer_use.cover, MacroCover::Name(name) if name == spelled))
+                    }),
+                    _ => false,
+                })
+        {
+            self.reject(expansion, "name_argument_in_template");
+        }
         if self.open.len() >= MAX_LIFTED_NESTING {
             self.reject(expansion, "nesting_beyond_recursion_limit");
         }
@@ -376,6 +396,7 @@ pub(super) fn kept_expansions(module: &mut Module) -> HashSet<MacroExpansionId> 
         };
         let mut survey = Survey {
             globals: &globals,
+            macros: &module.macros,
             open: Vec::new(),
             declared: HashMap::new(),
             seen: Vec::new(),

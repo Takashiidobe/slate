@@ -371,6 +371,28 @@ def lz4_suite(project_dir, build_dir, relinked, archive, out, args):
             "seconds": round(sum(row[4] for row in results), 2), "log": "suite.log"}
 
 
+ONIGURUMA_TESTS = ["test_utf8", "test_syntax", "test_options", "testc", "testcu", "test_regset", "test_back"]
+
+
+def oniguruma_suite(project_dir, build_dir, relinked, archive, out, args):
+    def case(name):
+        native = run_case([f"test/{name}"], build_dir)
+        translated = run_case([str(relinked[f"test/{name}"])], build_dir)
+        same = translated[0] == native[0] and translated[1] == native[1]
+        return name, native[0] == 0, same and translated[0] == 0, native[2], translated[2], translated[1]
+
+    with concurrent.futures.ThreadPoolExecutor(args.jobs) as pool:
+        results = list(pool.map(case, ONIGURUMA_TESTS))
+    (out / "suite.log").write_text("".join(
+        f"{name}: {'ok' if ok else 'FAIL'}\n{stdout.decode(errors='replace')}\n"
+        for name, _, ok, _, _, stdout in results))
+    return {"native_ok": sum(row[1] for row in results), "native_total": len(results),
+            "ok": sum(row[2] for row in results), "total": len(results),
+            "regressions": [row[0] for row in results if not row[2]],
+            "native_seconds": round(sum(row[3] for row in results), 2),
+            "seconds": round(sum(row[4] for row in results), 2), "log": "suite.log"}
+
+
 def libuv_suite(project_dir, build_dir, relinked, archive, out, args):
     native, translated = build_dir / "uv_run_tests_a", relinked["uv_run_tests_a"]
     names = subprocess.run([str(native), "--list"], capture_output=True, text=True, cwd=build_dir).stdout.split()
@@ -1158,6 +1180,8 @@ RECIPES = {
         benchmark=lua_benchmark,
     ),
     "cJSON": CMakeLibrary(library="libcjson.so", translate_tests=True),
+    "oniguruma": CMakeLibrary(library="libonig.so", tools=[f"test/{name}" for name in ONIGURUMA_TESTS],
+                              ctest=False, translate_tests=True, suite=oniguruma_suite),
     "lz4": CMakeLibrary(library="liblz4.so", tools=["lz4"], translate_tests=True, suite=lz4_suite),
     "zlib": CMakeLibrary(
         library="libz.a",

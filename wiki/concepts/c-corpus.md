@@ -180,6 +180,16 @@ written once translation units are known.
   takes 6.9s vs 3.1s translated because each run goes through the libtool
   wrapper script, so `test_over_native` is not meaningful.
 
+- oniguruma: upstream's CMake registers no tests (`make test` in
+  `test/Makefile.am` runs the executables), so `ctest=False` and
+  `oniguruma_suite` runs the seven `test/` executables (`test_utf8`,
+  `test_syntax`, `test_options`, `testc`, `testcu`, `test_regset`,
+  `test_back`), each translated as its own crate against the translated
+  `cdylib` (`translate_tests`). A case passes when the exit code and the
+  `RESULT SUCC/FAIL` stdout match the native run. `testp` needs
+  `ENABLE_POSIX_API`, which the corpus build leaves off. 2026-11-13: 0
+  barriers, 7/7 pass (4565 checks, 0 failures).
+
 ### CMake libraries
 
 `CMakeLibrary` recipes (cJSON, libyaml, zlib) cover CMake/ninja projects
