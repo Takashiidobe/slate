@@ -197,8 +197,12 @@ cargo nextest r --release --profile slate
   - Intrinsics whose Rust signature differs from MSVC's are `slate_support`
     helpers instead: `__movs*`/`__stos*`, `__cpuid`/`__cpuidex`,
     `_addcarry_u32/u64`, `_subborrow_u32/u64` and `_umul128`.
-- The catalogs contain names, destinations and translation-target eligibility.
-  Layouts, signatures, linker names and values stay in the generator report.
+- The catalogs contain names, destinations, translation-target eligibility and
+  each function's probed signature. Layouts, linker names and values stay in
+  the generator report.
+- A system function binds to its canonical path only when the unit's
+  signature equals the catalog's; feature macros such as `_GNU_SOURCE` can
+  change it (`setitimer`, GNU `strerror_r`), and a mismatch keeps a local extern.
 - Lookup uses the translation target, never the host compiler cfg. Unknown or
   incompatible targets keep local declarations; canonical paths merge downstream.
 - User definitions and non-system declarations stay local. Sema retains named

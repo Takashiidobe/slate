@@ -66,11 +66,12 @@ impl Tables<'_> {
             {
                 actual = format!("{prefix} -> !");
             }
-            if function
-                .symbol
-                .asm_name
-                .as_deref()
-                .is_none_or(|name| name.trim_start_matches('\u{1}') == function.name)
+            if symbol.shape.is_none_or(|shape| shape == actual)
+                && function
+                    .symbol
+                    .asm_name
+                    .as_deref()
+                    .is_none_or(|name| name.trim_start_matches('\u{1}') == function.name)
             {
                 self.support_functions.insert(
                     function.value.id,

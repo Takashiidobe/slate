@@ -48,8 +48,15 @@ match width, alignment and signedness. Function and global probes must compile
 with the C declaration's type and refer to the same linker symbol. Integer
 constants must match by name and value. Lowering requires system-header macro
 references preserved by sema, rather than provenance on expanded literals. The
-checked-in catalogs contain names, canonical destinations and target
-eligibility; compatibility details stay in the generator report.
+checked-in catalogs contain names, canonical destinations, target eligibility
+and each function's probed Rust signature; other compatibility details stay in
+the generator report.
+
+Headers are probed without feature-test macros. A translation unit can see a
+different declaration of the same function, for example `setitimer` with an
+enum parameter or the GNU `strerror_r` under `_GNU_SOURCE`. Lowering binds a
+function to its canonical path only when the unit's signature equals the
+probed one; otherwise it keeps a local extern.
 
 The vendored libc defaults to FreeBSD 15 and to 64-bit file offsets and time on
 32-bit glibc. Header probes use each target's default C ABI, so on 32-bit glibc

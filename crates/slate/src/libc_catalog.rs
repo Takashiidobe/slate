@@ -14,6 +14,7 @@ pub struct Symbol {
     pub rust_path: &'static str,
     pub targets: &'static [&'static str],
     pub kind: Kind,
+    pub shape: Option<&'static str>,
 }
 
 include!("libc_symbols_table.rs");
@@ -32,6 +33,7 @@ const fn msvc_intrinsic(
         rust_path,
         targets,
         kind: Kind::Function,
+        shape: None,
     }
 }
 

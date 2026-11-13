@@ -441,24 +441,25 @@ pub fn integer(value: &ir::Value) -> Option<String> {
 }
 
 pub fn table(targets: &BTreeMap<String, TargetSymbols>) -> String {
-    let mut rows: BTreeMap<(Kind, &str, String), BTreeSet<&str>> = BTreeMap::new();
+    let mut rows: BTreeMap<(Kind, &str, String, Option<&str>), BTreeSet<&str>> = BTreeMap::new();
     for (target, symbols) in targets {
         for candidate in &symbols.accepted {
             rows.entry((
                 candidate.kind,
                 &candidate.name,
                 candidate.rust_path.replace("libc::", "slate_support::"),
+                (candidate.kind == Kind::Function).then_some(candidate.shape.as_str()),
             ))
             .or_default()
             .insert(target);
         }
     }
     let mut out = String::from("pub const SYMBOLS: &[Symbol] = &[\n");
-    for ((kind, name, rust_path), targets) in rows {
+    for ((kind, name, rust_path, shape), targets) in rows {
         let targets = targets.into_iter().collect::<Vec<_>>();
         let _ = writeln!(
             out,
-            "    Symbol {{ name: {name:?}, rust_path: {rust_path:?}, targets: &{targets:?}, kind: Kind::{kind:?} }},"
+            "    Symbol {{ name: {name:?}, rust_path: {rust_path:?}, targets: &{targets:?}, kind: Kind::{kind:?}, shape: {shape:?} }},"
         );
     }
     out.push_str("];\n");
