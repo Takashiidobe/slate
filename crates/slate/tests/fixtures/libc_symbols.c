@@ -46,12 +46,24 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut optind: i32;
+// CHECK-NEXT:     static mut in6addr_any: in6_addr;
+// CHECK-NEXT:     static mut in6addr_loopback: in6_addr;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: use slate_support::in6addr_any;
-// CHECK-NEXT: use slate_support::in6addr_loopback;
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct in6_addr {
+// CHECK-NEXT:     __in6_u: __SlateRecord_in_h_225,
+// CHECK-NEXT: }
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: union __SlateRecord_in_h_225 {
+// CHECK-NEXT:     __u6_addr8: [u8; 16],
+// CHECK-NEXT:     __u6_addr16: [u16; 8],
+// CHECK-NEXT:     __u6_addr32: [u32; 4],
+// CHECK-NEXT: }
 // CHECK-NEXT: use slate_support::qsort;
 // CHECK-NEXT: use slate_support::memcmp;
 // CHECK-NEXT: use slate_support::close;
@@ -139,8 +151,8 @@ int main(void) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", ((unsafe { memcmp((std::ptr::addr_of!(in6addr_any) as * const ()) as *
 // CHECK-NEXT:         const core::ffi::c_void, (std::ptr::addr_of!(in6addr_loopback) as * const ()) as
-// CHECK-NEXT:         * const core::ffi::c_void, (std::mem::size_of::< slate_support::in6_addr > () as
-// CHECK-NEXT:         u64) as usize) as i32 }) != 0) as i32
+// CHECK-NEXT:         * const core::ffi::c_void, (std::mem::size_of::< in6_addr > () as u64) as usize)
+// CHECK-NEXT:         as i32 }) != 0) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}", slate_support::EOF as i32, - (slate_support::EOF as i32),

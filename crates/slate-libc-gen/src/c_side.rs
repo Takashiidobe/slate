@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use rayon::prelude::*;
-use std::collections::{BTreeMap, HashMap};
-use std::path::Path;
+use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 pub const HEADERS: &[&str] = &[
@@ -82,6 +82,7 @@ pub struct Field {
     pub aggregate: bool,
     pub bitfield: bool,
     pub shape: String,
+    pub records: Vec<String>,
 }
 
 #[derive(Clone, Debug)]
@@ -262,6 +263,7 @@ fn parse_ir(text: &str) -> CMap {
                                         offset,
                                         aggregate,
                                         bitfield,
+                                        records: type_ids(&shape),
                                         shape,
                                     })
                                     .collect()
@@ -303,6 +305,13 @@ fn parse_ir(text: &str) -> CMap {
                 Some(Def::Record(ty)) => {
                     let mut ty = ty.clone();
                     ty.record_name = tag_names.get(&current).cloned();
+                    for field in ty.fields.iter_mut().flatten() {
+                        field.records = field
+                            .records
+                            .iter()
+                            .filter_map(|id| record_tag(&defs, &tag_names, id))
+                            .collect();
+                    }
                     resolved = Some(ty);
                     break;
                 }
@@ -334,6 +343,149 @@ fn parse_ir(text: &str) -> CMap {
         }
     }
     map
+}
+
+fn type_ids(shape: &str) -> Vec<String> {
+    shape
+        .match_indices("@type")
+        .map(|(at, prefix)| {
+            let digits = shape[at + prefix.len()..]
+                .chars()
+                .take_while(char::is_ascii_digit)
+                .collect::<String>();
+            format!("type{digits}")
+        })
+        .collect()
+}
+
+fn record_tag(
+    defs: &HashMap<String, Def>,
+    tag_names: &HashMap<String, String>,
+    id: &str,
+) -> Option<String> {
+    let mut current = id.to_string();
+    for _ in 0..16 {
+        match defs.get(&current)? {
+            Def::Alias(next) => current = next.clone(),
+            Def::Record(_) | Def::Incomplete => return tag_names.get(&current).cloned(),
+            _ => return None,
+        }
+    }
+    None
+}
+
+pub fn macro_members(
+    target: &str,
+    scratch: &Path,
+    providers: &crate::providers::Inventory,
+) -> Result<BTreeSet<String>> {
+    let source = scratch.join("macros.c");
+    std::fs::write(&source, "")?;
+    let mut bodies: HashMap<String, String> = HashMap::new();
+    let mut texts: HashMap<PathBuf, Option<String>> = HashMap::new();
+    for header in HEADERS
+        .iter()
+        .copied()
+        .chain(providers.headers.iter().map(String::as_str))
+    {
+        let mut args = target_args(target);
+        args.extend(["-include".into(), header.to_string()]);
+        let Ok((unit, trace)) =
+            slate::frontend::preprocess_traced(&source, slate::target::parse_args(&args)?)
+        else {
+            continue;
+        };
+        for event in &trace.events {
+            if event.skipped
+                || event.command_line
+                || event.kind != slate_parser::pp::MacroEventKind::Define
+            {
+                continue;
+            }
+            let Some(path) = unit.files().get_path(event.loc.file) else {
+                continue;
+            };
+            let Some(text) = texts
+                .entry(path.to_path_buf())
+                .or_insert_with(|| std::fs::read_to_string(path).ok())
+            else {
+                continue;
+            };
+            bodies.insert(
+                event.name.clone(),
+                macro_body(text, event.loc.offset, &event.name),
+            );
+        }
+    }
+    let mut pending: Vec<&String> = bodies
+        .keys()
+        .filter(|name| !name.starts_with('_'))
+        .collect();
+    let mut seen: BTreeSet<&String> = pending.iter().copied().collect();
+    let mut members = BTreeSet::new();
+    while let Some(name) = pending.pop() {
+        let body = &bodies[name];
+        members.extend(reached_members(body));
+        for word in body.split(|c: char| !(c.is_ascii_alphanumeric() || c == '_')) {
+            if let Some((referenced, _)) = bodies.get_key_value(word)
+                && seen.insert(referenced)
+            {
+                pending.push(referenced);
+            }
+        }
+    }
+    Ok(members)
+}
+
+fn macro_body(text: &str, offset: usize, name: &str) -> String {
+    let offset = offset.min(text.len());
+    let start = text[..offset].rfind('\n').map_or(0, |n| n + 1);
+    let mut body = String::new();
+    for line in text[start..].lines() {
+        match line.strip_suffix('\\') {
+            Some(continued) => {
+                body.push_str(continued);
+                body.push(' ');
+            }
+            None => {
+                body.push_str(line);
+                break;
+            }
+        }
+    }
+    match body.find(name) {
+        Some(at) => body[at + name.len()..].to_string(),
+        None => String::new(),
+    }
+}
+
+fn reached_members(body: &str) -> Vec<String> {
+    let bytes = body.as_bytes();
+    let mut members = Vec::new();
+    let mut index = 0;
+    while index < bytes.len() {
+        let accessed = body[..index]
+            .trim_end()
+            .ends_with(|c: char| c.is_ascii_alphanumeric() || c == '_' || c == ')' || c == ']');
+        let after = match bytes[index] {
+            b'.' if accessed && bytes.get(index + 1) != Some(&b'.') => index + 1,
+            b'-' if bytes.get(index + 1) == Some(&b'>') => index + 2,
+            _ => {
+                index += 1;
+                continue;
+            }
+        };
+        let rest = body[after..].trim_start();
+        let name: String = rest
+            .chars()
+            .take_while(|c| c.is_ascii_alphanumeric() || *c == '_')
+            .collect();
+        if name.starts_with('_') {
+            members.push(name);
+        }
+        index = after;
+    }
+    members
 }
 
 pub fn target_args(target: &str) -> Vec<String> {

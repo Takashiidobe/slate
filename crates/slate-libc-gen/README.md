@@ -43,7 +43,12 @@ Slate. Identical mappings share a target group; a mismatch excludes only the
 affected target. Unprobed targets retain their local declarations.
 
 Records must match size, alignment and public field offsets. Reserved fields are
-ignored unless header macros reach through an aggregate. Scalar typedefs must
+ignored unless header macros reach through an aggregate, or a public macro
+(followed through the macros it expands) reads the field with `.` or `->`, as
+glibc `s6_addr` and `IN6_IS_ADDR_*` read `__in6_u` and `FD_SET` reads
+`__fds_bits`. Expansion puts those names in user code, so such a record stays
+local, and so does every record that contains it (`sockaddr_in6`). Records the
+provider declares incomplete, such as `FILE`, are exempt. Scalar typedefs must
 match width, alignment and signedness. Function and global probes must compile
 with the C declaration's type and refer to the same linker symbol. Integer
 constants must match by name and value. Lowering requires system-header macro

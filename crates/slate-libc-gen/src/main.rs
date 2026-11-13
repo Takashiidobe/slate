@@ -8,7 +8,7 @@ use anyhow::Result;
 use clap::Parser;
 use decide::TargetData;
 use rayon::prelude::*;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::PathBuf;
 
 const DEFAULT_TARGETS: &[&str] = &[
@@ -68,7 +68,7 @@ fn main() -> Result<()> {
     let work = std::fs::canonicalize(work)?;
     let libc_dir = rust_side::prepare_libc(&args.libc, &work)?;
 
-    let c_maps: Vec<(String, c_side::CMap, providers::Inventory)> = targets
+    let c_maps: Vec<(String, c_side::CMap, providers::Inventory, BTreeSet<String>)> = targets
         .par_iter()
         .map(|target| {
             let scratch = &work.join(format!("c-{target}"));
@@ -76,13 +76,21 @@ fn main() -> Result<()> {
             eprintln!("c side: {target}");
             let providers = providers::Inventory::collect(target, &work)?;
             let c = c_side::collect(&args.parser, target, scratch, &providers)?;
-            Ok((target.clone(), c, providers))
+            let macro_members = std::thread::scope(|scope| {
+                std::thread::Builder::new()
+                    .stack_size(64 << 20)
+                    .spawn_scoped(scope, || c_side::macro_members(target, scratch, &providers))
+                    .expect("macro worker")
+                    .join()
+                    .expect("macro worker panicked")
+            })?;
+            Ok((target.clone(), c, providers, macro_members))
         })
         .collect::<Result<_>>()?;
 
     let data: BTreeMap<String, TargetData> = c_maps
         .into_par_iter()
-        .map(|(target, c, providers)| {
+        .map(|(target, c, providers, macro_members)| {
             let candidates: Vec<(String, Vec<String>)> = c
                 .iter()
                 .map(|(name, ty)| {
@@ -98,7 +106,15 @@ fn main() -> Result<()> {
                 .collect();
             eprintln!("rust side: {target} ({} candidates)", candidates.len());
             let rust = rust_side::collect(&libc_dir, &work, &target, &candidates, &providers)?;
-            Ok((target, TargetData { c, rust, providers }))
+            Ok((
+                target,
+                TargetData {
+                    c,
+                    rust,
+                    providers,
+                    macro_members,
+                },
+            ))
         })
         .collect::<Result<_>>()?;
 

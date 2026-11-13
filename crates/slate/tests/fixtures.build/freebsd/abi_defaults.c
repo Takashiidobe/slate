@@ -17,6 +17,12 @@ unsigned int cpu_capacity(void) { return CPU_SETSIZE; }
 // SLATE-FILECHECK-BEGIN x86_64-unknown-freebsd aarch64-unknown-freebsd
 // CHECK: {{^}}#[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
+// CHECK-NEXT: struct _cpuset {
+// CHECK-NEXT:     __bits: [u64; 16],
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C)]
+// CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct tcp_info {
 // CHECK-NEXT:     tcpi_state: u8,
 // CHECK-NEXT:     __tcpi_ca_state: u8,
@@ -96,8 +102,8 @@ unsigned int cpu_capacity(void) { return CPU_SETSIZE; }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn cpu_set_size(set: *mut slate_support::cpuset_t) -> u64 {
-// CHECK-NEXT:     std::mem::size_of::<slate_support::cpuset_t>() as u64
+// CHECK-NEXT: extern "C-unwind" fn cpu_set_size(set: *mut _cpuset) -> u64 {
+// CHECK-NEXT:     std::mem::size_of::<_cpuset>() as u64
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

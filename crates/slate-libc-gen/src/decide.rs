@@ -9,6 +9,7 @@ pub struct TargetData {
     pub c: CMap,
     pub rust: BTreeMap<String, RustLayout>,
     pub providers: crate::providers::Inventory,
+    pub macro_members: BTreeSet<String>,
 }
 
 #[derive(PartialEq, Eq)]
@@ -27,6 +28,7 @@ pub struct Entry {
     pub layout_key: u64,
     pub aliases: BTreeSet<String>,
     pub notes: Vec<String>,
+    pub macro_reached: bool,
 }
 
 fn flexible_array(shape: &str) -> bool {
@@ -40,29 +42,92 @@ fn reserved(name: &str) -> bool {
 
 pub fn decide(targets: &BTreeMap<String, TargetData>) -> Vec<Entry> {
     let names: BTreeSet<&String> = targets.values().flat_map(|data| data.c.keys()).collect();
-    let mut entries: Vec<Entry> = Vec::new();
+    let mut decided: Vec<Entry> = Vec::new();
     for name in names {
         for (target, data) in targets {
             let Some(c) = data.c.get(name) else {
                 continue;
             };
-            let entry = decide_one(name, target, c, data.rust.get(name), &data.providers);
-            if let Some(previous) = entries.iter_mut().find(|previous| {
-                previous.name == entry.name
-                    && previous.rust_path == entry.rust_path
-                    && previous.outcome == entry.outcome
-                    && previous.alignment == entry.alignment
-                    && previous.layout_key == entry.layout_key
-                    && previous.aliases == entry.aliases
-            }) {
-                previous.targets.extend(entry.targets);
-                previous.notes.extend(entry.notes);
-            } else {
-                entries.push(entry);
-            }
+            decided.push(decide_one(
+                name,
+                target,
+                c,
+                data.rust.get(name),
+                &data.providers,
+                &data.macro_members,
+            ));
+        }
+    }
+    exclude_containers(&mut decided, targets);
+    let mut entries: Vec<Entry> = Vec::new();
+    for entry in decided {
+        if let Some(previous) = entries.iter_mut().find(|previous| {
+            previous.name == entry.name
+                && previous.rust_path == entry.rust_path
+                && previous.outcome == entry.outcome
+                && previous.alignment == entry.alignment
+                && previous.layout_key == entry.layout_key
+                && previous.aliases == entry.aliases
+        }) {
+            previous.targets.extend(entry.targets);
+            previous.notes.extend(entry.notes);
+        } else {
+            entries.push(entry);
         }
     }
     entries
+}
+
+fn exclude_containers(decided: &mut [Entry], targets: &BTreeMap<String, TargetData>) {
+    loop {
+        let excluded: BTreeSet<(String, String)> = decided
+            .iter()
+            .filter(|entry| entry.outcome == Outcome::Excluded && entry.macro_reached)
+            .flat_map(|entry| {
+                entry
+                    .targets
+                    .iter()
+                    .map(|target| (target.clone(), entry.name.clone()))
+            })
+            .collect();
+        let mut changed = false;
+        for entry in decided.iter_mut() {
+            if entry.outcome == Outcome::Excluded {
+                continue;
+            }
+            for target in &entry.targets {
+                let Some(fields) = targets[target]
+                    .c
+                    .get(&entry.name)
+                    .and_then(|c| c.fields.as_ref())
+                else {
+                    continue;
+                };
+                let blocked = fields.iter().find_map(|field| {
+                    field
+                        .records
+                        .iter()
+                        .find(|record| {
+                            **record != entry.name
+                                && excluded.contains(&(target.clone(), (*record).clone()))
+                        })
+                        .map(|record| (field.name.clone(), record.clone()))
+                });
+                if let Some((field, record)) = blocked {
+                    entry.notes.push(format!(
+                        "{target}: field `{field}` refers to `{record}`, which stays local"
+                    ));
+                    entry.outcome = Outcome::Excluded;
+                    entry.macro_reached = true;
+                    changed = true;
+                    break;
+                }
+            }
+        }
+        if !changed {
+            return;
+        }
+    }
 }
 
 fn decide_one(
@@ -71,10 +136,12 @@ fn decide_one(
     c: &CType,
     rust: Option<&RustLayout>,
     providers: &crate::providers::Inventory,
+    macro_members: &BTreeSet<String>,
 ) -> Entry {
     let present = [(target, c, rust)];
     let mut notes = Vec::new();
     let mut blocked = false;
+    let mut macro_reached = false;
     let mut common_fields: Option<Vec<String>> = None;
     let mut bad_fields: BTreeSet<String> = BTreeSet::new();
 
@@ -144,6 +211,13 @@ fn decide_one(
                             };
                             notes.push(format!("{target}: field `{field}`: {detail}"));
                         }
+                    } else if !matches && !incomplete_in_libc && macro_members.contains(field) {
+                        bad_fields.insert(field.clone());
+                        macro_reached = true;
+                        notes.push(format!(
+                            "{target}: reserved field `{field}` not mirrored by provider; \
+                             a header macro reaches it by name"
+                        ));
                     } else if !matches && !incomplete_in_libc {
                         if (*aggregate || flexible_array(shape)) && !opaque_candidate {
                             bad_fields.insert(field.clone());
@@ -219,6 +293,7 @@ fn decide_one(
         },
         aliases,
         notes,
+        macro_reached,
     }
 }
 
