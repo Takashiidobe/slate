@@ -186,6 +186,9 @@ similar rust.
   - Translates libcurl and the `curl` tool. Passes all 1690 `runtests.pl` tests,
     and benchmarks within 5% of native over file:// and HTTP transfers.
 - [jq](https://jqlang.org)
+- [nginx](https://nginx.org)
+  - Translates the default `nginx` build. Passes all 2584 tests in the 176
+    upstream `nginx-tests` files that apply to its modules, matching native.
 
 ### MSVC
 

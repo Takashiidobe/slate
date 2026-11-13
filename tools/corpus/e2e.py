@@ -1209,6 +1209,15 @@ def test_sandbox(project_dir, recipe, binary, out, jobs, name="test-tree"):
     return sandbox
 
 
+NGINX_TEST = """set -e
+binary="$PWD/build-clang/objs/nginx"
+tests="${SLATE_CORPUS:-$HOME/c-corpus}/nginx-tests"
+[ -d "$tests" ] || git clone -q --depth 1 https://github.com/nginx/nginx-tests.git "$tests"
+cd "$tests"
+TEST_NGINX_BINARY="$binary" exec prove -j"$(nproc)" "$@" .
+"""
+
+
 LMDB_TEST = """set -e
 dump() { ./mdb_dump "$1" | grep -v '^mapaddr='; }
 rm -rf testdb loaded copied && mkdir testdb loaded copied
@@ -1317,6 +1326,7 @@ RECIPES = {
         ldflags=["-L/usr/lib", "-lcrypt", "-lpcre2-8", "-lz", "-Wl,-E"],
         host_includes=["/usr/include"],
         links={"build-clang/objs/nginx": "target"},
+        test=["bash", "-c", NGINX_TEST, "nginx-tests"],
         every_unit=True,
     ),
     "cpython": Recipe(
