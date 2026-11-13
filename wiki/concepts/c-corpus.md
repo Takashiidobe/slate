@@ -170,6 +170,19 @@ written once translation units are known.
   too. The benchmark times five `lua -e` scripts (fib, table, string, sort,
   closure). 2026-10-05: `final OK`, 4.7s vs 4.5s native; benchmark geomean
   1.56x native (fib 2.8x).
+- tinycc: the target is `TCC_FILES` from the out-of-tree `build-clang`
+  (11 TUs). The sandbox copies `build-clang` with its `.o` files
+  (`test_keep_objects`: the `-b` tests link `bcheck.o`, `bt-log.o` and
+  `runmain.o`) and replaces `build-clang/tcc` with the translated binary,
+  then runs `make -C build-clang/tests -k CC=gcc` (`-o tcc -o libtcc1.a` so
+  make does not rebuild them). `CC=gcc` is needed because clang 22 rejects
+  `tcctest.c`'s `old_style_f((void *)1, ...)`, so `test.ref` fails natively
+  too. That runs `make test`: hello-exe/run, libtest, test3 (tcc compiling
+  `tcctest.c` and tcc.c itself), abitest, 129 `tests2` cases, pp, memtest,
+  dlltest, cross-test, btest and tccb. `libtest` links the native
+  `libtcc.a`, so it does not cover the translated library. 2026-11-13: 0
+  barriers, `ALL TESTS PASSED` translated and native in 5.7s vs 5.6s.
+  The 2026-10-05 barriers (K&R `gind`, `asm_instrs` initializer) are gone.
 - jq: the target is `jq_OBJECTS` + `libjq_la_OBJECTS` (22 TUs, libtool
   `.lo` names matched by stem), read from `build-clang`'s Makefile; the
   vendored oniguruma stays native (`libonig.a`). The test runs the nine

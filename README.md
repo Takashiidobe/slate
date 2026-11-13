@@ -170,6 +170,9 @@ similar rust.
 - [libevent](https://libevent.org)
 - [yyjson](https://github.com/ibireme/yyjson)
 - [PCRE2](https://github.com/PCRE2Project/pcre2)
+- [TinyCC](https://repo.or.cz/w/tinycc.git)
+  - The translated `tcc` passes upstream's `make test`, including compiling
+    `tcctest.c` and itself and the 129 `tests2` programs.
 - [Oniguruma](https://github.com/kkos/oniguruma)
   - Translates libonig and passes its 7 upstream test programs (4565 checks).
 - [curl](https://curl.se)

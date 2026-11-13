@@ -44,6 +44,7 @@ class Recipe:
     test_build: list[list[str]] = field(default_factory=list)
     test_dir: str = ""
     test_patches: dict[str, list[tuple[str, str]]] = field(default_factory=dict)
+    test_keep_objects: bool = False
     benchmark: Callable | None = None
 
 
@@ -1051,7 +1052,7 @@ def test_sandbox(project_dir, recipe, binary, out, jobs, name="test-tree"):
         source = project_dir / name
         if source.is_dir():
             shutil.copytree(source, sandbox / name, symlinks=True,
-                            ignore=shutil.ignore_patterns("tmp", "*.o", "*.xo"))
+                            ignore=shutil.ignore_patterns("tmp", *([] if recipe.test_keep_objects else ["*.o", "*.xo"])))
         elif source.exists():
             shutil.copy2(source, sandbox / name)
     for name, replacements in recipe.test_patches.items():
@@ -1065,6 +1066,7 @@ def test_sandbox(project_dir, recipe, binary, out, jobs, name="test-tree"):
     for link, kind in recipe.links.items():
         path = sandbox / link
         path.parent.mkdir(parents=True, exist_ok=True)
+        path.unlink(missing_ok=True)
         native = project_dir / recipe.make_dir / recipe.target if kind == "target" else project_dir / link
         path.symlink_to(binary if kind == "target" and binary else native.resolve())
     return sandbox
@@ -1103,6 +1105,10 @@ if ./qjs --std tests/test_builtin.js; then echo "PASS: test_builtin"; else echo 
 exit $fail
 """
 
+TINYCC_TEST = """make -C build-clang/tests -k CC=gcc -o tcc -o libtcc1.a 2>&1 | tee tests.log
+! grep -q "^make.*Error" tests.log
+"""
+
 RECIPES = {
     "quickjs": Recipe(
         target="qjs",
@@ -1114,6 +1120,18 @@ RECIPES = {
         links={"qjs": "target"},
         test=["sh", "-c", QUICKJS_TEST],
         test_copy=["tests"],
+    ),
+    "tinycc": Recipe(
+        target="tcc",
+        make_dir="build-clang",
+        objects=["TCC_FILES"],
+        archives=[],
+        libs="LIBS",
+        ldflags=["-lm", "-ldl", "-lpthread"],
+        links={"build-clang/tcc": "target"},
+        test=["sh", "-c", TINYCC_TEST],
+        test_copy=["build-clang"],
+        test_keep_objects=True,
     ),
     "jq": Recipe(
         target="jq",
