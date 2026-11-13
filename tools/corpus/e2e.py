@@ -65,6 +65,7 @@ class CMakeLibrary:
     host_includes: list[str] = field(default_factory=list)
     test_env: dict[str, str] = field(default_factory=dict)
     compare_stdout: bool = True
+    ctest: bool = True
     translate_tests: bool = False
     suite: Callable | None = None
     benchmark: Callable | None = None
@@ -366,6 +367,33 @@ def lz4_suite(project_dir, build_dir, relinked, archive, out, args):
     return {"native_ok": sum(ok for _, ok, _, _, _ in results), "native_total": len(results),
             "ok": sum(not problems for _, _, problems, _, _ in results), "total": len(results),
             "regressions": [label for label, _, problems, _, _ in results if problems],
+            "native_seconds": round(sum(row[3] for row in results), 2),
+            "seconds": round(sum(row[4] for row in results), 2), "log": "suite.log"}
+
+
+def libuv_suite(project_dir, build_dir, relinked, archive, out, args):
+    native, translated = build_dir / "uv_run_tests_a", relinked["uv_run_tests_a"]
+    names = subprocess.run([str(native), "--list"], capture_output=True, text=True, cwd=build_dir).stdout.split()
+
+    def outcome(binary, name):
+        start = time.perf_counter()
+        try:
+            code = subprocess.run([str(binary), name], capture_output=True, cwd=build_dir, timeout=60).returncode
+        except subprocess.TimeoutExpired:
+            code = "timeout"
+        return code == 0, time.perf_counter() - start
+
+    results = []
+    for name in names:
+        native_ok, native_seconds = outcome(native, name)
+        ok, seconds = outcome(translated, name)
+        results.append((name, native_ok, ok, native_seconds, seconds))
+    lines = [f"{name}: native {'ok' if native_ok else 'fail'}, translated {'ok' if ok else 'fail'}"
+             for name, native_ok, ok, _, _ in results]
+    (out / "suite.log").write_text("\n".join(lines) + "\n")
+    return {"native_ok": sum(row[1] for row in results), "native_total": len(results),
+            "ok": sum(row[2] for row in results), "total": len(results),
+            "regressions": [row[0] for row in results if row[1] and not row[2]],
             "native_seconds": round(sum(row[3] for row in results), 2),
             "seconds": round(sum(row[4] for row in results), 2), "log": "suite.log"}
 
@@ -802,7 +830,7 @@ def library_tests(project_dir, build_dir, recipe, archive, database, args, out):
     if sandbox.exists():
         shutil.rmtree(sandbox)
     cases, skipped = [], []
-    for case in ctest_cases(build_dir):
+    for case in ctest_cases(build_dir) if recipe.ctest else []:
         found = ctest_executable(case["command"], build_dir)
         script = ctest_script(case["command"], build_dir)
         if found:
@@ -1152,7 +1180,9 @@ RECIPES = {
         compare_stdout=False,
     ),
     "yyjson": CMakeLibrary(library="libyyjson.a"),
-    "libuv": CMakeLibrary(library="libuv.a", variants=["libuv.so"], translate_tests=True, compare_stdout=False),
+    "libuv": CMakeLibrary(library="libuv.a", variants=["libuv.so"], tools=["uv_run_tests_a"], ctest=False,
+                         translate_tests=True, compare_stdout=False,
+                         suite=libuv_suite),
     "curl": CMakeLibrary(library="lib/libcurl.so", tools=["src/curl"], translate_tests=True, suite=curl_suite,
                          benchmark=curl_benchmark),
     "pcre2": CMakeLibrary(
