@@ -1,7 +1,7 @@
 use super::walk::child_exprs;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{Expr, Ident, Stmt, Type, macro_template_base};
+use crate::backend::rust_ast::{Expr, Ident, Stmt, Type, UnaryOp, macro_template_base};
 
 fn place_root(expr: &Expr) -> Option<Ident> {
     match expr {
@@ -30,8 +30,17 @@ impl Binding<'_> {
         place_root(place) == Some(self.name)
     }
 
+    fn derefs_owner(&self, place: &Expr) -> bool {
+        !matches!(self.ty, Some(Type::Ptr { .. } | Type::Ref { .. }))
+            && matches!(place, Expr::Unary { op: UnaryOp::Deref, expr } if self.roots(expr))
+    }
+
     fn expr_mutates(&self, expr: &Expr) -> bool {
         let here = match expr {
+            Expr::Ref {
+                mutable: true,
+                expr,
+            } if self.derefs_owner(expr) => true,
             Expr::Ref {
                 mutable: true,
                 expr,

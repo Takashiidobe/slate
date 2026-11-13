@@ -377,9 +377,10 @@ pub(in crate::backend) fn solve(
                 function: site.caller.clone(),
                 name: site.caller_binding.clone(),
             };
-            let Some(caller_fact) = facts.get(&caller_binding).cloned() else {
+            let Some(mut caller_fact) = facts.get(&caller_binding).cloned() else {
                 continue;
             };
+            caller_fact.free = false;
             let callee_binding = PointerBinding {
                 function: name.clone(),
                 name: callee_param_name(&fn_defs, name, site.arg_index),
@@ -1657,7 +1658,7 @@ fn for_each_fn_body<'a>(programs: &'a [Program], f: &mut impl FnMut(FnKey, &'a [
 
 fn is_heap_alloc_call(expr: &Expr) -> bool {
     matches!(
-        peel_cast(expr),
+        peel_cast_and_unsafe(expr),
         Expr::Call {
             binding: CallBinding::Direct {
                 identity: FunctionIdentity::Known(Known::Malloc | Known::Calloc | Known::Realloc),
@@ -2448,6 +2449,10 @@ fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
             _ => None,
         };
         for (index, arg) in args.iter_mut().enumerate() {
+            let callee_plan = callee.as_ref().and_then(|callee| {
+                let pname = ctx.scope.param_names.get(callee)?.get(index)?;
+                ctx.scope.plans.get(callee)?.get(pname.as_str())
+            });
             if let Expr::Var(name) = arg
                 && let Some(plan) = ctx.own.get(name.as_str())
             {
@@ -2463,13 +2468,12 @@ fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
                         .flatten()
                         .unwrap_or(plan.mutable);
                     *arg = to_raw_pointer_as(name.as_str(), plan, target_mutable);
+                    if let Some(callee_plan) = callee_plan.filter(|p| p.kind == LiftKind::Scalar) {
+                        bridge_arg_into_ref(arg, callee_plan);
+                    }
                 }
                 continue;
             }
-            let callee_plan = callee.as_ref().and_then(|callee| {
-                let pname = ctx.scope.param_names.get(callee)?.get(index)?;
-                ctx.scope.plans.get(callee)?.get(pname.as_str())
-            });
             if let Some(plan) = callee_plan {
                 match plan.kind {
                     LiftKind::Scalar => {

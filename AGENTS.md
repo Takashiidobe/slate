@@ -105,11 +105,15 @@ Search in this order before reading or re-deriving anything:
 
 Then pick the tool by what you are searching:
 
-- Rust code you have edited this session, or a file `status` lists as changed:
-  the LSP (rust-analyzer), since the index's lines there are stale. `hover`,
-  `goToDefinition`, `findReferences`, `workspaceSymbol`, and `documentSymbol`
-  for an enum's variants or a file's outline. Put the cursor on the identifier
-  itself (for example the variant name line, not its `#[error]` attribute).
+- Any Rust code: always the LSP (rust-analyzer), never grep, sed, rg, or
+  `cat` on `.rs` files. Load it with `ToolSearch("select:LSP")` once per
+  session. `workspaceSymbol` finds a function by name, `goToDefinition` and
+  `findReferences` follow it, `incomingCalls`/`outgoingCalls` trace callers,
+  `hover` gives types, and `documentSymbol` gives an enum's variants or a
+  file's outline. Put the cursor on the identifier itself (for example the
+  variant name line, not its `#[error]` attribute). Read only the lines the LSP
+  points at. The SCIP index (`tools/scip/scip.py`) is stale for any file you
+  edited this session or `status` lists as changed.
 - Everything else (wiki, fixtures, C sources, `.beads`): grep. Quote globs; the
   shell is fish and an unquoted `--include=*.rs` errors.
 

@@ -16,9 +16,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
-// CHECK-NEXT: fn just_free(p: *mut i32) {
-// CHECK-NEXT:     unsafe { free((p as *mut ()) as *mut core::ffi::c_void) };
-// CHECK-NEXT: }
+// CHECK-NEXT: fn just_free(p: Box<i32>) {}
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let x: *mut i32 = (unsafe {
 // CHECK-NEXT:         malloc((std::mem::size_of::<i32>() as u64) as usize) as *mut ()
@@ -27,7 +25,7 @@ int main(void) {
 // CHECK-NEXT:         *x = 4;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", unsafe { * x });
-// CHECK-NEXT:     just_free(x);
+// CHECK-NEXT:     just_free(unsafe { Box::from_raw(x) });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

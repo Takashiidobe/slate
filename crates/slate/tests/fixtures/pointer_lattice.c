@@ -40,12 +40,11 @@ int main(void) {
 // CHECK-NEXT: fn peek(p: &i32) -> i32 {
 // CHECK-NEXT:     (unsafe { *(p as *const i32) }) + 1
 // CHECK-NEXT: }
-// CHECK-NEXT: fn use_and_free(y: *mut i32) -> i32 {
+// CHECK-NEXT: fn use_and_free(mut y: Box<i32>) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *y = *y + 1;
+// CHECK-NEXT:         *(&mut (*y) as *mut i32) = *(&mut (*y) as *mut i32) + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let v: i32 = unsafe { *y };
-// CHECK-NEXT:     unsafe { free((y as *mut ()) as *mut core::ffi::c_void) };
+// CHECK-NEXT:     let v: i32 = unsafe { *(&mut (*y) as *mut i32) };
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -59,7 +58,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *c = 100;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let v: i32 = use_and_free(c);
+// CHECK-NEXT:     let v: i32 = use_and_free(unsafe { Box::from_raw(c) });
 // CHECK-NEXT:     println!("{} {} {}", a, peeked, v);
 // CHECK-NEXT:     a + peeked + v
 // CHECK-NEXT: }

@@ -256,6 +256,13 @@ stage, against the relinked tools in `test-tree/`.
   `-DTEST_COMMAND=` argument; `compare_stdout=False` because cmake echoes
   that path. 70.9s translated vs 81.1s native.
 
+- zstd (2026-11-13): 30 TUs from `libzstd.so`, 0 barriers. The corpus build
+  has `ZSTD_BUILD_TESTS=OFF`, so there is no ctest: 175 differential
+  compressions (`-T2 -5`, `--rsyncable`, `--ultra -22` over sources and docs)
+  and `zstd_suite`, 366 round trips over six modes with sources, an empty
+  file and noise. The `zstd` CLI crate needed the pointer-lattice fixes in
+  slate-dghn.51.1. 1.38x native time over the test stage.
+
 - `test_env` adds environment to every ctest case (c-ares sets
   `GTEST_PRINT_TIME=0`, since gtest's per-test timings differ run to
   run). `compare_stdout=False` judges cases by exit code alone, for

@@ -372,6 +372,59 @@ def lz4_suite(project_dir, build_dir, relinked, archive, out, args):
             "seconds": round(sum(row[4] for row in results), 2), "log": "suite.log"}
 
 
+ZSTD_MODES = [["-1"], ["-3"], ["-9"], ["-19"], ["--fast=5"], ["-3", "--long=24"]]
+
+
+def zstd_suite(project_dir, build_dir, relinked, archive, out, args):
+    inputs_dir = out / "suite-inputs"
+    shutil.rmtree(inputs_dir, ignore_errors=True)
+    inputs_dir.mkdir()
+    sources = sorted(path for pattern in ["lib/*/*.c", "lib/*.h", "programs/*.c", "doc/*.md"]
+                     for path in project_dir.glob(pattern) if path.is_file())
+    (inputs_dir / "empty").write_bytes(b"")
+    (inputs_dir / "all-sources").write_bytes(b"".join(path.read_bytes() for path in sources) * 4)
+    state, noise = 0x12345678, bytearray()
+    for _ in range(1 << 18):
+        state = (state * 1103515245 + 12345) & 0xFFFFFFFF
+        noise.append(state >> 24)
+    (inputs_dir / "noise").write_bytes(bytes(noise))
+    inputs = [*sources, *sorted(inputs_dir.iterdir())]
+    native, translated = build_dir / "programs/zstd", relinked["programs/zstd"]
+
+    def zstd(tool, arguments, data):
+        start = time.perf_counter()
+        result = subprocess.run([str(tool), *arguments], input=data, capture_output=True, timeout=120)
+        return result.returncode, result.stdout, time.perf_counter() - start
+
+    def case(item):
+        mode, path = item
+        data = path.read_bytes()
+        native_code, native_frame, native_seconds = zstd(native, [*mode, "-c"], data)
+        code, frame, seconds = zstd(translated, [*mode, "-c"], data)
+        problems = []
+        if code != native_code or frame != native_frame:
+            problems.append("compress")
+        for name, decoder, source in [("decompress", translated, frame), ("native-decompress", native, frame),
+                                      ("decompress-native-frame", translated, native_frame)]:
+            result = zstd(decoder, ["-d", "-c"], source)
+            seconds += result[2] if decoder == translated else 0
+            if result[0] or result[1] != data:
+                problems.append(name)
+        label = f"{' '.join(mode)} {os.path.relpath(path, project_dir)}"
+        return label, native_code == 0, problems, native_seconds, seconds
+
+    with concurrent.futures.ThreadPoolExecutor(args.jobs) as pool:
+        results = list(pool.map(case, [(mode, path) for mode in ZSTD_MODES for path in inputs]))
+    lines = [f"{label}: {'ok' if not problems else 'FAIL ' + ','.join(problems)}"
+             for label, _, problems, _, _ in results]
+    (out / "suite.log").write_text("\n".join(lines) + "\n")
+    return {"native_ok": sum(ok for _, ok, _, _, _ in results), "native_total": len(results),
+            "ok": sum(not problems for _, _, problems, _, _ in results), "total": len(results),
+            "regressions": [label for label, _, problems, _, _ in results if problems],
+            "native_seconds": round(sum(row[3] for row in results), 2),
+            "seconds": round(sum(row[4] for row in results), 2), "log": "suite.log"}
+
+
 ONIGURUMA_TESTS = ["test_utf8", "test_syntax", "test_options", "testc", "testcu", "test_regset", "test_back"]
 
 
@@ -1251,6 +1304,16 @@ RECIPES = {
         compare_stdout=False,
     ),
     "yyjson": CMakeLibrary(library="libyyjson.a"),
+    "zstd": CMakeLibrary(
+        library="lib/libzstd.so",
+        variants=["lib/libzstd.a"],
+        tools=["programs/zstd"],
+        differential=[Differential("programs/zstd", [*level, "-c", "{input}"])
+                      for level in (["-T2", "-5"], ["-3", "--rsyncable"], ["--ultra", "-22"])],
+        inputs=["lib/*/*.c", "lib/*.h", "doc/*.md", "programs/*.c"],
+        translate_tests=True,
+        suite=zstd_suite,
+    ),
     "libpng": CMakeLibrary(library="libpng18.so", variants=["libpng18.a"],
                            tools=["pngtest", "pngvalid", "pngstest", "pngunknown", "pngimage", "pnggetset"],
                            translate_tests=True, compare_stdout=False),

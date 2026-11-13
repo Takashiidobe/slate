@@ -178,6 +178,10 @@ similar rust.
 - [libpng](http://www.libpng.org/pub/png/libpng.html)
   - Translates libpng, including its SSE2 filters, and passes all 37 upstream
     ctest cases (`pngtest`, `pngvalid`, `pngstest`, `pngunknown`, `pngimage`).
+- [zstd](https://facebook.github.io/zstd/)
+  - Translates libzstd and the `zstd` CLI. The translated CLI produces
+    byte-identical output to native at 9 compression levels and modes, and
+    round-trips 366 files across both builds.
 - [curl](https://curl.se)
   - Translates libcurl and the `curl` tool. Passes all 1690 `runtests.pl` tests,
     and benchmarks within 5% of native over file:// and HTTP transfers.
