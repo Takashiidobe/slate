@@ -68,7 +68,14 @@ impl FunctionLowerer<'_, '_> {
             }
             None => Stmt::Assign {
                 target: self.lower_place(place)?,
-                value,
+                value: if self.support_scalar_field(place) {
+                    Expr::Cast {
+                        expr: Box::new(value),
+                        ty: rust::Type::Custom("_".into()),
+                    }
+                } else {
+                    value
+                },
             },
         };
         Ok(if self.place_is_unsafe(place) {

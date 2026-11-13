@@ -898,7 +898,7 @@ impl FunctionLowerer<'_, '_> {
         }
     }
 
-    fn support_record_path(&self, id: TypeId) -> Option<&'static str> {
+    pub(super) fn support_record_path(&self, id: TypeId) -> Option<&'static str> {
         let definition = self.tables.types.get(&id)?;
         definition.provenance.system_header?;
         crate::libc_catalog::record_path(definition, &self.tables.target.triple)
@@ -1190,7 +1190,7 @@ const NAMED_TYPEDEFS: &[&str] = &[
     "socklen_t",
 ];
 
-fn known_c_name(types: &CTypes, mut c: QualType, target: &str) -> Option<&'static str> {
+pub(super) fn known_c_name(types: &CTypes, mut c: QualType, target: &str) -> Option<&'static str> {
     loop {
         c = match types.kind(c.ty) {
             CTypeKind::Typedef {

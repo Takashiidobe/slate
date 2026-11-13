@@ -352,6 +352,43 @@ impl FunctionLowerer<'_, '_> {
         }))
     }
 
+    pub(super) fn support_scalar_field(&self, place: &ir::Place) -> bool {
+        let PlaceKind::Field {
+            ref base,
+            index,
+            bits: None,
+        } = without_macro_holes(place).kind
+        else {
+            return false;
+        };
+        let tables = self.tables;
+        let ir::Type::Defined(id) = tables.resolve_type(&base.ty) else {
+            return false;
+        };
+        if self.support_record_path(*id).is_none() {
+            return false;
+        }
+        match tables.resolve_type(&place.ty) {
+            ir::Type::Pointer { pointee, .. } => {
+                matches!(tables.resolve_type(pointee), ir::Type::Void)
+            }
+            ir::Type::Numeric(ir::NumericType::Integer { .. }) => tables
+                .record_fields(&base.ty)
+                .and_then(|fields| fields.get(index))
+                .and_then(|field| tables.c_types.nodes.get(&field.id).copied())
+                .and_then(|c| {
+                    super::types::known_c_name(&tables.c_types.types, c, &tables.target.triple)
+                })
+                .is_some_and(|name| {
+                    matches!(
+                        name,
+                        "size_t" | "ssize_t" | "ptrdiff_t" | "intptr_t" | "uintptr_t"
+                    )
+                }),
+            _ => false,
+        }
+    }
+
     pub(super) fn lower_address(&mut self, place: &ir::Place, mutable: bool) -> Result<Expr> {
         if let Some(address) = self.vla_address(place)? {
             return Ok(address);

@@ -957,6 +957,10 @@ impl FunctionLowerer<'_, '_> {
                         method: getter,
                         args: Vec::new(),
                     },
+                    None if self.support_scalar_field(place) => Expr::Cast {
+                        expr: Box::new(self.lower_place(place)?),
+                        ty: self.lower_type(&place.ty)?,
+                    },
                     None => self.lower_place(place)?,
                 };
                 let lowered = if matches!(value.ty, ir::Type::VaList) {
