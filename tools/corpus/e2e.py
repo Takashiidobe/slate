@@ -1386,6 +1386,7 @@ RECIPES = {
         translate_tests=True,
         suite=xxhsum_suite,
     ),
+    "mimalloc": CMakeLibrary(library="libmimalloc.so", variants=["libmimalloc.a"], translate_tests=True),
     "libpng": CMakeLibrary(library="libpng18.so", variants=["libpng18.a"],
                            tools=["pngtest", "pngvalid", "pngstest", "pngunknown", "pngimage", "pnggetset"],
                            translate_tests=True, compare_stdout=False),

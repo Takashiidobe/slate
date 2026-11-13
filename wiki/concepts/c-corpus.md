@@ -272,6 +272,16 @@ stage, against the relinked tools in `test-tree/`.
   own `--little-endian` output, so that format is compared only), stdin
   hashing, and a `-b -i1` exit-code match. No ctest in this build.
 
+- mimalloc (2026-11-13): 21 TUs of `libmimalloc.so`/`libmimalloc.a`, 0
+  barriers (the atomic pointer array, `assume_aligned` and `umull_overflow`
+  gaps in the original probe were closed by slate-dghn.33/.34). The only
+  failure was rustc's `deref_nullptr` deny lint on the dead arm of
+  `mi_arena_start_idx(...) : ((mi_arena_t*)NULL)->arena_idx` in
+  `_mi_arenas_visit`; sema's `Hoister::branch` now keeps only the taken arm of
+  a `?:` whose condition compares two null constants. ctest 5 of 5 (the
+  `test-stress-{heaps,static,dynamic}` cases run cmake and are skipped); the
+  recipe has no extra suite.
+
 - `test_env` adds environment to every ctest case (c-ares sets
   `GTEST_PRINT_TIME=0`, since gtest's per-test timings differ run to
   run). `compare_stdout=False` judges cases by exit code alone, for

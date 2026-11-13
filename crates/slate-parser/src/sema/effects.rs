@@ -17,6 +17,28 @@ fn is_constant(value: &Value) -> bool {
     }
 }
 
+fn is_null_constant(value: &Value) -> bool {
+    match &value.node.value {
+        ValueKind::Null => true,
+        ValueKind::Convert { operand, .. } | ValueKind::MacroArg { value: operand, .. } => {
+            is_null_constant(operand)
+        }
+        _ => false,
+    }
+}
+
+fn null_comparison_outcome(condition: &Value) -> Option<bool> {
+    match &condition.node.value {
+        ValueKind::Compare {
+            op: op @ (CompareOp::Eq | CompareOp::Ne),
+            left,
+            right,
+            ..
+        } if is_null_constant(left) && is_null_constant(right) => Some(matches!(op, CompareOp::Eq)),
+        _ => None,
+    }
+}
+
 fn promoted_store(value: Value) -> Value {
     let mut inner = &value;
     while let ValueKind::Convert {
@@ -379,8 +401,12 @@ impl Hoister {
         } else {
             Some(self.declare(source, None, out))
         };
+        let taken = null_comparison_outcome(&condition);
         let mut branches = Vec::new();
-        for value in [left, right] {
+        for (index, value) in [left, right].into_iter().enumerate() {
+            if taken.is_some_and(|taken| taken != (index == 0)) {
+                continue;
+            }
             let mut body = Vec::new();
             if let Some(place) = &result {
                 let value = self.value(value, &mut body)?;
@@ -395,13 +421,17 @@ impl Hoister {
             }
             branches.push(body);
         }
-        let else_body = branches.pop();
-        let then_body = branches.pop().unwrap_or_default();
-        out.push(source.node.derive(Statement::If {
-            condition,
-            then_body,
-            else_body,
-        }));
+        if taken.is_some() {
+            out.extend(branches.pop().unwrap_or_default());
+        } else {
+            let else_body = branches.pop();
+            let then_body = branches.pop().unwrap_or_default();
+            out.push(source.node.derive(Statement::If {
+                condition,
+                then_body,
+                else_body,
+            }));
+        }
         Ok(Value {
             ty: source.ty.clone(),
             node: source.node.clone().with_value(match result {
