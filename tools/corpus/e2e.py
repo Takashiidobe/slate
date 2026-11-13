@@ -46,6 +46,7 @@ class Recipe:
     test_patches: dict[str, list[tuple[str, str]]] = field(default_factory=dict)
     test_keep_objects: bool = False
     benchmark: Callable | None = None
+    every_unit: bool = False
 
 
 @dataclass
@@ -731,6 +732,15 @@ def translation_units(project_dir, recipe, database, variables, flavor):
     return [found[Path(obj).stem] for obj in objects]
 
 
+def every_translation_unit(recipe, database, flavor):
+    units = {}
+    for entry in json.loads(database.read_text()):
+        source = Path(pp_diff.absolute(entry["directory"], entry["file"])).resolve()
+        if source.suffix == ".c" and source.exists() and source not in units:
+            units[source] = translation_unit(entry, source, recipe, flavor)
+    return list(units.values())
+
+
 def all_c_translation_units(recipe, database, flavor, project_dir):
     units = {}
     members = None
@@ -1298,6 +1308,17 @@ RECIPES = {
         test_build=[["make", "-C", "tests/modules"]],
         benchmark=redis_benchmark,
     ),
+    "nginx": Recipe(
+        target="objs/nginx",
+        make_dir="build-clang",
+        objects=[],
+        archives=[],
+        libs="LIBS",
+        ldflags=["-L/usr/lib", "-lcrypt", "-lpcre2-8", "-lz", "-Wl,-E"],
+        host_includes=["/usr/include"],
+        links={"build-clang/objs/nginx": "target"},
+        every_unit=True,
+    ),
     "cpython": Recipe(
         target="python",
         make_dir="build-clang",
@@ -1477,6 +1498,10 @@ def main():
         variables = None
         missing = ([recipe.archive] if recipe.archive and not (project_dir / recipe.archive).exists() else [])
         units = all_c_translation_units(recipe, database, args.mode, project_dir)
+    elif recipe.every_unit:
+        variables = {recipe.libs: ""}
+        missing = native_check(project_dir, recipe, variables)
+        units = every_translation_unit(recipe, database, args.mode)
     else:
         names = recipe.tools if make_library else [*(name for name in recipe.objects if not name.endswith(".o")), recipe.libs]
         variables = make_variables(project_dir, recipe, COMPILERS[args.mode], names)
