@@ -10,7 +10,7 @@ Run all Cargo commands from the workspace root with Rust nightly.
 
 `slate-intrinsic-gen` is development tooling and is not published.
 
-## First release
+## Manually
 
 Verify all three packaged crates together, including unpublished dependencies:
 
@@ -30,7 +30,7 @@ cargo publish -p slate-c2rust --all-features --locked
 Use `--dry-run` to check a package before publishing it. Checking the translator
 requires its dependencies to be available on crates.io.
 
-## Tag releases
+## Through GitHub
 
 Trusted publishing uses temporary tokens; no repository API token secret is
 needed. It must be configured after each crate's first manual publication. See
