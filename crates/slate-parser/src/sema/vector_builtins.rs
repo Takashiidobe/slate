@@ -45,6 +45,7 @@ impl Lowerer {
                 intrinsic(reduction_intrinsic(reduction, element), arguments)
             }
             Expansion::Intrinsic(name) => intrinsic(name, arguments),
+            Expansion::Neon(op) => return self.expand_neon(e, op, (returned, ty, arguments)),
             Expansion::Zero
             | Expansion::LaneInsert
             | Expansion::LaneExtract

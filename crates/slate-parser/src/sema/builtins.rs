@@ -454,6 +454,7 @@ pub(super) enum Expansion {
     PermutePairs,
     MaskLogic(MaskOp),
     FloatClassMask,
+    Neon(super::neon_builtins::NeonOp),
     Ms {
         intrinsic: MsIntrinsic,
         ordering: MsOrdering,
@@ -698,7 +699,11 @@ pub(super) fn expansion(builtin: &ClangBuiltin) -> Option<Expansion> {
         | "insertf32x4" | "inserti32x4" | "insertf64x4" | "inserti64x4" | "insertf32x8"
         | "inserti32x8" | "insertf64x2_512" | "inserti64x2_512" | "insertf32x4_256"
         | "inserti32x4_256" | "insertf64x2_256" | "inserti64x2_256" => Expansion::InsertSubvector,
-        record => return named_compare(record).or_else(|| ms_expansion(record)),
+        record => {
+            return named_compare(record)
+                .or_else(|| ms_expansion(record))
+                .or_else(|| super::neon_builtins::neon_op(record).map(Expansion::Neon));
+        }
     })
 }
 

@@ -276,6 +276,28 @@ rewrites by hand. Immediates must fold to constants (otherwise the call stays):
 Operands used more than once are bound once (`bind_once`), so their side
 effects run exactly once.
 
+clang NEON builtins (`__builtin_neon_*`, `Expansion::Neon`, `sema/neon_builtins.rs`)
+lower to the LLVM intrinsic clang's CGBuiltin picks, so lanes, NaNs and
+saturation match the hardware instruction. Polymorphic `_v` forms take
+`int8x16_t`/`int8x8_t` operands and a constant NEON type code as the last
+argument (`& 0xf` element: 0-3 int8..int64, 4-6 poly8/16/64, 9 f32, 10 f64;
+`0x10` unsigned; `0x20` quad): operands are bit cast to the decoded vector,
+the result back to the prototype's vector. Codes for f16, bf16 and poly128 fall
+back to the extern call.
+
+| Builtins | Expansion |
+| --- | --- |
+| `vget[q]_lane_*` | `lane` read, index modulo lanes, converted to the return type |
+| `vaddv[q]_*` | f32/f64 `llvm.aarch64.neon.faddv` (pairwise), integers `llvm.vector.reduce.add` |
+| `vaddlv[q]_*` | lanes widened to twice the width, then `llvm.vector.reduce.add` |
+| `vmaxv`/`vminv[q]_*`, `vmaxnmv`/`vminnmv[q]_*` | floats `llvm.aarch64.neon.f{max,min}[nm]v`, integers `llvm.vector.reduce.{s,u}{max,min}` |
+| `vbsl[q]_v` | `b ^ ((a ^ b) & mask)` on the bytes (falls back if an operand has effects) |
+| `vabs[q]_v` | `llvm.aarch64.neon.abs` (integers, wraps at MIN), `llvm.fabs` |
+| `vmax`/`vmin[q]_v`, `vmaxnm`/`vminnm[q]_v` | `llvm.aarch64.neon.{s,u,f}{max,min}`, `llvm.aarch64.neon.f{max,min}nm` |
+| `vqadd`/`vqsub[q]_v` | `llvm.aarch64.neon.{s,u}q{add,sub}` |
+| `vfma[q]_v(a, b, c)` | `llvm.fma(b, c, a)` |
+| `vsqrt[q]_v`, `vcagt[q]_v` | `llvm.sqrt`; `llvm.aarch64.neon.facgt` (the code gives the integer result, operands are floats of that width) |
+
 ## Atomic operations
 
 - `__c11_atomic_*`
