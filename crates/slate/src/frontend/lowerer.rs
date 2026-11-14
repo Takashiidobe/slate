@@ -204,6 +204,7 @@ struct FunctionLowerer<'a, 'm> {
     byref_slots: HashSet<BindingId>,
     pending: Vec<Stmt>,
     dispatching: bool,
+    switch_lets: HashSet<BindingId>,
 }
 
 impl FunctionLowerer<'_, '_> {

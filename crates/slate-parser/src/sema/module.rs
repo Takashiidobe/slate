@@ -444,15 +444,28 @@ impl Lowerer {
         let nodes = self.module.c_types.nodes.clone();
         let bindings = self.module.c_types.bindings.clone();
         super::effects_statements::normalize(&mut self.module, self.next_id, access.clone())?;
-        let kept = keep(&mut self.module);
-        for (function, body) in self.module.functions.iter_mut().zip(bodies) {
-            function.value.body = body;
+        let mut kept = keep(&mut self.module);
+        let mut rejections = std::mem::take(&mut self.module.macro_rejections);
+        loop {
+            for (function, body) in self.module.functions.iter_mut().zip(bodies.iter()) {
+                function.value.body = body.clone();
+            }
+            self.module.c_types.nodes = nodes.clone();
+            self.module.c_types.bindings = bindings.clone();
+            self.module
+                .strip_macro_structure(|expansion| kept.contains(&expansion));
+            super::effects_statements::normalize(&mut self.module, self.next_id, access.clone())?;
+            let survived = keep(&mut self.module);
+            for (expansion, reason) in std::mem::take(&mut self.module.macro_rejections) {
+                rejections.entry(expansion).or_insert(reason);
+            }
+            if kept.iter().all(|expansion| survived.contains(expansion)) {
+                break;
+            }
+            kept.retain(|expansion| survived.contains(expansion));
         }
-        self.module.c_types.nodes = nodes;
-        self.module.c_types.bindings = bindings;
-        self.module
-            .strip_macro_structure(|expansion| kept.contains(&expansion));
-        super::effects_statements::normalize(&mut self.module, self.next_id, access)
+        self.module.macro_rejections = rejections;
+        Ok(())
     }
 
     fn complete_declaration_abis(&mut self) -> Result<(), ResolveError> {

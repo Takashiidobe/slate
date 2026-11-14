@@ -187,18 +187,84 @@ impl FunctionLowerer<'_, '_> {
             ));
         }
         let arms = merge_empty_arms(arms);
+        let mut prelude = Vec::new();
+        for statement in self.shared_case_lets(&arms) {
+            let ir::Statement::Let(variable) = &statement.value else {
+                continue;
+            };
+            let declaration = slate_parser::ast::Span {
+                value: ir::Statement::Let(ir::Variable {
+                    initializer: None,
+                    ..variable.clone()
+                }),
+                ..statement.clone()
+            };
+            prelude.extend(self.lower_statement(&declaration)?);
+            self.switch_lets.insert(variable.id);
+        }
+        let lowered = self.lower_switch_arms(id, discriminant, &arms)?;
+        if prelude.is_empty() {
+            return Ok(lowered);
+        }
+        prelude.push(lowered);
+        Ok(Stmt::Scope { body: prelude })
+    }
+
+    fn shared_case_lets<'a>(
+        &self,
+        arms: &[SwitchArm<'a>],
+    ) -> Vec<&'a slate_parser::ast::Span<ir::Statement>> {
+        let declares = |arm: &SwitchArm| {
+            arm.body
+                .iter()
+                .any(|statement| matches!(statement.value, ir::Statement::Let(_)))
+        };
+        if !arms.iter().any(declares) {
+            return Vec::new();
+        }
+        let mentions: Vec<HashSet<BindingId>> = arms.iter().map(arm_mentions).collect();
+        let mut shared = Vec::new();
+        for (index, arm) in arms.iter().enumerate() {
+            for statement in &arm.body {
+                let ir::Statement::Let(variable) = &statement.value else {
+                    continue;
+                };
+                if variable.byref
+                    || variable.auto_init.is_some()
+                    || self.tables.variably_modified(&variable.ty)
+                {
+                    continue;
+                }
+                if mentions
+                    .iter()
+                    .enumerate()
+                    .any(|(other, names)| other != index && names.contains(&variable.id))
+                {
+                    shared.push(*statement);
+                }
+            }
+        }
+        shared
+    }
+
+    fn lower_switch_arms(
+        &mut self,
+        id: BindingId,
+        discriminant: &ir::Value,
+        arms: &[SwitchArm],
+    ) -> Result<Stmt> {
         if self
             .tables
             .wide_int(&discriminant.ty)
             .is_some_and(|wide| wide.exceeds_i128())
         {
-            return self.lower_indexed_switch(id, discriminant, &arms);
+            return self.lower_indexed_switch(id, discriminant, arms);
         }
         if arms[..arms.len().saturating_sub(1)]
             .iter()
             .any(falls_through)
         {
-            return self.lower_fallthrough_switch(id, discriminant, &arms);
+            return self.lower_fallthrough_switch(id, discriminant, arms);
         }
         let mut match_arms = Vec::new();
         for arm in arms.iter().filter(|arm| !arm.default) {
@@ -397,6 +463,26 @@ impl FunctionLowerer<'_, '_> {
         }
         Ok(lowered)
     }
+}
+
+#[derive(Default)]
+struct Mentions(HashSet<BindingId>);
+
+impl ir::MacroStructureVisitor for Mentions {
+    fn binding(&mut self, binding: BindingId) {
+        self.0.insert(binding);
+    }
+}
+
+fn arm_mentions(arm: &SwitchArm) -> HashSet<BindingId> {
+    let mut body: Vec<_> = arm
+        .body
+        .iter()
+        .map(|statement| (*statement).clone())
+        .collect();
+    let mut mentions = Mentions::default();
+    ir::walk_macro_structure(&mut body, &mut mentions);
+    mentions.0
 }
 
 fn merge_empty_arms(arms: Vec<SwitchArm>) -> Vec<SwitchArm> {

@@ -113,6 +113,20 @@ impl FunctionLowerer<'_, '_> {
                     .map(|value| self.lower_value(value))
                     .transpose()?,
             },
+            ir::Statement::Let(variable) if self.switch_lets.contains(&variable.id) => {
+                match &variable.initializer {
+                    Some(value) => {
+                        let place = ir::Place {
+                            ty: variable.ty.clone(),
+                            kind: PlaceKind::Binding(variable.id),
+                            access: variable.access,
+                        };
+                        let value = self.lower_value(value)?;
+                        self.lower_assignment(&place, value)?
+                    }
+                    None => Stmt::Block(rust::Block::default()),
+                }
+            }
             ir::Statement::Let(variable) if variable.byref => self.lower_byref_let(variable)?,
             ir::Statement::Let(variable) if self.tables.variably_modified(&variable.ty) => {
                 self.lower_vla_let(variable)?

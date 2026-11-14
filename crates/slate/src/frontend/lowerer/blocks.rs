@@ -63,6 +63,7 @@ impl<'a, 'm> FunctionLowerer<'a, 'm> {
             byref_slots: HashSet::new(),
             pending: Vec::new(),
             dispatching: false,
+            switch_lets: HashSet::new(),
         }
     }
 }
