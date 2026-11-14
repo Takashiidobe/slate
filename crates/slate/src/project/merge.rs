@@ -630,7 +630,6 @@ type ExploredRow = (Vec<String>, u64, Option<Result<(Compiled, bool), String>>);
 fn explore_unit(
     matrix: &Matrix,
     target: &str,
-    project: &Path,
     source: &Path,
     owners: &CommonOwners,
     comdats: &ComdatOwners,
@@ -648,7 +647,7 @@ fn explore_unit(
             .then(|| compile_isolated(unit.path().to_path_buf(), unit, owners, comdats, &interner));
         rows.push((names, fingerprint, result));
     };
-    let plan = super::plan::relevant_features(matrix, project, target, source, &mut on_run);
+    let plan = super::plan::relevant_features(matrix, target, source, &mut on_run);
     (plan, rows, interner)
 }
 
@@ -697,9 +696,9 @@ fn explored_unit(
     unit
 }
 
-fn prepare_target(matrix: &Matrix, project: &Path, target: &str) -> Result<TargetBuild, String> {
+fn prepare_target(matrix: &Matrix, target: &str) -> Result<TargetBuild, String> {
     let defaults = matrix
-        .commands(project, target, &[])
+        .commands(target, &[])
         .map_err(|error| error.to_string())?;
     let parsed: Vec<Unit> = defaults
         .into_par_iter()
@@ -710,7 +709,7 @@ fn prepare_target(matrix: &Matrix, project: &Path, target: &str) -> Result<Targe
     let explored: Vec<_> = matrix
         .sources
         .par_iter()
-        .map(|source| explore_unit(matrix, target, project, source, &owners, &comdats))
+        .map(|source| explore_unit(matrix, target, source, &owners, &comdats))
         .collect();
     if let Some((unit, error)) = explored
         .iter()
@@ -814,18 +813,12 @@ enum RowOutcome {
 
 fn compile_row(
     matrix: &Matrix,
-    project: &Path,
     build: &TargetBuild,
     unit: &TargetUnit,
     mask: u32,
 ) -> Result<RowOutcome, String> {
     let command = matrix
-        .command(
-            project,
-            &build.name,
-            &subset(&unit.relevant, mask),
-            &unit.source,
-        )
+        .command(&build.name, &subset(&unit.relevant, mask), &unit.source)
         .map_err(|error| error.to_string())?;
     let path = command.file;
     let preprocessed = frontend::preprocess_unit(&path, command.args)
@@ -843,13 +836,12 @@ fn compile_row(
     Ok(RowOutcome::Built(compiled, has_main))
 }
 
-fn compile_rows(matrix: &Matrix, project: &Path, builds: &mut [TargetBuild], jobs: Vec<Job>) {
+fn compile_rows(matrix: &Matrix, builds: &mut [TargetBuild], jobs: Vec<Job>) {
     let outcomes: Vec<RowOutcome> = jobs
         .par_iter()
         .map(|&(target, index, mask)| {
             let build = &builds[target];
-            compile_row(matrix, project, build, &build.units[index], mask)
-                .unwrap_or_else(RowOutcome::Failed)
+            compile_row(matrix, build, &build.units[index], mask).unwrap_or_else(RowOutcome::Failed)
         })
         .collect();
     let mut repeats = Vec::new();
@@ -1588,15 +1580,12 @@ struct ProjectionResult {
 
 fn check_config(
     matrix: &Matrix,
-    project: &Path,
     target: &TargetBuild,
     merged: &[MergedUnit],
     families: &Families,
     features: &[String],
 ) -> Result<Vec<String>, ()> {
-    let commands = matrix
-        .commands(project, &target.name, features)
-        .map_err(|_| ())?;
+    let commands = matrix.commands(&target.name, features).map_err(|_| ())?;
     let mut units = Vec::with_capacity(commands.len());
     for command in commands {
         units.push(parse(command).map_err(|_| ())?);
@@ -1701,7 +1690,6 @@ fn projects_target(matrix: &Matrix, name: &str, projection_triples: &[String]) -
 
 fn check_projection(
     matrix: &Matrix,
-    project: &Path,
     targets: &[TargetBuild],
     merged: &[MergedUnit],
     families: &Families,
@@ -1716,7 +1704,7 @@ fn check_projection(
         .collect();
     let results: Vec<_> = jobs
         .par_iter()
-        .map(|(target, config)| check_config(matrix, project, target, merged, families, config))
+        .map(|(target, config)| check_config(matrix, target, merged, families, config))
         .collect();
     let mut outcome = ProjectionResult {
         checked: 0,
@@ -1737,7 +1725,6 @@ fn check_projection(
 
 pub fn merge(
     matrix: &Matrix,
-    project: &Path,
     targets: &[String],
     projection: Projection,
     projection_triples: &[String],
@@ -1781,7 +1768,7 @@ pub fn merge(
     slate_parser::pp::reuse_lexed_sources();
     let prepared: Vec<Result<TargetBuild, String>> = names
         .par_iter()
-        .map(|name| prepare_target(matrix, project, name))
+        .map(|name| prepare_target(matrix, name))
         .collect();
     let mut builds = prepared.into_iter().collect::<Result<Vec<_>, _>>()?;
     let mut jobs: Vec<Job> = Vec::new();
@@ -1794,7 +1781,7 @@ pub fn merge(
             );
         }
     }
-    compile_rows(matrix, project, &mut builds, jobs);
+    compile_rows(matrix, &mut builds, jobs);
     let mut cfgs = BTreeMap::new();
     for build in &builds {
         if let Some(other) = cfgs.insert(build.cfg.clone(), build.name.clone()) {
@@ -1889,7 +1876,6 @@ pub fn merge(
         .collect();
     let result = check_projection(
         matrix,
-        project,
         &builds,
         &merged,
         &families,

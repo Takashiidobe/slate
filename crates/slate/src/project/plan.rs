@@ -63,12 +63,7 @@ pub enum Mode {
     CheckExhaustive,
 }
 
-pub fn plan(
-    matrix: &Matrix,
-    project: &Path,
-    target: Option<&str>,
-    mode: Mode,
-) -> Result<Plan, MatrixError> {
+pub fn plan(matrix: &Matrix, target: Option<&str>, mode: Mode) -> Result<Plan, MatrixError> {
     if let Some(target) = target
         && !matrix.targets.iter().any(|known| known.name == target)
     {
@@ -92,7 +87,7 @@ pub fn plan(
         .collect();
     let mut units = jobs
         .into_par_iter()
-        .map(|(name, source)| plan_unit(matrix, project, name, source, mode))
+        .map(|(name, source)| plan_unit(matrix, name, source, mode))
         .collect::<Vec<UnitPlan>>()
         .into_iter();
     Ok(Plan {
@@ -110,24 +105,23 @@ pub type OnRun<'a> = dyn FnMut(Vec<String>, usize, PreprocessedUnit) + 'a;
 
 pub fn relevant_features<'a>(
     matrix: &'a Matrix,
-    project: &'a Path,
     target: &'a str,
     source: &'a Path,
     on_run: &'a mut OnRun<'a>,
 ) -> UnitPlan {
-    let mut explorer = Explorer::new(matrix, project, target, source);
+    let mut explorer = Explorer::new(matrix, target, source);
     explorer.tracks_elements = false;
     explorer.on_run = Some(on_run);
     explorer.explore();
     explorer.relevant_unit()
 }
 
-fn plan_unit(matrix: &Matrix, project: &Path, target: &str, source: &Path, mode: Mode) -> UnitPlan {
-    let mut explorer = Explorer::new(matrix, project, target, source);
+fn plan_unit(matrix: &Matrix, target: &str, source: &Path, mode: Mode) -> UnitPlan {
+    let mut explorer = Explorer::new(matrix, target, source);
     explorer.explore();
     let mut unit = explorer.finish();
     if mode == Mode::CheckExhaustive {
-        let mut exhaustive = Explorer::new(matrix, project, target, source);
+        let mut exhaustive = Explorer::new(matrix, target, source);
         exhaustive.interned = explorer.interned.clone();
         exhaustive.enumerate();
         let compiles = exhaustive.select().len();
@@ -264,7 +258,6 @@ struct Pending {
 
 struct Explorer<'a> {
     matrix: &'a Matrix,
-    project: &'a Path,
     target: &'a str,
     source: &'a Path,
     feature_of_macro: HashMap<String, Vec<usize>>,
@@ -284,7 +277,7 @@ struct Explorer<'a> {
 }
 
 impl<'a> Explorer<'a> {
-    fn new(matrix: &'a Matrix, project: &'a Path, target: &'a str, source: &'a Path) -> Self {
+    fn new(matrix: &'a Matrix, target: &'a str, source: &'a Path) -> Self {
         let mut feature_of_macro: HashMap<String, Vec<usize>> = HashMap::new();
         for (index, feature) in matrix.features.iter().enumerate() {
             for define in &feature.defines {
@@ -297,7 +290,6 @@ impl<'a> Explorer<'a> {
         }
         Self {
             matrix,
-            project,
             target,
             source,
             feature_of_macro,
@@ -398,9 +390,9 @@ impl<'a> Explorer<'a> {
     }
 
     fn observe_unlimited(&mut self, config: &Config) {
-        let command =
-            self.matrix
-                .command(self.project, self.target, &self.names(config), self.source);
+        let command = self
+            .matrix
+            .command(self.target, &self.names(config), self.source);
         let result = command
             .map_err(|error| error.to_string())
             .and_then(|command| {
@@ -701,7 +693,7 @@ impl<'a> Explorer<'a> {
     fn check(&self, config: &Config) -> Result<(), String> {
         let command = self
             .matrix
-            .command(self.project, self.target, &self.names(config), self.source)
+            .command(self.target, &self.names(config), self.source)
             .map_err(|error| error.to_string())?;
         frontend::parse_module_with_compiler_args(&command.file, command.args)
             .map(|_| ())

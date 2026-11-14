@@ -1,6 +1,6 @@
 use crate::backend::{self, rust_ast};
 use crate::frontend;
-use crate::project::matrix::{self, Matrix};
+use crate::project::matrix::{self, MatrixFile};
 use crate::project::merge::{self, Projection};
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -163,12 +163,12 @@ fn merge_targets(path: &Path, extra_args: &[String], targets: &[String]) -> Resu
         })
         .cloned()
         .collect();
-    let matrix = Matrix {
+    let matrix = MatrixFile {
         sources: vec![source.clone()],
         args,
         targets: targets
             .iter()
-            .map(|triple| matrix::Target {
+            .map(|triple| matrix::MatrixTarget {
                 name: triple.clone(),
                 triple: triple.clone(),
                 flavor: flavor.clone(),
@@ -178,12 +178,10 @@ fn merge_targets(path: &Path, extra_args: &[String], targets: &[String]) -> Resu
             .collect(),
         features: Vec::new(),
         invalid_features: Vec::new(),
-    };
-    matrix
-        .validate()
-        .map_err(|error| Error::Merge(error.to_string()))?;
-    let merged =
-        merge::merge(&matrix, project, &[], Projection::Skip, &[]).map_err(Error::Merge)?;
+    }
+    .resolve(project)
+    .map_err(|error| Error::Merge(error.to_string()))?;
+    let merged = merge::merge(&matrix, &[], Projection::Skip, &[]).map_err(Error::Merge)?;
     let mut program = merged
         .units
         .into_iter()

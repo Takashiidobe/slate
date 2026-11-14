@@ -698,6 +698,7 @@ fn matrix_fixture(name: &str) -> PathBuf {
 }
 
 fn translate_matrix(
+    option: &str,
     work: &str,
     matrix: &Path,
     project: &Path,
@@ -709,7 +710,7 @@ fn translate_matrix(
     let _ = std::fs::remove_dir_all(&crate_dir);
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
         .arg("translate-project")
-        .arg("--matrix")
+        .arg(option)
         .arg(matrix)
         .args(selection)
         .arg(project)
@@ -777,7 +778,7 @@ fn matrix_selection_matches_c_with_same_configuration() {
     ] {
         let mut selected = vec!["--matrix-target", "linux-x86_64"];
         selected.extend(&selection);
-        let (crate_dir, result) = translate_matrix(work, &matrix, &project, &selected);
+        let (crate_dir, result) = translate_matrix("--matrix", work, &matrix, &project, &selected);
         result.unwrap_or_else(|error| panic!("{work}: {error}"));
         let c_args: Vec<&str> = base.iter().chain(&extra).copied().collect();
         assert_eq!(
@@ -797,8 +798,13 @@ fn matrix_targets_use_their_own_generated_headers_and_args() {
         ("linux-x86_64-gcc", "100 + 1 + 5"),
         ("windows-x86_64", "100 + 2 + 0"),
     ] {
-        let (crate_dir, result) =
-            translate_matrix(target, &matrix, &project, &["--matrix-target", target]);
+        let (crate_dir, result) = translate_matrix(
+            "--matrix",
+            target,
+            &matrix,
+            &project,
+            &["--matrix-target", target],
+        );
         result.unwrap_or_else(|error| panic!("{target}: {error}"));
         let value = std::fs::read_to_string(crate_dir.join("src/value.rs")).expect("read value.rs");
         assert!(value.contains(constant), "{target}: {value}");
@@ -825,7 +831,7 @@ fn matrix_rejects_invalid_input() {
             "no_target_selected",
             None,
             vec![],
-            "--matrix requires --matrix-target",
+            "--matrix and --manifest require --matrix-target",
         ),
         (
             "unknown_target",
@@ -923,7 +929,7 @@ fn matrix_rejects_invalid_input() {
         ),
     ] {
         let path = contents.map_or(matrix.clone(), |contents| write(name, contents));
-        let (_, result) = translate_matrix(name, &path, &project, &selection);
+        let (_, result) = translate_matrix("--matrix", name, &path, &project, &selection);
         let error = result.expect_err(name);
         assert!(error.contains(expected), "{name}: {error}");
     }
@@ -943,9 +949,181 @@ fn matrix_rejects_invalid_input() {
         .expect("run slate translate-project");
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(
-        stderr.contains("--matrix cannot be combined with --compile-commands"),
+        stderr.contains("--matrix and --manifest cannot be combined with --compile-commands"),
         "{stderr}"
     );
+}
+
+#[test]
+fn manifest_targets_use_their_own_compile_commands() {
+    let project = matrix_fixture("generated");
+    let manifest = project.join("manifest.json");
+    for (target, constant) in [
+        ("linux-x86_64", "100 + 1 + 7"),
+        ("linux-x86_64-gcc", "100 + 1 + 7"),
+        ("windows-x86_64", "100 + 2 + 0"),
+    ] {
+        let work = format!("manifest-{target}");
+        let (crate_dir, result) = translate_matrix(
+            "--manifest",
+            &work,
+            &manifest,
+            &project,
+            &["--matrix-target", target],
+        );
+        result.unwrap_or_else(|error| panic!("{target}: {error}"));
+        let value = std::fs::read_to_string(crate_dir.join("src/value.rs")).expect("read value.rs");
+        assert!(value.contains(constant), "{target}: {value}");
+    }
+}
+
+#[test]
+fn manifest_selection_and_merge_match_c_with_same_configuration() {
+    let project = matrix_fixture("generated");
+    let manifest = project.join("manifest.json");
+    let base = [
+        "-DPROJECT_BASE=100",
+        "-Iinclude",
+        "-Igen-linux",
+        "-DTARGET_EXTRA=7",
+    ];
+    for (work, selection, extra) in [
+        (
+            "manifest-fast",
+            vec!["--matrix-target", "linux-x86_64", "--features", "fast"],
+            vec!["-DFAST"],
+        ),
+        (
+            "manifest-level",
+            vec![
+                "--matrix-target",
+                "linux-x86_64",
+                "--features",
+                "level-two,small",
+            ],
+            vec!["-DLEVEL=2", "-DHAS_LEVEL", "-DSMALL"],
+        ),
+        (
+            "manifest-merge",
+            vec!["--merge", "--matrix-target", "linux-x86_64,windows-x86_64"],
+            vec![],
+        ),
+    ] {
+        let (crate_dir, result) =
+            translate_matrix("--manifest", work, &manifest, &project, &selection);
+        result.unwrap_or_else(|error| panic!("{work}: {error}"));
+        let c_args: Vec<&str> = base.iter().chain(&extra).copied().collect();
+        assert_eq!(
+            run_cargo_binary(&crate_dir),
+            run_clang_binary(&project, work, &c_args),
+            "{work}"
+        );
+    }
+}
+
+#[test]
+fn manifest_rejects_invalid_input() {
+    let project = matrix_fixture("generated");
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/matrix");
+    std::fs::create_dir_all(&dir).expect("create manifest directory");
+    let write = |name: &str, contents: serde_json::Value| {
+        let path = dir.join(format!("{name}.json"));
+        std::fs::write(&path, contents.to_string()).expect("write manifest");
+        path
+    };
+    let database = |name: &str, args: &[&str], files: &[&str]| {
+        let entries: Vec<serde_json::Value> = files
+            .iter()
+            .map(|file| {
+                let mut arguments = vec!["/usr/bin/clang", "-c", file, "-Iinclude", "-Igen-linux"];
+                arguments.extend(args);
+                serde_json::json!({
+                    "directory": project.display().to_string(),
+                    "file": file,
+                    "arguments": arguments,
+                })
+            })
+            .collect();
+        write(name, serde_json::json!(entries))
+            .display()
+            .to_string()
+    };
+    let linux = |compile_commands: &str| {
+        serde_json::json!({
+            "triple": "x86_64-unknown-linux-gnu",
+            "flavor": "clang",
+            "compile_commands": compile_commands,
+        })
+    };
+    let both = database("manifest-db-both", &[], &["main.c", "value.c"]);
+    let main_only = database("manifest-db-main", &[], &["main.c"]);
+    let foreign = database(
+        "manifest-db-foreign",
+        &["--target=aarch64-linux-gnu"],
+        &["main.c", "value.c"],
+    );
+    let extra = database(
+        "manifest-db-extra",
+        &["-DTARGET_EXTRA=1"],
+        &["main.c", "value.c"],
+    );
+    let selected = ["--matrix-target", "a"];
+    for (name, contents, expected) in [
+        (
+            "manifest-version",
+            serde_json::json!({"version": 2, "targets": {"a": linux(&both)}}),
+            "has version 2, the supported version is 1",
+        ),
+        (
+            "manifest-no-targets",
+            serde_json::json!({"version": 1, "targets": {}}),
+            "matrix has no targets",
+        ),
+        (
+            "manifest-unknown-field",
+            serde_json::json!({"version": 1, "targets": {"a": {
+                "triple": "x86_64-unknown-linux-gnu", "flavor": "clang",
+                "compile_commands": both, "typo": 1
+            }}}),
+            "unknown field `typo`",
+        ),
+        (
+            "manifest-foreign-target",
+            serde_json::json!({"version": 1, "targets": {"a": linux(&foreign)}}),
+            "is compiled for aarch64-linux-gnu, not x86_64-unknown-linux-gnu",
+        ),
+        (
+            "manifest-feature-in-base",
+            serde_json::json!({"version": 1, "targets": {"a": linux(&extra)},
+                "features": {"extra": ["TARGET_EXTRA=2"]}}),
+            "already sets feature macro TARGET_EXTRA, so feature extra cannot be turned off",
+        ),
+        (
+            "manifest-different-sources",
+            serde_json::json!({"version": 1,
+                "targets": {"a": linux(&both), "b": linux(&main_only)}}),
+            "manifest targets b and a compile different sources: only a compiles value.c",
+        ),
+        (
+            "manifest-missing-database",
+            serde_json::json!({"version": 1, "targets": {"a": linux("missing.json")}}),
+            "manifest target a: read compile commands",
+        ),
+    ] {
+        let path = write(name, contents);
+        let (_, result) = translate_matrix("--manifest", name, &path, &project, &selected);
+        let error = result.expect_err(name);
+        assert!(error.contains(expected), "{name}: {error}");
+    }
+    let (_, result) = translate_matrix(
+        "--manifest",
+        "manifest-and-matrix",
+        &project.join("manifest.json"),
+        &project,
+        &["--matrix", "matrix.json", "--matrix-target", "a"],
+    );
+    let error = result.expect_err("manifest-and-matrix");
+    assert!(error.contains("pass one --matrix or --manifest"), "{error}");
 }
 
 #[test]

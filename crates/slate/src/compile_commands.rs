@@ -90,13 +90,40 @@ pub struct SelectedTarget {
     pub others: Vec<String>,
 }
 
+#[derive(Debug, Clone)]
+pub struct UnitCommand {
+    pub file: PathBuf,
+    pub directory: PathBuf,
+    pub args: Vec<String>,
+}
+
 struct Entry {
     command: CompileCommand,
+    unit: UnitCommand,
     target: Option<String>,
     position_independent: bool,
 }
 
 pub fn read(paths: &[PathBuf], options: &ReadOptions) -> Result<Commands, CompileCommandsError> {
+    let (entries, selected) = read_entries(paths, options)?;
+    Ok(Commands {
+        commands: entries.into_iter().map(|entry| entry.command).collect(),
+        selected,
+    })
+}
+
+pub fn read_units(
+    paths: &[PathBuf],
+    options: &ReadOptions,
+) -> Result<Vec<UnitCommand>, CompileCommandsError> {
+    let (entries, _) = read_entries(paths, options)?;
+    Ok(entries.into_iter().map(|entry| entry.unit).collect())
+}
+
+fn read_entries(
+    paths: &[PathBuf],
+    options: &ReadOptions,
+) -> Result<(Vec<Entry>, Option<SelectedTarget>), CompileCommandsError> {
     let mut parsed = Vec::new();
     for path in paths {
         parsed.extend(read_one(path, options)?);
@@ -118,21 +145,21 @@ pub fn read(paths: &[PathBuf], options: &ReadOptions) -> Result<Commands, Compil
         (None, None) => (parsed, None),
         (requested, conflict) => select_target(parsed, requested, conflict)?,
     };
-    let mut commands: Vec<CompileCommand> = Vec::new();
-    for Entry { command, .. } in entries {
-        match commands.last() {
-            Some(earlier) if earlier.file == command.file => {
-                if selected.is_some() && earlier.args != command.args {
+    let mut unique: Vec<Entry> = Vec::new();
+    for entry in entries {
+        match unique.last() {
+            Some(earlier) if earlier.command.file == entry.command.file => {
+                if selected.is_some() && earlier.command.args != entry.command.args {
                     return Err(CompileCommandsError::MultipleCommandsInTarget {
-                        file: command.file,
+                        file: entry.command.file,
                         target: selected.map_or_else(String::new, |target| target.name),
                     });
                 }
             }
-            _ => commands.push(command),
+            _ => unique.push(entry),
         }
     }
-    Ok(Commands { commands, selected })
+    Ok((unique, selected))
 }
 
 fn select_target(
@@ -333,21 +360,25 @@ fn read_one(path: &Path, options: &ReadOptions) -> Result<Vec<Entry>, CompileCom
                 index,
             });
         }
-        let args = CompilerArgParser::parse_in(
-            command_arguments(&words, &directory, &file, options),
-            &directory,
-        )
-        .map_err(|source| CompileCommandsError::Arguments {
-            path: path.to_path_buf(),
-            index,
-            file: file.clone(),
-            source,
-        })?;
+        let unit_args = command_arguments(&words, &directory, &file, options);
+        let args =
+            CompilerArgParser::parse_in(crate::target::compiler_arguments(&unit_args), &directory)
+                .map_err(|source| CompileCommandsError::Arguments {
+                    path: path.to_path_buf(),
+                    index,
+                    file: file.clone(),
+                    source,
+                })?;
         commands.push(Entry {
             target: output_of(entry, &words).and_then(build_target_of),
             position_independent: words
                 .iter()
                 .any(|word| matches!(word.as_str(), "-fPIC" | "-fpic")),
+            unit: UnitCommand {
+                file: file.clone(),
+                directory,
+                args: unit_args,
+            },
             command: CompileCommand { file, args },
         });
     }
@@ -440,7 +471,7 @@ fn command_arguments(
             .cloned(),
     );
     args.extend(options.extra_args.iter().cloned());
-    crate::target::compiler_arguments(&args)
+    args
 }
 
 fn compiler_flavor(compiler: &str) -> CompilerFlavor {

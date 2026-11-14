@@ -1,0 +1,28 @@
+[
+  {
+    "directory": "..",
+    "file": "main.c",
+    "arguments": [
+      "cl",
+      "-c",
+      "main.c",
+      "/DPROJECT_BASE=100",
+      "/Iinclude",
+      "/Igen-windows"
+    ],
+    "output": "CMakeFiles/app.dir/main.c.o"
+  },
+  {
+    "directory": "..",
+    "file": "value.c",
+    "arguments": [
+      "cl",
+      "-c",
+      "value.c",
+      "/DPROJECT_BASE=100",
+      "/Iinclude",
+      "/Igen-windows"
+    ],
+    "output": "CMakeFiles/app.dir/value.c.o"
+  }
+]
