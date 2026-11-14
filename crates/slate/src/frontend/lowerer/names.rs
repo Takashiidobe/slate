@@ -13,7 +13,7 @@ pub(super) fn rust_binding_name(name: &str) -> String {
         "as", "break", "const", "continue", "else", "enum", "extern", "false", "fn", "for", "if",
         "impl", "in", "let", "loop", "match", "mod", "move", "mut", "pub", "ref", "return",
         "static", "struct", "trait", "true", "type", "unsafe", "use", "where", "while", "async",
-        "await", "dyn",
+        "await", "dyn", "gen",
     ];
     if let Some(synthetic) = name.strip_prefix('.') {
         format!("__slate_{}", synthetic.replace('.', "_"))

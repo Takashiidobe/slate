@@ -1987,6 +1987,7 @@ pub fn is_rust_keyword(name: &str) -> bool {
             | "virtual"
             | "yield"
             | "try"
+            | "gen"
     )
 }
 
