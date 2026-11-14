@@ -555,7 +555,7 @@ impl FunctionLowerer<'_, '_> {
             section: None,
             retain: false,
             fallback: None,
-            weak: global.symbol.weak && global.definition,
+            weak: false,
             dll_storage: global
                 .symbol
                 .dll_storage
@@ -563,7 +563,9 @@ impl FunctionLowerer<'_, '_> {
             ..global.symbol.clone()
         };
         if matches!(variable.storage, ir::StorageDuration::Automatic)
-            || (variable.alignment.is_some() && tables.storage_of(&variable.ty).is_none())
+            || (global.definition
+                && variable.alignment.is_some()
+                && tables.storage_of(&variable.ty).is_none())
             || (variable.access.atomic
                 && !tables.atomic_unpadded(&variable.ty)
                 && !tables.target.triple.contains("linux"))

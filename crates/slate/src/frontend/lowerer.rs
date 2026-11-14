@@ -835,8 +835,10 @@ impl<'m> ModuleLowerer<'m> {
                     .options
                     .imported_commons
                     .contains(&global.variable.name);
-            let exported = (self.options.export_symbols || global.symbol.include)
-                && matches!(global.linkage, ir::Linkage::External);
+            let weak_definition = global.definition && global.symbol.weak;
+            let exported =
+                (self.options.export_symbols || global.symbol.include || weak_definition)
+                    && matches!(global.linkage, ir::Linkage::External);
             let thread_local: Vec<Attr> =
                 matches!(global.variable.storage, ir::StorageDuration::Thread)
                     .then_some(Attr::ThreadLocal)
@@ -890,6 +892,7 @@ impl<'m> ModuleLowerer<'m> {
                         comments,
                         attrs: thread_local
                             .into_iter()
+                            .chain(weak_definition.then_some(Attr::WeakLinkage))
                             .chain(exported.then_some(match asm_name {
                                 Some(name) => Attr::ExportName(name),
                                 None => Attr::NoMangle,
@@ -1472,6 +1475,7 @@ impl<'m> ModuleLowerer<'m> {
             Item::ExternBlock { decls, .. } => decls.iter().any(|decl| {
                 matches!(decl, rust::ExternDecl::Static { attrs, .. } if attrs.contains(&Attr::ExternWeakLinkage))
             }),
+            Item::Static { attrs, .. } => attrs.contains(&Attr::WeakLinkage),
             _ => false,
         }) {
             features.push(rust::CrateAttr::Feature(rust::Feature::Linkage));
