@@ -45,6 +45,20 @@ impl Lowerer {
                 intrinsic(reduction_intrinsic(reduction, element), arguments)
             }
             Expansion::Intrinsic(name) => intrinsic(name, arguments),
+            Expansion::Zero
+            | Expansion::LaneInsert
+            | Expansion::LaneExtract
+            | Expansion::Blend
+            | Expansion::PermuteQuads
+            | Expansion::ByteShift { .. }
+            | Expansion::Compare { .. }
+            | Expansion::CompareMask
+            | Expansion::MaskToVector
+            | Expansion::VectorToMask
+            | Expansion::MaskedLoad
+            | Expansion::InsertSubvector => {
+                return self.expand_x86_vector(e, expansion, signature, (returned, ty, arguments));
+            }
             Expansion::Ms {
                 intrinsic,
                 ordering,

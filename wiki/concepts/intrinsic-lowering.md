@@ -70,8 +70,13 @@
   is `splat(0) - v`); lane-wise conversions are
   `std::simd::num::Simd{Int,Uint,Float}::cast::<T>(v)`, chosen by the source
   element (`Expr::GenericPath` carries the turbofish).
-- Vector comparison masks, dynamic shuffle masks, and ordinary C vector
-  function ABI remain barriers; function addresses cannot expose LLVM intrinsics.
+- Vector comparisons yield `-1`/`0` integer lanes. Dynamic shuffle masks and
+  ordinary C vector function ABI remain barriers; function addresses cannot
+  expose LLVM intrinsics.
+- `slate.vector_sign_bitmask(v)` (signed integer lanes) is
+  `simd_lt(v, Simd::default()).to_bitmask() as T`; `slate.masked_load(p, w, k)`
+  is `Simd::load_select_ptr(p as *const Lane, Mask::from_bitmask(k), w)`, which
+  reads no disabled lane.
 - Only default-address-space pointers participate in intrinsic signatures.
 - TableGen aliases cover direct builtin mappings; builtins Clang expands by
   hand expand in sema. Unexpanded ones stay `builtin without a lowering`

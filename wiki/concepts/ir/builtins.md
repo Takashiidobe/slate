@@ -245,6 +245,25 @@ when bit `i` of the integer mask is set, else `b`. Slate lowers it to
 vectors (`__SlateVector`) are not supported.
 See [vector types](type-families.md#vector) for supported shapes.
 
+`sema/x86_vector_builtins.rs` expands the x86 builtins clang's CGBuiltin
+rewrites by hand. Immediates must fold to constants (otherwise the call stays):
+
+| Builtins | Expansion |
+| --- | --- |
+| `__builtin_elementwise_sqrt` | `intrinsic<T, llvm.sqrt>` (scalars too) |
+| `undef{128,256,512}`, `__builtin_nondeterministic_value` | zero of the result type (an argument with effects is sequenced first) |
+| `vec_set_*` / `vec_ext_*` | two-operand shuffle with a splat / `lane(v, imm & (lanes-1))` |
+| `pblend{w,d}*`, `blendp{s,d}*` | shuffle, lane `i` from `b` when imm bit `i % 8` is set |
+| `permd{i,f}{256,512}` | shuffle `i/4*4 + (imm >> 2*(i%4) & 3)` |
+| `ps{r,l}ldqi{128,256,512}_byteshift` | bit cast to bytes, per-16-byte shuffle against zero (imm > 15 is zero), bit cast back |
+| `cmp{eq,lt,le,unord,neq,nlt,nle,ord}{ps,pd,ss,sd}`, `cmpp{s,d}[256]`, `cmps{s,d}` | predicate (`imm & 15`, signalling bit ignored) built from `eq/lt/le/gt/ge/ne` compares, `ord = (a==a)&(b==b)`, `unord = (a!=a)\|(b!=b)` and `not`; mask bit cast to the float type; scalar forms shuffle lane 0 into `a` |
+| `cmpp{s,d}{128,256,512}_mask` | the same predicate, `slate.vector_sign_bitmask`, `and` with the mask unless all-ones |
+| `cvtmask2{b,w,d,q}*` / `cvt{b,w,d,q}2mask*` | `slate.vector_select(k, splat(-1), 0)` / `slate.vector_sign_bitmask(v)` |
+| `loaddqu{qi,hi,si,di}*_mask`, `loadup{s,d}*_mask` | `slate.masked_load(ptr, passthrough, k)` |
+| `insert128i256`, `vinsertf128_*`, `insert{f,i}{32x4,64x4,32x8,64x2}*` | widen the part by shuffle, then a two-operand shuffle at `imm % parts` |
+
+Masked stores (`storedqu*_mask`) remain calls.
+
 ## Atomic operations
 
 - `__c11_atomic_*`

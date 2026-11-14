@@ -434,4 +434,114 @@ impl FunctionLowerer<'_, '_> {
             binding: CallBinding::Generated,
         })
     }
+
+    pub(super) fn lower_vector_sign_bitmask(
+        &mut self,
+        value: &ir::Value,
+        arguments: &[ir::Value],
+    ) -> Result<Expr> {
+        let [vector] = arguments else {
+            return Err(unsupported_value(value));
+        };
+        let (
+            ir::Type::Vector {
+                element: ir::NumericType::Integer { signed: true, .. },
+                ..
+            },
+            ir::Type::Numeric(ir::NumericType::Integer { .. }),
+        ) = (
+            self.tables.resolve_type(&vector.ty),
+            self.tables.resolve_type(&value.ty),
+        )
+        else {
+            return Err(unsupported_value(value));
+        };
+        if is_slate_vector(&self.lower_type(&vector.ty)?) {
+            return Err(unsupported_value(value));
+        }
+        let negative = Expr::Call {
+            func: Box::new(Expr::Var("std::simd::cmp::SimdPartialOrd::simd_lt".into())),
+            args: vec![
+                self.lower_value(vector)?,
+                Expr::Call {
+                    func: Box::new(Expr::Var("std::simd::Simd::default".into())),
+                    args: vec![],
+                    binding: CallBinding::Generated,
+                },
+            ],
+            binding: CallBinding::Generated,
+        };
+        Ok(Expr::Cast {
+            expr: Box::new(Expr::MethodCall {
+                recv: Box::new(negative),
+                method: "to_bitmask".into(),
+                args: vec![],
+            }),
+            ty: self.lower_type(&value.ty)?,
+        })
+    }
+
+    pub(super) fn lower_masked_load(
+        &mut self,
+        value: &ir::Value,
+        arguments: &[ir::Value],
+    ) -> Result<Expr> {
+        let [pointer, passthrough, mask] = arguments else {
+            return Err(unsupported_value(value));
+        };
+        let (
+            ir::Type::Vector { element, lanes },
+            ir::Type::Numeric(ir::NumericType::Integer { width, .. }),
+        ) = (
+            self.tables.resolve_type(&value.ty).clone(),
+            self.tables.resolve_type(&mask.ty).clone(),
+        )
+        else {
+            return Err(unsupported_value(value));
+        };
+        let lane_width = match element {
+            ir::NumericType::Integer { width, .. } => width,
+            ir::NumericType::Float(ir::FloatType::F32) => 32,
+            ir::NumericType::Float(ir::FloatType::F64) => 64,
+            ir::NumericType::Float(_) => return Err(unsupported_value(value)),
+        };
+        let unsigned = match width {
+            8 => Prim::U8,
+            16 => Prim::U16,
+            32 => Prim::U32,
+            64 => Prim::U64,
+            _ => return Err(unsupported_value(value)),
+        };
+        let vector_type = self.lower_type(&value.ty)?;
+        if !matches!(lane_width, 8 | 16 | 32 | 64) || is_slate_vector(&vector_type) {
+            return Err(unsupported_value(value));
+        }
+        let lane = self.lower_type(&ir::Type::Numeric(element))?;
+        let bits = Expr::Cast {
+            expr: Box::new(Expr::Cast {
+                expr: Box::new(self.lower_value(mask)?),
+                ty: rust::Type::Prim(unsigned),
+            }),
+            ty: rust::Type::Prim(Prim::U64),
+        };
+        let enable = Expr::Call {
+            func: Box::new(Expr::Var(
+                format!("std::simd::Mask::<i{lane_width}, {lanes}>::from_bitmask").into(),
+            )),
+            args: vec![bits],
+            binding: CallBinding::Generated,
+        };
+        let pointer = Expr::Cast {
+            expr: Box::new(self.lower_value(pointer)?),
+            ty: rust::Type::Ptr {
+                mutable: false,
+                inner: Box::new(lane),
+            },
+        };
+        Ok(Expr::Call {
+            func: Box::new(Expr::Var("std::simd::Simd::load_select_ptr".into())),
+            args: vec![pointer, enable, self.lower_value(passthrough)?],
+            binding: CallBinding::Generated,
+        })
+    }
 }

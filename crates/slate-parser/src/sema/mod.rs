@@ -36,6 +36,7 @@ mod typer;
 pub mod types;
 mod validate;
 mod vector_builtins;
+mod x86_vector_builtins;
 
 pub use ctype::compat::PointerMerge;
 pub use module::MacroKeep;

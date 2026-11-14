@@ -424,6 +424,23 @@ pub(super) enum Expansion {
     LaneSelect,
     FloatReduce(ArithOp),
     Intrinsic(&'static str),
+    Zero,
+    LaneInsert,
+    LaneExtract,
+    Blend,
+    PermuteQuads,
+    ByteShift {
+        left: bool,
+    },
+    Compare {
+        predicate: Option<u8>,
+        scalar: bool,
+    },
+    CompareMask,
+    MaskToVector,
+    VectorToMask,
+    MaskedLoad,
+    InsertSubvector,
     Ms {
         intrinsic: MsIntrinsic,
         ordering: MsOrdering,
@@ -489,7 +506,73 @@ pub(super) fn expansion(builtin: &ClangBuiltin) -> Option<Expansion> {
         "reduce_fadd_ps512" | "reduce_fadd_pd512" => Expansion::FloatReduce(ArithOp::Add),
         "reduce_fmul_ps512" | "reduce_fmul_pd512" => Expansion::FloatReduce(ArithOp::Mul),
         "__rdtsc" => Expansion::Intrinsic("llvm.x86.rdtsc"),
-        record => return ms_expansion(record),
+        "ElementwiseSqrt" => Expansion::Intrinsic("llvm.sqrt"),
+        "NondetermenisticValue" | "undef128" | "undef256" | "undef512" => Expansion::Zero,
+        "vec_set_v16qi" | "vec_set_v8hi" | "vec_set_v4si" | "vec_set_v2di" | "vec_set_v32qi"
+        | "vec_set_v16hi" | "vec_set_v8si" | "vec_set_v4di" => Expansion::LaneInsert,
+        "vec_ext_v16qi" | "vec_ext_v8hi" | "vec_ext_v4si" | "vec_ext_v2di" | "vec_ext_v4sf"
+        | "vec_ext_v32qi" | "vec_ext_v16hi" | "vec_ext_v8si" | "vec_ext_v4di" => {
+            Expansion::LaneExtract
+        }
+        "pblendw128" | "pblendw256" | "pblendd128" | "pblendd256" | "blendps" | "blendpd"
+        | "blendps256" | "blendpd256" => Expansion::Blend,
+        "permdi256" | "permdf256" | "permdi512" | "permdf512" => Expansion::PermuteQuads,
+        "psrldqi128_byteshift" | "psrldqi256_byteshift" | "psrldqi512_byteshift" => {
+            Expansion::ByteShift { left: false }
+        }
+        "pslldqi128_byteshift" | "pslldqi256_byteshift" | "pslldqi512_byteshift" => {
+            Expansion::ByteShift { left: true }
+        }
+        "cmpps" | "cmppd" | "cmpps256" | "cmppd256" => Expansion::Compare {
+            predicate: None,
+            scalar: false,
+        },
+        "cmpss" | "cmpsd" => Expansion::Compare {
+            predicate: None,
+            scalar: true,
+        },
+        "cmpps128_mask" | "cmppd128_mask" | "cmpps256_mask" | "cmppd256_mask" | "cmpps512_mask"
+        | "cmppd512_mask" => Expansion::CompareMask,
+        "cvtmask2b128" | "cvtmask2b256" | "cvtmask2b512" | "cvtmask2w128" | "cvtmask2w256"
+        | "cvtmask2w512" | "cvtmask2d128" | "cvtmask2d256" | "cvtmask2d512" | "cvtmask2q128"
+        | "cvtmask2q256" | "cvtmask2q512" => Expansion::MaskToVector,
+        "cvtb2mask128" | "cvtb2mask256" | "cvtb2mask512" | "cvtw2mask128" | "cvtw2mask256"
+        | "cvtw2mask512" | "cvtd2mask128" | "cvtd2mask256" | "cvtd2mask512" | "cvtq2mask128"
+        | "cvtq2mask256" | "cvtq2mask512" => Expansion::VectorToMask,
+        "loaddquqi128_mask" | "loaddquqi256_mask" | "loaddquqi512_mask" | "loaddquhi128_mask"
+        | "loaddquhi256_mask" | "loaddquhi512_mask" | "loaddqusi128_mask" | "loaddqusi256_mask"
+        | "loaddqusi512_mask" | "loaddqudi128_mask" | "loaddqudi256_mask" | "loaddqudi512_mask"
+        | "loadups128_mask" | "loadups256_mask" | "loadups512_mask" | "loadupd128_mask"
+        | "loadupd256_mask" | "loadupd512_mask" => Expansion::MaskedLoad,
+        "insert128i256" | "vinsertf128_pd256" | "vinsertf128_ps256" | "vinsertf128_si256"
+        | "insertf32x4" | "inserti32x4" | "insertf64x4" | "inserti64x4" | "insertf32x8"
+        | "inserti32x8" | "insertf64x2_512" | "inserti64x2_512" | "insertf32x4_256"
+        | "inserti32x4_256" | "insertf64x2_256" | "inserti64x2_256" => Expansion::InsertSubvector,
+        record => return named_compare(record).or_else(|| ms_expansion(record)),
+    })
+}
+
+fn named_compare(record: &str) -> Option<Expansion> {
+    let rest = record.strip_prefix("cmp")?;
+    let (name, scalar) = match rest.len().checked_sub(2).map(|split| rest.split_at(split)) {
+        Some((name, "ps" | "pd")) => (name, false),
+        Some((name, "ss" | "sd")) => (name, true),
+        _ => return None,
+    };
+    let predicate = match name {
+        "eq" => 0,
+        "lt" => 1,
+        "le" => 2,
+        "unord" => 3,
+        "neq" => 4,
+        "nlt" => 5,
+        "nle" => 6,
+        "ord" => 7,
+        _ => return None,
+    };
+    Some(Expansion::Compare {
+        predicate: Some(predicate),
+        scalar,
     })
 }
 
