@@ -178,6 +178,26 @@ const int k = 2`, `table[1]`, `s.field`, string elements, `*ptr` to a
   const, `(int)2.5`). gcc also reads a const tentative definition as zero,
   modeled for gcc only. Volatile, non-const, extern, and non-constant
   initializers stay unfolded (`ir_asm_const_objects*.c`).
+- Above `-O0` (`codegen.optimization`), both compilers also accept operands
+  that fold only after inlining and promoting locals, which `-O0` rejects.
+  `Lowerer::constant_asm_operands` (`sema/asm_constants.rs`) runs after
+  `complete_declaration_abis` and models this:
+  - A rejected asm is selected again with known values for automatic,
+    non-volatile locals and parameters that are only ever read (no write,
+    address, or projection), whose initializer folds to an integer or a
+    symbol (`auto __flags = BUGFLAG_WARNING | 3; "i"(__flags)`).
+  - A call to an `always_inline` function that is still unresolved, directly
+    or through its callees, whose arguments fold, gets a clone
+    `<name>__const<N>` with those parameters known. The clone is deduplicated
+    per argument set and kept only if it resolves fully. It is internal,
+    keeps the signature and arguments, and drops symbol attributes except
+    `section` (`arch_static_branch(&key, true)`).
+  - Unresolved internal functions that are left unreferenced are dropped, as
+    clang never emits them.
+  - Not handled: asm with a tied input, a non-memory-only `InPlace` input,
+    or callees with static locals or nested functions
+    (`ir_asm_constant_after_inlining.c`, slate
+    `x86_64/asm_immediate_after_inlining.c`).
 
 ### Memory operands
 

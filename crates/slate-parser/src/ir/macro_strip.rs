@@ -16,6 +16,8 @@ pub trait MacroStructureVisitor {
     fn leave_place_hole(&mut self, _expansion: MacroExpansionId) {}
     fn binding(&mut self, _binding: BindingId) {}
     fn rewrite_place(&mut self, _place: &mut Place) {}
+    fn rewrite_value(&mut self, _value: &mut Value) {}
+    fn rewrite_statement(&mut self, _statement: &mut Statement) {}
 }
 
 struct KeepOnly<F>(F);
@@ -57,6 +59,10 @@ pub fn walk_macro_structure<V: MacroStructureVisitor>(
     visitor: &mut V,
 ) {
     Walker { visitor }.statements(body);
+}
+
+pub fn walk_value_structure<V: MacroStructureVisitor>(value: &mut Value, visitor: &mut V) {
+    Walker { visitor }.value(value);
 }
 
 impl<V: MacroStructureVisitor> Walker<'_, V> {
@@ -247,6 +253,7 @@ impl<V: MacroStructureVisitor> Walker<'_, V> {
                 self.statements(&mut omp.body);
             }
         }
+        self.visitor.rewrite_statement(statement);
     }
 
     fn ordering(&mut self, ordering: &mut Option<Atomicity>) {
@@ -485,5 +492,6 @@ impl<V: MacroStructureVisitor> Walker<'_, V> {
             | ValueKind::Void
             | ValueKind::CodeUnits(_) => {}
         }
+        self.visitor.rewrite_value(whole);
     }
 }

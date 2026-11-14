@@ -7,7 +7,7 @@ mod declarations;
 mod macro_strip;
 pub use macro_strip::{
     MacroStructureVisitor, strip_all_macro_structure, strip_all_macro_structure_in_value,
-    walk_macro_structure,
+    walk_macro_structure, walk_value_structure,
 };
 mod module;
 mod module_print;

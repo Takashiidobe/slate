@@ -98,6 +98,7 @@ fn resolve_module(
         reserved_extents: HashMap::new(),
         bare_weakrefs: HashSet::new(),
         register_variables: HashMap::new(),
+        specializations: Default::default(),
         nested_functions: Vec::new(),
         context,
     };
@@ -412,6 +413,7 @@ impl Lowerer {
         self.resolve_object_requests(unit)?;
         self.finish_functions(unit.dialect.inline_semantics())?;
         self.complete_declaration_abis()?;
+        self.constant_asm_operands();
         let declared: Vec<_> = self.types.entities.types().collect();
         let access = declared
             .iter()

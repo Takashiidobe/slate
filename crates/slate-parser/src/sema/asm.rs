@@ -9,6 +9,7 @@ use crate::compiler_args::CompilerFlavor;
 use crate::ir::*;
 use crate::target::flag_condition;
 use crate::target_info::TargetFamily;
+use foldhash::HashMap;
 use num_bigint::BigInt;
 
 impl Lowerer {
@@ -65,12 +66,12 @@ impl Lowerer {
                     early_clobber,
                 },
             };
-            sources.push(self.source(output, constraint, Candidate::Output(kind)));
+            sources.push(self.source(operand_name(output), constraint, Candidate::Output(kind)));
         }
         for input in &operands.inputs {
             let constraint = constraint(&input.constraint.value, family);
             let candidate = self.input_candidate(&input.expr, &constraint)?;
-            sources.push(self.source(input, constraint, candidate));
+            sources.push(self.source(operand_name(input), constraint, candidate));
         }
         let (alternative, rejected) = select(&sources, family);
         lowered.alternative = alternative;
@@ -176,6 +177,105 @@ impl Lowerer {
                 selected,
             });
         }
+        self.place_pieces(&mut lowered, &renumbered);
+        lowered.clobbers = operands
+            .clobbers
+            .iter()
+            .map(|clobber| match &clobber.value {
+                ast::AsmClobber::Memory => AsmClobber::Memory,
+                ast::AsmClobber::Cc => AsmClobber::Cc,
+                ast::AsmClobber::Unwind => AsmClobber::Unwind,
+                ast::AsmClobber::Redzone => AsmClobber::Redzone,
+                ast::AsmClobber::Register(reg) => AsmClobber::Register(register(reg)),
+            })
+            .collect();
+        for label in &operands.labels {
+            lowered.labels.push(
+                self.names
+                    .references
+                    .iter()
+                    .find(|reference| reference.id == label.id)
+                    .map(|reference| reference.binding)
+                    .ok_or(ResolveError::Internal("missing asm label binding"))?,
+            );
+        }
+        Ok(lowered)
+    }
+
+    pub(super) fn reselect(&self, asm: &mut InlineAsm, known: &HashMap<BindingId, Value>) -> bool {
+        let family = self.context.target.family;
+        let unsupported = asm.operands.iter().any(|operand| match &operand.kind {
+            AsmOperandKind::InOut { input, .. } => input.is_some(),
+            AsmOperandKind::InPlace(_) | AsmOperandKind::Memory { .. } => {
+                !operand.constraint.memory_only()
+            }
+            _ => false,
+        });
+        if asm.alternative.is_some() || unsupported {
+            return false;
+        }
+        let sources: Vec<_> = asm
+            .operands
+            .iter()
+            .map(|operand| {
+                let candidate = match &operand.kind {
+                    AsmOperandKind::In(value) => Candidate::Value(substitute(value, known)),
+                    kind => Candidate::Output(kind.clone()),
+                };
+                self.source(operand.name.clone(), operand.constraint.clone(), candidate)
+            })
+            .collect();
+        let (Some(alternative), rejected) = select(&sources, family) else {
+            return false;
+        };
+        for (operand, source) in asm.operands.iter_mut().zip(sources) {
+            let selected = match choose(&source, alternative, family).ok() {
+                Some(Choice::Class(AsmOperandClass::Register(class))) => {
+                    let pinned = match &operand.kind {
+                        AsmOperandKind::In(value) => {
+                            self.pinned_register(&Candidate::Value(value.clone()))
+                        }
+                        kind => self.pinned_register(&Candidate::Output(kind.clone())),
+                    };
+                    Some(match pinned {
+                        Some(register) if holds(class, &register) => {
+                            AsmOperandClass::Explicit(register)
+                        }
+                        _ => AsmOperandClass::Register(class),
+                    })
+                }
+                Some(Choice::Class(class)) => Some(class),
+                Some(Choice::Tie(_)) | None => None,
+            };
+            if let AsmOperandKind::In(value) = &mut operand.kind {
+                match (&selected, source.constant, source.symbol) {
+                    (Some(AsmOperandClass::Symbol), _, Some(symbol)) => {
+                        operand.kind = AsmOperandKind::Symbol(symbol);
+                    }
+                    (Some(AsmOperandClass::Immediate), Some(constant), _) => {
+                        value.node.value = ValueKind::Constant(integer_number(&value.ty, constant));
+                    }
+                    _ => {}
+                }
+            }
+            operand.selected = selected;
+        }
+        asm.alternative = Some(alternative);
+        asm.rejected = rejected;
+        let identity: Vec<_> = (0..asm.operands.len()).map(|index| (index, None)).collect();
+        self.place_pieces(asm, &identity);
+        if asm.options.is_some() {
+            asm.options = Some(options(asm, false, family, self.types.flavor()));
+        }
+        true
+    }
+
+    fn place_pieces(
+        &self,
+        lowered: &mut InlineAsm,
+        renumbered: &[(usize, Option<AsmRegisterView>)],
+    ) {
+        let family = self.context.target.family;
         let gcc_arm = family == TargetFamily::Arm32 && self.types.flavor().is_gcc();
         let mut pieces = Vec::with_capacity(lowered.pieces.len());
         for mut piece in std::mem::take(&mut lowered.pieces) {
@@ -211,29 +311,28 @@ impl Lowerer {
             pieces.push(piece);
         }
         lowered.pieces = pieces;
-        lowered.clobbers = operands
-            .clobbers
-            .iter()
-            .map(|clobber| match &clobber.value {
-                ast::AsmClobber::Memory => AsmClobber::Memory,
-                ast::AsmClobber::Cc => AsmClobber::Cc,
-                ast::AsmClobber::Unwind => AsmClobber::Unwind,
-                ast::AsmClobber::Redzone => AsmClobber::Redzone,
-                ast::AsmClobber::Register(reg) => AsmClobber::Register(register(reg)),
-            })
-            .collect();
-        for label in &operands.labels {
-            lowered.labels.push(
-                self.names
-                    .references
-                    .iter()
-                    .find(|reference| reference.id == label.id)
-                    .map(|reference| reference.binding)
-                    .ok_or(ResolveError::Internal("missing asm label binding"))?,
-            );
-        }
-        Ok(lowered)
     }
+}
+
+fn operand_name(operand: &ast::AsmOperand) -> Option<String> {
+    operand.name.as_ref().map(|name| name.value.clone())
+}
+
+pub(super) fn substitute(value: &Value, known: &HashMap<BindingId, Value>) -> Value {
+    struct Substitute<'a>(&'a HashMap<BindingId, Value>);
+    impl MacroStructureVisitor for Substitute<'_> {
+        fn rewrite_value(&mut self, value: &mut Value) {
+            if let ValueKind::Read { place, .. } = &value.node.value
+                && let PlaceKind::Binding(id) = place.without_macro_holes().kind
+                && let Some(known) = self.0.get(&id)
+            {
+                *value = known.clone();
+            }
+        }
+    }
+    let mut value = value.clone();
+    walk_value_structure(&mut value, &mut Substitute(known));
+    value
 }
 
 impl Lowerer {
@@ -253,7 +352,7 @@ impl Lowerer {
 
     fn source<'a>(
         &self,
-        operand: &ast::AsmOperand,
+        name: Option<String>,
         mut constraint: AsmConstraint,
         candidate: Candidate<'a>,
     ) -> Source<'a> {
@@ -312,7 +411,7 @@ impl Lowerer {
             )
         }) && matches!(candidate, Candidate::Lvalue { .. });
         Source {
-            name: operand.name.as_ref().map(|name| name.value.clone()),
+            name,
             constraint,
             candidate,
             width: if decays { None } else { width },
@@ -367,8 +466,12 @@ impl Lowerer {
         }
     }
 
-    fn symbol(&self, value: &Value) -> Option<AsmSymbol> {
+    pub(super) fn symbol(&self, value: &Value) -> Option<AsmSymbol> {
         match &value.node.value {
+            ValueKind::MacroArg { value, .. } => self.symbol(value),
+            ValueKind::MacroExpansion { evaluation, .. } if evaluation.statements.is_empty() => {
+                self.symbol(&evaluation.value)
+            }
             ValueKind::AddressOf(place)
             | ValueKind::ArrayDecay { place, .. }
             | ValueKind::FunctionDecay { place } => self.symbol_place(place),
@@ -430,6 +533,7 @@ impl Lowerer {
                 })
             }
             PlaceKind::Deref(pointer) => self.symbol(pointer),
+            PlaceKind::MacroArg { place, .. } => self.symbol_place(place),
             PlaceKind::Field {
                 base,
                 index,

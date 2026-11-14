@@ -1814,6 +1814,22 @@ impl FunctionLowerer<'_, '_> {
                     let ir::AsmOperandKind::In(value) = &operand.kind else {
                         return Err(unsupported_asm(format!("constant output {index}")));
                     };
+                    let widened;
+                    let value = match &value.node.value {
+                        ValueKind::Constant(Number::Bool(flag)) => {
+                            let mut byte = value.clone();
+                            byte.ty = ir::Type::Numeric(ir::NumericType::Integer {
+                                width: 8,
+                                signed: false,
+                                bit_precise: false,
+                            });
+                            byte.node.value =
+                                ValueKind::Constant(Number::Integer(u8::from(*flag).into()));
+                            widened = byte;
+                            &widened
+                        }
+                        _ => value,
+                    };
                     if !matches!(
                         value.node.value,
                         ValueKind::Constant(Number::Integer(_) | Number::SignedInteger(_))
