@@ -188,6 +188,9 @@ similar rust.
 - [nginx](https://nginx.org)
   - Translates the default `nginx` build. Passes all 2584 tests in the 176
     upstream `nginx-tests` files that apply to its modules, matching native.
+- [NumPy](https://numpy.org)
+  - Translates all 151 C units of NumPy's `aarch64-linux-gnu` clang cross build,
+    including the NEON (ASIMD) dispatch paths. Not run yet
 
 ### MSVC
 
