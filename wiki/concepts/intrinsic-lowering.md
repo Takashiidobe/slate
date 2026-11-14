@@ -70,9 +70,17 @@
   is `splat(0) - v`); lane-wise conversions are
   `std::simd::num::Simd{Int,Uint,Float}::cast::<T>(v)`, chosen by the source
   element (`Expr::GenericPath` carries the turbofish).
-- Vector comparisons yield `-1`/`0` integer lanes. Dynamic shuffle masks and
-  ordinary C vector function ABI remain barriers; function addresses cannot
-  expose LLVM intrinsics.
+- Vector comparisons yield `-1`/`0` integer lanes. Dynamic shuffle masks remain
+  barriers; function addresses cannot expose LLVM intrinsics.
+- An extern C function with vector parameters or result lowers to
+  `extern "C"` with `Simd` types when every vector pass is `direct` (x86 and
+  AArch64). rustc requires the caller to enable the feature that holds the
+  vector (`avx` for 32 bytes, `avx512f` for 64), so such an extern is declared
+  as `__slate_vabi_<name>` (`link_name` the C symbol) behind a private
+  `#[target_feature] unsafe fn <name>` shim with the Rust ABI; callers need no
+  feature. A non-`direct` vector pass (a vector wider than the unit's ISA,
+  `byval`), weak externs, other targets, and exported definitions with vector
+  ABI stay barriers (`extern_vector_abi.c`).
 - `slate.vector_sign_bitmask(v)` (signed integer lanes) is
   `simd_lt(v, Simd::default()).to_bitmask() as T`; `slate.masked_load(p, w, k)`
   is `Simd::load_select_ptr(p as *const Lane, Mask::from_bitmask(k), w)`, which

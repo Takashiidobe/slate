@@ -275,7 +275,7 @@ impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_extern(
         &mut self,
         function: &slate_parser::ast::Span<ir::Function>,
-    ) -> Result<(rust::Abi, rust::ExternDecl)> {
+    ) -> Result<(rust::Abi, rust::ExternDecl, Option<FnDef>)> {
         let (fixed, variadic) = match &function.parameters {
             ir::Parameters::Prototype { fixed, variadic } => (fixed.as_slice(), variadic),
             ir::Parameters::Unprototyped => (&[][..], &true),
@@ -283,15 +283,9 @@ impl FunctionLowerer<'_, '_> {
         self.tables.reject_sme_state(function)?;
         let abi = self.tables.function_abi(function)?;
         self.dependencies.vectorcall |= abi == rust::Abi::VectorcallUnwind;
-        if self.tables.function_has_vector(function) {
-            return Err(Construct::Function {
-                name: function.name.clone(),
-                detail: "vector C ABI".into(),
-            }
-            .into());
-        }
+        let vector_feature = self.tables.vector_abi_feature(function)?;
         let ret = self.lower_return(function)?;
-        let attrs = self
+        let mut attrs: Vec<Attr> = self
             .tables
             .builtin_library(function.value.id)
             .map(str::to_owned)
@@ -324,11 +318,21 @@ impl FunctionLowerer<'_, '_> {
                         ret: Box::new(ret.unwrap_or(rust::Type::Unit)),
                     },
                 },
+                None,
             ));
         }
-        let decl = rust::ExternDecl::Fn(rust::ExternFnDecl {
+        let name = match vector_feature {
+            Some(_) => {
+                if attrs.is_empty() {
+                    attrs.push(Attr::LinkName(function.name.clone()));
+                }
+                format!("__slate_vabi_{}", function.name)
+            }
+            None => function.name.clone(),
+        };
+        let mut decl = rust::ExternFnDecl {
             attrs,
-            name: function.name.clone(),
+            name,
             identity: self
                 .tables
                 .names
@@ -355,8 +359,34 @@ impl FunctionLowerer<'_, '_> {
             variadic: *variadic,
             ret,
             safe: false,
+        };
+        let shim = vector_feature.map(|feature| {
+            decl.identity = FunctionIdentity::Unknown;
+            let call = Expr::Call {
+                func: Box::new(Expr::Var(decl.name.as_str().into())),
+                args: decl
+                    .params
+                    .iter()
+                    .map(|param| Expr::Var(param.name.as_str().into()))
+                    .collect(),
+                binding: CallBinding::Generated,
+            };
+            FnDef {
+                comments: Vec::new(),
+                attrs: vec![Attr::TargetFeature(feature.into())],
+                vis: rust::Visibility::Private,
+                unsafe_: true,
+                abi: None,
+                name: function.name.clone(),
+                params: decl.params.clone(),
+                ret: decl.ret.clone(),
+                body: vec![Stmt::Return(Some(Expr::Unsafe(Box::new(rust::Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(call)),
+                }))))],
+            }
         });
-        Ok((abi, decl))
+        Ok((abi, rust::ExternDecl::Fn(decl), shim))
     }
 
     pub(super) fn lower_function(

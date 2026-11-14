@@ -110,6 +110,51 @@ impl Tables<'_> {
         Ok((!enabled.is_empty()).then(|| Attr::TargetFeature(enabled.join(","))))
     }
 
+    pub(super) fn vector_abi_feature(
+        &self,
+        function: &ir::Function,
+    ) -> Result<Option<&'static str>> {
+        if !self.function_has_vector(function) {
+            return Ok(None);
+        }
+        let barrier = |detail: String| -> Failure {
+            Construct::Function {
+                name: function.name.clone(),
+                detail,
+            }
+            .into()
+        };
+        let Some(signature) = &function.abi else {
+            return Err(barrier("vector C ABI".into()));
+        };
+        if function.symbol.weak
+            || !matches!(self.target.family, TargetFamily::AArch64) && !self.is_x86()
+        {
+            return Err(barrier(format!("vector C ABI {signature}")));
+        }
+        let passes = fixed_parameters(&function.parameters)
+            .iter()
+            .map(|parameter| &parameter.ty)
+            .zip(&signature.arguments)
+            .chain(function.return_type.iter().zip([&signature.result]));
+        let mut widest = 0;
+        for (ty, pass) in passes {
+            if !matches!(self.resolve_type(ty), ir::Type::Vector { .. }) {
+                continue;
+            }
+            if *pass != ir::AbiPass::Direct {
+                return Err(barrier(format!("vector C ABI {signature}")));
+            }
+            let (size, _) = self.storage_of(ty).ok_or_else(|| unsupported_type(ty))?;
+            widest = widest.max(size);
+        }
+        Ok(match widest {
+            32 if self.is_x86() => Some("avx"),
+            64 if self.is_x86() => Some("avx512f"),
+            _ => None,
+        })
+    }
+
     pub(super) fn reject_sme_state(&self, function: &ir::Function) -> Result<()> {
         let Some(sme) = function.semantics.sme.first() else {
             return Ok(());

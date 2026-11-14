@@ -973,8 +973,14 @@ impl<'m> ModuleLowerer<'m> {
                 continue;
             }
             match self.lowerer().lower_extern(function) {
-                Ok((rust::Abi::CUnwind, decl)) => self.externs.push(decl),
-                Ok((abi, decl)) => self.convention_externs.entry(abi).or_default().push(decl),
+                Ok((abi, decl, shim)) => {
+                    if abi == rust::Abi::CUnwind {
+                        self.externs.push(decl);
+                    } else {
+                        self.convention_externs.entry(abi).or_default().push(decl);
+                    }
+                    self.items.extend(shim.map(Item::Fn));
+                }
                 Err(error) => self.barriers.push(
                     error
                         .within(
