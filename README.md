@@ -189,6 +189,8 @@ similar rust.
   - Translates the default `nginx` build. Passes all 2584 tests in the 176
     upstream `nginx-tests` files that apply to its modules, matching native.
 - [NumPy](https://numpy.org)
+  - x86_64 passes 14872 tests, and skips 17, same as the C build on my machine.
+    28.7s compared to 35.7s as well.
   - Translates all 151 C units of NumPy's `aarch64-linux-gnu` clang cross build,
     including the NEON (ASIMD) dispatch paths. Not run yet
 
