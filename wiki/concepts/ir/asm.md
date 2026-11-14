@@ -194,9 +194,14 @@ const int k = 2`, `table[1]`, `s.field`, string elements, `*ptr` to a
     `section` (`arch_static_branch(&key, true)`).
   - Unresolved internal functions that are left unreferenced are dropped, as
     clang never emits them.
-  - Not handled: asm with a tied input, a non-memory-only `InPlace` input,
-    or callees with static locals or nested functions
-    (`ir_asm_constant_after_inlining.c`, slate
+  - Reselection keeps a tied input in its output's slot and keeps an
+    `InPlace` input in memory (its constraint narrowed to its memory classes),
+    so `"0"(x)` and `"g"(*p)` beside an `"i"` resolve. A block-scope `static`
+    is a module global, so every clone shares it
+    (`ir_asm_constant_after_inlining_tied_inplace.c`, slate
+    `x86_64/asm_immediate_after_inlining_tied_and_static.c`).
+  - Not handled: an MSVC `Memory` operand that is not memory-only, and
+    callees with nested functions (`ir_asm_constant_after_inlining.c`, slate
     `x86_64/asm_immediate_after_inlining.c`).
 
 ### Memory operands

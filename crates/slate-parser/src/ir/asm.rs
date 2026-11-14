@@ -375,6 +375,14 @@ impl AsmConstraint {
         })
     }
 
+    pub fn retain_memory(&mut self) {
+        for alternative in &mut self.alternatives {
+            if let AsmConstraintLocation::Letters { classes, .. } = &mut alternative.location {
+                classes.retain(|class| matches!(class, AsmOperandClass::Memory));
+            }
+        }
+    }
+
     pub fn allows_immediate(&self) -> bool {
         self.alternatives.iter().any(|alternative| {
             alternative

@@ -205,10 +205,8 @@ impl Lowerer {
     pub(super) fn reselect(&self, asm: &mut InlineAsm, known: &HashMap<BindingId, Value>) -> bool {
         let family = self.context.target.family;
         let unsupported = asm.operands.iter().any(|operand| match &operand.kind {
-            AsmOperandKind::InOut { input, .. } => input.is_some(),
-            AsmOperandKind::InPlace(_) | AsmOperandKind::Memory { .. } => {
-                !operand.constraint.memory_only()
-            }
+            AsmOperandKind::InPlace(_) => !operand.constraint.allows_memory(),
+            AsmOperandKind::Memory { .. } => !operand.constraint.memory_only(),
             _ => false,
         });
         if asm.alternative.is_some() || unsupported {
@@ -218,11 +216,16 @@ impl Lowerer {
             .operands
             .iter()
             .map(|operand| {
+                let mut constraint = operand.constraint.clone();
                 let candidate = match &operand.kind {
                     AsmOperandKind::In(value) => Candidate::Value(substitute(value, known)),
+                    AsmOperandKind::InPlace(_) => {
+                        constraint.retain_memory();
+                        Candidate::Output(operand.kind.clone())
+                    }
                     kind => Candidate::Output(kind.clone()),
                 };
-                self.source(operand.name.clone(), operand.constraint.clone(), candidate)
+                self.source(operand.name.clone(), constraint, candidate)
             })
             .collect();
         let (Some(alternative), rejected) = select(&sources, family) else {
