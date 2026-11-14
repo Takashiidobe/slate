@@ -811,7 +811,9 @@ impl<'m> ModuleLowerer<'m> {
                 global.definition
                     && !global.symbol.selectany
                     && global.variable.initializer.as_ref().is_some_and(|value| {
-                        tables.is_constant_initializer(value) && tables.holds_address_integer(value)
+                        tables.is_constant_initializer(value)
+                            && (tables.holds_address_integer(value)
+                                || tables.holds_integer_function_pointer(value))
                     })
             })
             .map(|global| global.variable.id)

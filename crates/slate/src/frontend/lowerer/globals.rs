@@ -378,6 +378,21 @@ impl Tables<'_> {
         }
     }
 
+    pub(super) fn holds_integer_function_pointer(&self, value: &ir::Value) -> bool {
+        match &value.node.value {
+            ValueKind::Aggregate { members, .. } => members
+                .iter()
+                .any(|member| self.holds_integer_function_pointer(&member.value)),
+            _ => {
+                matches!(self.resolve_type(&value.ty), ir::Type::Pointer { pointee, .. }
+                    if matches!(self.resolve_type(pointee), ir::Type::Function { .. }))
+                    && self
+                        .fold_pointer_address(value)
+                        .is_some_and(|address| address != 0)
+            }
+        }
+    }
+
     pub(super) fn is_address_integer(&self, value: &ir::Value) -> bool {
         let pointer_sized = |ty: &ir::Type| {
             matches!(
@@ -462,15 +477,22 @@ impl FunctionLowerer<'_, '_> {
                 index: 0,
             };
         }
+        let address_integer = self.tables.is_address_integer(value);
         self.in_static_initializer = true;
         self.address_image_fill = true;
         let filled = match &value.node.value {
             ValueKind::Aggregate { members, .. } => {
                 self.fill_aggregate(&value.ty, members, &base, true, &mut stmts)
             }
-            _ => self
+            _ if address_integer => self
                 .address_integer_write(base, value)
                 .map(|write| stmts.push(write)),
+            _ => self.lower_value(value).map(|value| {
+                stmts.push(Stmt::Assign {
+                    target: base,
+                    value,
+                })
+            }),
         };
         self.in_static_initializer = false;
         self.address_image_fill = false;

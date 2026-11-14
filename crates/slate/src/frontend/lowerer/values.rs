@@ -989,9 +989,14 @@ impl FunctionLowerer<'_, '_> {
                 if let Some(unaligned) = self.lower_unaligned_read(place)? {
                     return Ok(unaligned);
                 }
+                let in_packed = self.bit_unit_in_packed(place);
                 let lowered = match self.bit_field_accessor(place, "get")? {
                     Some((storage, getter)) => Expr::MethodCall {
-                        recv: Box::new(storage),
+                        recv: Box::new(if in_packed {
+                            Self::unaligned_bit_unit_read(storage)
+                        } else {
+                            storage
+                        }),
                         method: getter,
                         args: Vec::new(),
                     },

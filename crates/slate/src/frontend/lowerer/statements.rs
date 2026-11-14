@@ -11,7 +11,7 @@ impl FunctionLowerer<'_, '_> {
 
     pub(super) fn lower_assignment(&mut self, place: &ir::Place, value: Expr) -> Result<Stmt> {
         if place.access.volatile {
-            if let Some(write) = self.volatile_bit_field_write(place, value.clone())? {
+            if let Some(write) = self.bit_unit_write(place, value.clone(), true)? {
                 return Ok(write);
             }
             self.reject_unaligned_volatile(place)?;
@@ -85,6 +85,11 @@ impl FunctionLowerer<'_, '_> {
         }
         if let Some(unaligned) = self.lower_unaligned_write(place, &value)? {
             return Ok(unaligned);
+        }
+        if self.bit_unit_in_packed(place)
+            && let Some(write) = self.bit_unit_write(place, value.clone(), false)?
+        {
+            return Ok(write);
         }
         let assignment = match self.bit_field_accessor(place, "set")? {
             Some((storage, setter)) if is_trivial_operand(&value) => Stmt::Expr(Expr::MethodCall {

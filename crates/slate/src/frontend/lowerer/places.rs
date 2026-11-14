@@ -113,17 +113,21 @@ impl FunctionLowerer<'_, '_> {
         let PlaceKind::Field { base, .. } = &without_macro_holes(place).kind else {
             return false;
         };
-        if self.lower_type(&base.ty).is_err() {
+        self.packed_record(&base.ty) || self.place_in_packed(base)
+    }
+
+    fn packed_record(&mut self, ty: &ir::Type) -> bool {
+        if self.lower_type(ty).is_err() {
             return false;
         }
         matches!(
-            self.tables.resolve_type(&base.ty),
+            self.tables.resolve_type(ty),
             ir::Type::Defined(id)
                 if matches!(
                     self.dependencies.records.get(&id.0),
                     Some(Record::Built(record)) if record.packed.is_some()
                 )
-        ) || self.place_in_packed(base)
+        )
     }
 
     pub(super) fn reject_unaligned_volatile(&mut self, place: &ir::Place) -> Result<()> {
@@ -653,13 +657,59 @@ impl FunctionLowerer<'_, '_> {
         }
     }
 
-    pub(super) fn volatile_bit_field_write(
+    pub(super) fn bit_unit_in_packed(&mut self, place: &ir::Place) -> bool {
+        let PlaceKind::Field {
+            base,
+            bits: Some(_),
+            ..
+        } = &place.kind
+        else {
+            return false;
+        };
+        let mut current = without_macro_holes(base);
+        while let PlaceKind::Field { base, .. } = &current.kind {
+            if self
+                .erased_copy
+                .as_ref()
+                .is_some_and(|(erased, _)| std::ptr::eq(*erased, current))
+            {
+                return false;
+            }
+            if self.packed_record(&base.ty) {
+                return true;
+            }
+            current = without_macro_holes(base);
+        }
+        false
+    }
+
+    pub(super) fn unaligned_bit_unit_read(storage: Expr) -> Expr {
+        Expr::Unsafe(Box::new(rust::Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(Expr::Call {
+                func: Box::new(Expr::Var("std::ptr::read_unaligned".into())),
+                args: vec![Expr::AddrOf {
+                    mutable: false,
+                    expr: Box::new(storage),
+                }],
+                binding: CallBinding::Generated,
+            })),
+        }))
+    }
+
+    pub(super) fn bit_unit_write(
         &mut self,
         place: &ir::Place,
         value: Expr,
+        volatile: bool,
     ) -> Result<Option<Stmt>> {
         let Some((storage, setter)) = self.bit_field_accessor(place, "set")? else {
             return Ok(None);
+        };
+        let (read, write) = if volatile {
+            ("std::ptr::read_volatile", "std::ptr::write_volatile")
+        } else {
+            ("std::ptr::read_unaligned", "std::ptr::write_unaligned")
         };
         let address = Expr::AddrOf {
             mutable: true,
@@ -682,7 +732,11 @@ impl FunctionLowerer<'_, '_> {
                                 name: unit.clone(),
                                 mutable: true,
                                 ty: None,
-                                init: Some(volatile_read(address.clone())),
+                                init: Some(Expr::Call {
+                                    func: Box::new(Expr::Var(read.into())),
+                                    args: vec![address.clone()],
+                                    binding: CallBinding::Generated,
+                                }),
                             },
                             Stmt::Expr(Expr::MethodCall {
                                 recv: Box::new(Expr::Var(unit.as_str().into())),
@@ -690,7 +744,7 @@ impl FunctionLowerer<'_, '_> {
                                 args: vec![Expr::Var(operand.into())],
                             }),
                             Stmt::Expr(Expr::Call {
-                                func: Box::new(Expr::Var("std::ptr::write_volatile".into())),
+                                func: Box::new(Expr::Var(write.into())),
                                 args: vec![address, Expr::Var(unit.into())],
                                 binding: CallBinding::Generated,
                             }),
