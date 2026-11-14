@@ -39,7 +39,10 @@ impl Uses {
 impl MacroStructureVisitor for Uses {
     fn statement(&mut self, statement: &Statement) {
         match statement {
-            Statement::Let(variable) => self.locals.push(variable.clone()),
+            Statement::Let(variable) => {
+                self.callees.extend(variable.cleanup);
+                self.locals.push(variable.clone())
+            }
             Statement::Asm(asm) => {
                 self.rejected |= asm.alternative.is_none() && !asm.rejected.is_empty()
             }

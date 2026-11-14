@@ -1220,6 +1220,9 @@ def barrier_rows(entry):
             rows.append({"scope": parts[0], "site": "", "kind": "ok", "detail": ""})
         elif len(parts) >= 4:
             rows.append({"scope": parts[0], "site": parts[1], "kind": parts[2], "detail": parts[3]})
+        elif len(parts) == 3 and parts[0] == "<invalid>":
+            scope, _, detail = parts[2].partition(": ")
+            rows.append({"scope": scope, "site": parts[1], "kind": "invalid", "detail": f"invalid IR: {detail}"})
     if result.returncode and not rows:
         error = [line for line in result.stderr.splitlines() if "×" in line] or result.stderr.strip().splitlines()
         detail = re.sub(r"^.*× (parse \S+: )?", "", error[0]).strip() if error else f"exit {result.returncode}"

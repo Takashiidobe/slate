@@ -193,7 +193,10 @@ const int k = 2`, `table[1]`, `s.field`, string elements, `*ptr` to a
     keeps the signature and arguments, and drops symbol attributes except
     `section` (`arch_static_branch(&key, true)`).
   - Unresolved internal functions that are left unreferenced are dropped, as
-    clang never emits them.
+    clang never emits them. A local's `cleanup` target counts as a call, both
+    for the unresolved propagation and as a reference, so a `guard()`
+    destructor whose own calls were specialized stays
+    (`ir_asm_cleanup_after_inlining.c`).
   - Reselection keeps a tied input in its output's slot and keeps an
     `InPlace` input in memory (its constraint narrowed to its memory classes),
     so `"0"(x)` and `"g"(*p)` beside an `"i"` resolve. A block-scope `static`
