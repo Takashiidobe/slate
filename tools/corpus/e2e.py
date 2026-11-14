@@ -101,6 +101,7 @@ class TranslationOnly:
     extension: str | None = None
     python: str = ""
     test: list[str] = field(default_factory=list)
+    shard_units: int | None = None
 
 
 RUST_NATIVE_LIBS = ["-lgcc_s", "-lutil", "-lrt", "-lpthread", "-lm", "-ldl", "-lc"]
@@ -721,6 +722,7 @@ def translation_unit(entry, source, recipe, flavor):
         "file": str(source),
         "arguments": [COMPILERS[flavor], *args, "-c", str(source)],
         "native": native_arguments(argv, entry),
+        "standalone": "-S" in argv,
     }
 
 
@@ -1041,7 +1043,7 @@ def translate_executable(project_dir, build_dir, executable, recipe, database, f
         shutil.rmtree(work)
     work.mkdir(parents=True)
     commands = work / "compile_commands.json"
-    commands.write_text(json.dumps([{key: value for key, value in unit.items() if key != "native"}
+    commands.write_text(json.dumps([{key: value for key, value in unit.items() if key not in ("native", "standalone")}
                                     for unit in units], indent=1) + "\n")
     crate = work / "crate"
     code, _ = run([SLATE, "translate-project", "--compile-commands", commands, project_dir, crate],
@@ -1601,8 +1603,117 @@ RECIPES = {
     ),
     "openblas": TranslationOnly(archive="libopenblas.a", smoke="openblas",
                                 object_prefixes=["cblas_dgemm.o", "cblas_xerbla.o"]),
-    "linux": TranslationOnly(required_args=["-D__KERNEL__"]),
+    "linux": TranslationOnly(required_args=["-D__KERNEL__"], shard_units=120),
 }
+
+
+def shard_units(units, project_dir, limit):
+    standalone = [unit for unit in units if unit["standalone"]]
+    linked = [unit for unit in units if not unit["standalone"]]
+    paths = {unit["file"]: Path(os.path.relpath(unit["file"], project_dir)).parts for unit in linked}
+
+    def split(prefix, members):
+        if len(members) <= limit:
+            return [(prefix, members)]
+        groups = collections.defaultdict(list)
+        for unit in members:
+            parts = paths[unit["file"]]
+            groups[parts[len(prefix)] if len(parts) > len(prefix) + 1 else ""].append(unit)
+        if list(groups) == [""]:
+            return [((*prefix, str(index)), members[start:start + limit])
+                    for index, start in enumerate(range(0, len(members), limit))]
+        packed = []
+        pending = []
+        for key in sorted(groups):
+            for name, shard in split((*prefix, key) if key else prefix, groups[key]):
+                if len(shard) < limit // 4 and sum(map(len, (s for _, s in pending))) + len(shard) <= limit:
+                    pending.append((name, shard))
+                else:
+                    packed.append((name, shard))
+        if pending:
+            packed.append(((*prefix, "_packed") if len(pending) > 1 else pending[0][0],
+                           [unit for _, shard in pending for unit in shard]))
+        return packed
+
+    shards = split((), linked)
+    shards += [(Path(os.path.relpath(unit["file"], project_dir)).with_suffix("").parts, [unit]) for unit in standalone]
+    names = ["_".join(name).replace("-", "_").replace(".", "_") or "root" for name, _ in shards]
+    if len(set(names)) != len(names):
+        raise SystemExit(f"duplicate shard names: {[n for n, c in collections.Counter(names).items() if c > 1]}")
+    return dict(zip(names, (shard for _, shard in shards)))
+
+
+def rustc_error_cluster(line):
+    message = line.split(": error", 1)[1] if ": error" in line else line
+    message = re.sub(r"`[^`]*`", "`_`", message)
+    return re.sub(r"\balloc\d+|0x[0-9a-f]+(\[noalloc\])?|-?\b\d+\b", "N", message).strip()
+
+
+def sharded_stages(units, project_dir, out, recipe, args, finish):
+    shards = shard_units(units, project_dir, recipe.shard_units)
+    root = out / "shards"
+    if root.exists():
+        shutil.rmtree(root)
+    root.mkdir()
+    (out / "shards.json").write_text(json.dumps(
+        {name: [os.path.relpath(unit["file"], project_dir) for unit in shard] for name, shard in shards.items()},
+        indent=1) + "\n")
+    log(f"{len(shards)} shards, largest {max(map(len, shards.values()))} units")
+    failed = {}
+    total = 0
+    for index, (name, shard) in enumerate(shards.items()):
+        directory = root / name
+        directory.mkdir()
+        commands = directory / "compile_commands.json"
+        commands.write_text(json.dumps([{key: value for key, value in unit.items()
+                                         if key not in ("native", "standalone")} for unit in shard], indent=1) + "\n")
+        log(f"[{index + 1}/{len(shards)}] {name} ({len(shard)} units)")
+        crate_type = ["--crate-type", recipe.crate_type]
+        while True:
+            code, seconds = run([SLATE, "translate-project", *crate_type, "--compile-commands", commands,
+                                 project_dir, directory / "crate"], directory / "translate.log",
+                                env=dict(os.environ, SLATE_NO_FORMAT="1"))
+            total += seconds
+            if not (code and crate_type and "defines main" in (directory / "translate.log").read_text(errors="replace")):
+                break
+            crate_type = []
+        if code:
+            lines = (directory / "translate.log").read_text(errors="replace").splitlines()
+            failed[name] = next((line for line in lines if "error" in line), lines[-1] if lines else str(code))
+    report = [f"# translate: {len(shards) - len(failed)}/{len(shards)} shards", ""]
+    report += [f"- `{name}`: {error}" for name, error in failed.items()]
+    (out / "translate.md").write_text("\n".join(report) + "\n")
+    if not finish("translate", "failed" if failed else "ok", shards=len(shards), failed=sorted(failed),
+                  translate_seconds=round(total, 1), report="translate.md"):
+        return 1 if failed else 0
+
+    def check(name):
+        directory = root / name
+        env = dict(os.environ, CARGO_TARGET_DIR=str(directory / "cargo-target"))
+        code, _ = run(["cargo", "check", "--profile", args.profile, "--message-format=short"],
+                      directory / "check.log", cwd=directory / "crate", env=env)
+        errors = [line for line in (directory / "check.log").read_text(errors="replace").splitlines()
+                  if re.search(r": error(\[E\d+\])?:", line)]
+        return name, code, errors
+
+    with concurrent.futures.ThreadPoolExecutor(max(1, args.jobs // 4)) as pool:
+        results = list(pool.map(check, shards))
+    clusters = collections.defaultdict(lambda: [0, set(), ""])
+    for name, _, errors in results:
+        for line in errors:
+            cluster = clusters[rustc_error_cluster(line)]
+            cluster[0] += 1
+            cluster[1].add(name)
+            cluster[2] = cluster[2] or line
+    broken = sorted(name for name, code, _ in results if code)
+    report = [f"# check: {len(shards) - len(broken)}/{len(shards)} shards", "",
+              "| errors | shards | cluster | example |", "| --- | --- | --- | --- |"]
+    report += [f"| {count} | {len(names)} | {cluster} | `{example}` |"
+               for cluster, (count, names, example) in sorted(clusters.items(), key=lambda item: -item[1][0])]
+    (out / "check.md").write_text("\n".join(report) + "\n")
+    finish("check", "failed" if broken else "ok", errors=sum(count for count, _, _ in clusters.values()),
+           failed=broken, report="check.md")
+    return 1 if broken else 0
 
 
 def main():
@@ -1675,7 +1786,7 @@ def main():
         missing = native_check(project_dir, recipe, variables)
         units = translation_units(project_dir, recipe, database, variables, args.mode)
     commands = out / "compile_commands.json"
-    commands.write_text(json.dumps([{key: value for key, value in unit.items() if key != "native"}
+    commands.write_text(json.dumps([{key: value for key, value in unit.items() if key not in ("native", "standalone")}
                                     for unit in units], indent=1) + "\n")
     if not finish("native", "failed" if missing else "ok", missing=missing, units=len(units)):
         return 1 if missing else 0
@@ -1683,6 +1794,8 @@ def main():
     blocked = barrier_report(units, project_dir, out, args.jobs)
     if not finish("barriers", "ok", blocked=blocked, report="barriers.md"):
         return 0
+    if translation_only and recipe.shard_units:
+        return sharded_stages(units, project_dir, out, recipe, args, finish)
 
     crate = out / (args.project if library or make_library or translation_only else recipe.target)
     if crate.exists():
