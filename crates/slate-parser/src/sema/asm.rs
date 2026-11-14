@@ -427,6 +427,18 @@ impl Lowerer {
         expr: &'a ast::Expr,
         constraint: &AsmConstraint,
     ) -> Result<Candidate<'a>, ResolveError> {
+        let in_constant_initializer = self.in_constant_initializer;
+        self.in_constant_initializer |= constraint.allows_immediate();
+        let candidate = self.input_value_or_place(expr, constraint);
+        self.in_constant_initializer = in_constant_initializer;
+        candidate
+    }
+
+    fn input_value_or_place<'a>(
+        &mut self,
+        expr: &'a ast::Expr,
+        constraint: &AsmConstraint,
+    ) -> Result<Candidate<'a>, ResolveError> {
         if !constraint.allows_memory() {
             return Ok(Candidate::Value(self.expr(expr)?.value));
         }

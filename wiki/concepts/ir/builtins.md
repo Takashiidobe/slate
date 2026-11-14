@@ -99,6 +99,9 @@ Inside the initializer of a static or thread-storage object (file scope,
 block-scope `static`, and compound literals nested in it), a call to one of
 these builtins whose arguments are constant lowers to `const<T>(N)`
 annotated `c_builtin`, because gcc and clang constant-evaluate it there.
+The same fold applies to an asm input whose constraint allows an immediate
+(`"i"`, `"n"`, `"ir"`), so the kernel's `"i"(order_base_2(64))` selects
+`imm` even at -O0 (`Lowerer::input_candidate` in `sema/asm.rs`).
 Everywhere else, including automatic initializers with constant arguments,
 the call is kept. A result the evaluator rejects (`__builtin_clz(0)`) stays
 a call.

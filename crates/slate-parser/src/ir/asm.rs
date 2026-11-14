@@ -375,6 +375,14 @@ impl AsmConstraint {
         })
     }
 
+    pub fn allows_immediate(&self) -> bool {
+        self.alternatives.iter().any(|alternative| {
+            alternative
+                .classes()
+                .any(|class| matches!(class, AsmOperandClass::Immediate))
+        })
+    }
+
     pub fn memory_only(&self) -> bool {
         self.alternatives.iter().all(|alternative| {
             alternative.classes().next().is_some()
