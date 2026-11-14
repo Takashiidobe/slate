@@ -1,4 +1,5 @@
-use std::collections::{BTreeMap, BTreeSet, HashMap};
+use foldhash::{HashMap, HashMapExt};
+use std::collections::{BTreeMap, BTreeSet};
 
 use super::types::{BITS_MODULE, is_anonymous};
 use crate::backend::codegen::type_to_string;

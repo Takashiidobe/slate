@@ -1,7 +1,7 @@
 use crate::ast::*;
 use crate::ir::NameResolution;
 use crate::visit::{self, Visitor};
-use std::collections::{HashMap, HashSet};
+use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use std::convert::Infallible;
 
 #[derive(Clone, Copy)]

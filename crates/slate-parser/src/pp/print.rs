@@ -3,7 +3,7 @@ use crate::ast::{FileId, Loc, Span};
 use crate::charset::Charset;
 use crate::files::{Files, decode_source_bytes, raw_byte_for_char};
 use crate::lexer::{Token, token_spelling};
-use std::collections::HashMap;
+use foldhash::{HashMap, HashMapExt};
 use std::io::{self, Write};
 
 pub fn write_preprocessed(

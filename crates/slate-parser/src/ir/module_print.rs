@@ -276,7 +276,7 @@ impl DisplayModule<'_> {
         let mut table = if self.show_metadata {
             self.module.metadata.clone()
         } else {
-            Metadata::new()
+            Metadata::default()
         };
         let c_types = &self.module.c_types;
         for (id, c) in &c_types.nodes {

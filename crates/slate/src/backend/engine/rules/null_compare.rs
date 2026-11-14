@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use foldhash::HashMap;
 
 use super::walk;
 use crate::backend::engine::NodeRule;

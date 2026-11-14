@@ -2,11 +2,12 @@ use super::long_double;
 use crate::backend::rust_ast::{self as rust, Attr, BinOp, Expr, FnDef, FnParam, Item, Prim, Stmt};
 use crate::function_identity::CallBinding;
 use crate::function_identity::{FunctionIdentity, classify_function};
+use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use slate_parser::ast::Span;
 use slate_parser::files::Files;
 use slate_parser::ir::{self, BindingId, Number, PlaceKind, TypeId, ValueKind};
 use slate_parser::target_info::{TargetFamily, TargetInfo};
-use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet};
 
 mod arithmetic;
 mod asm;

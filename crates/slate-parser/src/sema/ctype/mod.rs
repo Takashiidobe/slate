@@ -5,7 +5,7 @@ mod layout;
 mod mangle;
 mod render;
 
-use std::collections::{HashMap, HashSet};
+use foldhash::{HashMap, HashSet};
 
 pub(super) use layout::rank_width;
 

@@ -5,13 +5,13 @@ use crate::ir::{
     LogicalOp, Number, NumericType, Overflow, Place, PlaceKind, ShiftFill, Type, UnaryArithOp,
     Value, ValueKind,
 };
+use foldhash::HashMap;
 use num_bigint::{BigInt, BigUint, Sign};
 use rustc_apfloat::{
     Float, FloatConvert, Status,
     ieee::{BFloat, Double, Half, Quad, Single, X87DoubleExtended},
 };
 use std::cmp::Ordering;
-use std::collections::HashMap;
 
 const MAX_WIDTH: u32 = 65_536;
 const MAX_DEPTH: usize = 256;

@@ -1,6 +1,6 @@
 use crate::compiler_args::CompilerFlavor;
 use crate::target_info::TargetInfo;
-use std::collections::HashMap;
+use foldhash::HashMap;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 use std::sync::{Mutex, OnceLock};

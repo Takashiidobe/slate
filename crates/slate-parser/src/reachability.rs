@@ -1,7 +1,7 @@
 use crate::ast::*;
 use crate::compiler_options::InlineSemantics;
 use crate::target_info::TargetEnvironment;
-use std::collections::{HashMap, HashSet};
+use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 
 pub fn filter_translation_unit(
     tu: &TranslationUnit,

@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use foldhash::{HashMap, HashMapExt};
 
 use crate::backend::rust_ast::{
     BinOp, Block, Comment, CommentAttach, Expr, FnParam, Ident, InlineAsm, Label, MatchArm,

@@ -2,7 +2,7 @@ use super::effects::Hoister;
 use super::numeric::ResolveError;
 use crate::ast::Span;
 use crate::ir::*;
-use std::collections::HashMap;
+use foldhash::HashMap;
 
 pub(super) fn normalize(
     module: &mut Module,

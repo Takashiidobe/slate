@@ -1,5 +1,5 @@
 use crate::backend::rust_ast::{AtomicPlace, Block, Expr, FnParam, Ident, Label, Pattern, Stmt};
-use std::collections::{HashMap, HashSet};
+use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 
 trait Names {
     fn push(&mut self) {}

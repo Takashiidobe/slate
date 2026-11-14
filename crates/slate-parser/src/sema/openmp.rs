@@ -2,7 +2,7 @@ use crate::ast::{Expr, ExprKind, InitDeclarator, Initializer, Stmt, StmtKind};
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
 use crate::ir::{BindingId, CompareOp};
 use crate::visit::{self, Visitor};
-use std::collections::HashMap;
+use foldhash::HashMap;
 
 use super::ctype::QualType;
 use super::types::TypeResolver;

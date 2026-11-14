@@ -1001,7 +1001,7 @@ impl From<bool> for RustValue {
 }
 
 mod ident_intern {
-    use std::collections::HashSet;
+    use foldhash::{HashSet, HashSetExt};
     use std::sync::{Mutex, OnceLock};
 
     #[derive(Debug, Clone, Copy, Eq)]

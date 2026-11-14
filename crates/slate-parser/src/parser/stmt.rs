@@ -6,7 +6,7 @@ use crate::ast::*;
 use crate::const_expr;
 use crate::error::ParseError;
 use crate::lexer::{Keyword, Token, TokenSpanExt};
-use std::collections::HashMap;
+use foldhash::{HashMap, HashMapExt};
 
 impl Parser {
     pub(super) fn parse_function_body(

@@ -54,7 +54,7 @@ pub(crate) struct DeclaratorParser<'a> {
     pub(super) biggest_alignment: i64,
     pub(super) context: ParseContext<'a>,
     pub(super) identifier_list: IdentifierList,
-    pub(super) definition_bindings: std::collections::HashMap<String, super::NameBinding>,
+    pub(super) definition_bindings: foldhash::HashMap<String, super::NameBinding>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -76,7 +76,7 @@ impl<'a> DeclaratorParser<'a> {
                 }),
             context,
             identifier_list: IdentifierList::Rejected,
-            definition_bindings: std::collections::HashMap::new(),
+            definition_bindings: foldhash::HashMap::default(),
         }
     }
 

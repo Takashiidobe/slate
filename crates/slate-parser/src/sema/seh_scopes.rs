@@ -1,6 +1,6 @@
 use crate::ast::*;
 use crate::visit::{self, Visitor};
-use std::collections::HashMap;
+use foldhash::HashMap;
 use std::convert::Infallible;
 
 #[derive(Clone, Copy, PartialEq, Eq)]

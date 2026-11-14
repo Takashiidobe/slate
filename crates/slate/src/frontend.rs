@@ -1,3 +1,4 @@
+use foldhash::HashSet;
 use slate_parser::ast::TranslationUnit;
 use slate_parser::compiler_args::CompilerArgs;
 use slate_parser::dialect::Dialect;
@@ -6,7 +7,6 @@ use slate_parser::ir::{BindingId, Module};
 use slate_parser::parser::{Parser, Preprocessed};
 use slate_parser::pp::{DirectiveDiagnostic, PPNode, PreprocessTrace};
 use slate_parser::sema::Sema;
-use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 

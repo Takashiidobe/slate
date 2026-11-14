@@ -3,7 +3,7 @@ use super::numeric::ResolveError;
 use crate::ast::{Expr, ExprKind, FunctionDefinition, NodeId, Span, Stmt, StmtKind};
 use crate::ir::*;
 use crate::visit::{self, Visitor};
-use std::collections::HashMap;
+use foldhash::HashMap;
 
 pub(super) struct NestedScope {
     id: BindingId,

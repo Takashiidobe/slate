@@ -1,4 +1,5 @@
-use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
+use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
+use std::collections::{BTreeMap, BTreeSet};
 
 use super::rules::walk::{child_exprs, child_exprs_mut, stmt_exprs, stmt_exprs_mut};
 use super::shadow::visit_names;

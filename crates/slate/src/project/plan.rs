@@ -1,5 +1,6 @@
 use super::matrix::{Matrix, MatrixError};
 use crate::frontend::{self, PreprocessedUnit};
+use foldhash::{HashMap, HashMapExt};
 use rayon::prelude::*;
 use slate_parser::ast::{FileId, Span};
 use slate_parser::files::Files;
@@ -7,7 +8,7 @@ use slate_parser::lexer::{Token, token_spelling};
 use slate_parser::pp::{
     ArmState, FeatureSet, PPNode, PPNodeKind, PreprocessTrace, RootFeatures, TokenTrace,
 };
-use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::fmt::Write;
 use std::path::{Path, PathBuf};
 

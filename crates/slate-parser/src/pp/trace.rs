@@ -3,7 +3,8 @@ use super::syntax::{Directive, directive_spelling, identifier};
 use super::{Preprocessor, is_defined_operator};
 use crate::ast::{FileId, Loc, Span};
 use crate::lexer::Token;
-use std::collections::{BTreeSet, HashMap};
+use foldhash::{HashMap, HashMapExt};
+use std::collections::BTreeSet;
 use std::path::Path;
 use std::rc::Rc;
 
@@ -123,7 +124,7 @@ impl PreprocessTrace {
             contexts: vec![(ContextId(0), None)],
             sets: vec![Vec::new()],
             interned_contexts: HashMap::new(),
-            interned_sets: HashMap::from([(Vec::new(), MacroSet(0))]),
+            interned_sets: HashMap::from_iter([(Vec::new(), MacroSet(0))]),
             unions: HashMap::new(),
             open: Vec::new(),
             current: ContextId(0),

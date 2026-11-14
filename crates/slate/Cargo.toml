@@ -37,6 +37,7 @@ path = "src/main.rs"
 
 [dependencies]
 clap = { workspace = true, features = ["derive"] }
+foldhash.workspace = true
 libc.workspace = true
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true

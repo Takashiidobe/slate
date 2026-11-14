@@ -12,7 +12,7 @@ use crate::ir::{
 };
 use crate::target_info::TargetFamily;
 use crate::visit::{self, Visitor};
-use std::collections::{HashMap, HashSet};
+use foldhash::{HashMap, HashSet};
 use std::convert::Infallible;
 
 #[derive(Debug, Clone, Default)]

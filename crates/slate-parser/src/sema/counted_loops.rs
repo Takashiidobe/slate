@@ -1,7 +1,7 @@
 use crate::ast::Span;
 use crate::ir::*;
+use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use num_bigint::BigInt;
-use std::collections::{HashMap, HashSet};
 
 #[derive(Default)]
 struct Uses {

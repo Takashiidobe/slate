@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use foldhash::HashMap;
 
 use super::constant_index_casts::representable_literal;
 use super::walk;

@@ -1,4 +1,5 @@
-use std::collections::{BTreeMap, BTreeSet, HashMap};
+use foldhash::{HashMap, HashMapExt};
+use std::collections::{BTreeMap, BTreeSet};
 
 use crate::backend::codegen;
 use crate::backend::rust_ast::{

@@ -1,6 +1,6 @@
 use super::Comment;
 use crate::ast::{CommentAttach, CommentGroup, FileId, NodeId, Span};
-use std::collections::HashMap;
+use foldhash::{HashMap, HashMapExt};
 
 fn plain(comments: Vec<(usize, Span<Comment>)>) -> Vec<Span<Comment>> {
     comments.into_iter().map(|(_, comment)| comment).collect()

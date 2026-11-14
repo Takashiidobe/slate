@@ -26,7 +26,7 @@ use super::seh_scopes::{SehScope, label_scopes};
 use super::typer::{Choice, Slot};
 use super::types::TypeResolver;
 use super::validate::{SemaError, error};
-use std::collections::{HashMap, HashSet};
+use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 
 pub(super) fn validate(
     unit: &TranslationUnit,

@@ -35,19 +35,18 @@ pub struct Reference {
 pub struct NameResolution {
     pub bindings: Vec<Span<Binding>>,
     pub references: Vec<Span<Reference>>,
-    pub label_definitions: std::collections::HashMap<crate::ast::NodeId, BindingId>,
-    pub declarations: std::collections::HashMap<crate::ast::NodeId, BindingId>,
-    pub tags: std::collections::HashMap<crate::ast::TagId, BindingId>,
-    pub implicit_functions: std::collections::HashSet<BindingId>,
-    pub ms_asm_members: std::collections::HashMap<crate::ast::NodeId, BindingId>,
-    pub overload_sets: std::collections::HashMap<BindingId, Vec<BindingId>>,
-    pub passes_object_size: std::collections::HashSet<BindingId>,
-    pub builtin_typedefs: std::collections::HashMap<String, BindingId>,
-    pub openmp_outer_references:
-        std::collections::HashMap<crate::ast::NodeId, Vec<Span<BindingId>>>,
-    pub openmp_iteration_copies: std::collections::HashMap<BindingId, BindingId>,
-    pub block_ranges: std::collections::HashMap<crate::ast::NodeId, std::ops::Range<u32>>,
-    pub nested_function_ranges: std::collections::HashMap<crate::ast::NodeId, std::ops::Range<u32>>,
+    pub label_definitions: foldhash::HashMap<crate::ast::NodeId, BindingId>,
+    pub declarations: foldhash::HashMap<crate::ast::NodeId, BindingId>,
+    pub tags: foldhash::HashMap<crate::ast::TagId, BindingId>,
+    pub implicit_functions: foldhash::HashSet<BindingId>,
+    pub ms_asm_members: foldhash::HashMap<crate::ast::NodeId, BindingId>,
+    pub overload_sets: foldhash::HashMap<BindingId, Vec<BindingId>>,
+    pub passes_object_size: foldhash::HashSet<BindingId>,
+    pub builtin_typedefs: foldhash::HashMap<String, BindingId>,
+    pub openmp_outer_references: foldhash::HashMap<crate::ast::NodeId, Vec<Span<BindingId>>>,
+    pub openmp_iteration_copies: foldhash::HashMap<BindingId, BindingId>,
+    pub block_ranges: foldhash::HashMap<crate::ast::NodeId, std::ops::Range<u32>>,
+    pub nested_function_ranges: foldhash::HashMap<crate::ast::NodeId, std::ops::Range<u32>>,
 }
 
 impl fmt::Display for NameResolution {

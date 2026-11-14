@@ -2,8 +2,8 @@ use crate::ast::FileId;
 use crate::charset::Charset;
 use crate::lexer::{Lexer, LineToken};
 use crate::standard_features::StandardFeatures;
+use foldhash::HashMap;
 use std::cell::RefCell;
-use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::atomic::{AtomicBool, Ordering};
 

@@ -22,8 +22,8 @@ use crate::diagnostics::Warning;
 use crate::ir::*;
 use crate::standard_features::StandardFeatures;
 use crate::target_info::TargetEnvironment;
+use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use num_bigint::Sign;
-use std::collections::{HashMap, HashSet};
 
 pub type MacroKeep = fn(&mut Module) -> HashSet<ast::MacroExpansionId>;
 

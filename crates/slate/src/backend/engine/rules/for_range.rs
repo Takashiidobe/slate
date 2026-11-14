@@ -4,7 +4,7 @@ use super::walk::kind_has_stmt_exprs;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{BinOp, Expr, Ident, Prim, RustValue, Type, UnaryOp};
-use std::collections::HashSet;
+use foldhash::HashSet;
 
 struct RecoveredFor {
     ind_var: Ident,

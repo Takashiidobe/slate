@@ -10,7 +10,7 @@ use crate::ast::{
 use crate::ir::BindingId;
 use crate::ir::{Type, Value};
 use crate::visit::{self, Visitor};
-use std::collections::HashMap;
+use foldhash::HashMap;
 
 impl Lowerer {
     pub(super) fn resolve_type(

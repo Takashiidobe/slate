@@ -2,7 +2,7 @@ use super::input::{ParserInput, TokenRange};
 use crate::ast::*;
 use crate::lexer::Token;
 use crate::visit::{self, Visitor};
-use std::collections::{HashMap, HashSet};
+use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use std::convert::Infallible;
 
 #[derive(Clone, Copy, PartialEq, Eq)]

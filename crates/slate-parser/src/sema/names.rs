@@ -8,7 +8,7 @@ use crate::compiler_args::CompilerFlavor;
 use crate::dialect::Dialect;
 use crate::ir::{Binding, BindingId, BindingKind, NameResolution, Reference};
 use crate::visit::{self, Visitor};
-use std::collections::{HashMap, HashSet};
+use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 
 #[derive(Debug, Clone, thiserror::Error)]
 pub enum ResolveError {

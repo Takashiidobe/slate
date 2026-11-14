@@ -10,11 +10,11 @@ use crate::ast::{Expr, ExprKind, NodeId, Span, StmtKind};
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
 use crate::diagnostics::Warning;
 use crate::ir::*;
+use foldhash::{HashMap, HashSet};
 use rustc_apfloat::{
     Float,
     ieee::{Double, Half, Quad, Single, X87DoubleExtended},
 };
-use std::collections::{HashMap, HashSet};
 
 enum Projection {
     Place(Lvalue),

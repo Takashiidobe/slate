@@ -1,6 +1,7 @@
+use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use slate_parser::ir::{self, BindingId, FloatType, NumericType, Type, TypeDefinitionKind, TypeId};
 use slate_parser::target_info::TargetOs;
-use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet};
 
 pub struct Unit<'a> {
     pub module: &'a ir::Module,

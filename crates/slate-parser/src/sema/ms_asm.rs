@@ -13,7 +13,8 @@ use crate::ir::{
 };
 use crate::lexer::Keyword;
 use crate::target::x86::decode_register;
-use std::collections::{BTreeSet, HashMap};
+use foldhash::HashMap;
+use std::collections::BTreeSet;
 use std::fmt::Write;
 
 enum MsAsmOperand {

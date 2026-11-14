@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 
 use slate_parser::ast::{MacroCover, MacroDefinition, MacroExpansionId, MacroInvocations};
 use slate_parser::ir::{

@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use foldhash::{HashMap, HashMapExt};
 use std::rc::Rc;
 
 use super::ctype::convert::ConversionContext;

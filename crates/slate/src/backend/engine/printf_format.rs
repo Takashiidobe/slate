@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use foldhash::HashSet;
 
 use slate_parser::target_info::{TargetInfo, TargetOs};
 

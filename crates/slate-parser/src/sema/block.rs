@@ -4,7 +4,7 @@ use super::operand::Operand;
 use crate::ast::{BlockLiteral as AstBlock, Expr, ExprKind, NodeId};
 use crate::ir::*;
 use crate::visit::{self, Visitor};
-use std::collections::HashMap;
+use foldhash::HashMap;
 
 struct ReferenceScan<'a> {
     references: &'a HashMap<NodeId, BindingId>,

@@ -10,9 +10,9 @@ use crate::ir::BindingId;
 use crate::standard_features::{Availability, MicrosoftIntegerLiterals, StandardFeatures};
 use crate::target_info::TargetInfo;
 use crate::visit::{self, Visitor};
+use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use miette::{Diagnostic, LabeledSpan, NamedSource, Severity, SourceCode, SourceSpan};
 use num_bigint::BigUint;
-use std::collections::{HashMap, HashSet};
 use thiserror::Error;
 
 use super::names::{ItemResolution, ResolveError as NameError};

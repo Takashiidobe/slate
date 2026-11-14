@@ -3,8 +3,9 @@ use crate::backend::rust_ast::{
     Attr, Block, Cfg, FnDef, Ident, Item, Label, RecordDef, RecordField, Stmt, Type,
 };
 use crate::backend::visit_names;
+use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
+use std::collections::BTreeSet;
 use std::collections::hash_map::DefaultHasher;
-use std::collections::{BTreeSet, HashMap, HashSet};
 use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 

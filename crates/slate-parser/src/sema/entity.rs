@@ -2,7 +2,7 @@ use super::ctype::QualType;
 use super::fold::Objects;
 use super::numeric::ResolveError;
 use crate::ir::{BindingId, Linkage, StorageDuration, SymbolAttributes, Value};
-use std::collections::HashMap;
+use foldhash::HashMap;
 
 #[derive(Debug, Default, Clone, Copy)]
 pub(super) struct ObjectRequest {

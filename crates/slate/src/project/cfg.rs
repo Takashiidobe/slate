@@ -1,6 +1,7 @@
 use crate::backend::rust_ast::Cfg;
+use foldhash::{HashMap, HashMapExt};
 use slate_parser::target_info::{Endian, TargetEnvironment, TargetFamily, TargetInfo, TargetOs};
-use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Mutex;
 
 pub const MAX_TARGETS: usize = u64::BITS as usize;

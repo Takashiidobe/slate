@@ -1,7 +1,7 @@
 use super::numeric::{ResolveError, conversion, integer_fits};
 use crate::ast::Span;
 use crate::ir::*;
-use std::collections::{HashMap, HashSet};
+use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 
 pub(super) fn has_effects(value: &Value) -> bool {
     Hoister::new(0, 0, HashMap::new(), HashSet::new()).effects(value)

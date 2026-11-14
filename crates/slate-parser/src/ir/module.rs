@@ -7,7 +7,7 @@ use crate::ast::{
 };
 pub use crate::ast::{OmpScheduleKind, OmpScheduleModifier};
 use crate::target_info::TargetInfo;
-use std::collections::HashMap;
+use foldhash::{HashMap, HashMapExt};
 
 pub type Metadata = HashMap<NodeId, Vec<(String, String)>>;
 

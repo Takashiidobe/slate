@@ -5,7 +5,7 @@ use crate::ast::{
     MacroInvocations, MacroNesting, Provenance,
 };
 use crate::lexer::TokenSpanExt;
-use std::collections::HashMap;
+use foldhash::HashMap;
 use std::rc::Rc;
 use std::sync::Arc;
 

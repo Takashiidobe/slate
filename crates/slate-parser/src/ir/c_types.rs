@@ -1,7 +1,7 @@
 use super::{BindingId, Place, PlaceKind, TypeDefinition, TypeId, Value};
 use crate::ast::NodeId;
 use crate::sema::ctype::{CTypeKind, CTypes, QualType};
-use std::collections::HashMap;
+use foldhash::HashMap;
 
 #[derive(Debug, Clone, Default)]
 pub struct CTypeTable {

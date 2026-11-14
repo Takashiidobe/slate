@@ -2,8 +2,9 @@ use super::undo::UndoLog;
 use crate::ast::{Comment, CommentAttach, CommentGroup, NodeId, Span, SpanRangeIndex, TypeName};
 use crate::lexer::Token;
 use crate::pp::{CommentFollower, CommentLayout, CommentPlacement, PPNode, PPNodeKind};
+use foldhash::{HashMap, HashSet};
 use std::cell::RefCell;
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::BTreeMap;
 
 #[derive(Clone)]
 pub(super) enum Annotation {
