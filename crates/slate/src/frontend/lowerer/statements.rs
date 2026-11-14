@@ -334,7 +334,10 @@ impl FunctionLowerer<'_, '_> {
                     let source = self.lower_place(source)?;
                     let source = match convention {
                         ir::VaConvention::Target if unsafe_source => {
-                            clone_va_list(through_raw_pointer(source))
+                            Expr::Unsafe(Box::new(rust::Block {
+                                stmts: Vec::new(),
+                                tail: Some(Box::new(clone_va_list(through_raw_pointer(source)))),
+                            }))
                         }
                         ir::VaConvention::Target => clone_va_list(source),
                         ir::VaConvention::Win64 => source,

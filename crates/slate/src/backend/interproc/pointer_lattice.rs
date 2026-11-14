@@ -2013,7 +2013,15 @@ fn hoist_args_after_reborrow(args: &mut [Expr], reborrowed: &[(usize, String)]) 
 }
 
 fn bridge_arg_into_ref(arg: &mut Expr, plan: &LiftPlan) {
-    let taken = std::mem::replace(arg, Expr::Value(RustValue::None));
+    let mut taken = std::mem::replace(arg, Expr::Value(RustValue::None));
+    if plan.mutable
+        && let Expr::Cast {
+            ty: Type::Ptr { mutable, .. },
+            ..
+        } = &mut taken
+    {
+        *mutable = true;
+    }
     *arg = Expr::Unsafe(Box::new(Block {
         stmts: Vec::new(),
         tail: Some(Box::new(Expr::Ref {

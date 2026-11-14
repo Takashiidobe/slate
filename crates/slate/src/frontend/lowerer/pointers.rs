@@ -297,6 +297,23 @@ impl FunctionLowerer<'_, '_> {
         })
     }
 
+    pub(super) fn lower_typed_function_address(&mut self, value: &ir::Value) -> Result<Expr> {
+        let lowered = self.lower_value(value)?;
+        let names_function_item = matches!(&lowered, Expr::Call { func, .. } if matches!(&**func, Expr::Var(name) if name.as_str() == "Some"));
+        if !names_function_item && !matches!(value.node.value, ValueKind::MacroArg { .. }) {
+            return Ok(lowered);
+        }
+        Ok(Expr::Block(Box::new(rust::Block {
+            stmts: vec![Stmt::Let {
+                name: "__slate_function".into(),
+                mutable: false,
+                ty: Some(self.lower_type(&value.ty)?),
+                init: Some(lowered),
+            }],
+            tail: Some(Box::new(Expr::Var("__slate_function".into()))),
+        })))
+    }
+
     pub(super) fn lower_null(&mut self, value: &ir::Value) -> Result<Expr> {
         if matches!(&value.ty, ir::Type::Pointer { pointee, .. } if matches!(**pointee, ir::Type::Function { .. }))
         {

@@ -1578,7 +1578,11 @@ impl<'m> ModuleLowerer<'m> {
             };
             if arity <= 3 {
                 features.push(rust::CrateAttr::NoMain);
-                items.push(main_wrapper(arity, dependencies.huge_stack));
+                items.push(main_wrapper(
+                    arity,
+                    dependencies.huge_stack,
+                    main.return_type.is_none(),
+                ));
             }
         }
         items.splice(0..0, dependencies.macro_templates.into_values());

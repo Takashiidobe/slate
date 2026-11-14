@@ -12,7 +12,7 @@ pub(super) fn codegen_builtin(metadata: &[(String, String)]) -> bool {
         || entry("c_builtin_header").is_some_and(|header| header.ends_with("intrin.h"))
 }
 
-pub(super) fn main_wrapper(arity: usize, huge_stack: bool) -> Item {
+pub(super) fn main_wrapper(arity: usize, huge_stack: bool, returns_void: bool) -> Item {
     let c_strings = || rust::Type::Ptr {
         mutable: true,
         inner: Box::new(rust::Type::Ptr {
@@ -101,7 +101,15 @@ pub(super) fn main_wrapper(arity: usize, huge_stack: bool) -> Item {
     } else {
         call
     };
-    body.push(Stmt::Return(Some(call)));
+    if returns_void {
+        body.push(Stmt::Expr(call));
+        body.push(Stmt::Return(Some(Expr::Value(rust::RustValue::TypedInt(
+            0,
+            rust::Prim::I32,
+        )))));
+    } else {
+        body.push(Stmt::Return(Some(call)));
+    }
     Item::Fn(FnDef {
         comments: Vec::new(),
         attrs: vec![Attr::NoMangle],

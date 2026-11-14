@@ -261,6 +261,7 @@ impl FunctionLowerer<'_, '_> {
                     _ => None,
                 });
             if let Some(spelled) = name_argument
+                && place.is_none()
                 && argument.as_ref().is_none_or(|value| {
                     codegen::expr_to_string(value) == path_keyword_free(spelled)
                 })

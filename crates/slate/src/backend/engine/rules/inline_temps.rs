@@ -1796,10 +1796,10 @@ fn expr_arg_pos(expr: &Expr, name: Ident, ty: Option<&Type>) -> Option<ArgPos> {
             ArgPos::NonArg => ArgPos::Cast,
             other => other,
         }),
-        Expr::Unary { expr, .. }
-        | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => expr_arg_pos(expr, name, ty),
+        Expr::AddrOf { .. } => None,
+        Expr::Unary { expr, .. } | Expr::Ref { expr, .. } | Expr::Transmute { expr, .. } => {
+            expr_arg_pos(expr, name, ty)
+        }
         Expr::Binary { lhs, rhs, .. }
         | Expr::Range {
             start: lhs,

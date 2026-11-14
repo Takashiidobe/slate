@@ -26,9 +26,31 @@ struct Survey<'a> {
     unfit: HashMap<MacroExpansionId, &'static str>,
     has_jump: bool,
     reserves_storage: HashSet<MacroExpansionId>,
+    argument_values: HashMap<(MacroExpansionId, usize), String>,
 }
 
 impl Survey<'_> {
+    fn argument_value(&mut self, expansion: MacroExpansionId, argument: usize, printed: String) {
+        let call_list = self
+            .macros
+            .expansion(expansion)
+            .argument_uses
+            .iter()
+            .any(|using| {
+                using.argument == argument && matches!(using.cover, MacroCover::CallArguments(_))
+            });
+        if call_list {
+            return;
+        }
+        let known = self
+            .argument_values
+            .entry((expansion, argument))
+            .or_insert_with(|| printed.clone());
+        if *known != printed {
+            self.reject(expansion, "argument_split_across_holes");
+        }
+    }
+
     fn reserve_storage(&mut self) {
         self.reserves_storage
             .extend(self.open.iter().map(|(id, _)| *id));
@@ -116,6 +138,14 @@ impl MacroStructureVisitor for Survey<'_> {
         }
         if matches!(kind, ValueKind::Block(_)) {
             self.reserve_storage();
+        }
+        if let ValueKind::MacroArg {
+            expansion,
+            argument,
+            value,
+        } = kind
+        {
+            self.argument_value(*expansion, *argument, value.display(false).to_string());
         }
         if let ValueKind::MacroExpansion {
             expansion,
@@ -406,6 +436,7 @@ pub(super) fn kept_expansions(module: &mut Module) -> HashSet<MacroExpansionId> 
             unfit: HashMap::new(),
             has_jump: false,
             reserves_storage: HashSet::new(),
+            argument_values: HashMap::new(),
         };
         walk_macro_structure(body, &mut survey);
         if survey.has_jump {

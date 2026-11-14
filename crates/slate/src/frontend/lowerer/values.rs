@@ -1571,34 +1571,37 @@ impl FunctionLowerer<'_, '_> {
             }
             ValueKind::Compare {
                 op, left, right, ..
-            } => Expr::Binary {
-                op: match op {
-                    ir::CompareOp::Eq => BinOp::Eq,
-                    ir::CompareOp::Ne => BinOp::Ne,
-                    ir::CompareOp::Lt => BinOp::Lt,
-                    ir::CompareOp::Le => BinOp::Le,
-                    ir::CompareOp::Gt => BinOp::Gt,
-                    ir::CompareOp::Ge => BinOp::Ge,
-                },
-                lhs: Box::new(
-                    if matches!(left.node.value, ValueKind::FunctionDecay { .. })
-                        && matches!(right.node.value, ValueKind::FunctionDecay { .. })
-                    {
-                        Expr::Block(Box::new(rust::Block {
-                            stmts: vec![Stmt::Let {
-                                name: "__slate_function".into(),
-                                mutable: false,
-                                ty: Some(self.lower_type(&left.ty)?),
-                                init: Some(self.lower_value(left)?),
-                            }],
-                            tail: Some(Box::new(Expr::Var("__slate_function".into()))),
-                        }))
+            } => {
+                let is_decay = |mut operand: &ir::Value| {
+                    while let ValueKind::MacroArg { value, .. } = &operand.node.value {
+                        operand = value;
+                    }
+                    matches!(operand.node.value, ValueKind::FunctionDecay { .. })
+                };
+                let is_null = |operand: &ir::Value| matches!(operand.node.value, ValueKind::Null);
+                let pin_left = is_decay(left) && (is_decay(right) || is_null(right));
+                let pin_right = is_decay(right) && is_null(left);
+                Expr::Binary {
+                    op: match op {
+                        ir::CompareOp::Eq => BinOp::Eq,
+                        ir::CompareOp::Ne => BinOp::Ne,
+                        ir::CompareOp::Lt => BinOp::Lt,
+                        ir::CompareOp::Le => BinOp::Le,
+                        ir::CompareOp::Gt => BinOp::Gt,
+                        ir::CompareOp::Ge => BinOp::Ge,
+                    },
+                    lhs: Box::new(if pin_left {
+                        self.lower_typed_function_address(left)?
                     } else {
                         self.lower_value(left)?
-                    },
-                ),
-                rhs: Box::new(self.lower_value(right)?),
-            },
+                    }),
+                    rhs: Box::new(if pin_right {
+                        self.lower_typed_function_address(right)?
+                    } else {
+                        self.lower_value(right)?
+                    }),
+                }
+            }
             ValueKind::PointerOffset {
                 pointer,
                 amount,
