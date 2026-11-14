@@ -25,6 +25,10 @@ pub(super) fn builtin_intrinsic(
         "__builtin_bswap16" | "__builtin_bswap32" | "__builtin_bswap64" => Some("llvm.bswap"),
         "__builtin_frame_address" => Some("llvm.frameaddress"),
         "__builtin_return_address" => Some("llvm.returnaddress"),
+        "_mm_pause" => Some("llvm.x86.sse2.pause"),
+        "_mm_lfence" => Some("llvm.x86.sse2.lfence"),
+        "_mm_mfence" => Some("llvm.x86.sse2.mfence"),
+        "_mm_sfence" => Some("llvm.x86.sse.sfence"),
         name if module.target.long_double != LongDoubleFormat::Binary128 => match name {
             "__builtin_ceill" => Some("llvm.ceil"),
             "__builtin_floorl" => Some("llvm.floor"),
