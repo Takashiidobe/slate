@@ -25,7 +25,7 @@ import pp_diff
 SLATE = ROOT / "target/test-cache/release/slate"
 SETUP = ROOT / "crates/slate-parser/tools/c_corpus_setup.py"
 STAGES = ("native", "barriers", "translate", "check", "build", "bench", "test")
-COMPILERS = {"clang": "clang", "gcc": "gcc"}
+COMPILERS = {"clang": "clang", "gcc": "gcc", "clang-aarch64": "clang"}
 
 
 @dataclass

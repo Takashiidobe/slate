@@ -21,7 +21,7 @@ through `slate-parser ir --flavor=clang` on `x86_64-unknown-linux-gnu`.
 ## Layout
 
 ```
-~/c-corpus/<project>/build-<flavor>/compile_commands.json   flavor: clang, gcc, msvc
+~/c-corpus/<project>/build-<flavor>/compile_commands.json   flavor: clang, gcc, msvc, clang-aarch64
 ~/c-corpus/<project>/build-<flavor>.log                     setup log
 ~/c-corpus/.venv                                            python for code generators
 ```
@@ -36,7 +36,7 @@ through `slate-parser ir --flavor=clang` on `x86_64-unknown-linux-gnu`.
 ## Setup
 
 ```
-python3 tools/c_corpus_setup.py [PROJECT ...] [--flavor clang|gcc|msvc ...]
+python3 tools/c_corpus_setup.py [PROJECT ...] [--flavor clang|gcc|msvc|clang-aarch64 ...]
 ```
 
 - Recreates `build-<flavor>/` and runs the whole build, so generated
@@ -129,7 +129,7 @@ python3 tools/c_corpus_sweep.py [PROJECT ...] [--flavor clang|gcc|msvc] [--jobs 
 ## End to end
 
 ```
-python3 tools/corpus/e2e.py PROJECT [--mode clang|gcc] [--setup] [--until STAGE] [--bench-runs N] [-- runtest args]
+python3 tools/corpus/e2e.py PROJECT [--mode clang|gcc|clang-aarch64] [--setup] [--until STAGE] [--bench-runs N] [-- runtest args]
 ```
 
 Translates one project's target with `slate translate-project`, links it
@@ -309,6 +309,13 @@ translated runs stop before test execution: NumPy's generated SIMD variants
 reuse source paths under colliding module names, and OpenBLAS function-pointer
 initializers fail Rust const evaluation. See the e2e summaries under
 `target/corpus/{numpy,openblas}/clang/`.
+
+`clang-aarch64` is a cross flavor for Meson recipes (NumPy): setup writes
+`build-clang-aarch64/cross.ini` (`clang --target=aarch64-linux-gnu
+--sysroot=/usr/aarch64-linux-gnu`, host `cpu_family = 'aarch64'`, the recipe's
+`meson_cross` properties) so NumPy builds its ASIMD dispatch variants instead of
+the x86 ones. The host Python's headers stand in for an aarch64 CPython, which
+is enough for translation-only runs; nothing built for it is run.
 
 ### Make libraries
 

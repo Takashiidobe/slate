@@ -7,7 +7,8 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
-FLAVORS = ("gcc", "msvc", "clang")
+FLAVORS = ("gcc", "msvc", "clang", "clang-aarch64")
+CROSS = {"clang-aarch64": ("aarch64-linux-gnu", "aarch64", Path("/usr/aarch64-linux-gnu"))}
 MSVC_BIN = (
     Path(os.environ.get("MSVC_WINE_ROOT", Path.home() / ".local/share/msvc-wine/opt/msvc"))
     / "bin"
@@ -24,7 +25,7 @@ class CMake:
     python_requirements: list[str] = field(default_factory=list)
 
     def flavors(self):
-        return FLAVORS if self.msvc_options is not None else ("gcc", "clang")
+        return ("gcc", "msvc", "clang") if self.msvc_options is not None else ("gcc", "clang")
 
 
 @dataclass
@@ -35,9 +36,10 @@ class Configure:
     python_packages: list[str] = field(default_factory=list)
     submodules: list[str] = field(default_factory=list)
     build_program: str = "make"
+    meson_cross: dict[str, str] | None = None
 
     def flavors(self):
-        return ("gcc", "clang")
+        return ("gcc", "clang", *CROSS) if self.meson_cross is not None else ("gcc", "clang")
 
 
 @dataclass
@@ -57,7 +59,7 @@ class Nmake:
     options: list[str] = field(default_factory=list)
 
     def flavors(self):
-        return FLAVORS
+        return ("gcc", "msvc", "clang")
 
 
 MSVC_CURL = [
@@ -127,6 +129,7 @@ RECIPES = {
             "vendored-meson/meson",
         ],
         build_program="ninja",
+        meson_cross={"longdouble_format": "IEEE_QUAD_LE"},
     ),
     "openblas": InTree(make=["CC={cc}"]),
     "linux": Configure(
@@ -152,7 +155,7 @@ RECIPES = {
 
 
 def compiler(flavor: str) -> str:
-    return {"gcc": "gcc", "clang": "clang", "msvc": "cl"}[flavor]
+    return {"gcc": "gcc", "clang": "clang", "msvc": "cl", "clang-aarch64": "clang"}[flavor]
 
 
 def environment(flavor: str) -> dict[str, str]:
@@ -224,7 +227,10 @@ def setup(corpus: Path, project: str, flavor: str) -> str:
                     env["PATH"] = f"{python.parent}:{env['PATH']}"
                 if recipe.bootstrap:
                     run(expand(recipe.bootstrap, values), root, env, log)
-                run(expand(recipe.configure, values), build, env, log)
+                configure = expand(recipe.configure, values)
+                if flavor in CROSS:
+                    configure += ["--cross-file", str(meson_cross_file(build, flavor, recipe.meson_cross))]
+                run(configure, build, env, log)
                 command = [recipe.build_program, *expand(recipe.make, values)]
                 if recipe.build_program == "make":
                     command[1:1] = ["-j", JOBS]
@@ -245,6 +251,28 @@ def setup(corpus: Path, project: str, flavor: str) -> str:
     if not database.exists():
         raise RuntimeError("no compile_commands.json written")
     return "ok" if built else "database written, build incomplete"
+
+
+def meson_cross_file(build: Path, flavor: str, properties: dict[str, str]) -> Path:
+    triple, cpu, sysroot = CROSS[flavor]
+    tool = f"'--target={triple}', '--sysroot={sysroot}']"
+    lines = [
+        "[binaries]",
+        f"c = ['clang', {tool}",
+        f"cpp = ['clang++', {tool}",
+        "ar = 'llvm-ar'",
+        "strip = 'llvm-strip'",
+        "[host_machine]",
+        "system = 'linux'",
+        f"cpu_family = '{cpu}'",
+        f"cpu = '{cpu}'",
+        "endian = 'little'",
+        "[properties]",
+        *(f"{key} = '{value}'" for key, value in properties.items()),
+    ]
+    path = build / "cross.ini"
+    path.write_text("\n".join(lines) + "\n")
+    return path
 
 
 def python_environment(corpus: Path, requirements: list[Path], log, packages: list[str] | None = None) -> Path:
