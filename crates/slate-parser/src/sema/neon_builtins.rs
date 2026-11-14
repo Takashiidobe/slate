@@ -1,5 +1,7 @@
+use super::ctype::QualType;
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
+use super::numeric::conversion;
 use super::operand::Operand;
 use super::vector_builtins::LoweredCall;
 use crate::ast::Expr;
@@ -25,6 +27,16 @@ pub(super) enum NeonOp {
     Fma,
     Sqrt,
     AbsGreater,
+    Load,
+    LoadLane,
+    Load2,
+    Store,
+    StoreLane,
+    Store2,
+    ShiftLeftImmediate,
+    ShiftRightImmediate,
+    ShiftLeft,
+    Table(u8),
 }
 
 pub(super) fn neon_op(record: &str) -> Option<NeonOp> {
@@ -74,6 +86,19 @@ pub(super) fn neon_op(record: &str) -> Option<NeonOp> {
         "vfma_v" | "vfmaq_v" => NeonOp::Fma,
         "vsqrt_v" | "vsqrtq_v" => NeonOp::Sqrt,
         "vcagt_v" | "vcagtq_v" => NeonOp::AbsGreater,
+        "vld1_v" | "vld1q_v" => NeonOp::Load,
+        "vld1_lane_v" | "vld1q_lane_v" => NeonOp::LoadLane,
+        "vld2_v" | "vld2q_v" => NeonOp::Load2,
+        "vst1_v" | "vst1q_v" => NeonOp::Store,
+        "vst1_lane_v" | "vst1q_lane_v" => NeonOp::StoreLane,
+        "vst2_v" | "vst2q_v" => NeonOp::Store2,
+        "vshl_n_v" | "vshlq_n_v" => NeonOp::ShiftLeftImmediate,
+        "vshr_n_v" | "vshrq_n_v" => NeonOp::ShiftRightImmediate,
+        "vshl_v" | "vshlq_v" => NeonOp::ShiftLeft,
+        "vqtbl1_v" | "vqtbl1q_v" => NeonOp::Table(1),
+        "vqtbl2_v" | "vqtbl2q_v" => NeonOp::Table(2),
+        "vqtbl3_v" | "vqtbl3q_v" => NeonOp::Table(3),
+        "vqtbl4_v" | "vqtbl4q_v" => NeonOp::Table(4),
         _ => return None,
     })
 }
@@ -83,9 +108,27 @@ impl Lowerer {
         &mut self,
         e: &Expr,
         op: NeonOp,
+        signature: QualType,
         (returned, ty, arguments): LoweredCall,
     ) -> Result<Result<Operand, LoweredCall>, ResolveError> {
         let result = self.types.ir_type(returned);
+        let typed = !matches!(
+            op,
+            NeonOp::LaneRead
+                | NeonOp::AddAcross { .. }
+                | NeonOp::MaxAcross
+                | NeonOp::MinAcross
+                | NeonOp::MaxNumAcross
+                | NeonOp::MinNumAcross
+        );
+        let shape = arguments
+            .last()
+            .and_then(|code| self.neon_constant(code))
+            .and_then(|code| neon_vector(code, op == NeonOp::AbsGreater))
+            .unwrap_or((Type::Void, Type::Void));
+        if typed && shape.1 == Type::Void {
+            return Ok(Err((returned, ty, arguments)));
+        }
         let value = match op {
             NeonOp::LaneRead => {
                 let Some((vector, lanes)) = arguments.first().and_then(|vector| match vector.ty {
@@ -129,23 +172,82 @@ impl Lowerer {
                     ConversionReason::Explicit,
                 )?
             }
-            _ => {
-                let Some((code, operands)) = arguments.split_last() else {
-                    return Ok(Err((returned, ty, arguments)));
+            NeonOp::Load
+            | NeonOp::LoadLane
+            | NeonOp::Load2
+            | NeonOp::Store
+            | NeonOp::StoreLane
+            | NeonOp::Store2 => {
+                let lane = match op {
+                    NeonOp::LoadLane | NeonOp::StoreLane => {
+                        let Some(lane) = arguments.get(2).and_then(|lane| self.neon_constant(lane))
+                        else {
+                            return Ok(Err((returned, ty, arguments)));
+                        };
+                        lane
+                    }
+                    _ => 0,
                 };
-                let Some(shape) = self
-                    .neon_constant(code)
-                    .and_then(|code| neon_vector(code, op == NeonOp::AbsGreater))
+                let mut operands = arguments;
+                operands.pop();
+                let value = self.neon_memory(e, op, signature, shape.1, lane, operands)?;
+                match result {
+                    Type::Void => value,
+                    _ => self
+                        .context
+                        .vector_convert(value, result, ConversionReason::Explicit)?,
+                }
+            }
+            NeonOp::ShiftLeftImmediate | NeonOp::ShiftRightImmediate => {
+                let Some(amount) = arguments
+                    .get(1)
+                    .and_then(|amount| self.neon_constant(amount))
                 else {
                     return Ok(Err((returned, ty, arguments)));
                 };
-                let operands = operands.to_vec();
-                if op == NeonOp::BitSelect && operands.iter().any(super::effects::has_effects) {
+                let vector = arguments
+                    .into_iter()
+                    .next()
+                    .ok_or(ResolveError::Internal("neon shift operand"))?;
+                let shifted = self.neon_shift_immediate(e, op, shape.1, vector, amount)?;
+                self.context
+                    .vector_convert(shifted, result, ConversionReason::Explicit)?
+            }
+            NeonOp::Table(count) => {
+                let mut operands = arguments;
+                operands.pop();
+                let index = operands
+                    .pop()
+                    .ok_or(ResolveError::Internal("neon table index"))?;
+                if operands.len() != usize::from(count) {
+                    return Err(ResolveError::Internal("neon table operand count"));
+                }
+                let (_, vector) = shape;
+                operands.push(self.context.vector_convert(
+                    index,
+                    vector.clone(),
+                    ConversionReason::Explicit,
+                )?);
+                let looked_up = self.value(
+                    e,
+                    vector,
+                    ValueKind::Intrinsic {
+                        name: format!("llvm.aarch64.neon.tbl{count}"),
+                        arguments: operands,
+                    },
+                );
+                self.context
+                    .vector_convert(looked_up, result, ConversionReason::Explicit)?
+            }
+            _ => {
+                if op == NeonOp::BitSelect && arguments.iter().any(super::effects::has_effects) {
                     return Ok(Err((returned, ty, arguments)));
                 }
-                let typed = self.neon_lanewise(e, op, shape, operands)?;
+                let mut operands = arguments;
+                operands.pop();
+                let lanewise = self.neon_lanewise(e, op, shape, operands)?;
                 self.context
-                    .vector_convert(typed, result, ConversionReason::Explicit)?
+                    .vector_convert(lanewise, result, ConversionReason::Explicit)?
             }
         };
         Ok(Ok(Operand { c: returned, value }))
@@ -255,6 +357,8 @@ impl Lowerer {
             }
             NeonOp::Sqrt => "llvm.sqrt",
             NeonOp::AbsGreater => "llvm.aarch64.neon.facgt",
+            NeonOp::ShiftLeft if signed => "llvm.aarch64.neon.sshl",
+            NeonOp::ShiftLeft => "llvm.aarch64.neon.ushl",
             _ => return Err(ResolveError::Internal("neon lanewise operation")),
         };
         Ok(self.value(
@@ -263,6 +367,304 @@ impl Lowerer {
             ValueKind::Intrinsic {
                 name: name.into(),
                 arguments: operands,
+            },
+        ))
+    }
+
+    fn neon_memory(
+        &mut self,
+        e: &Expr,
+        op: NeonOp,
+        signature: QualType,
+        vector: Type,
+        lane: u32,
+        operands: Vec<Value>,
+    ) -> Result<Value, ResolveError> {
+        let Type::Vector { element, lanes } = vector else {
+            return Err(ResolveError::Internal("neon memory vector"));
+        };
+        let scalar = Type::Numeric(element);
+        fn count<T>(_: T) -> ResolveError {
+            ResolveError::Internal("neon memory operand count")
+        }
+        match op {
+            NeonOp::Load => {
+                let [pointer]: [Value; 1] = operands.try_into().map_err(count)?;
+                let place = self.neon_place(e, pointer, &vector, None);
+                Ok(self.value(
+                    e,
+                    vector,
+                    ValueKind::Read {
+                        place,
+                        ordering: None,
+                    },
+                ))
+            }
+            NeonOp::Store => {
+                let [pointer, value]: [Value; 2] = operands.try_into().map_err(count)?;
+                let value = self.context.vector_convert(
+                    value,
+                    vector.clone(),
+                    ConversionReason::Explicit,
+                )?;
+                let place = self.neon_place(e, pointer, &vector, None);
+                Ok(self.neon_store(e, place, value))
+            }
+            NeonOp::LoadLane => {
+                let [pointer, source, _]: [Value; 3] = operands.try_into().map_err(count)?;
+                let source = self.context.vector_convert(
+                    source,
+                    vector.clone(),
+                    ConversionReason::Explicit,
+                )?;
+                let place = self.neon_place(e, pointer, &scalar, None);
+                let loaded = self.value(
+                    e,
+                    scalar,
+                    ValueKind::Read {
+                        place,
+                        ordering: None,
+                    },
+                );
+                let splat = conversion(
+                    loaded,
+                    vector.clone(),
+                    ConversionKind::VectorSplat,
+                    ConversionReason::Explicit,
+                    ConversionSema::Exact,
+                );
+                let index = lane % lanes;
+                let mask = (0..lanes)
+                    .map(|each| Some(if each == index { lanes + each } else { each }))
+                    .collect();
+                Ok(self.shuffle(e, vector, source, Some(splat), mask))
+            }
+            NeonOp::StoreLane => {
+                let [pointer, source, _]: [Value; 3] = operands.try_into().map_err(count)?;
+                let source = self.context.vector_convert(
+                    source,
+                    vector.clone(),
+                    ConversionReason::Explicit,
+                )?;
+                let index = self.neon_index(e, lane % lanes);
+                let value = self.value(
+                    e,
+                    scalar.clone(),
+                    ValueKind::Lane {
+                        vector: Box::new(source),
+                        index: Box::new(index),
+                    },
+                );
+                let place = self.neon_place(e, pointer, &scalar, None);
+                Ok(self.neon_store(e, place, value))
+            }
+            NeonOp::Load2 => {
+                let mut captures = Vec::new();
+                let [target, source]: [Place; 2] = self
+                    .bind_all(signature, operands, &mut captures)?
+                    .try_into()
+                    .map_err(count)?;
+                let mut parts = Vec::new();
+                for odd in 0..2 {
+                    let mut halves = Vec::new();
+                    for half in 0..2 {
+                        let pointer = self.read_place(e, &source);
+                        let place = self.neon_place(e, pointer, &vector, Some(half));
+                        halves.push(self.value(
+                            e,
+                            vector.clone(),
+                            ValueKind::Read {
+                                place,
+                                ordering: None,
+                            },
+                        ));
+                    }
+                    let [low, high]: [Value; 2] = halves.try_into().map_err(count)?;
+                    let mask = (0..lanes).map(|each| Some(2 * each + odd)).collect();
+                    let part = self.shuffle(e, vector.clone(), low, Some(high), mask);
+                    let pointer = self.read_place(e, &target);
+                    let place = self.neon_place(e, pointer, &vector, Some(odd));
+                    parts.push(self.neon_store(e, place, part));
+                }
+                let stored = self.neon_sequence(e, parts);
+                Ok(self.captured(e, captures, stored))
+            }
+            NeonOp::Store2 => {
+                let mut captures = Vec::new();
+                let [target, low, high]: [Place; 3] = self
+                    .bind_all(signature, operands, &mut captures)?
+                    .try_into()
+                    .map_err(count)?;
+                let mut parts = Vec::new();
+                for half in 0..2 {
+                    let mut sources = Vec::new();
+                    for place in [&low, &high] {
+                        let read = self.read_place(e, place);
+                        sources.push(self.context.vector_convert(
+                            read,
+                            vector.clone(),
+                            ConversionReason::Explicit,
+                        )?);
+                    }
+                    let [first, second]: [Value; 2] = sources.try_into().map_err(count)?;
+                    let mask = (0..lanes)
+                        .map(|each| Some(half * lanes / 2 + each / 2 + each % 2 * lanes))
+                        .collect();
+                    let part = self.shuffle(e, vector.clone(), first, Some(second), mask);
+                    let pointer = self.read_place(e, &target);
+                    let place = self.neon_place(e, pointer, &vector, Some(half));
+                    parts.push(self.neon_store(e, place, part));
+                }
+                let stored = self.neon_sequence(e, parts);
+                Ok(self.captured(e, captures, stored))
+            }
+            _ => Err(ResolveError::Internal("neon memory operation")),
+        }
+    }
+
+    fn neon_place(&mut self, e: &Expr, pointer: Value, ty: &Type, index: Option<u32>) -> Place {
+        let (element, bytes) = match ty {
+            Type::Vector { element, lanes } => {
+                (*element, element_bytes(*element) * u64::from(*lanes))
+            }
+            Type::Numeric(element) => (*element, element_bytes(*element)),
+            _ => (NumericType::integer(8, false), 1),
+        };
+        let align = element_bytes(element);
+        let mut pointer = neon_pointer(pointer, ty);
+        if let Some(index) = index.filter(|index| *index > 0) {
+            let amount = self.neon_index(e, index);
+            let pointer_type = pointer.ty.clone();
+            pointer = self.value(
+                e,
+                pointer_type,
+                ValueKind::PointerOffset {
+                    pointer: Box::new(pointer),
+                    amount: Box::new(amount),
+                    subtract: false,
+                    element: ty.clone(),
+                    overflow: Overflow::Wrap,
+                },
+            );
+        }
+        Place {
+            ty: ty.clone(),
+            kind: PlaceKind::Deref(Box::new(pointer)),
+            access: Access {
+                align: (align < bytes).then_some(align),
+                ..Access::default()
+            },
+        }
+    }
+
+    fn neon_store(&mut self, e: &Expr, place: Place, value: Value) -> Value {
+        let ty = value.ty.clone();
+        let store = self.value(
+            e,
+            ty,
+            ValueKind::Store {
+                place,
+                value: Box::new(value),
+                ordering: None,
+            },
+        );
+        self.neon_sequence(e, vec![store])
+    }
+
+    fn neon_sequence(&mut self, e: &Expr, effects: Vec<Value>) -> Value {
+        let void = self.value(e, Type::Void, ValueKind::Void);
+        effects.into_iter().rev().fold(void, |rest, effect| {
+            self.value(
+                e,
+                Type::Void,
+                ValueKind::Sequence {
+                    left: Box::new(effect),
+                    right: Box::new(rest),
+                },
+            )
+        })
+    }
+
+    fn neon_shift_immediate(
+        &mut self,
+        e: &Expr,
+        op: NeonOp,
+        vector: Type,
+        value: Value,
+        amount: u32,
+    ) -> Result<Value, ResolveError> {
+        let Type::Vector {
+            element: element @ NumericType::Integer { width, signed, .. },
+            ..
+        } = vector
+        else {
+            return Err(ResolveError::Internal("neon shift lane type"));
+        };
+        let value =
+            self.context
+                .vector_convert(value, vector.clone(), ConversionReason::Explicit)?;
+        let right = op == NeonOp::ShiftRightImmediate;
+        let amount = match amount >= width {
+            true if right && signed => width - 1,
+            true if right => {
+                let zero = self.zero(e, &vector)?;
+                return Ok(if super::effects::has_effects(&value) {
+                    self.value(
+                        e,
+                        vector,
+                        ValueKind::Sequence {
+                            left: Box::new(value),
+                            right: Box::new(zero),
+                        },
+                    )
+                } else {
+                    zero
+                });
+            }
+            _ => amount,
+        };
+        let amount = self.value(
+            e,
+            Type::Numeric(element),
+            ValueKind::Constant(Number::Integer(amount.into())),
+        );
+        let amount = conversion(
+            amount,
+            vector.clone(),
+            ConversionKind::VectorSplat,
+            ConversionReason::Explicit,
+            ConversionSema::Exact,
+        );
+        let (op, semantics) = if right {
+            (
+                ArithOp::Shr,
+                ArithSema::ShiftRight {
+                    fill: if signed {
+                        ShiftFill::SignExtend
+                    } else {
+                        ShiftFill::ZeroExtend
+                    },
+                    amount_out_of_range: UbPolicy::Undefined,
+                },
+            )
+        } else {
+            (
+                ArithOp::Shl,
+                ArithSema::ShiftLeft {
+                    overflow: Overflow::Wrap,
+                    amount_out_of_range: UbPolicy::Undefined,
+                    negative_left: None,
+                },
+            )
+        };
+        Ok(self.value(
+            e,
+            vector,
+            ValueKind::Arith {
+                op,
+                left: Box::new(value),
+                right: Box::new(amount),
+                semantics,
             },
         ))
     }
@@ -314,4 +716,27 @@ fn neon_vector(code: u32, float_operands: bool) -> Option<(Type, Type)> {
         (true, _) => return None,
     };
     Some((operand, result))
+}
+
+fn element_bytes(element: NumericType) -> u64 {
+    match element {
+        NumericType::Integer { width, .. } => u64::from(width / 8),
+        NumericType::Float(FloatType::F32) => 4,
+        NumericType::Float(_) => 8,
+    }
+}
+
+fn neon_pointer(pointer: Value, pointee: &Type) -> Value {
+    conversion(
+        pointer,
+        Type::Pointer {
+            pointee: Box::new(pointee.clone()),
+            is_const: false,
+            access: Access::default(),
+            space: PointerSpace::Default,
+        },
+        ConversionKind::PointerCast,
+        ConversionReason::Explicit,
+        ConversionSema::Exact,
+    )
 }

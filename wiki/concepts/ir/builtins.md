@@ -297,6 +297,12 @@ back to the extern call.
 | `vqadd`/`vqsub[q]_v` | `llvm.aarch64.neon.{s,u}q{add,sub}` |
 | `vfma[q]_v(a, b, c)` | `llvm.fma(b, c, a)` |
 | `vsqrt[q]_v`, `vcagt[q]_v` | `llvm.sqrt`; `llvm.aarch64.neon.facgt` (the code gives the integer result, operands are floats of that width) |
+| `vld1[q]_v` / `vst1[q]_v` | `read` / `store` of the decoded vector through the pointer cast to it, `align=<element size>` |
+| `vld1[q]_lane_v` / `vst1[q]_lane_v` | element `read` spliced in by a two-operand shuffle with its splat / `store` of `lane(v, n % lanes)` |
+| `vld2[q]_v(&ret, p)` / `vst2[q]_v(p, a, b)` | two under-aligned vector reads of `p`, `p + 1` and even/odd shuffles into `ret[0]`, `ret[1]` / interleaving shuffles of `a`, `b` stored to `p`, `p + 1`; pointers and vectors bound once |
+| `vshl[q]_n_v` / `vshr[q]_n_v` | `shl` / `shr` by a splat constant; `vshr` by the lane width is `shr` by width - 1 when signed and zero when unsigned |
+| `vshl[q]_v` | `llvm.aarch64.neon.{s,u}shl` (signed per-lane count, negative shifts right) |
+| `vqtbl{1,2,3,4}[q]_v` | `llvm.aarch64.neon.tbl{1,2,3,4}`: tables stay `int8x16_t`, index and result take the decoded type |
 
 ## Atomic operations
 

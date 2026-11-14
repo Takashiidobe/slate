@@ -555,7 +555,7 @@ impl Lowerer {
         }
     }
 
-    fn bind_all(
+    pub(super) fn bind_all(
         &mut self,
         signature: QualType,
         arguments: Vec<Value>,
@@ -839,7 +839,7 @@ impl Lowerer {
         )
     }
 
-    fn read_place(&mut self, e: &Expr, place: &Place) -> Value {
+    pub(super) fn read_place(&mut self, e: &Expr, place: &Place) -> Value {
         self.value(
             e,
             place.ty.clone(),
@@ -877,7 +877,7 @@ impl Lowerer {
         )
     }
 
-    fn shuffle(
+    pub(super) fn shuffle(
         &mut self,
         e: &Expr,
         ty: Type,
@@ -933,7 +933,7 @@ impl Lowerer {
             .value
     }
 
-    fn zero(&mut self, e: &Expr, ty: &Type) -> Result<Value, ResolveError> {
+    pub(super) fn zero(&mut self, e: &Expr, ty: &Type) -> Result<Value, ResolveError> {
         let scalar = |element: NumericType| match element {
             NumericType::Float(_) => Number::FloatBits(0),
             NumericType::Integer { .. } => Number::Integer(0u32.into()),
