@@ -442,18 +442,15 @@ impl Names for Rename {
     }
 }
 
-pub(super) fn restore(body: &mut [Stmt], params: &[FnParam], renamed: &[(Ident, Ident)]) {
+pub(super) fn restore(body: &mut [Stmt], params: &mut [FnParam], renamed: &[(Ident, Ident)]) {
     if renamed.is_empty() {
         return;
     }
-    let mut taken = Collect(
-        params
-            .iter()
-            .map(|param| Ident::new(param.name.as_str()))
-            .collect(),
-    );
-    walk_stmts(body, &mut taken);
-    let mut taken = taken.0;
+    let mut body_names = Collect(HashSet::new());
+    walk_stmts(body, &mut body_names);
+    let body_names = body_names.0;
+    let mut taken = body_names.clone();
+    taken.extend(params.iter().map(|param| Ident::new(param.name.as_str())));
     let mut scopes = ScopeMentions {
         scopes: renamed
             .iter()
@@ -466,7 +463,19 @@ pub(super) fn restore(body: &mut [Stmt], params: &[FnParam], renamed: &[(Ident, 
             .collect(),
     };
     walk_stmts(body, &mut scopes);
+    let relevant = scopes.relevant;
     let mut scopes = scopes.scopes;
+    for param in params.iter() {
+        let name = Ident::new(param.name.as_str());
+        if let Some(scope) = scopes.get_mut(&name) {
+            scope.binders += 1;
+            scope.mentions.extend(
+                body_names
+                    .iter()
+                    .filter(|mentioned| **mentioned != name && relevant.contains(*mentioned)),
+            );
+        }
+    }
     let mut pending: HashSet<Ident> = renamed.iter().map(|&(fresh, _)| fresh).collect();
     let mut applied = HashMap::new();
     for &(fresh, original) in renamed {
@@ -494,6 +503,11 @@ pub(super) fn restore(body: &mut [Stmt], params: &[FnParam], renamed: &[(Ident, 
         };
         taken.insert(to);
         applied.insert(fresh, to);
+    }
+    for param in params.iter_mut() {
+        if let Some(to) = applied.get(&Ident::new(param.name.as_str())) {
+            param.name = to.as_str().to_string();
+        }
     }
     walk_stmts(body, &mut Rename(applied));
 }

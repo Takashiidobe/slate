@@ -111,6 +111,9 @@ impl MacroStructureVisitor for Survey<'_> {
         if matches!(kind, ValueKind::LabelAddress(_) | ValueKind::Seh(_)) {
             self.reject_open("control_transfer");
         }
+        if matches!(kind, ValueKind::VaStart { .. }) {
+            self.reject_open("va_start_reads_variadic_arguments");
+        }
         if matches!(kind, ValueKind::Block(_)) {
             self.reserve_storage();
         }

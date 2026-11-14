@@ -158,7 +158,7 @@ fn run_function(
     rules::demote_params(&mut function);
     *body = arena::reify(&function, root);
     *params = function.params().to_vec();
-    shadow::restore(body, params, &shadowed);
+    shadow::restore(body, &mut params[..], &shadowed);
 }
 
 fn enqueue_subtree(arena: &Arena, id: NodeId, worklist: &mut BTreeSet<u32>) {
