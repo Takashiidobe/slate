@@ -113,6 +113,143 @@ impl MacroStructureVisitor for Reselect<'_> {
     }
 }
 
+fn entry_prefix(body: &[Span<Statement>], entry: &Known) -> usize {
+    if entry.is_empty() {
+        return 0;
+    }
+    let mut count = 0;
+    for statement in body {
+        let mut single = vec![statement.clone()];
+        let mut targets = JumpTargets::default();
+        walk_macro_structure(&mut single, &mut targets);
+        if targets.labels {
+            break;
+        }
+        let uses = Uses::of(&mut single);
+        if entry.keys().all(|id| uses.stable(*id)) {
+            count += 1;
+            continue;
+        }
+        if matches!(statement.value, Statement::Write { .. } | Statement::Asm(_)) {
+            count += 1;
+        }
+        break;
+    }
+    count
+}
+
+#[derive(Default)]
+struct JumpTargets {
+    labels: bool,
+    switches: HashSet<BindingId>,
+    cases: Vec<BindingId>,
+}
+
+impl JumpTargets {
+    fn enterable(self) -> bool {
+        self.labels
+            || self
+                .cases
+                .iter()
+                .any(|switch| !self.switches.contains(switch))
+    }
+
+    fn of_statements(body: &mut Vec<Span<Statement>>) -> bool {
+        let mut targets = Self::default();
+        walk_macro_structure(body, &mut targets);
+        targets.enterable()
+    }
+
+    fn of_value(value: &mut Value) -> bool {
+        let mut targets = Self::default();
+        walk_value_structure(value, &mut targets);
+        targets.enterable()
+    }
+}
+
+impl MacroStructureVisitor for JumpTargets {
+    fn statement(&mut self, statement: &Statement) {
+        match statement {
+            Statement::Label { .. } => self.labels = true,
+            Statement::Switch { id, .. } => {
+                self.switches.insert(*id);
+            }
+            Statement::Case { switch, .. } | Statement::Default { switch, .. } => {
+                self.cases.push(*switch)
+            }
+            _ => {}
+        }
+    }
+}
+
+struct DeadArms<'a> {
+    lower: &'a Lowerer,
+    pruned: bool,
+}
+
+impl MacroStructureVisitor for DeadArms<'_> {
+    fn rewrite_statement(&mut self, statement: &mut Statement) {
+        let Statement::If {
+            condition,
+            then_body,
+            else_body,
+        } = statement
+        else {
+            return;
+        };
+        let Some(taken) = self.lower.folded_condition(condition) else {
+            return;
+        };
+        let (kept, mut dropped) = if taken {
+            (
+                std::mem::take(then_body),
+                else_body.take().unwrap_or_default(),
+            )
+        } else {
+            (
+                else_body.take().unwrap_or_default(),
+                std::mem::take(then_body),
+            )
+        };
+        if JumpTargets::of_statements(&mut dropped) {
+            let (then_value, else_value) = if taken {
+                (kept, dropped)
+            } else {
+                (dropped, kept)
+            };
+            *then_body = then_value;
+            *else_body = Some(else_value);
+            return;
+        }
+        *statement = Statement::Block(kept);
+        self.pruned = true;
+    }
+
+    fn rewrite_value(&mut self, value: &mut Value) {
+        let ValueKind::Conditional {
+            condition,
+            then_value,
+            else_value,
+        } = &mut value.node.value
+        else {
+            return;
+        };
+        let Some(taken) = self.lower.folded_condition(condition) else {
+            return;
+        };
+        let (kept, dropped) = if taken {
+            (then_value, else_value)
+        } else {
+            (else_value, then_value)
+        };
+        if kept.ty != value.ty || JumpTargets::of_value(dropped) {
+            return;
+        }
+        *value = kept.as_ref().clone();
+        self.pruned = true;
+    }
+}
+
 #[derive(Default)]
 pub(super) struct Specializations {
     clones: HashMap<(BindingId, Vec<String>), Option<BindingId>>,
@@ -125,12 +262,8 @@ impl Lowerer {
         if self.types.dialect().options().codegen.optimization == Optimization::None {
             return;
         }
-        let mut unresolved = HashSet::new();
-        let mut calls = HashMap::new();
         for index in 0..self.module.functions.len() {
-            let function = &self.module.functions[index].value;
-            let id = function.id;
-            let Some(mut body) = function.body.clone() else {
+            let Some(mut body) = self.module.functions[index].value.body.take() else {
                 continue;
             };
             let known = self.known_locals(&mut body, Known::new());
@@ -141,24 +274,11 @@ impl Lowerer {
                     known: &known,
                 },
             );
-            let uses = Uses::of(&mut body);
-            if uses.rejected {
-                unresolved.insert(id);
-            }
-            calls.insert(id, uses.callees);
             self.module.functions[index].value.body = Some(body);
         }
-        let mut changed = true;
-        while changed {
-            changed = false;
-            for (caller, callees) in &calls {
-                if !unresolved.contains(caller)
-                    && callees.iter().any(|callee| unresolved.contains(callee))
-                {
-                    unresolved.insert(*caller);
-                    changed = true;
-                }
-            }
+        let mut unresolved = self.unresolved_functions();
+        if self.prune_dead_arms(&unresolved) {
+            unresolved = self.unresolved_functions();
         }
         let candidates: HashSet<BindingId> = self
             .module
@@ -191,6 +311,64 @@ impl Lowerer {
             self.module.functions[index].value.body = Some(body);
         }
         self.drop_unreferenced(&unresolved);
+    }
+
+    fn unresolved_functions(&mut self) -> HashSet<BindingId> {
+        let mut unresolved = HashSet::new();
+        let mut calls = HashMap::new();
+        for function in &mut self.module.functions {
+            let id = function.value.id;
+            let Some(body) = &mut function.value.body else {
+                continue;
+            };
+            let uses = Uses::of(body);
+            if uses.rejected {
+                unresolved.insert(id);
+            }
+            calls.insert(id, uses.callees);
+        }
+        let mut changed = true;
+        while changed {
+            changed = false;
+            for (caller, callees) in &calls {
+                if !unresolved.contains(caller)
+                    && callees.iter().any(|callee| unresolved.contains(callee))
+                {
+                    unresolved.insert(*caller);
+                    changed = true;
+                }
+            }
+        }
+        unresolved
+    }
+
+    fn prune_dead_arms(&mut self, unresolved: &HashSet<BindingId>) -> bool {
+        let mut pruned = false;
+        for index in 0..self.module.functions.len() {
+            if !unresolved.contains(&self.module.functions[index].value.id) {
+                continue;
+            }
+            let Some(mut body) = self.module.functions[index].value.body.take() else {
+                continue;
+            };
+            let mut dead = DeadArms {
+                lower: self,
+                pruned: false,
+            };
+            walk_macro_structure(&mut body, &mut dead);
+            pruned |= dead.pruned;
+            self.module.functions[index].value.body = Some(body);
+        }
+        pruned
+    }
+
+    fn folded_condition(&self, condition: &Value) -> Option<bool> {
+        integer_with_objects(
+            condition,
+            self.types.fold_target(),
+            self.types.entities.constants(),
+        )
+        .map(|value| value != 0.into())
     }
 
     fn known_locals(&self, body: &mut Vec<Span<Statement>>, mut known: Known) -> Known {
@@ -251,18 +429,26 @@ impl Lowerer {
             return None;
         }
         let mut known = Known::new();
+        let mut entry = Known::new();
         for (parameter, argument) in fixed.iter().zip(arguments) {
-            if let Some(argument) = argument
-                && uses.stable(parameter.value.id)
-            {
-                known.insert(parameter.value.id, argument);
+            if let Some(argument) = argument {
+                if uses.stable(parameter.value.id) {
+                    known.insert(parameter.value.id, argument);
+                } else {
+                    entry.insert(parameter.value.id, argument);
+                }
             }
         }
-        if known.is_empty() || self.specializations.active.contains(&callee) {
+        let prefix = entry_prefix(&body, &entry);
+        if prefix == 0 {
+            entry.clear();
+        }
+        if (known.is_empty() && entry.is_empty()) || self.specializations.active.contains(&callee) {
             return None;
         }
         let mut key: Vec<_> = known
             .iter()
+            .chain(&entry)
             .map(|(id, value)| format!("{}={value}", id.0))
             .collect();
         key.sort();
@@ -273,21 +459,21 @@ impl Lowerer {
         let mut function = original.clone();
         self.specializations.active.insert(callee);
         let known = self.known_locals(&mut body, known);
-        walk_macro_structure(
-            &mut body,
-            &mut Reselect {
-                lower: self,
-                known: &known,
-            },
-        );
-        walk_macro_structure(
-            &mut body,
-            &mut Redirect {
-                lower: self,
-                known: &known,
-                candidates,
-            },
-        );
+        let mut rest = body.split_off(prefix);
+        let mut at_entry = known.clone();
+        at_entry.extend(entry);
+        for (part, known) in [(&mut body, &at_entry), (&mut rest, &known)] {
+            walk_macro_structure(part, &mut Reselect { lower: self, known });
+            walk_macro_structure(
+                part,
+                &mut Redirect {
+                    lower: self,
+                    known,
+                    candidates,
+                },
+            );
+        }
+        body.append(&mut rest);
         self.specializations.active.remove(&callee);
         let uses = Uses::of(&mut body);
         let resolved = !uses.rejected && !uses.callees.iter().any(|id| candidates.contains(id));

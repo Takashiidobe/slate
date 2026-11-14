@@ -192,6 +192,17 @@ const int k = 2`, `table[1]`, `s.field`, string elements, `*ptr` to a
     per argument set and kept only if it resolves fully. It is internal,
     keeps the signature and arguments, and drops symbol attributes except
     `section` (`arch_static_branch(&key, true)`).
+  - In functions that are still unresolved, an `if` or `?:` whose condition
+    folds to a constant loses its dead arm, unless that arm holds a label or
+    a case of an enclosing switch. clang's codegen never emits such an arm.
+    `__builtin_constant_p(param)` folds to 0 in a body that is not cloned,
+    so the asm it guards (`nf_hook`'s `static_key_false(&nf_hooks_needed[pf][hook])`,
+    `arch_test_bit_acquire`, `if (IS_ENABLED(...))`) stops blocking the
+    function, and the unresolved set is recomputed.
+  - A parameter that is written later (`"=r"(p) : "i"(p)` in `rip_rel_ptr`)
+    keeps its argument value through the leading top-level statements, up to
+    and including the first `Write` or asm that writes it, and not past a
+    label (`ir_asm_dead_arm_entry_value.c`).
   - Unresolved internal functions that are left unreferenced are dropped, as
     clang never emits them. A local's `cleanup` target counts as a call, both
     for the unresolved propagation and as a reference, so a `guard()`
