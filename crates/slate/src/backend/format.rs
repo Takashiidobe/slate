@@ -20,7 +20,14 @@ fn restore_macro_lists(formatted: String) -> String {
     out
 }
 
+fn skip_formatting() -> bool {
+    std::env::var_os("SLATE_NO_FORMAT").is_some_and(|value| value != "0")
+}
+
 pub fn format_rust(source: &str) -> Result<String, String> {
+    if skip_formatting() {
+        return Ok(restore_macro_lists(source.to_string()));
+    }
     let rustfmt = std::env::var("SLATE_RUSTFMT").unwrap_or_else(|_| "rustfmt".into());
     let mut child = Command::new(&rustfmt)
         .args(["--emit", "stdout", "--edition", "2024"])
@@ -54,7 +61,7 @@ pub fn write_rust(path: &Path, source: &str) -> Result<(), String> {
 }
 
 pub fn pretty_rust(source: &str) -> Result<String, String> {
-    if source.contains("//") || source.contains("/*") {
+    if skip_formatting() || source.contains("//") || source.contains("/*") {
         return format_rust(source);
     }
     match syn::parse_file(source) {

@@ -661,6 +661,18 @@ def native_compile_seconds(units, out, jobs):
     return seconds, failures
 
 
+def format_crate(crate, jobs):
+    def format_file(path):
+        result = subprocess.run(["rustfmt", "--edition", "2024", path], capture_output=True, text=True)
+        return path, result.returncode
+
+    start = time.perf_counter()
+    with concurrent.futures.ThreadPoolExecutor(jobs) as pool:
+        failures = [str(path.relative_to(crate)) for path, code in
+                    pool.map(format_file, sorted((crate / "src").rglob("*.rs"))) if code]
+    return round(time.perf_counter() - start, 1), failures
+
+
 def openblas_smoke(project_dir, translated_archive, out):
     test_dir = out / "openblas-smoke"
     test_dir.mkdir(exist_ok=True)
@@ -1624,11 +1636,13 @@ def main():
     crate_type = ["--crate-type", "staticlib,cdylib" if recipe.translate_tests else "staticlib"] if library else crate_type
     crate_type = ["--crate-type", "staticlib"] if make_library else crate_type
     code, seconds = run([SLATE, "translate-project", *crate_type, "--compile-commands", commands, project_dir,
-                         crate], out / "translate.log")
+                         crate], out / "translate.log", env=dict(os.environ, SLATE_NO_FORMAT="1"))
+    format_seconds, format_failures = format_crate(crate, args.jobs) if not code else (0, [])
     native_seconds, native_failures = native_compile_seconds(units, out, args.jobs)
     timing = {"translate_seconds": seconds, "native_compile_seconds": native_seconds,
               "translate_over_compile": round(seconds / native_seconds, 2) if native_seconds else None,
-              "native_compile_failures": [path for path, _ in native_failures]}
+              "native_compile_failures": [path for path, _ in native_failures],
+              "format_seconds": format_seconds, "format_failures": format_failures}
     if not finish("translate", "failed" if code else "ok", log="translate.log", **timing):
         return 1 if code else 0
 

@@ -1,5 +1,5 @@
 use crate::backend::rust_ast::{AtomicPlace, Block, Expr, FnParam, Ident, Label, Pattern, Stmt};
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 trait Names {
     fn push(&mut self) {}
@@ -373,22 +373,38 @@ impl Names for Collect {
     }
 }
 
-struct ScopeMentions {
-    target: Ident,
-    frames: Vec<bool>,
+#[derive(Default)]
+struct Scope {
     binders: usize,
     mentions: HashSet<Ident>,
 }
 
+struct ScopeMentions {
+    scopes: HashMap<Ident, Scope>,
+    frames: Vec<Vec<Ident>>,
+    relevant: HashSet<Ident>,
+}
+
 impl ScopeMentions {
-    fn in_scope(&self) -> bool {
-        self.frames.iter().any(|&bound| bound)
+    fn mention(&mut self, name: Ident) {
+        if !self.relevant.contains(&name) {
+            return;
+        }
+        for frame in &self.frames {
+            for target in frame {
+                if *target != name
+                    && let Some(scope) = self.scopes.get_mut(target)
+                {
+                    scope.mentions.insert(name);
+                }
+            }
+        }
     }
 }
 
 impl Names for ScopeMentions {
     fn push(&mut self) {
-        self.frames.push(false);
+        self.frames.push(Vec::new());
     }
 
     fn pop(&mut self) {
@@ -396,27 +412,23 @@ impl Names for ScopeMentions {
     }
 
     fn bind(&mut self, name: &mut Ident, _: bool) {
-        if *name == self.target {
-            self.binders += 1;
-            if let Some(frame) = self.frames.last_mut() {
-                *frame = true;
+        self.mention(*name);
+        if let Some(scope) = self.scopes.get_mut(name) {
+            scope.binders += 1;
+            if let Some(frame) = self.frames.last_mut()
+                && !frame.contains(name)
+            {
+                frame.push(*name);
             }
-        } else if self.in_scope() {
-            self.mentions.insert(*name);
         }
     }
 
     fn var(&mut self, name: &mut Ident) {
-        if *name != self.target && self.in_scope() {
-            self.mentions.insert(*name);
-        }
+        self.mention(*name);
     }
 }
 
-struct Rename {
-    from: Ident,
-    to: Ident,
-}
+struct Rename(HashMap<Ident, Ident>);
 
 impl Names for Rename {
     fn bind(&mut self, name: &mut Ident, _: bool) {
@@ -424,8 +436,8 @@ impl Names for Rename {
     }
 
     fn var(&mut self, name: &mut Ident) {
-        if *name == self.from {
-            *name = self.to;
+        if let Some(&to) = self.0.get(name) {
+            *name = to;
         }
     }
 }
@@ -442,22 +454,35 @@ pub(super) fn restore(body: &mut [Stmt], params: &[FnParam], renamed: &[(Ident, 
     );
     walk_stmts(body, &mut taken);
     let mut taken = taken.0;
+    let mut scopes = ScopeMentions {
+        scopes: renamed
+            .iter()
+            .map(|&(fresh, _)| (fresh, Scope::default()))
+            .collect(),
+        frames: vec![Vec::new()],
+        relevant: renamed
+            .iter()
+            .flat_map(|&(fresh, original)| [fresh, original])
+            .collect(),
+    };
+    walk_stmts(body, &mut scopes);
+    let mut scopes = scopes.scopes;
     let mut pending: HashSet<Ident> = renamed.iter().map(|&(fresh, _)| fresh).collect();
+    let mut applied = HashMap::new();
     for &(fresh, original) in renamed {
         pending.remove(&fresh);
-        let mut scope = ScopeMentions {
-            target: fresh,
-            frames: vec![false],
-            binders: 0,
-            mentions: HashSet::new(),
-        };
-        walk_stmts(body, &mut scope);
-        let conflicts = scope.mentions.contains(&original)
+        let scope = scopes.remove(&fresh).unwrap_or_default();
+        let mentions: HashSet<Ident> = scope
+            .mentions
+            .iter()
+            .map(|name| applied.get(name).copied().unwrap_or(*name))
+            .collect();
+        let conflicts = mentions.contains(&original)
             || renamed.iter().any(|&(other, base)| {
                 base == original
                     && other != fresh
                     && pending.contains(&other)
-                    && scope.mentions.contains(&other)
+                    && mentions.contains(&other)
             });
         let to = if scope.binders == 1 && !conflicts {
             original
@@ -468,8 +493,9 @@ pub(super) fn restore(body: &mut [Stmt], params: &[FnParam], renamed: &[(Ident, 
                 .unwrap_or(fresh)
         };
         taken.insert(to);
-        walk_stmts(body, &mut Rename { from: fresh, to });
+        applied.insert(fresh, to);
     }
+    walk_stmts(body, &mut Rename(applied));
 }
 
 struct Visit<F>(F);
