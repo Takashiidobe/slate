@@ -174,7 +174,7 @@ fn takes_address(expr: &Expr, name: Ident) -> bool {
     }
 }
 
-fn kind_takes_address(kind: &NodeKind, name: Ident) -> bool {
+pub(super) fn kind_takes_address(kind: &NodeKind, name: Ident) -> bool {
     let mut found = matches!(kind, NodeKind::InlineAsm(_));
     walk::visit_kind_exprs(kind, |expr| found |= takes_address(expr, name));
     found

@@ -1,3 +1,4 @@
+use super::slot_promote::kind_takes_address;
 use super::{inline_temps, walk};
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
@@ -122,10 +123,13 @@ impl CallCtx<'_> {
             .iter()
             .any(|&id| match self.arena.get(id) {
                 Some(NodeKind::Assign { target, .. })
-                | Some(NodeKind::CompoundAssign { target, .. }) => {
-                    assign_root_var(target) == Some(name)
+                | Some(NodeKind::CompoundAssign { target, .. })
+                    if assign_root_var(target) == Some(name) =>
+                {
+                    true
                 }
-                _ => false,
+                Some(kind) => kind_takes_address(kind, name),
+                None => false,
             })
     }
 }
