@@ -45,6 +45,7 @@ class Recipe:
     test_dir: str = ""
     test_patches: dict[str, list[tuple[str, str]]] = field(default_factory=dict)
     test_keep_objects: bool = False
+    test_binary: str = ""
     benchmark: Callable | None = None
     every_unit: bool = False
 
@@ -1270,6 +1271,29 @@ def link_flags(project_dir, recipe, variables):
     return " ".join(f"-C link-arg={flag}" for flag in flags)
 
 
+def exports_dynamic(ldflags):
+    return any(flag in ("-rdynamic", "-Wl,-E", "-Wl,--export-dynamic", "-Wl,-export-dynamic") for flag in ldflags)
+
+
+def build_tree_test(project_dir, recipe, binary, out, args):
+    build = project_dir / recipe.make_dir
+    copy = build / recipe.test_binary
+    shutil.copy2(binary, copy)
+
+    def command(executable):
+        return [part.replace("{binary}", executable) for part in recipe.test] + args.test_args
+
+    code, seconds = run(command(f"./{recipe.test_binary}"), out / "test.log", cwd=build,
+                        timeout=args.test_timeout, stdin=subprocess.DEVNULL)
+    details = {"seconds": seconds, "log": "test.log", "exit": code}
+    if args.native_test:
+        native_code, native_seconds = run(command(f"./{recipe.target}"), out / "test-native.log", cwd=build,
+                                          timeout=args.test_timeout, stdin=subprocess.DEVNULL)
+        details |= {"native_seconds": native_seconds, "native_exit": native_code, "native_log": "test-native.log",
+                    "test_over_native": round(seconds / native_seconds, 2) if native_seconds else None}
+    return code, details
+
+
 def test_sandbox(project_dir, recipe, binary, out, jobs, name="test-tree"):
     for index, command in enumerate(recipe.test_build):
         code, _ = run([*command, f"-j{jobs}"], out / f"test-build-{index}.log", cwd=project_dir)
@@ -1433,6 +1457,9 @@ RECIPES = {
         host_includes=["/usr/include"],
         native_objects=["Python/asm_trampoline.o"],
         links={"build-clang/python": "target"},
+        test=["{binary}", "-m", "test", "-j0", "--timeout=1200", "-x", "test_gdb",
+              "--ignore", "*TestPerfProfilerWithDwarf*"],
+        test_binary="python-slate",
     ),
     "lua": Recipe(
         target="lua",
@@ -1635,7 +1662,9 @@ def main():
     crate_type = ["--crate-type", recipe.crate_type] if translation_only else []
     crate_type = ["--crate-type", "staticlib,cdylib" if recipe.translate_tests else "staticlib"] if library else crate_type
     crate_type = ["--crate-type", "staticlib"] if make_library else crate_type
-    code, seconds = run([SLATE, "translate-project", *crate_type, "--compile-commands", commands, project_dir,
+    export_dynamic = ["--export-dynamic"] if isinstance(recipe, Recipe) and exports_dynamic(recipe.ldflags) else []
+    code, seconds = run([SLATE, "translate-project", *crate_type, *export_dynamic, "--compile-commands", commands,
+                         project_dir,
                          crate], out / "translate.log", env=dict(os.environ, SLATE_NO_FORMAT="1"))
     format_seconds, format_failures = format_crate(crate, args.jobs) if not code else (0, [])
     native_seconds, native_failures = native_compile_seconds(units, out, args.jobs)
@@ -1713,6 +1742,11 @@ def main():
             return 1
         if not finish("bench", "ok", **bench):
             return 0
+
+    if recipe.test_binary:
+        code, details = build_tree_test(project_dir, recipe, binary, out, args)
+        finish("test", "failed" if code else "ok", **details)
+        return 1 if code else 0
 
     try:
         sandbox = test_sandbox(project_dir, recipe, binary, out, args.jobs)

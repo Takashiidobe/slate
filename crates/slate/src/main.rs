@@ -824,6 +824,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut crate_types = Vec::new();
     let mut flavor = None;
     let mut explicit_docs_only = false;
+    let mut export_dynamic = false;
     let mut manifest: Option<PathBuf> = None;
     let mut manifest_target = None;
     let mut features: Vec<String> = Vec::new();
@@ -851,6 +852,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
                 build_target = Some(target.as_str());
             }
             "--explicit-docs-only" => explicit_docs_only = true,
+            "--export-dynamic" => export_dynamic = true,
             "--manifest" => {
                 index += 1;
                 let path = args
@@ -972,6 +974,9 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
         if !features.is_empty() {
             return Err("--merge chooses features itself; remove --features".into());
         }
+        if export_dynamic {
+            return Err("--export-dynamic is not supported with --merge".into());
+        }
         if !compile_command_paths.is_empty() || flavor.is_some() || !include_args.is_empty() {
             return Err(
                 "--merge cannot be combined with --compile-commands, --flavor or include options"
@@ -1037,6 +1042,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             commands,
             &crate_types,
             explicit_docs_only,
+            export_dynamic,
         );
     }
     if manifest_target.is_some() || !features.is_empty() {
@@ -1066,6 +1072,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
         read.commands,
         &crate_types,
         explicit_docs_only,
+        export_dynamic,
     )
 }
 
@@ -1190,6 +1197,7 @@ fn translate_slate_project(
     commands: Vec<compile_commands::CompileCommand>,
     crate_types: &[String],
     explicit_docs_only: bool,
+    export_dynamic: bool,
 ) -> Result<String, String> {
     let units = parse_slate_units(commands)?;
     let roots: Vec<&str> = units
@@ -1212,7 +1220,7 @@ fn translate_slate_project(
             &units,
             merge::imported_commons(&units),
             explicit_docs_only,
-            root.as_deref(),
+            root.as_deref().filter(|_| !export_dynamic),
             merge::Sections::ByProject,
             false,
             &merge::comdat_owners(&units),

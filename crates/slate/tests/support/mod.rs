@@ -1073,11 +1073,33 @@ pub fn build_project_release(crate_dir: &Path) -> Result<PathBuf, String> {
     build_project_release_for_target(crate_dir, None)
 }
 
+pub fn build_project_release_with_link_args(
+    crate_dir: &Path,
+    link_args: &[String],
+) -> Result<PathBuf, String> {
+    build_project_release_inner(crate_dir, None, link_args)
+}
+
 pub fn build_project_release_for_target(
     crate_dir: &Path,
     cross: Option<&CrossTarget>,
 ) -> Result<PathBuf, String> {
+    build_project_release_inner(crate_dir, cross, &[])
+}
+
+fn build_project_release_inner(
+    crate_dir: &Path,
+    cross: Option<&CrossTarget>,
+    link_args: &[String],
+) -> Result<PathBuf, String> {
     let mut command = Command::new(cargo());
+    if !link_args.is_empty() {
+        let flags: Vec<String> = link_args
+            .iter()
+            .map(|arg| format!("-Clink-arg={arg}"))
+            .collect();
+        command.env("RUSTFLAGS", flags.join(" "));
+    }
     command
         .args([
             "build",

@@ -188,9 +188,15 @@ similar rust.
 - [nginx](https://nginx.org)
   - Translates the default `nginx` build. Passes all 2584 tests in the 176
     upstream `nginx-tests` files that apply to its modules, matching native.
+- [CPython](https://www.python.org)
+  - Translates the 190 C units of the `python` binary. With the build tree's
+    extension modules, `python -m test` passes 459 of 462 test files (48,414
+    tests), in 100s against 95s native. The 3 failures are debugging tooling
+    that expects the C build: `test_gdb` (2 files) and perf's DWARF unwinding in
+    `test_perf_profiler`. Every other test matches native.
 - [NumPy](https://numpy.org)
   - x86_64 passes 14872 tests, and skips 17, same as the C build on my machine.
-    28.7s compared to 35.7s as well.
+    Tests run in 28.7s for the rust version compared to 35.7s in C.
   - Translates all 151 C units of NumPy's `aarch64-linux-gnu` clang cross build,
     including the NEON (ASIMD) dispatch paths. Not run yet
 

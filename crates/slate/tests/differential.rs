@@ -368,10 +368,14 @@ fn release_build_differential() {
         let result = (|| {
             let options = support::fixture_dg_options(&sources[0]);
             let target = support::translation_target(&options);
+            let translate_args = release_directive(sources, "// translate-args:");
+            let link_args = release_directive(sources, "// link-args:");
             let mut c_args = options.clone();
             c_args.push("-O2".to_owned());
-            translate_fixture_project(sources, &crate_dir, options, &[])?;
-            let rs_bin = support::build_project_release(&crate_dir)?;
+            c_args.extend(link_args.iter().cloned());
+            let translate_args: Vec<&str> = translate_args.iter().map(String::as_str).collect();
+            translate_fixture_project(sources, &crate_dir, options, &translate_args)?;
+            let rs_bin = support::build_project_release_with_link_args(&crate_dir, &link_args)?;
             let c_bin = work.join(format!("{name}_c"));
             support::compile_c_multi_with_std_include_and_args(
                 sources,
@@ -412,6 +416,20 @@ fn release_build_differential() {
     .flatten()
     .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}
+
+fn release_directive(sources: &[PathBuf], prefix: &str) -> Vec<String> {
+    sources
+        .iter()
+        .filter_map(|source| std::fs::read_to_string(source).ok())
+        .flat_map(|text| {
+            text.lines()
+                .filter_map(|line| line.strip_prefix(prefix))
+                .flat_map(str::split_whitespace)
+                .map(str::to_string)
+                .collect::<Vec<_>>()
+        })
+        .collect()
 }
 
 fn release_unit_output(crate_dir: &Path, source: &Path) -> PathBuf {
