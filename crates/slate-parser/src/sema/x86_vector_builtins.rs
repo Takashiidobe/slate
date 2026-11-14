@@ -501,6 +501,40 @@ impl Lowerer {
             Expansion::MaskedStore => {
                 self.value(e, result, intrinsic("slate.masked_store", arguments))
             }
+            Expansion::FloatClassMask => {
+                let (Some(lanes), Some(classes)) = (
+                    arguments.first().and_then(|vector| lanes_of(&vector.ty)),
+                    immediate(1),
+                ) else {
+                    return Ok(Err((returned, ty, arguments)));
+                };
+                let [vector, _, enabled]: [Value; 3] = arguments
+                    .try_into()
+                    .map_err(|_| ResolveError::Internal("fpclass arguments"))?;
+                let full = super::fold::integer_constant(&enabled, self.types.fold_target())
+                    .is_some_and(|mask| {
+                        let all = (BigInt::from(1) << lanes) - 1;
+                        mask & &all == all
+                    });
+                let mut captures = Vec::new();
+                let place = self
+                    .bind_all(signature, vec![vector], &mut captures)?
+                    .into_iter()
+                    .next()
+                    .ok_or(ResolveError::Internal("fpclass operand"))?;
+                let mask = self.float_class_mask(e, classes, &place)?;
+                let bits = self.value(
+                    e,
+                    result.clone(),
+                    intrinsic("slate.vector_sign_bitmask", vec![mask]),
+                );
+                let value = if full {
+                    bits
+                } else {
+                    self.bitwise(e, ArithOp::And, bits, enabled)
+                };
+                self.captured(e, captures, value)
+            }
             _ => return Err(ResolveError::Internal("x86 vector expansion")),
         };
         Ok(Ok(Operand { c: returned, value }))
@@ -694,6 +728,115 @@ impl Lowerer {
                 self.not(e, zero)
             }
         })
+    }
+
+    fn float_class_mask(
+        &mut self,
+        e: &Expr,
+        classes: u32,
+        place: &Place,
+    ) -> Result<Value, ResolveError> {
+        let Type::Vector {
+            element: NumericType::Float(float),
+            lanes,
+        } = place.ty
+        else {
+            return Err(ResolveError::Internal("fpclass operand"));
+        };
+        let (width, mantissa) = match float {
+            FloatType::F32 => (32, 23),
+            FloatType::F64 => (64, 52),
+            _ => return Err(ResolveError::Internal("fpclass lane")),
+        };
+        let signed = Type::Vector {
+            element: NumericType::integer(width, true),
+            lanes,
+        };
+        let unsigned = Type::Vector {
+            element: NumericType::integer(width, false),
+            lanes,
+        };
+        let one = BigUint::from(1u32);
+        let sign: BigUint = &one << (width - 1);
+        let infinity: BigUint = (&sign - 1u32) >> mantissa << mantissa;
+        let quiet: BigUint = &one << (mantissa - 1);
+        let smallest_normal: BigUint = &one << mantissa;
+        let compare = |this: &mut Self,
+                       op,
+                       magnitude: bool,
+                       constant: BigUint|
+         -> Result<Value, ResolveError> {
+            let read = this.read_place(e, place);
+            let mut left =
+                this.context
+                    .vector_convert(read, unsigned.clone(), ConversionReason::Explicit)?;
+            if magnitude {
+                let low_bits = this.splat_constant(e, &unsigned, &sign - 1u32);
+                left = this.bitwise(e, ArithOp::And, left, low_bits);
+            }
+            let right = this.splat_constant(e, &unsigned, constant);
+            Ok(this.value(
+                e,
+                signed.clone(),
+                ValueKind::Compare {
+                    op,
+                    left: Box::new(left),
+                    right: Box::new(right),
+                    exceptions: None,
+                    reason: None,
+                },
+            ))
+        };
+        let zero = BigUint::from(0u32);
+        let mut any: Option<Value> = None;
+        for class in (0..8).filter(|class| classes >> class & 1 == 1) {
+            let term = match class {
+                0 => compare(self, CompareOp::Ge, true, &infinity | &quiet)?,
+                1 => compare(self, CompareOp::Eq, false, zero.clone())?,
+                2 => compare(self, CompareOp::Eq, false, sign.clone())?,
+                3 => compare(self, CompareOp::Eq, false, infinity.clone())?,
+                4 => compare(self, CompareOp::Eq, false, &sign | &infinity)?,
+                5 => {
+                    let nonzero = compare(self, CompareOp::Ne, true, zero.clone())?;
+                    let small = compare(self, CompareOp::Lt, true, smallest_normal.clone())?;
+                    self.bitwise(e, ArithOp::And, nonzero, small)
+                }
+                6 => {
+                    let negative = compare(self, CompareOp::Ge, false, sign.clone())?;
+                    let finite = compare(self, CompareOp::Lt, true, infinity.clone())?;
+                    let nonzero = compare(self, CompareOp::Ne, true, zero.clone())?;
+                    let negative = self.bitwise(e, ArithOp::And, negative, finite);
+                    self.bitwise(e, ArithOp::And, negative, nonzero)
+                }
+                _ => {
+                    let nan = compare(self, CompareOp::Gt, true, infinity.clone())?;
+                    let signaling = compare(self, CompareOp::Lt, true, &infinity | &quiet)?;
+                    self.bitwise(e, ArithOp::And, nan, signaling)
+                }
+            };
+            any = Some(match any {
+                Some(any) => self.bitwise(e, ArithOp::Or, any, term),
+                None => term,
+            });
+        }
+        match any {
+            Some(any) => Ok(any),
+            None => self.zero(e, &signed),
+        }
+    }
+
+    fn splat_constant(&mut self, e: &Expr, ty: &Type, value: BigUint) -> Value {
+        let Type::Vector { element, .. } = ty else {
+            return self.mask_constant(e, ty, value);
+        };
+        let scalar = self.mask_constant(e, &Type::Numeric(*element), value);
+        conversion(
+            scalar,
+            ty.clone(),
+            ConversionKind::VectorSplat,
+            ConversionReason::Explicit,
+            ConversionSema::Exact,
+        )
     }
 
     fn read_place(&mut self, e: &Expr, place: &Place) -> Value {

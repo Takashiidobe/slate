@@ -270,7 +270,8 @@ rewrites by hand. Immediates must fold to constants (otherwise the call stays):
 | `pshuf{l,h}w[256,512]` | per-8-word shuffle of the low / high four words by 2-bit selectors; the other half unchanged |
 | `vpermilps[256,512]` / `vpermilpd[256,512]` | same lane formula as `pshufd` / lane `i/2*2 + (imm >> i%8 & 1)` |
 | `k{and,andn,or,xor,xnor,not,add,mov}{qi,hi,si,di}`, `kunpck{hi,si,di}`, `kshift{l,r}i*` | integer ops on the mask type (`add` wraps, unpack is `a << w/2 \| b & low`, constant shifts of `>= w` give zero) |
-| `round{ps,pd,ss,sd}[256]`, `vcvtph2ps512_mask`, `reduce_fm{ax,in}_p{s,d}512`, 512-bit gathers and scatters | the matching LLVM intrinsic, arguments unchanged |
+| `round{ps,pd,ss,sd}[256]`, `vcvtph2ps512_mask`, `reduce_fm{ax,in}_p{s,d}512`, 512-bit gathers and scatters, AVX-512VL `gather3{si,di}v*` and `scatter{si,di}v*` | the matching LLVM intrinsic, arguments unchanged (VL forms use the `i8`-mask `llvm.x86.avx512.gather3siv8.si` family) |
+| `fpclassp{s,d}{128,256,512}_mask` | Intel's CheckFPClass on the lanes bit cast to unsigned: QNaN `abs >= inf\|quiet`, ±0 and ±Inf by equality, denormal `0 < abs < min_normal`, negative finite `sign && 0 < abs < inf`, SNaN `inf < abs < inf\|quiet`; selected classes OR'd, `slate.vector_sign_bitmask`, `and` with the mask unless all-ones |
 
 Operands used more than once are bound once (`bind_once`), so their side
 effects run exactly once.

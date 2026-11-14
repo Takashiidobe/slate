@@ -64,7 +64,8 @@ impl Lowerer {
             | Expansion::MaskedStore
             | Expansion::ShuffleWords { .. }
             | Expansion::PermutePairs
-            | Expansion::MaskLogic(_) => {
+            | Expansion::MaskLogic(_)
+            | Expansion::FloatClassMask => {
                 return self.expand_x86_vector(e, expansion, signature, (returned, ty, arguments));
             }
             Expansion::Ms {
