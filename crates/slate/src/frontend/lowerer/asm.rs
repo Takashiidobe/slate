@@ -1749,6 +1749,7 @@ impl FunctionLowerer<'_, '_> {
         let mut slots = Vec::new();
         let mut flags_inputs = Vec::new();
         let mut saved_rbx = None;
+        let mut saved_rbx_scratch = None;
         let mut reserved_operands: Vec<(&str, usize, bool, bool)> = Vec::new();
         let mut taken = asm
             .operands
@@ -2197,6 +2198,7 @@ impl FunctionLowerer<'_, '_> {
                         }
                         "bx" => {
                             saved_rbx = Some(operands.len());
+                            saved_rbx_scratch = Some(self.asm_scratch_type(operand)?);
                             rust::AsmReg::Class("reg".into())
                         }
                         _ => {
@@ -2294,16 +2296,44 @@ impl FunctionLowerer<'_, '_> {
                 let slot = saved_rbx.ok_or(Invariant::AsmOperandIndex(index))?;
                 let discarded =
                     |output: &Expr| matches!(output, Expr::Var(name) if name.as_str() == "_");
-                let (input, output) = match (&operands[slot], lowered) {
+                let current = self.asm_scratch_type(operand)?;
+                let saved = saved_rbx_scratch
+                    .clone()
+                    .ok_or(Invariant::AsmOperandIndex(index))?;
+                let (input, output, input_ty, output_ty) = match (&operands[slot], lowered) {
                     (
                         rust::AsmOperand::Out { value, .. },
                         rust::AsmOperand::In { value: input, .. },
-                    ) => (input, value.clone()),
+                    ) => (input, value.clone(), current, saved),
                     (
                         rust::AsmOperand::InOut { input, output, .. },
                         rust::AsmOperand::Out { value, .. },
-                    ) if discarded(output) => (input.clone(), value),
+                    ) if discarded(output) => (input.clone(), value, saved, current),
                     _ => return Err(unsupported_asm("second rbx operand")),
+                };
+                let rank = |ty: &rust::Type| match ty {
+                    rust::Type::Prim(Prim::U64) => 2,
+                    rust::Type::Prim(Prim::U32) => 1,
+                    _ => 0,
+                };
+                let input = if rank(&input_ty) < rank(&output_ty) {
+                    Expr::Cast {
+                        expr: Box::new(input),
+                        ty: output_ty,
+                    }
+                } else {
+                    if rank(&input_ty) > rank(&output_ty)
+                        && let Expr::Var(temp) = &output
+                    {
+                        for statement in &mut prefix {
+                            if let Stmt::Let { name, ty, .. } = statement
+                                && name.as_str() == temp.as_str()
+                            {
+                                *ty = Some(input_ty.clone());
+                            }
+                        }
+                    }
+                    input
                 };
                 operands[slot] = rust::AsmOperand::InOut {
                     reg: rust::AsmReg::Class("reg".into()),
@@ -2342,6 +2372,27 @@ impl FunctionLowerer<'_, '_> {
                 }
                 (Some(canonical), lowered) => {
                     slots.push(Slot::Register(canonical));
+                    if let rust::AsmOperand::In { value, .. } = &lowered
+                        && let Some(previous) = explicit.iter().find_map(|operand| match operand {
+                            rust::AsmOperand::In {
+                                reg: rust::AsmReg::Explicit(name),
+                                value,
+                            }
+                            | rust::AsmOperand::InOut {
+                                reg: rust::AsmReg::Explicit(name),
+                                input: value,
+                                ..
+                            } if name == canonical => Some(value),
+                            _ => None,
+                        })
+                    {
+                        if previous != value {
+                            return Err(unsupported_asm(format!(
+                                "two different inputs in register {canonical}"
+                            )));
+                        }
+                        continue;
+                    }
                     explicit.push(lowered);
                 }
                 (_, lowered) => {
