@@ -974,9 +974,30 @@ impl Preprocessor<'_> {
     ) -> Result<Vec<PPToken>, PPFailure> {
         let mut output = Vec::new();
         let mut spaced = Vec::new();
+        let mut placemarker = None;
         let mut i = 0;
         while i < definition.replacement.len() {
             let token = &definition.replacement[i];
+            if let Some(leading_space) = placemarker
+                && token.value == Token::HashHash
+                && i + 1 < definition.replacement.len()
+            {
+                let mut right_tokens = replacement_tokens(
+                    &definition.replacement[i + 1],
+                    parameters,
+                    arguments,
+                    stamp,
+                    false,
+                );
+                if let Some(first) = right_tokens.first_mut() {
+                    first.token.leading_space = leading_space;
+                    placemarker = None;
+                }
+                output.extend(right_tokens);
+                i += 2;
+                continue;
+            }
+            placemarker = None;
             if matches!(&token.value, Token::Ident(name) if name == "__VA_OPT__")
                 && let Some((optional, _, end)) =
                     invocation_arguments(&definition.replacement, i + 1)
@@ -1077,6 +1098,9 @@ impl Preprocessor<'_> {
                     || replacement_tokens(token, parameters, arguments, stamp, false).is_empty())
             {
                 spaced.push(output.len());
+            }
+            if !prescan && substituted.is_empty() {
+                placemarker = Some(token.leading_space);
             }
             output.extend(substituted);
             i += 1;
