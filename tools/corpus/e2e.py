@@ -97,6 +97,7 @@ class TranslationOnly:
     archive: str | None = None
     smoke: str | None = None
     object_prefixes: list[str] = field(default_factory=list)
+    required_args: list[str] = field(default_factory=list)
     extension: str | None = None
     python: str = ""
     test: list[str] = field(default_factory=list)
@@ -774,6 +775,9 @@ def all_c_translation_units(recipe, database, flavor, project_dir):
             continue
         if recipe.object_prefixes and not any(output.startswith(prefix) for prefix in recipe.object_prefixes):
             continue
+        argv = entry.get("arguments") or shlex.split(entry["command"])
+        if not all(arg in argv for arg in recipe.required_args):
+            continue
         units[source] = translation_unit(entry, source, recipe, flavor)
     return list(units.values())
 
@@ -1217,10 +1221,26 @@ def barrier_rows(entry):
         elif len(parts) >= 4:
             rows.append({"scope": parts[0], "site": parts[1], "kind": parts[2], "detail": parts[3]})
     if result.returncode and not rows:
-        error = result.stderr.strip().splitlines()
-        rows.append({"scope": "<tu>", "site": "", "kind": "error",
-                     "detail": error[-1] if error else f"exit {result.returncode}"})
+        error = [line for line in result.stderr.splitlines() if "×" in line] or result.stderr.strip().splitlines()
+        detail = re.sub(r"^.*× (parse \S+: )?", "", error[0]).strip() if error else f"exit {result.returncode}"
+        rows.append({"scope": "<tu>", "site": "", "kind": "error", "detail": detail})
     return entry["file"], rows
+
+
+def barrier_cluster(detail):
+    detail = re.sub(r"^(global|function|declaration) [^:]+: ", r"\1 <name>: ", detail)
+    detail = re.split(r" (?=[a-z_]+<)", detail, maxsplit=1)[0]
+    detail = re.sub(r"@type[0-9]+", "@type", detail)
+    detail = re.sub(r"(%|operand: |alternative: )[0-9]+", r"\1N", detail)
+    return detail[:160]
+
+
+def barrier_origin(site, project_dir):
+    spelled = re.search(r"\(spelled at (.*)\)$", site)
+    location = spelled[1] if spelled else site.split(" (")[0]
+    path, _, line = location.rpartition(":")[0].rpartition(":")
+    path = os.path.relpath(os.path.normpath(path), project_dir) if path else location
+    return f"{path}:{line}" if path else location
 
 
 def barrier_report(units, project_dir, out, jobs):
@@ -1231,21 +1251,25 @@ def barrier_report(units, project_dir, out, jobs):
     blocked = [row for row in rows if row["kind"] != "ok"]
     functions = sum(row["scope"] not in ("<module>", "<tu>") and not row["scope"].startswith("<declaration ")
                     for row in rows)
-    kinds = collections.defaultdict(lambda: [0, set()])
+    kinds = collections.defaultdict(lambda: [0, set(), collections.Counter(), collections.Counter()])
     for row in blocked:
-        key = f"{row['kind']}: {re.sub(r'%[0-9]+', '%N', row['detail'])[:120]}"
+        key = f"{row['kind']}: {barrier_cluster(row['detail'])}"
         kinds[key][0] += 1
         kinds[key][1].add(row["tu"])
+        kinds[key][2][barrier_origin(row["site"], project_dir)] += 1
+        kinds[key][3][row["scope"]] += 1
     lines = [
         "# Lowering barriers",
         "",
         f"- TUs: {len(results)}, with barriers: {len({row['tu'] for row in blocked})}",
         f"- functions and globals: {len(rows)} rows, {functions} functions, {len(blocked)} blocked",
         "",
-        "| count | TUs | barrier |",
-        "| ---: | ---: | --- |",
-        *(f"| {count} | {len(tus)} | `{key}` |"
-          for key, (count, tus) in sorted(kinds.items(), key=lambda item: -item[1][0])),
+        "| count | TUs | barrier | top origins | top scopes |",
+        "| ---: | ---: | --- | --- | --- |",
+        *(f"| {count} | {len(tus)} | `{key}` | "
+          f"{', '.join(f'{origin} ({n})' for origin, n in origins.most_common(3))} | "
+          f"{', '.join(f'{scope} ({n})' for scope, n in scopes.most_common(3))} |"
+          for key, (count, tus, origins, scopes) in sorted(kinds.items(), key=lambda item: -item[1][0])),
         "",
         "| TU | scope | site | barrier |",
         "| --- | --- | --- | --- |",
@@ -1574,6 +1598,7 @@ RECIPES = {
     ),
     "openblas": TranslationOnly(archive="libopenblas.a", smoke="openblas",
                                 object_prefixes=["cblas_dgemm.o", "cblas_xerbla.o"]),
+    "linux": TranslationOnly(required_args=["-D__KERNEL__"]),
 }
 
 
