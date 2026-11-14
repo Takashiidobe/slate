@@ -179,6 +179,20 @@ impl Tables<'_> {
             } if let Some(initializer) = self.constexprs.get(id) => {
                 self.is_constant_initializer(initializer)
             }
+            ValueKind::Read {
+                place:
+                    ir::Place {
+                        kind:
+                            PlaceKind::CompoundLiteral {
+                                storage:
+                                    ir::StorageDuration::Static | ir::StorageDuration::Automatic,
+                                initializer,
+                                ..
+                            },
+                        ..
+                    },
+                ordering: None,
+            } => self.is_constant_initializer(initializer),
             ValueKind::Copy { operand, .. } => self.is_constant_initializer(operand),
             ValueKind::ArrayDecay { place, .. } | ValueKind::AddressOf(place) => {
                 self.is_constant_address(place)
@@ -231,6 +245,7 @@ impl Tables<'_> {
                     self.is_constant_initializer(left) && self.is_constant_initializer(right)
                 }
             }
+            ValueKind::Compare { .. } if self.fold_pointer_compare(value).is_some() => true,
             ValueKind::Compare { left, right, .. } => [left, right].iter().all(|operand| {
                 !self.is_long_double(&operand.ty)
                     && !matches!(self.resolve_type(&operand.ty), ir::Type::Pointer { .. })
@@ -284,6 +299,51 @@ impl Tables<'_> {
             )
             .then_some((index, &member.value.ty))
         })
+    }
+
+    pub(super) fn fold_pointer_compare(&self, value: &ir::Value) -> Option<bool> {
+        let ValueKind::Compare {
+            op, left, right, ..
+        } = &value.node.value
+        else {
+            return None;
+        };
+        let (left, right) = (
+            self.fold_pointer_address(left)?,
+            self.fold_pointer_address(right)?,
+        );
+        Some(match op {
+            ir::CompareOp::Eq => left == right,
+            ir::CompareOp::Ne => left != right,
+            ir::CompareOp::Lt => left < right,
+            ir::CompareOp::Le => left <= right,
+            ir::CompareOp::Gt => left > right,
+            ir::CompareOp::Ge => left >= right,
+        })
+    }
+
+    fn fold_pointer_address(&self, value: &ir::Value) -> Option<u64> {
+        if !matches!(self.resolve_type(&value.ty), ir::Type::Pointer { .. }) {
+            return None;
+        }
+        match &value.node.value {
+            ValueKind::Null => Some(0),
+            ValueKind::Convert {
+                kind: ir::ConversionKind::IntToPtr,
+                operand,
+                ..
+            } => {
+                let mask = u64::MAX >> (64 - u64::from(self.target.pointer_width));
+                Some(self.fold_integer(operand)? as u64 & mask)
+            }
+            ValueKind::Convert {
+                kind: ir::ConversionKind::PointerCast,
+                operand,
+                ..
+            }
+            | ValueKind::Copy { operand, .. } => self.fold_pointer_address(operand),
+            _ => None,
+        }
     }
 
     pub(super) fn is_constant_address(&self, place: &ir::Place) -> bool {

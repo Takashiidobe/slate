@@ -895,6 +895,26 @@ impl FunctionLowerer<'_, '_> {
                 self.lower_value(initializer)?
             }
             ValueKind::Read {
+                place:
+                    ir::Place {
+                        kind:
+                            PlaceKind::CompoundLiteral {
+                                storage:
+                                    ir::StorageDuration::Static | ir::StorageDuration::Automatic,
+                                initializer,
+                                ..
+                            },
+                        ..
+                    },
+                ordering: None,
+            } if self.in_static_initializer => self.lower_value(initializer)?,
+            ValueKind::Compare { .. }
+                if self.in_static_initializer
+                    && let Some(result) = self.tables.fold_pointer_compare(value) =>
+            {
+                Expr::Value(rust::RustValue::Bool(result))
+            }
+            ValueKind::Read {
                 place,
                 ordering: Some(ordering),
             } => self.lower_atomic_access(place, ordering, None)?,
