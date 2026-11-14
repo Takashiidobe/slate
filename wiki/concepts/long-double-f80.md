@@ -24,9 +24,11 @@ A call to a body-less function whose return or argument holds f80 by value
 (including inside a struct) becomes a call to a C bridge named
 `__slate_<callee>__r<ret>_<arg tags>`. The test harness renders it from the
 name (`frontend::c_shim::render_shim_c_source_for_names`) and links it with
-`shims/long_double.c`, and the direct extern declaration is dropped. Barriers
-remain for variadic callees missing from `function_identity::Known` (the
-bridge needs their header). A record passed or returned by value is tagged
+`shims/long_double.c`, and the direct extern declaration is dropped. A
+variadic callee missing from `function_identity::Known` (a project function
+such as NumPy's `PyOS_snprintf`) has no header to declare it, so it is called
+through its address with an `__slate_icall__` trampoline instead, like a
+variadic definition (`fixtures.release/long_double_variadic_extern`). A record passed or returned by value is tagged
 by its class. A record that is MEMORY class in both C and Rust is tagged
 `m<size>a<align>` and passed unchanged as
 `struct __slate_m<size>a<align> { _Alignas(<align>) unsigned char v[<size>]; }`,
