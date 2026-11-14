@@ -20,12 +20,7 @@ with Rust nightly:
 cargo +nightly install slate-c2rust --locked
 ```
 
-The package is named `slate-c2rust`; the executable is named `slate`. To install
-the standalone C parser and typed IR CLI:
-
-```sh
-cargo +nightly install slate-parser --locked
-```
+(the package is named `slate-c2rust`; the executable is named `slate`).
 
 To avoid compilation from source, use
 [cargo-binstall](https://github.com/cargo-bins/cargo-binstall) to install
@@ -33,24 +28,15 @@ binaries directly. Prebuilt binaries are available for x86_64 Linux, x86_64 and
 Aarch64 mac, and x86_64 Windows:
 
 ```sh
-cargo binstall slate-c2rust slate-parser
+cargo binstall slate-c2rust
 ```
-
-This installs both `slate` and `slate-parser`; omit either package to install
-just one. The release workflow publishes these with github actions and puts them
-in [GitHub Releases](https://github.com/takashiidobe/slate/releases).
 
 To build from source:
 
 ```sh
 git clone https://github.com/takashiidobe/slate
 cd slate
-```
-
-Build the workspace:
-
-```sh
-cargo +nightly build --release
+cargo +nightly build --release # build the workspace
 ```
 
 ## Setup
@@ -93,11 +79,11 @@ slate translate add.c # translates add.c, prints to stdout
 You can also use `--flavor=msvc|clang|gcc` to have slate compile your code while
 emulating another compiler. Without a flavor, slate emulates `clang`.
 
-### Multi-target/feature translation
+### Multi-target/feature builds
 
-A multi-target build is described by a manifest: one compile_commands.json
-per target plus the Cargo features to expose. Build it with `slate project`
-from the project directory (paths in the manifest are relative to it):
+For a multi-target build, you'll need one compile_commands.json per target plus
+the Cargo features to expose. The manifest commands are under `slate project`,
+and take relative filepaths.
 
 ```sh
 cmake -S ~/zlib -B ~/zlib/build-clang -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
@@ -105,7 +91,7 @@ cd ~/zlib
 slate project target add zlib.json linux-x86_64 build-clang/compile_commands.json --triple x86_64-unknown-linux-gnu
 slate project target add zlib.json linux-aarch64 build-clang/compile_commands.json --triple aarch64-unknown-linux-gnu
 slate project feature add zlib.json FASTEST NO_GZIP   # features fastest, no-gzip
-slate project feature conflict zlib.json fastest no-gzip
+slate project feature conflict zlib.json fastest no-gzip # check features for overlap
 
 slate translate-project \
   --manifest zlib.json \
@@ -116,19 +102,21 @@ slate translate-project \
 ```
 
 `target add` infers the triple from the compiler name or a `--target` in the
-commands when it can, the flavor from the compiler (`cl` and `clang-cl` are
-msvc), and the CMake build target when one file is compiled several ways. Use
+commands when it can, the flavor from the compiler (`cl` and `clang-cl` = msvc),
+and the CMake build target when one file is compiled several ways. Use
 `target remove` and `feature remove` to edit the file; units only some targets
-compile are `#[cfg]`'d to those targets. `tools/corpus/manifests/zlib.json` is
-the 16-target zlib example.
+compile are `#[cfg]`'d to those targets.
+
+Look at `tools/corpus/manifests/zlib.json` for an example of a 16-target
+manifest with features.
 
 `--merge` produces one crate with `#[cfg]`'d code for each target and feature.
 
-The format allows mapping C options to Cargo features. For example, for zlib’s
-FASTEST configuration is added to the Cargo.toml as a `fastest` feature, and any
-code that is multi-target is `#[cfg]`'d away. Keep in mind that each feature
-adds an exponential amount of compiles (2^n, where n is the amount of
-features/targets in total) so be careful if your build adds too many features.
+The format allows mapping C options to Cargo features. For example, zlib’s
+`FASTEST` feature is added to the `Cargo.toml` as a `fastest` feature, and
+multi-target code is `#[cfg]`'d away. Keep in mind that each feature adds an
+exponential amount of compiles (2^n, where n is the amount of features/targets
+in total) so be careful if your build adds too many features.
 
 For zlib with 9 features, on a single target my machine can compile to rust in
 3s, but for all 16 targets that slate supports, it's closer to 30s.
@@ -204,10 +192,9 @@ similar rust.
 ### MSVC
 
 - [x] [MinHook](https://github.com/TsudaKageyu/minhook)
-  - The translated static library hooks local functions and kernel32 APIs
-    with output identical to the native `minhook.lib` on
-    `x86_64-pc-windows-msvc` and `i686-pc-windows-msvc`
-    (`tools/corpus/msvc_library.py minhook`).
+  - The translated static library hooks local functions and kernel32 APIs with
+    output identical to the native `minhook.lib` on `x86_64-pc-windows-msvc` and
+    `i686-pc-windows-msvc` (`tools/corpus/msvc_library.py minhook`).
 - [x] [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/)
   - Translates and links `plink`, `pscp` and `psftp` for
     `x86_64-pc-windows-msvc`. The translated `testcrypt` passes all 90
