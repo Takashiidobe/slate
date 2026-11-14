@@ -817,8 +817,6 @@ fn write_num_traits_support(crate_dir: &Path) -> Result<(), String> {
     Ok(())
 }
 
-type ReadMatrix = fn(&Path, &Path) -> Result<matrix::Matrix, matrix::MatrixError>;
-
 fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut paths = Vec::new();
     let mut compile_command_paths = Vec::new();
@@ -826,8 +824,8 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut crate_types = Vec::new();
     let mut flavor = None;
     let mut explicit_docs_only = false;
-    let mut matrix_input: Option<(PathBuf, ReadMatrix)> = None;
-    let mut matrix_target = None;
+    let mut manifest: Option<PathBuf> = None;
+    let mut manifest_target = None;
     let mut features: Vec<String> = Vec::new();
     let mut plan_mode = None;
     let mut merge = false;
@@ -853,19 +851,15 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
                 build_target = Some(target.as_str());
             }
             "--explicit-docs-only" => explicit_docs_only = true,
-            option @ ("--matrix" | "--manifest") => {
+            "--manifest" => {
                 index += 1;
                 let path = args
                     .get(index)
-                    .ok_or_else(|| format!("{option} requires a file"))?;
-                if matrix_input.is_some() {
-                    return Err("pass one --matrix or --manifest".into());
+                    .ok_or_else(|| "--manifest requires a file".to_string())?;
+                if manifest.is_some() {
+                    return Err("pass one --manifest".into());
                 }
-                let read: ReadMatrix = match option {
-                    "--matrix" => matrix::Matrix::read,
-                    _ => matrix::Matrix::read_manifest,
-                };
-                matrix_input = Some((PathBuf::from(path), read));
+                manifest = Some(PathBuf::from(path));
             }
             "--merge" => merge = true,
             "--check-projection" => {
@@ -889,11 +883,11 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             }
             "--plan" => plan_mode = Some(plan::Mode::Plan),
             "--plan-exhaustive" => plan_mode = Some(plan::Mode::CheckExhaustive),
-            "--matrix-target" => {
+            "--manifest-target" => {
                 index += 1;
-                matrix_target = Some(
+                manifest_target = Some(
                     args.get(index)
-                        .ok_or_else(|| "--matrix-target requires a target name".to_string())?
+                        .ok_or_else(|| "--manifest-target requires a target name".to_string())?
                         .clone(),
                 );
             }
@@ -952,8 +946,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
         index += 1;
     }
     if let Some(mode) = plan_mode {
-        let (matrix_path, read_matrix) =
-            matrix_input.ok_or("--plan requires --matrix or --manifest")?;
+        let manifest = manifest.ok_or("--plan requires --manifest")?;
         if !features.is_empty() {
             return Err("--plan chooses features itself; remove --features".into());
         }
@@ -961,9 +954,9 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             return Err("--plan requires only a project directory".into());
         };
         let project = compile_commands::absolute_path(&current_dir, Path::new(project));
-        let matrix = cli_result(read_matrix(&matrix_path, &project))?;
+        let matrix = cli_result(matrix::Matrix::read_manifest(&manifest, &project))?;
         let plan =
-            slate_worker_pool()?.install(|| plan::plan(&matrix, matrix_target.as_deref(), mode));
+            slate_worker_pool()?.install(|| plan::plan(&matrix, manifest_target.as_deref(), mode));
         let plan = cli_result(plan)?;
         print!("{}", plan.render(matrix.features.len()));
         return match plan.unplanned() {
@@ -975,8 +968,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
         return Err("translate-project requires a project directory and crate directory".into());
     }
     if merge {
-        let (matrix_path, read_matrix) =
-            matrix_input.ok_or("--merge requires --matrix or --manifest")?;
+        let manifest = manifest.ok_or("--merge requires --manifest")?;
         if !features.is_empty() {
             return Err("--merge chooses features itself; remove --features".into());
         }
@@ -987,8 +979,8 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             );
         }
         let project = compile_commands::absolute_path(&current_dir, Path::new(paths[0]));
-        let matrix = cli_result(read_matrix(&matrix_path, &project))?;
-        let targets: Vec<String> = matrix_target
+        let matrix = cli_result(matrix::Matrix::read_manifest(&manifest, &project))?;
+        let targets: Vec<String> = manifest_target
             .iter()
             .flat_map(|names: &String| names.split(','))
             .map(str::to_string)
@@ -1029,21 +1021,16 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     if build_target.is_some() && compile_command_paths.is_empty() {
         return Err("--build-target requires --compile-commands".into());
     }
-    if let Some((matrix_path, read_matrix)) = matrix_input {
+    if let Some(manifest) = manifest {
         if !compile_command_paths.is_empty() {
-            return Err(
-                "--matrix and --manifest cannot be combined with --compile-commands".into(),
-            );
+            return Err("--manifest cannot be combined with --compile-commands".into());
         }
         if flavor.is_some() || !include_args.is_empty() {
-            return Err(
-                "--matrix and --manifest cannot be combined with --flavor or include options"
-                    .into(),
-            );
+            return Err("--manifest cannot be combined with --flavor or include options".into());
         }
-        let target = matrix_target.ok_or("--matrix and --manifest require --matrix-target")?;
+        let target = manifest_target.ok_or("--manifest requires --manifest-target")?;
         let project = compile_commands::absolute_path(&current_dir, Path::new(paths[0]));
-        let matrix = cli_result(read_matrix(&matrix_path, &project))?;
+        let matrix = cli_result(matrix::Matrix::read_manifest(&manifest, &project))?;
         let commands = cli_result(matrix.commands(&target, &features))?;
         return translate_slate_project(
             Path::new(paths[1]),
@@ -1052,8 +1039,8 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             explicit_docs_only,
         );
     }
-    if matrix_target.is_some() || !features.is_empty() {
-        return Err("--matrix-target and --features require --matrix or --manifest".into());
+    if manifest_target.is_some() || !features.is_empty() {
+        return Err("--manifest-target and --features require --manifest".into());
     }
     if compile_command_paths.is_empty() {
         return Err("translate-project requires at least one --compile-commands <file>".into());

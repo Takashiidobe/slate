@@ -49,13 +49,13 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}target linux-x86_64: 1 compiles
-// CHECK-NEXT:   large_arrays.c: [] 1 compiled
-// CHECK-NEXT: target windows-x86_64: 1 compiles
+// CHECK: {{^}}target linux-aarch64: 1 compiles
 // CHECK-NEXT:   large_arrays.c: [] 1 compiled
 // CHECK-NEXT: target linux-i686: 1 compiles
 // CHECK-NEXT:   large_arrays.c: [] 1 compiled
-// CHECK-NEXT: target linux-aarch64: 1 compiles
+// CHECK-NEXT: target linux-x86_64: 1 compiles
+// CHECK-NEXT:   large_arrays.c: [] 1 compiled
+// CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   large_arrays.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 4 targets
 // CHECK-NEXT: unit large_arrays: 31 items, 16 gated, 1 duplicated functions
@@ -78,13 +78,13 @@ int main(void) {
 // CHECK-NEXT: static mut crossing: __SlateAlignLargeArray<[c_long; 3]> =
 // CHECK-NEXT:     __SlateAlignLargeArray([(1 as c_long), (2 as c_long), (3 as c_long)]);
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(any(windows, target_arch = "x86"))]
+// CHECK-NEXT: #[cfg(any(target_arch = "x86", windows))]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn read_crossing() -> i32 {
 // CHECK-NEXT:     (unsafe { crossing[1] }) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(any(windows, target_arch = "x86"))]
+// CHECK-NEXT: #[cfg(any(target_arch = "x86", windows))]
 // CHECK-NEXT: static mut crossing: [c_long; 3] = [1, 2, 3];
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(not(target_arch = "aarch64"))]
@@ -195,10 +195,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: //! merge-extra-targets: linux-i686 i686-unknown-linux-gnu clang linux-aarch64 aarch64-unknown-linux-gnu clang
 // CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc"),
+// CHECK-NEXT:     all(target_arch = "aarch64", target_os = "linux", target_env = "gnu"),
 // CHECK-NEXT:     all(target_arch = "x86", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "aarch64", target_os = "linux", target_env = "gnu")
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
+// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:

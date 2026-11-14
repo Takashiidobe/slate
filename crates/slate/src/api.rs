@@ -1,6 +1,6 @@
 use crate::backend::{self, rust_ast};
 use crate::frontend;
-use crate::project::matrix::{self, MatrixFile};
+use crate::project::matrix::Matrix;
 use crate::project::merge::{self, Projection};
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -150,7 +150,6 @@ fn merge_targets(path: &Path, extra_args: &[String], targets: &[String]) -> Resu
         path: path.to_path_buf(),
         source,
     })?;
-    let project = source.parent().unwrap_or(Path::new("/"));
     let mut flavor = "clang".to_string();
     let args = extra_args
         .iter()
@@ -162,25 +161,9 @@ fn merge_targets(path: &Path, extra_args: &[String], targets: &[String]) -> Resu
             None => true,
         })
         .cloned()
-        .collect();
-    let matrix = MatrixFile {
-        sources: vec![source.clone()],
-        args,
-        targets: targets
-            .iter()
-            .map(|triple| matrix::MatrixTarget {
-                name: triple.clone(),
-                triple: triple.clone(),
-                flavor: flavor.clone(),
-                sysroot: None,
-                args: Vec::new(),
-            })
-            .collect(),
-        features: Vec::new(),
-        invalid_features: Vec::new(),
-    }
-    .resolve(project)
-    .map_err(|error| Error::Merge(error.to_string()))?;
+        .collect::<Vec<_>>();
+    let matrix = Matrix::single_source(&source, &args, &flavor, targets)
+        .map_err(|error| Error::Merge(error.to_string()))?;
     let merged = merge::merge(&matrix, &[], Projection::Skip, &[]).map_err(Error::Merge)?;
     let mut program = merged
         .units

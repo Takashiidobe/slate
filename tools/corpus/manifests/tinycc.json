@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "targets": {
+    "linux-x86_64": {
+      "triple": "x86_64-unknown-linux-gnu",
+      "flavor": "gcc",
+      "compile_commands": "build-gcc/compile_commands.json"
+    }
+  }
+}

@@ -24,17 +24,17 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}target linux-x86_64: 1 compiles
-// CHECK-NEXT:   target_properties.c: [] 1 compiled
-// CHECK-NEXT: target windows-x86_64: 1 compiles
+// CHECK: {{^}}target linux-aarch64: 1 compiles
 // CHECK-NEXT:   target_properties.c: [] 1 compiled
 // CHECK-NEXT: target linux-i686: 1 compiles
 // CHECK-NEXT:   target_properties.c: [] 1 compiled
-// CHECK-NEXT: target linux-aarch64: 1 compiles
+// CHECK-NEXT: target linux-musl-x86_64: 1 compiles
+// CHECK-NEXT:   target_properties.c: [] 1 compiled
+// CHECK-NEXT: target linux-x86_64: 1 compiles
 // CHECK-NEXT:   target_properties.c: [] 1 compiled
 // CHECK-NEXT: target windows-i686: 1 compiles
 // CHECK-NEXT:   target_properties.c: [] 1 compiled
-// CHECK-NEXT: target linux-musl-x86_64: 1 compiles
+// CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   target_properties.c: [] 1 compiled
 // CHECK-NEXT: total: 6 compiles across 6 targets
 // CHECK-NEXT: unit target_properties: 13 items, 6 gated, 0 duplicated functions
@@ -50,7 +50,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(all(target_pointer_width = "64", unix))]
 // CHECK-NEXT: const __SLATE_HOIST_model: &core::ffi::CStr = c"lp64";
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(any(windows, target_arch = "x86"))]
+// CHECK-NEXT: #[cfg(any(target_arch = "x86", windows))]
 // CHECK-NEXT: const __SLATE_HOIST_model: &core::ffi::CStr = c"other";
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(not(all(target_arch = "x86_64", target_env = "gnu")))]
@@ -90,12 +90,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: //! merge-extra-targets: linux-i686 i686-unknown-linux-gnu clang linux-aarch64 aarch64-unknown-linux-gnu clang windows-i686 i686-pc-windows-msvc msvc linux-musl-x86_64 x86_64-unknown-linux-musl clang
 // CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc"),
-// CHECK-NEXT:     all(target_arch = "x86", target_os = "linux", target_env = "gnu"),
 // CHECK-NEXT:     all(target_arch = "aarch64", target_os = "linux", target_env = "gnu"),
+// CHECK-NEXT:     all(target_arch = "x86", target_os = "linux", target_env = "gnu"),
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "musl"),
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
 // CHECK-NEXT:     all(target_arch = "x86", windows, target_env = "msvc"),
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "musl")
+// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:

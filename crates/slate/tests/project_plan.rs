@@ -1,5 +1,7 @@
 #[path = "support/filecheck.rs"]
 mod filecheck;
+#[path = "support/manifest.rs"]
+mod manifest;
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -55,30 +57,31 @@ fn plan_fixture(source: &Path) -> Result<(), String> {
     let base = if specific.is_file() {
         specific
     } else {
-        fixtures().join("matrix.json")
+        fixtures().join("targets.json")
     };
     let base = std::fs::read(&base).map_err(|e| format!("read {}: {e}", base.display()))?;
-    let mut matrix: serde_json::Value =
-        serde_json::from_slice(&base).map_err(|e| format!("parse matrix: {e}"))?;
-    matrix["sources"] = serde_json::json!([format!("{stem}.c")]);
-    let matrix_path = work().join(format!("{stem}.json"));
-    std::fs::create_dir_all(work()).map_err(|e| format!("create work: {e}"))?;
-    std::fs::write(&matrix_path, matrix.to_string()).map_err(|e| format!("write matrix: {e}"))?;
-    let matrix_arg = matrix_path.display().to_string();
+    let spec: serde_json::Value =
+        serde_json::from_slice(&base).map_err(|e| format!("parse targets: {e}"))?;
+    let manifest_path = manifest::write_manifest(
+        &spec,
+        &[format!("{stem}.c")],
+        &fixtures(),
+        &work().join(format!("{stem}.json")),
+    );
+    let manifest_arg = manifest_path.display().to_string();
     let explicit = text
         .lines()
         .find_map(|line| line.strip_prefix("// plan-args:"))
         .map(|args| {
             args.split_whitespace()
-                .map(|arg| arg.replace("{matrix}", &matrix_arg))
+                .map(|arg| arg.replace("{manifest}", &manifest_arg))
                 .collect::<Vec<_>>()
         });
     let mut failures = Vec::new();
-    for target in matrix["targets"].as_array().expect("matrix targets") {
-        let name = target["name"].as_str().expect("target name").to_string();
+    for (name, target) in spec["targets"].as_object().expect("spec targets") {
         let triple = target["triple"].as_str().expect("target triple");
         let selected = |mode: &str| {
-            [mode, "--matrix", &matrix_arg, "--matrix-target", &name].map(str::to_string)
+            [mode, "--manifest", &manifest_arg, "--manifest-target", name].map(str::to_string)
         };
         let args = explicit
             .clone()

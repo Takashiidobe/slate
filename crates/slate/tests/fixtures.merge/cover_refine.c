@@ -59,10 +59,10 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}target linux-x86_64: 24 compiles
-// CHECK-NEXT:   cover_refine.c: [alpha,beta,gamma,delta,epsilon] 32 compiled
+// CHECK-NEXT:   cover_refine.c: [alpha,beta,delta,epsilon,gamma] 32 compiled
 // CHECK-NEXT:     8 assignments preprocess like a compiled one
 // CHECK-NEXT: target windows-x86_64: 24 compiles
-// CHECK-NEXT:   cover_refine.c: [alpha,beta,gamma,delta,epsilon] 32 compiled
+// CHECK-NEXT:   cover_refine.c: [alpha,beta,delta,epsilon,gamma] 32 compiled
 // CHECK-NEXT:     8 assignments preprocess like a compiled one
 // CHECK-NEXT: total: 48 compiles across 2 targets
 // CHECK-NEXT: unit cover_refine: 13 items, 3 gated, 0 duplicated functions
@@ -104,10 +104,10 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(any(
 // CHECK-NEXT:         feature = "beta",
 // CHECK-NEXT:         all(feature = "delta", feature = "epsilon"),
-// CHECK-NEXT:         all(feature = "alpha", feature = "gamma", feature = "epsilon")
+// CHECK-NEXT:         all(feature = "alpha", feature = "epsilon", feature = "gamma")
 // CHECK-NEXT:     ))]
 // CHECK-NEXT:     let mut value: i32 = 0;
-// CHECK-NEXT:     #[cfg(all(feature = "alpha", feature = "gamma", feature = "epsilon"))]
+// CHECK-NEXT:     #[cfg(all(feature = "alpha", feature = "epsilon", feature = "gamma"))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         value += 8;
 // CHECK-NEXT:     }
@@ -118,7 +118,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(any(
 // CHECK-NEXT:         all(not(feature = "beta"), not(feature = "epsilon")),
 // CHECK-NEXT:         all(not(feature = "alpha"), not(feature = "beta"), not(feature = "delta")),
-// CHECK-NEXT:         all(not(feature = "beta"), not(feature = "gamma"), not(feature = "delta"))
+// CHECK-NEXT:         all(not(feature = "beta"), not(feature = "delta"), not(feature = "gamma"))
 // CHECK-NEXT:     ))]
 // CHECK-NEXT:     let value: i32 = 0;
 // CHECK-NEXT:     value
@@ -132,11 +132,11 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         value += 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(all(feature = "gamma", feature = "delta"))]
+// CHECK-NEXT:     #[cfg(all(feature = "delta", feature = "gamma"))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         value += 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(all(feature = "gamma", feature = "epsilon"))]
+// CHECK-NEXT:     #[cfg(all(feature = "epsilon", feature = "gamma"))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         value += 4;
 // CHECK-NEXT:     }

@@ -32,11 +32,11 @@ socklen_t f_socklen;
 int main(void) { return 0; }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}target linux-x86_64: 1 compiles
+// CHECK: {{^}}target android-x86_64: 1 compiles
+// CHECK-NEXT:   named_types_support.c: [] 1 compiled
+// CHECK-NEXT: target linux-x86_64: 1 compiles
 // CHECK-NEXT:   named_types_support.c: [] 1 compiled
 // CHECK-NEXT: target windows-x86_64: 1 compiles
-// CHECK-NEXT:   named_types_support.c: [] 1 compiled
-// CHECK-NEXT: target android-x86_64: 1 compiles
 // CHECK-NEXT:   named_types_support.c: [] 1 compiled
 // CHECK-NEXT: total: 3 compiles across 3 targets
 // CHECK-NEXT: unit named_types_support: 32 items, 15 gated, 0 duplicated functions
@@ -113,9 +113,9 @@ int main(void) { return 0; }
 // CHECK-EMPTY:
 // CHECK-NEXT: //! merge-extra-targets: android-x86_64 x86_64-linux-android clang
 // CHECK-NEXT: #[cfg(not(any(
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "android"),
 // CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc"),
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "android")
+// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:

@@ -11,9 +11,11 @@ import sys
 import tempfile
 from pathlib import Path
 
+import project_manifest
+
 ROOT = Path(__file__).resolve().parents[2]
 SLATE = ROOT / "target/test-cache/release/slate"
-MATRIX = ROOT / "tools/corpus/matrices/zlib.json"
+MANIFEST = ROOT / "tools/corpus/manifests/zlib.json"
 PROJECT = Path.home() / "c-corpus/zlib"
 MSVC_ROOT = Path(os.environ.get("MSVC_WINE_ROOT", Path.home() / ".local/share/msvc-wine/opt/msvc"))
 PINNED = "nightly-2026-10-25"
@@ -517,7 +519,7 @@ def main():
     parser.add_argument("--control", action="store_true")
     parser.add_argument("--codegen", action="store_true")
     args = parser.parse_args()
-    matrix = json.loads(MATRIX.read_text())
+    matrix = project_manifest.load(MANIFEST, PROJECT)
     targets = {target["name"]: target for target in matrix["targets"]}
     if args.codegen or args.layouts:
         names = [feature["name"] for feature in matrix["features"]]

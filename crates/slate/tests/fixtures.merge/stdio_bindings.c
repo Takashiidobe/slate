@@ -29,13 +29,13 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}target linux-x86_64: 2 compiles
+// CHECK: {{^}}target android-x86_64: 2 compiles
+// CHECK-NEXT:   stdio_bindings.c: [] 1 compiled
+// CHECK-NEXT:   units/stdio_bindings_layout.c: [] 1 compiled
+// CHECK-NEXT: target linux-x86_64: 2 compiles
 // CHECK-NEXT:   stdio_bindings.c: [] 1 compiled
 // CHECK-NEXT:   units/stdio_bindings_layout.c: [] 1 compiled
 // CHECK-NEXT: target windows-x86_64: 2 compiles
-// CHECK-NEXT:   stdio_bindings.c: [] 1 compiled
-// CHECK-NEXT:   units/stdio_bindings_layout.c: [] 1 compiled
-// CHECK-NEXT: target android-x86_64: 2 compiles
 // CHECK-NEXT:   stdio_bindings.c: [] 1 compiled
 // CHECK-NEXT:   units/stdio_bindings_layout.c: [] 1 compiled
 // CHECK-NEXT: total: 6 compiles across 3 targets
@@ -78,9 +78,9 @@ int main(void) {
 // CHECK-NEXT: //!
 // CHECK-NEXT: //! merge-extra-targets: android-x86_64 x86_64-linux-android clang
 // CHECK-NEXT: #[cfg(not(any(
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "android"),
 // CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc"),
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "android")
+// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
@@ -219,9 +219,6 @@ int main(void) {
 // CHECK-NEXT:     fn fputc([[ARG_0]]: i32, [[ARG_1:arg[0-9]+]]: *mut _IO_FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(target_env = "gnu")]
-// CHECK-NEXT: use core::ffi::c_long;
-// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_os = "android")]
 // CHECK-NEXT: #[repr(C, align(8))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -237,6 +234,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: use core::ffi::c_char;
+// CHECK-NEXT: #[cfg(target_env = "gnu")]
+// CHECK-NEXT: use core::ffi::c_long;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: #[repr(C)]
@@ -259,30 +258,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn stream_layout() -> i32 {
-// CHECK-NEXT:     #[cfg(target_env = "gnu")]
-// CHECK-NEXT:     let write: Option<unsafe extern "C-unwind" fn(i32, *mut _IO_FILE) -> i32> = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<
-// CHECK-NEXT:             *const (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(i32, *mut _IO_FILE) -> i32>,
-// CHECK-NEXT:         >(fputc as *const ())
-// CHECK-NEXT:     };
-// CHECK-NEXT:     #[cfg(target_env = "gnu")]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { write.unwrap()(119i32, stdout) };
-// CHECK-NEXT:         unsafe { write.unwrap()(10i32, stdout) };
-// CHECK-NEXT:         { unsafe { (*stdout)._fileno } }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let write: Option<unsafe extern "C-unwind" fn(i32, *mut _iobuf) -> i32> = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32, *mut _iobuf) -> i32>>(
-// CHECK-NEXT:             fputc as *const (),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { write.unwrap()(119i32, __acrt_iob_func(1u32)) };
-// CHECK-NEXT:         unsafe { write.unwrap()(10i32, __acrt_iob_func(1u32)) };
-// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_os = "android")]
 // CHECK-NEXT:     let write: Option<unsafe extern "C-unwind" fn(i32, *mut __sFILE) -> i32> = unsafe {
 // CHECK-NEXT:         std::mem::transmute::<
@@ -300,9 +275,33 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { write.unwrap()(10i32, (std::ptr::addr_of_mut!(__sF) as *mut __sFILE).add(1)) };
 // CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let write: Option<unsafe extern "C-unwind" fn(i32, *mut _iobuf) -> i32> = unsafe {
+// CHECK-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32, *mut _iobuf) -> i32>>(
+// CHECK-NEXT:             fputc as *const (),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { write.unwrap()(119i32, __acrt_iob_func(1u32)) };
+// CHECK-NEXT:         unsafe { write.unwrap()(10i32, __acrt_iob_func(1u32)) };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(not(target_env = "gnu"))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         1
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(target_env = "gnu")]
+// CHECK-NEXT:     let write: Option<unsafe extern "C-unwind" fn(i32, *mut _IO_FILE) -> i32> = unsafe {
+// CHECK-NEXT:         std::mem::transmute::<
+// CHECK-NEXT:             *const (),
+// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(i32, *mut _IO_FILE) -> i32>,
+// CHECK-NEXT:         >(fputc as *const ())
+// CHECK-NEXT:     };
+// CHECK-NEXT:     #[cfg(target_env = "gnu")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { write.unwrap()(119i32, stdout) };
+// CHECK-NEXT:         unsafe { write.unwrap()(10i32, stdout) };
+// CHECK-NEXT:         { unsafe { (*stdout)._fileno } }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NOT: {{.}}

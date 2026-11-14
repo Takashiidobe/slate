@@ -1,5 +1,7 @@
 #[path = "support/filecheck.rs"]
 mod filecheck;
+#[path = "support/manifest.rs"]
+mod manifest;
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -14,7 +16,7 @@ fn work() -> PathBuf {
 }
 
 fn translate(
-    matrix: &Path,
+    manifest: &Path,
     target: &str,
     feature: Option<&str>,
     crate_dir: &Path,
@@ -23,9 +25,9 @@ fn translate(
     let mut command = Command::new(env!("CARGO_BIN_EXE_slate"));
     command
         .arg("translate-project")
-        .arg("--matrix")
-        .arg(matrix)
-        .args(["--matrix-target", target]);
+        .arg("--manifest")
+        .arg(manifest)
+        .args(["--manifest-target", target]);
     if let Some(feature) = feature {
         command.args(["--features", feature]);
     }
@@ -93,27 +95,32 @@ fn signature(item: &str) -> String {
 fn lowered_names_fixture(source: &Path) -> Result<(), String> {
     let stem = source.file_stem().unwrap().to_string_lossy().into_owned();
     let text = std::fs::read_to_string(source).map_err(|error| format!("read: {error}"))?;
-    let base = fixtures().join("matrix.json");
+    let base = fixtures().join("targets.json");
     let base = std::fs::read(&base).map_err(|error| format!("read {}: {error}", base.display()))?;
-    let mut matrix: serde_json::Value =
-        serde_json::from_slice(&base).map_err(|error| format!("parse matrix: {error}"))?;
-    matrix["sources"] = serde_json::json!([format!("{stem}.c")]);
-    std::fs::create_dir_all(work()).map_err(|error| format!("create work: {error}"))?;
-    let matrix_path = work().join(format!("{stem}.json"));
-    std::fs::write(&matrix_path, matrix.to_string()).map_err(|error| format!("write: {error}"))?;
+    let spec: serde_json::Value =
+        serde_json::from_slice(&base).map_err(|error| format!("parse targets: {error}"))?;
+    let manifest_path = manifest::write_manifest(
+        &spec,
+        &[format!("{stem}.c")],
+        &fixtures(),
+        &work().join(format!("{stem}.json")),
+    );
     let mut failures = Vec::new();
-    for target in matrix["targets"].as_array().expect("matrix targets") {
-        let name = target["name"].as_str().expect("target name");
+    for (name, target) in spec["targets"].as_object().expect("spec targets") {
         let triple = target["triple"].as_str().expect("target triple");
         let dir = work().join(triple);
         std::fs::create_dir_all(&dir).map_err(|error| format!("create: {error}"))?;
         let translated = dir.join("crates").join(&stem);
-        let plain = translate(&matrix_path, name, None, &translated.join("plain"))?;
+        let plain = translate(&manifest_path, name, None, &translated.join("plain"))?;
         let plain = items(&plain);
         let mut output = String::new();
-        for feature in matrix["features"].as_array().expect("matrix features") {
-            let feature = feature["name"].as_str().expect("feature name");
-            let toggled = translate(&matrix_path, name, Some(feature), &translated.join(feature))?;
+        for feature in spec["features"].as_object().expect("spec features").keys() {
+            let toggled = translate(
+                &manifest_path,
+                name,
+                Some(feature),
+                &translated.join(feature),
+            )?;
             let toggled = items(&toggled);
             output.push_str(&format!("feature {feature}\n"));
             for item in plain.difference(&toggled) {

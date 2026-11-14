@@ -329,7 +329,7 @@ impl TargetConditions {
                         assert_eq!(
                             holds(&cfg, target),
                             on >> index & 1 == 1,
-                            "{} is wrong for matrix target {index}",
+                            "{} is wrong for target {index}",
                             cfg.render()
                         );
                     }

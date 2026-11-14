@@ -95,21 +95,32 @@ emulating another compiler. Without a flavor, slate emulates `clang`.
 
 ### Multi-target/feature translation
 
-For now, slate has it's own "compile commands" esque format to handle
-multi-target builds. I plan to add a cli option to allow merging multiple
-compile_commands.json files for multiple targets into one json file to feed to
-slate to build a project that is multitarget.
+A multi-target build is described by a manifest: one compile_commands.json
+per target plus the Cargo features to expose. Build it with `slate project`
+from the project directory (paths in the manifest are relative to it):
 
 ```sh
-cmake -S ~/zlib -B ~/zlib/build-clang # build the sources
+cmake -S ~/zlib -B ~/zlib/build-clang -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cd ~/zlib
+slate project target add zlib.json linux-x86_64 build-clang/compile_commands.json --triple x86_64-unknown-linux-gnu
+slate project target add zlib.json linux-aarch64 build-clang/compile_commands.json --triple aarch64-unknown-linux-gnu
+slate project feature add zlib.json FASTEST NO_GZIP   # features fastest, no-gzip
+slate project feature conflict zlib.json fastest no-gzip
 
 slate translate-project \
-  --matrix tools/corpus/matrices/zlib.json \
+  --manifest zlib.json \
   --merge \
-  --matrix-target linux-x86_64,linux-i686,linux-aarch64 \
+  --manifest-target linux-x86_64,linux-aarch64 \
   --crate-type staticlib \
   ~/zlib ./zlib-rs
 ```
+
+`target add` infers the triple from the compiler name or a `--target` in the
+commands when it can, the flavor from the compiler (`cl` and `clang-cl` are
+msvc), and the CMake build target when one file is compiled several ways. Use
+`target remove` and `feature remove` to edit the file; units only some targets
+compile are `#[cfg]`'d to those targets. `tools/corpus/manifests/zlib.json` is
+the 16-target zlib example.
 
 `--merge` produces one crate with `#[cfg]`'d code for each target and feature.
 

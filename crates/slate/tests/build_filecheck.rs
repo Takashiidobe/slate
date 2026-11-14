@@ -57,21 +57,19 @@ fn build_fixture(fixture: &Path, target: &str, text: &str) -> Result<(), String>
         .arg(fixture)
         .arg("-o")
         .arg(work.join(format!("{name}.o"))))?;
-    let matrix = work.join(format!("{name}.json"));
-    std::fs::write(
-        &matrix,
-        serde_json::json!({
-            "targets": [{"name": "build", "triple": target, "flavor": "clang", "args": args}],
-            "sources": [fixture.file_name().unwrap().to_str().unwrap()]
-        })
-        .to_string(),
-    )
-    .map_err(|error| error.to_string())?;
+    let manifest = support::manifest::write_manifest(
+        &serde_json::json!({
+            "targets": {"build": {"triple": target, "flavor": "clang", "args": args}}
+        }),
+        &[fixture.file_name().unwrap().to_str().unwrap().to_string()],
+        fixture.parent().unwrap(),
+        &work.join(format!("{name}.json")),
+    );
     let project = work.join(&name);
     run(Command::new(env!("CARGO_BIN_EXE_slate"))
-        .args(["translate-project", "--matrix"])
-        .arg(&matrix)
-        .args(["--matrix-target", "build"])
+        .args(["translate-project", "--manifest"])
+        .arg(&manifest)
+        .args(["--manifest-target", "build"])
         .arg(fixture.parent().unwrap())
         .arg(&project)
         .env("SLATE_SYSROOTS", slate_parser::sysroot::root())

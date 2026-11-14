@@ -4,6 +4,7 @@
 )]
 
 pub mod filecheck;
+pub mod manifest;
 
 use std::collections::BTreeMap;
 use std::io::Write;

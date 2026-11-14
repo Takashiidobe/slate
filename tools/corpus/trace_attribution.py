@@ -1,4 +1,3 @@
-import json
 import os
 import re
 import subprocess
@@ -6,16 +5,18 @@ import sys
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__))))
+import project_manifest  # noqa: E402
+
 B = "target/test-cache/release/slate-parser"
 Z = os.path.expanduser("~/c-corpus/zlib")
-M = json.load(open("tools/corpus/matrices/zlib.json"))
+M = project_manifest.load("tools/corpus/manifests/zlib.json", Z)
 TARGET = sys.argv[1] if len(sys.argv) > 1 else "linux-x86_64"
 T = next(t for t in M["targets"] if t["name"] == TARGET)
 ARGS = [
     f"--target={T['triple']}",
     f"--flavor={T['flavor']}",
-    *[a.replace("-I", f"-I{Z}/", 1) if a.startswith("-I") else a for a in T["args"]],
-    *[a.replace("-I.", f"-I{Z}") if a == "-I." else a for a in M["args"]],
+    *T["args"],
 ]
 LINE = re.compile(r"^tokens (\S+) `(.*)` context=\[.*?\] macros=\[.*?\] roots=\[(.*?)\]$")
 EXP = re.compile(r"^expansion (\S+) (\S+)( empty)? context=\[.*?\] macros=\[.*?\] roots=\[(.*?)\]$")

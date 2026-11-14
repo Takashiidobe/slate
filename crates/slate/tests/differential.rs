@@ -697,10 +697,9 @@ fn matrix_fixture(name: &str) -> PathBuf {
         .join(name)
 }
 
-fn translate_matrix(
-    option: &str,
+fn translate_manifest(
     work: &str,
-    matrix: &Path,
+    manifest: &Path,
     project: &Path,
     selection: &[&str],
 ) -> (PathBuf, Result<(), String>) {
@@ -710,8 +709,8 @@ fn translate_matrix(
     let _ = std::fs::remove_dir_all(&crate_dir);
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
         .arg("translate-project")
-        .arg(option)
-        .arg(matrix)
+        .arg("--manifest")
+        .arg(manifest)
         .args(selection)
         .arg(project)
         .arg(&crate_dir)
@@ -768,198 +767,6 @@ fn run_clang_sources(project: &Path, work: &str, args: &[&str], sources: &[&str]
 }
 
 #[test]
-fn matrix_selection_matches_c_with_same_configuration() {
-    let project = matrix_fixture("generated");
-    let matrix = project.join("matrix.json");
-    let base = ["-DPROJECT_BASE=100", "-Iinclude", "-Igen-linux"];
-    for (work, selection, extra) in [
-        ("plain", vec![], vec![]),
-        ("fast", vec!["--features", "fast"], vec!["-DFAST"]),
-        (
-            "level",
-            vec!["--features", "level-two,small"],
-            vec!["-DLEVEL=2", "-DHAS_LEVEL", "-DSMALL"],
-        ),
-    ] {
-        let mut selected = vec!["--matrix-target", "linux-x86_64"];
-        selected.extend(&selection);
-        let (crate_dir, result) = translate_matrix("--matrix", work, &matrix, &project, &selected);
-        result.unwrap_or_else(|error| panic!("{work}: {error}"));
-        let c_args: Vec<&str> = base.iter().chain(&extra).copied().collect();
-        assert_eq!(
-            run_cargo_binary(&crate_dir),
-            run_clang_binary(&project, work, &c_args),
-            "{work}"
-        );
-    }
-}
-
-#[test]
-fn matrix_targets_use_their_own_generated_headers_and_args() {
-    let project = matrix_fixture("generated");
-    let matrix = project.join("matrix.json");
-    for (target, constant) in [
-        ("linux-x86_64", "100 + 1 + 0"),
-        ("linux-x86_64-gcc", "100 + 1 + 5"),
-        ("windows-x86_64", "100 + 2 + 0"),
-    ] {
-        let (crate_dir, result) = translate_matrix(
-            "--matrix",
-            target,
-            &matrix,
-            &project,
-            &["--matrix-target", target],
-        );
-        result.unwrap_or_else(|error| panic!("{target}: {error}"));
-        let value = std::fs::read_to_string(crate_dir.join("src/value.rs")).expect("read value.rs");
-        assert!(value.contains(constant), "{target}: {value}");
-    }
-}
-
-#[test]
-fn matrix_rejects_invalid_input() {
-    let project = matrix_fixture("generated");
-    let matrix = project.join("matrix.json");
-    let write = |name: &str, contents: serde_json::Value| {
-        let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/matrix");
-        std::fs::create_dir_all(&dir).expect("create matrix directory");
-        let path = dir.join(format!("{name}.json"));
-        std::fs::write(&path, contents.to_string()).expect("write matrix");
-        path
-    };
-    let target = serde_json::json!({
-        "name": "a", "triple": "x86_64-unknown-linux-gnu", "flavor": "clang"
-    });
-    let selected = ["--matrix-target", "a"];
-    for (name, contents, selection, expected) in [
-        (
-            "no_target_selected",
-            None,
-            vec![],
-            "--matrix and --manifest require --matrix-target",
-        ),
-        (
-            "unknown_target",
-            None,
-            vec!["--matrix-target", "nope"],
-            "unknown matrix target nope",
-        ),
-        (
-            "unknown_feature",
-            None,
-            vec!["--matrix-target", "linux-x86_64", "--features", "nope"],
-            "unknown matrix feature nope",
-        ),
-        (
-            "invalid_combination",
-            None,
-            vec![
-                "--matrix-target",
-                "linux-x86_64",
-                "--features",
-                "small,fast",
-            ],
-            "matrix features fast, small cannot be combined",
-        ),
-        (
-            "unsupported_triple",
-            Some(serde_json::json!({"sources": ["main.c"], "targets": [
-                {"name": "a", "triple": "mips-unknown-linux-gnu", "flavor": "clang"}
-            ]})),
-            selected.to_vec(),
-            "matrix target a: unsupported target triple mips-unknown-linux-gnu",
-        ),
-        (
-            "flavor_mismatch",
-            Some(serde_json::json!({"sources": ["main.c"], "targets": [
-                {"name": "a", "triple": "x86_64-unknown-linux-musl", "flavor": "gcc"}
-            ]})),
-            selected.to_vec(),
-            "matrix target a: x86_64-unknown-linux-musl does not support flavor gcc",
-        ),
-        (
-            "duplicate_target",
-            Some(serde_json::json!({"sources": ["main.c"], "targets": [target, target]})),
-            selected.to_vec(),
-            "duplicate matrix target a",
-        ),
-        (
-            "bad_feature_name",
-            Some(
-                serde_json::json!({"sources": ["main.c"], "targets": [target],
-                "features": [{"name": "not valid", "defines": ["X"]}]}),
-            ),
-            selected.to_vec(),
-            "matrix feature \"not valid\" is not a valid Cargo feature name",
-        ),
-        (
-            "feature_without_defines",
-            Some(
-                serde_json::json!({"sources": ["main.c"], "targets": [target],
-                "features": [{"name": "x", "defines": []}]}),
-            ),
-            selected.to_vec(),
-            "matrix feature x has no defines",
-        ),
-        (
-            "invalid_names_unknown_feature",
-            Some(
-                serde_json::json!({"sources": ["main.c"], "targets": [target],
-                "features": [{"name": "x", "defines": ["X"]}],
-                "invalid_features": [["x", "y"]]}),
-            ),
-            selected.to_vec(),
-            "invalid_features names unknown matrix feature y",
-        ),
-        (
-            "empty_invalid_group",
-            Some(
-                serde_json::json!({"sources": ["main.c"], "targets": [target],
-                "invalid_features": [[]]}),
-            ),
-            selected.to_vec(),
-            "invalid_features entries need at least two features",
-        ),
-        (
-            "unknown_field",
-            Some(serde_json::json!({"sources": ["main.c"], "targets": [target], "typo": 1})),
-            selected.to_vec(),
-            "unknown field `typo`",
-        ),
-        (
-            "no_sources",
-            Some(serde_json::json!({"sources": [], "targets": [target]})),
-            selected.to_vec(),
-            "matrix has no sources",
-        ),
-    ] {
-        let path = contents.map_or(matrix.clone(), |contents| write(name, contents));
-        let (_, result) = translate_matrix("--matrix", name, &path, &project, &selection);
-        let error = result.expect_err(name);
-        assert!(error.contains(expected), "{name}: {error}");
-    }
-
-    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .args(["translate-project", "--matrix"])
-        .arg(&matrix)
-        .args([
-            "--matrix-target",
-            "linux-x86_64",
-            "--compile-commands",
-            "x.json",
-        ])
-        .arg(&project)
-        .arg("unused")
-        .output()
-        .expect("run slate translate-project");
-    let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(
-        stderr.contains("--matrix and --manifest cannot be combined with --compile-commands"),
-        "{stderr}"
-    );
-}
-
-#[test]
 fn manifest_targets_use_their_own_compile_commands() {
     let project = matrix_fixture("generated");
     let manifest = project.join("manifest.json");
@@ -969,13 +776,8 @@ fn manifest_targets_use_their_own_compile_commands() {
         ("windows-x86_64", "100 + 2 + 0"),
     ] {
         let work = format!("manifest-{target}");
-        let (crate_dir, result) = translate_matrix(
-            "--manifest",
-            &work,
-            &manifest,
-            &project,
-            &["--matrix-target", target],
-        );
+        let (crate_dir, result) =
+            translate_manifest(&work, &manifest, &project, &["--manifest-target", target]);
         result.unwrap_or_else(|error| panic!("{target}: {error}"));
         let value = std::fs::read_to_string(crate_dir.join("src/value.rs")).expect("read value.rs");
         assert!(value.contains(constant), "{target}: {value}");
@@ -994,14 +796,19 @@ fn manifest_selection_and_merge_match_c_with_same_configuration() {
     ];
     for (work, selection, extra) in [
         (
+            "manifest-plain",
+            vec!["--manifest-target", "linux-x86_64"],
+            vec![],
+        ),
+        (
             "manifest-fast",
-            vec!["--matrix-target", "linux-x86_64", "--features", "fast"],
+            vec!["--manifest-target", "linux-x86_64", "--features", "fast"],
             vec!["-DFAST"],
         ),
         (
             "manifest-level",
             vec![
-                "--matrix-target",
+                "--manifest-target",
                 "linux-x86_64",
                 "--features",
                 "level-two,small",
@@ -1010,12 +817,15 @@ fn manifest_selection_and_merge_match_c_with_same_configuration() {
         ),
         (
             "manifest-merge",
-            vec!["--merge", "--matrix-target", "linux-x86_64,windows-x86_64"],
+            vec![
+                "--merge",
+                "--manifest-target",
+                "linux-x86_64,windows-x86_64",
+            ],
             vec![],
         ),
     ] {
-        let (crate_dir, result) =
-            translate_matrix("--manifest", work, &manifest, &project, &selection);
+        let (crate_dir, result) = translate_manifest(work, &manifest, &project, &selection);
         result.unwrap_or_else(|error| panic!("{work}: {error}"));
         let c_args: Vec<&str> = base.iter().chain(&extra).copied().collect();
         assert_eq!(
@@ -1029,8 +839,7 @@ fn manifest_selection_and_merge_match_c_with_same_configuration() {
 #[test]
 fn manifest_merge_gates_units_compiled_for_some_targets() {
     let project = matrix_fixture("split");
-    let (crate_dir, result) = translate_matrix(
-        "--manifest",
+    let (crate_dir, result) = translate_manifest(
         "manifest-split",
         &project.join("manifest.json"),
         &project,
@@ -1101,7 +910,7 @@ fn manifest_rejects_invalid_input() {
         &["-DTARGET_EXTRA=1"],
         &["main.c", "value.c"],
     );
-    let selected = ["--matrix-target", "a"];
+    let selected = ["--manifest-target", "a"];
     for (name, contents, expected) in [
         (
             "manifest-version",
@@ -1111,7 +920,45 @@ fn manifest_rejects_invalid_input() {
         (
             "manifest-no-targets",
             serde_json::json!({"version": 1, "targets": {}}),
-            "matrix has no targets",
+            "manifest has no targets",
+        ),
+        (
+            "manifest-unsupported-triple",
+            serde_json::json!({"version": 1, "targets": {"a": {
+                "triple": "mips-unknown-linux-gnu", "flavor": "clang", "compile_commands": both
+            }}}),
+            "manifest target a: unsupported target triple mips-unknown-linux-gnu",
+        ),
+        (
+            "manifest-flavor-mismatch",
+            serde_json::json!({"version": 1, "targets": {"a": {
+                "triple": "x86_64-unknown-linux-musl", "flavor": "gcc", "compile_commands": both
+            }}}),
+            "manifest target a: x86_64-unknown-linux-musl does not support flavor gcc",
+        ),
+        (
+            "manifest-bad-feature-name",
+            serde_json::json!({"version": 1, "targets": {"a": linux(&both)},
+                "features": {"not valid": ["X"]}}),
+            "manifest feature \"not valid\" is not a valid Cargo feature name",
+        ),
+        (
+            "manifest-feature-without-defines",
+            serde_json::json!({"version": 1, "targets": {"a": linux(&both)},
+                "features": {"x": []}}),
+            "manifest feature x has no defines",
+        ),
+        (
+            "manifest-invalid-names-unknown-feature",
+            serde_json::json!({"version": 1, "targets": {"a": linux(&both)},
+                "features": {"x": ["X"]}, "invalid_features": [["x", "y"]]}),
+            "invalid_features names unknown manifest feature y",
+        ),
+        (
+            "manifest-empty-invalid-group",
+            serde_json::json!({"version": 1, "targets": {"a": linux(&both)},
+                "invalid_features": [[]]}),
+            "invalid_features entries need at least two features",
         ),
         (
             "manifest-unknown-field",
@@ -1139,19 +986,57 @@ fn manifest_rejects_invalid_input() {
         ),
     ] {
         let path = write(name, contents);
-        let (_, result) = translate_matrix("--manifest", name, &path, &project, &selected);
+        let (_, result) = translate_manifest(name, &path, &project, &selected);
         let error = result.expect_err(name);
         assert!(error.contains(expected), "{name}: {error}");
     }
-    let (_, result) = translate_matrix(
-        "--manifest",
-        "manifest-and-matrix",
-        &project.join("manifest.json"),
-        &project,
-        &["--matrix", "matrix.json", "--matrix-target", "a"],
-    );
-    let error = result.expect_err("manifest-and-matrix");
-    assert!(error.contains("pass one --matrix or --manifest"), "{error}");
+    let manifest = project.join("manifest.json");
+    for (name, selection, expected) in [
+        (
+            "manifest-twice",
+            vec!["--manifest", "manifest.json", "--manifest-target", "a"],
+            "pass one --manifest",
+        ),
+        (
+            "manifest-no-target-selected",
+            vec![],
+            "--manifest requires --manifest-target",
+        ),
+        (
+            "manifest-unknown-target",
+            vec!["--manifest-target", "nope"],
+            "unknown manifest target nope",
+        ),
+        (
+            "manifest-unknown-feature",
+            vec!["--manifest-target", "linux-x86_64", "--features", "nope"],
+            "unknown manifest feature nope",
+        ),
+        (
+            "manifest-invalid-combination",
+            vec![
+                "--manifest-target",
+                "linux-x86_64",
+                "--features",
+                "small,fast",
+            ],
+            "manifest features fast, small cannot be combined",
+        ),
+        (
+            "manifest-and-compile-commands",
+            vec![
+                "--manifest-target",
+                "linux-x86_64",
+                "--compile-commands",
+                "x.json",
+            ],
+            "--manifest cannot be combined with --compile-commands",
+        ),
+    ] {
+        let (_, result) = translate_manifest(name, &manifest, &project, &selection);
+        let error = result.expect_err(name);
+        assert!(error.contains(expected), "{name}: {error}");
+    }
 }
 
 fn slate_project(directory: &Path, args: &[&str]) -> Result<String, String> {

@@ -1,5 +1,7 @@
 #[path = "support/filecheck.rs"]
 mod filecheck;
+#[path = "support/manifest.rs"]
+mod manifest;
 
 use slate_parser::target_info::TargetInfo;
 use std::collections::BTreeSet;
@@ -21,13 +23,13 @@ fn work() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/merge")
 }
 
-fn merge(matrix: &Path, crate_dir: &Path, jobs: Option<&str>) -> (String, String, i32) {
+fn merge(manifest: &Path, crate_dir: &Path, jobs: Option<&str>) -> (String, String, i32) {
     let _ = std::fs::remove_dir_all(crate_dir);
     let mut command = Command::new(env!("CARGO_BIN_EXE_slate"));
     command
         .arg("translate-project")
-        .arg("--matrix")
-        .arg(matrix)
+        .arg("--manifest")
+        .arg(manifest)
         .args(["--merge", "--check-projection", "all"])
         .args(["--projection-triples", PROJECTION_TRIPLES])
         .arg(fixtures())
@@ -66,15 +68,14 @@ fn crate_sources(crate_dir: &Path) -> String {
     text
 }
 
-fn feature_sets(matrix: &serde_json::Value) -> Vec<Vec<String>> {
-    let names: Vec<String> = matrix["features"]
-        .as_array()
-        .expect("matrix features")
-        .iter()
-        .map(|feature| feature["name"].as_str().expect("feature name").to_string())
-        .collect();
+fn spec_features(spec: &serde_json::Value) -> serde_json::Map<String, serde_json::Value> {
+    spec["features"].as_object().cloned().unwrap_or_default()
+}
+
+fn feature_sets(spec: &serde_json::Value) -> Vec<Vec<String>> {
+    let names: Vec<String> = spec_features(spec).keys().cloned().collect();
     let invalid = |set: &[String]| {
-        matrix["invalid_features"]
+        spec["invalid_features"]
             .as_array()
             .into_iter()
             .flatten()
@@ -146,24 +147,23 @@ fn run_rust(crate_dir: &Path, features: &[String], worker: usize) -> Result<Stri
 }
 
 fn differential(
-    matrix: &serde_json::Value,
+    spec: &serde_json::Value,
     crate_dir: &Path,
     stem: &str,
     sources: &[PathBuf],
     worker: usize,
 ) -> Vec<String> {
+    let features = spec_features(spec);
     let defines = |set: &[String]| -> Vec<String> {
-        matrix["features"]
-            .as_array()
-            .expect("matrix features")
+        features
             .iter()
-            .filter(|feature| set.iter().any(|name| feature["name"] == name.as_str()))
-            .flat_map(|feature| feature["defines"].as_array().expect("defines"))
+            .filter(|(name, _)| set.contains(name))
+            .flat_map(|(_, defines)| defines.as_array().expect("defines"))
             .map(|define| define.as_str().expect("define").to_string())
             .collect()
     };
     let mut failures = Vec::new();
-    for set in feature_sets(matrix) {
+    for set in feature_sets(spec) {
         let binary = work().join(format!("{stem}-c"));
         let Some(expected) = run_c(sources, &defines(&set), &binary) else {
             continue;
@@ -183,9 +183,9 @@ fn differential(
 fn merge_fixture(source: &Path, worker: usize) -> Result<(), String> {
     let stem = source.file_stem().unwrap().to_string_lossy().into_owned();
     let text = std::fs::read_to_string(source).map_err(|e| format!("read: {e}"))?;
-    let base = std::fs::read(fixtures().join("matrix.json")).map_err(|e| format!("read: {e}"))?;
-    let mut matrix: serde_json::Value =
-        serde_json::from_slice(&base).map_err(|e| format!("parse matrix: {e}"))?;
+    let base = std::fs::read(fixtures().join("targets.json")).map_err(|e| format!("read: {e}"))?;
+    let mut spec: serde_json::Value =
+        serde_json::from_slice(&base).map_err(|e| format!("parse targets: {e}"))?;
     let mut sources = vec![format!("{stem}.c")];
     sources.extend(
         text.lines()
@@ -194,50 +194,59 @@ fn merge_fixture(source: &Path, worker: usize) -> Result<(), String> {
             .flat_map(str::split_whitespace)
             .map(str::to_string),
     );
-    matrix["sources"] = serde_json::json!(sources);
     if let Some(args) = text
         .lines()
         .find_map(|line| line.strip_prefix("// merge-linux-args:"))
     {
-        matrix["targets"][0]["args"] =
+        spec["targets"]["linux-x86_64"]["args"] =
             serde_json::json!(args.split_whitespace().collect::<Vec<_>>());
     }
+    let targets = spec["targets"].as_object_mut().expect("spec targets");
     if let Some(other) = text
         .lines()
         .find_map(|line| line.strip_prefix("// merge-second-target:"))
     {
         let fields: Vec<&str> = other.split_whitespace().collect();
-        matrix["targets"][1] =
-            serde_json::json!({"name": fields[0], "triple": fields[1], "flavor": fields[2]});
+        targets.remove("windows-x86_64");
+        targets.insert(
+            fields[0].to_string(),
+            serde_json::json!({"triple": fields[1], "flavor": fields[2]}),
+        );
     }
     if let Some(extra) = text
         .lines()
         .find_map(|line| line.strip_prefix("// merge-extra-targets:"))
     {
         let fields: Vec<&str> = extra.split_whitespace().collect();
-        let targets = matrix["targets"].as_array_mut().expect("matrix targets");
-        targets.extend(fields.chunks(3).map(|target| {
-            serde_json::json!({"name": target[0], "triple": target[1], "flavor": target[2]})
-        }));
+        for target in fields.chunks(3) {
+            targets.insert(
+                target[0].to_string(),
+                serde_json::json!({"triple": target[1], "flavor": target[2]}),
+            );
+        }
     }
     if let Some(names) = text
         .lines()
         .find_map(|line| line.strip_prefix("// merge-features:"))
     {
-        matrix["features"] = names
+        spec["features"] = names
             .split_whitespace()
-            .map(|name| serde_json::json!({"name": name, "defines": [name.to_uppercase()]}))
-            .collect();
-        matrix["invalid_features"] = serde_json::json!([]);
+            .map(|name| (name.to_string(), serde_json::json!([name.to_uppercase()])))
+            .collect::<serde_json::Map<_, _>>()
+            .into();
+        spec["invalid_features"] = serde_json::json!([]);
     }
-    std::fs::create_dir_all(work()).map_err(|e| format!("create work: {e}"))?;
-    let matrix_path = work().join(format!("{stem}.json"));
-    std::fs::write(&matrix_path, matrix.to_string()).map_err(|e| format!("write matrix: {e}"))?;
+    let manifest_path = manifest::write_manifest(
+        &spec,
+        &sources,
+        &fixtures(),
+        &work().join(format!("{stem}.json")),
+    );
     let crate_dir = work().join("crates").join(&stem);
-    let (stdout, stderr, code) = merge(&matrix_path, &crate_dir, None);
+    let (stdout, stderr, code) = merge(&manifest_path, &crate_dir, None);
     let generated = crate_sources(&crate_dir);
     let serial_dir = work().join("crates").join(format!("{stem}-serial"));
-    let serial = merge(&matrix_path, &serial_dir, Some("1"));
+    let serial = merge(&manifest_path, &serial_dir, Some("1"));
     let report: String = stdout
         .lines()
         .filter(|line| !line.starts_with("wrote "))
@@ -282,7 +291,7 @@ fn merge_fixture(source: &Path, worker: usize) -> Result<(), String> {
     }
     if code == 0 {
         let paths: Vec<PathBuf> = sources.iter().map(|path| fixtures().join(path)).collect();
-        failures.extend(differential(&matrix, &crate_dir, &stem, &paths, worker));
+        failures.extend(differential(&spec, &crate_dir, &stem, &paths, worker));
     }
     if failures.is_empty() {
         Ok(())
@@ -329,15 +338,17 @@ fn merge_filecheck() {
 }
 
 #[test]
-fn target_outside_matrix_hits_guard() {
-    let base = std::fs::read(fixtures().join("matrix.json")).expect("read matrix");
-    let mut matrix: serde_json::Value = serde_json::from_slice(&base).expect("parse matrix");
-    matrix["sources"] = serde_json::json!(["by_target.c"]);
-    std::fs::create_dir_all(work()).expect("create work");
-    let matrix_path = work().join("target_guard.json");
-    std::fs::write(&matrix_path, matrix.to_string()).expect("write matrix");
+fn target_outside_manifest_hits_guard() {
+    let base = std::fs::read(fixtures().join("targets.json")).expect("read targets");
+    let spec: serde_json::Value = serde_json::from_slice(&base).expect("parse targets");
+    let manifest_path = manifest::write_manifest(
+        &spec,
+        &["by_target.c".to_string()],
+        &fixtures(),
+        &work().join("target_guard.json"),
+    );
     let crate_dir = work().join("crates/target_guard");
-    let (stdout, stderr, code) = merge(&matrix_path, &crate_dir, None);
+    let (stdout, stderr, code) = merge(&manifest_path, &crate_dir, None);
     assert_eq!(code, 0, "{stdout}{stderr}");
     let check = |triple: &str| {
         Command::new(std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into()))
@@ -365,12 +376,13 @@ fn target_outside_matrix_hits_guard() {
 #[test]
 fn target_properties_match_rustc() {
     let workspace = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
-    let matrix = std::fs::read(workspace.join("tools/corpus/matrices/zlib.json")).expect("matrix");
-    let matrix: serde_json::Value = serde_json::from_slice(&matrix).expect("parse matrix");
-    let targets: Vec<(String, BTreeSet<String>, BTreeSet<String>)> = matrix["targets"]
-        .as_array()
-        .expect("matrix targets")
-        .iter()
+    let manifest =
+        std::fs::read(workspace.join("tools/corpus/manifests/zlib.json")).expect("manifest");
+    let manifest: serde_json::Value = serde_json::from_slice(&manifest).expect("parse manifest");
+    let targets: Vec<(String, BTreeSet<String>, BTreeSet<String>)> = manifest["targets"]
+        .as_object()
+        .expect("manifest targets")
+        .values()
         .map(|target| {
             let triple = target["triple"].as_str().expect("triple");
             let info = TargetInfo::for_triple(triple).expect("known triple");
@@ -403,17 +415,29 @@ fn target_properties_match_rustc() {
 
 #[test]
 fn exhaustive_projection_is_bounded() {
-    let base = std::fs::read(fixtures().join("matrix.json")).expect("read matrix");
-    let mut matrix: serde_json::Value = serde_json::from_slice(&base).expect("parse matrix");
-    matrix["sources"] = serde_json::json!(["by_target.c"]);
-    matrix["invalid_features"] = serde_json::json!([]);
-    matrix["features"] = (0..10)
-        .map(|index| serde_json::json!({"name": format!("f{index}"), "defines": [format!("F{index}")]}))
-        .collect();
-    std::fs::create_dir_all(work()).expect("create work");
-    let matrix_path = work().join("projection_bound.json");
-    std::fs::write(&matrix_path, matrix.to_string()).expect("write matrix");
-    let (_, stderr, code) = merge(&matrix_path, &work().join("crates/projection_bound"), None);
+    let base = std::fs::read(fixtures().join("targets.json")).expect("read targets");
+    let mut spec: serde_json::Value = serde_json::from_slice(&base).expect("parse targets");
+    spec["invalid_features"] = serde_json::json!([]);
+    spec["features"] = (0..10)
+        .map(|index| {
+            (
+                format!("f{index}"),
+                serde_json::json!([format!("F{index}")]),
+            )
+        })
+        .collect::<serde_json::Map<_, _>>()
+        .into();
+    let manifest_path = manifest::write_manifest(
+        &spec,
+        &["by_target.c".to_string()],
+        &fixtures(),
+        &work().join("projection_bound.json"),
+    );
+    let (_, stderr, code) = merge(
+        &manifest_path,
+        &work().join("crates/projection_bound"),
+        None,
+    );
     assert!(
         code != 0 && stderr.contains("2048 whole-project translations"),
         "{code}: {stderr}"
@@ -435,9 +459,9 @@ fn zlib_projection_sample() {
     let _ = std::fs::remove_dir_all(&crate_dir);
     let output = Command::new(env!("CARGO_BIN_EXE_slate"))
         .arg("translate-project")
-        .arg("--matrix")
-        .arg(workspace.join("tools/corpus/matrices/zlib.json"))
-        .args(["--merge", "--matrix-target", "linux-x86_64"])
+        .arg("--manifest")
+        .arg(workspace.join("tools/corpus/manifests/zlib.json"))
+        .args(["--merge", "--manifest-target", "linux-x86_64"])
         .args(["--check-projection", "8"])
         .arg(&project)
         .arg(&crate_dir)

@@ -623,7 +623,7 @@ fn matrix_target_info(matrix: &Matrix, target: &str) -> Result<TargetInfo, Strin
         .targets
         .iter()
         .find(|known| known.name == target)
-        .ok_or_else(|| format!("unknown matrix target {target}"))?;
+        .ok_or_else(|| format!("unknown manifest target {target}"))?;
     TargetInfo::for_triple(&known.triple).map_err(|error| error.to_string())
 }
 
@@ -1576,7 +1576,7 @@ fn projection_configs(matrix: &Matrix, projection: Projection) -> Result<Vec<Vec
         Projection::All => {
             if names.len() > MAX_ENUMERATED_FEATURES {
                 return Err(format!(
-                    "cannot enumerate {} matrix features, the limit is {MAX_ENUMERATED_FEATURES}",
+                    "cannot enumerate {} manifest features, the limit is {MAX_ENUMERATED_FEATURES}",
                     names.len()
                 ));
             }
@@ -1790,7 +1790,7 @@ pub fn merge(
     for source in &matrix.sources {
         let stem = stem_of(source)?;
         if !stems.insert(stem.clone()) {
-            return Err(format!("matrix sources map twice to module {stem}"));
+            return Err(format!("manifest sources map twice to module {stem}"));
         }
     }
     slate_parser::pp::reuse_lexed_sources();
@@ -1817,7 +1817,7 @@ pub fn merge(
     for build in &builds {
         if let Some(other) = cfgs.insert(build.cfg.clone(), build.name.clone()) {
             return Err(format!(
-                "matrix targets {other} and {} have the same Rust cfg {}",
+                "manifest targets {other} and {} have the same Rust cfg {}",
                 build.name,
                 build.cfg.render()
             ));

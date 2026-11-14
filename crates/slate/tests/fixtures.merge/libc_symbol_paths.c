@@ -17,17 +17,17 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}target linux-x86_64: 1 compiles
-// CHECK-NEXT:   libc_symbol_paths.c: [] 1 compiled
-// CHECK-NEXT: target windows-x86_64: 1 compiles
-// CHECK-NEXT:   libc_symbol_paths.c: [] 1 compiled
-// CHECK-NEXT: target musl-x86_64: 1 compiles
-// CHECK-NEXT:   libc_symbol_paths.c: [] 1 compiled
-// CHECK-NEXT: target android-x86_64: 1 compiles
+// CHECK: {{^}}target android-x86_64: 1 compiles
 // CHECK-NEXT:   libc_symbol_paths.c: [] 1 compiled
 // CHECK-NEXT: target darwin-x86_64: 1 compiles
 // CHECK-NEXT:   libc_symbol_paths.c: [] 1 compiled
 // CHECK-NEXT: target freebsd-x86_64: 1 compiles
+// CHECK-NEXT:   libc_symbol_paths.c: [] 1 compiled
+// CHECK-NEXT: target linux-x86_64: 1 compiles
+// CHECK-NEXT:   libc_symbol_paths.c: [] 1 compiled
+// CHECK-NEXT: target musl-x86_64: 1 compiles
+// CHECK-NEXT:   libc_symbol_paths.c: [] 1 compiled
+// CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   libc_symbol_paths.c: [] 1 compiled
 // CHECK-NEXT: total: 6 compiles across 6 targets
 // CHECK-NEXT: unit libc_symbol_paths: 10 items, 1 gated, 0 duplicated functions
@@ -55,12 +55,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: //! merge-extra-targets: musl-x86_64 x86_64-unknown-linux-musl clang android-x86_64 x86_64-linux-android clang darwin-x86_64 x86_64-apple-darwin clang freebsd-x86_64 x86_64-unknown-freebsd clang
 // CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc"),
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "musl"),
 // CHECK-NEXT:     all(target_arch = "x86_64", target_os = "android"),
 // CHECK-NEXT:     all(target_arch = "x86_64", target_os = "macos"),
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "freebsd")
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "freebsd"),
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "musl"),
+// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:

@@ -2,7 +2,6 @@ use crate::compile_commands::{
     self, CompileCommand, CompileCommandsError, ReadOptions, UnitCommand, absolute_path,
 };
 use crate::project::manifest::{Manifest, ManifestTarget};
-use serde::Deserialize;
 use serde::de::DeserializeOwned;
 use slate_parser::compiler_args::{CompilerArgError, CompilerArgParser, CompilerFlavor};
 use slate_parser::target_registry;
@@ -12,13 +11,13 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum MatrixError {
-    #[error("read matrix {path}: {source}")]
+    #[error("read manifest {path}: {source}")]
     Read {
         path: PathBuf,
         #[source]
         source: std::io::Error,
     },
-    #[error("parse matrix {path}: {source}")]
+    #[error("parse manifest {path}: {source}")]
     Parse {
         path: PathBuf,
         #[source]
@@ -26,19 +25,19 @@ pub enum MatrixError {
     },
     #[error("manifest {path} has version {version}, the supported version is 1")]
     UnsupportedVersion { path: PathBuf, version: u32 },
-    #[error("matrix has no sources")]
+    #[error("manifest targets compile no C sources")]
     NoSources,
-    #[error("matrix has no targets")]
+    #[error("manifest has no targets")]
     NoTargets,
-    #[error("duplicate matrix target {0}")]
+    #[error("duplicate manifest target {0}")]
     DuplicateTarget(String),
-    #[error("duplicate matrix feature {0}")]
+    #[error("duplicate manifest feature {0}")]
     DuplicateFeature(String),
-    #[error("matrix target {target}: unsupported target triple {triple}")]
+    #[error("manifest target {target}: unsupported target triple {triple}")]
     UnsupportedTriple { target: String, triple: String },
-    #[error("matrix target {target}: {flavor}")]
+    #[error("manifest target {target}: {flavor}")]
     UnknownFlavor { target: String, flavor: String },
-    #[error("matrix target {target}: {triple} does not support flavor {flavor}")]
+    #[error("manifest target {target}: {triple} does not support flavor {flavor}")]
     UnsupportedFlavor {
         target: String,
         triple: String,
@@ -67,23 +66,23 @@ pub enum MatrixError {
         name: String,
         feature: String,
     },
-    #[error("matrix feature {0:?} is not a valid Cargo feature name")]
+    #[error("manifest feature {0:?} is not a valid Cargo feature name")]
     InvalidFeatureName(String),
-    #[error("matrix feature {0} has no defines")]
+    #[error("manifest feature {0} has no defines")]
     FeatureWithoutDefines(String),
     #[error("invalid_features entries need at least two features: {0:?}")]
     ShortInvalidGroup(Vec<String>),
-    #[error("invalid_features names unknown matrix feature {0}")]
+    #[error("invalid_features names unknown manifest feature {0}")]
     InvalidGroupUnknownFeature(String),
-    #[error("unknown matrix target {0}")]
+    #[error("unknown manifest target {0}")]
     UnknownTarget(String),
-    #[error("unknown matrix feature {0}")]
+    #[error("unknown manifest feature {0}")]
     UnknownFeature(String),
-    #[error("unknown matrix source {}", .0.display())]
+    #[error("unknown manifest source {}", .0.display())]
     UnknownSource(PathBuf),
-    #[error("matrix features {} cannot be combined", .0.join(", "))]
+    #[error("manifest features {} cannot be combined", .0.join(", "))]
     InvalidCombination(Vec<String>),
-    #[error("cannot enumerate {features} matrix features, the limit is {limit}")]
+    #[error("cannot enumerate {features} manifest features, the limit is {limit}")]
     TooManyFeaturesToEnumerate { features: usize, limit: usize },
     #[error("{file}: {source}", file = file.display())]
     Arguments {
@@ -108,35 +107,10 @@ pub struct Target {
     pub(crate) units: BTreeMap<PathBuf, UnitCommand>,
 }
 
-#[derive(Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[derive(Debug)]
 pub struct Feature {
     pub name: String,
     pub defines: Vec<String>,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MatrixFile {
-    pub sources: Vec<PathBuf>,
-    #[serde(default)]
-    pub args: Vec<String>,
-    pub targets: Vec<MatrixTarget>,
-    #[serde(default)]
-    pub features: Vec<Feature>,
-    #[serde(default)]
-    pub invalid_features: Vec<Vec<String>>,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MatrixTarget {
-    pub name: String,
-    pub triple: String,
-    pub flavor: String,
-    pub sysroot: Option<String>,
-    #[serde(default)]
-    pub args: Vec<String>,
 }
 
 pub(crate) fn read_json<T: DeserializeOwned>(path: &Path) -> Result<T, MatrixError> {
@@ -150,54 +124,34 @@ pub(crate) fn read_json<T: DeserializeOwned>(path: &Path) -> Result<T, MatrixErr
     })
 }
 
-impl MatrixFile {
-    pub fn resolve(self, project: &Path) -> Result<Matrix, MatrixError> {
-        if self.sources.is_empty() {
-            return Err(MatrixError::NoSources);
-        }
-        if self.targets.is_empty() {
-            return Err(MatrixError::NoTargets);
-        }
+impl Matrix {
+    pub fn single_source(
+        source: &Path,
+        args: &[String],
+        flavor: &str,
+        triples: &[String],
+    ) -> Result<Self, MatrixError> {
+        let directory = source.parent().unwrap_or(Path::new("/")).to_path_buf();
         let mut targets = Vec::new();
-        for target in &self.targets {
-            validate_target(&target.name, &target.triple, &target.flavor)?;
-            let mut args = vec![
-                format!("--flavor={}", target.flavor),
-                format!("--target={}", target.triple),
-            ];
-            args.extend(
-                target
-                    .sysroot
-                    .iter()
-                    .map(|root| format!("--sysroot={root}")),
-            );
-            args.extend(target.args.iter().cloned());
-            args.extend(self.args.iter().cloned());
-            let units = self
-                .sources
-                .iter()
-                .map(|source| {
-                    let unit = UnitCommand {
-                        file: absolute_path(project, source),
-                        directory: project.to_path_buf(),
-                        args: args.clone(),
-                    };
-                    (source.clone(), unit)
-                })
-                .collect();
+        for triple in triples {
+            validate_target(triple, triple, flavor)?;
+            let mut unit_args = vec![format!("--flavor={flavor}"), format!("--target={triple}")];
+            unit_args.extend(args.iter().cloned());
+            let unit = UnitCommand {
+                file: source.to_path_buf(),
+                directory: directory.clone(),
+                args: unit_args,
+            };
             targets.push(Target {
-                name: target.name.clone(),
-                triple: target.triple.clone(),
-                units,
+                name: triple.clone(),
+                triple: triple.clone(),
+                units: BTreeMap::from([(source.to_path_buf(), unit)]),
             });
         }
-        Matrix::new(self.sources, targets, self.features, self.invalid_features)
-    }
-}
-
-impl Matrix {
-    pub fn read(path: &Path, project: &Path) -> Result<Self, MatrixError> {
-        read_json::<MatrixFile>(path)?.resolve(project)
+        if targets.is_empty() {
+            return Err(MatrixError::NoTargets);
+        }
+        Matrix::new(vec![source.to_path_buf()], targets, Vec::new(), Vec::new())
     }
 
     pub fn read_manifest(path: &Path, project: &Path) -> Result<Self, MatrixError> {

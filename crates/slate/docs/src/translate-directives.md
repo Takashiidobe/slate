@@ -8,7 +8,7 @@ select are dropped, not turned into Rust cfgs.
 results with the same engine as `translate-project --merge`. Items that differ
 between targets get `#[cfg(target_arch = ...)]`-style gates, and a
 `compile_error!` guards every target that was not translated. Feature macros are
-not explored; use `translate-project --merge --matrix` for those.
+not explored; use `translate-project --merge --manifest` for those.
 
 ```bash
 cargo run --release -p slate-c2rust -- translate \

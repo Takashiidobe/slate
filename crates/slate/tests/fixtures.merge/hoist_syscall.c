@@ -9,9 +9,9 @@ int main(void) {
 // merge-second-target: linux-aarch64 aarch64-unknown-linux-gnu clang
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}target linux-x86_64: 1 compiles
+// CHECK: {{^}}target linux-aarch64: 1 compiles
 // CHECK-NEXT:   hoist_syscall.c: [] 1 compiled
-// CHECK-NEXT: target linux-aarch64: 1 compiles
+// CHECK-NEXT: target linux-x86_64: 1 compiles
 // CHECK-NEXT:   hoist_syscall.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
 // CHECK-NEXT: unit hoist_syscall: 6 items, 2 gated, 0 duplicated functions
@@ -24,7 +24,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(not(all(
-// CHECK-NEXT:     any(target_arch = "x86_64", target_arch = "aarch64"),
+// CHECK-NEXT:     any(target_arch = "aarch64", target_arch = "x86_64"),
 // CHECK-NEXT:     target_os = "linux",
 // CHECK-NEXT:     target_env = "gnu"
 // CHECK-NEXT: )))]

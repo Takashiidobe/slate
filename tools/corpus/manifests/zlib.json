@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "targets": {
+    "android-aarch64": {
+      "triple": "aarch64-linux-android",
+      "flavor": "clang",
+      "compile_commands": "build-clang/compile_commands.json",
+      "build_target": "zlibstatic"
+    },
+    "android-x86_64": {
+      "triple": "x86_64-linux-android",
+      "flavor": "clang",
+      "compile_commands": "build-clang/compile_commands.json",
+      "build_target": "zlibstatic"
+    },
+    "darwin-aarch64": {
+      "triple": "aarch64-apple-darwin",
+      "flavor": "clang",
+      "compile_commands": "build-clang/compile_commands.json",
+      "build_target": "zlibstatic"
+    },
+    "darwin-x86_64": {
+      "triple": "x86_64-apple-darwin",
+      "flavor": "clang",
+      "compile_commands": "build-clang/compile_commands.json",
+      "build_target": "zlibstatic"
+    },
+    "freebsd-aarch64": {
+      "triple": "aarch64-unknown-freebsd",
+      "flavor": "clang",
+      "compile_commands": "build-clang/compile_commands.json",
+      "build_target": "zlibstatic"
+    },
+    "freebsd-x86_64": {
+      "triple": "x86_64-unknown-freebsd",
+      "flavor": "clang",
+      "compile_commands": "build-clang/compile_commands.json",
+      "build_target": "zlibstatic"
+    },
+    "linux-aarch64": {
+      "triple": "aarch64-unknown-linux-gnu",
+      "flavor": "clang",
+      "compile_commands": "build-clang/compile_commands.json",
+      "build_target": "zlibstatic"
+    },
+    "linux-arm32": {
+      "triple": "armv7-unknown-linux-gnueabihf",
+      "flavor": "clang",
+      "compile_commands": "build-clang/compile_commands.json",
+      "build_target": "zlibstatic"
+    },
+    "linux-i686": {
+      "triple": "i686-unknown-linux-gnu",
+      "flavor": "clang",
+      "compile_commands": "build-clang/compile_commands.json",
+      "build_target": "zlibstatic"
+    },
+    "linux-musl-aarch64": {
+      "triple": "aarch64-unknown-linux-musl",
+      "flavor": "clang",
+      "compile_commands": "build-clang/compile_commands.json",
+      "build_target": "zlibstatic"
+    },
+    "linux-musl-x86_64": {
+      "triple": "x86_64-unknown-linux-musl",
+      "flavor": "clang",
+      "compile_commands": "build-clang/compile_commands.json",
+      "build_target": "zlibstatic"
+    },
+    "linux-x86_64": {
+      "triple": "x86_64-unknown-linux-gnu",
+      "flavor": "clang",
+      "compile_commands": "build-clang/compile_commands.json",
+      "build_target": "zlibstatic"
+    },
+    "windows-aarch64": {
+      "triple": "aarch64-pc-windows-msvc",
+      "flavor": "msvc",
+      "compile_commands": "build-msvc/compile_commands.json",
+      "build_target": "zlibstatic"
+    },
+    "windows-arm32": {
+      "triple": "thumbv7a-pc-windows-msvc",
+      "flavor": "msvc",
+      "compile_commands": "build-msvc/compile_commands.json",
+      "build_target": "zlibstatic"
+    },
+    "windows-i686": {
+      "triple": "i686-pc-windows-msvc",
+      "flavor": "msvc",
+      "compile_commands": "build-msvc/compile_commands.json",
+      "build_target": "zlibstatic"
+    },
+    "windows-x86_64": {
+      "triple": "x86_64-pc-windows-msvc",
+      "flavor": "msvc",
+      "compile_commands": "build-msvc/compile_commands.json",
+      "build_target": "zlibstatic"
+    }
+  },
+  "features": {
+    "fastest": [
+      "FASTEST"
+    ],
+    "inflate-allow-invalid": [
+      "INFLATE_ALLOW_INVALID_DISTANCE_TOOFAR_ARRR"
+    ],
+    "inflate-strict": [
+      "INFLATE_STRICT"
+    ],
+    "lit-mem": [
+      "LIT_MEM"
+    ],
+    "no-gzcompress": [
+      "NO_GZCOMPRESS"
+    ],
+    "no-gzip": [
+      "NO_GZIP"
+    ],
+    "no-vsnprintf": [
+      "NO_vsnprintf"
+    ],
+    "pkzip-bug": [
+      "PKZIP_BUG_WORKAROUND"
+    ],
+    "zlib-debug": [
+      "ZLIB_DEBUG"
+    ]
+  }
+}

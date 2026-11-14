@@ -157,9 +157,9 @@ int wide(void) {
 // CHECK: {{^}}target linux-x86_64: 2 compiles from 467 preprocessor runs, naive 1073741824
 // CHECK-NEXT:   wide.c: 2 compiles, 30 relevant, 64 elements, 467 runs
 // CHECK-NEXT:     []
-// CHECK-NEXT:     [f0,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19,f20,f21,f22,f23,f24,f25,f26,f27,f28,f29]
+// CHECK-NEXT:     [f0,f1,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19,f2,f20,f21,f22,f23,f24,f25,f26,f27,f28,f29,f3,f4,f5,f6,f7,f8,f9]
 // CHECK-NEXT: total: 2 compiles across 1 targets
 // CHECK-NEXT: exit: 0
-// CHECK-NEXT: exhaustive: error: cannot enumerate 30 matrix features, the limit is 16
+// CHECK-NEXT: exhaustive: error: cannot enumerate 30 manifest features, the limit is 16
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

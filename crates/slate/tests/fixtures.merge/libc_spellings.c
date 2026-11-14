@@ -53,22 +53,22 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}target linux-x86_64: 2 compiles
-// CHECK-NEXT:   libc_spellings.c: [] 1 compiled
-// CHECK-NEXT:   units/libc_spellings_address.c: [] 1 compiled
-// CHECK-NEXT: target windows-x86_64: 2 compiles
-// CHECK-NEXT:   libc_spellings.c: [] 1 compiled
-// CHECK-NEXT:   units/libc_spellings_address.c: [] 1 compiled
-// CHECK-NEXT: target musl-x86_64: 2 compiles
-// CHECK-NEXT:   libc_spellings.c: [] 1 compiled
-// CHECK-NEXT:   units/libc_spellings_address.c: [] 1 compiled
-// CHECK-NEXT: target android-x86_64: 2 compiles
+// CHECK: {{^}}target android-x86_64: 2 compiles
 // CHECK-NEXT:   libc_spellings.c: [] 1 compiled
 // CHECK-NEXT:   units/libc_spellings_address.c: [] 1 compiled
 // CHECK-NEXT: target darwin-x86_64: 2 compiles
 // CHECK-NEXT:   libc_spellings.c: [] 1 compiled
 // CHECK-NEXT:   units/libc_spellings_address.c: [] 1 compiled
 // CHECK-NEXT: target freebsd-x86_64: 2 compiles
+// CHECK-NEXT:   libc_spellings.c: [] 1 compiled
+// CHECK-NEXT:   units/libc_spellings_address.c: [] 1 compiled
+// CHECK-NEXT: target linux-x86_64: 2 compiles
+// CHECK-NEXT:   libc_spellings.c: [] 1 compiled
+// CHECK-NEXT:   units/libc_spellings_address.c: [] 1 compiled
+// CHECK-NEXT: target musl-x86_64: 2 compiles
+// CHECK-NEXT:   libc_spellings.c: [] 1 compiled
+// CHECK-NEXT:   units/libc_spellings_address.c: [] 1 compiled
+// CHECK-NEXT: target windows-x86_64: 2 compiles
 // CHECK-NEXT:   libc_spellings.c: [] 1 compiled
 // CHECK-NEXT:   units/libc_spellings_address.c: [] 1 compiled
 // CHECK-NEXT: total: 12 compiles across 6 targets
@@ -198,7 +198,7 @@ int main(void) {
 // CHECK-NEXT: use slate_support::__errno_location;
 // CHECK-NEXT: #[cfg(not(any(target_os = "android", target_os = "macos")))]
 // CHECK-NEXT: use slate_support::isdigit;
-// CHECK-NEXT: #[cfg(any(windows, target_env = "musl"))]
+// CHECK-NEXT: #[cfg(any(target_env = "musl", windows))]
 // CHECK-NEXT: use slate_support::isgraph;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_os = "macos")]
@@ -304,14 +304,6 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn count_digits() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         #[cfg(target_os = "linux")]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             *(__errno_location() as *mut i32) = 0;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         #[cfg(windows)]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             *_errno() = 0;
-// CHECK-NEXT:         }
 // CHECK-NEXT:         #[cfg(target_os = "android")]
 // CHECK-NEXT:         {
 // CHECK-NEXT:             *(__errno() as *mut i32) = 0;
@@ -320,50 +312,14 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             *(__error() as *mut i32) = 0;
 // CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(target_env = "gnu")]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         count(unsafe {
-// CHECK-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
-// CHECK-NEXT:                 isdigit as *const (),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }) + unsafe { *(__errno_location() as *mut i32) }
-// CHECK-NEXT:             + if ((unsafe { *unsafe { *__ctype_b_loc() }.add(97) }) as i32) & 32768 != 0 {
-// CHECK-NEXT:                 1
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 0
-// CHECK-NEXT:             }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         count(unsafe {
-// CHECK-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
-// CHECK-NEXT:                 isdigit as *const (),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }) + unsafe { *_errno() }
-// CHECK-NEXT:             + if (unsafe { isgraph(97i32 as i32) as i32 }) != 0 {
-// CHECK-NEXT:                 1
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 0
-// CHECK-NEXT:             }
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(target_env = "musl")]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         count(unsafe {
-// CHECK-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
-// CHECK-NEXT:                 isdigit as *const (),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }) + unsafe { *(__errno_location() as *mut i32) }
-// CHECK-NEXT:             + if (if false {
-// CHECK-NEXT:                 unsafe { isgraph(97i32 as i32) as i32 }
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 (64u32 < 94) as i32
-// CHECK-NEXT:             }) != 0
-// CHECK-NEXT:             {
-// CHECK-NEXT:                 1
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 0
-// CHECK-NEXT:             }
+// CHECK-NEXT:         #[cfg(target_os = "linux")]
+// CHECK-NEXT:         {
+// CHECK-NEXT:             *(__errno_location() as *mut i32) = 0;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         #[cfg(windows)]
+// CHECK-NEXT:         {
+// CHECK-NEXT:             *_errno() = 0;
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_os = "android")]
 // CHECK-NEXT:     {
@@ -390,6 +346,50 @@ int main(void) {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             }
 // CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(target_env = "gnu")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         count(unsafe {
+// CHECK-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// CHECK-NEXT:                 isdigit as *const (),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }) + unsafe { *(__errno_location() as *mut i32) }
+// CHECK-NEXT:             + if ((unsafe { *unsafe { *__ctype_b_loc() }.add(97) }) as i32) & 32768 != 0 {
+// CHECK-NEXT:                 1
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 0
+// CHECK-NEXT:             }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(target_env = "musl")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         count(unsafe {
+// CHECK-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// CHECK-NEXT:                 isdigit as *const (),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }) + unsafe { *(__errno_location() as *mut i32) }
+// CHECK-NEXT:             + if (if false {
+// CHECK-NEXT:                 unsafe { isgraph(97i32 as i32) as i32 }
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 (64u32 < 94) as i32
+// CHECK-NEXT:             }) != 0
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 1
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 0
+// CHECK-NEXT:             }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         count(unsafe {
+// CHECK-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// CHECK-NEXT:                 isdigit as *const (),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }) + unsafe { *_errno() }
+// CHECK-NEXT:             + if (unsafe { isgraph(97i32 as i32) as i32 }) != 0 {
+// CHECK-NEXT:                 1
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 0
+// CHECK-NEXT:             }
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn count(test: Option<unsafe extern "C-unwind" fn(i32) -> i32>) -> i32 {
@@ -405,7 +405,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(thread_local)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(any(target_env = "musl", target_os = "macos"))]
+// CHECK-NEXT: #[cfg(any(target_os = "macos", target_env = "musl"))]
 // CHECK-NEXT: fn hand_written(c: i32) -> i32 {
 // CHECK-NEXT:     if false {
 // CHECK-NEXT:         unsafe { slate_support::isgraph(c) }
@@ -414,7 +414,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+// CHECK-NEXT: #[cfg(not(any(target_os = "macos", target_os = "linux")))]
 // CHECK-NEXT: fn hand_written(c: i32) -> i32 {
 // CHECK-NEXT:     let [[V_0]]: i32 = if false {
 // CHECK-NEXT:         unsafe { slate_support::isgraph(c) }
@@ -496,12 +496,12 @@ int main(void) {
 // CHECK-NEXT: //!
 // CHECK-NEXT: //! merge-extra-targets: musl-x86_64 x86_64-unknown-linux-musl clang android-x86_64 x86_64-linux-android clang darwin-x86_64 x86_64-apple-darwin clang freebsd-x86_64 x86_64-unknown-freebsd clang
 // CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc"),
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "musl"),
 // CHECK-NEXT:     all(target_arch = "x86_64", target_os = "android"),
 // CHECK-NEXT:     all(target_arch = "x86_64", target_os = "macos"),
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "freebsd")
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "freebsd"),
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
+// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "musl"),
+// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
 // CHECK-NEXT: )))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
@@ -580,19 +580,157 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn classify(c: i32) -> i32 {
 // CHECK-NEXT:     let mut bits: i32 = 0;
-// CHECK-NEXT:     #[cfg(any(target_os = "linux", target_os = "macos"))]
-// CHECK-NEXT:     let [[V_0]]: i32 = bits;
-// CHECK-NEXT:     #[cfg(target_env = "gnu")]
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     let [[V_0]]: i32 = if (unsafe { slate_support::isalnum(c) }) != 0 {
+// CHECK-NEXT:         1
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     };
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_0]]
-// CHECK-NEXT:             | if (unsafe { slate_support::isalnum(c as i32) }) != 0 {
+// CHECK-NEXT:         bits |= [[V_0]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = if (unsafe { slate_support::isalpha(c) }) != 0 {
+// CHECK-NEXT:         2
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     };
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits |= [[V_5]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = if (unsafe { slate_support::isblank(c) }) != 0 {
+// CHECK-NEXT:         4
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     };
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits |= [[V_6]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = if (unsafe { slate_support::iscntrl(c) }) != 0 {
+// CHECK-NEXT:         8
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     };
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits |= [[V_7]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 = if (unsafe { slate_support::isdigit(c) }) != 0 {
+// CHECK-NEXT:         16
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     };
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits |= [[V_8]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = if (unsafe { slate_support::isgraph(c) }) != 0 {
+// CHECK-NEXT:         32
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     };
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits |= [[V_9]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = if (unsafe { slate_support::islower(c) }) != 0 {
+// CHECK-NEXT:         64
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     };
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits |= [[V_10]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: i32 = if (unsafe { slate_support::isprint(c) }) != 0 {
+// CHECK-NEXT:         128
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     };
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits |= [[V_11]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = if (unsafe { slate_support::ispunct(c) }) != 0 {
+// CHECK-NEXT:         256
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     };
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits |= [[V_12]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = if (unsafe { slate_support::isspace(c) }) != 0 {
+// CHECK-NEXT:         512
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     };
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits |= [[V_13]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = if (unsafe { slate_support::isupper(c) }) != 0 {
+// CHECK-NEXT:         1024
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     };
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits |= [[V_14]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     let [[V_15:__v[0-9]+]]: i32 = if (unsafe { slate_support::isxdigit(c) }) != 0 {
+// CHECK-NEXT:         2048
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         0
+// CHECK-NEXT:     };
+// CHECK-NEXT:     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits |= [[V_15]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_os = "linux"))]
+// CHECK-NEXT:     let [[V_1]]: i32 = bits;
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_env = "musl"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits = [[V_1]]
+// CHECK-NEXT:             | if (unsafe { slate_support::isalnum(c) }) != 0 {
 // CHECK-NEXT:                 1
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits = [[V_1]]
+// CHECK-NEXT:             | if (unsafe { slate_support::isalnum(c as i32) }) != 0 {
+// CHECK-NEXT:                 1
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 0
+// CHECK-NEXT:             };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_os = "linux"))]
 // CHECK-NEXT:     let [[V_2]]: i32 = bits;
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_env = "musl"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits = [[V_2]]
+// CHECK-NEXT:             | if (unsafe { slate_support::isalpha(c) }) != 0 {
+// CHECK-NEXT:                 2
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 0
+// CHECK-NEXT:             };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         bits = [[V_2]]
@@ -602,17 +740,17 @@ int main(void) {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_env = "musl", target_os = "macos"))]
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_os = "linux"))]
+// CHECK-NEXT:     let [[V_4]]: i32 = bits;
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_env = "musl"))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_0]]
-// CHECK-NEXT:             | if (unsafe { slate_support::isalnum(c) }) != 0 {
-// CHECK-NEXT:                 1
+// CHECK-NEXT:         bits = [[V_4]]
+// CHECK-NEXT:             | if (unsafe { slate_support::isblank(c) }) != 0 {
+// CHECK-NEXT:                 4
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_os = "linux", target_os = "macos"))]
-// CHECK-NEXT:     let [[V_4]]: i32 = bits;
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         bits = [[V_4]]
@@ -622,336 +760,187 @@ int main(void) {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_env = "musl", target_os = "macos"))]
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_os = "linux"))]
+// CHECK-NEXT:     let [[V_3]]: i32 = bits;
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_env = "musl"))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_4]]
-// CHECK-NEXT:             | if (unsafe { slate_support::isalpha(c) }) != 0 {
-// CHECK-NEXT:                 2
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 0
-// CHECK-NEXT:             };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_os = "linux", target_os = "macos"))]
-// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = bits;
-// CHECK-NEXT:     #[cfg(target_env = "gnu")]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_5]]
-// CHECK-NEXT:             | if (unsafe { slate_support::iscntrl(c as i32) }) != 0 {
-// CHECK-NEXT:                 8
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 0
-// CHECK-NEXT:             };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_env = "musl", target_os = "macos"))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_5]]
-// CHECK-NEXT:             | if (unsafe { slate_support::isblank(c) }) != 0 {
-// CHECK-NEXT:                 4
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 0
-// CHECK-NEXT:             };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_os = "linux", target_os = "macos"))]
-// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = bits;
-// CHECK-NEXT:     #[cfg(target_env = "gnu")]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_6]]
-// CHECK-NEXT:             | if (unsafe { slate_support::isdigit(c as i32) }) != 0 {
-// CHECK-NEXT:                 16
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 0
-// CHECK-NEXT:             };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_env = "musl", target_os = "macos"))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_6]]
+// CHECK-NEXT:         bits = [[V_3]]
 // CHECK-NEXT:             | if (unsafe { slate_support::iscntrl(c) }) != 0 {
 // CHECK-NEXT:                 8
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_os = "linux", target_os = "macos"))]
-// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = bits;
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_7]]
-// CHECK-NEXT:             | if (unsafe { slate_support::isgraph(c as i32) }) != 0 {
-// CHECK-NEXT:                 32
+// CHECK-NEXT:         bits = [[V_3]]
+// CHECK-NEXT:             | if (unsafe { slate_support::iscntrl(c as i32) }) != 0 {
+// CHECK-NEXT:                 8
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_env = "musl", target_os = "macos"))]
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_os = "linux"))]
+// CHECK-NEXT:     let [[V_16:__v[0-9]+]]: i32 = bits;
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_env = "musl"))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_7]]
+// CHECK-NEXT:         bits = [[V_16]]
 // CHECK-NEXT:             | if (unsafe { slate_support::isdigit(c) }) != 0 {
 // CHECK-NEXT:                 16
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_os = "linux", target_os = "macos"))]
-// CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 = bits;
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_8]]
-// CHECK-NEXT:             | if (unsafe { slate_support::islower(c as i32) }) != 0 {
-// CHECK-NEXT:                 64
+// CHECK-NEXT:         bits = [[V_16]]
+// CHECK-NEXT:             | if (unsafe { slate_support::isdigit(c as i32) }) != 0 {
+// CHECK-NEXT:                 16
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_env = "musl", target_os = "macos"))]
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_os = "linux"))]
+// CHECK-NEXT:     let [[V_17:__v[0-9]+]]: i32 = bits;
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_env = "musl"))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_8]]
+// CHECK-NEXT:         bits = [[V_17]]
 // CHECK-NEXT:             | if (unsafe { slate_support::isgraph(c) }) != 0 {
 // CHECK-NEXT:                 32
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_os = "linux", target_os = "macos"))]
-// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = bits;
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_9]]
-// CHECK-NEXT:             | if (unsafe { slate_support::isprint(c as i32) }) != 0 {
-// CHECK-NEXT:                 128
+// CHECK-NEXT:         bits = [[V_17]]
+// CHECK-NEXT:             | if (unsafe { slate_support::isgraph(c as i32) }) != 0 {
+// CHECK-NEXT:                 32
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_env = "musl", target_os = "macos"))]
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_os = "linux"))]
+// CHECK-NEXT:     let [[V_18:__v[0-9]+]]: i32 = bits;
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_env = "musl"))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_9]]
+// CHECK-NEXT:         bits = [[V_18]]
 // CHECK-NEXT:             | if (unsafe { slate_support::islower(c) }) != 0 {
 // CHECK-NEXT:                 64
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_os = "linux", target_os = "macos"))]
-// CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = bits;
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_10]]
-// CHECK-NEXT:             | if (unsafe { slate_support::ispunct(c as i32) }) != 0 {
-// CHECK-NEXT:                 256
+// CHECK-NEXT:         bits = [[V_18]]
+// CHECK-NEXT:             | if (unsafe { slate_support::islower(c as i32) }) != 0 {
+// CHECK-NEXT:                 64
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_env = "musl", target_os = "macos"))]
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_os = "linux"))]
+// CHECK-NEXT:     let [[V_19:__v[0-9]+]]: i32 = bits;
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_env = "musl"))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_10]]
+// CHECK-NEXT:         bits = [[V_19]]
 // CHECK-NEXT:             | if (unsafe { slate_support::isprint(c) }) != 0 {
 // CHECK-NEXT:                 128
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_os = "linux", target_os = "macos"))]
-// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: i32 = bits;
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_11]]
-// CHECK-NEXT:             | if (unsafe { slate_support::isspace(c as i32) }) != 0 {
-// CHECK-NEXT:                 512
+// CHECK-NEXT:         bits = [[V_19]]
+// CHECK-NEXT:             | if (unsafe { slate_support::isprint(c as i32) }) != 0 {
+// CHECK-NEXT:                 128
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_env = "musl", target_os = "macos"))]
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_os = "linux"))]
+// CHECK-NEXT:     let [[V_20:__v[0-9]+]]: i32 = bits;
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_env = "musl"))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_11]]
+// CHECK-NEXT:         bits = [[V_20]]
 // CHECK-NEXT:             | if (unsafe { slate_support::ispunct(c) }) != 0 {
 // CHECK-NEXT:                 256
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(target_env = "musl")]
-// CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = if __isspace(c) != 0 { 512 } else { 0 };
-// CHECK-NEXT:     #[cfg(target_env = "musl")]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits |= [[V_12]];
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_os = "linux", target_os = "macos"))]
-// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = bits;
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_13]]
-// CHECK-NEXT:             | if (unsafe { slate_support::isupper(c as i32) }) != 0 {
-// CHECK-NEXT:                 1024
+// CHECK-NEXT:         bits = [[V_20]]
+// CHECK-NEXT:             | if (unsafe { slate_support::ispunct(c as i32) }) != 0 {
+// CHECK-NEXT:                 256
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_env = "gnu"))]
+// CHECK-NEXT:     let [[V_21:__v[0-9]+]]: i32 = bits;
 // CHECK-NEXT:     #[cfg(target_os = "macos")]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_13]]
+// CHECK-NEXT:         bits = [[V_21]]
 // CHECK-NEXT:             | if (unsafe { slate_support::isspace(c) }) != 0 {
 // CHECK-NEXT:                 512
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(target_os = "macos")]
-// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = bits;
-// CHECK-NEXT:     #[cfg(target_env = "musl")]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_13]]
-// CHECK-NEXT:             | if (unsafe { slate_support::isupper(c) }) != 0 {
-// CHECK-NEXT:                 1024
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 0
-// CHECK-NEXT:             };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(target_os = "macos")]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_14]]
-// CHECK-NEXT:             | if (unsafe { slate_support::isupper(c) }) != 0 {
-// CHECK-NEXT:                 1024
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 0
-// CHECK-NEXT:             };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_os = "linux", target_os = "macos"))]
-// CHECK-NEXT:     let [[V_15:__v[0-9]+]]: i32 = bits;
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_15]]
-// CHECK-NEXT:             | if (unsafe { slate_support::isxdigit(c as i32) }) != 0 {
+// CHECK-NEXT:         bits = [[V_21]]
+// CHECK-NEXT:             | if (unsafe { slate_support::isspace(c as i32) }) != 0 {
+// CHECK-NEXT:                 512
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 0
+// CHECK-NEXT:             };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(target_env = "musl")]
+// CHECK-NEXT:     let [[V_22:__v[0-9]+]]: i32 = if __isspace(c) != 0 { 512 } else { 0 };
+// CHECK-NEXT:     #[cfg(target_env = "musl")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits |= [[V_22]];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_os = "linux"))]
+// CHECK-NEXT:     let [[V_23:__v[0-9]+]]: i32 = bits;
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_env = "musl"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits = [[V_23]]
+// CHECK-NEXT:             | if (unsafe { slate_support::isupper(c) }) != 0 {
+// CHECK-NEXT:                 1024
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 0
+// CHECK-NEXT:             };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(target_env = "gnu")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits = [[V_23]]
+// CHECK-NEXT:             | if (unsafe { slate_support::isupper(c as i32) }) != 0 {
+// CHECK-NEXT:                 1024
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 0
+// CHECK-NEXT:             };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_os = "linux"))]
+// CHECK-NEXT:     let [[V_24:__v[0-9]+]]: i32 = bits;
+// CHECK-NEXT:     #[cfg(any(target_os = "macos", target_env = "musl"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits = [[V_24]]
+// CHECK-NEXT:             | if (unsafe { slate_support::isxdigit(c) }) != 0 {
 // CHECK-NEXT:                 2048
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
 // CHECK-NEXT:             };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     let [[V_1]]: i32 = if (unsafe { slate_support::isalnum(c) }) != 0 {
-// CHECK-NEXT:         1
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     };
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+// CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         bits |= [[V_1]];
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     let [[V_16:__v[0-9]+]]: i32 = if (unsafe { slate_support::isalpha(c) }) != 0 {
-// CHECK-NEXT:         2
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     };
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits |= [[V_16]];
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     let [[V_3]]: i32 = if (unsafe { slate_support::isblank(c) }) != 0 {
-// CHECK-NEXT:         4
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     };
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits |= [[V_3]];
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     let [[V_17:__v[0-9]+]]: i32 = if (unsafe { slate_support::iscntrl(c) }) != 0 {
-// CHECK-NEXT:         8
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     };
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits |= [[V_17]];
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     let [[V_18:__v[0-9]+]]: i32 = if (unsafe { slate_support::isdigit(c) }) != 0 {
-// CHECK-NEXT:         16
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     };
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits |= [[V_18]];
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     let [[V_19:__v[0-9]+]]: i32 = if (unsafe { slate_support::isgraph(c) }) != 0 {
-// CHECK-NEXT:         32
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     };
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits |= [[V_19]];
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     let [[V_20:__v[0-9]+]]: i32 = if (unsafe { slate_support::islower(c) }) != 0 {
-// CHECK-NEXT:         64
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     };
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits |= [[V_20]];
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     let [[V_21:__v[0-9]+]]: i32 = if (unsafe { slate_support::isprint(c) }) != 0 {
-// CHECK-NEXT:         128
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     };
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits |= [[V_21]];
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     let [[V_22:__v[0-9]+]]: i32 = if (unsafe { slate_support::ispunct(c) }) != 0 {
-// CHECK-NEXT:         256
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     };
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits |= [[V_22]];
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     let [[V_23:__v[0-9]+]]: i32 = if (unsafe { slate_support::isspace(c) }) != 0 {
-// CHECK-NEXT:         512
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     };
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits |= [[V_23]];
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     let [[V_24:__v[0-9]+]]: i32 = if (unsafe { slate_support::isupper(c) }) != 0 {
-// CHECK-NEXT:         1024
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     };
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits |= [[V_24]];
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     let [[V_25:__v[0-9]+]]: i32 = if (unsafe { slate_support::isxdigit(c) }) != 0 {
-// CHECK-NEXT:         2048
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     };
-// CHECK-NEXT:     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits |= [[V_25]];
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(target_env = "musl", target_os = "macos"))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits = [[V_15]]
-// CHECK-NEXT:             | if (unsafe { slate_support::isxdigit(c) }) != 0 {
+// CHECK-NEXT:         bits = [[V_24]]
+// CHECK-NEXT:             | if (unsafe { slate_support::isxdigit(c as i32) }) != 0 {
 // CHECK-NEXT:                 2048
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0
