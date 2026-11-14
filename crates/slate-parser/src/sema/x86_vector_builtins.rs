@@ -1,4 +1,4 @@
-use super::builtins::Expansion;
+use super::builtins::{Expansion, MaskOp, Passthrough};
 use super::ctype::QualType;
 use super::expression::Lowerer;
 use super::numeric::{ResolveError, conversion};
@@ -6,7 +6,7 @@ use super::operand::Operand;
 use super::vector_builtins::LoweredCall;
 use crate::ast::Expr;
 use crate::ir::*;
-use num_bigint::BigInt;
+use num_bigint::{BigInt, BigUint};
 
 type Captures = Vec<(BindingId, Value)>;
 
@@ -174,7 +174,7 @@ impl Lowerer {
                 };
                 self.captured(e, captures, value)
             }
-            Expansion::CompareMask => {
+            Expansion::CompareMask { integer } => {
                 let (Some(lanes), Some(predicate)) = (
                     arguments.first().and_then(|vector| lanes_of(&vector.ty)),
                     immediate(2),
@@ -197,7 +197,12 @@ impl Lowerer {
                     });
                 let mut captures = Vec::new();
                 let (left, right) = self.bind_pair(signature, vec![left, right], &mut captures)?;
-                let mask = self.predicate_mask(e, predicate, &left, &right)?;
+                let mask = match integer {
+                    Some(unsigned) => {
+                        self.integer_predicate_mask(e, predicate, &left, &right, unsigned)?
+                    }
+                    None => self.predicate_mask(e, predicate, &left, &right)?,
+                };
                 let bits = self.value(
                     e,
                     result.clone(),
@@ -264,6 +269,238 @@ impl Lowerer {
                     .collect();
                 self.shuffle(e, result, vector, Some(widened), mask)
             }
+            Expansion::ShuffleLanes => {
+                let (Some(lanes), Some(bytes), Some(bits)) =
+                    (lanes_of(&result), byte_count(&result), immediate(2))
+                else {
+                    return Ok(Err((returned, ty, arguments)));
+                };
+                let [left, right, _]: [Value; 3] = arguments
+                    .try_into()
+                    .map_err(|_| ResolveError::Internal("vector shuffle arguments"))?;
+                let group = lanes / (bytes / 16);
+                let mut selector = bits * 0x0101_0101;
+                let mut mask = Vec::new();
+                for first in (0..lanes).step_by(group as usize) {
+                    for lane in 0..group {
+                        let mut index = selector % group;
+                        selector /= group;
+                        if lane >= group / 2 {
+                            index += lanes;
+                        }
+                        mask.push(Some(first + index));
+                    }
+                }
+                self.shuffle(e, result, left, Some(right), mask)
+            }
+            Expansion::AlignBytes => {
+                let (Some(lanes), Some(shift)) = (lanes_of(&result), immediate(2)) else {
+                    return Ok(Err((returned, ty, arguments)));
+                };
+                let mut captures = Vec::new();
+                let (high, low) = self.bind_pair(signature, arguments, &mut captures)?;
+                let value = if shift >= 32 {
+                    self.zero(e, &result)?
+                } else {
+                    let (low, high, shift) = if shift > 16 {
+                        (
+                            self.read_place(e, &high),
+                            self.zero(e, &result)?,
+                            shift - 16,
+                        )
+                    } else {
+                        (self.read_place(e, &low), self.read_place(e, &high), shift)
+                    };
+                    let mask = (0..lanes)
+                        .map(|byte| {
+                            let index = shift + byte % 16;
+                            let index = if index >= 16 {
+                                index + lanes - 16
+                            } else {
+                                index
+                            };
+                            Some(index + byte / 16 * 16)
+                        })
+                        .collect();
+                    self.shuffle(e, result, low, Some(high), mask)
+                };
+                self.captured(e, captures, value)
+            }
+            Expansion::PermuteHalves => {
+                let (Some(lanes), Some(bits)) = (lanes_of(&result), immediate(2)) else {
+                    return Ok(Err((returned, ty, arguments)));
+                };
+                let mut captures = Vec::new();
+                let (left, right) = self.bind_pair(signature, arguments, &mut captures)?;
+                let half = lanes / 2;
+                let mut sources = Vec::new();
+                let mut mask = Vec::new();
+                for part in 0..2 {
+                    let control = bits >> (part * 4);
+                    let source = if control & 8 != 0 {
+                        self.zero(e, &result)?
+                    } else if control & 2 != 0 {
+                        self.read_place(e, &right)
+                    } else {
+                        self.read_place(e, &left)
+                    };
+                    sources.push(source);
+                    let offset = if control & 1 != 0 { half } else { 0 };
+                    mask.extend((0..half).map(|lane| Some(part * lanes + offset + lane)));
+                }
+                let [low, high]: [Value; 2] = sources
+                    .try_into()
+                    .map_err(|_| ResolveError::Internal("half permute sources"))?;
+                let value = self.shuffle(e, result, low, Some(high), mask);
+                self.captured(e, captures, value)
+            }
+            Expansion::MaskedFmaddSub(passthrough) => {
+                let name = match &result {
+                    Type::Vector {
+                        element: NumericType::Float(FloatType::F64),
+                        ..
+                    } => "llvm.x86.avx512.vfmaddsub.pd.512",
+                    Type::Vector {
+                        element: NumericType::Float(FloatType::F32),
+                        ..
+                    } => "llvm.x86.avx512.vfmaddsub.ps.512",
+                    _ => return Ok(Err((returned, ty, arguments))),
+                };
+                let [a, b, c, enabled, rounding]: [Value; 5] = arguments
+                    .try_into()
+                    .map_err(|_| ResolveError::Internal("masked fmaddsub arguments"))?;
+                let mut captures = Vec::new();
+                let places = self.bind_all(signature, vec![a, b, c], &mut captures)?;
+                let mut operands: Vec<Value> = places
+                    .iter()
+                    .map(|place| self.read_place(e, place))
+                    .collect();
+                operands.push(rounding);
+                let fused = self.value(e, result.clone(), intrinsic(name, operands));
+                let kept = match passthrough {
+                    Passthrough::First => self.read_place(e, &places[0]),
+                    Passthrough::Zero => self.zero(e, &result)?,
+                    Passthrough::Third => self.read_place(e, &places[2]),
+                };
+                let value = self.value(
+                    e,
+                    result,
+                    intrinsic("slate.vector_select", vec![enabled, fused, kept]),
+                );
+                self.captured(e, captures, value)
+            }
+            Expansion::ShuffleWords { high } => {
+                let (Some(lanes), Some(bits)) = (lanes_of(&result), immediate(1)) else {
+                    return Ok(Err((returned, ty, arguments)));
+                };
+                let vector = arguments
+                    .into_iter()
+                    .next()
+                    .ok_or(ResolveError::Internal("word shuffle operand"))?;
+                let mask = (0..lanes)
+                    .map(|lane| {
+                        let (group, offset) = (lane / 8 * 8, lane % 8);
+                        Some(if (offset >= 4) == high {
+                            group + offset / 4 * 4 + (bits >> (2 * (offset % 4)) & 3)
+                        } else {
+                            lane
+                        })
+                    })
+                    .collect();
+                self.shuffle(e, result, vector, None, mask)
+            }
+            Expansion::PermutePairs => {
+                let (Some(lanes), Some(bits)) = (lanes_of(&result), immediate(1)) else {
+                    return Ok(Err((returned, ty, arguments)));
+                };
+                let vector = arguments
+                    .into_iter()
+                    .next()
+                    .ok_or(ResolveError::Internal("pair permute operand"))?;
+                let mask = (0..lanes)
+                    .map(|lane| Some(lane / 2 * 2 + (bits >> (lane % 8) & 1)))
+                    .collect();
+                self.shuffle(e, result, vector, None, mask)
+            }
+            Expansion::MaskLogic(op) => {
+                let Type::Numeric(NumericType::Integer { width, .. }) = result else {
+                    return Ok(Err((returned, ty, arguments)));
+                };
+                let shift = immediate(1);
+                let mut operands = arguments.into_iter();
+                let (Some(left), second) = (operands.next(), operands.next()) else {
+                    return Err(ResolveError::Internal("mask operation operands"));
+                };
+                let require =
+                    |value: Option<Value>| value.ok_or(ResolveError::Internal("mask operand"));
+                match op {
+                    MaskOp::And => self.bitwise(e, ArithOp::And, left, require(second)?),
+                    MaskOp::AndNot => {
+                        let inverted = self.not(e, left);
+                        self.bitwise(e, ArithOp::And, inverted, require(second)?)
+                    }
+                    MaskOp::Or => self.bitwise(e, ArithOp::Or, left, require(second)?),
+                    MaskOp::Xor => self.bitwise(e, ArithOp::Xor, left, require(second)?),
+                    MaskOp::Xnor => {
+                        let difference = self.bitwise(e, ArithOp::Xor, left, require(second)?);
+                        self.not(e, difference)
+                    }
+                    MaskOp::Not => self.not(e, left),
+                    MaskOp::Move => left,
+                    MaskOp::Add => self.value(
+                        e,
+                        result,
+                        ValueKind::Arith {
+                            op: ArithOp::Add,
+                            left: Box::new(left),
+                            right: Box::new(require(second)?),
+                            semantics: ArithSema::Integer {
+                                overflow: Overflow::Wrap,
+                            },
+                        },
+                    ),
+                    MaskOp::Unpack => {
+                        let half = width / 2;
+                        let low =
+                            self.mask_constant(e, &result, (BigUint::from(1u32) << half) - 1u32);
+                        let low = self.bitwise(e, ArithOp::And, require(second)?, low);
+                        let high = self.mask_shift(e, ArithOp::Shl, left, half);
+                        self.bitwise(e, ArithOp::Or, high, low)
+                    }
+                    MaskOp::ShiftLeft | MaskOp::ShiftRight => {
+                        let Some(shift) = shift else {
+                            let mut arguments = vec![left];
+                            arguments.extend(second);
+                            return Ok(Err((returned, ty, arguments)));
+                        };
+                        if shift >= width {
+                            let zero = self.zero(e, &result)?;
+                            if super::effects::has_effects(&left) {
+                                self.value(
+                                    e,
+                                    result,
+                                    ValueKind::Sequence {
+                                        left: Box::new(left),
+                                        right: Box::new(zero),
+                                    },
+                                )
+                            } else {
+                                zero
+                            }
+                        } else {
+                            let op = if op == MaskOp::ShiftLeft {
+                                ArithOp::Shl
+                            } else {
+                                ArithOp::Shr
+                            };
+                            self.mask_shift(e, op, left, shift)
+                        }
+                    }
+                }
+            }
+            Expansion::MaskedStore => {
+                self.value(e, result, intrinsic("slate.masked_store", arguments))
+            }
             _ => return Err(ResolveError::Internal("x86 vector expansion")),
         };
         Ok(Ok(Operand { c: returned, value }))
@@ -275,36 +512,94 @@ impl Lowerer {
         arguments: Vec<Value>,
         captures: &mut Captures,
     ) -> Result<(Place, Place), ResolveError> {
+        let mut places = self
+            .bind_all(signature, arguments.into_iter().take(2).collect(), captures)?
+            .into_iter();
+        match (places.next(), places.next()) {
+            (Some(left), Some(right)) => Ok((left, right)),
+            _ => Err(ResolveError::Internal("vector operand pair")),
+        }
+    }
+
+    fn bind_all(
+        &mut self,
+        signature: QualType,
+        arguments: Vec<Value>,
+        captures: &mut Captures,
+    ) -> Result<Vec<Place>, ResolveError> {
         let parameters = self
             .types
             .ctypes
             .function_parts(signature)
             .map(|(_, params, _, _)| params.to_vec())
             .unwrap_or_default();
-        let mut arguments = arguments.into_iter();
-        let (Some(&left_c), Some(&right_c), Some(left), Some(right)) = (
-            parameters.first(),
-            parameters.get(1),
-            arguments.next(),
-            arguments.next(),
-        ) else {
-            return Err(ResolveError::Internal("vector compare operands"));
+        if parameters.len() < arguments.len() {
+            return Err(ResolveError::Internal("vector builtin operands"));
+        }
+        Ok(parameters
+            .into_iter()
+            .zip(arguments)
+            .map(|(c, value)| self.bind_once(Operand { c, value }, captures))
+            .collect())
+    }
+
+    fn integer_predicate_mask(
+        &mut self,
+        e: &Expr,
+        predicate: u32,
+        left: &Place,
+        right: &Place,
+        unsigned: bool,
+    ) -> Result<Value, ResolveError> {
+        let Type::Vector {
+            element: NumericType::Integer { width, .. },
+            lanes,
+        } = left.ty
+        else {
+            return Err(ResolveError::Internal("integer vector compare operand"));
         };
-        let left = self.bind_once(
-            Operand {
-                c: left_c,
-                value: left,
+        let operand = Type::Vector {
+            element: NumericType::integer(width, !unsigned),
+            lanes,
+        };
+        let mask = Type::Vector {
+            element: NumericType::integer(width, true),
+            lanes,
+        };
+        let op = match predicate & 7 {
+            0 => CompareOp::Eq,
+            1 => CompareOp::Lt,
+            2 => CompareOp::Le,
+            3 => return self.zero(e, &mask),
+            4 => CompareOp::Ne,
+            5 => CompareOp::Ge,
+            6 => CompareOp::Gt,
+            _ => {
+                let zero = self.zero(e, &mask)?;
+                return Ok(self.not(e, zero));
+            }
+        };
+        let read = |this: &mut Self, place: &Place| {
+            let value = this.read_place(e, place);
+            if value.ty == operand {
+                Ok(value)
+            } else {
+                this.context
+                    .vector_convert(value, operand.clone(), ConversionReason::Explicit)
+            }
+        };
+        let (x, y) = (read(self, left)?, read(self, right)?);
+        Ok(self.value(
+            e,
+            mask,
+            ValueKind::Compare {
+                op,
+                left: Box::new(x),
+                right: Box::new(y),
+                exceptions: None,
+                reason: None,
             },
-            captures,
-        );
-        let right = self.bind_once(
-            Operand {
-                c: right_c,
-                value: right,
-            },
-            captures,
-        );
-        Ok((left, right))
+        ))
     }
 
     fn predicate_mask(
@@ -454,6 +749,37 @@ impl Lowerer {
                 left: Box::new(left),
                 right: right.map(Box::new),
                 mask: ShuffleMask::Lanes(lanes),
+            },
+        )
+    }
+
+    fn mask_constant(&mut self, e: &Expr, ty: &Type, value: BigUint) -> Value {
+        self.value(e, ty.clone(), ValueKind::Constant(Number::Integer(value)))
+    }
+
+    fn mask_shift(&mut self, e: &Expr, op: ArithOp, value: Value, amount: u32) -> Value {
+        let ty = value.ty.clone();
+        let amount = self.mask_constant(e, &ty, amount.into());
+        let semantics = if op == ArithOp::Shl {
+            ArithSema::ShiftLeft {
+                overflow: Overflow::Wrap,
+                amount_out_of_range: UbPolicy::Undefined,
+                negative_left: None,
+            }
+        } else {
+            ArithSema::ShiftRight {
+                fill: ShiftFill::ZeroExtend,
+                amount_out_of_range: UbPolicy::Undefined,
+            }
+        };
+        self.value(
+            e,
+            ty,
+            ValueKind::Arith {
+                op,
+                left: Box::new(value),
+                right: Box::new(amount),
+                semantics,
             },
         )
     }

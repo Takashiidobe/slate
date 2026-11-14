@@ -444,9 +444,14 @@ impl FunctionLowerer<'_, '_> {
             return Err(unsupported_value(value));
         };
         let (
-            ir::Type::Vector {
-                element: ir::NumericType::Integer { signed: true, .. },
-                ..
+            &ir::Type::Vector {
+                element:
+                    ir::NumericType::Integer {
+                        signed: true,
+                        width,
+                        ..
+                    },
+                lanes,
             },
             ir::Type::Numeric(ir::NumericType::Integer { .. }),
         ) = (
@@ -464,7 +469,9 @@ impl FunctionLowerer<'_, '_> {
             args: vec![
                 self.lower_value(vector)?,
                 Expr::Call {
-                    func: Box::new(Expr::Var("std::simd::Simd::default".into())),
+                    func: Box::new(Expr::Var(
+                        format!("std::simd::Simd::<i{width}, {lanes}>::default").into(),
+                    )),
                     args: vec![],
                     binding: CallBinding::Generated,
                 },
@@ -489,11 +496,55 @@ impl FunctionLowerer<'_, '_> {
         let [pointer, passthrough, mask] = arguments else {
             return Err(unsupported_value(value));
         };
+        let (enable, lane) = self.lane_enable(value, &value.ty, mask)?;
+        let pointer = Expr::Cast {
+            expr: Box::new(self.lower_value(pointer)?),
+            ty: rust::Type::Ptr {
+                mutable: false,
+                inner: Box::new(lane),
+            },
+        };
+        Ok(Expr::Call {
+            func: Box::new(Expr::Var("std::simd::Simd::load_select_ptr".into())),
+            args: vec![pointer, enable, self.lower_value(passthrough)?],
+            binding: CallBinding::Generated,
+        })
+    }
+
+    pub(super) fn lower_masked_store(
+        &mut self,
+        value: &ir::Value,
+        arguments: &[ir::Value],
+    ) -> Result<Expr> {
+        let [pointer, vector, mask] = arguments else {
+            return Err(unsupported_value(value));
+        };
+        let (enable, lane) = self.lane_enable(value, &vector.ty, mask)?;
+        let pointer = Expr::Cast {
+            expr: Box::new(self.lower_value(pointer)?),
+            ty: rust::Type::Ptr {
+                mutable: true,
+                inner: Box::new(lane),
+            },
+        };
+        Ok(Expr::Call {
+            func: Box::new(Expr::Var("std::simd::Simd::store_select_ptr".into())),
+            args: vec![self.lower_value(vector)?, pointer, enable],
+            binding: CallBinding::Generated,
+        })
+    }
+
+    fn lane_enable(
+        &mut self,
+        value: &ir::Value,
+        vector: &ir::Type,
+        mask: &ir::Value,
+    ) -> Result<(Expr, rust::Type)> {
         let (
             ir::Type::Vector { element, lanes },
             ir::Type::Numeric(ir::NumericType::Integer { width, .. }),
         ) = (
-            self.tables.resolve_type(&value.ty).clone(),
+            self.tables.resolve_type(vector).clone(),
             self.tables.resolve_type(&mask.ty).clone(),
         )
         else {
@@ -512,7 +563,7 @@ impl FunctionLowerer<'_, '_> {
             64 => Prim::U64,
             _ => return Err(unsupported_value(value)),
         };
-        let vector_type = self.lower_type(&value.ty)?;
+        let vector_type = self.lower_type(vector)?;
         if !matches!(lane_width, 8 | 16 | 32 | 64) || is_slate_vector(&vector_type) {
             return Err(unsupported_value(value));
         }
@@ -531,17 +582,6 @@ impl FunctionLowerer<'_, '_> {
             args: vec![bits],
             binding: CallBinding::Generated,
         };
-        let pointer = Expr::Cast {
-            expr: Box::new(self.lower_value(pointer)?),
-            ty: rust::Type::Ptr {
-                mutable: false,
-                inner: Box::new(lane),
-            },
-        };
-        Ok(Expr::Call {
-            func: Box::new(Expr::Var("std::simd::Simd::load_select_ptr".into())),
-            args: vec![pointer, enable, self.lower_value(passthrough)?],
-            binding: CallBinding::Generated,
-        })
+        Ok((enable, lane))
     }
 }

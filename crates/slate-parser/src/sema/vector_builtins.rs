@@ -52,11 +52,19 @@ impl Lowerer {
             | Expansion::PermuteQuads
             | Expansion::ByteShift { .. }
             | Expansion::Compare { .. }
-            | Expansion::CompareMask
+            | Expansion::CompareMask { .. }
             | Expansion::MaskToVector
             | Expansion::VectorToMask
             | Expansion::MaskedLoad
-            | Expansion::InsertSubvector => {
+            | Expansion::InsertSubvector
+            | Expansion::ShuffleLanes
+            | Expansion::AlignBytes
+            | Expansion::PermuteHalves
+            | Expansion::MaskedFmaddSub(_)
+            | Expansion::MaskedStore
+            | Expansion::ShuffleWords { .. }
+            | Expansion::PermutePairs
+            | Expansion::MaskLogic(_) => {
                 return self.expand_x86_vector(e, expansion, signature, (returned, ty, arguments));
             }
             Expansion::Ms {

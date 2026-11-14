@@ -2025,6 +2025,9 @@ impl FunctionLowerer<'_, '_> {
             ValueKind::Intrinsic { name, arguments } if name == "slate.masked_load" => {
                 self.lower_masked_load(value, arguments)?
             }
+            ValueKind::Intrinsic { name, arguments } if name == "slate.masked_store" => {
+                self.lower_masked_store(value, arguments)?
+            }
             ValueKind::Intrinsic { name, arguments } => {
                 let intrinsic = intrinsics::named_intrinsic(self.tables.target.family, name)
                     .ok_or_else(|| unsupported_value(value))?;

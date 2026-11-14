@@ -1319,7 +1319,7 @@ int main(void) {
 // CHECK-NEXT:                     std::simd::Simd<i8, 64>,
 // CHECK-NEXT:                 >(__A)
 // CHECK-NEXT:             },
-// CHECK-NEXT:             std::simd::Simd::default(),
+// CHECK-NEXT:             std::simd::Simd::<i8, 64>::default(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .to_bitmask() as u64
 // CHECK-NEXT: }
@@ -1362,7 +1362,7 @@ int main(void) {
 // CHECK-NEXT:                     std::simd::Simd<i32, 4>,
 // CHECK-NEXT:                 >(__A)
 // CHECK-NEXT:             },
-// CHECK-NEXT:             std::simd::Simd::default(),
+// CHECK-NEXT:             std::simd::Simd::<i32, 4>::default(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .to_bitmask() as u8
 // CHECK-NEXT: }
@@ -2620,7 +2620,7 @@ int main(void) {
 // CHECK-NEXT:                         );
 // CHECK-NEXT:                         [[T_4]]
 // CHECK-NEXT:                     },
-// CHECK-NEXT:                     std::simd::Simd::default(),
+// CHECK-NEXT:                     std::simd::Simd::<i32, 16>::default(),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .to_bitmask() as u16) as u32,
 // CHECK-NEXT:         )
@@ -2657,7 +2657,7 @@ int main(void) {
 // CHECK-NEXT:                             );
 // CHECK-NEXT:                             [[T_14]]
 // CHECK-NEXT:                         },
-// CHECK-NEXT:                     std::simd::Simd::default(),
+// CHECK-NEXT:                     std::simd::Simd::<i32, 16>::default(),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .to_bitmask() as u16) as u32,
 // CHECK-NEXT:         )
@@ -2682,7 +2682,7 @@ int main(void) {
 // CHECK-NEXT:                         );
 // CHECK-NEXT:                         [[T_19]]
 // CHECK-NEXT:                     },
-// CHECK-NEXT:                     std::simd::Simd::default(),
+// CHECK-NEXT:                     std::simd::Simd::<i32, 16>::default(),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .to_bitmask() as u16) as u32,
 // CHECK-NEXT:         )
@@ -2707,7 +2707,7 @@ int main(void) {
 // CHECK-NEXT:                         );
 // CHECK-NEXT:                         [[T_24]]
 // CHECK-NEXT:                     },
-// CHECK-NEXT:                     std::simd::Simd::default(),
+// CHECK-NEXT:                     std::simd::Simd::<i32, 16>::default(),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .to_bitmask() as u16) & 23130) as u32,
 // CHECK-NEXT:         )

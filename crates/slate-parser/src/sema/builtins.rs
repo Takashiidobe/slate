@@ -436,15 +436,49 @@ pub(super) enum Expansion {
         predicate: Option<u8>,
         scalar: bool,
     },
-    CompareMask,
+    CompareMask {
+        integer: Option<bool>,
+    },
     MaskToVector,
     VectorToMask,
     MaskedLoad,
     InsertSubvector,
+    ShuffleLanes,
+    AlignBytes,
+    PermuteHalves,
+    MaskedFmaddSub(Passthrough),
+    MaskedStore,
+    ShuffleWords {
+        high: bool,
+    },
+    PermutePairs,
+    MaskLogic(MaskOp),
     Ms {
         intrinsic: MsIntrinsic,
         ordering: MsOrdering,
     },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum MaskOp {
+    And,
+    AndNot,
+    Or,
+    Xor,
+    Xnor,
+    Not,
+    Move,
+    Add,
+    Unpack,
+    ShiftLeft,
+    ShiftRight,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum Passthrough {
+    First,
+    Zero,
+    Third,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -500,7 +534,27 @@ pub(super) fn expansion(builtin: &ClangBuiltin) -> Option<Expansion> {
         | "selectw_512" | "selectd_128" | "selectd_256" | "selectd_512" | "selectq_128"
         | "selectq_256" | "selectq_512" | "selectps_128" | "selectps_256" | "selectps_512"
         | "selectpd_128" | "selectpd_256" | "selectpd_512" => Expansion::LaneSelect,
-        "pshufd" | "pshufd256" | "pshufd512" => Expansion::ShuffleDwords,
+        "pshufd" | "pshufd256" | "pshufd512" | "vpermilps" | "vpermilps256" | "vpermilps512" => {
+            Expansion::ShuffleDwords
+        }
+        "vpermilpd" | "vpermilpd256" | "vpermilpd512" => Expansion::PermutePairs,
+        "pshuflw" | "pshuflw256" | "pshuflw512" => Expansion::ShuffleWords { high: false },
+        "pshufhw" | "pshufhw256" | "pshufhw512" => Expansion::ShuffleWords { high: true },
+        "kandqi" | "kandhi" | "kandsi" | "kanddi" => Expansion::MaskLogic(MaskOp::And),
+        "kandnqi" | "kandnhi" | "kandnsi" | "kandndi" => Expansion::MaskLogic(MaskOp::AndNot),
+        "korqi" | "korhi" | "korsi" | "kordi" => Expansion::MaskLogic(MaskOp::Or),
+        "kxorqi" | "kxorhi" | "kxorsi" | "kxordi" => Expansion::MaskLogic(MaskOp::Xor),
+        "kxnorqi" | "kxnorhi" | "kxnorsi" | "kxnordi" => Expansion::MaskLogic(MaskOp::Xnor),
+        "knotqi" | "knothi" | "knotsi" | "knotdi" => Expansion::MaskLogic(MaskOp::Not),
+        "kmovb" | "kmovw" | "kmovd" | "kmovq" => Expansion::MaskLogic(MaskOp::Move),
+        "kaddqi" | "kaddhi" | "kaddsi" | "kadddi" => Expansion::MaskLogic(MaskOp::Add),
+        "kunpckhi" | "kunpcksi" | "kunpckdi" => Expansion::MaskLogic(MaskOp::Unpack),
+        "kshiftliqi" | "kshiftlihi" | "kshiftlisi" | "kshiftlidi" => {
+            Expansion::MaskLogic(MaskOp::ShiftLeft)
+        }
+        "kshiftriqi" | "kshiftrihi" | "kshiftrisi" | "kshiftridi" => {
+            Expansion::MaskLogic(MaskOp::ShiftRight)
+        }
         "pmuludq128" | "pmuludq256" | "pmuludq512" => Expansion::WidenMultiply { signed: false },
         "pmuldq128" | "pmuldq256" | "pmuldq512" => Expansion::WidenMultiply { signed: true },
         "reduce_fadd_ps512" | "reduce_fadd_pd512" => Expansion::FloatReduce(ArithOp::Add),
@@ -532,7 +586,68 @@ pub(super) fn expansion(builtin: &ClangBuiltin) -> Option<Expansion> {
             scalar: true,
         },
         "cmpps128_mask" | "cmppd128_mask" | "cmpps256_mask" | "cmppd256_mask" | "cmpps512_mask"
-        | "cmppd512_mask" => Expansion::CompareMask,
+        | "cmppd512_mask" => Expansion::CompareMask { integer: None },
+        "cmpb128_mask" | "cmpb256_mask" | "cmpb512_mask" | "cmpw128_mask" | "cmpw256_mask"
+        | "cmpw512_mask" | "cmpd128_mask" | "cmpd256_mask" | "cmpd512_mask" | "cmpq128_mask"
+        | "cmpq256_mask" | "cmpq512_mask" => Expansion::CompareMask {
+            integer: Some(false),
+        },
+        "ucmpb128_mask" | "ucmpb256_mask" | "ucmpb512_mask" | "ucmpw128_mask" | "ucmpw256_mask"
+        | "ucmpw512_mask" | "ucmpd128_mask" | "ucmpd256_mask" | "ucmpd512_mask"
+        | "ucmpq128_mask" | "ucmpq256_mask" | "ucmpq512_mask" => Expansion::CompareMask {
+            integer: Some(true),
+        },
+        "shufps" | "shufpd" | "shufps256" | "shufpd256" | "shufps512" | "shufpd512" => {
+            Expansion::ShuffleLanes
+        }
+        "palignr128" | "palignr256" | "palignr512" => Expansion::AlignBytes,
+        "permti256" | "vperm2f128_pd256" | "vperm2f128_ps256" | "vperm2f128_si256" => {
+            Expansion::PermuteHalves
+        }
+        "vfmaddsubpd512_mask" | "vfmaddsubps512_mask" => {
+            Expansion::MaskedFmaddSub(Passthrough::First)
+        }
+        "vfmaddsubpd512_maskz" | "vfmaddsubps512_maskz" => {
+            Expansion::MaskedFmaddSub(Passthrough::Zero)
+        }
+        "vfmaddsubpd512_mask3" | "vfmaddsubps512_mask3" => {
+            Expansion::MaskedFmaddSub(Passthrough::Third)
+        }
+        "storedquqi128_mask" | "storedquqi256_mask" | "storedquqi512_mask"
+        | "storedquhi128_mask" | "storedquhi256_mask" | "storedquhi512_mask"
+        | "storedqusi128_mask" | "storedqusi256_mask" | "storedqusi512_mask"
+        | "storedqudi128_mask" | "storedqudi256_mask" | "storedqudi512_mask"
+        | "storeups128_mask" | "storeups256_mask" | "storeups512_mask" | "storeupd128_mask"
+        | "storeupd256_mask" | "storeupd512_mask" => Expansion::MaskedStore,
+        "roundps" => Expansion::Intrinsic("llvm.x86.sse41.round.ps"),
+        "roundpd" => Expansion::Intrinsic("llvm.x86.sse41.round.pd"),
+        "roundss" => Expansion::Intrinsic("llvm.x86.sse41.round.ss"),
+        "roundsd" => Expansion::Intrinsic("llvm.x86.sse41.round.sd"),
+        "roundps256" => Expansion::Intrinsic("llvm.x86.avx.round.ps.256"),
+        "roundpd256" => Expansion::Intrinsic("llvm.x86.avx.round.pd.256"),
+        "vcvtph2ps512_mask" => Expansion::Intrinsic("llvm.x86.avx512.mask.vcvtph2ps.512"),
+        "reduce_fmax_ps512" | "reduce_fmax_pd512" => {
+            Expansion::Intrinsic("llvm.vector.reduce.fmax")
+        }
+        "reduce_fmin_ps512" | "reduce_fmin_pd512" => {
+            Expansion::Intrinsic("llvm.vector.reduce.fmin")
+        }
+        "gathersiv16si" => Expansion::Intrinsic("llvm.x86.avx512.gather.dpi.512"),
+        "gathersiv16sf" => Expansion::Intrinsic("llvm.x86.avx512.gather.dps.512"),
+        "gathersiv8df" => Expansion::Intrinsic("llvm.x86.avx512.gather.dpd.512"),
+        "gathersiv8di" => Expansion::Intrinsic("llvm.x86.avx512.gather.dpq.512"),
+        "gatherdiv16si" => Expansion::Intrinsic("llvm.x86.avx512.gather.qpi.512"),
+        "gatherdiv16sf" => Expansion::Intrinsic("llvm.x86.avx512.gather.qps.512"),
+        "gatherdiv8df" => Expansion::Intrinsic("llvm.x86.avx512.gather.qpd.512"),
+        "gatherdiv8di" => Expansion::Intrinsic("llvm.x86.avx512.gather.qpq.512"),
+        "scattersiv16si" => Expansion::Intrinsic("llvm.x86.avx512.scatter.dpi.512"),
+        "scattersiv16sf" => Expansion::Intrinsic("llvm.x86.avx512.scatter.dps.512"),
+        "scattersiv8df" => Expansion::Intrinsic("llvm.x86.avx512.scatter.dpd.512"),
+        "scattersiv8di" => Expansion::Intrinsic("llvm.x86.avx512.scatter.dpq.512"),
+        "scatterdiv16si" => Expansion::Intrinsic("llvm.x86.avx512.scatter.qpi.512"),
+        "scatterdiv16sf" => Expansion::Intrinsic("llvm.x86.avx512.scatter.qps.512"),
+        "scatterdiv8df" => Expansion::Intrinsic("llvm.x86.avx512.scatter.qpd.512"),
+        "scatterdiv8di" => Expansion::Intrinsic("llvm.x86.avx512.scatter.qpq.512"),
         "cvtmask2b128" | "cvtmask2b256" | "cvtmask2b512" | "cvtmask2w128" | "cvtmask2w256"
         | "cvtmask2w512" | "cvtmask2d128" | "cvtmask2d256" | "cvtmask2d512" | "cvtmask2q128"
         | "cvtmask2q256" | "cvtmask2q512" => Expansion::MaskToVector,

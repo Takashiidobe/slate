@@ -261,8 +261,19 @@ rewrites by hand. Immediates must fold to constants (otherwise the call stays):
 | `cvtmask2{b,w,d,q}*` / `cvt{b,w,d,q}2mask*` | `slate.vector_select(k, splat(-1), 0)` / `slate.vector_sign_bitmask(v)` |
 | `loaddqu{qi,hi,si,di}*_mask`, `loadup{s,d}*_mask` | `slate.masked_load(ptr, passthrough, k)` |
 | `insert128i256`, `vinsertf128_*`, `insert{f,i}{32x4,64x4,32x8,64x2}*` | widen the part by shuffle, then a two-operand shuffle at `imm % parts` |
+| `[u]cmp{b,w,d,q}{128,256,512}_mask` | lane compare (`imm & 7`: eq, lt, le, false, ne, ge, gt, true) on signed or unsigned lanes, `slate.vector_sign_bitmask`, `and` with the mask |
+| `shufp{s,d}[256,512]` | clang's per-128-bit-lane selector: `imm * 0x01010101`, low half of each lane from `a`, high half from `b` |
+| `palignr{128,256,512}` | per-16-byte shuffle of `(b, a)`; shift > 16 shifts `a` against zero, shift >= 32 is zero |
+| `permti256`, `vperm2f128_*` | each 128-bit half from `a`/`b` low/high (`imm >> 4*half`), zero when bit 3 is set |
+| `vfmaddsubp{s,d}512_mask{,z,3}` | `llvm.x86.avx512.vfmaddsub.*.512`, then `slate.vector_select` with `a`, zero or `c` |
+| `storedqu{qi,hi,si,di}*_mask`, `storeup{s,d}*_mask` | `slate.masked_store(ptr, v, k)` |
+| `pshuf{l,h}w[256,512]` | per-8-word shuffle of the low / high four words by 2-bit selectors; the other half unchanged |
+| `vpermilps[256,512]` / `vpermilpd[256,512]` | same lane formula as `pshufd` / lane `i/2*2 + (imm >> i%8 & 1)` |
+| `k{and,andn,or,xor,xnor,not,add,mov}{qi,hi,si,di}`, `kunpck{hi,si,di}`, `kshift{l,r}i*` | integer ops on the mask type (`add` wraps, unpack is `a << w/2 \| b & low`, constant shifts of `>= w` give zero) |
+| `round{ps,pd,ss,sd}[256]`, `vcvtph2ps512_mask`, `reduce_fm{ax,in}_p{s,d}512`, 512-bit gathers and scatters | the matching LLVM intrinsic, arguments unchanged |
 
-Masked stores (`storedqu*_mask`) remain calls.
+Operands used more than once are bound once (`bind_once`), so their side
+effects run exactly once.
 
 ## Atomic operations
 

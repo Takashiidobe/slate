@@ -76,7 +76,8 @@
 - `slate.vector_sign_bitmask(v)` (signed integer lanes) is
   `simd_lt(v, Simd::default()).to_bitmask() as T`; `slate.masked_load(p, w, k)`
   is `Simd::load_select_ptr(p as *const Lane, Mask::from_bitmask(k), w)`, which
-  reads no disabled lane.
+  reads no disabled lane; `slate.masked_store(p, v, k)` is
+  `Simd::store_select_ptr(v, p as *mut Lane, Mask::from_bitmask(k))`.
 - Only default-address-space pointers participate in intrinsic signatures.
 - TableGen aliases cover direct builtin mappings; builtins Clang expands by
   hand expand in sema. Unexpanded ones stay `builtin without a lowering`
