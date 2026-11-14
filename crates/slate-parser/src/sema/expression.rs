@@ -42,6 +42,7 @@ pub(super) struct Lowerer {
     pub in_function: bool,
     pub function_target: Vec<TargetFeature>,
     pub in_naked_function: bool,
+    pub in_constant_initializer: bool,
     pub files: crate::files::Files,
     pub return_type: Option<QualType>,
     pub ms_asm_return: Vec<BindingId>,
@@ -2822,6 +2823,17 @@ impl Lowerer {
             return Ok(value.clone());
         }
         if let ExprKind::Call { callee, arguments } = &e.value {
+            if self.in_constant_initializer
+                && let ExprKind::Identifier(name) = &callee.value
+                && super::builtins::BitBuiltin::of_call(callee, arguments).is_some()
+                && let Ok(folded) = self.types.constant_value(e)
+            {
+                let c = self.result(e)?;
+                let value = self.operand(e, c, folded.value.node.value);
+                self.module
+                    .annotate(&value.node, [("c_builtin".into(), name.clone())]);
+                return Ok(value);
+            }
             if let Some(value) = self.function_like_builtin(e, callee, arguments)? {
                 return Ok(value);
             }

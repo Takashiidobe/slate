@@ -95,6 +95,13 @@ Slate derives from the pointee layout which bytes and bit-field bits are data
 
 Parser: `sema/expression.rs` and `sema/vector_builtins.rs` emit overflow IR;
 `sema/fold.rs` folds constant bit queries and type-generic rotations.
+Inside the initializer of a static or thread-storage object (file scope,
+block-scope `static`, and compound literals nested in it), a call to one of
+these builtins whose arguments are constant lowers to `const<T>(N)`
+annotated `c_builtin`, because gcc and clang constant-evaluate it there.
+Everywhere else, including automatic initializers with constant arguments,
+the call is kept. A result the evaluator rejects (`__builtin_clz(0)`) stays
+a call.
 Retained polymorphic builtin declarations are keyed by name and C signature. Slate: `lowerer/arithmetic.rs` handles
 overflow, `lowerer/values.rs` handles rotations and scalar bit counts, and
 `lowerer/intrinsics.rs` handles mapped bit operations.

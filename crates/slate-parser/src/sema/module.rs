@@ -87,6 +87,7 @@ fn resolve_module(
         switches: Vec::new(),
         in_function: false,
         in_naked_function: false,
+        in_constant_initializer: false,
         files: files.clone(),
         return_type: None,
         ms_asm_return: Vec::new(),
@@ -1669,10 +1670,12 @@ impl Lowerer {
                     let anchor = declarator.derive(());
                     let region = self.context.region;
                     let x87 = self.context.x87;
+                    let in_constant_initializer = self.in_constant_initializer;
                     if storage != StorageDuration::Automatic {
                         self.context.region.floating = FloatingSemantics::default();
                         self.context.region.complex_range = ComplexMethod::Full;
                         self.context.x87 = x87.map(X87Excess::in_constant_initializer);
+                        self.in_constant_initializer = true;
                     }
                     let value = self.initializer_value(
                         declarator.id,
@@ -1682,6 +1685,7 @@ impl Lowerer {
                     );
                     self.context.region = region;
                     self.context.x87 = x87;
+                    self.in_constant_initializer = in_constant_initializer;
                     let mut value = value?;
                     if self.types.flavor().is_msvc()
                         && (global || storage_class == StorageClass::Static)
