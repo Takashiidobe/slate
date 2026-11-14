@@ -1600,6 +1600,7 @@ impl CompilerArgParser {
             None => raw.target.clone(),
         };
         let mut target = TargetInfo::for_triple_and_flavor(&triple, raw.flavor)?;
+        target.code16 = raw.arch_mode == Some(ArchMode::Code16);
         validate_rules(&target).check(&raw)?;
         if target.family == TargetFamily::X86 {
             target.abi.default_regparm = raw.regparm.unwrap_or(0);

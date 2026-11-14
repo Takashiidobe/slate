@@ -1099,6 +1099,9 @@ impl fmt::Display for DisplayModule<'_> {
             "        stack_alignment = {};",
             target.abi.preferred_stack_alignment
         )?;
+        if target.code16 {
+            writeln!(f, "        code16;")?;
+        }
         writeln!(
             f,
             "        long_double = {};",

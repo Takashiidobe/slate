@@ -294,6 +294,11 @@ ABI environment (`TargetEnvironment`) from compiler flavor; the triple never
 selects the flavor. How to add one: [adding-a-target](../adding-a-target.md).
 
 - Linux profiles use GNU, GNU EABI, or GNU EABI hard-float environments.
+- `-m32` and `-m16` retarget x86_64 to i686 (`target_registry::arch_variant`).
+  `-m16` also sets `TargetInfo::code16`, printed `code16;` in the target
+  header: same types, layout, ABI and predefines as `-m32`, but the backend
+  must emit 16-bit real-mode encodings (gcc `.code16gcc`, clang's CODE16
+  triple). `-mx32` is rejected until it has a target.
 - `{x86_64,aarch64,i686,thumbv7a}-pc-windows-msvc`: 32-bit `long`, binary64
   `long double`, unsigned 16-bit `wchar_t`, Microsoft record layout.
   - i686: `long long`/`double` 8-aligned (4 on i686 Linux), 4-byte pointers,

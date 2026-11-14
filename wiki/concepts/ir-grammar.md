@@ -72,6 +72,7 @@ target     = "target" string "{"
                "endian" "=" ( "little" | "big" ) ";"
                "pointer" "[size=" int ", align=" int "]" ";"
                "stack_alignment" "=" int ";"
+               [ "code16" ";" ]
                "long_double" "=" float_type ";"
                { "storage" storage_of "[size=" int ", align=" int "]" ";" }
              "}" ;
@@ -80,6 +81,8 @@ storage_of = "bool" | "i8, u8" | "i16, u16" | "i32, u32" | "i64, u64"
            | "d32" | "d64" | "d128" ;
 ```
 
+- `code16` marks an `-m16` unit: C semantics and layout are the i686 target's,
+  but code must be encoded for 16-bit real mode (gcc's `.code16gcc`).
 - `storage` lines cover every scalar format a module can name (`bool`, standard
   integers, floats, in that order), only for formats the target supports.
   Bit-precise integers, pointers, `va_list`, and composites are derived at the

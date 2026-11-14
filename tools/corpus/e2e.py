@@ -1635,7 +1635,15 @@ def shard_units(units, project_dir, limit):
                            [unit for _, shard in pending for unit in shard]))
         return packed
 
-    shards = split((), linked)
+    def arch_mode(unit):
+        arguments = unit["arguments"] if "arguments" in unit else shlex.split(unit["command"])
+        modes = [argument for argument in arguments if argument in ("-m16", "-m32", "-m64", "-mx32")]
+        return modes[-1].lstrip("-") if modes and modes[-1] != "-m64" else ""
+
+    shards = []
+    for mode in sorted({arch_mode(unit) for unit in linked}):
+        members = [unit for unit in linked if arch_mode(unit) == mode]
+        shards += [((*name, mode) if mode else name, shard) for name, shard in split((), members)]
     shards += [(Path(os.path.relpath(unit["file"], project_dir)).with_suffix("").parts, [unit]) for unit in standalone]
     names = ["_".join(name).replace("-", "_").replace(".", "_") or "root" for name, _ in shards]
     if len(set(names)) != len(names):

@@ -170,6 +170,7 @@ int __attribute__((fastcall)) fast(int a, int b) { return a + b; }
 // M16-NEXT:         endian = little;
 // M16-NEXT:         pointer [size=4, align=4];
 // M16-NEXT:         stack_alignment = 16;
+// M16-NEXT:         code16;
 // M16-NEXT:         long_double = f80;
 // M16-NEXT:         storage bool [size=1, align=1];
 // M16-NEXT:         storage i8, u8 [size=1, align=1];

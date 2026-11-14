@@ -1,6 +1,7 @@
 mod support;
 
 use std::path::{Path, PathBuf};
+use std::process::Output;
 
 fn fixtures_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures")
@@ -707,6 +708,91 @@ fn translation_uses_builtin_frontend() {
             String::from_utf8_lossy(&output.stderr)
         );
     }
+}
+
+fn translate_arch_mode_project(work: &str, units: &[(&str, &[&str])]) -> (PathBuf, Output) {
+    let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.arch-mode");
+    let crate_dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target/difftest-generated/arch-mode")
+        .join(work);
+    let _ = std::fs::remove_dir_all(&crate_dir);
+    std::fs::create_dir_all(&crate_dir).expect("create arch-mode crate directory");
+    let entries: Vec<_> = units
+        .iter()
+        .map(|(file, flags)| {
+            let source = fixtures.join(file);
+            let mut arguments = vec!["clang".to_string(), "--target=x86_64-linux-gnu".into()];
+            arguments.extend(flags.iter().map(|flag| flag.to_string()));
+            arguments.extend(["-c".into(), source.display().to_string()]);
+            serde_json::json!({"directory": fixtures, "file": source, "arguments": arguments})
+        })
+        .collect();
+    let commands = crate_dir.join("compile_commands.json");
+    std::fs::write(&commands, serde_json::to_vec(&entries).unwrap()).unwrap();
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .env("SLATE_SYSROOTS", slate_parser::sysroot::root())
+        .args(["translate-project", "--compile-commands"])
+        .arg(&commands)
+        .arg(&fixtures)
+        .arg(crate_dir.join("crate"))
+        .output()
+        .expect("run translate-project");
+    (crate_dir.join("crate"), output)
+}
+
+fn cargo_in(crate_dir: &Path, command: &str) -> Output {
+    std::process::Command::new("cargo")
+        .args([command, "--quiet", "--release"])
+        .current_dir(crate_dir)
+        .env("CARGO_TARGET_DIR", crate_dir.join("../cargo-target"))
+        .output()
+        .expect("run cargo")
+}
+
+#[test]
+fn arch_mode_projects_select_their_rust_target() {
+    for (work, flags, rustflags) in [
+        ("m32", &["-m32"][..], false),
+        ("m16", &["-m16", "-march=i386"][..], true),
+    ] {
+        let (crate_dir, output) = translate_arch_mode_project(work, &[("realmode.c", flags)]);
+        assert!(
+            output.status.success(),
+            "{work}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let config = std::fs::read_to_string(crate_dir.join(".cargo/config.toml"))
+            .expect("read .cargo/config.toml");
+        assert!(
+            config.contains("target = \"i686-unknown-linux-gnu\""),
+            "{work}: {config}"
+        );
+        assert_eq!(
+            config.contains("-Ctarget-feature=+16bit-mode,-32bit-mode"),
+            rustflags,
+            "{work}: {config}"
+        );
+        let build = cargo_in(&crate_dir, "build");
+        assert!(
+            build.status.success(),
+            "{work}: {}",
+            String::from_utf8_lossy(&build.stderr)
+        );
+    }
+    let (crate_dir, output) = translate_arch_mode_project("m64", &[("long_mode.c", &[])]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!crate_dir.join(".cargo/config.toml").exists());
+    let (_, output) =
+        translate_arch_mode_project("mixed", &[("realmode.c", &["-m16"]), ("long_mode.c", &[])]);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        !output.status.success() && stderr.contains("translate for different targets"),
+        "{stderr}"
+    );
 }
 
 fn matrix_fixture(name: &str) -> PathBuf {
