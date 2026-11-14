@@ -64,6 +64,7 @@ impl<'a, 'm> FunctionLowerer<'a, 'm> {
             pending: Vec::new(),
             dispatching: false,
             switch_lets: HashSet::new(),
+            erased_copy: None,
         }
     }
 }

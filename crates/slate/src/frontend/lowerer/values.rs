@@ -958,6 +958,24 @@ impl FunctionLowerer<'_, '_> {
                 if let Some(lane) = self.lower_lane_read(place)? {
                     return Ok(lane);
                 }
+                if let Some(erased) = self.erased_ancestor(place)? {
+                    let address = self.lower_address(erased, false)?;
+                    let (copy, read) =
+                        self.with_erased_copy(erased, |lowerer| lowerer.lower_value(value))?;
+                    return Ok(Expr::Unsafe(Box::new(rust::Block {
+                        stmts: vec![Stmt::Let {
+                            name: copy,
+                            mutable: false,
+                            ty: None,
+                            init: Some(Expr::MethodCall {
+                                recv: Box::new(address),
+                                method: "read_unaligned".into(),
+                                args: Vec::new(),
+                            }),
+                        }],
+                        tail: Some(Box::new(read)),
+                    })));
+                }
                 if let Some(address) = self.erased_field_address(place, false)? {
                     return Ok(Expr::Unsafe(Box::new(rust::Block {
                         stmts: Vec::new(),

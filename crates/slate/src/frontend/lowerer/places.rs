@@ -310,6 +310,39 @@ impl FunctionLowerer<'_, '_> {
         }))
     }
 
+    pub(super) fn erased_ancestor<'p>(
+        &mut self,
+        place: &'p ir::Place,
+    ) -> Result<Option<&'p ir::Place>> {
+        if self.erased_copy.is_some() {
+            return Ok(None);
+        }
+        let mut current = without_macro_holes(place);
+        while let PlaceKind::Field { base, .. }
+        | PlaceKind::Lane { base, .. }
+        | PlaceKind::ComplexPart { base, .. } = &current.kind
+        {
+            let base = without_macro_holes(base);
+            if self.erased_field_address(base, false)?.is_some() {
+                return Ok(Some(base));
+            }
+            current = base;
+        }
+        Ok(None)
+    }
+
+    pub(super) fn with_erased_copy<T>(
+        &mut self,
+        erased: &ir::Place,
+        lower: impl FnOnce(&mut Self) -> Result<T>,
+    ) -> Result<(String, T)> {
+        let copy = self.next_temp();
+        self.erased_copy = Some((std::ptr::from_ref(erased), copy.clone()));
+        let lowered = lower(self);
+        self.erased_copy = None;
+        Ok((copy, lowered?))
+    }
+
     pub(super) fn erased_field_address(
         &mut self,
         place: &ir::Place,
@@ -418,6 +451,11 @@ impl FunctionLowerer<'_, '_> {
         {
             return self.lower_macro_place_hole(*expansion, *argument, inner);
         }
+        if let Some((erased, copy)) = &self.erased_copy
+            && std::ptr::eq(*erased, place)
+        {
+            return Ok(Expr::Var(copy.as_str().into()));
+        }
         let tables = self.tables;
         if let PlaceKind::Binding(id) = place.kind
             && (tables.stdio.functions.contains_key(&id)
@@ -501,13 +539,32 @@ impl FunctionLowerer<'_, '_> {
             PlaceKind::CompoundLiteral {
                 object,
                 storage,
-                alignment: None,
+                alignment,
                 ref initializer,
-            } => self.lower_compound_literal(object, storage, initializer),
+            } => {
+                let wrapper = match alignment {
+                    None => None,
+                    Some(_) => match self.tables.storage_of(&initializer.ty) {
+                        Some(_) => self.tables.over_alignment(&initializer.ty, alignment),
+                        None => {
+                            return Err(Construct::Place {
+                                ir: place.to_string(),
+                            }
+                            .into());
+                        }
+                    },
+                };
+                self.lower_compound_literal(object, storage, initializer, wrapper)
+            }
             PlaceKind::Temporary {
                 object,
                 ref initializer,
-            } => self.lower_compound_literal(object, ir::StorageDuration::Automatic, initializer),
+            } => self.lower_compound_literal(
+                object,
+                ir::StorageDuration::Automatic,
+                initializer,
+                None,
+            ),
             _ => Err(Construct::Place {
                 ir: place.to_string(),
             }
@@ -686,6 +743,7 @@ impl FunctionLowerer<'_, '_> {
         object: BindingId,
         storage: ir::StorageDuration,
         initializer: &ir::Value,
+        wrapper: Option<super::globals::AlignWrapper>,
     ) -> Result<Expr> {
         let index = self.local_index(object);
         let persistent = matches!(
@@ -698,6 +756,17 @@ impl FunctionLowerer<'_, '_> {
             format!("__slate_compound_{index}")
         };
         let ty = self.lower_type(&initializer.ty)?;
+        let ty = match wrapper {
+            Some(wrapper) => self.align_wrapped(&name, wrapper, ty)?,
+            None => ty,
+        };
+        let slot = match wrapper {
+            Some(_) => Expr::Field {
+                base: Box::new(Expr::Var(name.as_str().into())),
+                field: "0".into(),
+            },
+            None => Expr::Var(name.as_str().into()),
+        };
         if !persistent
             && let ValueKind::Aggregate { members, .. } = &initializer.node.value
             && self.zeroes_padding(&initializer.ty)
@@ -712,7 +781,7 @@ impl FunctionLowerer<'_, '_> {
                 ty: Some(ty),
                 init: Some(zeroed()),
             });
-            let place = Expr::Var(name.as_str().into());
+            let place = slot;
             let mut stmts = Vec::new();
             self.fill_aggregate(&initializer.ty, members, &place, true, &mut stmts)?;
             if let Some(clear) =
@@ -738,8 +807,12 @@ impl FunctionLowerer<'_, '_> {
                     |item| matches!(item, Item::Static { name: emitted, .. } if *emitted == name),
                 );
             if emitted {
-                return Ok(Expr::Var(name.into()));
+                return Ok(slot);
             }
+            let init = match wrapper {
+                Some(wrapper) => super::globals::align_wrap(wrapper, init),
+                None => init,
+            };
             self.dependencies.compound_literals.push(Item::Static {
                 comments: Vec::new(),
                 attrs: matches!(storage, ir::StorageDuration::Thread)
@@ -748,14 +821,14 @@ impl FunctionLowerer<'_, '_> {
                     .collect(),
                 vis: rust::Visibility::Private,
                 mutable: true,
-                name: name.clone(),
+                name,
                 ty,
                 init,
             });
-            return Ok(Expr::Var(name.into()));
+            return Ok(slot);
         }
         self.hoisted.push(Stmt::Let {
-            name: name.clone(),
+            name,
             mutable: true,
             ty: Some(ty),
             init: Some(zeroed()),
@@ -764,12 +837,12 @@ impl FunctionLowerer<'_, '_> {
             op: rust::UnaryOp::Deref,
             expr: Box::new(Expr::Block(Box::new(rust::Block {
                 stmts: vec![Stmt::Assign {
-                    target: Expr::Var(name.as_str().into()),
+                    target: slot.clone(),
                     value: init,
                 }],
                 tail: Some(Box::new(Expr::AddrOf {
                     mutable: true,
-                    expr: Box::new(Expr::Var(name.into())),
+                    expr: Box::new(slot),
                 })),
             }))),
         })

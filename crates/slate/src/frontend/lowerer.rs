@@ -205,6 +205,7 @@ struct FunctionLowerer<'a, 'm> {
     pending: Vec<Stmt>,
     dispatching: bool,
     switch_lets: HashSet<BindingId>,
+    erased_copy: Option<(*const ir::Place, String)>,
 }
 
 impl FunctionLowerer<'_, '_> {

@@ -27,6 +27,50 @@ impl FunctionLowerer<'_, '_> {
         if let Some(lane) = self.lower_lane_write(place, &value)? {
             return Ok(lane);
         }
+        if let Some(erased) = self.erased_ancestor(place)? {
+            let operand = self.next_temp();
+            let pointer = self.next_temp();
+            let address = self.lower_address(erased, true)?;
+            let (copy, assignment) = self.with_erased_copy(erased, |lowerer| {
+                lowerer.lower_assignment(place, Expr::Var(operand.as_str().into()))
+            })?;
+            let pointer_var = || Expr::Var(pointer.as_str().into());
+            return Ok(Stmt::Unsafe {
+                body: rust::Block {
+                    stmts: vec![
+                        Stmt::Let {
+                            name: operand.clone(),
+                            mutable: false,
+                            ty: None,
+                            init: Some(value),
+                        },
+                        Stmt::Let {
+                            name: pointer.clone(),
+                            mutable: false,
+                            ty: None,
+                            init: Some(address),
+                        },
+                        Stmt::Let {
+                            name: copy.clone(),
+                            mutable: true,
+                            ty: None,
+                            init: Some(Expr::MethodCall {
+                                recv: Box::new(pointer_var()),
+                                method: "read_unaligned".into(),
+                                args: Vec::new(),
+                            }),
+                        },
+                        assignment,
+                        Stmt::Expr(Expr::MethodCall {
+                            recv: Box::new(pointer_var()),
+                            method: "write_unaligned".into(),
+                            args: vec![Expr::Var(copy.as_str().into())],
+                        }),
+                    ],
+                    tail: None,
+                },
+            });
+        }
         if let Some(address) = self.erased_field_address(place, true)? {
             return Ok(Stmt::Unsafe {
                 body: rust::Block {
