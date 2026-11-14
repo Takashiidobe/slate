@@ -1,6 +1,36 @@
 use super::*;
 
 impl Tables<'_> {
+    pub(super) fn pointer_int_round_trip_root<'v>(
+        &self,
+        value: &'v ir::Value,
+    ) -> Option<&'v ir::Value> {
+        let ValueKind::Convert {
+            kind: ir::ConversionKind::IntToPtr,
+            operand,
+            ..
+        } = &value.node.value
+        else {
+            return None;
+        };
+        let mut current: &ir::Value = operand;
+        loop {
+            match self.resolve_type(&current.ty) {
+                ir::Type::Pointer { .. } => {}
+                ir::Type::Numeric(ir::NumericType::Integer { width, .. })
+                    if *width == self.target.pointer_width => {}
+                _ => return None,
+            }
+            match &current.node.value {
+                ValueKind::Copy { operand, .. } | ValueKind::Convert { operand, .. } => {
+                    current = operand;
+                }
+                _ => break,
+            }
+        }
+        matches!(self.resolve_type(&current.ty), ir::Type::Pointer { .. }).then_some(current)
+    }
+
     pub(super) fn null_address_offset(&self, value: &ir::Value) -> Option<u64> {
         match &value.node.value {
             ValueKind::Null => Some(0),

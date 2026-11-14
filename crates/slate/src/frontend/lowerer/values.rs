@@ -1151,6 +1151,30 @@ impl FunctionLowerer<'_, '_> {
                     ty: self.lower_value_type(value)?,
                 }
             }
+            ValueKind::Convert { .. }
+                if self.in_static_initializer
+                    && let Some(root) = self.tables.pointer_int_round_trip_root(value) =>
+            {
+                self.lower_value(&ir::Value {
+                    ty: value.ty.clone(),
+                    node: Span {
+                        value: ValueKind::Convert {
+                            kind: ir::ConversionKind::PointerCast,
+                            operand: Box::new(root.clone()),
+                            reason: ir::ConversionReason::Explicit,
+                            semantics: ir::ConversionSema::Exact,
+                        },
+                        id: value.node.id,
+                        spelling: value.node.spelling,
+                        expansion: value.node.expansion,
+                        provenance: value.node.provenance,
+                        macro_origin: value.node.macro_origin.clone(),
+                        macro_nesting: value.node.macro_nesting.clone(),
+                        leading_space: value.node.leading_space,
+                        digraph: value.node.digraph,
+                    },
+                })?
+            }
             ValueKind::Convert { operand, .. }
                 if self.tables.wide_int(&operand.ty).is_some()
                     || self.tables.wide_int(&value.ty).is_some() =>
