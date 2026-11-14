@@ -55,6 +55,7 @@ pub(super) struct MacroSite {
     parameters: Vec<String>,
     arguments: Vec<Option<Expr>>,
     place_arguments: Vec<Option<Expr>>,
+    unsafe_places: Vec<bool>,
     call_arguments: Vec<Vec<Expr>>,
     returns: bool,
 }
@@ -150,6 +151,7 @@ impl FunctionLowerer<'_, '_> {
             parameters,
             arguments: vec![None; count],
             place_arguments: vec![None; count],
+            unsafe_places: vec![false; count],
             call_arguments: vec![Vec::new(); count],
             returns: false,
         });
@@ -277,7 +279,8 @@ impl FunctionLowerer<'_, '_> {
             }
             let value = match (argument, place) {
                 (argument, Some(place)) => {
-                    let read_is_unsafe = matches!(&argument, Some(Expr::Unsafe(_)));
+                    let read_is_unsafe =
+                        matches!(&argument, Some(Expr::Unsafe(_))) || site.unsafe_places[index];
                     macro_templates::make_place_parameter(&mut template, name, read_is_unsafe);
                     Expr::AddrOf {
                         mutable: macro_templates::parameter_is_written(&template, name),
@@ -418,6 +421,7 @@ impl FunctionLowerer<'_, '_> {
     ) -> Result<Expr> {
         let parameter = self.lower_hole_argument(expansion, argument, |this, site| {
             let found = this.lower_place(place)?;
+            site.unsafe_places[argument] |= this.place_is_unsafe(place);
             site.place_arguments[argument].get_or_insert(found);
             Ok(())
         })?;
