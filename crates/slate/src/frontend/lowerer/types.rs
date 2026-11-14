@@ -947,6 +947,9 @@ impl FunctionLowerer<'_, '_> {
                             ..
                         },
                     ) => self.lower_type(inner),
+                    Some(ir::TypeDefinitionKind::Enum {
+                        underlying: None, ..
+                    }) => Ok(rust::Type::Prim(Prim::I32)),
                     Some(ir::TypeDefinitionKind::Record { .. })
                         if self.tables.stdio.file_records.contains(id) =>
                     {
@@ -961,7 +964,6 @@ impl FunctionLowerer<'_, '_> {
                     Some(ir::TypeDefinitionKind::Record { .. }) => {
                         Ok(rust::Type::Custom(self.lower_record(*id)?))
                     }
-                    Some(_) => Err(unsupported_type(ty)),
                     None => Err(Invariant::UnresolvedType(*id).into()),
                 };
             }
