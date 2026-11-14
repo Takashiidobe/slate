@@ -303,6 +303,10 @@ back to the extern call.
 | `vshl[q]_n_v` / `vshr[q]_n_v` | `shl` / `shr` by a splat constant; `vshr` by the lane width is `shr` by width - 1 when signed and zero when unsigned |
 | `vshl[q]_v` | `llvm.aarch64.neon.{s,u}shl` (signed per-lane count, negative shifts right) |
 | `vqtbl{1,2,3,4}[q]_v` | `llvm.aarch64.neon.tbl{1,2,3,4}`: tables stay `int8x16_t`, index and result take the decoded type |
+| `vrnd`, `vrndm`, `vrndn`, `vrndp`, `vrnda`, `vrndx`, `vrndi` `[q]_v` | `llvm.trunc`, `floor`, `roundeven`, `ceil`, `round`, `rint`, `nearbyint` |
+| `vcvt{n,m,p,a}[q]_{s,u}{32,64}_v` | `llvm.aarch64.neon.fcvt{n,m,p,a}{s,u}` (saturating, NaN is 0); the code gives the integer result, operands are floats of that width |
+| `vmovl_v` / `vmovn_v` | lane-wise extend from half width / truncate from double width (the code gives the result) |
+| `vmull_v` | both operands extended to the result width, then a wrapping `mul` (what LLVM selects as `smull`/`umull`); poly codes (`vmull_p8`) fall back |
 
 ## Atomic operations
 

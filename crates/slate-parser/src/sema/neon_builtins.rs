@@ -37,6 +37,22 @@ pub(super) enum NeonOp {
     ShiftRightImmediate,
     ShiftLeft,
     Table(u8),
+    Round(&'static str),
+    ConvertRounding(&'static str),
+    Widen,
+    Narrow,
+    MultiplyLong,
+}
+
+impl NeonOp {
+    fn shape(self) -> NeonShape {
+        match self {
+            Self::AbsGreater | Self::ConvertRounding(_) => NeonShape::Float,
+            Self::Widen | Self::MultiplyLong => NeonShape::Half,
+            Self::Narrow => NeonShape::Double,
+            _ => NeonShape::Same,
+        }
+    }
 }
 
 pub(super) fn neon_op(record: &str) -> Option<NeonOp> {
@@ -99,6 +115,17 @@ pub(super) fn neon_op(record: &str) -> Option<NeonOp> {
         "vqtbl2_v" | "vqtbl2q_v" => NeonOp::Table(2),
         "vqtbl3_v" | "vqtbl3q_v" => NeonOp::Table(3),
         "vqtbl4_v" | "vqtbl4q_v" => NeonOp::Table(4),
+        "vrnd_v" | "vrndq_v" => NeonOp::Round("llvm.trunc"),
+        "vrndm_v" | "vrndmq_v" => NeonOp::Round("llvm.floor"),
+        "vrndn_v" | "vrndnq_v" => NeonOp::Round("llvm.roundeven"),
+        "vrndp_v" | "vrndpq_v" => NeonOp::Round("llvm.ceil"),
+        "vrnda_v" | "vrndaq_v" => NeonOp::Round("llvm.round"),
+        "vrndx_v" | "vrndxq_v" => NeonOp::Round("llvm.rint"),
+        "vrndi_v" | "vrndiq_v" => NeonOp::Round("llvm.nearbyint"),
+        "vmovl_v" => NeonOp::Widen,
+        "vmovn_v" => NeonOp::Narrow,
+        "vmull_v" => NeonOp::MultiplyLong,
+        _ if convert_rounding(name).is_some() => NeonOp::ConvertRounding(convert_rounding(name)?),
         _ => return None,
     })
 }
@@ -124,7 +151,7 @@ impl Lowerer {
         let shape = arguments
             .last()
             .and_then(|code| self.neon_constant(code))
-            .and_then(|code| neon_vector(code, op == NeonOp::AbsGreater))
+            .and_then(|code| neon_vector(code, op.shape()))
             .unwrap_or((Type::Void, Type::Void));
         if typed && shape.1 == Type::Void {
             return Ok(Err((returned, ty, arguments)));
@@ -334,9 +361,56 @@ impl Lowerer {
         let Type::Vector { element, .. } = operand else {
             return Err(ResolveError::Internal("neon vector shape"));
         };
+        let Type::Vector {
+            element: result_element,
+            lanes,
+        } = result
+        else {
+            return Err(ResolveError::Internal("neon result shape"));
+        };
+        if matches!(op, NeonOp::Widen | NeonOp::Narrow | NeonOp::MultiplyLong) {
+            let mut converted = operands.into_iter().map(|value| {
+                self.context.elementwise_conversion(
+                    value,
+                    Type::Numeric(element),
+                    Type::Numeric(result_element),
+                    lanes,
+                    ConversionReason::Explicit,
+                )
+            });
+            let (Some(left), right) = (converted.next(), converted.next()) else {
+                return Err(ResolveError::Internal("neon widen operand count"));
+            };
+            let (left, right) = (left?, right.transpose()?);
+            return Ok(match right {
+                Some(right) if op == NeonOp::MultiplyLong => self.value(
+                    e,
+                    result,
+                    ValueKind::Arith {
+                        op: ArithOp::Mul,
+                        left: Box::new(left),
+                        right: Box::new(right),
+                        semantics: ArithSema::Integer {
+                            overflow: Overflow::Wrap,
+                        },
+                    },
+                ),
+                _ => left,
+            });
+        }
         let float = matches!(element, NumericType::Float(_));
         let signed = matches!(element, NumericType::Integer { signed: true, .. });
+        let result_signed = matches!(result_element, NumericType::Integer { signed: true, .. });
+        let converted;
         let name = match op {
+            NeonOp::Round(name) => name,
+            NeonOp::ConvertRounding(mode) => {
+                converted = format!(
+                    "llvm.aarch64.neon.fcvt{mode}{}",
+                    if result_signed { 's' } else { 'u' }
+                );
+                converted.as_str()
+            }
             NeonOp::Abs if float => "llvm.fabs",
             NeonOp::Abs => "llvm.aarch64.neon.abs",
             NeonOp::Max if float => "llvm.aarch64.neon.fmax",
@@ -681,9 +755,34 @@ impl Lowerer {
     }
 }
 
-fn neon_vector(code: u32, float_operands: bool) -> Option<(Type, Type)> {
+fn convert_rounding(name: &str) -> Option<&'static str> {
+    let rest = name.strip_prefix("vcvt")?;
+    let (mode, rest) = rest.split_at_checked(1)?;
+    let rest = rest.strip_prefix('q').unwrap_or(rest);
+    if !matches!(rest, "_s32_v" | "_s64_v" | "_u32_v" | "_u64_v") {
+        return None;
+    }
+    Some(match mode {
+        "n" => "n",
+        "m" => "m",
+        "p" => "p",
+        "a" => "a",
+        _ => return None,
+    })
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum NeonShape {
+    Same,
+    Float,
+    Half,
+    Double,
+}
+
+fn neon_vector(code: u32, shape: NeonShape) -> Option<(Type, Type)> {
     let unsigned = code & 0x10 != 0;
     let bits = if code & 0x20 != 0 { 128 } else { 64 };
+    let poly = matches!(code & 0xf, 4..=6);
     let element = match code & 0xf {
         0 => NumericType::integer(8, !unsigned),
         1 => NumericType::integer(16, !unsigned),
@@ -703,19 +802,26 @@ fn neon_vector(code: u32, float_operands: bool) -> Option<(Type, Type)> {
     };
     let lanes = bits / width;
     let result = Type::Vector { element, lanes };
-    let operand = match (float_operands, width) {
-        (false, _) => result.clone(),
-        (true, 32) => Type::Vector {
-            element: NumericType::Float(FloatType::F32),
-            lanes,
-        },
-        (true, 64) => Type::Vector {
-            element: NumericType::Float(FloatType::F64),
-            lanes,
-        },
-        (true, _) => return None,
+    let signed = matches!(element, NumericType::Integer { signed: true, .. });
+    let operand = match (shape, element) {
+        (NeonShape::Same, _) => element,
+        (NeonShape::Float, _) if width == 32 => NumericType::Float(FloatType::F32),
+        (NeonShape::Float, _) if width == 64 => NumericType::Float(FloatType::F64),
+        (NeonShape::Half, NumericType::Integer { .. }) if !poly && width >= 16 => {
+            NumericType::integer(width / 2, signed)
+        }
+        (NeonShape::Double, NumericType::Integer { .. }) if width <= 32 && bits == 64 => {
+            NumericType::integer(width * 2, signed)
+        }
+        _ => return None,
     };
-    Some((operand, result))
+    Some((
+        Type::Vector {
+            element: operand,
+            lanes,
+        },
+        result,
+    ))
 }
 
 fn element_bytes(element: NumericType) -> u64 {

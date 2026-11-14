@@ -465,7 +465,7 @@ pub fn render_shim_c_source_for_names(names: &BTreeSet<String>) -> String {
             .join("\n"),
     ];
     if names.iter().any(|name| {
-        name.contains("f80")
+        !name.starts_with("__slate_intrinsic_") && name.contains("f80")
             || name.contains("s80")
             || name.starts_with("__slate_f128_")
             || name.starts_with("__slate_ldv__")
