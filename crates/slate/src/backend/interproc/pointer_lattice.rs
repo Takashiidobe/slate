@@ -1991,6 +1991,27 @@ fn to_raw_pointer_as(name: &str, plan: &LiftPlan, target_mutable: bool) -> Expr 
     }
 }
 
+fn hoist_args_after_reborrow(args: &mut [Expr], reborrowed: &[(usize, String)]) -> Vec<Stmt> {
+    let mut hoisted = Vec::new();
+    for (index, arg) in args.iter_mut().enumerate() {
+        let conflicts = reborrowed
+            .iter()
+            .any(|(borrowed, name)| *borrowed < index && arg.reads_var(name));
+        if !conflicts {
+            continue;
+        }
+        let name = format!("__arg{index}");
+        let value = std::mem::replace(arg, Expr::Var(Ident::new(&name)));
+        hoisted.push(Stmt::Let {
+            name,
+            mutable: false,
+            ty: None,
+            init: Some(value),
+        });
+    }
+    hoisted
+}
+
 fn bridge_arg_into_ref(arg: &mut Expr, plan: &LiftPlan) {
     let taken = std::mem::replace(arg, Expr::Value(RustValue::None));
     *arg = Expr::Unsafe(Box::new(Block {
@@ -2459,6 +2480,7 @@ fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
             Expr::Var(name) => ctx.scope.resolve(name.as_str()),
             _ => None,
         };
+        let mut reborrowed: Vec<(usize, String)> = Vec::new();
         for (index, arg) in args.iter_mut().enumerate() {
             let callee_plan = callee.as_ref().and_then(|callee| {
                 let pname = ctx.scope.param_names.get(callee)?.get(index)?;
@@ -2470,6 +2492,9 @@ fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
                 let direct = callee
                     .as_ref()
                     .is_some_and(|callee| callee_accepts_directly(callee, index, plan, ctx.scope));
+                if direct && plan.mutable {
+                    reborrowed.push((index, name.as_str().to_string()));
+                }
                 if !direct {
                     let target_mutable = callee
                         .as_ref()
@@ -2499,6 +2524,14 @@ fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
                 }
             }
             rewrite_expr(arg, ctx);
+        }
+        let hoisted = hoist_args_after_reborrow(args, &reborrowed);
+        if !hoisted.is_empty() {
+            let call = std::mem::replace(expr, Expr::Todo(String::new()));
+            *expr = Expr::Block(Box::new(Block {
+                stmts: hoisted,
+                tail: Some(Box::new(call)),
+            }));
         }
         return;
     }
