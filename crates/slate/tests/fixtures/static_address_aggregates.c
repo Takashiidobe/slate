@@ -42,14 +42,12 @@ int main(void) {
 // CHECK-NEXT: static mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16([
 // CHECK-NEXT:     11i32, 22i32, 33i32, 44i32, 55i32,
 // CHECK-NEXT: ]);
-// CHECK-NEXT: static mut middle: *const i32 = (unsafe {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }.offset(2i32 as isize)
-// CHECK-NEXT: }) as *const i32;
+// CHECK-NEXT: static mut middle: *const i32 = unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }
+// CHECK-NEXT:     .wrapping_offset(2i32 as isize) as *const i32;
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: static mut end: *const i32 = (unsafe {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }.offset(5i32 as isize)
-// CHECK-NEXT: }) as *const i32;
+// CHECK-NEXT: static mut end: *const i32 = unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }
+// CHECK-NEXT:     .wrapping_offset(5i32 as isize) as *const i32;
 // CHECK-NEXT: extern "C-unwind" fn twice(x: i32) -> i32 {
 // CHECK-NEXT:     x * 2
 // CHECK-NEXT: }
@@ -63,9 +61,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut entries: __SlateAlign16<[Entry; 2]> = __SlateAlign16([
 // CHECK-NEXT:     Entry {
-// CHECK-NEXT:         value: (unsafe {
-// CHECK-NEXT:             unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }.offset(1i32 as isize)
-// CHECK-NEXT:         }) as *const i32,
+// CHECK-NEXT:         value: unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }
+// CHECK-NEXT:             .wrapping_offset(1i32 as isize) as *const i32,
 // CHECK-NEXT:         callback: Some(twice),
 // CHECK-NEXT:         opaque: unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
@@ -76,9 +73,8 @@ int main(void) {
 // CHECK-NEXT:         name: (b"twice\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT:     },
 // CHECK-NEXT:     Entry {
-// CHECK-NEXT:         value: (unsafe {
-// CHECK-NEXT:             unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }.offset(3i32 as isize)
-// CHECK-NEXT:         }) as *const i32,
+// CHECK-NEXT:         value: unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }
+// CHECK-NEXT:             .wrapping_offset(3i32 as isize) as *const i32,
 // CHECK-NEXT:         callback: unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 *const (),
@@ -109,10 +105,8 @@ int main(void) {
 // CHECK-NEXT:     nested: {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [Entry; 2] = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = Entry {
-// CHECK-NEXT:             value: (unsafe {
-// CHECK-NEXT:                 unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }
-// CHECK-NEXT:                     .offset(3i32 as isize)
-// CHECK-NEXT:             }) as *const i32,
+// CHECK-NEXT:             value: unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }
+// CHECK-NEXT:                 .wrapping_offset(3i32 as isize) as *const i32,
 // CHECK-NEXT:             callback: Some(twice),
 // CHECK-NEXT:             opaque: unsafe {
 // CHECK-NEXT:                 std::mem::transmute::<
@@ -124,9 +118,8 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     },
-// CHECK-NEXT:     tail: (unsafe {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }.offset(4i32 as isize)
-// CHECK-NEXT:     }) as *const i32,
+// CHECK-NEXT:     tail: unsafe { std::ptr::addr_of_mut!(values.0) as *mut i32 }
+// CHECK-NEXT:         .wrapping_offset(4i32 as isize) as *const i32,
 // CHECK-NEXT: };
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let callback: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {

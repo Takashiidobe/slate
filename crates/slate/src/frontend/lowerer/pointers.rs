@@ -174,7 +174,9 @@ impl FunctionLowerer<'_, '_> {
                     stmts: Vec::new(),
                     tail: Some(Box::new(Expr::MethodCall {
                         recv: Box::new(self.byte_pointer(pointer)?),
-                        method: if matches!(pointer.node.value, ValueKind::LabelAddress(_)) {
+                        method: if self.in_static_initializer
+                            || matches!(pointer.node.value, ValueKind::LabelAddress(_))
+                        {
                             "wrapping_offset"
                         } else {
                             "offset"
@@ -193,6 +195,11 @@ impl FunctionLowerer<'_, '_> {
                     method: "wrapping_offset".into(),
                     args: vec![offset],
                 }),
+            },
+            _ if self.in_static_initializer => Expr::MethodCall {
+                recv: Box::new(self.lower_value(pointer)?),
+                method: "wrapping_offset".into(),
+                args: vec![offset],
             },
             _ => Expr::Unsafe(Box::new(rust::Block {
                 stmts: Vec::new(),

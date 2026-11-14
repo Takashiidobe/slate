@@ -48,18 +48,14 @@ int main(void) {
 // CHECK-NEXT:     node { next: 0u32, value: 40i32 },
 // CHECK-NEXT: ]);
 // CHECK-NEXT: static mut table: __SlateAlign16<[*mut node; 4]> = __SlateAlign16([
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(nodes.0) as *mut node }.offset(0i32 as isize)
-// CHECK-NEXT:     },
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(nodes.0) as *mut node }.offset(1i32 as isize)
-// CHECK-NEXT:     },
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(nodes.0) as *mut node }.offset(2i32 as isize)
-// CHECK-NEXT:     },
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(nodes.0) as *mut node }.offset(3i32 as isize)
-// CHECK-NEXT:     },
+// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(nodes.0) as *mut node }
+// CHECK-NEXT:         .wrapping_offset(0i32 as isize),
+// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(nodes.0) as *mut node }
+// CHECK-NEXT:         .wrapping_offset(1i32 as isize),
+// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(nodes.0) as *mut node }
+// CHECK-NEXT:         .wrapping_offset(2i32 as isize),
+// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(nodes.0) as *mut node }
+// CHECK-NEXT:         .wrapping_offset(3i32 as isize),
 // CHECK-NEXT: ]);
 // CHECK-NEXT: fn unlink_after(target: *mut node) {
 // CHECK-NEXT:     let mut cur: *mut node = unsafe { table.0[0] };

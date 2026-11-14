@@ -156,10 +156,10 @@ int main(void) {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 *mut i32,
 // CHECK-NEXT:                 *const (),
-// CHECK-NEXT:             >(unsafe {
+// CHECK-NEXT:             >(
 // CHECK-NEXT:                 unsafe { std::ptr::addr_of_mut!(data.0) as *mut i32 }
-// CHECK-NEXT:                     .offset(2i32 as isize)
-// CHECK-NEXT:             })
+// CHECK-NEXT:                     .wrapping_offset(2i32 as isize),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         });
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
@@ -187,10 +187,10 @@ int main(void) {
 // CHECK-NEXT:                 std::mem::transmute::<
 // CHECK-NEXT:                     *mut i32,
 // CHECK-NEXT:                     *const (),
-// CHECK-NEXT:                 >(unsafe {
+// CHECK-NEXT:                 >(
 // CHECK-NEXT:                     unsafe { std::ptr::addr_of_mut!(data.0) as *mut i32 }
-// CHECK-NEXT:                         .offset(3i32 as isize)
-// CHECK-NEXT:                 })
+// CHECK-NEXT:                         .wrapping_offset(3i32 as isize),
+// CHECK-NEXT:                 )
 // CHECK-NEXT:             }
 // CHECK-NEXT:                 .wrapping_byte_offset(-4isize),
 // CHECK-NEXT:         );
@@ -262,10 +262,10 @@ int main(void) {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 *mut i32,
 // CHECK-NEXT:                 *const (),
-// CHECK-NEXT:             >(unsafe {
+// CHECK-NEXT:             >(
 // CHECK-NEXT:                 unsafe { std::ptr::addr_of_mut!(data.0) as *mut i32 }
-// CHECK-NEXT:                     .offset(1i32 as isize)
-// CHECK-NEXT:             })
+// CHECK-NEXT:                     .wrapping_offset(1i32 as isize),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         });
 // CHECK-NEXT:     (*[[T_1]]).slots[1] = 0u64;
 // CHECK-NEXT:     [[T_0]]

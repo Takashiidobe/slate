@@ -52,9 +52,8 @@ int main(void) {
 // CHECK-NEXT: static mut signed_width: *mut i32 = (unsafe { std::ptr::addr_of_mut!(x) }) as *mut i32;
 // CHECK-NEXT: static mut nested: *mut () = (unsafe { std::ptr::addr_of_mut!(x) }) as *mut ();
 // CHECK-NEXT: static mut mixed_sign: *mut () = (unsafe { std::ptr::addr_of_mut!(x) }) as *mut ();
-// CHECK-NEXT: static mut element: *mut i32 = (unsafe {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(arr.0) as *mut i32 }.offset(2i32 as isize)
-// CHECK-NEXT: }) as *mut i32;
+// CHECK-NEXT: static mut element: *mut i32 = unsafe { std::ptr::addr_of_mut!(arr.0) as *mut i32 }
+// CHECK-NEXT:     .wrapping_offset(2i32 as isize) as *mut i32;
 // CHECK-NEXT: static mut held: holder = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: holder = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].p = (unsafe { std::ptr::addr_of_mut!(x) }) as *mut ();
@@ -63,9 +62,8 @@ int main(void) {
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut table: __SlateAlign16<[*mut (); 3]> = __SlateAlign16([
 // CHECK-NEXT:     (unsafe { std::ptr::addr_of_mut!(x) }) as *mut (),
-// CHECK-NEXT:     (unsafe {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(arr.0) as *mut i32 }.offset(1i32 as isize)
-// CHECK-NEXT:     }) as *mut (),
+// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(arr.0) as *mut i32 }.wrapping_offset(1i32 as isize)
+// CHECK-NEXT:         as *mut (),
 // CHECK-NEXT:     std::ptr::null_mut::<()>(),
 // CHECK-NEXT: ]);
 // CHECK-NEXT: #[used]

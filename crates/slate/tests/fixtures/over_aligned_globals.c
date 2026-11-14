@@ -91,8 +91,9 @@ int main(void) {
 // CHECK-NEXT: });
 // CHECK-NEXT: static mut small: __SlateAlign16<i8> = __SlateAlign16(unsafe { std::mem::zeroed() });
 // CHECK-NEXT: static mut values_tail: *mut u32 = unsafe {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(values.0) as *mut u32 }.offset(2i32 as isize)
-// CHECK-NEXT: };
+// CHECK-NEXT:     std::ptr::addr_of_mut!(values.0) as *mut u32
+// CHECK-NEXT: }
+// CHECK-NEXT:     .wrapping_offset(2i32 as isize);
 // CHECK-NEXT: static mut origin_ptr: *mut Point = unsafe { std::ptr::addr_of_mut!(origin.0) };
 // CHECK-NEXT: static mut counter_ptr: *mut i32 = unsafe { std::ptr::addr_of_mut!(counter.0) };
 // CHECK-NEXT: fn aligned(pointer: *const (), alignment: u64) -> i32 {
