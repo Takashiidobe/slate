@@ -354,6 +354,7 @@ pub struct Merged {
     pub root: Option<String>,
     pub features: BTreeSet<String>,
     pub target_guard: Item,
+    pub unit_cfgs: BTreeMap<String, Cfg>,
     report: String,
     pub mismatches: usize,
     pub signature_mismatches: usize,
@@ -445,6 +446,7 @@ struct TargetUnit {
     programs: Mutex<BTreeMap<u64, u32>>,
     reused: BTreeSet<u32>,
     defines_main: bool,
+    present: bool,
 }
 
 struct TargetBuild {
@@ -676,6 +678,7 @@ fn explored_unit(
         programs: Mutex::new(BTreeMap::new()),
         reused: BTreeSet::new(),
         defines_main: false,
+        present: true,
     };
     let mut programs = BTreeMap::new();
     let mut repeats = Vec::new();
@@ -696,7 +699,23 @@ fn explored_unit(
     unit
 }
 
+fn absent_unit(source: &Path) -> TargetUnit {
+    TargetUnit {
+        interner: Interner::default(),
+        source: source.to_path_buf(),
+        relevant: Vec::new(),
+        compiled: Vec::new(),
+        infeasible: Vec::new(),
+        tried: BTreeSet::new(),
+        programs: Mutex::new(BTreeMap::new()),
+        reused: BTreeSet::new(),
+        defines_main: false,
+        present: false,
+    }
+}
+
 fn prepare_target(matrix: &Matrix, target: &str) -> Result<TargetBuild, String> {
+    let known = matrix.target(target).map_err(|error| error.to_string())?;
     let defaults = matrix
         .commands(target, &[])
         .map_err(|error| error.to_string())?;
@@ -709,6 +728,7 @@ fn prepare_target(matrix: &Matrix, target: &str) -> Result<TargetBuild, String> 
     let explored: Vec<_> = matrix
         .sources
         .par_iter()
+        .filter(|source| known.compiles(source))
         .map(|source| explore_unit(matrix, target, source, &owners, &comdats))
         .collect();
     if let Some((unit, error)) = explored
@@ -722,8 +742,16 @@ fn prepare_target(matrix: &Matrix, target: &str) -> Result<TargetBuild, String> 
         ));
     }
 
-    let mut built = Vec::with_capacity(explored.len());
-    for (unit, rows, interner) in explored {
+    let mut built = Vec::with_capacity(matrix.sources.len());
+    let mut explored = explored.into_iter();
+    for source in &matrix.sources {
+        if !known.compiles(source) {
+            built.push(absent_unit(source));
+            continue;
+        }
+        let (unit, rows, interner) = explored
+            .next()
+            .expect("one exploration per compiled source");
         if unit.relevant.len() > MAX_RELEVANT_FEATURES {
             return Err(format!(
                 "target {target}: {} depends on {} features, the limit is {MAX_RELEVANT_FEATURES}",
@@ -1774,6 +1802,9 @@ pub fn merge(
     let mut jobs: Vec<Job> = Vec::new();
     for (target, build) in builds.iter().enumerate() {
         for (index, unit) in build.units.iter().enumerate() {
+            if !unit.present {
+                continue;
+            }
             jobs.extend(
                 valid_rows(matrix, &unit.relevant)
                     .filter(|mask| !unit.tried.contains(mask))
@@ -1810,6 +1841,7 @@ pub fn merge(
             .units
             .iter()
             .zip(&stems)
+            .filter(|(unit, _)| unit.present)
             .map(|(unit, stem)| UnitCompiles {
                 stem,
                 relevant: &unit.relevant,
@@ -1851,7 +1883,7 @@ pub fn merge(
         .collect();
     for build in &builds {
         for unit in &build.units {
-            if unit.compiled.is_empty() {
+            if unit.present && unit.compiled.is_empty() {
                 let reason = unit
                     .infeasible
                     .first()
@@ -1894,11 +1926,39 @@ pub fn merge(
         [] => None,
         _ => return Err(format!("multiple units define main: {}", roots.join(", "))),
     };
+    let everywhere = (1u64 << builds.len()) - 1;
+    let mut unit_cfgs = BTreeMap::new();
+    for (index, stem) in stems.iter().enumerate() {
+        let present = builds
+            .iter()
+            .enumerate()
+            .filter(|(_, build)| build.units[index].present)
+            .fold(0u64, |mask, (target, _)| mask | 1 << target);
+        if present == everywhere {
+            continue;
+        }
+        if root.as_deref() == Some(stem) {
+            let missing: Vec<&str> = builds
+                .iter()
+                .filter(|build| !build.units[index].present)
+                .map(|build| build.name.as_str())
+                .collect();
+            return Err(format!(
+                "{stem} defines main but targets {} do not compile it",
+                missing.join(", ")
+            ));
+        }
+        unit_cfgs.insert(stem.clone(), conditions.select(present, everywhere));
+    }
 
     let mut report = String::new();
     for (build, count) in builds.iter().zip(&compiles) {
         let _ = writeln!(report, "target {}: {count} compiles", build.name);
         for (unit, source) in build.units.iter().zip(&matrix.sources) {
+            if !unit.present {
+                let _ = writeln!(report, "  {}: not compiled", source.display());
+                continue;
+            }
             let _ = writeln!(
                 report,
                 "  {}: [{}] {} compiled",
@@ -1934,6 +1994,9 @@ pub fn merge(
             unit.gated,
             unit.duplicated.len()
         );
+        if let Some(cfg) = unit_cfgs.get(&unit.stem) {
+            let _ = writeln!(report, "  only on {}", cfg.render());
+        }
         for (key, variants) in &unit.duplicated {
             let _ = writeln!(report, "  duplicated {key}: {variants} variants");
         }
@@ -1993,6 +2056,7 @@ pub fn merge(
         root,
         features,
         target_guard,
+        unit_cfgs,
         report,
         mismatches: result.mismatches.len(),
         signature_mismatches: signature_mismatches.len(),

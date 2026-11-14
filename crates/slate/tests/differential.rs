@@ -743,6 +743,10 @@ fn run_cargo_binary(crate_dir: &Path) -> String {
 }
 
 fn run_clang_binary(project: &Path, work: &str, args: &[&str]) -> String {
+    run_clang_sources(project, work, args, &["main.c", "value.c"])
+}
+
+fn run_clang_sources(project: &Path, work: &str, args: &[&str], sources: &[&str]) -> String {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("target/difftest-generated/matrix")
         .join(format!("{work}-c"));
@@ -751,7 +755,8 @@ fn run_clang_binary(project: &Path, work: &str, args: &[&str]) -> String {
     let status = std::process::Command::new("clang")
         .current_dir(project)
         .args(args)
-        .args(["main.c", "value.c", "-o"])
+        .args(sources)
+        .arg("-o")
         .arg(&binary)
         .status()
         .expect("run clang");
@@ -1022,6 +1027,36 @@ fn manifest_selection_and_merge_match_c_with_same_configuration() {
 }
 
 #[test]
+fn manifest_merge_gates_units_compiled_for_some_targets() {
+    let project = matrix_fixture("split");
+    let (crate_dir, result) = translate_matrix(
+        "--manifest",
+        "manifest-split",
+        &project.join("manifest.json"),
+        &project,
+        &["--merge"],
+    );
+    result.unwrap_or_else(|error| panic!("manifest-split: {error}"));
+    assert_eq!(
+        run_cargo_binary(&crate_dir),
+        run_clang_sources(
+            &project,
+            "manifest-split",
+            &["-Iinclude"],
+            &["main.c", "common.c", "unix.c"]
+        )
+    );
+    let root = std::fs::read_to_string(crate_dir.join("src/main.rs")).expect("read main.rs");
+    for declaration in [
+        "#[path = \"common.rs\"]\nmod __slate_unit_common;\n#[cfg(unix)]\n",
+        "#[cfg(unix)]\n#[path = \"unix.rs\"]\nmod __slate_unit_unix;\n",
+        "#[cfg(windows)]\n#[path = \"win.rs\"]\nmod __slate_unit_win;\n",
+    ] {
+        assert!(root.contains(declaration), "{declaration} missing:\n{root}");
+    }
+}
+
+#[test]
 fn manifest_rejects_invalid_input() {
     let project = matrix_fixture("generated");
     let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/matrix");
@@ -1056,7 +1091,6 @@ fn manifest_rejects_invalid_input() {
         })
     };
     let both = database("manifest-db-both", &[], &["main.c", "value.c"]);
-    let main_only = database("manifest-db-main", &[], &["main.c"]);
     let foreign = database(
         "manifest-db-foreign",
         &["--target=aarch64-linux-gnu"],
@@ -1097,12 +1131,6 @@ fn manifest_rejects_invalid_input() {
             serde_json::json!({"version": 1, "targets": {"a": linux(&extra)},
                 "features": {"extra": ["TARGET_EXTRA=2"]}}),
             "already sets feature macro TARGET_EXTRA, so feature extra cannot be turned off",
-        ),
-        (
-            "manifest-different-sources",
-            serde_json::json!({"version": 1,
-                "targets": {"a": linux(&both), "b": linux(&main_only)}}),
-            "manifest targets b and a compile different sources: only a compiles value.c",
         ),
         (
             "manifest-missing-database",

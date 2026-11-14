@@ -1,0 +1,35 @@
+[
+  {
+    "directory": "..",
+    "file": "main.c",
+    "arguments": [
+      "cl",
+      "-c",
+      "main.c",
+      "/Iinclude"
+    ],
+    "output": "CMakeFiles/app.dir/main.c.o"
+  },
+  {
+    "directory": "..",
+    "file": "common.c",
+    "arguments": [
+      "cl",
+      "-c",
+      "common.c",
+      "/Iinclude"
+    ],
+    "output": "CMakeFiles/app.dir/common.c.o"
+  },
+  {
+    "directory": "..",
+    "file": "win.c",
+    "arguments": [
+      "cl",
+      "-c",
+      "win.c",
+      "/Iinclude"
+    ],
+    "output": "CMakeFiles/app.dir/win.c.o"
+  }
+]

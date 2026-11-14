@@ -67,15 +67,6 @@ pub enum MatrixError {
         name: String,
         feature: String,
     },
-    #[error(
-        "manifest targets {target} and {other} compile different sources: only {other} compiles {}",
-        file.display()
-    )]
-    DifferentSources {
-        target: String,
-        other: String,
-        file: PathBuf,
-    },
     #[error("matrix feature {0:?} is not a valid Cargo feature name")]
     InvalidFeatureName(String),
     #[error("matrix feature {0} has no defines")]
@@ -223,24 +214,12 @@ impl Matrix {
                 &manifest.features,
             )?);
         }
-        let first = &targets[0];
-        for target in &targets[1..] {
-            let only_in = |having: &'_ Target, lacking: &'_ Target| {
-                having
-                    .units
-                    .keys()
-                    .find(|source| !lacking.units.contains_key(*source))
-                    .map(|source| MatrixError::DifferentSources {
-                        target: lacking.name.clone(),
-                        other: having.name.clone(),
-                        file: source.clone(),
-                    })
-            };
-            if let Some(error) = only_in(first, target).or_else(|| only_in(target, first)) {
-                return Err(error);
-            }
-        }
-        let sources: Vec<PathBuf> = first.units.keys().cloned().collect();
+        let sources: Vec<PathBuf> = targets
+            .iter()
+            .flat_map(|target| target.units.keys().cloned())
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect();
         if sources.is_empty() {
             return Err(MatrixError::NoSources);
         }
@@ -295,6 +274,13 @@ impl Matrix {
         })
     }
 
+    pub fn target(&self, name: &str) -> Result<&Target, MatrixError> {
+        self.targets
+            .iter()
+            .find(|candidate| candidate.name == name)
+            .ok_or_else(|| MatrixError::UnknownTarget(name.to_string()))
+    }
+
     pub fn is_invalid_combination(&self, features: &[String]) -> bool {
         self.invalid_features
             .iter()
@@ -309,7 +295,8 @@ impl Matrix {
         let (target, defines) = self.selection(target, features)?;
         self.sources
             .iter()
-            .map(|source| command_for(target.unit(source)?, &defines))
+            .filter_map(|source| target.units.get(source))
+            .map(|unit| command_for(unit, &defines))
             .collect()
     }
 
@@ -328,11 +315,7 @@ impl Matrix {
         target: &str,
         features: &[String],
     ) -> Result<(&Target, Vec<String>), MatrixError> {
-        let target = self
-            .targets
-            .iter()
-            .find(|candidate| candidate.name == target)
-            .ok_or_else(|| MatrixError::UnknownTarget(target.to_string()))?;
+        let target = self.target(target)?;
         if let Some(unknown) = features
             .iter()
             .find(|name| !self.features.iter().any(|feature| feature.name == **name))
@@ -358,6 +341,10 @@ impl Matrix {
 }
 
 impl Target {
+    pub fn compiles(&self, source: &Path) -> bool {
+        self.units.contains_key(source)
+    }
+
     fn unit(&self, source: &Path) -> Result<&UnitCommand, MatrixError> {
         self.units
             .get(source)

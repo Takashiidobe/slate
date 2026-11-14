@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "targets": {
+    "linux-x86_64": {
+      "triple": "x86_64-unknown-linux-gnu",
+      "flavor": "clang",
+      "compile_commands": "build-linux/compile_commands.json"
+    },
+    "windows-x86_64": {
+      "triple": "x86_64-pc-windows-msvc",
+      "flavor": "msvc",
+      "compile_commands": "build-windows/compile_commands.json"
+    }
+  }
+}

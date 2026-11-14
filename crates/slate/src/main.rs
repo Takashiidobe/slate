@@ -1008,6 +1008,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             &merged.features,
             Some(merged.target_guard),
             merged.shared_macros,
+            &merged.unit_cfgs,
         )?;
         let report_path = Path::new(paths[1]).join("merge-report.txt");
         std::fs::write(&report_path, report)
@@ -1240,6 +1241,7 @@ fn translate_slate_project(
         &BTreeSet::new(),
         None,
         None,
+        &BTreeMap::new(),
     )
 }
 
@@ -1258,6 +1260,7 @@ fn write_project_crate(
     declared_features: &BTreeSet<String>,
     target_guard: Option<rust_ast::Item>,
     shared_macros: Option<rust_ast::Program>,
+    unit_cfgs: &BTreeMap<String, rust_ast::Cfg>,
 ) -> Result<String, String> {
     let lib_crate_types = match &root {
         Some(root) => {
@@ -1293,9 +1296,18 @@ fn write_project_crate(
             programs
                 .iter()
                 .filter(|(stem, _)| root.as_ref() != Some(stem))
-                .map(|(stem, _)| rust_ast::Item::Mod {
-                    name: rust_ast::Ident::new(format!("__slate_unit_{stem}")),
-                    path: Some(format!("{}.rs", unit_file_stem(stem))),
+                .map(|(stem, _)| {
+                    let declaration = rust_ast::Item::Mod {
+                        name: rust_ast::Ident::new(format!("__slate_unit_{stem}")),
+                        path: Some(format!("{}.rs", unit_file_stem(stem))),
+                    };
+                    match unit_cfgs.get(stem) {
+                        Some(cfg) => rust_ast::Item::Cfg {
+                            cfg: cfg.clone(),
+                            item: Box::new(declaration),
+                        },
+                        None => declaration,
+                    }
                 }),
         )
         .collect();

@@ -1,0 +1,35 @@
+[
+  {
+    "directory": "..",
+    "file": "main.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "main.c",
+      "-Iinclude"
+    ],
+    "output": "CMakeFiles/app.dir/main.c.o"
+  },
+  {
+    "directory": "..",
+    "file": "common.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "common.c",
+      "-Iinclude"
+    ],
+    "output": "CMakeFiles/app.dir/common.c.o"
+  },
+  {
+    "directory": "..",
+    "file": "unix.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "unix.c",
+      "-Iinclude"
+    ],
+    "output": "CMakeFiles/app.dir/unix.c.o"
+  }
+]

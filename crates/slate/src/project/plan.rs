@@ -75,15 +75,22 @@ pub fn plan(matrix: &Matrix, target: Option<&str>, mode: Mode) -> Result<Plan, M
             limit: MAX_EXHAUSTIVE_FEATURES,
         });
     }
-    let names: Vec<&str> = matrix
+    let selected: Vec<(&str, Vec<&PathBuf>)> = matrix
         .targets
         .iter()
-        .map(|known| known.name.as_str())
-        .filter(|name| target.is_none_or(|target| target == *name))
+        .filter(|known| target.is_none_or(|target| target == known.name))
+        .map(|known| {
+            let sources = matrix
+                .sources
+                .iter()
+                .filter(|source| known.compiles(source))
+                .collect();
+            (known.name.as_str(), sources)
+        })
         .collect();
-    let jobs: Vec<(&str, &PathBuf)> = names
+    let jobs: Vec<(&str, &PathBuf)> = selected
         .iter()
-        .flat_map(|name| matrix.sources.iter().map(move |source| (*name, source)))
+        .flat_map(|(name, sources)| sources.iter().map(move |source| (*name, *source)))
         .collect();
     let mut units = jobs
         .into_par_iter()
@@ -91,11 +98,11 @@ pub fn plan(matrix: &Matrix, target: Option<&str>, mode: Mode) -> Result<Plan, M
         .collect::<Vec<UnitPlan>>()
         .into_iter();
     Ok(Plan {
-        targets: names
+        targets: selected
             .into_iter()
-            .map(|name| TargetPlan {
+            .map(|(name, sources)| TargetPlan {
                 name: name.to_string(),
-                units: units.by_ref().take(matrix.sources.len()).collect(),
+                units: units.by_ref().take(sources.len()).collect(),
             })
             .collect(),
     })
