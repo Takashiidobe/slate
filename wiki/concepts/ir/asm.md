@@ -313,7 +313,7 @@ asm and asm in naked functions have `None`. Verified against clang
 | --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `memory` (`None`/`ReadOnly`/`Any` = `nomem`/`readonly`/neither) | from operands: memory inputs read, memory outputs write. A `"memory"` clobber or basic asm forces `Any`. clang also forces `Any` for side-effecting asm (volatile, `goto`, no outputs); gcc keeps `nomem` for volatile extended asm |
 | `pure`                                                          | not volatile, not `goto`, has an output, and `memory` is not `Any`                                                                                                                                                                  |
-| `nostack`                                                       | on for extended GNU asm (neither compiler guarantees stack alignment or red zone); off for basic GNU asm, which may push, and for MSVC `__asm`                                                                                      |
+| `nostack`                                                       | on for extended GNU asm (neither compiler guarantees stack alignment or red zone); off for basic GNU asm, which may push, for MSVC `__asm`, and for x86 asm with an operand bound to the stack pointer (`"+r"(current_stack_pointer)`, the kernel's `ASM_CALL_CONSTRAINT`) |
 | `preserves_flags`                                               | never on x86; elsewhere unless `"cc"` is written (gcc aarch64 and 32-bit ARM add a CC clobber only for `"cc"`)                                                                                                                      |
 | `may_unwind`                                                    | an `"unwind"` clobber                                                                                                                                                                                                               |
 
@@ -459,7 +459,10 @@ impossible.
   and after the template (inputs become `inout(..) => _`, outputs early), and an rbx clobber is
   saved and restored with `mov` through an early `out(reg) _`. rbp gets the same treatment as an
   operand (copied in and out through a scratch pair) and as a clobber; an rsp clobber is saved and
-  restored the same way. An rsp operand remains a barrier.
+  restored the same way. An rsp/esp operand (a stack-pointer register variable) passes no Rust
+  operand: a template reference prints the register by name, an unreferenced one is dropped (the
+  asm is not `nostack`, so Rust keeps the stack usable for a `call`), and a referenced output or
+  in-out stays a barrier (`asm_stack_pointer_operand.c`; i686 and aarch64 `sp`: `slate-3f8g.4.41`).
 - Memory operands pass their address `in(reg)`: `InPlace` as `&raw const`, memory `Out` and
   `InOut` as `&raw mut`, and an unaddressable `In(value)` spills to a temporary first. A
   reference prints `({N:r})` (AT&T) or `<size> ptr [{N:r}]` (Intel, size from the width);

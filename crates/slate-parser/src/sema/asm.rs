@@ -648,10 +648,14 @@ fn options(
     {
         memory = AsmMemory::Any;
     }
+    let stack_pointer = family.is_x86()
+        && asm.operands.iter().any(|operand| {
+            matches!(&operand.selected, Some(AsmOperandClass::Explicit(register)) if register.canonical == Some("sp"))
+        });
     AsmOptions {
         memory,
         pure: !side_effects && memory != AsmMemory::Any,
-        nostack: !basic,
+        nostack: !basic && !stack_pointer,
         preserves_flags: !family.is_x86() && !clobbers(|clobber| matches!(clobber, AsmClobber::Cc)),
         may_unwind: clobbers(|clobber| matches!(clobber, AsmClobber::Unwind)),
     }

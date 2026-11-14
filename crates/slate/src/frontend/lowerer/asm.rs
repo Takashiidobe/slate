@@ -1799,6 +1799,20 @@ impl FunctionLowerer<'_, '_> {
             };
             let mut pinned = None;
             let mut reserved = None;
+            if x86
+                && matches!(&operand.selected, Some(ir::AsmOperandClass::Explicit(register)) if register.canonical == Some("sp"))
+            {
+                let referenced = asm.pieces.iter().any(
+                    |piece| matches!(piece, ir::AsmPiece::Operand { index: piece, .. } if *piece == index),
+                );
+                if referenced && !matches!(operand.kind, ir::AsmOperandKind::In(_)) {
+                    return Err(unsupported_asm(
+                        "stack pointer output referenced in the template",
+                    ));
+                }
+                slots.push(Slot::Register("sp"));
+                continue;
+            }
             if fixed {
                 return Err(unsupported_asm(
                     "register variable needs explicit register lowering",
