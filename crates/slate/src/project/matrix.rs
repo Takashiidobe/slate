@@ -1,6 +1,7 @@
 use crate::compile_commands::{
     self, CompileCommand, CompileCommandsError, ReadOptions, UnitCommand, absolute_path,
 };
+use crate::project::manifest::{Manifest, ManifestTarget};
 use serde::Deserialize;
 use serde::de::DeserializeOwned;
 use slate_parser::compiler_args::{CompilerArgError, CompilerArgParser, CompilerFlavor};
@@ -113,7 +114,7 @@ pub struct Matrix {
 pub struct Target {
     pub name: String,
     pub triple: String,
-    units: BTreeMap<PathBuf, UnitCommand>,
+    pub(crate) units: BTreeMap<PathBuf, UnitCommand>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -147,28 +148,7 @@ pub struct MatrixTarget {
     pub args: Vec<String>,
 }
 
-#[derive(Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-struct Manifest {
-    version: u32,
-    targets: BTreeMap<String, ManifestTarget>,
-    #[serde(default)]
-    features: BTreeMap<String, Vec<String>>,
-    #[serde(default)]
-    invalid_features: Vec<Vec<String>>,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-struct ManifestTarget {
-    triple: String,
-    flavor: String,
-    sysroot: Option<String>,
-    compile_commands: PathBuf,
-    build_target: Option<String>,
-}
-
-fn read_json<T: DeserializeOwned>(path: &Path) -> Result<T, MatrixError> {
+pub(crate) fn read_json<T: DeserializeOwned>(path: &Path) -> Result<T, MatrixError> {
     let bytes = std::fs::read(path).map_err(|source| MatrixError::Read {
         path: path.to_path_buf(),
         source,
@@ -230,13 +210,7 @@ impl Matrix {
     }
 
     pub fn read_manifest(path: &Path, project: &Path) -> Result<Self, MatrixError> {
-        let manifest: Manifest = read_json(path)?;
-        if manifest.version != 1 {
-            return Err(MatrixError::UnsupportedVersion {
-                path: path.to_path_buf(),
-                version: manifest.version,
-            });
-        }
+        let manifest = Manifest::read(path)?;
         if manifest.targets.is_empty() {
             return Err(MatrixError::NoTargets);
         }
@@ -406,7 +380,7 @@ fn command_for(unit: &UnitCommand, defines: &[String]) -> Result<CompileCommand,
     }
 }
 
-fn read_manifest_target(
+pub(crate) fn read_manifest_target(
     name: &str,
     target: &ManifestTarget,
     project: &Path,
@@ -421,7 +395,7 @@ fn read_manifest_target(
             .map(|root| format!("--sysroot={root}")),
     );
     let database = absolute_path(project, &target.compile_commands);
-    let units = compile_commands::read_units(
+    let (units, _) = compile_commands::read_units(
         &[database],
         &ReadOptions {
             extra_args: &extra_args,
@@ -471,7 +445,7 @@ fn read_manifest_target(
     })
 }
 
-fn command_targets(args: &[String]) -> impl Iterator<Item = &str> {
+pub(crate) fn command_targets(args: &[String]) -> impl Iterator<Item = &str> {
     args.iter().enumerate().filter_map(|(index, arg)| {
         arg.strip_prefix("--target=").or_else(|| {
             matches!(arg.as_str(), "-target" | "--target")
@@ -491,7 +465,7 @@ fn same_target(found: &str, triple: &str) -> bool {
     }
 }
 
-fn command_macros(args: &[String]) -> impl Iterator<Item = &str> {
+pub(crate) fn command_macros(args: &[String]) -> impl Iterator<Item = &str> {
     args.iter().enumerate().filter_map(|(index, arg)| {
         let value = ["-D", "/D", "-U", "/U"]
             .iter()
@@ -504,11 +478,15 @@ fn command_macros(args: &[String]) -> impl Iterator<Item = &str> {
     })
 }
 
-fn macro_of(define: &str) -> &str {
+pub(crate) fn macro_of(define: &str) -> &str {
     define.split_once('=').map_or(define, |(name, _)| name)
 }
 
-fn validate_target(name: &str, triple: &str, flavor: &str) -> Result<CompilerFlavor, MatrixError> {
+pub(crate) fn validate_target(
+    name: &str,
+    triple: &str,
+    flavor: &str,
+) -> Result<CompilerFlavor, MatrixError> {
     let flavor: CompilerFlavor = flavor
         .parse()
         .map_err(|flavor| MatrixError::UnknownFlavor {
@@ -529,7 +507,7 @@ fn validate_target(name: &str, triple: &str, flavor: &str) -> Result<CompilerFla
     Ok(flavor)
 }
 
-fn is_cargo_feature_name(name: &str) -> bool {
+pub(crate) fn is_cargo_feature_name(name: &str) -> bool {
     let mut chars = name.chars();
     chars
         .next()

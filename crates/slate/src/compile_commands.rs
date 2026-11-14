@@ -115,9 +115,12 @@ pub fn read(paths: &[PathBuf], options: &ReadOptions) -> Result<Commands, Compil
 pub fn read_units(
     paths: &[PathBuf],
     options: &ReadOptions,
-) -> Result<Vec<UnitCommand>, CompileCommandsError> {
-    let (entries, _) = read_entries(paths, options)?;
-    Ok(entries.into_iter().map(|entry| entry.unit).collect())
+) -> Result<(Vec<UnitCommand>, Option<SelectedTarget>), CompileCommandsError> {
+    let (entries, selected) = read_entries(paths, options)?;
+    Ok((
+        entries.into_iter().map(|entry| entry.unit).collect(),
+        selected,
+    ))
 }
 
 fn read_entries(
@@ -484,7 +487,7 @@ fn compiler_flavor(compiler: &str) -> CompilerFlavor {
         || name.ends_with("-gcc")
         || name.starts_with("gcc-")
         || name.contains("-gcc-");
-    if name == "cl" {
+    if name == "cl" || name == "clang-cl" {
         CompilerFlavor::Msvc
     } else if gcc && !name.contains("clang") {
         CompilerFlavor::Gcc

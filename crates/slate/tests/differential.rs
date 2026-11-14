@@ -1126,6 +1126,330 @@ fn manifest_rejects_invalid_input() {
     assert!(error.contains("pass one --matrix or --manifest"), "{error}");
 }
 
+fn slate_project(directory: &Path, args: &[&str]) -> Result<String, String> {
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("project")
+        .args(args)
+        .current_dir(directory)
+        .env("SLATE_SYSROOTS", slate_parser::sysroot::root())
+        .env_remove("SLATE_TARGET")
+        .env_remove("SLATE_CLANG_ARGS")
+        .output()
+        .expect("run slate project");
+    if output.status.success() {
+        Ok(String::from_utf8_lossy(&output.stdout).into_owned())
+    } else {
+        Err(String::from_utf8_lossy(&output.stderr).into_owned())
+    }
+}
+
+fn read_manifest(path: &Path) -> serde_json::Value {
+    serde_json::from_slice(&std::fs::read(path).expect("read manifest")).expect("parse manifest")
+}
+
+#[test]
+fn project_commands_build_the_fixture_manifest() {
+    let project = matrix_fixture("generated");
+    let work = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/project-edit");
+    std::fs::create_dir_all(&work).expect("create project edit directory");
+    let manifest = work.join("manifest.json");
+    let _ = std::fs::remove_file(&manifest);
+    let manifest = manifest.display().to_string();
+    let run = |args: &[&str]| {
+        let mut full = vec![args[0], args[1], manifest.as_str()];
+        full.extend(&args[2..]);
+        slate_project(&project, &full)
+    };
+    let linux = ["build-linux/compile_commands.json"];
+    let error = run(&["target", "add", "linux-x86_64", linux[0]]).expect_err("no triple");
+    assert!(error.contains("names a triple, pass --triple"), "{error}");
+    for args in [
+        &[
+            "target",
+            "add",
+            "linux-x86_64",
+            linux[0],
+            "--triple",
+            "x86_64-linux-gnu",
+        ][..],
+        &[
+            "target",
+            "add",
+            "linux-x86_64-gcc",
+            linux[0],
+            "--triple",
+            "x86_64-unknown-linux-gnu",
+            "--flavor",
+            "gcc",
+        ],
+        &[
+            "target",
+            "add",
+            "windows-x86_64",
+            "build-windows/compile_commands.json",
+            "--triple",
+            "x86_64-pc-windows-msvc",
+        ],
+        &["feature", "add", "FAST", "SMALL", "NO_THING"],
+        &[
+            "feature",
+            "add",
+            "--name",
+            "level-two",
+            "LEVEL=2",
+            "--define",
+            "HAS_LEVEL",
+        ],
+        &["feature", "conflict", "fast", "SMALL"],
+        &["feature", "conflict", "no-thing", "small"],
+        &["feature", "remove", "NO_THING"],
+    ] {
+        run(args).unwrap_or_else(|error| panic!("{args:?}: {error}"));
+    }
+    assert_eq!(
+        read_manifest(Path::new(&manifest)),
+        read_manifest(&project.join("manifest.json"))
+    );
+    for (args, expected) in [
+        (
+            &[
+                "target",
+                "add",
+                "windows-x86_64",
+                "build-windows/compile_commands.json",
+            ][..],
+            "manifest already has target windows-x86_64, pass --replace to overwrite it",
+        ),
+        (
+            &["feature", "add", "TARGET_EXTRA"],
+            "the compile commands of targets linux-x86_64, linux-x86_64-gcc already set TARGET_EXTRA",
+        ),
+        (
+            &["feature", "add", "FAST"],
+            "manifest already has feature fast",
+        ),
+        (
+            &["feature", "add", "HAS_LEVEL"],
+            "feature level-two already defines HAS_LEVEL",
+        ),
+        (
+            &["feature", "add", "NO_GZIP", "no_gzip"],
+            "NO_GZIP and no_gzip both become feature no-gzip",
+        ),
+        (
+            &["feature", "add", "9.X"],
+            "feature name \"9.x\" from 9.X is not a valid Cargo feature name, pass --name",
+        ),
+        (
+            &["feature", "remove", "MISSING"],
+            "manifest has no feature or define MISSING",
+        ),
+        (
+            &["feature", "conflict", "fast", "FAST"],
+            "a conflict needs at least two different features",
+        ),
+        (
+            &["target", "remove", "linux-x86_64", "missing"],
+            "manifest has no target missing",
+        ),
+    ] {
+        let error = run(args).expect_err(args[2]);
+        assert!(error.contains(expected), "{args:?}: {error}");
+    }
+    assert_eq!(
+        read_manifest(Path::new(&manifest)),
+        read_manifest(&project.join("manifest.json"))
+    );
+    run(&[
+        "target",
+        "add",
+        "windows-x86_64",
+        "build-linux/compile_commands.json",
+        "--triple",
+        "x86_64-pc-windows-msvc",
+        "--flavor",
+        "msvc",
+        "--replace",
+    ])
+    .expect("replace target");
+    run(&["feature", "remove", "small"]).expect("remove feature");
+    run(&["target", "remove", "linux-x86_64-gcc"]).expect("remove target");
+    assert_eq!(
+        read_manifest(Path::new(&manifest)),
+        serde_json::json!({
+            "version": 1,
+            "targets": {
+                "linux-x86_64": {
+                    "triple": "x86_64-unknown-linux-gnu",
+                    "flavor": "clang",
+                    "compile_commands": "build-linux/compile_commands.json",
+                },
+                "windows-x86_64": {
+                    "triple": "x86_64-pc-windows-msvc",
+                    "flavor": "msvc",
+                    "compile_commands": "build-linux/compile_commands.json",
+                },
+            },
+            "features": {"fast": ["FAST"], "level-two": ["LEVEL=2", "HAS_LEVEL"]},
+        })
+    );
+}
+
+#[test]
+fn project_target_add_infers_triple_flavor_and_build_target() {
+    let project = matrix_fixture("generated");
+    let work =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/project-infer");
+    std::fs::create_dir_all(&work).expect("create project infer directory");
+    let manifest = work.join("manifest.json");
+    let _ = std::fs::remove_file(&manifest);
+    let database = |name: &str, entries: &[(&str, &[&str], &str)]| {
+        let entries: Vec<serde_json::Value> = entries
+            .iter()
+            .map(|(file, arguments, output)| {
+                serde_json::json!({
+                    "directory": project.display().to_string(),
+                    "file": file,
+                    "arguments": arguments,
+                    "output": output,
+                })
+            })
+            .collect();
+        std::fs::write(work.join(name), serde_json::json!(entries).to_string())
+            .expect("write compile commands");
+    };
+    let gcc: &[&str] = &[
+        "/usr/bin/x86_64-linux-gnu-gcc",
+        "-c",
+        "main.c",
+        "-Iinclude",
+        "-Igen-linux",
+    ];
+    let gcc_value: &[&str] = &[
+        "/usr/bin/x86_64-linux-gnu-gcc",
+        "-c",
+        "value.c",
+        "-Iinclude",
+        "-Igen-linux",
+    ];
+    let gcc_shared: &[&str] = &[
+        "/usr/bin/x86_64-linux-gnu-gcc",
+        "-c",
+        "value.c",
+        "-fPIC",
+        "-Iinclude",
+        "-Igen-linux",
+    ];
+    database(
+        "gcc.json",
+        &[
+            ("main.c", gcc, "CMakeFiles/app.dir/main.c.o"),
+            ("value.c", gcc_shared, "CMakeFiles/shared.dir/value.c.o"),
+            ("value.c", gcc_value, "CMakeFiles/static.dir/value.c.o"),
+        ],
+    );
+    let clang_cl: &[&str] = &[
+        "clang-cl.exe",
+        "--target=x86_64-pc-windows-msvc",
+        "/c",
+        "main.c",
+        "/Iinclude",
+        "/Igen-windows",
+    ];
+    database("clang-cl.json", &[("main.c", clang_cl, "app.dir/main.obj")]);
+    let mixed: &[&str] = &[
+        "/usr/bin/clang",
+        "--target=aarch64-linux-gnu",
+        "-c",
+        "value.c",
+    ];
+    database(
+        "mixed.json",
+        &[("main.c", gcc, "a/main.o"), ("value.c", mixed, "a/value.o")],
+    );
+    let manifest = manifest.display().to_string();
+    let work_dir = work.display().to_string();
+    let add = |name: &str, database: &str, extra: &[&str]| {
+        let mut args = vec![
+            "target",
+            "add",
+            manifest.as_str(),
+            name,
+            database,
+            "--project",
+            work_dir.as_str(),
+        ];
+        args.extend(extra);
+        slate_project(&work, &args)
+    };
+    let report = add("gnu", "gcc.json", &[]).expect("add gcc target");
+    assert!(
+        report.contains("target gnu: x86_64-unknown-linux-gnu gcc, 1 units from gcc.json"),
+        "{report}"
+    );
+    assert!(
+        report.contains(
+            "build target static (others: app, shared, pass --build-target to choose one)"
+        ),
+        "{report}"
+    );
+    let report = add("gnu-app", "gcc.json", &["--build-target", "app"]).expect("add app target");
+    assert!(
+        report.contains("build target app (others: shared, static"),
+        "{report}"
+    );
+    add("windows", "clang-cl.json", &[]).expect("add clang-cl target");
+    let error = add("mixed", "mixed.json", &["--flavor", "gcc"]).expect_err("mixed triples");
+    assert!(error.contains("compiles for several triples (aarch64-unknown-linux-gnu, x86_64-unknown-linux-gnu), pass --triple"), "{error}");
+    let error =
+        add("mixed", "mixed.json", &["--triple", "x86_64-linux-gnu"]).expect_err("mixed flavors");
+    assert!(
+        error.contains("uses compilers of several flavors (clang, gcc), pass --flavor"),
+        "{error}"
+    );
+    let error = add(
+        "mixed",
+        "mixed.json",
+        &["--triple", "x86_64-linux-gnu", "--flavor", "gcc"],
+    )
+    .expect_err("foreign command target");
+    assert!(
+        error.contains("is compiled for aarch64-linux-gnu, not x86_64-unknown-linux-gnu"),
+        "{error}"
+    );
+    let error =
+        add("bad", "gcc.json", &["--build-target", "nope"]).expect_err("unknown build target");
+    assert!(
+        error.contains("unknown build target nope, the compile commands have: app, shared, static"),
+        "{error}"
+    );
+    assert_eq!(
+        read_manifest(Path::new(&manifest)),
+        serde_json::json!({
+            "version": 1,
+            "targets": {
+                "gnu": {
+                    "triple": "x86_64-unknown-linux-gnu",
+                    "flavor": "gcc",
+                    "compile_commands": "gcc.json",
+                    "build_target": "static",
+                },
+                "gnu-app": {
+                    "triple": "x86_64-unknown-linux-gnu",
+                    "flavor": "gcc",
+                    "compile_commands": "gcc.json",
+                    "build_target": "app",
+                },
+                "windows": {
+                    "triple": "x86_64-pc-windows-msvc",
+                    "flavor": "msvc",
+                    "compile_commands": "clang-cl.json",
+                },
+            },
+        })
+    );
+}
+
 #[test]
 fn translation_uses_native_headers_without_sysroot() {
     let work =

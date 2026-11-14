@@ -29,8 +29,77 @@ enum Command {
     Translate(RawArgs),
     LoweringBarriers(RawArgs),
     TranslateProject(RawArgs),
+    Project(ProjectArgs),
     #[cfg(feature = "sysroot-install")]
     Sysroot(SysrootArgs),
+}
+
+#[derive(Args)]
+struct ProjectArgs {
+    #[command(subcommand)]
+    action: ProjectAction,
+}
+
+#[derive(Subcommand)]
+enum ProjectAction {
+    Target {
+        #[command(subcommand)]
+        action: TargetAction,
+    },
+    Feature {
+        #[command(subcommand)]
+        action: FeatureAction,
+    },
+}
+
+#[derive(Subcommand)]
+enum TargetAction {
+    Add {
+        manifest: PathBuf,
+        name: String,
+        compile_commands: PathBuf,
+        #[arg(long, default_value = ".")]
+        project: PathBuf,
+        #[arg(long)]
+        triple: Option<String>,
+        #[arg(long)]
+        flavor: Option<String>,
+        #[arg(long)]
+        sysroot: Option<String>,
+        #[arg(long)]
+        build_target: Option<String>,
+        #[arg(long)]
+        replace: bool,
+    },
+    Remove {
+        manifest: PathBuf,
+        #[arg(required = true)]
+        names: Vec<String>,
+    },
+}
+
+#[derive(Subcommand)]
+enum FeatureAction {
+    Add {
+        manifest: PathBuf,
+        defines: Vec<String>,
+        #[arg(long, default_value = ".")]
+        project: PathBuf,
+        #[arg(long)]
+        name: Option<String>,
+        #[arg(long = "define")]
+        extra_defines: Vec<String>,
+    },
+    Remove {
+        manifest: PathBuf,
+        #[arg(required = true)]
+        names: Vec<String>,
+    },
+    Conflict {
+        manifest: PathBuf,
+        #[arg(required = true)]
+        names: Vec<String>,
+    },
 }
 
 #[derive(Args)]
@@ -113,6 +182,7 @@ fn run_cli() -> ExitCode {
             Some(_) => run(translate_project_command(&raw.args)),
             None => ExitCode::from(2),
         },
+        Command::Project(args) => run(project_command(args.action)),
         #[cfg(feature = "sysroot-install")]
         Command::Sysroot(args) => match args.action {
             SysrootAction::Install(raw) => {
@@ -145,6 +215,70 @@ fn run(result: Result<String, String>) -> ExitCode {
             ExitCode::FAILURE
         }
     }
+}
+
+fn project_command(action: ProjectAction) -> Result<String, String> {
+    use slate::project::manifest;
+    cli_result(match action {
+        ProjectAction::Target {
+            action:
+                TargetAction::Add {
+                    manifest: path,
+                    name,
+                    compile_commands,
+                    project,
+                    triple,
+                    flavor,
+                    sysroot,
+                    build_target,
+                    replace,
+                },
+        } => manifest::add_target(&manifest::TargetAdd {
+            manifest: &path,
+            project: &project,
+            name: &name,
+            compile_commands: &compile_commands,
+            triple: triple.as_deref(),
+            flavor: flavor.as_deref(),
+            sysroot: sysroot.as_deref(),
+            build_target: build_target.as_deref(),
+            replace,
+        }),
+        ProjectAction::Target {
+            action:
+                TargetAction::Remove {
+                    manifest: path,
+                    names,
+                },
+        } => manifest::remove_targets(&path, &names),
+        ProjectAction::Feature {
+            action:
+                FeatureAction::Add {
+                    manifest: path,
+                    mut defines,
+                    project,
+                    name,
+                    extra_defines,
+                },
+        } => {
+            defines.extend(extra_defines);
+            manifest::add_features(&path, &project, &defines, name.as_deref())
+        }
+        ProjectAction::Feature {
+            action:
+                FeatureAction::Remove {
+                    manifest: path,
+                    names,
+                },
+        } => manifest::remove_features(&path, &names),
+        ProjectAction::Feature {
+            action:
+                FeatureAction::Conflict {
+                    manifest: path,
+                    names,
+                },
+        } => manifest::add_conflict(&path, &names),
+    })
 }
 
 fn cli_result<T, E: std::error::Error + 'static>(result: Result<T, E>) -> Result<T, String> {
