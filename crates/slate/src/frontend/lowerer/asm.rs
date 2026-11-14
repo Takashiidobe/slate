@@ -719,6 +719,17 @@ fn asm_template(
                         template.push_str(&canonical[1..]);
                         continue;
                     }
+                    Slot::Register(canonical) if *modifier == Some('a') && view.is_none() => {
+                        let bits = if family == TargetFamily::X86 { 32 } else { 64 };
+                        let name = gpr_name(canonical, None, bits).ok_or_else(|| {
+                            unsupported_asm(format!("address register {canonical}"))
+                        })?;
+                        template.push_str(&match asm.dialect {
+                            Some(ir::AsmDialect::Intel) => format!("[{name}]"),
+                            _ => format!("(%{name})"),
+                        });
+                        continue;
+                    }
                     Slot::Register(canonical) => {
                         let width = operand.width.ok_or(Invariant::AsmOperandWidth)?;
                         template.push_str(&explicit_reference(
@@ -1002,7 +1013,9 @@ impl FunctionLowerer<'_, '_> {
     fn asm_symbol(&mut self, symbol: &ir::AsmSymbol) -> Result<Expr> {
         let id = symbol.binding;
         if let Some(function) = self.tables.names.get(&id) {
-            if self.tables.intrinsics.contains_key(&id) || function.builtin.is_some() {
+            if self.tables.intrinsics.contains_key(&id)
+                || (function.builtin.is_some() && function.is_extern)
+            {
                 return Err(unsupported_asm("builtin symbol operand"));
             }
             self.dependencies.taken_functions.insert(id);
@@ -1799,6 +1812,7 @@ impl FunctionLowerer<'_, '_> {
             };
             let mut pinned = None;
             let mut reserved = None;
+            let mut merged_rbx = false;
             if x86
                 && matches!(&operand.selected, Some(ir::AsmOperandClass::Explicit(register)) if register.canonical == Some("sp"))
             {
@@ -2174,10 +2188,12 @@ impl FunctionLowerer<'_, '_> {
                             rust::AsmReg::Class("reg".into())
                         }
                         "bx" if x86_32 => {
-                            return Err(unsupported_asm("ebx operand"));
+                            pinned = Some(canonical);
+                            rust::AsmReg::Explicit(canonical.into())
                         }
                         "bx" if saved_rbx.is_some() => {
-                            return Err(unsupported_asm("second rbx operand"));
+                            merged_rbx = true;
+                            rust::AsmReg::Class("reg".into())
                         }
                         "bx" => {
                             saved_rbx = Some(operands.len());
@@ -2272,6 +2288,30 @@ impl FunctionLowerer<'_, '_> {
                 reserved_operands.push((canonical, operands.len(), input, output));
                 slots.push(Slot::Register(canonical));
                 operands.push(lowered);
+                continue;
+            }
+            if merged_rbx {
+                let slot = saved_rbx.ok_or(Invariant::AsmOperandIndex(index))?;
+                let discarded =
+                    |output: &Expr| matches!(output, Expr::Var(name) if name.as_str() == "_");
+                let (input, output) = match (&operands[slot], lowered) {
+                    (
+                        rust::AsmOperand::Out { value, .. },
+                        rust::AsmOperand::In { value: input, .. },
+                    ) => (input, value.clone()),
+                    (
+                        rust::AsmOperand::InOut { input, output, .. },
+                        rust::AsmOperand::Out { value, .. },
+                    ) if discarded(output) => (input.clone(), value),
+                    _ => return Err(unsupported_asm("second rbx operand")),
+                };
+                operands[slot] = rust::AsmOperand::InOut {
+                    reg: rust::AsmReg::Class("reg".into()),
+                    late: false,
+                    input,
+                    output,
+                };
+                slots.push(Slot::Register("bx"));
                 continue;
             }
             match (pinned, lowered) {
@@ -2445,10 +2485,7 @@ impl FunctionLowerer<'_, '_> {
                 if !clobbered.insert(canonical) {
                     continue;
                 }
-                if canonical == "bx" && x86_32 {
-                    return Err(unsupported_asm("ebx clobber"));
-                }
-                if canonical == "bx" {
+                if canonical == "bx" && !x86_32 {
                     if saved_rbx.is_none() {
                         saved_rbx = Some((operands.len(), false));
                         operands.push(rust::AsmOperand::Out {
