@@ -1091,6 +1091,15 @@ impl ClassifyCtx<'_> {
         }
     }
 
+    fn stored(&mut self, value: &Expr) {
+        if let Some(source) = source_var(value)
+            && let Some(canonical) = self.canonical_of(source.as_str())
+        {
+            self.observe(&canonical, PointerFact::observe_escape);
+        }
+        self.expr(value);
+    }
+
     fn escape_all(&mut self, expr: &Expr) {
         if let Expr::Var(name) = expr
             && let Some(canonical) = self.canonical_of(name.as_str())
@@ -1165,17 +1174,17 @@ impl ClassifyCtx<'_> {
             }
             Expr::StructLit { fields, .. } => {
                 for (_, value) in fields {
-                    self.expr(value);
+                    self.stored(value);
                 }
             }
             Expr::TupleStructLit { fields, .. } | Expr::ArrayLit(fields) | Expr::VecLit(fields) => {
                 for elem in fields {
-                    self.expr(elem);
+                    self.stored(elem);
                 }
             }
-            Expr::ArrayRepeat { elem, .. } => self.expr(elem),
+            Expr::ArrayRepeat { elem, .. } => self.stored(elem),
             Expr::VecRepeat { elem, len } => {
-                self.expr(elem);
+                self.stored(elem);
                 self.expr(len);
             }
             Expr::Closure { body, .. } => self.expr(body),
