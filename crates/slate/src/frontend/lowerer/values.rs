@@ -1055,6 +1055,21 @@ impl FunctionLowerer<'_, '_> {
                 to: self.lower_type(&value.ty)?,
                 expr: Box::new(self.lower_value(operand)?),
             },
+            ValueKind::Convert {
+                kind: ir::ConversionKind::BitCast,
+                operand,
+                ..
+            } if matches!(
+                self.tables.resolve_type(&operand.ty),
+                ir::Type::Vector { .. }
+            ) || matches!(self.tables.resolve_type(&value.ty), ir::Type::Vector { .. }) =>
+            {
+                Expr::Transmute {
+                    from: self.lower_type(&operand.ty)?,
+                    to: self.lower_type(&value.ty)?,
+                    expr: Box::new(self.lower_value(operand)?),
+                }
+            }
             ValueKind::Lane { vector, index } => Expr::Index {
                 base: Box::new(self.lower_value(vector)?),
                 index: Box::new(Expr::Cast {
