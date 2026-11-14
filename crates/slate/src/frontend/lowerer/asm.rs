@@ -749,6 +749,7 @@ fn asm_template(
                         let displacement = match modifier {
                             None => None,
                             Some('H') if x86 => Some(8),
+                            Some('b' | 'h' | 'w' | 'k' | 'q') if x86 => None,
                             _ => {
                                 return Err(unsupported_asm(format!(
                                     "memory modifier {modifier:?}"
