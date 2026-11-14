@@ -173,6 +173,14 @@ linkage and merged across redeclarations (first value wins, flags OR):
 - Conflicting `always_inline`/`noinline` across declarations keep the first
   and are accepted on clang and gcc. Fixture: `ir_inline_conflict.c`.
 
+- Slate lowers a `weak` object declaration as `#[linkage = "extern_weak"]
+  static X: *mut T`, which holds the address. On ELF, a static initializer
+  that takes its address uses a second declaration of the same symbol,
+  `#[link_name = "x"] static mut __slate_weak_address_X: T`, plus
+  `global_asm!(".weak {}", sym ...)` in the same module. rustc keeps a
+  module's non-generic items in one codegen unit, so the only strong
+  reference sits next to its `.weak`. Thread-locals and non-ELF targets
+  still reject it. Fixture: `static_init_weak_extern_address.c`.
 - `weakref("t")` is not `weak` + `alias`: it defines no symbol, and its
   uses resolve to an `extern_weak` reference to `t`. It prints as `extern`
   with `[weakref="t"]`, needs internal linkage, and applies to functions

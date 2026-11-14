@@ -68,12 +68,12 @@ int j[1] = { DBL_MAX }; /* { dg-warning "overflow in conversion" } */
 // DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: i32 [storage=static] = shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(0), neg<i32, overflow=ub>(const<i32>(1))) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: i32 [storage=static] = shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(0), const<i32>(1000)) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_h:[0-9]+]] h: i32 [storage=static] = shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(0), neg<i32, overflow=ub>(const<i32>(1))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_b1:[0-9]+]] b1: i32 [storage=static] = conditional<i32>(ne<i32>(const<i32>(0), const<i32>(0)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f64>(1.7976931348623157e308)), const<i32>(0)) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_d1:[0-9]+]] d1: u32 [storage=static] = conditional<u32>(ne<i32>(const<i32>(0), const<i32>(0)), float_to_int<u32, reason=explicit, out_of_range=ub, exceptions=ignore>(neg<f64>(const<f64>(1.0))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_e1:[0-9]+]] e1: i32 [storage=static] = conditional<i32>(ne<i32>(const<i32>(0), const<i32>(0)), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(0), const<i32>(1000)), const<i32>(0)) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_f1:[0-9]+]] f1: i32 [storage=static] = conditional<i32>(ne<i32>(const<i32>(0), const<i32>(0)), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(0), neg<i32, overflow=ub>(const<i32>(1))), const<i32>(0)) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_g1:[0-9]+]] g1: i32 [storage=static] = conditional<i32>(ne<i32>(const<i32>(0), const<i32>(0)), shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(0), const<i32>(1000)), const<i32>(0)) [linkage=external];
-// DEFAULT-NEXT:     global %[[VALUE_h1:[0-9]+]] h1: i32 [storage=static] = conditional<i32>(ne<i32>(const<i32>(0), const<i32>(0)), shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(0), neg<i32, overflow=ub>(const<i32>(1))), const<i32>(0)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b1:[0-9]+]] b1: i32 [storage=static] = const<i32>(0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d1:[0-9]+]] d1: u32 [storage=static] = reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e1:[0-9]+]] e1: i32 [storage=static] = const<i32>(0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f1:[0-9]+]] f1: i32 [storage=static] = const<i32>(0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_g1:[0-9]+]] g1: i32 [storage=static] = const<i32>(0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_h1:[0-9]+]] h1: i32 [storage=static] = const<i32>(0) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] = shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(neg<i32, overflow=ub>(const<i32>(1)), const<i32>(0)) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_j:[0-9]+]] j: array<i32, 1> [storage=static] = aggregate<array<i32, 1>, zero_fill=false>(index0 = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(1.7976931348623157e308))) [linkage=external];
 // DEFAULT-NEXT: }

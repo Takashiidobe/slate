@@ -1166,6 +1166,24 @@ impl Lowerer {
         self.promote_truth(value)
     }
 
+    fn constant_condition(&mut self, condition: &Expr) -> Option<bool> {
+        let mut inner = condition;
+        while let ExprKind::Paren(next) = &inner.value {
+            inner = next;
+        }
+        if matches!(inner.value, ExprKind::StringLiteral(_)) {
+            return Some(true);
+        }
+        let value = self.types.constant_value(condition).ok()?;
+        let target = self.types.fold_target();
+        let number = if self.types.ctypes.is_pointer(value.c) {
+            super::fold::pointer_address(&value.value, target)?
+        } else {
+            super::fold::integer_constant(&value.value, target)?
+        };
+        Some(number.sign() != num_bigint::Sign::NoSign)
+    }
+
     fn promote_truth(&mut self, value: Value) -> Result<Value, ResolveError> {
         let int = self.context.int_type();
         self.context
@@ -3121,6 +3139,30 @@ impl Lowerer {
                 then_value,
                 else_value,
             } => {
+                if self.in_constant_initializer
+                    && let Some(truth) = self.constant_condition(condition)
+                    && let c = self.result(e)?
+                    && !self.types.ctypes.is_void(c)
+                {
+                    let (selected, slot) = match (then_value, truth) {
+                        (Some(then_value), true) => (then_value, Slot::Then),
+                        (None, true) => (condition, Slot::Then),
+                        (_, false) => (else_value, Slot::Else),
+                    };
+                    let mut value = self.expr(selected)?;
+                    if then_value.is_none()
+                        && truth
+                        && value.value.ty == Type::Bool
+                        && self.types.ir_type(value.c) != Type::Bool
+                    {
+                        value.value = self.emit_convert_to(
+                            value.value,
+                            value.c,
+                            ConversionReason::Promotion,
+                        )?;
+                    }
+                    return self.converted(e, slot, value);
+                }
                 let (test, mut left, then_value, shared) = match then_value {
                     Some(then_value) => {
                         let test = self.expr(condition)?;

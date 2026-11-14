@@ -348,6 +348,7 @@ impl Tables<'_> {
 
     pub(super) fn is_constant_address(&self, place: &ir::Place) -> bool {
         match &place.kind {
+            PlaceKind::Binding(id) if self.weak_address_globals.contains(id) => true,
             PlaceKind::Binding(id) if self.indirect_globals.contains(id) => false,
             PlaceKind::Binding(id) => {
                 self.statics.contains(id)
@@ -719,6 +720,10 @@ impl FunctionLowerer<'_, '_> {
 
 pub(super) fn image_name(binding: &str) -> String {
     format!("__SlateImage_{binding}")
+}
+
+pub(super) fn weak_address_name(binding: &str) -> String {
+    format!("__slate_weak_address_{binding}")
 }
 
 fn maybe_uninit(ty: rust::Type) -> rust::Type {

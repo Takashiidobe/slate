@@ -41,7 +41,7 @@ int first(void) {
 // DEFAULT-NEXT:         field0 driver_data: u64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([80, 65, 82, 80, 79, 82, 84, 95, 83, 69, 82, 73, 65, 76, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_ids:[0-9]+]] ids: array<@type[[TYPE_id]], 1> [storage=static] [const] = aggregate<array<@type[[TYPE_id]], 1>, zero_fill=false>(index0 = aggregate<@type[[TYPE_id]], zero_fill=false>(field0 = conditional<u64>(ne<i32>(const<i32>(0), const<i32>(0)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))), ptr_to_int<u64, reason=explicit>(addr_of<ptr<array<i8, 15>>>(%[[VALUE_str]]))))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ids:[0-9]+]] ids: array<@type[[TYPE_id]], 1> [storage=static] [const] = aggregate<array<@type[[TYPE_id]], 1>, zero_fill=false>(index0 = aggregate<@type[[TYPE_id]], zero_fill=false>(field0 = ptr_to_int<u64, reason=explicit>(addr_of<ptr<array<i8, 15>>>(%[[VALUE_str]])))) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([97, 98, 99, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_narrow:[0-9]+]] narrow: ptr<const array<i8, 4>> [storage=static] = pointer_cast<ptr<const array<i8, 4>>, reason=assign>(addr_of<ptr<array<i8, 4>>>(%[[VALUE_str_2]])) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i32, 3> [storage=static] = code_units<array<i32, 3>>([97, 98, 0]) [linkage=internal];

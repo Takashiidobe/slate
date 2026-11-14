@@ -614,6 +614,14 @@ impl FunctionLowerer<'_, '_> {
                 }),
             };
         }
+        if self.in_static_initializer && self.tables.weak_address_globals.contains(&id) {
+            self.dependencies.weak_addresses.borrow_mut().insert(id);
+            return Expr::Var(
+                super::globals::weak_address_name(&self.binding_name(id))
+                    .as_str()
+                    .into(),
+            );
+        }
         if self.tables.indirect_globals.contains(&id) {
             return Expr::Unary {
                 op: rust::UnaryOp::Deref,

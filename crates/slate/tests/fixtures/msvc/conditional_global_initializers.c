@@ -161,20 +161,14 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:     {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_0:__t[0-9]+]]: op = unsafe { std::mem::zeroed() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_0]].text = ptrlen {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ptr: (if (std::mem::size_of::<[i8; 2]>() as u64) != 0u64 {
 // I686-PC-WINDOWS-MSVC-NEXT: static mut operators: [op; 5] = [
 // I686-PC-WINDOWS-MSVC-NEXT:     op {
 // I686-PC-WINDOWS-MSVC-NEXT:         text: ptrlen {
-// I686-PC-WINDOWS-MSVC-NEXT:             ptr: (if (std::mem::size_of::<[i8; 2]>() as u32) != 0u32 {
 // AARCH64-PC-WINDOWS-MSVC-NEXT: static mut operators: [op; 5] = [
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_0:__t[0-9]+]]: op = unsafe { std::mem::zeroed() };
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_0]].text = ptrlen {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:             ptr: (if (std::mem::size_of::<[i8; 2]>() as u64) != 0u64 {
-// CHECK-NEXT:                 b"(\0".as_ptr() as *mut i8
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 b"(\0".as_ptr() as *mut i8
-// CHECK-NEXT:             }) as *const (),
+// CHECK-NEXT:             ptr: (b"(\0".as_ptr() as *mut i8) as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:             len: (std::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
 // X86_64-PC-WINDOWS-MSVC-NEXT:         };
 // X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_0]].r#type = 0u32;
@@ -190,18 +184,12 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:     {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_1:__t[0-9]+]]: op = unsafe { std::mem::zeroed() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_1]].text = ptrlen {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ptr: (if (std::mem::size_of::<[i8; 2]>() as u64) != 0u64 {
 // I686-PC-WINDOWS-MSVC-NEXT:     op {
 // I686-PC-WINDOWS-MSVC-NEXT:         text: ptrlen {
-// I686-PC-WINDOWS-MSVC-NEXT:             ptr: (if (std::mem::size_of::<[i8; 2]>() as u32) != 0u32 {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_1:__t[0-9]+]]: op = unsafe { std::mem::zeroed() };
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_1]].text = ptrlen {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:             ptr: (if (std::mem::size_of::<[i8; 2]>() as u64) != 0u64 {
-// CHECK-NEXT:                 b")\0".as_ptr() as *mut i8
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 b")\0".as_ptr() as *mut i8
-// CHECK-NEXT:             }) as *const (),
+// CHECK-NEXT:             ptr: (b")\0".as_ptr() as *mut i8) as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:             len: (std::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
 // X86_64-PC-WINDOWS-MSVC-NEXT:         };
 // X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_1]].r#type = 1u32;
@@ -217,18 +205,12 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:     {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_2:__t[0-9]+]]: op = unsafe { std::mem::zeroed() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_2]].text = ptrlen {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ptr: (if (std::mem::size_of::<[i8; 3]>() as u64) != 0u64 {
 // I686-PC-WINDOWS-MSVC-NEXT:     op {
 // I686-PC-WINDOWS-MSVC-NEXT:         text: ptrlen {
-// I686-PC-WINDOWS-MSVC-NEXT:             ptr: (if (std::mem::size_of::<[i8; 3]>() as u32) != 0u32 {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_2:__t[0-9]+]]: op = unsafe { std::mem::zeroed() };
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_2]].text = ptrlen {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:             ptr: (if (std::mem::size_of::<[i8; 3]>() as u64) != 0u64 {
-// CHECK-NEXT:                 b"&&\0".as_ptr() as *mut i8
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 b"&&\0".as_ptr() as *mut i8
-// CHECK-NEXT:             }) as *const (),
+// CHECK-NEXT:             ptr: (b"&&\0".as_ptr() as *mut i8) as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:             len: (std::mem::size_of::<[i8; 3]>() as u64).wrapping_sub(1u64),
 // X86_64-PC-WINDOWS-MSVC-NEXT:         };
 // X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_2]].r#type = 2u32;
@@ -244,18 +226,12 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:     {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_3:__t[0-9]+]]: op = unsafe { std::mem::zeroed() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_3]].text = ptrlen {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ptr: (if (std::mem::size_of::<[i8; 3]>() as u64) != 0u64 {
 // I686-PC-WINDOWS-MSVC-NEXT:     op {
 // I686-PC-WINDOWS-MSVC-NEXT:         text: ptrlen {
-// I686-PC-WINDOWS-MSVC-NEXT:             ptr: (if (std::mem::size_of::<[i8; 3]>() as u32) != 0u32 {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_3:__t[0-9]+]]: op = unsafe { std::mem::zeroed() };
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_3]].text = ptrlen {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:             ptr: (if (std::mem::size_of::<[i8; 3]>() as u64) != 0u64 {
-// CHECK-NEXT:                 b"||\0".as_ptr() as *mut i8
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 b"||\0".as_ptr() as *mut i8
-// CHECK-NEXT:             }) as *const (),
+// CHECK-NEXT:             ptr: (b"||\0".as_ptr() as *mut i8) as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:             len: (std::mem::size_of::<[i8; 3]>() as u64).wrapping_sub(1u64),
 // X86_64-PC-WINDOWS-MSVC-NEXT:         };
 // X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_3]].r#type = 3u32;
@@ -271,18 +247,12 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:     {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_4:__t[0-9]+]]: op = unsafe { std::mem::zeroed() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_4]].text = ptrlen {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ptr: (if (std::mem::size_of::<[i8; 2]>() as u64) != 0u64 {
 // I686-PC-WINDOWS-MSVC-NEXT:     op {
 // I686-PC-WINDOWS-MSVC-NEXT:         text: ptrlen {
-// I686-PC-WINDOWS-MSVC-NEXT:             ptr: (if (std::mem::size_of::<[i8; 2]>() as u32) != 0u32 {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_4:__t[0-9]+]]: op = unsafe { std::mem::zeroed() };
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_4]].text = ptrlen {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:             ptr: (if (std::mem::size_of::<[i8; 2]>() as u64) != 0u64 {
-// CHECK-NEXT:                 b"!\0".as_ptr() as *mut i8
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 b"!\0".as_ptr() as *mut i8
-// CHECK-NEXT:             }) as *const (),
+// CHECK-NEXT:             ptr: (b"!\0".as_ptr() as *mut i8) as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:             len: (std::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
 // X86_64-PC-WINDOWS-MSVC-NEXT:         };
 // X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_4]].r#type = 4u32;
@@ -303,37 +273,19 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT: static mut names: [ptrlen; 3] = [
 // AARCH64-PC-WINDOWS-MSVC-NEXT: static mut names: [ptrlen; 3] = [
 // CHECK-NEXT:     ptrlen {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         ptr: (if (std::mem::size_of::<[i8; 5]>() as u64) != 0u64 {
-// I686-PC-WINDOWS-MSVC-NEXT:         ptr: (if (std::mem::size_of::<[i8; 5]>() as u32) != 0u32 {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         ptr: (if (std::mem::size_of::<[i8; 5]>() as u64) != 0u64 {
-// CHECK-NEXT:             b"ping\0".as_ptr() as *mut i8
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             b"ping\0".as_ptr() as *mut i8
-// CHECK-NEXT:         }) as *const (),
+// CHECK-NEXT:         ptr: (b"ping\0".as_ptr() as *mut i8) as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:         len: (std::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),
 // I686-PC-WINDOWS-MSVC-NEXT:         len: (std::mem::size_of::<[i8; 5]>() as u32).wrapping_sub(1u32),
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         len: (std::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),
 // CHECK-NEXT:     },
 // CHECK-NEXT:     ptrlen {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         ptr: (if (std::mem::size_of::<[i8; 6]>() as u64) != 0u64 {
-// I686-PC-WINDOWS-MSVC-NEXT:         ptr: (if (std::mem::size_of::<[i8; 6]>() as u32) != 0u32 {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         ptr: (if (std::mem::size_of::<[i8; 6]>() as u64) != 0u64 {
-// CHECK-NEXT:             b"query\0".as_ptr() as *mut i8
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             b"query\0".as_ptr() as *mut i8
-// CHECK-NEXT:         }) as *const (),
+// CHECK-NEXT:         ptr: (b"query\0".as_ptr() as *mut i8) as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:         len: (std::mem::size_of::<[i8; 6]>() as u64).wrapping_sub(1u64),
 // I686-PC-WINDOWS-MSVC-NEXT:         len: (std::mem::size_of::<[i8; 6]>() as u32).wrapping_sub(1u32),
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         len: (std::mem::size_of::<[i8; 6]>() as u64).wrapping_sub(1u64),
 // CHECK-NEXT:     },
 // CHECK-NEXT:     ptrlen {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         ptr: (if (std::mem::size_of::<[i8; 25]>() as u64) != 0u64 {
-// I686-PC-WINDOWS-MSVC-NEXT:         ptr: (if (std::mem::size_of::<[i8; 25]>() as u32) != 0u32 {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         ptr: (if (std::mem::size_of::<[i8; 25]>() as u64) != 0u64 {
-// CHECK-NEXT:             b"session-bind@openssh.com\0".as_ptr() as *mut i8
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             b"session-bind@openssh.com\0".as_ptr() as *mut i8
-// CHECK-NEXT:         }) as *const (),
+// CHECK-NEXT:         ptr: (b"session-bind@openssh.com\0".as_ptr() as *mut i8) as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:         len: (std::mem::size_of::<[i8; 25]>() as u64).wrapping_sub(1u64),
 // I686-PC-WINDOWS-MSVC-NEXT:         len: (std::mem::size_of::<[i8; 25]>() as u32).wrapping_sub(1u32),
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         len: (std::mem::size_of::<[i8; 25]>() as u64).wrapping_sub(1u64),
@@ -380,32 +332,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut extra: sign_extra = sign_extra {
-// X86_64-PC-WINDOWS-MSVC-NEXT:     hash: if (std::mem::size_of::<i32>() as u64) == 4u64 {
-// I686-PC-WINDOWS-MSVC-NEXT:     hash: if (std::mem::size_of::<i32>() as u32) == 4u32 {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     hash: if (std::mem::size_of::<i32>() as u64) == 4u64 {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of!(vt_a) }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of!(vt_b) }
-// CHECK-NEXT:     },
-// CHECK-NEXT:     fallback: {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         let [[T_0]]: Option<unsafe extern "C-unwind" fn(i32) -> i32> = if 1i32 != 0i32 {
-// I686-PC-WINDOWS-MSVC-NEXT:         let [[T_0:__t[0-9]+]]: Option<unsafe extern "C-unwind" fn(i32) -> i32> = if 1i32 != 0i32 {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         let [[T_0]]: Option<unsafe extern "C-unwind" fn(i32) -> i32> = if 1i32 != 0i32 {
-// CHECK-NEXT:             Some(hash_b)
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             Some(hash_a)
-// CHECK-NEXT:         };
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     },
+// CHECK-NEXT:     hash: unsafe { std::ptr::addr_of!(vt_a) },
+// CHECK-NEXT:     fallback: Some(hash_b),
 // CHECK-NEXT:     alg: (b"Ed25519\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT:     prefix: ptrlen {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         ptr: (if (std::mem::size_of::<[i8; 1]>() as u64) != 0u64 {
-// I686-PC-WINDOWS-MSVC-NEXT:         ptr: (if (std::mem::size_of::<[i8; 1]>() as u32) != 0u32 {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         ptr: (if (std::mem::size_of::<[i8; 1]>() as u64) != 0u64 {
-// CHECK-NEXT:             b"\0".as_ptr() as *mut i8
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             b"\0".as_ptr() as *mut i8
-// CHECK-NEXT:         }) as *const (),
+// CHECK-NEXT:         ptr: (b"\0".as_ptr() as *mut i8) as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:         len: (std::mem::size_of::<[i8; 1]>() as u64).wrapping_sub(1u64),
 // I686-PC-WINDOWS-MSVC-NEXT:         len: (std::mem::size_of::<[i8; 1]>() as u32).wrapping_sub(1u32),
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         len: (std::mem::size_of::<[i8; 1]>() as u64).wrapping_sub(1u64),
@@ -416,627 +347,36 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut buffer_b: [i8; 8] = [115, 101, 99, 111, 110, 100, 0, 0];
 // CHECK-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: static mut pick: *mut i8 = if (std::mem::size_of::<*mut ()>() as u64) == 8u64 {
-// I686-PC-WINDOWS-MSVC-NEXT: static mut pick: *mut i8 = if (std::mem::size_of::<*mut ()>() as u32) == 8u32 {
-// AARCH64-PC-WINDOWS-MSVC-NEXT: static mut pick: *mut i8 = if (std::mem::size_of::<*mut ()>() as u64) == 8u64 {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(buffer_a) as *mut i8 }
-// CHECK-NEXT: } else {
-// CHECK-NEXT:     unsafe { unsafe { std::ptr::addr_of_mut!(buffer_b) as *mut i8 }.offset(1i32 as isize) }
-// CHECK-NEXT: };
+// X86_64-PC-WINDOWS-MSVC-NEXT: static mut pick: *mut i8 = unsafe { std::ptr::addr_of_mut!(buffer_a) as *mut i8 };
+// I686-PC-WINDOWS-MSVC-NEXT: static mut pick: *mut i8 =
+// I686-PC-WINDOWS-MSVC-NEXT:     unsafe { unsafe { std::ptr::addr_of_mut!(buffer_b) as *mut i8 }.offset(1i32 as isize) };
+// AARCH64-PC-WINDOWS-MSVC-NEXT: static mut pick: *mut i8 = unsafe { std::ptr::addr_of_mut!(buffer_a) as *mut i8 };
 // CHECK-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: static mut picks: __SlateAlign16<[*const u32; 2]> = __SlateAlign16([
-// I686-PC-WINDOWS-MSVC-NEXT: static mut picks: [*const u32; 2] = [
-// AARCH64-PC-WINDOWS-MSVC-NEXT: static mut picks: [*const u32; 2] = [
-// CHECK-NEXT:     if 0i32 != 0i32 {
-// CHECK-NEXT:         std::ptr::null::<u32>()
-// CHECK-NEXT:     } else {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::ptr::addr_of!(operators.0[3i32 as usize].r#type) }
-// I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::ptr::addr_of!(operators[3i32 as usize].r#type) }
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::ptr::addr_of!(operators[3i32 as usize].r#type) }
-// CHECK-NEXT:     },
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if (std::mem::size_of::<i32>() as u64) == 4u64 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::ptr::addr_of!(operators.0[1i32 as usize].r#type) }
-// I686-PC-WINDOWS-MSVC-NEXT:     if (std::mem::size_of::<i32>() as u32) == 4u32 {
-// I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::ptr::addr_of!(operators[1i32 as usize].r#type) }
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     if (std::mem::size_of::<i32>() as u64) == 4u64 {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::ptr::addr_of!(operators[1i32 as usize].r#type) }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         std::ptr::null::<u32>()
-// CHECK-NEXT:     },
+// X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe { std::ptr::addr_of!(operators.0[3i32 as usize].r#type) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe { std::ptr::addr_of!(operators.0[1i32 as usize].r#type) },
 // X86_64-PC-WINDOWS-MSVC-NEXT: ]);
+// I686-PC-WINDOWS-MSVC-NEXT: static mut picks: [*const u32; 2] = [
+// I686-PC-WINDOWS-MSVC-NEXT:     unsafe { std::ptr::addr_of!(operators[3i32 as usize].r#type) },
+// I686-PC-WINDOWS-MSVC-NEXT:     unsafe { std::ptr::addr_of!(operators[1i32 as usize].r#type) },
 // I686-PC-WINDOWS-MSVC-NEXT: ];
+// AARCH64-PC-WINDOWS-MSVC-NEXT: static mut picks: [*const u32; 2] = [
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     unsafe { std::ptr::addr_of!(operators[3i32 as usize].r#type) },
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     unsafe { std::ptr::addr_of!(operators[1i32 as usize].r#type) },
 // AARCH64-PC-WINDOWS-MSVC-NEXT: ];
 // CHECK-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: static mut valid_bitmap: __SlateAlign16<[u32; 8]> = __SlateAlign16([
-// I686-PC-WINDOWS-MSVC-NEXT: static mut valid_bitmap: [u32; 8] = [
-// AARCH64-PC-WINDOWS-MSVC-NEXT: static mut valid_bitmap: [u32; 8] = [
-// CHECK-NEXT:     0u32 | if 1i32 >= 0i32 && 1i32 < 32i32 {
-// CHECK-NEXT:         1u32 << if 1i32 >= 0i32 && 1i32 < 32i32 {
-// CHECK-NEXT:             1i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 2i32 >= 0i32 && 2i32 < 32i32 {
-// CHECK-NEXT:         1u32 << if 2i32 >= 0i32 && 2i32 < 32i32 {
-// CHECK-NEXT:             2i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 20i32 >= 0i32 && 20i32 < 32i32 {
-// CHECK-NEXT:         1u32 << if 20i32 >= 0i32 && 20i32 < 32i32 {
-// CHECK-NEXT:             20i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 31i32 >= 0i32 && 31i32 < 32i32 {
-// CHECK-NEXT:         1u32 << if 31i32 >= 0i32 && 31i32 < 32i32 {
-// CHECK-NEXT:             31i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 32i32 >= 0i32 && 32i32 < 32i32 {
-// CHECK-NEXT:         1u32 << if 32i32 >= 0i32 && 32i32 < 32i32 {
-// CHECK-NEXT:             32i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 50i32 >= 0i32 && 50i32 < 32i32 {
-// CHECK-NEXT:         1u32 << if 50i32 >= 0i32 && 50i32 < 32i32 {
-// CHECK-NEXT:             50i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 94i32 >= 0i32 && 94i32 < 32i32 {
-// CHECK-NEXT:         1u32 << if 94i32 >= 0i32 && 94i32 < 32i32 {
-// CHECK-NEXT:             94i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 100i32 >= 0i32 && 100i32 < 32i32 {
-// CHECK-NEXT:         1u32 << if 100i32 >= 0i32 && 100i32 < 32i32 {
-// CHECK-NEXT:             100i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 255i32 >= 0i32 && 255i32 < 32i32 {
-// CHECK-NEXT:         1u32 << if 255i32 >= 0i32 && 255i32 < 32i32 {
-// CHECK-NEXT:             255i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     },
-// CHECK-NEXT:     0u32 | if 1i32 >= 32i32 && 1i32 < 64i32 {
-// CHECK-NEXT:         1u32 << if 1i32 >= 32i32 && 1i32 < 64i32 {
-// CHECK-NEXT:             -31i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 2i32 >= 32i32 && 2i32 < 64i32 {
-// CHECK-NEXT:         1u32 << if 2i32 >= 32i32 && 2i32 < 64i32 {
-// CHECK-NEXT:             -30i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 20i32 >= 32i32 && 20i32 < 64i32 {
-// CHECK-NEXT:         1u32 << if 20i32 >= 32i32 && 20i32 < 64i32 {
-// CHECK-NEXT:             -12i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 31i32 >= 32i32 && 31i32 < 64i32 {
-// CHECK-NEXT:         1u32 << if 31i32 >= 32i32 && 31i32 < 64i32 {
-// CHECK-NEXT:             -1i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 32i32 >= 32i32 && 32i32 < 64i32 {
-// CHECK-NEXT:         1u32 << if 32i32 >= 32i32 && 32i32 < 64i32 {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 50i32 >= 32i32 && 50i32 < 64i32 {
-// CHECK-NEXT:         1u32 << if 50i32 >= 32i32 && 50i32 < 64i32 {
-// CHECK-NEXT:             18i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 94i32 >= 32i32 && 94i32 < 64i32 {
-// CHECK-NEXT:         1u32 << if 94i32 >= 32i32 && 94i32 < 64i32 {
-// CHECK-NEXT:             62i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 100i32 >= 32i32 && 100i32 < 64i32 {
-// CHECK-NEXT:         1u32 << if 100i32 >= 32i32 && 100i32 < 64i32 {
-// CHECK-NEXT:             68i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 255i32 >= 32i32 && 255i32 < 64i32 {
-// CHECK-NEXT:         1u32 << if 255i32 >= 32i32 && 255i32 < 64i32 {
-// CHECK-NEXT:             223i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     },
-// CHECK-NEXT:     0u32 | if 1i32 >= 64i32 && 1i32 < 96i32 {
-// CHECK-NEXT:         1u32 << if 1i32 >= 64i32 && 1i32 < 96i32 {
-// CHECK-NEXT:             -63i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 2i32 >= 64i32 && 2i32 < 96i32 {
-// CHECK-NEXT:         1u32 << if 2i32 >= 64i32 && 2i32 < 96i32 {
-// CHECK-NEXT:             -62i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 20i32 >= 64i32 && 20i32 < 96i32 {
-// CHECK-NEXT:         1u32 << if 20i32 >= 64i32 && 20i32 < 96i32 {
-// CHECK-NEXT:             -44i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 31i32 >= 64i32 && 31i32 < 96i32 {
-// CHECK-NEXT:         1u32 << if 31i32 >= 64i32 && 31i32 < 96i32 {
-// CHECK-NEXT:             -33i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 32i32 >= 64i32 && 32i32 < 96i32 {
-// CHECK-NEXT:         1u32 << if 32i32 >= 64i32 && 32i32 < 96i32 {
-// CHECK-NEXT:             -32i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 50i32 >= 64i32 && 50i32 < 96i32 {
-// CHECK-NEXT:         1u32 << if 50i32 >= 64i32 && 50i32 < 96i32 {
-// CHECK-NEXT:             -14i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 94i32 >= 64i32 && 94i32 < 96i32 {
-// CHECK-NEXT:         1u32 << if 94i32 >= 64i32 && 94i32 < 96i32 {
-// CHECK-NEXT:             30i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 100i32 >= 64i32 && 100i32 < 96i32 {
-// CHECK-NEXT:         1u32 << if 100i32 >= 64i32 && 100i32 < 96i32 {
-// CHECK-NEXT:             36i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 255i32 >= 64i32 && 255i32 < 96i32 {
-// CHECK-NEXT:         1u32 << if 255i32 >= 64i32 && 255i32 < 96i32 {
-// CHECK-NEXT:             191i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     },
-// CHECK-NEXT:     0u32 | if 1i32 >= 96i32 && 1i32 < 128i32 {
-// CHECK-NEXT:         1u32 << if 1i32 >= 96i32 && 1i32 < 128i32 {
-// CHECK-NEXT:             -95i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 2i32 >= 96i32 && 2i32 < 128i32 {
-// CHECK-NEXT:         1u32 << if 2i32 >= 96i32 && 2i32 < 128i32 {
-// CHECK-NEXT:             -94i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 20i32 >= 96i32 && 20i32 < 128i32 {
-// CHECK-NEXT:         1u32 << if 20i32 >= 96i32 && 20i32 < 128i32 {
-// CHECK-NEXT:             -76i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 31i32 >= 96i32 && 31i32 < 128i32 {
-// CHECK-NEXT:         1u32 << if 31i32 >= 96i32 && 31i32 < 128i32 {
-// CHECK-NEXT:             -65i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 32i32 >= 96i32 && 32i32 < 128i32 {
-// CHECK-NEXT:         1u32 << if 32i32 >= 96i32 && 32i32 < 128i32 {
-// CHECK-NEXT:             -64i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 50i32 >= 96i32 && 50i32 < 128i32 {
-// CHECK-NEXT:         1u32 << if 50i32 >= 96i32 && 50i32 < 128i32 {
-// CHECK-NEXT:             -46i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 94i32 >= 96i32 && 94i32 < 128i32 {
-// CHECK-NEXT:         1u32 << if 94i32 >= 96i32 && 94i32 < 128i32 {
-// CHECK-NEXT:             -2i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 100i32 >= 96i32 && 100i32 < 128i32 {
-// CHECK-NEXT:         1u32 << if 100i32 >= 96i32 && 100i32 < 128i32 {
-// CHECK-NEXT:             4i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 255i32 >= 96i32 && 255i32 < 128i32 {
-// CHECK-NEXT:         1u32 << if 255i32 >= 96i32 && 255i32 < 128i32 {
-// CHECK-NEXT:             159i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     },
-// CHECK-NEXT:     0u32 | if 1i32 >= 128i32 && 1i32 < 160i32 {
-// CHECK-NEXT:         1u32 << if 1i32 >= 128i32 && 1i32 < 160i32 {
-// CHECK-NEXT:             -127i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 2i32 >= 128i32 && 2i32 < 160i32 {
-// CHECK-NEXT:         1u32 << if 2i32 >= 128i32 && 2i32 < 160i32 {
-// CHECK-NEXT:             -126i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 20i32 >= 128i32 && 20i32 < 160i32 {
-// CHECK-NEXT:         1u32 << if 20i32 >= 128i32 && 20i32 < 160i32 {
-// CHECK-NEXT:             -108i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 31i32 >= 128i32 && 31i32 < 160i32 {
-// CHECK-NEXT:         1u32 << if 31i32 >= 128i32 && 31i32 < 160i32 {
-// CHECK-NEXT:             -97i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 32i32 >= 128i32 && 32i32 < 160i32 {
-// CHECK-NEXT:         1u32 << if 32i32 >= 128i32 && 32i32 < 160i32 {
-// CHECK-NEXT:             -96i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 50i32 >= 128i32 && 50i32 < 160i32 {
-// CHECK-NEXT:         1u32 << if 50i32 >= 128i32 && 50i32 < 160i32 {
-// CHECK-NEXT:             -78i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 94i32 >= 128i32 && 94i32 < 160i32 {
-// CHECK-NEXT:         1u32 << if 94i32 >= 128i32 && 94i32 < 160i32 {
-// CHECK-NEXT:             -34i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 100i32 >= 128i32 && 100i32 < 160i32 {
-// CHECK-NEXT:         1u32 << if 100i32 >= 128i32 && 100i32 < 160i32 {
-// CHECK-NEXT:             -28i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 255i32 >= 128i32 && 255i32 < 160i32 {
-// CHECK-NEXT:         1u32 << if 255i32 >= 128i32 && 255i32 < 160i32 {
-// CHECK-NEXT:             127i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     },
-// CHECK-NEXT:     0u32 | if 1i32 >= 160i32 && 1i32 < 192i32 {
-// CHECK-NEXT:         1u32 << if 1i32 >= 160i32 && 1i32 < 192i32 {
-// CHECK-NEXT:             -159i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 2i32 >= 160i32 && 2i32 < 192i32 {
-// CHECK-NEXT:         1u32 << if 2i32 >= 160i32 && 2i32 < 192i32 {
-// CHECK-NEXT:             -158i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 20i32 >= 160i32 && 20i32 < 192i32 {
-// CHECK-NEXT:         1u32 << if 20i32 >= 160i32 && 20i32 < 192i32 {
-// CHECK-NEXT:             -140i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 31i32 >= 160i32 && 31i32 < 192i32 {
-// CHECK-NEXT:         1u32 << if 31i32 >= 160i32 && 31i32 < 192i32 {
-// CHECK-NEXT:             -129i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 32i32 >= 160i32 && 32i32 < 192i32 {
-// CHECK-NEXT:         1u32 << if 32i32 >= 160i32 && 32i32 < 192i32 {
-// CHECK-NEXT:             -128i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 50i32 >= 160i32 && 50i32 < 192i32 {
-// CHECK-NEXT:         1u32 << if 50i32 >= 160i32 && 50i32 < 192i32 {
-// CHECK-NEXT:             -110i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 94i32 >= 160i32 && 94i32 < 192i32 {
-// CHECK-NEXT:         1u32 << if 94i32 >= 160i32 && 94i32 < 192i32 {
-// CHECK-NEXT:             -66i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 100i32 >= 160i32 && 100i32 < 192i32 {
-// CHECK-NEXT:         1u32 << if 100i32 >= 160i32 && 100i32 < 192i32 {
-// CHECK-NEXT:             -60i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 255i32 >= 160i32 && 255i32 < 192i32 {
-// CHECK-NEXT:         1u32 << if 255i32 >= 160i32 && 255i32 < 192i32 {
-// CHECK-NEXT:             95i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     },
-// CHECK-NEXT:     0u32 | if 1i32 >= 192i32 && 1i32 < 224i32 {
-// CHECK-NEXT:         1u32 << if 1i32 >= 192i32 && 1i32 < 224i32 {
-// CHECK-NEXT:             -191i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 2i32 >= 192i32 && 2i32 < 224i32 {
-// CHECK-NEXT:         1u32 << if 2i32 >= 192i32 && 2i32 < 224i32 {
-// CHECK-NEXT:             -190i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 20i32 >= 192i32 && 20i32 < 224i32 {
-// CHECK-NEXT:         1u32 << if 20i32 >= 192i32 && 20i32 < 224i32 {
-// CHECK-NEXT:             -172i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 31i32 >= 192i32 && 31i32 < 224i32 {
-// CHECK-NEXT:         1u32 << if 31i32 >= 192i32 && 31i32 < 224i32 {
-// CHECK-NEXT:             -161i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 32i32 >= 192i32 && 32i32 < 224i32 {
-// CHECK-NEXT:         1u32 << if 32i32 >= 192i32 && 32i32 < 224i32 {
-// CHECK-NEXT:             -160i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 50i32 >= 192i32 && 50i32 < 224i32 {
-// CHECK-NEXT:         1u32 << if 50i32 >= 192i32 && 50i32 < 224i32 {
-// CHECK-NEXT:             -142i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 94i32 >= 192i32 && 94i32 < 224i32 {
-// CHECK-NEXT:         1u32 << if 94i32 >= 192i32 && 94i32 < 224i32 {
-// CHECK-NEXT:             -98i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 100i32 >= 192i32 && 100i32 < 224i32 {
-// CHECK-NEXT:         1u32 << if 100i32 >= 192i32 && 100i32 < 224i32 {
-// CHECK-NEXT:             -92i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 255i32 >= 192i32 && 255i32 < 224i32 {
-// CHECK-NEXT:         1u32 << if 255i32 >= 192i32 && 255i32 < 224i32 {
-// CHECK-NEXT:             63i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     },
-// CHECK-NEXT:     0u32 | if 1i32 >= 224i32 && 1i32 < 256i32 {
-// CHECK-NEXT:         1u32 << if 1i32 >= 224i32 && 1i32 < 256i32 {
-// CHECK-NEXT:             -223i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 2i32 >= 224i32 && 2i32 < 256i32 {
-// CHECK-NEXT:         1u32 << if 2i32 >= 224i32 && 2i32 < 256i32 {
-// CHECK-NEXT:             -222i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 20i32 >= 224i32 && 20i32 < 256i32 {
-// CHECK-NEXT:         1u32 << if 20i32 >= 224i32 && 20i32 < 256i32 {
-// CHECK-NEXT:             -204i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 31i32 >= 224i32 && 31i32 < 256i32 {
-// CHECK-NEXT:         1u32 << if 31i32 >= 224i32 && 31i32 < 256i32 {
-// CHECK-NEXT:             -193i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 32i32 >= 224i32 && 32i32 < 256i32 {
-// CHECK-NEXT:         1u32 << if 32i32 >= 224i32 && 32i32 < 256i32 {
-// CHECK-NEXT:             -192i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 50i32 >= 224i32 && 50i32 < 256i32 {
-// CHECK-NEXT:         1u32 << if 50i32 >= 224i32 && 50i32 < 256i32 {
-// CHECK-NEXT:             -174i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 94i32 >= 224i32 && 94i32 < 256i32 {
-// CHECK-NEXT:         1u32 << if 94i32 >= 224i32 && 94i32 < 256i32 {
-// CHECK-NEXT:             -130i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 100i32 >= 224i32 && 100i32 < 256i32 {
-// CHECK-NEXT:         1u32 << if 100i32 >= 224i32 && 100i32 < 256i32 {
-// CHECK-NEXT:             -124i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     } | if 255i32 >= 224i32 && 255i32 < 256i32 {
-// CHECK-NEXT:         1u32 << if 255i32 >= 224i32 && 255i32 < 256i32 {
-// CHECK-NEXT:             31i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0u32
-// CHECK-NEXT:     },
+// X86_64-PC-WINDOWS-MSVC-NEXT:     2148532230u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:     262145u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:     1073741824u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:     16u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:     0u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:     0u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:     0u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:     2147483648u32,
 // X86_64-PC-WINDOWS-MSVC-NEXT: ]);
-// I686-PC-WINDOWS-MSVC-NEXT: ];
-// AARCH64-PC-WINDOWS-MSVC-NEXT: ];
+// I686-PC-WINDOWS-MSVC-NEXT: static mut valid_bitmap: [u32; 8] = [2148532230, 262145, 1073741824, 16, 0, 0, 0, 2147483648];
+// AARCH64-PC-WINDOWS-MSVC-NEXT: static mut valid_bitmap: [u32; 8] = [2148532230, 262145, 1073741824, 16, 0, 0, 0, 2147483648];
 // CHECK-EMPTY:
 // CHECK-NEXT: fn same(p: ptrlen, s: *const i8) -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool =

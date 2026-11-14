@@ -274,3 +274,10 @@ unrounded, which depends on register allocation; slate models `-O0`. clang's
 - GNU `a ?: b` evaluates `a` once: a `capture<%id>` around the
   `conditional`, both the test and the then-arm reading `%id` (clang's
   `BinaryConditionalOperator`, `ir_gnu_conditional.c`).
+- In the initializer of a static or thread-storage object, a conditional
+  (or `a ?: b`) whose test folds to a constant lowers to only the selected
+  arm, converted to the result type; the other arm is not lowered. The test
+  folds through `TypeResolver::constant_value` (integer or pointer address),
+  and a string literal is true. gcc and clang accept a non-constant
+  unselected arm there (`bin2bcd`, `ilog2`, `"f" ? sizeof("f") - 1 : 0`).
+  Fixture: `{clang,gcc}/linux/x86_64/conditional_fold_static_init.c`.

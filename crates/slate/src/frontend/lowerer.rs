@@ -90,6 +90,7 @@ struct Tables<'m> {
     flexible_globals: HashMap<BindingId, String>,
     address_images: HashSet<BindingId>,
     indirect_globals: HashSet<BindingId>,
+    weak_address_globals: HashSet<BindingId>,
     target: &'m TargetInfo,
     unit_features: Vec<&'static str>,
     zero_init_padding_bits: slate_parser::compiler_options::ZeroInitPaddingBits,
@@ -167,6 +168,7 @@ struct Dependencies {
     bit_unit_impls: Vec<Item>,
     named_prims: BTreeMap<&'static str, Prim>,
     stdio_layout_used: bool,
+    weak_addresses: std::cell::RefCell<HashSet<BindingId>>,
 }
 
 enum Record {
@@ -363,6 +365,7 @@ struct ModuleLowerer<'m> {
     items: Vec<Item>,
     externs: Vec<rust::ExternDecl>,
     convention_externs: BTreeMap<rust::Abi, Vec<rust::ExternDecl>>,
+    weak_address_decls: Vec<(BindingId, rust::ExternDecl, Item)>,
     barriers: Vec<Barrier>,
 }
 
@@ -738,6 +741,21 @@ impl<'m> ModuleLowerer<'m> {
                 })
                 .map(|global| global.variable.id)
                 .collect(),
+            weak_address_globals: statics
+                .iter()
+                .filter(|global| {
+                    !global.definition
+                        && global.symbol.weak
+                        && !matches!(global.variable.storage, ir::StorageDuration::Thread)
+                        && matches!(
+                            module.target.os,
+                            slate_parser::target_info::TargetOs::Linux
+                                | slate_parser::target_info::TargetOs::Android
+                                | slate_parser::target_info::TargetOs::FreeBsd
+                        )
+                })
+                .map(|global| global.variable.id)
+                .collect(),
             target: &module.target,
             unit_features,
             zero_init_padding_bits: module.zero_init_padding_bits,
@@ -809,6 +827,7 @@ impl<'m> ModuleLowerer<'m> {
             items: Vec::new(),
             externs: Vec::new(),
             convention_externs: BTreeMap::new(),
+            weak_address_decls: Vec::new(),
             barriers,
         })
     }
@@ -916,6 +935,33 @@ impl<'m> ModuleLowerer<'m> {
                     });
                 }
                 Ok((ty, None)) if global.symbol.weak => {
+                    if self
+                        .tables
+                        .weak_address_globals
+                        .contains(&global.variable.id)
+                    {
+                        let alias = globals::weak_address_name(&name);
+                        let symbol = asm_name
+                            .clone()
+                            .unwrap_or_else(|| global.variable.name.clone());
+                        self.weak_address_decls.push((
+                            global.variable.id,
+                            rust::ExternDecl::Static {
+                                attrs: vec![Attr::LinkName(symbol)],
+                                mutable: true,
+                                name: alias.clone(),
+                                ty: ty.clone(),
+                            },
+                            Item::GlobalAsm(rust::InlineAsm {
+                                template: ".weak {}".into(),
+                                operands: vec![rust::AsmOperand::Sym(Expr::Var(
+                                    alias.as_str().into(),
+                                ))],
+                                options: Vec::new(),
+                                kind: rust::AsmKind::Global,
+                            }),
+                        ));
+                    }
                     self.externs.push(rust::ExternDecl::Static {
                         attrs: std::iter::once(Attr::ExternWeakLinkage)
                             .chain(linked)
@@ -1129,9 +1175,16 @@ impl<'m> ModuleLowerer<'m> {
             mut items,
             mut externs,
             convention_externs,
+            weak_address_decls,
             barriers,
             ..
         } = self;
+        for (id, decl, asm) in weak_address_decls {
+            if dependencies.weak_addresses.borrow().contains(&id) {
+                externs.push(decl);
+                items.push(asm);
+            }
+        }
         let large_array_alignment = tables
             .target
             .large_array_alignment()

@@ -36,51 +36,8 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut bittab: __SlateAlign16<[u32; 6]> = __SlateAlign16([
-// CHECK-NEXT:     if 1i32 < 2i32 {
-// CHECK-NEXT:         4294967295u32
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         (if 128i32 == 128i32 { 4294967168u32 } else { 4294967168u32 }) << 23i32 | 1u32
-// CHECK-NEXT:     },
-// CHECK-NEXT:     if 2i32 < 2i32 {
-// CHECK-NEXT:         4294967295u32
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         (if 128i32 == 128i32 { 4294967168u32 } else { 4294967168u32 }) << 23i32 | 2u32
-// CHECK-NEXT:     },
-// CHECK-NEXT:     if 15i32 < 2i32 {
-// CHECK-NEXT:         4294967295u32
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         (if 128i32 == 128i32 { 4294967168u32 } else { 4294967168u32 }) << 23i32 | 15u32
-// CHECK-NEXT:     },
-// CHECK-NEXT:     (if 0i32 == 0i32 {
-// CHECK-NEXT:         (if 160i32 == 128i32 { 4294967168u32 } else { 4294967136u32 }) << 23i32
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         if 0i32 == 13i32 {
-// CHECK-NEXT:             (if 128i32 == 128i32 { 4294967200u32 } else { 4294967168u32 }) << 23i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             (if 128i32 == 128i32 { 4294967168u32 } else { 4294967168u32 }) << 23i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }) | (if 128i32 == 128i32 { 4294967168u32 } else { 4294967168u32 }) << 23i32 >> 6i32
-// CHECK-NEXT:         | 0u32,
-// CHECK-NEXT:     (if 1i32 == 0i32 {
-// CHECK-NEXT:         (if 160i32 == 128i32 { 4294967168u32 } else { 4294967136u32 }) << 23i32
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         if 1i32 == 13i32 {
-// CHECK-NEXT:             (if 128i32 == 128i32 { 4294967200u32 } else { 4294967168u32 }) << 23i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             (if 128i32 == 128i32 { 4294967168u32 } else { 4294967168u32 }) << 23i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }) | (if 128i32 == 128i32 { 4294967168u32 } else { 4294967168u32 }) << 23i32 >> 6i32
-// CHECK-NEXT:         | 1u32,
-// CHECK-NEXT:     (if 13i32 == 0i32 {
-// CHECK-NEXT:         (if 160i32 == 128i32 { 4294967168u32 } else { 4294967136u32 }) << 23i32
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         if 13i32 == 13i32 {
-// CHECK-NEXT:             (if 128i32 == 128i32 { 4294967200u32 } else { 4294967168u32 }) << 23i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             (if 128i32 == 128i32 { 4294967168u32 } else { 4294967168u32 }) << 23i32
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }) | (if 128i32 == 128i32 { 4294967168u32 } else { 4294967168u32 }) << 23i32 >> 6i32
-// CHECK-NEXT:         | 13u32,
+// CHECK-NEXT:     4294967295u32, 3221225474u32, 3221225487u32, 3003121664u32, 3271557121u32,
+// CHECK-NEXT:     3539992589u32,
 // CHECK-NEXT: ]);
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
@@ -94,20 +51,16 @@ int main(void) {
 // CHECK-NEXT: static mut lo: addr = addr {
 // CHECK-NEXT:     family: 2u16,
 // CHECK-NEXT:     port: 65535u16,
-// CHECK-NEXT:     host: (if 1234i32 == 4321i32 { 2130706433i32 } else { 16777343i32 }) as u32,
+// CHECK-NEXT:     host: 16777343u32,
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut values: [i16; 6] = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: [i16; 6] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]][0] = (if (std::mem::size_of::<i64>() as u64) > 4u64 { -1i32 } else { 1i32 })
-// CHECK-NEXT:         as i16;
+// CHECK-NEXT:     [[T_0]][0] = -1i16;
 // CHECK-NEXT:     [[T_0]][3] = -254i16;
-// CHECK-NEXT:     [[T_0]][5] = (if 100i32 > 50i32 { 100i32 } else { 50i32 }) as i16;
+// CHECK-NEXT:     [[T_0]][5] = 100i16;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
-// CHECK-NEXT: static mut scales: __SlateAlign16<[f64; 2]> = __SlateAlign16([
-// CHECK-NEXT:     if 1i32 != 0i32 { 0.5f64 } else { 2.0f64 },
-// CHECK-NEXT:     if 0i32 != 0i32 { 1.0f64 } else { 3.0f32 as f64 },
-// CHECK-NEXT: ]);
+// CHECK-NEXT: static mut scales: __SlateAlign16<[f64; 2]> = __SlateAlign16([0.5f64, 3.0f32 as f64]);
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: u32 = 0;
