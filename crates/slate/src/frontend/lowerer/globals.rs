@@ -519,7 +519,7 @@ impl FunctionLowerer<'_, '_> {
                     inner: Box::new(opaque),
                 },
             }),
-            method: "write".into(),
+            method: "write_unaligned".into(),
             args: vec![self.lower_address_integer(value)?],
         }))
     }

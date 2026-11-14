@@ -88,14 +88,14 @@ int main(void) {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: std::mem::MaybeUninit<__SlateImage_kernels> = std::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1:__t[0-9]+]] = [[T_0]].as_mut_ptr();
 // CHECK-NEXT:     (std::ptr::addr_of_mut!((* [[T_1]]).0[0]) as *mut *const ())
-// CHECK-NEXT:         .write(unsafe {
+// CHECK-NEXT:         .write_unaligned(unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>,
 // CHECK-NEXT:                 *const (),
 // CHECK-NEXT:             >(Some(add))
 // CHECK-NEXT:         });
 // CHECK-NEXT:     (std::ptr::addr_of_mut!((* [[T_1]]).0[1]) as *mut *const ())
-// CHECK-NEXT:         .write(unsafe {
+// CHECK-NEXT:         .write_unaligned(unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>,
 // CHECK-NEXT:                 *const (),
@@ -108,14 +108,14 @@ int main(void) {
 // CHECK-NEXT:     let mut [[T_0]]: std::mem::MaybeUninit<__SlateImage_exported_kernels> = std::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
 // CHECK-NEXT:     (std::ptr::addr_of_mut!((* [[T_1]]).0[0]) as *mut *const ())
-// CHECK-NEXT:         .write(unsafe {
+// CHECK-NEXT:         .write_unaligned(unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>,
 // CHECK-NEXT:                 *const (),
 // CHECK-NEXT:             >(Some(sub))
 // CHECK-NEXT:         });
 // CHECK-NEXT:     (std::ptr::addr_of_mut!((* [[T_1]]).0[1]) as *mut *const ())
-// CHECK-NEXT:         .write(unsafe {
+// CHECK-NEXT:         .write_unaligned(unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>,
 // CHECK-NEXT:                 *const (),
@@ -127,7 +127,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[T_0]]: std::mem::MaybeUninit<__SlateImage_aligned> = std::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
 // CHECK-NEXT:     (std::ptr::addr_of_mut!((* [[T_1]]).0[0]) as *mut *const ())
-// CHECK-NEXT:         .write(unsafe {
+// CHECK-NEXT:         .write_unaligned(unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>,
 // CHECK-NEXT:                 *const (),
@@ -140,7 +140,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[T_0]]: std::mem::MaybeUninit<__SlateImage_scalar> = std::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
 // CHECK-NEXT:     (std::ptr::addr_of_mut!(* [[T_1]]) as *mut *const ())
-// CHECK-NEXT:         .write(unsafe {
+// CHECK-NEXT:         .write_unaligned(unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>,
 // CHECK-NEXT:                 *const (),
@@ -152,7 +152,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[T_0]]: std::mem::MaybeUninit<__SlateImage_third> = std::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
 // CHECK-NEXT:     (std::ptr::addr_of_mut!(* [[T_1]]) as *mut *const ())
-// CHECK-NEXT:         .write(unsafe {
+// CHECK-NEXT:         .write_unaligned(unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 *mut i32,
 // CHECK-NEXT:                 *const (),
@@ -167,7 +167,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[T_0]]: std::mem::MaybeUninit<__SlateImage_past_first> = std::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
 // CHECK-NEXT:     (std::ptr::addr_of_mut!(* [[T_1]]) as *mut *const ())
-// CHECK-NEXT:         .write(
+// CHECK-NEXT:         .write_unaligned(
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 std::mem::transmute::<
 // CHECK-NEXT:                     *mut i32,
@@ -182,7 +182,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[T_0]]: std::mem::MaybeUninit<__SlateImage_before_last> = std::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
 // CHECK-NEXT:     (std::ptr::addr_of_mut!(* [[T_1]]) as *mut *const ())
-// CHECK-NEXT:         .write(
+// CHECK-NEXT:         .write_unaligned(
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 std::mem::transmute::<
 // CHECK-NEXT:                     *mut i32,
@@ -200,7 +200,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[T_0]]: std::mem::MaybeUninit<__SlateImage_constant_handle> = std::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
 // CHECK-NEXT:     (std::ptr::addr_of_mut!(* [[T_1]]) as *mut *const ())
-// CHECK-NEXT:         .write(unsafe {
+// CHECK-NEXT:         .write_unaligned(unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>,
 // CHECK-NEXT:                 *const (),
@@ -220,7 +220,7 @@ int main(void) {
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
 // CHECK-NEXT:     (*[[T_1]]).0[0].tag = 7i32;
 // CHECK-NEXT:     (std::ptr::addr_of_mut!((* [[T_1]]).0[0].r#fn) as *mut *const ())
-// CHECK-NEXT:         .write(unsafe {
+// CHECK-NEXT:         .write_unaligned(unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>,
 // CHECK-NEXT:                 *const (),
@@ -229,7 +229,7 @@ int main(void) {
 // CHECK-NEXT:     (*[[T_1]]).0[0].bias = 3i64;
 // CHECK-NEXT:     (*[[T_1]]).0[1].tag = 1i32;
 // CHECK-NEXT:     (std::ptr::addr_of_mut!((* [[T_1]]).0[1].r#fn) as *mut *const ())
-// CHECK-NEXT:         .write(unsafe {
+// CHECK-NEXT:         .write_unaligned(unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>,
 // CHECK-NEXT:                 *const (),
@@ -250,7 +250,7 @@ int main(void) {
 // CHECK-NEXT:     (*[[T_1]]).label = 110i8;
 // CHECK-NEXT:     (*[[T_1]]).inner.tag = 4i32;
 // CHECK-NEXT:     (std::ptr::addr_of_mut!((* [[T_1]]).inner.r#fn) as *mut *const ())
-// CHECK-NEXT:         .write(unsafe {
+// CHECK-NEXT:         .write_unaligned(unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>,
 // CHECK-NEXT:                 *const (),
@@ -258,7 +258,7 @@ int main(void) {
 // CHECK-NEXT:         });
 // CHECK-NEXT:     (*[[T_1]]).inner.bias = 9i64;
 // CHECK-NEXT:     (std::ptr::addr_of_mut!((* [[T_1]]).slots[0]) as *mut *const ())
-// CHECK-NEXT:         .write(unsafe {
+// CHECK-NEXT:         .write_unaligned(unsafe {
 // CHECK-NEXT:             std::mem::transmute::<
 // CHECK-NEXT:                 *mut i32,
 // CHECK-NEXT:                 *const (),
