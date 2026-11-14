@@ -96,6 +96,9 @@ class TranslationOnly:
     archive: str | None = None
     smoke: str | None = None
     object_prefixes: list[str] = field(default_factory=list)
+    extension: str | None = None
+    python: str = ""
+    test: list[str] = field(default_factory=list)
 
 
 RUST_NATIVE_LIBS = ["-lgcc_s", "-lutil", "-lrt", "-lpthread", "-lm", "-ldl", "-lc"]
@@ -812,6 +815,85 @@ def target_objects(build_dir, target):
     return objects
 
 
+def ninja_inputs(build_dir, target):
+    inputs, reading = [], False
+    for line in ninja_tool(build_dir, "query", target).splitlines():
+        line = line.strip()
+        if line.startswith("input:"):
+            reading = True
+        elif line.startswith("outputs:"):
+            break
+        elif reading and line and not line.startswith("|"):
+            inputs.append(line)
+    return inputs
+
+
+def extension_objects(build_dir, extension):
+    command = link_command(build_dir, extension)
+    archives = [token for token in command if token.endswith(".a") and (build_dir / token).exists()]
+    objects = [obj for target in [extension, *archives] for obj in ninja_inputs(build_dir, target)
+               if obj.endswith(".o")]
+    return command, archives, objects
+
+
+def extension_units(build_dir, recipe, flavor):
+    _, _, objects = extension_objects(build_dir, recipe.extension)
+    units = []
+    for obj in objects:
+        source = Path(ninja_inputs(build_dir, obj)[0])
+        if source.suffix != ".c":
+            continue
+        entry = {"directory": str(build_dir), "file": str(source), "output": obj,
+                 "command": ninja_tool(build_dir, "commands", obj).strip().splitlines()[-1]}
+        units.append(translation_unit(entry, (build_dir / source).resolve(), recipe, flavor))
+    return units
+
+
+def python_extension_test(project_dir, build_dir, recipe, translated_archive, out, args):
+    command, archives, objects = extension_objects(build_dir, recipe.extension)
+    native = {obj for obj in objects if Path(ninja_inputs(build_dir, obj)[0]).suffix != ".c"}
+    link = []
+    for token in command:
+        if token in archives:
+            link += [obj for obj in ninja_inputs(build_dir, token) if obj in native]
+        elif token.endswith(".o") and token not in native:
+            continue
+        elif token == "-Wl,--end-group":
+            link += [str(translated_archive), token]
+        else:
+            link.append(token)
+    output = link.index("-o") + 1
+    translated_so = out / "extension" / Path(link[output]).name
+    translated_so.parent.mkdir(exist_ok=True)
+    link[output] = str(translated_so)
+    link += RUST_NATIVE_LIBS
+    code, seconds = run(link, out / "extension-link.log", cwd=build_dir)
+    if code:
+        return 1, {"error": "extension link failed", "log": "extension-link.log"}
+    results = {"link_seconds": seconds}
+    python = args.corpus / recipe.python
+    trees = [("native", None), ("translated", translated_so)] if args.native_test else [("translated", translated_so)]
+    for label, replacement in trees:
+        destdir = out / f"install-{label}"
+        if destdir.exists():
+            shutil.rmtree(destdir)
+        code, _ = run([python, project_dir / "vendored-meson/meson/meson.py", "install", "-C", build_dir,
+                       "--destdir", destdir, "--quiet", "--no-rebuild"], out / f"install-{label}.log")
+        if code:
+            return 1, {"error": f"{label} install failed", "log": f"install-{label}.log"}
+        site = next(destdir.rglob("site-packages"))
+        if replacement:
+            shutil.copy2(replacement, next(site.rglob(Path(recipe.extension).name)))
+        env = dict(os.environ, PYTHONPATH=str(site))
+        test = [python, "-m", "pytest", "-q", "-p", "no:cacheprovider",
+                *(str(site / path) for path in recipe.test), *args.test_args]
+        code, seconds = run(test, out / f"test-{label}.log", cwd=out, env=env, timeout=args.test_timeout)
+        tail = (out / f"test-{label}.log").read_text(errors="replace").strip().splitlines()
+        results[label] = {"code": code, "seconds": seconds, "summary": tail[-1] if tail else ""}
+    failed = results["translated"]["code"] != 0
+    return (1 if failed else 0), results
+
+
 def link_command(build_dir, executable):
     segments, segment = [], []
     for token in shlex.split(ninja_tool(build_dir, "commands", executable).strip().splitlines()[-1]):
@@ -1446,7 +1528,11 @@ RECIPES = {
         tools=["PROGS"],
         test=["bash", "-c", LMDB_TEST],
     ),
-    "numpy": TranslationOnly(),
+    "numpy": TranslationOnly(
+        extension="numpy/_core/_multiarray_umath.cpython-314-x86_64-linux-gnu.so",
+        python=".venv/bin/python",
+        test=["numpy/_core/tests/test_multiarray.py"],
+    ),
     "openblas": TranslationOnly(archive="libopenblas.a", smoke="openblas",
                                 object_prefixes=["cblas_dgemm.o", "cblas_xerbla.o"]),
 }
@@ -1504,6 +1590,10 @@ def main():
         variables = None
         missing = [] if (build_dir / recipe.library).exists() else [recipe.library]
         units = library_units(build_dir, recipe, database, args.mode)
+    elif translation_only and recipe.extension:
+        variables = None
+        missing = [] if (build_dir / recipe.extension).exists() else [recipe.extension]
+        units = extension_units(build_dir, recipe, args.mode) if not missing else []
     elif translation_only:
         variables = None
         missing = ([recipe.archive] if recipe.archive and not (project_dir / recipe.archive).exists() else [])
@@ -1562,6 +1652,10 @@ def main():
         return 1 if code else 0
 
     if translation_only:
+        if recipe.extension:
+            code, details = python_extension_test(project_dir, build_dir, recipe, binary, out, args)
+            finish("test", "failed" if code else "ok", **details)
+            return 1 if code else 0
         if recipe.smoke == "openblas":
             code, details = openblas_smoke(project_dir, binary, out)
             finish("test", "failed" if code else "ok", **details)

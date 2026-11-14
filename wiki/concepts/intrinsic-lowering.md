@@ -76,9 +76,11 @@
   `extern "C"` with `Simd` types when every vector pass is `direct` (x86 and
   AArch64). rustc requires the caller to enable the feature that holds the
   vector (`avx` for 32 bytes, `avx512f` for 64), so such an extern is declared
-  as `__slate_vabi_<name>` (`link_name` the C symbol) behind a private
+  as `__vector_abi_<name>` (`link_name` the C symbol) behind a private
   `#[target_feature] unsafe fn <name>` shim with the Rust ABI; callers need no
-  feature. A non-`direct` vector pass (a vector wider than the unit's ISA,
+  feature. The alias must not start with `__slate_`: every `__slate_*` extern
+  is read as a C shim name (`__slate_<callee>__<tags>`), and the
+  long-double C shim would emit a bogus trampoline for it. A non-`direct` vector pass (a vector wider than the unit's ISA,
   `byval`), weak externs, other targets, and exported definitions with vector
   ABI stay barriers (`extern_vector_abi.c`).
 - `slate.vector_sign_bitmask(v)` (signed integer lanes) is

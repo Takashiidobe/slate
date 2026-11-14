@@ -326,7 +326,7 @@ impl FunctionLowerer<'_, '_> {
                 if attrs.is_empty() {
                     attrs.push(Attr::LinkName(function.name.clone()));
                 }
-                format!("__slate_vabi_{}", function.name)
+                format!("__vector_abi_{}", function.name)
             }
             None => function.name.clone(),
         };
