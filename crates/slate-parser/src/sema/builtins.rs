@@ -129,6 +129,47 @@ impl BitBuiltin {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum ConstantBuiltin {
+    Abs,
+    Expect,
+    Strlen,
+    Strcmp,
+    Memcmp,
+    Fabs,
+    Copysign,
+    Fmax,
+    Fmin,
+}
+
+impl ConstantBuiltin {
+    pub(super) fn of_call<'e>(callee: &Expr, arguments: &'e [Expr]) -> Option<(Self, &'e [Expr])> {
+        let ExprKind::Identifier(name) = &callee.value else {
+            return None;
+        };
+        let (builtin, arity) = match name.as_str() {
+            "__builtin_abs" | "__builtin_labs" | "__builtin_llabs" => (Self::Abs, 1),
+            "__builtin_expect" => (Self::Expect, 2),
+            "__builtin_expect_with_probability" => (Self::Expect, 3),
+            "__builtin_strlen" => (Self::Strlen, 1),
+            "__builtin_strcmp" => (Self::Strcmp, 2),
+            "__builtin_memcmp" => (Self::Memcmp, 3),
+            "__builtin_fabs" | "__builtin_fabsf" | "__builtin_fabsl" => (Self::Fabs, 1),
+            "__builtin_copysign" | "__builtin_copysignf" | "__builtin_copysignl" => {
+                (Self::Copysign, 2)
+            }
+            "__builtin_fmax" | "__builtin_fmaxf" | "__builtin_fmaxl" => (Self::Fmax, 2),
+            "__builtin_fmin" | "__builtin_fminf" | "__builtin_fminl" => (Self::Fmin, 2),
+            _ => return None,
+        };
+        (arguments.len() == arity).then_some((builtin, arguments))
+    }
+
+    pub(super) fn strings(self) -> bool {
+        matches!(self, Self::Strlen | Self::Strcmp | Self::Memcmp)
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum ClangBuiltinKind {
     Builtin,
     Atomic,

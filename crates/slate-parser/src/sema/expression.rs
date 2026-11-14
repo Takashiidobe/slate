@@ -2825,7 +2825,8 @@ impl Lowerer {
         if let ExprKind::Call { callee, arguments } = &e.value {
             if self.in_constant_initializer
                 && let ExprKind::Identifier(name) = &callee.value
-                && super::builtins::BitBuiltin::of_call(callee, arguments).is_some()
+                && (super::builtins::BitBuiltin::of_call(callee, arguments).is_some()
+                    || super::builtins::ConstantBuiltin::of_call(callee, arguments).is_some())
                 && let Ok(folded) = self.types.constant_value(e)
             {
                 let c = self.result(e)?;

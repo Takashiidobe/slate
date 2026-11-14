@@ -916,6 +916,115 @@ impl TypeResolver {
         }
     }
 
+    fn constant_builtin(
+        &mut self,
+        context: &super::numeric::Context,
+        builtin: super::builtins::ConstantBuiltin,
+        callee: &crate::ast::Expr,
+        arguments: &[crate::ast::Expr],
+        ty: &Type,
+    ) -> Result<ValueKind, ResolveError> {
+        use super::builtins::ConstantBuiltin;
+        let rejected = ResolveError::Rejected("builtin call is not a constant");
+        if builtin.strings() {
+            let mut strings = Vec::new();
+            for argument in &arguments[..arguments.len().min(2)] {
+                let mut argument = argument;
+                while let crate::ast::ExprKind::Paren(inner) = &argument.value {
+                    argument = inner;
+                }
+                let crate::ast::ExprKind::StringLiteral(literal) = &argument.value else {
+                    return Err(rejected);
+                };
+                if !matches!(
+                    literal.encoding,
+                    crate::const_expr::Encoding::Plain | crate::const_expr::Encoding::Utf8
+                ) {
+                    return Err(rejected);
+                }
+                let mut units = literal.execution_units(self.target_info());
+                units.push(0);
+                strings.push(units);
+            }
+            let terminated = |units: &[u32]| {
+                let end = units
+                    .iter()
+                    .position(|unit| *unit == 0)
+                    .unwrap_or(units.len());
+                units[..end].to_vec()
+            };
+            let n: BigInt = match (builtin, strings.as_slice()) {
+                (ConstantBuiltin::Strlen, [string]) => terminated(string).len().into(),
+                (ConstantBuiltin::Strcmp, [left, right]) => {
+                    let (mut left, mut right) = (terminated(left), terminated(right));
+                    left.push(0);
+                    right.push(0);
+                    ordering(left.cmp(&right))
+                }
+                (ConstantBuiltin::Memcmp, [left, right]) => {
+                    let count = self.constant_integer(&arguments[2])?;
+                    let count = usize::try_from(&count).map_err(|_| rejected.clone())?;
+                    let mut result = std::cmp::Ordering::Equal;
+                    for index in 0..count {
+                        let (Some(left), Some(right)) = (left.get(index), right.get(index)) else {
+                            return Err(rejected);
+                        };
+                        result = left.cmp(right);
+                        if result.is_ne() {
+                            break;
+                        }
+                    }
+                    ordering(result)
+                }
+                _ => return Err(rejected),
+            };
+            return Ok(ValueKind::Constant(super::fold::integer_number(ty, n)));
+        }
+        let signature = self.call_signature(callee, arguments)?;
+        let parameters = self
+            .ctypes
+            .function_parts(signature)
+            .ok_or(ResolveError::Internal("constant builtin signature"))?
+            .1
+            .to_vec();
+        let mut values = Vec::with_capacity(arguments.len());
+        for (argument, parameter) in arguments.iter().zip(parameters) {
+            let operand = self.constant_value_with_context(context, argument)?;
+            let operand = self.arithmetic_conversion(
+                context,
+                operand,
+                parameter,
+                crate::ir::ConversionReason::Arg,
+            )?;
+            values.push(operand.value);
+        }
+        let first = values.first().ok_or(rejected.clone())?;
+        let target = self.fold_target();
+        Ok(match builtin {
+            ConstantBuiltin::Abs => {
+                let n = super::fold::integer_constant(first, target).ok_or(rejected.clone())?;
+                let bits = self.measured_storage(ty, false, true)?.size_bytes * 8;
+                let magnitude = n.magnitude().clone();
+                if magnitude >= num_bigint::BigUint::from(1u8) << (bits - 1) {
+                    return Err(rejected);
+                }
+                ValueKind::Constant(Number::Integer(magnitude))
+            }
+            ConstantBuiltin::Expect => {
+                let n = super::fold::integer_constant(first, target).ok_or(rejected)?;
+                ValueKind::Constant(super::fold::integer_number(ty, n))
+            }
+            _ => {
+                let Type::Numeric(NumericType::Float(format)) = ty else {
+                    return Err(rejected);
+                };
+                let bits = super::fold::float_builtin(builtin, *format, &values, target)
+                    .ok_or(rejected)?;
+                ValueKind::Constant(Number::FloatBits(bits))
+            }
+        })
+    }
+
     pub(super) fn constant_value(&mut self, e: &crate::ast::Expr) -> Result<Operand, ResolveError> {
         let context = super::numeric::Context::for_dialect(&self.dialect);
         self.constant_value_with_context(&context, e)
@@ -1146,6 +1255,19 @@ impl TypeResolver {
                 (
                     c,
                     ValueKind::Constant(super::fold::integer_number(&self.ir_type(c), n)),
+                )
+            }
+            ExprKind::Call { callee, arguments }
+                if super::builtins::ConstantBuiltin::of_call(callee, arguments).is_some() =>
+            {
+                let (builtin, arguments) =
+                    super::builtins::ConstantBuiltin::of_call(callee, arguments)
+                        .ok_or(ResolveError::Internal("constant builtin"))?;
+                let c = self.typed(e)?.c;
+                let ty = self.ir_type(c);
+                (
+                    c,
+                    self.constant_builtin(context, builtin, callee, arguments, &ty)?,
                 )
             }
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty, .. } => {
@@ -5165,4 +5287,12 @@ pub(super) fn last_field_declarator(
             .map(|last| (&declaration.specifiers, last)),
         _ => None,
     })
+}
+
+fn ordering(ordering: std::cmp::Ordering) -> BigInt {
+    match ordering {
+        std::cmp::Ordering::Less => BigInt::from(-1),
+        std::cmp::Ordering::Equal => BigInt::from(0),
+        std::cmp::Ordering::Greater => BigInt::from(1),
+    }
 }

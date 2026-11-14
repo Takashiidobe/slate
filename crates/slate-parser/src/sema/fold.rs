@@ -1,4 +1,4 @@
-use super::builtins::{BitBuiltin, StdcBit};
+use super::builtins::{BitBuiltin, ConstantBuiltin, StdcBit};
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::{
     AggregateTarget, ArithOp, ArithSema, BindingId, CompareOp, ConversionKind, FloatType,
@@ -661,6 +661,30 @@ fn floating(value: &Value, depth: usize, env: Env) -> Option<Quad> {
 
 fn widen<F: FloatConvert<Quad>>(value: F) -> Quad {
     value.convert(&mut false).value
+}
+
+pub(super) fn float_builtin(
+    builtin: ConstantBuiltin,
+    format: FloatType,
+    arguments: &[Value],
+    target: Target,
+) -> Option<u128> {
+    let env = Env::constant(target, None);
+    let values = arguments
+        .iter()
+        .map(|argument| floating(argument, MAX_DEPTH, env))
+        .collect::<Option<Vec<_>>>()?;
+    in_format!(format, F => {
+        let values: Vec<F> = values.into_iter().map(narrow::<F>).collect();
+        let result = match (builtin, values.as_slice()) {
+            (ConstantBuiltin::Fabs, [x]) => x.abs(),
+            (ConstantBuiltin::Copysign, [x, y]) => x.copy_sign(*y),
+            (ConstantBuiltin::Fmax, [x, y]) => x.max(*y),
+            (ConstantBuiltin::Fmin, [x, y]) => x.min(*y),
+            _ => return None,
+        };
+        Some(result.to_bits())
+    })
 }
 
 fn narrow<F: Float>(value: Quad) -> F

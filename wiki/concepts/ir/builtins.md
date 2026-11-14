@@ -99,6 +99,13 @@ Inside the initializer of a static or thread-storage object (file scope,
 block-scope `static`, and compound literals nested in it), a call to one of
 these builtins whose arguments are constant lowers to `const<T>(N)`
 annotated `c_builtin`, because gcc and clang constant-evaluate it there.
+`ConstantBuiltin` (`sema/builtins.rs`) adds the `__builtin_`-prefixed
+`abs`/`labs`/`llabs`, `expect`/`expect_with_probability`,
+`strlen`/`strcmp`/`memcmp` on narrow string literals (`memcmp` stops at the
+first difference, as clang does), and `fabs`/`copysign`/`fmax`/`fmin` in every
+float width, all evaluated by `TypeResolver::constant_builtin`; they also make
+a `_Static_assert` an integer constant expression. Unprefixed library names
+stay calls because the flavors disagree on them.
 The same fold applies to an asm input whose constraint allows an immediate
 (`"i"`, `"n"`, `"ir"`), so the kernel's `"i"(order_base_2(64))` selects
 `imm` even at -O0 (`Lowerer::input_candidate` in `sema/asm.rs`).

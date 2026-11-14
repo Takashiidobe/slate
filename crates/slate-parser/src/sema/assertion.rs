@@ -2568,6 +2568,7 @@ fn constant_truth(types: &mut TypeResolver, expr: &Expr, shape: Shape) -> Option
 fn call_shape<'e>(expr: &'e Expr, callee: &Expr, arguments: &'e [Expr]) -> Shape<'e> {
     if super::expression::constant_p_operand(callee, arguments).is_some()
         || super::builtins::BitBuiltin::of_call(callee, arguments).is_some()
+        || super::builtins::ConstantBuiltin::of_call(callee, arguments).is_some()
     {
         return Shape::Constant;
     }
