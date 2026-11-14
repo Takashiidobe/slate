@@ -90,6 +90,7 @@ struct Tables<'m> {
     address_images: HashSet<BindingId>,
     indirect_globals: HashSet<BindingId>,
     target: &'m TargetInfo,
+    unit_features: Vec<&'static str>,
     zero_init_padding_bits: slate_parser::compiler_options::ZeroInitPaddingBits,
     alloca_layout: ir::AllocaLayout,
     rust_layout: TargetInfo,
@@ -560,6 +561,7 @@ impl<'m> ModuleLowerer<'m> {
                 None => statics.push(&global.value),
             }
         }
+        let unit_features = target_features::unit_target_features(&module.target);
         let mut names: HashMap<_, _> = module
             .functions
             .iter()
@@ -585,6 +587,7 @@ impl<'m> ModuleLowerer<'m> {
                         is_extern: function.body.is_none(),
                         weak_extern: function.body.is_none() && function.symbol.weak,
                         is_unsafe: function.body.is_none()
+                            || !unit_features.is_empty()
                             || !function.semantics.target.is_empty()
                             || matches!(
                                 function.parameters,
@@ -664,7 +667,7 @@ impl<'m> ModuleLowerer<'m> {
                         codegen_builtin: false,
                         is_extern: false,
                         weak_extern: false,
-                        is_unsafe: variadic,
+                        is_unsafe: variadic || !unit_features.is_empty(),
                         is_variadic: variadic,
                         exported: false,
                         identity: FunctionIdentity::Unknown,
@@ -733,6 +736,7 @@ impl<'m> ModuleLowerer<'m> {
                 .map(|global| global.variable.id)
                 .collect(),
             target: &module.target,
+            unit_features,
             zero_init_padding_bits: module.zero_init_padding_bits,
             alloca_layout: module.alloca,
             rust_layout: TargetInfo::for_triple(&module.target.triple)

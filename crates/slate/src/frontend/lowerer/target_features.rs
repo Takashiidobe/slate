@@ -85,6 +85,17 @@ fn rustc_x86_feature(clang: &str) -> Option<&'static str> {
         .find_map(|(name, rustc)| (*name == clang).then_some(*rustc))
 }
 
+pub(super) fn unit_target_features(target: &TargetInfo) -> Vec<&'static str> {
+    let slate_parser::target::isa::TargetIsa::X86(isa) = target.isa else {
+        return Vec::new();
+    };
+    isa.enabled_beyond(slate_parser::target::x86_isa::X86Isa::baseline(
+        target.family,
+    ))
+    .filter_map(rustc_x86_feature)
+    .collect()
+}
+
 fn rustc_aarch64_feature(clang: &str) -> Option<&'static str> {
     AARCH64_FEATURES
         .iter()
@@ -183,7 +194,7 @@ impl Tables<'_> {
             .into()
         };
         self.reject_sme_state(function)?;
-        let mut enabled = Vec::new();
+        let mut enabled = self.unit_features.clone();
         for feature in &function.semantics.target {
             match feature {
                 ir::TargetFeature::Enable(name) if name == "default" => {}

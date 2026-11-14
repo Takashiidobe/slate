@@ -291,7 +291,7 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
-// CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave,sse")]
 // CHECK-NEXT: unsafe fn _mm_set_ps(__z: f32, __y: f32, __x: f32, __w: f32) -> std::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: std::simd::Simd<f32, 4> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     return unsafe {
@@ -302,14 +302,14 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave,sse")]
 // CHECK-NEXT: unsafe fn _mm_storeu_ps(__p: *mut f32, __a: std::simd::Simd<f32, 4>) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::addr_of_mut!((*(__p as *mut __storeu_ps__2095)).__v).write_unaligned(__a);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // CHECK-NEXT: unsafe fn _mm256_storeu_ps(__p: *mut f32, __a: std::simd::Simd<f32, 8>) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::addr_of_mut!((*(__p as *mut __storeu_ps__3282)).__v).write_unaligned(__a);
@@ -321,7 +321,7 @@ int main(void) {
 // CHECK-NEXT:     options(att_syntax)
 // CHECK-NEXT: );
 // CHECK-EMPTY:
-// CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // CHECK-NEXT: unsafe fn _mm256_set_ps(
 // CHECK-NEXT:     __a: f32,
 // CHECK-NEXT:     __b: f32,
@@ -342,12 +342,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // CHECK-NEXT: unsafe fn _mm256_set1_ps(__w: f32) -> std::simd::Simd<f32, 8> {
 // CHECK-NEXT:     return unsafe { _mm256_set_ps(__w, __w, __w, __w, __w, __w, __w, __w) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // CHECK-NEXT: unsafe fn _mm512_set1_ps(__w: f32) -> std::simd::Simd<f32, 16> {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0]]: std::simd::Simd<f32, 16> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     return unsafe {
@@ -360,7 +360,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // CHECK-NEXT: unsafe fn _mm512_set1_pd(__w: f64) -> std::simd::Simd<f64, 8> {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0]]: std::simd::Simd<f64, 8> = unsafe { std::mem::zeroed() };
 // CHECK-NEXT:     return unsafe {
@@ -372,14 +372,14 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // CHECK-NEXT: unsafe fn _mm512_storeu_ps(__P: *mut (), __A: std::simd::Simd<f32, 16>) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         std::ptr::addr_of_mut!((*(__P as *mut __storeu_ps__4291)).__v).write_unaligned(__A);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // CHECK-NEXT: unsafe fn _mm512_set_pd(
 // CHECK-NEXT:     __A: f64,
 // CHECK-NEXT:     __B: f64,
@@ -418,7 +418,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe { __vector_abi___vabi_sum8([[ARG_0]]) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn print_lanes(name: *const i8, lanes: &[f32]) {
+// CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: unsafe fn print_lanes(name: *const i8, lanes: &[f32]) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%s:".as_ptr(), name) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
@@ -430,7 +431,8 @@ int main(void) {
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: unsafe fn __slate_main() -> i32 {
 // CHECK-NEXT:     if !std::arch::is_x86_feature_detected!("avx512f") {
 // CHECK-NEXT:         println!("no avx512f");
 // CHECK-NEXT:         return 0;
@@ -442,7 +444,7 @@ int main(void) {
 // CHECK-NEXT:             vabi_double4(_mm_set_ps(4.0f32, 3.0f32, 2.0f32, 1.0f32)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     print_lanes(c"double4".as_ptr(), &out4.0);
+// CHECK-NEXT:     unsafe { print_lanes(c"double4".as_ptr(), &out4.0) };
 // CHECK-NEXT:     let mut out8: __SlateAlign16<[f32; 8]> = __SlateAlign16([0 as f32; 8]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _mm256_storeu_ps(
@@ -462,7 +464,7 @@ int main(void) {
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     print_lanes(c"add8".as_ptr(), &out8.0);
+// CHECK-NEXT:     unsafe { print_lanes(c"add8".as_ptr(), &out8.0) };
 // CHECK-NEXT:     let mut out16: __SlateAlign16<[f32; 16]> = __SlateAlign16([0 as f32; 16]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _mm512_storeu_ps(
@@ -470,7 +472,7 @@ int main(void) {
 // CHECK-NEXT:             __vabi_scale_by16(_mm512_set1_ps(2.0f32), 0.25f32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     print_lanes(c"scale16".as_ptr(), &out16.0);
+// CHECK-NEXT:     unsafe { print_lanes(c"scale16".as_ptr(), &out16.0) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

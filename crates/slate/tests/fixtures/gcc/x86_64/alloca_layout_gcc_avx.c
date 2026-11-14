@@ -145,7 +145,8 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
-// CHECK-NEXT: fn probe(n: i32) {
+// CHECK-NEXT: #[target_feature(enable = "avx,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: unsafe fn probe(n: i32) {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let a: *mut i8 =
 // CHECK-NEXT:         (__slate_alloca::alloca(((n as u64) as usize) + 8usize, 32usize) as *mut ()) as *mut i8;
@@ -159,12 +160,13 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT: #[target_feature(enable = "avx,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: unsafe fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
 // CHECK-NEXT:         < (std::mem::size_of::<[i32; 5]>() as u64) / (std::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:     {
-// CHECK-NEXT:         probe(unsafe { sizes.0[i as usize] });
+// CHECK-NEXT:         unsafe { probe(sizes.0[i as usize]) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

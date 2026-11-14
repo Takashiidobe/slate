@@ -279,13 +279,13 @@ int main(void) {
 // CHECK-NEXT:     __A
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
-// CHECK-NEXT: unsafe fn _load_mask32(__A: *mut u32) -> u32 {
-// CHECK-NEXT:     unsafe { *__A }
+// CHECK-NEXT: unsafe fn _load_mask32(__A: &u32) -> u32 {
+// CHECK-NEXT:     unsafe { *(__A as *const u32) }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
-// CHECK-NEXT: unsafe fn _store_mask64(__A: *mut u64, __B: u64) {
+// CHECK-NEXT: unsafe fn _store_mask64(__A: &mut u64, __B: u64) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__A = __B;
+// CHECK-NEXT:         *(__A as *mut u64) = __B;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
@@ -443,10 +443,10 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"knot64 %016llx\n".as_ptr(), _knot_mask64(d)) };
 // CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let loaded: u32 = unsafe { _load_mask32(std::ptr::addr_of_mut!(c)) };
+// CHECK-NEXT:     let loaded: u32 = unsafe { _load_mask32(&(*std::ptr::addr_of_mut!(c))) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _store_mask64(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(d),
+// CHECK-NEXT:             &mut (*std::ptr::addr_of_mut!(d)),
 // CHECK-NEXT:             _cvtu64_mask64((_cvtmask32_u32(loaded) as u64) << 3i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

@@ -565,6 +565,16 @@ impl X86Isa {
         }
     }
 
+    pub fn enabled_beyond(self, baseline: Self) -> impl Iterator<Item = &'static str> {
+        ALL_FEATURES
+            .iter()
+            .copied()
+            .filter(move |feature| {
+                self.features.contains(*feature) && !baseline.features.contains(*feature)
+            })
+            .map(X86Feature::spelling)
+    }
+
     pub fn check_fpmath(self, flavor: CompilerFlavor) -> Result<(), String> {
         if flavor.is_gcc() {
             return Ok(());

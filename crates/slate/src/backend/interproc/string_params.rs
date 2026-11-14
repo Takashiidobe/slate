@@ -151,8 +151,10 @@ pub(in crate::backend) fn run(
 }
 
 fn candidate_for(f: &FnDef, rust_bound: bool) -> Option<CandidateFn> {
-    let private =
-        f.name != "main" && !f.unsafe_ && f.abi.is_none() && matches!(f.vis, Visibility::Private);
+    let private = f.name != "main"
+        && !interproc::has_unsafe_signature(f)
+        && f.abi.is_none()
+        && matches!(f.vis, Visibility::Private);
     if !private && !rust_bound {
         return None;
     }

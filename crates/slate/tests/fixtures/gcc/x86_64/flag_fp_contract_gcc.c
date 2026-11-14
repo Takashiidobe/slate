@@ -21,7 +21,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: // { dg-options "-O2 -mfma -ffp-contract=off" }
-// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT: #[target_feature(enable = "avx,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: unsafe fn __slate_main() -> i32 {
 // CHECK-NEXT:     let base: f64 = 1.0f64 + 9.313225746154785e-10f64;
 // CHECK-NEXT:     let square: f64 = 1.0f64 + 1.862645149230957e-9f64;
 // CHECK-NEXT:     let a: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(base)) };

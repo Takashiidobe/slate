@@ -21,7 +21,8 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-maes -mpclmul -mrdrnd -msha -madx" }
-// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT: #[target_feature(enable = "adx,aes,pclmulqdq,rdrand,sha")]
+// CHECK-NEXT: unsafe fn __slate_main() -> i32 {
 // CHECK-NEXT:     let all: i32 = 1;
 // CHECK-NEXT:     let avx: i32 = 0;
 // CHECK-NEXT:     println!("{} {}", all, avx);

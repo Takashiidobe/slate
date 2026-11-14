@@ -460,8 +460,10 @@ fn callee_param_name(
 }
 
 fn candidate_for(f: &FnDef, liftable_export: bool) -> Option<Candidate> {
-    let private =
-        f.name != "main" && !f.unsafe_ && f.abi.is_none() && matches!(f.vis, Visibility::Private);
+    let private = f.name != "main"
+        && !interproc::has_unsafe_signature(f)
+        && f.abi.is_none()
+        && matches!(f.vis, Visibility::Private);
     if !private && !liftable_export {
         return None;
     }

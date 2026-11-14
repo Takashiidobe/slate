@@ -279,8 +279,19 @@ fn is_path_bindable(f: &FnDef) -> bool {
         })
 }
 
+pub(in crate::backend) fn has_unsafe_signature(f: &FnDef) -> bool {
+    f.unsafe_
+        && (!f
+            .attrs
+            .iter()
+            .any(|attr| matches!(attr, Attr::TargetFeature(_)))
+            || f.params
+                .iter()
+                .any(|param| matches!(param.ty, Type::VaList | Type::Variadic)))
+}
+
 fn is_liftable_export(f: &FnDef) -> bool {
-    !f.unsafe_
+    !has_unsafe_signature(f)
         && !f
             .attrs
             .iter()

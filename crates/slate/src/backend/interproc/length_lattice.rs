@@ -3700,7 +3700,9 @@ fn return_buffer_candidates(
         if pinned.contains(name) {
             continue;
         }
-        let private = !f.unsafe_ && f.abi.is_none() && matches!(f.vis, Visibility::Private);
+        let private = !interproc::has_unsafe_signature(f)
+            && f.abi.is_none()
+            && matches!(f.vis, Visibility::Private);
         if !private && !rust_bound.contains(name) {
             continue;
         }
