@@ -67,6 +67,38 @@ fn register_reference(
     })
 }
 
+fn high_byte_narrowed(asm: &ir::InlineAsm) -> Option<ir::InlineAsm> {
+    let general = |index: usize| {
+        matches!(
+            asm.operands
+                .get(index)
+                .and_then(|operand| operand.selected.as_ref()),
+            Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::Reg))
+        )
+    };
+    let indices: BTreeSet<usize> = asm
+        .pieces
+        .iter()
+        .filter_map(|piece| match piece {
+            ir::AsmPiece::Operand {
+                index,
+                view: Some(ir::AsmRegisterView::HighByte),
+                ..
+            } if general(*index) => Some(*index),
+            _ => None,
+        })
+        .collect();
+    if indices.is_empty() {
+        return None;
+    }
+    let mut narrowed = asm.clone();
+    for index in indices {
+        narrowed.operands[index].selected =
+            Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::RegAbcd));
+    }
+    Some(narrowed)
+}
+
 fn register_modifier(operand: &ir::AsmOperand, view: Option<ir::AsmRegisterView>) -> Result<char> {
     let width = match view {
         Some(ir::AsmRegisterView::HighByte) => {
@@ -1670,6 +1702,8 @@ impl FunctionLowerer<'_, '_> {
         let family = self.tables.target.family;
         let x86 = family.is_x86();
         let arm = family == TargetFamily::Arm32;
+        let narrowed = x86.then(|| high_byte_narrowed(asm)).flatten();
+        let asm = narrowed.as_ref().unwrap_or(asm);
         if asm.labels.len() != labels.len() {
             return Err(unsupported_asm("asm goto outside dispatch"));
         }
