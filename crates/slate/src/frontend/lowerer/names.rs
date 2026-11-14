@@ -60,6 +60,47 @@ pub(super) fn unique_name(name: String, taken: &mut HashSet<String>) -> String {
     candidate
 }
 
+pub(super) fn name_overload_sets(
+    module: &ir::Module,
+    names: &mut HashMap<BindingId, FunctionName>,
+) {
+    let mut overloads: HashMap<&str, Vec<BindingId>> = HashMap::new();
+    for function in &module.functions {
+        if function.semantics.overloadable {
+            let set = overloads.entry(function.name.as_str()).or_default();
+            if !set.contains(&function.value.id) {
+                set.push(function.value.id);
+            }
+        }
+    }
+    overloads.retain(|_, set| set.len() > 1);
+    if overloads.is_empty() {
+        return;
+    }
+    let mut taken: HashSet<String> = names.values().map(|name| name.rust.clone()).collect();
+    taken.extend(
+        module
+            .globals
+            .iter()
+            .map(|global| global.variable.name.clone()),
+    );
+    for function in &module.functions {
+        let Some(set) = overloads.get(function.name.as_str()) else {
+            continue;
+        };
+        let Some(index) = set.iter().position(|id| *id == function.value.id) else {
+            continue;
+        };
+        let Some(name) = names.get_mut(&function.value.id) else {
+            continue;
+        };
+        let base = function_rust_name(function);
+        if name.rust == base {
+            name.rust = unique_name(format!("{base}__{}", index + 1), &mut taken);
+        }
+    }
+}
+
 pub(super) fn alias_target<'m>(
     module: &'m ir::Module,
     global: &ir::Global,

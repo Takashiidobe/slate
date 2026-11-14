@@ -624,6 +624,7 @@ impl<'m> ModuleLowerer<'m> {
                 )
             })
             .collect();
+        name_overload_sets(module, &mut names);
         let defined: HashMap<&str, BindingId> = module
             .functions
             .iter()
@@ -1127,6 +1128,8 @@ impl<'m> ModuleLowerer<'m> {
                     } else if self.tables.passes_long_double(function) {
                         long_double_entry_export_name(&function.name, &definition)
                             .map(Attr::ExportName)
+                    } else if let Some(symbol) = &function.symbol.asm_name {
+                        Ok(Attr::ExportName(symbol.clone()))
                     } else if definition.name != function.name {
                         Ok(Attr::ExportName(function.name.clone()))
                     } else {
