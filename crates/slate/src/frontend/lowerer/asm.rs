@@ -668,6 +668,7 @@ fn asm_template(
 ) -> Result<String> {
     let x86 = family.is_x86();
     let arm = family == TargetFamily::Arm32;
+    let x86_64_att = family == TargetFamily::X86_64 && asm.dialect == Some(ir::AsmDialect::Att);
     names.statement_start = true;
     if !asm.has_sections() {
         return Ok(names.text(&asm.template));
@@ -837,6 +838,10 @@ fn asm_template(
                                 "arm immediate modifier {modifier:?}"
                             )));
                         }
+                        Some('a') if x86_64_att => {
+                            used[*index] = true;
+                            template.push_str(&format!("{{{slot}}}"));
+                        }
                         None | Some('c' | 'P' | 'p') => {
                             used[*index] = true;
                             if modifier.is_none() && asm.dialect == Some(ir::AsmDialect::Att) {
@@ -876,6 +881,7 @@ fn asm_template(
                             matches!(modifier, None | Some('c'))
                         } else {
                             matches!(modifier, None | Some('c' | 'P' | 'p'))
+                                || (x86_64_att && *modifier == Some('a'))
                         };
                         if !allowed {
                             return Err(unsupported_asm(format!("symbol modifier {modifier:?}")));
@@ -892,6 +898,9 @@ fn asm_template(
                             template.push_str(&format!("+{}", symbol.offset));
                         } else if symbol.offset < 0 {
                             template.push_str(&symbol.offset.to_string());
+                        }
+                        if *modifier == Some('a') {
+                            template.push_str("(%rip)");
                         }
                     }
                     Some(ir::AsmOperandClass::Flags(_))

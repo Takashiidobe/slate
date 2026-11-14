@@ -417,6 +417,10 @@ impossible.
 - Register placeholders use the reference view or operand width. Literal braces escape;
   percent pieces become `%`; ordinary AT&T constants and symbols receive `$`.
 - `%c`/`%P`/`%p` suppress the prefix; `%n` folds a negated integer per reference.
+  On x86_64 AT&T, `%a` prints a symbol as the memory reference `{N}+off(%rip)` and an
+  immediate as the bare constant, matching clang and gcc (per-cpu `%%gs:%a[var]`,
+  `asm_address_modifier.c`). i686, Intel dialect and arm targets keep `%a` on these
+  classes as a barrier (`slate-3f8g.4.40`).
   Symbol operands use Rust `sym` item paths with signed byte offsets in the template;
   functions retain the C ABI and string operands get named byte-array statics.
 - Unused operands get references in assembler comments to satisfy Rust's operand-use check.
