@@ -1641,9 +1641,9 @@ def shard_units(units, project_dir, limit):
         return modes[-1].lstrip("-") if modes and modes[-1] != "-m64" else ""
 
     shards = []
-    for mode in sorted({arch_mode(unit) for unit in linked}):
-        members = [unit for unit in linked if arch_mode(unit) == mode]
-        shards += [((*name, mode) if mode else name, shard) for name, shard in split((), members)]
+    for name, members in split((), linked):
+        for mode in sorted({arch_mode(unit) for unit in members}):
+            shards.append(((*name, mode) if mode else name, [unit for unit in members if arch_mode(unit) == mode]))
     shards += [(Path(os.path.relpath(unit["file"], project_dir)).with_suffix("").parts, [unit]) for unit in standalone]
     names = ["_".join(name).replace("-", "_").replace(".", "_") or "root" for name, _ in shards]
     if len(set(names)) != len(names):
