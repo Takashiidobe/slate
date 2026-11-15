@@ -306,8 +306,10 @@ selects the flavor. How to add one: [adding-a-target](../adding-a-target.md).
   `TargetInfo::isa`. Neither changes layout or ABI. Slate builds a crate whose
   units are all core-only and SSE-free for `x86_64-unknown-none` (64-bit) or a
   generated `i386-unknown-none.json` spec (`-m32`/`-m16`), with rustflags
-  derived from these facts, and rejects a crate whose units derive different
-  targets or flags (`project::build_target`).
+  derived from these facts plus `-Zmerge-functions=disabled` (C compilers do
+  not merge functions, and LLVM's merged bodies land in `.text..Lanon.*`
+  sections that the kernel linker script does not place), and rejects a crate
+  whose units derive different targets or flags (`project::build_target`).
 - `{x86_64,aarch64,i686,thumbv7a}-pc-windows-msvc`: 32-bit `long`, binary64
   `long double`, unsigned 16-bit `wchar_t`, Microsoft record layout.
   - i686: `long long`/`double` 8-aligned (4 on i686 Linux), 4-byte pointers,

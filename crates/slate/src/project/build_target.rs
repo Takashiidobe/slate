@@ -175,7 +175,11 @@ fn shared_flags(machine: MachineCodegen, isa: X86Isa) -> impl Iterator<Item = St
     .into_iter()
     .filter(|(on, _)| *on)
     .map(|(_, flag)| flag.to_string());
-    relocation.into_iter().chain(cf_protection).chain(switches)
+    relocation
+        .into_iter()
+        .chain(cf_protection)
+        .chain(switches)
+        .chain(["-Zmerge-functions=disabled".to_string()])
 }
 
 fn i386_spec(isa: X86Isa, code16: bool) -> String {

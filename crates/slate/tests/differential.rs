@@ -841,6 +841,7 @@ fn freestanding_projects_build_for_bare_metal_targets() {
                 "\"-Zindirect-branch-cs-prefix\"",
                 "\"-Zfunction-return=thunk-extern\"",
                 "\"-Ctarget-feature=-x87\"",
+                "\"-Zmerge-functions=disabled\"",
                 "build-std = [\"core\", \"compiler_builtins\"]",
             ][..],
         ),
@@ -849,7 +850,11 @@ fn freestanding_projects_build_for_bare_metal_targets() {
             "realmode.c",
             &code16[..],
             "i386-unknown-none.json",
-            &["\"-Crelocation-model=static\"", "json-target-spec = true"][..],
+            &[
+                "\"-Crelocation-model=static\"",
+                "\"-Zmerge-functions=disabled\"",
+                "json-target-spec = true",
+            ][..],
         ),
     ] {
         let (crate_dir, output) = translate_arch_mode_project(work, &[(file, flags)]);
