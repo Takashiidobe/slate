@@ -1388,17 +1388,28 @@ fn write_project_crate(
         })
     });
     let mut rust_features = BTreeSet::new();
+    let mut runtime_symbols = false;
     for (_, program) in &programs {
         for item in &program.items {
             if let rust_ast::Item::CrateAttrs(attrs) = item {
                 for attr in attrs {
-                    if let rust_ast::CrateAttr::Feature(feature) = attr {
-                        rust_features.insert(*feature);
+                    match attr {
+                        rust_ast::CrateAttr::Feature(feature) => {
+                            rust_features.insert(*feature);
+                        }
+                        rust_ast::CrateAttr::Allow(lints) => {
+                            runtime_symbols |=
+                                lints.contains(&rust_ast::Lint::SuspiciousRuntimeSymbolDefinitions);
+                        }
+                        _ => {}
                     }
                 }
             }
         }
     }
+    let runtime_symbols_allow = runtime_symbols.then(|| {
+        rust_ast::CrateAttr::Allow(vec![rust_ast::Lint::SuspiciousRuntimeSymbolDefinitions])
+    });
     for (stem, mut program) in programs {
         for item in &mut program.items {
             if let rust_ast::Item::CrateAttrs(attrs) = item {
@@ -1422,6 +1433,7 @@ fn write_project_crate(
                 .iter()
                 .copied()
                 .map(rust_ast::CrateAttr::Feature)
+                .chain(runtime_symbols_allow.clone())
                 .collect();
             program.items.retain(|item| match item {
                 rust_ast::Item::CrateAttrs(attrs) => {
@@ -1461,6 +1473,7 @@ fn write_project_crate(
             rust_ast::Lint::RustdocAll,
         ])]
         .into_iter()
+        .chain(runtime_symbols_allow)
         .chain(
             rust_features
                 .iter()

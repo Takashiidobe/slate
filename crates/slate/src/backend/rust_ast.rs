@@ -382,6 +382,7 @@ pub enum UsedKind {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Abi {
+    C,
     CUnwind,
     Win64Unwind,
     SysV64Unwind,
@@ -396,6 +397,7 @@ pub enum Abi {
 impl Abi {
     pub fn spelling(self) -> &'static str {
         match self {
+            Abi::C => "C",
             Abi::CUnwind => "C-unwind",
             Abi::Win64Unwind => "win64-unwind",
             Abi::SysV64Unwind => "sysv64-unwind",
@@ -410,7 +412,7 @@ impl Abi {
 
     pub fn foreign_block(self) -> &'static str {
         match self {
-            Abi::CUnwind | Abi::Rust => "C",
+            Abi::C | Abi::CUnwind | Abi::Rust => "C",
             Abi::Win64Unwind => "win64",
             Abi::SysV64Unwind => "sysv64",
             Abi::StdcallUnwind => "stdcall",

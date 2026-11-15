@@ -133,6 +133,7 @@ struct Dependencies {
     asm_unwind: bool,
     long_const_eval: bool,
     known_panics: bool,
+    runtime_symbols: bool,
     huge_stack: bool,
     asm_goto_with_outputs: bool,
     arm_neon_asm: bool,
@@ -1033,6 +1034,11 @@ impl<'m> ModuleLowerer<'m> {
             }
             match self.lowerer().lower_extern(function) {
                 Ok((abi, decl, shim)) => {
+                    self.dependencies.runtime_symbols |= functions::runtime_symbol(
+                        crate::libc_catalog::link_name(&function.name, &function.symbol),
+                        self.tables.target.os,
+                    )
+                    .is_some();
                     if abi == rust::Abi::CUnwind {
                         self.externs.push(decl);
                     } else {
@@ -1138,8 +1144,31 @@ impl<'m> ModuleLowerer<'m> {
                         Ok(Attr::NoMangle)
                     };
                     export.map(|attr| {
-                        definition.attrs.push(attr);
-                        definition.abi.get_or_insert(rust::Abi::CUnwind);
+                        let symbol = match &attr {
+                            Attr::ExportName(symbol) => {
+                                symbol.trim_start_matches('\u{1}').to_string()
+                            }
+                            _ => function.name.clone(),
+                        };
+                        let Some(runtime) =
+                            functions::runtime_symbol(&symbol, self.tables.target.os)
+                        else {
+                            definition.attrs.push(attr);
+                            definition.abi.get_or_insert(rust::Abi::CUnwind);
+                            return Item::Fn(definition);
+                        };
+                        self.dependencies.runtime_symbols = true;
+                        if let Some(wrapper) = functions::runtime_export(
+                            &definition,
+                            &symbol,
+                            &runtime,
+                            self.tables.names[&function.value.id].identity,
+                        ) {
+                            self.items.push(Item::Fn(wrapper));
+                        } else {
+                            definition.attrs.push(attr);
+                            definition.abi = Some(rust::Abi::C);
+                        }
                         Item::Fn(definition)
                     })
                 }
@@ -1340,6 +1369,11 @@ impl<'m> ModuleLowerer<'m> {
             features.push(rust::CrateAttr::Allow(vec![
                 rust::Lint::ArithmeticOverflow,
                 rust::Lint::UnconditionalPanic,
+            ]));
+        }
+        if dependencies.runtime_symbols {
+            features.push(rust::CrateAttr::Allow(vec![
+                rust::Lint::SuspiciousRuntimeSymbolDefinitions,
             ]));
         }
         if dependencies.x86_interrupt {

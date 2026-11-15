@@ -1,6 +1,6 @@
 use super::*;
 use slate_parser::sema::ctype::CTypeKind;
-use slate_parser::target_info::TargetFamily;
+use slate_parser::target_info::{TargetFamily, TargetOs};
 
 pub(super) fn codegen_builtin(metadata: &[(String, String)]) -> bool {
     let entry = |name: &str| {
@@ -10,6 +10,134 @@ pub(super) fn codegen_builtin(metadata: &[(String, String)]) -> bool {
     };
     entry("c_builtin_kind").is_some_and(|kind| kind != "library")
         || entry("c_builtin_header").is_some_and(|header| header.ends_with("intrin.h"))
+}
+
+#[derive(Clone, Copy)]
+pub(super) enum RuntimeType {
+    MutVoid,
+    ConstVoid,
+    ConstChar,
+    Int,
+    Size,
+    SignedSize,
+}
+
+impl RuntimeType {
+    fn rust(self) -> rust::Type {
+        let pointer = |mutable, inner| rust::Type::Ptr {
+            mutable,
+            inner: Box::new(rust::Type::CLib(inner)),
+        };
+        match self {
+            RuntimeType::MutVoid => pointer(true, rust::CLibType::VOID),
+            RuntimeType::ConstVoid => pointer(false, rust::CLibType::VOID),
+            RuntimeType::ConstChar => pointer(false, rust::CLibType::CHAR),
+            RuntimeType::Int => rust::Type::Custom("core::ffi::c_int".into()),
+            RuntimeType::Size => rust::Type::Prim(rust::Prim::Usize),
+            RuntimeType::SignedSize => rust::Type::Prim(rust::Prim::Isize),
+        }
+    }
+}
+
+pub(super) struct RuntimeSymbol {
+    pub params: &'static [RuntimeType],
+    pub ret: Option<RuntimeType>,
+}
+
+pub(super) fn runtime_symbol(name: &str, os: TargetOs) -> Option<RuntimeSymbol> {
+    use RuntimeType::*;
+    let (params, ret): (&'static [RuntimeType], _) = match name {
+        "memcpy" | "memmove" => (&[MutVoid, ConstVoid, Size], Some(MutVoid)),
+        "memset" => (&[MutVoid, Int, Size], Some(MutVoid)),
+        "memcmp" | "bcmp" => (&[ConstVoid, ConstVoid, Size], Some(Int)),
+        "strlen" => (&[ConstChar], Some(Size)),
+        _ if os == TargetOs::Windows => return None,
+        "malloc" => (&[Size], Some(MutVoid)),
+        "realloc" => (&[MutVoid, Size], Some(MutVoid)),
+        "free" => (&[MutVoid], None),
+        "exit" => (&[Int], None),
+        "open" => (&[ConstChar, Int], Some(Int)),
+        "read" => (&[Int, MutVoid, Size], Some(SignedSize)),
+        "write" => (&[Int, ConstVoid, Size], Some(SignedSize)),
+        "close" => (&[Int], Some(Int)),
+        _ => return None,
+    };
+    Some(RuntimeSymbol { params, ret })
+}
+
+pub(super) fn runtime_export(
+    definition: &FnDef,
+    symbol: &str,
+    runtime: &RuntimeSymbol,
+    identity: FunctionIdentity,
+) -> Option<FnDef> {
+    let castable = |ty: &rust::Type| matches!(ty, rust::Type::Prim(_) | rust::Type::Ptr { .. });
+    let returns = definition
+        .ret
+        .as_ref()
+        .filter(|ty| !matches!(ty, rust::Type::Unit));
+    if definition.params.len() != runtime.params.len()
+        || !definition.params.iter().all(|param| castable(&param.ty))
+        || returns.is_some() != runtime.ret.is_some()
+        || returns.is_some_and(|ty| !castable(ty))
+    {
+        return None;
+    }
+    let params = definition
+        .params
+        .iter()
+        .zip(runtime.params)
+        .map(|(param, ty)| FnParam {
+            comments: Vec::new(),
+            name: param.name.clone(),
+            mutable: false,
+            ty: ty.rust(),
+        })
+        .collect::<Vec<_>>();
+    let call = Expr::Call {
+        func: Box::new(Expr::Var(definition.name.as_str().into())),
+        args: definition
+            .params
+            .iter()
+            .map(|param| Expr::Cast {
+                expr: Box::new(Expr::Var(param.name.as_str().into())),
+                ty: param.ty.clone(),
+            })
+            .collect(),
+        binding: CallBinding::Direct {
+            identity,
+            canonical_type: None,
+            trusted_declaration: None,
+            trusted_headers: Default::default(),
+        },
+    };
+    let call = if definition.unsafe_ {
+        Expr::Unsafe(Box::new(rust::Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(call)),
+        }))
+    } else {
+        call
+    };
+    let ret = runtime.ret.map(RuntimeType::rust);
+    let body = match &ret {
+        Some(ty) => vec![Stmt::Return(Some(Expr::Cast {
+            expr: Box::new(call),
+            ty: ty.clone(),
+        }))],
+        None => vec![Stmt::Expr(call)],
+    };
+    Some(FnDef {
+        comments: Vec::new(),
+        attrs: vec![Attr::ExportName(symbol.to_string())],
+        vis: rust::Visibility::Private,
+        unsafe_: true,
+        abi: Some(rust::Abi::C),
+        name: format!("__slate_export_{}", definition.name),
+        params,
+        ret,
+        body,
+    })
 }
 
 pub(super) fn main_wrapper(arity: usize, huge_stack: bool, returns_void: bool) -> Item {
