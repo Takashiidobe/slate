@@ -347,6 +347,7 @@ struct ParsedCompilerArgs {
     red_zone: Option<bool>,
     indirect_branch_cs_prefix: Option<bool>,
     retpoline: Option<bool>,
+    function_return_thunk_extern: Option<bool>,
     three_dnow: Option<u8>,
     preferred_stack_boundary: Option<u32>,
     stack_alignment: Option<u32>,
@@ -614,6 +615,7 @@ enum Opt {
     RedZone,
     IndirectBranchCsPrefix,
     Retpoline,
+    FunctionReturn,
     X87,
     ClangX87,
     FpRetIn387,
@@ -781,6 +783,7 @@ impl std::fmt::Display for Opt {
             Self::RedZone => "mred-zone",
             Self::IndirectBranchCsPrefix => "mindirect-branch-cs-prefix",
             Self::Retpoline => "mretpoline",
+            Self::FunctionReturn => "mfunction-return",
             Self::X87 => "m80387",
             Self::ClangX87 => "mx87",
             Self::FpRetIn387 => "mfp-ret-in-387",
@@ -975,6 +978,7 @@ impl Opt {
             | Self::StackProtectorLevel
             | Self::CfProtection
             | Self::CodeModel
+            | Self::FunctionReturn
             | Self::RedZone
             | Self::IndirectBranchCsPrefix
             | Self::ArchMode
@@ -1374,12 +1378,6 @@ const CODEGEN_ONLY_FLAGS: &[CodegenOnlyFlag] = &[
     CodegenOnlyFlag::switch("-mskip-rax-setup", GNU_FLAVORS),
     CodegenOnlyFlag::switch("-mvzeroupper", GNU_FLAVORS),
     CodegenOnlyFlag::value("-mtune=", GNU_FLAVORS),
-    CodegenOnlyFlag::value("-mfunction-return=", GNU_FLAVORS).one_of(&[
-        "keep",
-        "thunk",
-        "thunk-inline",
-        "thunk-extern",
-    ]),
     CodegenOnlyFlag::value("-mstack-protector-guard=", GNU_FLAVORS).one_of(&["tls", "global"]),
     CodegenOnlyFlag::value("-mstack-protector-guard-reg=", GNU_FLAVORS).one_of(&["fs", "gs"]),
     CodegenOnlyFlag::value("-mstack-protector-guard-symbol=", GNU_FLAVORS),
@@ -2094,6 +2092,13 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                     return Err(invalid(argument, "missing value"));
                 }
             }
+        } else if let Some(mode) = argument.strip_prefix("-mfunction-return=") {
+            parsed.saw(Opt::FunctionReturn, argument);
+            parsed.function_return_thunk_extern = Some(match mode {
+                "thunk-extern" => true,
+                "keep" | "thunk" | "thunk-inline" => false,
+                _ => return Err(invalid(argument, "unknown function return mode")),
+            });
         } else if let Some(model) = argument.strip_prefix("-mcmodel=") {
             parsed.saw(Opt::CodeModel, argument);
             parsed.code_model = Some(
@@ -2731,6 +2736,7 @@ fn codegen_options(raw: &ParsedCompilerArgs, target: &TargetInfo) -> CodegenOpti
         red_zone: raw.red_zone,
         indirect_branch_cs_prefix: raw.indirect_branch_cs_prefix.unwrap_or(false),
         retpoline: raw.retpoline.unwrap_or(false),
+        function_return_thunk_extern: raw.function_return_thunk_extern.unwrap_or(false),
         three_dnow: raw.three_dnow.unwrap_or(0),
         delete_null_pointer_checks: raw.delete_null_pointer_checks.unwrap_or(true),
         trivial_auto_var_init: raw.trivial_auto_var_init.unwrap_or_default(),

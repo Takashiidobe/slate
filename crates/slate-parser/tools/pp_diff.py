@@ -47,16 +47,16 @@ CONSUMED_PRAGMA = re.compile(
 )
 
 KEEP_JOINED = ("-D", "-U", "-I", "-std=", "-isystem", "-iquote", "-idirafter", "-include", "-imacros")
-KEEP_SEPARATE = {"-D", "-U", "-I", "-isystem", "-iquote", "-idirafter", "-include", "-imacros"}
+KEEP_SEPARATE = {"-D", "-U", "-I", "-isystem", "-iquote", "-idirafter", "-include", "-imacros", "-mllvm"}
 PATH_FLAGS = {"-I", "-isystem", "-iquote", "-idirafter", "-include", "-imacros"}
-DROP_SEPARATE = {"-mllvm", "-Xclang"}
+DROP_SEPARATE = {"-Xclang"}
 SEMANTIC_FLAGS = (
     "-funsigned-char", "-fsigned-char", "-fshort-wchar", "-fms-extensions", "-fms-anonymous-structs",
     "-fexperimental-late-parse-attributes", "-fstrict-flex-arrays=", "-ffreestanding", "-nostdinc", "-fno-builtin",
     "-fpic", "-fPIC", "-fpie", "-fPIE", "-fno-pic", "-fno-PIC", "-fno-pie", "-fno-PIE",
     "-fstack-protector", "-fno-stack-protector", "-fcf-protection", "-mcmodel=", "-mregparm=", "--target=", "-O",
 )
-TARGET_FEATURE = re.compile(r"-march=.+|-m(?!llvm$)[a-z0-9][a-z0-9.-]*")
+TARGET_FEATURE = re.compile(r"-march=.+|-m(?!llvm$)[a-z0-9][a-z0-9.-]*(?:=.+)?")
 
 
 @dataclass

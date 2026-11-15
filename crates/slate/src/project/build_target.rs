@@ -160,6 +160,10 @@ fn shared_flags(machine: MachineCodegen, isa: X86Isa) -> impl Iterator<Item = St
         ),
         (machine.retpoline, "-Zretpoline"),
         (
+            machine.function_return_thunk_extern,
+            "-Zfunction-return=thunk-extern",
+        ),
+        (
             machine.indirect_branch_cs_prefix,
             "-Zindirect-branch-cs-prefix",
         ),

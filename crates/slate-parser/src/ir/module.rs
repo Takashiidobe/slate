@@ -40,6 +40,7 @@ pub struct MachineCodegen {
     pub cf_protection: Option<u8>,
     pub indirect_branch_cs_prefix: bool,
     pub retpoline: bool,
+    pub function_return_thunk_extern: bool,
 }
 
 impl MachineCodegen {
@@ -51,6 +52,7 @@ impl MachineCodegen {
             cf_protection: codegen.cf_protection,
             indirect_branch_cs_prefix: codegen.indirect_branch_cs_prefix,
             retpoline: codegen.retpoline,
+            function_return_thunk_extern: codegen.function_return_thunk_extern,
         }
     }
 }

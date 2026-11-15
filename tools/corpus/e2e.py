@@ -1673,6 +1673,7 @@ def shard_units(units, project_dir, limit):
         "csprefix": lambda a: a in ("-mindirect-branch-cs-prefix", "-mno-indirect-branch-cs-prefix"),
         "sse": lambda a: a in ("-msse", "-mno-sse", "-msse2", "-mno-sse2", "-msoft-float", "-mgeneral-regs-only"),
         "x87": lambda a: a in ("-m80387", "-mno-80387"),
+        "return": lambda a: a.startswith("-mfunction-return="),
     }
 
     def codegen_key(unit):

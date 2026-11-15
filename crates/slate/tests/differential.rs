@@ -818,6 +818,7 @@ const KERNEL_FLAGS: &[&str] = &[
     "-fcf-protection=branch",
     "-mretpoline-external-thunk",
     "-mindirect-branch-cs-prefix",
+    "-mfunction-return=thunk-extern",
 ];
 
 #[test]
@@ -838,6 +839,7 @@ fn freestanding_projects_build_for_bare_metal_targets() {
                 "\"-Zcf-protection=branch\"",
                 "\"-Zretpoline-external-thunk\"",
                 "\"-Zindirect-branch-cs-prefix\"",
+                "\"-Zfunction-return=thunk-extern\"",
                 "\"-Ctarget-feature=-x87\"",
                 "build-std = [\"core\", \"compiler_builtins\"]",
             ][..],

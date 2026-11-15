@@ -1176,6 +1176,9 @@ impl fmt::Display for DisplayModule<'_> {
                 .indirect_branch_cs_prefix
                 .then(|| "indirect_branch_cs_prefix".to_string()),
             machine.retpoline.then(|| "retpoline".to_string()),
+            machine
+                .function_return_thunk_extern
+                .then(|| "function_return=thunk_extern".to_string()),
         ]
         .into_iter()
         .flatten()
