@@ -71,6 +71,7 @@ impl Uses {
                 condition,
                 then_body,
                 else_body,
+                ..
             } => {
                 self.value(condition);
                 self.statements(then_body);
@@ -107,6 +108,7 @@ impl Uses {
                 id,
                 discriminant,
                 body,
+                ..
             } => {
                 self.switches.insert(*id);
                 self.value(discriminant);

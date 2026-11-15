@@ -206,7 +206,7 @@ int main (int argc, char *argv[])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(add<i32, overflow=ub>(const<i32>(5), const<i32>(37)), const<i32>(42))
+// DEFAULT-NEXT:         if ne<i32>(add<i32, overflow=ub>(const<i32>(5), const<i32>(37)), const<i32>(42)) [folded=false]
 // DEFAULT-NEXT:             do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     ;
@@ -295,7 +295,7 @@ int main (int argc, char *argv[])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(const<i32>(42), const<i32>(42)), ne<i32>(const<i32>(42), const<i32>(42))), ne<i32>(const<i32>(42), const<i32>(42))), ne<i32>(const<i32>(42), const<i32>(42)))
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(const<i32>(42), const<i32>(42)), ne<i32>(const<i32>(42), const<i32>(42))), ne<i32>(const<i32>(42), const<i32>(42))), ne<i32>(const<i32>(42), const<i32>(42))) [folded=false]
 // DEFAULT-NEXT:             do %[[VALUE15:[0-9]+]]
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     ;
@@ -309,7 +309,7 @@ int main (int argc, char *argv[])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(1), const<i32>(2)), const<i32>(4)), const<i32>(35)), const<i32>(42))
+// DEFAULT-NEXT:         if ne<i32>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(1), const<i32>(2)), const<i32>(4)), const<i32>(35)), const<i32>(42)) [folded=false]
 // DEFAULT-NEXT:             do %[[VALUE17:[0-9]+]]
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     ;

@@ -158,7 +158,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(size_of<u64, f32>(4) [c="__size_t"], size_of<u64, u32>(4) [c="__size_t"]), ne<u64>(size_of<u64, f64>(8) [c="__size_t"], size_of<u64, u64>(8) [c="__size_t"]))
+// DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(size_of<u64, f32>(4) [c="__size_t"], size_of<u64, u32>(4) [c="__size_t"]), ne<u64>(size_of<u64, f64>(8) [c="__size_t"], size_of<u64, u64>(8) [c="__size_t"])) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], reinterpret<u64, reason=arg>(const<u64>(3931642474694443008)) [c="ull"], reinterpret<u32, reason=arg>(const<u32>(0)) [c="ul"]);
 // DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%[[VALUE_c]], reinterpret<u64, reason=arg>(const<u64>(3931642474694443009)) [c="ull"], reinterpret<u32, reason=arg>(const<u32>(1)) [c="ul"]);

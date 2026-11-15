@@ -86,7 +86,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_cfb_tab32:[0-9]+]] cfb_tab32: array<u32, 2> [storage=static] [const] = aggregate<array<u32, 2>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)) [c="u32"], index1 = reinterpret<u32, reason=assign>(const<u32>(4294967295)) [c="u32"]) [linkage=internal] [c="const u32[]"];
 // DEFAULT-NEXT:     fn %[[VALUE_xxx:[0-9]+]] @xxx(%[[VALUE_bpp:[0-9]+]] bpp: i32) -> ptr<const u32> [linkage=external] [fallthrough=ub_if_used] [c="const u32 *(int)"] {
 // DEFAULT-NEXT:         let %[[VALUE_tab:[0-9]+]] tab: ptr<const u32> [storage=automatic] [c="const u32 *"];
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0)) [folded=false]
 // DEFAULT-NEXT:             return addr_of<ptr<const u32>>(%[[VALUE_deadfish]]) [c="const u32 *"];
 // DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<i32>(%[[VALUE_bpp]])
 // DEFAULT-NEXT:             {

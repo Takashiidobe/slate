@@ -496,7 +496,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_b129:[0-9]+]] b129: i129b [storage=automatic] = float_to_int<i129b, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(123));
 // DEFAULT-NEXT:         if ne<i32>(truncate<i32, reason=explicit, fits=unknown>(read<i129b>(%[[VALUE_b129]])), const<i32>(123))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(widen<i129b, reason=explicit>(const<i32>(123))), const<f80>(123))
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(widen<i129b, reason=explicit>(const<i32>(123))), const<f80>(123)) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(77)>(%[[VALUE_str_4]])), truncate<i64, reason=explicit, fits=unknown>(read<i101b>(%[[VALUE_b101]])), truncate<u64, reason=explicit, fits=unknown>(read<u150b>(%[[VALUE_ub150]])), truncate<i64, reason=explicit, fits=unknown>(read<i256b>(%[[VALUE_b256]])), truncate<u64, reason=explicit, fits=unknown>(read<u300b>(%[[VALUE_ub300]])));
 // DEFAULT-NEXT:     }

@@ -46,7 +46,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_str]])));
 // DEFAULT-NEXT:         size_of<u64, i32>(4) [c="__size_t"];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             if eq<i32>(const<i32>(5), const<i32>(5))
+// DEFAULT-NEXT:             if eq<i32>(const<i32>(5), const<i32>(5)) [folded=true]
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:             else
 // DEFAULT-NEXT:                 call<void, signature=fn(ptr<const i8>, ptr<const i8>, u32, ptr<const i8>) -> void>(%[[VALUE___assert_fail]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_2]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(27)>(%[[VALUE_str_3]])), reinterpret<u32, reason=arg, fits=always>(const<i32>(6)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(15)>(%[[VALUE_str_4]])));

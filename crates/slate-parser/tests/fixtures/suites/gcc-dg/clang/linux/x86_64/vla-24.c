@@ -62,7 +62,7 @@ int main (void)
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_n:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(1), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(1), const<i32>(0)) [folded=true]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n]]))) [c="__size_t"];
 // DEFAULT-NEXT:                 let %[[VALUE_i:[0-9]+]] i: vla<i8, %[[VALUE4]]> [storage=automatic];

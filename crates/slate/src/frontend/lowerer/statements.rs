@@ -379,8 +379,9 @@ impl FunctionLowerer<'_, '_> {
                 condition,
                 then_body,
                 else_body,
+                folded,
             } => Stmt::If {
-                cond: self.lower_condition(condition)?,
+                cond: self.lower_folded(condition, folded.is_some(), Self::lower_condition)?,
                 then_body: self.lower_statement_list(then_body)?,
                 else_body: else_body
                     .as_ref()
@@ -482,8 +483,9 @@ impl FunctionLowerer<'_, '_> {
                 id,
                 discriminant,
                 body,
+                folded,
             } => self
-                .lower_switch(*id, discriminant, body)
+                .lower_switch(*id, discriminant, folded.is_some(), body)
                 .map_err(|error| error.within(Site::of(statement), "in switch".into()))?,
             ir::Statement::Break(id) => Stmt::Break(Some(self.break_label(*id))),
             ir::Statement::Continue(id) if self.counted_loops.contains(id) => {

@@ -133,12 +133,12 @@ long gs4 (void)
 // DEFAULT-NEXT:         return add<i64, overflow=ub>(read<i64>(%[[VALUE_s1]]), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_s2]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_ge4:[0-9]+]] @ge4() -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0)) [folded=false]
 // DEFAULT-NEXT:             return read<i64>(%[[VALUE_e1]]);
 // DEFAULT-NEXT:         return widen<i64, reason=return>(read<i32>(%[[VALUE_e2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_gs4:[0-9]+]] @gs4() -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0)) [folded=false]
 // DEFAULT-NEXT:             return read<i64>(%[[VALUE_s1]]);
 // DEFAULT-NEXT:         return widen<i64, reason=return>(read<i32>(%[[VALUE_s2]]));
 // DEFAULT-NEXT:     }

@@ -99,7 +99,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(size_of<u64, i64>(8) [c="__size_t"], size_of<u64, f64>(8) [c="__size_t"]), ne<i32>(neg<i32, overflow=ub>(const<i32>(1021)), neg<i32, overflow=ub>(const<i32>(1021))))
+// DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(size_of<u64, i64>(8) [c="__size_t"], size_of<u64, f64>(8) [c="__size_t"]), ne<i32>(neg<i32, overflow=ub>(const<i32>(1021)), neg<i32, overflow=ub>(const<i32>(1021)))) [folded=false]
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         write<i64>(field0(%[[VALUE_u]]), call<i64, signature=fn() -> i64>(%[[VALUE_f1]]));
 // DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(field1(%[[VALUE_u]])), const<f64>(2.225073858507201e-308))

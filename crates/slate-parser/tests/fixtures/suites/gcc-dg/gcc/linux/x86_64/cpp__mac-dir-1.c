@@ -61,9 +61,9 @@ int main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0)) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(1), sub<i32, overflow=ub>(const<i32>(2), const<i32>(1)))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(1), sub<i32, overflow=ub>(const<i32>(2), const<i32>(1))) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

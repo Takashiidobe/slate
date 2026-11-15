@@ -179,7 +179,7 @@ int members(void) {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, i32>(4) [c="__size_t"]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_return_callback:[0-9]+]] @return_callback(%[[VALUE_value_5:[0-9]+]] value: @type[[TYPE4]]) -> ptr<fn(i32) -> i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, i32>(4) [c="__size_t"], const<u64>(0))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, i32>(4) [c="__size_t"], const<u64>(0)) [folded=true]
 // DEFAULT-NEXT:             return null<ptr<fn(i32) -> i32>>;
 // DEFAULT-NEXT:         return null<ptr<fn(i32) -> i32>>;
 // DEFAULT-NEXT:     }

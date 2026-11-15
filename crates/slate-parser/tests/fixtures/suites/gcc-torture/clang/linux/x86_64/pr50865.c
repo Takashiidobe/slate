@@ -53,13 +53,13 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_l1:[0-9]+]] l1: volatile i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(1));
 // DEFAULT-NEXT:         let %[[VALUE_l2:[0-9]+]] l2: volatile i64 [storage=automatic] = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         let %[[VALUE_l3:[0-9]+]] l3: volatile i64 [storage=automatic] = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)));
-// DEFAULT-NEXT:         if ne<i64>(rem<i64, by_zero=ub, min_by_neg_one=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), const<i64>(1)), widen<i64, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:         if ne<i64>(rem<i64, by_zero=ub, min_by_neg_one=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), const<i64>(1)), widen<i64, reason=usual_arith>(const<i32>(0))) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         if ne<i64>(rem<i64, by_zero=ub, min_by_neg_one=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), read<i64, volatile>(%[[VALUE_l1]])), widen<i64, reason=usual_arith>(const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         if eq<i64>(read<i64, volatile>(%[[VALUE_l2]]), widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if ne<i64>(rem<i64, by_zero=ub, min_by_neg_one=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), const<i64>(1)), widen<i64, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:                 if ne<i64>(rem<i64, by_zero=ub, min_by_neg_one=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), const<i64>(1)), widen<i64, reason=usual_arith>(const<i32>(0))) [folded=false]
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else

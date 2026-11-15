@@ -51,6 +51,20 @@ form was.
   and stay nested statements, not flattened arms. Statement order and
   absent `break`s encode fallthrough. Case endpoints (and GNU ranges) fold
   to the promoted switch type.
+- `[folded=V]` on `if` and `switch` (`sema/folded_branches.rs`, after
+  `constant_asm_operands`) records that the condition or discriminant folds
+  to `V`, as clang's `EmitIfStmt`/`EmitSwitchStmt` see it. Arms are never
+  removed. An `if` gets it only when its dead arm holds no label and no case
+  of an enclosing switch; a `switch` only when its body holds no label and no
+  case of another switch. Rust lowering keeps every arm and emits each
+  `size_of`/`align_of`/`offset_of` leaf of a folded condition as
+  `const { size_of::<T>() }`, so rustc's MIR drops the dead arm even at
+  `-O0`; only the leaf is wrapped because `ConstBlock` is opaque to rewrites.
+  The goto/asm-goto state machine jumps to the
+  live target and drops states only the dead arms reached. Dead arms may hold
+  asm that is invalid for the operand width (`__get_user_size`) or calls to
+  undefined functions (`__get_user_bad`), which C never instantiates
+  (`ir_folded_branches.c`, `x86_64/asm_folded_size_dispatch.c`).
 - Labels, `goto`, and `label_addr<ptr<void>>` use label `BindingId`s,
   distinct for GNU local labels. Computed goto keeps its pointer operand.
 - Fixtures: `ir_control_*.c`.

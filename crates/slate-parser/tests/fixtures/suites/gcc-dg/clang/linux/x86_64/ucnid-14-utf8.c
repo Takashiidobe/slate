@@ -65,7 +65,7 @@ main (void)
 // DEFAULT-NEXT:         goto %[[VALUE1:[0-9]+]];
 // DEFAULT-NEXT:         label %[[VALUE1]] ÿ:
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(4), const<i32>(4))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(4), const<i32>(4)) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

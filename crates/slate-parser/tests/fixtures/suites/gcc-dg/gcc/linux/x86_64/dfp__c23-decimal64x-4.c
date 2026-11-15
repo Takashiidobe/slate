@@ -70,11 +70,11 @@ main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(34), const<i32>(34))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(34), const<i32>(34)) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(neg<i32, overflow=ub>(const<i32>(6142)), neg<i32, overflow=ub>(const<i32>(6142)))
+// DEFAULT-NEXT:         if ne<i32>(neg<i32, overflow=ub>(const<i32>(6142)), neg<i32, overflow=ub>(const<i32>(6142))) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(6145), const<i32>(6145))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(6145), const<i32>(6145)) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         if ne<d128, exceptions=observable>(const<d128>(9.999999999999999999999999999999999e6144), const<d128>(9.999999999999999999999999999999999e6144))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

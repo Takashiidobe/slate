@@ -146,7 +146,7 @@ int main ()
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(65)>(%[[VALUE_a]]), read<i32>(%[[VALUE_i_3]]))), reinterpret<i32, reason=assign>(add<i32, overflow=wrap>(conditional<i32>(lt<i32>(reinterpret<i32, reason=explicit>(neg<i32, overflow=wrap>(const<i32>(1))) [c="int32_t"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="int32_t"]), neg<i32, overflow=wrap>(const<i32>(126)), const<i32>(4)), mul<i32, overflow=wrap>(read<i32>(%[[VALUE_i_3]]), const<i32>(13)))) [c="int32_t"]) [c="int32_t"];
 // DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(65)>(%[[VALUE_b]]), read<i32>(%[[VALUE_i_3]]))), reinterpret<i32, reason=assign>(add<i32, overflow=wrap>(conditional<i32>(lt<i32>(reinterpret<i32, reason=explicit>(neg<i32, overflow=wrap>(const<i32>(1))) [c="int32_t"], reinterpret<i32, reason=usual_arith>(const<i32>(0)) [c="int32_t"]), neg<i32, overflow=wrap>(const<i32>(126)), const<i32>(4)), mul<i32, overflow=wrap>(read<i32>(%[[VALUE_i_3]]), const<i32>(13)))) [c="int32_t"]) [c="int32_t"];
-// DEFAULT-NEXT:                     if ne<i32>(const<i32>(1), const<i32>(0))
+// DEFAULT-NEXT:                     if ne<i32>(const<i32>(1), const<i32>(0)) [folded=true]
 // DEFAULT-NEXT:                         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])), read<i32>(%[[VALUE_i_3]]), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(65)>(%[[VALUE_a]]), read<i32>(%[[VALUE_i_3]])))) [c="int32_t"]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, i32) -> void>(%[[VALUE_fun1]], array_decay<ptr<i32>, length=Some(65)>(%[[VALUE_a]]) [c="int32_t *"], const<i32>(65));
@@ -164,7 +164,7 @@ int main ()
 // DEFAULT-NEXT:             counted: %[[VALUE_i_4]] in const<i32>(0)..const<i32>(65)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if ne<i32>(const<i32>(1), const<i32>(0))
+// DEFAULT-NEXT:                     if ne<i32>(const<i32>(1), const<i32>(0)) [folded=true]
 // DEFAULT-NEXT:                         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%[[VALUE_str_2]])), read<i32>(%[[VALUE_i_4]]), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(65)>(%[[VALUE_a]]), read<i32>(%[[VALUE_i_4]])))) [c="int32_t"], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(65)>(%[[VALUE_b]]), read<i32>(%[[VALUE_i_4]])))) [c="int32_t"]);
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(65)>(%[[VALUE_a]]), read<i32>(%[[VALUE_i_4]])))) [c="int32_t"], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(65)>(%[[VALUE_b]]), read<i32>(%[[VALUE_i_4]])))) [c="int32_t"])
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

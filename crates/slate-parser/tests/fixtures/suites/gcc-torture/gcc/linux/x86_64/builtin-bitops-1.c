@@ -734,14 +734,14 @@ int main(void) {
 // DEFAULT-NEXT:             write<bool>(%[[VALUE100]], ne<i32>(call<i32, signature=fn(u32) -> i32>(%[[VALUE___builtin_clz]], truncate<u32, reason=arg, fits=always>(const<u64>(0))), call<i32, signature=fn(u32) -> i32>(%[[VALUE_my_clz]], truncate<u32, reason=arg, fits=always>(const<u64>(0)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%[[VALUE100]], const<bool>(false));
-// DEFAULT-NEXT:         if read<bool>(%[[VALUE100]])
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE100]]) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE101:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(0), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE101]], ne<i32>(call<i32, signature=fn(u32) -> i32>(%[[VALUE___builtin_ctz]], truncate<u32, reason=arg, fits=always>(const<u64>(0))), call<i32, signature=fn(u32) -> i32>(%[[VALUE_my_ctz]], truncate<u32, reason=arg, fits=always>(const<u64>(0)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%[[VALUE101]], const<bool>(false));
-// DEFAULT-NEXT:         if read<bool>(%[[VALUE101]])
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE101]]) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE___builtin_clrsb]], reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(0)))), call<i32, signature=fn(u32) -> i32>(%[[VALUE_my_clrsb]], truncate<u32, reason=arg, fits=always>(const<u64>(0))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -1010,14 +1010,14 @@ int main(void) {
 // DEFAULT-NEXT:             write<bool>(%[[VALUE124]], ne<i32>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_clzll]], const<u64>(0)), call<i32, signature=fn(u64) -> i32>(%[[VALUE_my_clzll]], const<u64>(0))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%[[VALUE124]], const<bool>(false));
-// DEFAULT-NEXT:         if read<bool>(%[[VALUE124]])
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE124]]) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE125:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(0), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE125]], ne<i32>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_ctzll]], const<u64>(0)), call<i32, signature=fn(u64) -> i32>(%[[VALUE_my_ctzll]], const<u64>(0))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%[[VALUE125]], const<bool>(false));
-// DEFAULT-NEXT:         if read<bool>(%[[VALUE125]])
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE125]]) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(%[[VALUE___builtin_clrsbll]], reinterpret<i64, reason=arg, fits=always>(const<u64>(0))), call<i32, signature=fn(u64) -> i32>(%[[VALUE_my_clrsbll]], const<u64>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

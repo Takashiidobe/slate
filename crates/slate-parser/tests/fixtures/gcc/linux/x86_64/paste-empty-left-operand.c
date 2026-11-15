@@ -60,13 +60,13 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if ne<i32>(const<i32>(1), const<i32>(0))
+// DEFAULT-NEXT:                 if ne<i32>(const<i32>(1), const<i32>(0)) [folded=true]
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_foo]], const<i32>(1));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if ne<i32>(const<i32>(2), const<i32>(0))
+// DEFAULT-NEXT:                 if ne<i32>(const<i32>(2), const<i32>(0)) [folded=true]
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_prefixfoo]], const<i32>(1));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));

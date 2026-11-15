@@ -661,6 +661,7 @@ impl Printer<'_> {
                     condition,
                     then_body,
                     else_body,
+                    folded,
                 } => {
                     write!(
                         f,
@@ -669,6 +670,9 @@ impl Printer<'_> {
                             .display_metadata(false, self.table())
                             .with_compact(self.compact)
                     )?;
+                    if let Some(folded) = folded {
+                        write!(f, " [folded={folded}]")?;
+                    }
                     self.statement_annotations(f, statement)?;
                     writeln!(f)?;
                     self.statements(f, then_body, indent + 4)?;
@@ -758,6 +762,7 @@ impl Printer<'_> {
                     id,
                     discriminant,
                     body,
+                    folded,
                 } => {
                     write!(
                         f,
@@ -767,6 +772,13 @@ impl Printer<'_> {
                             .display_metadata(false, self.table())
                             .with_compact(self.compact)
                     )?;
+                    match folded {
+                        Some(super::Number::Integer(value)) => write!(f, " [folded={value}]")?,
+                        Some(super::Number::SignedInteger(value)) => {
+                            write!(f, " [folded={value}]")?
+                        }
+                        Some(_) | None => {}
+                    }
                     self.statement_annotations(f, statement)?;
                     writeln!(f)?;
                     self.statements(f, body, indent + 4)?;

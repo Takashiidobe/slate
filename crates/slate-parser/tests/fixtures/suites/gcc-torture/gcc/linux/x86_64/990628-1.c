@@ -113,7 +113,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_load_data]]);
-// DEFAULT-NEXT:         if logical_and<bool>(eq<u64>(size_of<u64, i32>(4) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))) [c="__size_t"]), ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<@type[[TYPE_data_record]]>, subtract=false, element=@type[[TYPE_data_record]], overflow=ub>(read<ptr<@type[[TYPE_data_record]]>>(%[[VALUE_data_ptr]]), const<i32>(0))))), const<i32>(21845)))
+// DEFAULT-NEXT:         if logical_and<bool>(eq<u64>(size_of<u64, i32>(4) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))) [c="__size_t"]), ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<@type[[TYPE_data_record]]>, subtract=false, element=@type[[TYPE_data_record]], overflow=ub>(read<ptr<@type[[TYPE_data_record]]>>(%[[VALUE_data_ptr]]), const<i32>(0))))), const<i32>(21845))) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if logical_and<bool>(gt<u64>(size_of<u64, i32>(4) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))) [c="__size_t"]), ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<@type[[TYPE_data_record]]>, subtract=false, element=@type[[TYPE_data_record]], overflow=ub>(read<ptr<@type[[TYPE_data_record]]>>(%[[VALUE_data_ptr]]), const<i32>(0))))), const<i32>(1431655765)))

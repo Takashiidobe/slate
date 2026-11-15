@@ -62,7 +62,7 @@ int main(void) {
 // DEFAULT-NEXT:         return call<ptr<i32>, signature=fn() -> ptr<i32>>(%[[VALUE_alloc]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_b:[0-9]+]] @b(unprototyped) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(1), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(1), const<i32>(0)) [folded=true]
 // DEFAULT-NEXT:             return call<ptr<i32>, signature=fn() -> ptr<i32>>(%[[VALUE_a]]);
 // DEFAULT-NEXT:         return call<ptr<i32>, signature=fn() -> ptr<i32>>(%[[VALUE_alloc]]);
 // DEFAULT-NEXT:     }

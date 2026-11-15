@@ -177,6 +177,7 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         id: BindingId,
         discriminant: &ir::Value,
+        folded: bool,
         body: &[slate_parser::ast::Span<ir::Statement>],
     ) -> Result<Stmt> {
         let arms = switch_arms(id, body)?;
@@ -202,7 +203,7 @@ impl FunctionLowerer<'_, '_> {
             prelude.extend(self.lower_statement(&declaration)?);
             self.switch_lets.insert(variable.id);
         }
-        let lowered = self.lower_switch_arms(id, discriminant, &arms)?;
+        let lowered = self.lower_switch_arms(id, discriminant, folded, &arms)?;
         if prelude.is_empty() {
             return Ok(lowered);
         }
@@ -251,6 +252,7 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         id: BindingId,
         discriminant: &ir::Value,
+        folded: bool,
         arms: &[SwitchArm],
     ) -> Result<Stmt> {
         if self
@@ -264,7 +266,7 @@ impl FunctionLowerer<'_, '_> {
             .iter()
             .any(falls_through)
         {
-            return self.lower_fallthrough_switch(id, discriminant, arms);
+            return self.lower_fallthrough_switch(id, discriminant, folded, arms);
         }
         let mut match_arms = Vec::new();
         for arm in arms.iter().filter(|arm| !arm.default) {
@@ -286,7 +288,7 @@ impl FunctionLowerer<'_, '_> {
         Ok(Stmt::LabeledBlock {
             label: self.break_label(id),
             body: vec![Stmt::Match {
-                expr: self.lower_match_scrutinee(discriminant)?,
+                expr: self.lower_folded(discriminant, folded, Self::lower_match_scrutinee)?,
                 arms: match_arms,
             }],
         })
@@ -296,6 +298,7 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         id: BindingId,
         discriminant: &ir::Value,
+        folded: bool,
         arms: &[SwitchArm],
     ) -> Result<Stmt> {
         let case = self.next_temp();
@@ -317,7 +320,7 @@ impl FunctionLowerer<'_, '_> {
             },
         });
         let init = Expr::Match {
-            expr: Box::new(self.lower_match_scrutinee(discriminant)?),
+            expr: Box::new(self.lower_folded(discriminant, folded, Self::lower_match_scrutinee)?),
             arms: dispatch,
         };
         self.lower_case_loop(id, case, init, arms, Vec::new())
@@ -456,6 +459,18 @@ impl FunctionLowerer<'_, '_> {
         Ok(self.lower_switch_operand(discriminant)?.0)
     }
 
+    pub(super) fn lower_folded(
+        &mut self,
+        value: &ir::Value,
+        folded: bool,
+        lower: fn(&mut Self, &ir::Value) -> Result<Expr>,
+    ) -> Result<Expr> {
+        let outer = std::mem::replace(&mut self.const_layout, folded);
+        let lowered = lower(self, value);
+        self.const_layout = outer;
+        lowered
+    }
+
     fn lower_switch_arm(&mut self, arm: &SwitchArm) -> Result<Vec<Stmt>> {
         let mut lowered = Vec::new();
         for statement in &arm.body {
@@ -463,6 +478,24 @@ impl FunctionLowerer<'_, '_> {
         }
         Ok(lowered)
     }
+}
+
+pub(super) fn folded_case(
+    start: &ir::Value,
+    end: Option<&ir::Value>,
+    folded: &ir::Number,
+) -> Option<bool> {
+    let value = match folded {
+        ir::Number::Integer(number) => CaseNumber::Unsigned(number.to_string().parse().ok()?),
+        ir::Number::SignedInteger(number) => CaseNumber::Signed(number.to_string().parse().ok()?),
+        _ => return None,
+    };
+    let start = case_number(start).ok()?;
+    let end = match end {
+        Some(end) => case_number(end).ok()?,
+        None => start,
+    };
+    Some(start.at_most(value) && value.at_most(end))
 }
 
 #[derive(Default)]
@@ -548,6 +581,15 @@ impl CaseNumber {
         match self {
             CaseNumber::Signed(number) => u128::try_from(number).ok(),
             CaseNumber::Unsigned(number) => Some(number),
+        }
+    }
+
+    fn at_most(self, other: Self) -> bool {
+        match (self.signed(), other.signed()) {
+            (Some(left), Some(right)) => left <= right,
+            (Some(_), None) => true,
+            (None, Some(_)) => false,
+            (None, None) => self.unsigned() <= other.unsigned(),
         }
     }
 }

@@ -75,7 +75,7 @@ int main() {
 // DEFAULT-NEXT:         if logical_and<bool>(eq<u64>(mul<u64, overflow=wrap>(size_of<u64, i64>(8) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))) [c="__size_t"]) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(64))) [c="__size_t"]), ne<i32>(read<i32>(%[[VALUE_v]]), const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             if logical_and<bool>(eq<u64>(mul<u64, overflow=wrap>(size_of<u64, i64>(8) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))) [c="__size_t"]) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32))) [c="__size_t"]), ne<i32>(read<i32>(%[[VALUE_v]]), const<i32>(4)))
+// DEFAULT-NEXT:             if logical_and<bool>(eq<u64>(mul<u64, overflow=wrap>(size_of<u64, i64>(8) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))) [c="__size_t"]) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32))) [c="__size_t"]), ne<i32>(read<i32>(%[[VALUE_v]]), const<i32>(4))) [folded=false]
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

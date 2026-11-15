@@ -243,11 +243,11 @@ main (void)
 // DEFAULT-NEXT:             write<bool>(%[[VALUE14]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(2)>(%[[VALUE_tm32]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const i8>, length=Some(2)>(%[[VALUE_tm32a]])), size_of<u64, array<i8, 2>>(2) [c="__size_t"]), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE14]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(const<u16>(291))), const<i32>(291))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(const<u16>(291))), const<i32>(291)) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<u32>(const<u32>(1110), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1110)))
+// DEFAULT-NEXT:         if ne<u32>(const<u32>(1110), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1110))) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(97), const<i32>(97))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(97), const<i32>(97)) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

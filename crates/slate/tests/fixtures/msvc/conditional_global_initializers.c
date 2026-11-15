@@ -401,9 +401,13 @@ int main(void) {
 // CHECK-NEXT:         }));
 // CHECK-NEXT:     }
 // CHECK-NEXT:     CHECK!(
-// X86_64-PC-WINDOWS-MSVC-NEXT:         (core::mem::size_of::<[ptrlen; 3]>() as u64) / (core::mem::size_of::<ptrlen>() as u64) == 3
-// I686-PC-WINDOWS-MSVC-NEXT:         (core::mem::size_of::<[ptrlen; 3]>() as u32) / (core::mem::size_of::<ptrlen>() as u32) == 3
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         (core::mem::size_of::<[ptrlen; 3]>() as u64) / (core::mem::size_of::<ptrlen>() as u64) == 3
+// X86_64-PC-WINDOWS-MSVC-NEXT:         ((const { core::mem::size_of::<[ptrlen; 3]>() }) as u64)
+// X86_64-PC-WINDOWS-MSVC-NEXT:             / ((const { core::mem::size_of::<ptrlen>() }) as u64)
+// I686-PC-WINDOWS-MSVC-NEXT:         ((const { core::mem::size_of::<[ptrlen; 3]>() }) as u32)
+// I686-PC-WINDOWS-MSVC-NEXT:             / ((const { core::mem::size_of::<ptrlen>() }) as u32)
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         ((const { core::mem::size_of::<[ptrlen; 3]>() }) as u64)
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             / ((const { core::mem::size_of::<ptrlen>() }) as u64)
+// CHECK-NEXT:             == 3
 // CHECK-NEXT:     );
 // CHECK-NEXT:     loop {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         let [[V_1:__v[0-9]+]]: bool = same(unsafe { names.0[0] }, c"ping".as_ptr()) != 0

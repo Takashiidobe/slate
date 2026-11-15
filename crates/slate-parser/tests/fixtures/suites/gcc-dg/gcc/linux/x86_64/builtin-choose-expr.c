@@ -253,7 +253,7 @@ int main (void)
 // DEFAULT-NEXT:         let %[[VALUE_sugar:[0-9]+]] sugar: @type[[TYPE_S]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_united:[0-9]+]] united: @type[[TYPE_u]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_nations:[0-9]+]] nations: @type[[TYPE_u]] [storage=automatic];
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(const<i32>(0), const<i32>(0)), not<bool>(ne<i32>(const<i32>(5), const<i32>(0)))), not<bool>(ne<i32>(const<i32>(3), const<i32>(0))))
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(const<i32>(0), const<i32>(0)), not<bool>(ne<i32>(const<i32>(5), const<i32>(0)))), not<bool>(ne<i32>(const<i32>(3), const<i32>(0)))) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             {

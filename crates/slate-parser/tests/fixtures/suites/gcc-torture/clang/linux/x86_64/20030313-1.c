@@ -96,7 +96,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> ptr<@type[[TYPE_A]]> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: ptr<@type[[TYPE_A]]> [storage=automatic];
-// DEFAULT-NEXT:         switch %[[VALUE1:[0-9]+]] const<i32>(8)
+// DEFAULT-NEXT:         switch %[[VALUE1:[0-9]+]] const<i32>(8) [folded=8]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(2):
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);

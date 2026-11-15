@@ -87,7 +87,7 @@ main ()
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic];
-// DEFAULT-NEXT:         if not<bool>(const<bool>(true))
+// DEFAULT-NEXT:         if not<bool>(const<bool>(true)) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if call<bool, signature=fn(ptr<volatile @type[[TYPE_atomic_flag]]>) -> bool>(%[[VALUE_atomic_flag_test_and_set]], pointer_cast<ptr<volatile @type[[TYPE_atomic_flag]]>, reason=arg>(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_a]]) [c="atomic_flag *"]) [c="volatile atomic_flag *"])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

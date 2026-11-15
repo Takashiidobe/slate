@@ -168,7 +168,7 @@ int main ()
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(50), const<i32>(1)), const<i32>(25))
+// DEFAULT-NEXT:         if ne<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(50), const<i32>(1)), const<i32>(25)) [folded=false]
 // DEFAULT-NEXT:             do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     ;
@@ -273,14 +273,14 @@ int main ()
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:             if ne<f64, exceptions=observable>(const<f64>(0.1), const<f64>(0.1))
+// DEFAULT-NEXT:             if ne<f64, exceptions=observable>(const<f64>(0.1), const<f64>(0.1)) [folded=false]
 // DEFAULT-NEXT:                 do %[[VALUE38:[0-9]+]]
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         ;
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:             if ne<f64, exceptions=observable>(const<f64>(10.0), const<f64>(10.0))
+// DEFAULT-NEXT:             if ne<f64, exceptions=observable>(const<f64>(10.0), const<f64>(10.0)) [folded=false]
 // DEFAULT-NEXT:                 do %[[VALUE39:[0-9]+]]
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         ;

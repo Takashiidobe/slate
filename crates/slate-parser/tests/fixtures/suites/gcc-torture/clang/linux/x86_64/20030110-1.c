@@ -68,7 +68,7 @@ void foo()
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if eq<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_bpp]])), const<i32>(32))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if lt<i32>(const<i32>(2), const<i32>(8))
+// DEFAULT-NEXT:                 if lt<i32>(const<i32>(2), const<i32>(8)) [folded=true]
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:                             {
@@ -94,7 +94,7 @@ void foo()
 // DEFAULT-NEXT:                         ;
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         if lt<i32>(const<i32>(8), const<i32>(8))
+// DEFAULT-NEXT:         if lt<i32>(const<i32>(8), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 do %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:                     {

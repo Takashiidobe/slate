@@ -51,7 +51,7 @@ int main (int argc, char** argv)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] const<i32>(0)
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] const<i32>(0) [folded=0]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(0):
 // DEFAULT-NEXT:                     case %[[VALUE0]] const<i32>(1):

@@ -64,7 +64,7 @@ int if_macro_feature;
 // DEFAULT-NEXT:     global %[[VALUE_text_macro_feature:[0-9]+]] text_macro_feature: i32 [storage=static] = const<i32>(0) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_if_macro_attribute:[0-9]+]] if_macro_attribute: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_checked:[0-9]+]] @checked(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(ne<i32>(const<i32>(1), const<i32>(0)), ne<i32>(const<i32>(1), const<i32>(0)))
+// DEFAULT-NEXT:         if logical_and<bool>(ne<i32>(const<i32>(1), const<i32>(0)), ne<i32>(const<i32>(1), const<i32>(0))) [folded=true]
 // DEFAULT-NEXT:             return read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

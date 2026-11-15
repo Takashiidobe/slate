@@ -72,7 +72,7 @@ int main(void) {
 // DEFAULT-NEXT:         return read<u64>(%[[VALUE_ull3_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8)), const<i32>(64)), ne<i32>(mul<i32, overflow=ub>(const<i32>(4), const<i32>(8)), const<i32>(32)))
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8)), const<i32>(64)), ne<i32>(mul<i32, overflow=ub>(const<i32>(4), const<i32>(8)), const<i32>(32))) [folded=false]
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_ull3]], call<u64, signature=fn() -> u64>(%[[VALUE_foo]]));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_ull3]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3998784))))

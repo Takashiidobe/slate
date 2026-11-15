@@ -502,7 +502,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE17:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE16]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p]], read<ptr<i8>>(%[[VALUE17]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE16]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u32>(bitfield1<unit=0, bytes=0..4, bits=6..7>(%[[VALUE_sA]]), float_to_int<u32, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sA]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sA]])))));
@@ -581,7 +581,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE30:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE29]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_2]], read<ptr<i8>>(%[[VALUE30]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE29]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u32>(field3(%[[VALUE_sB]]), float_to_int<u32, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sB]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_2]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sB]])))));
@@ -660,7 +660,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE43:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE42]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_3]], read<ptr<i8>>(%[[VALUE43]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE42]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u32>(field0(%[[VALUE_sC]]), float_to_int<u32, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_sC]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_3]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_sC]])))));
@@ -739,7 +739,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE56:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE55]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_4]], read<ptr<i8>>(%[[VALUE56]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE55]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u64>(bitfield0<unit=0, bytes=0..8, bits=0..6>(%[[VALUE_sD]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sD]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_4]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sD]]))))));
@@ -818,7 +818,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE69:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE68]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_5]], read<ptr<i8>>(%[[VALUE69]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE68]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u64>(field0(%[[VALUE_sE]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_sE]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_5]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_sE]]))))));
@@ -897,7 +897,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE82:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE81]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_6]], read<ptr<i8>>(%[[VALUE82]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE81]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sF]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sF]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_6]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sF]]))))));
@@ -976,7 +976,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE95:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE94]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_7]], read<ptr<i8>>(%[[VALUE95]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE94]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sG]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_sG]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_7]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_sG]])))));
@@ -1055,7 +1055,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE108:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE107]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_8]], read<ptr<i8>>(%[[VALUE108]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE107]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sH]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_sH]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_8]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_sH]])))));
@@ -1134,7 +1134,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE121:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE120]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_9]], read<ptr<i8>>(%[[VALUE121]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE120]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sI]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_sI]]), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_9]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_sI]]))))));
@@ -1213,7 +1213,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE134:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE133]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_10]], read<ptr<i8>>(%[[VALUE134]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE133]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u16>(field3(%[[VALUE_sJ]]), float_to_int<u16, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_sJ]]), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_10]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_sJ]]))))));
@@ -1292,7 +1292,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE147:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE146]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_11]], read<ptr<i8>>(%[[VALUE147]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE146]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u32>(bitfield1<unit=0, bytes=0..4, bits=6..7>(%[[VALUE_sK]]), float_to_int<u32, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sK]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_11]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sK]])))));
@@ -1371,7 +1371,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE160:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE159]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_12]], read<ptr<i8>>(%[[VALUE160]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE159]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u32>(field3(%[[VALUE_sL]]), float_to_int<u32, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sL]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_12]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sL]])))));
@@ -1450,7 +1450,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE173:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE172]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_13]], read<ptr<i8>>(%[[VALUE173]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE172]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u32>(field0(%[[VALUE_sM]]), float_to_int<u32, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_sM]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_13]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_sM]])))));
@@ -1529,7 +1529,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE186:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE185]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_14]], read<ptr<i8>>(%[[VALUE186]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE185]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u64>(bitfield0<unit=0, bytes=0..8, bits=0..6>(%[[VALUE_sN]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_sN]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_14]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_sN]]))))));
@@ -1608,7 +1608,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE199:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE198]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_15]], read<ptr<i8>>(%[[VALUE199]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE198]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u64>(field0(%[[VALUE_sO]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_sO]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_15]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_sO]]))))));
@@ -1687,7 +1687,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE212:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE211]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_16]], read<ptr<i8>>(%[[VALUE212]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE211]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sP]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_sP]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_16]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_sP]]))))));
@@ -1766,7 +1766,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE225:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE224]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_17]], read<ptr<i8>>(%[[VALUE225]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE224]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sQ]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sQ]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_17]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sQ]])))));
@@ -1845,7 +1845,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE238:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE237]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_18]], read<ptr<i8>>(%[[VALUE238]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE237]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sR]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sR]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_18]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sR]])))));
@@ -1924,7 +1924,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE251:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE250]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_19]], read<ptr<i8>>(%[[VALUE251]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE250]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sS]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sS]]), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_19]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sS]]))))));
@@ -2003,7 +2003,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE264:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE263]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_20]], read<ptr<i8>>(%[[VALUE264]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE263]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u16>(field3(%[[VALUE_sT]]), float_to_int<u16, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sT]]), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_20]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sT]]))))));
@@ -2082,7 +2082,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE277:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE276]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_21]], read<ptr<i8>>(%[[VALUE277]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE276]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sU]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u16>(bitfield1<unit=0, bytes=0..2, bits=6..7>(%[[VALUE_sU]]), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_21]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=6..7>(%[[VALUE_sU]]))))));
@@ -2161,7 +2161,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE290:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE289]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_22]], read<ptr<i8>>(%[[VALUE290]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE289]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8)) [folded=false]
 // DEFAULT-NEXT:             write<u16>(field3(%[[VALUE_sV]]), float_to_int<u16, reason=assign, out_of_range=ub, exceptions=observable>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u16>(bitfield1<unit=0, bytes=0..2, bits=8..9>(%[[VALUE_sV]]), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_22]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=8..9>(%[[VALUE_sV]]))))));
@@ -2240,7 +2240,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE303:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE302]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_23]], read<ptr<i8>>(%[[VALUE303]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE302]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(8), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(8), const<i32>(8)) [folded=true]
 // DEFAULT-NEXT:             write<f80>(field0(%[[VALUE_sW]]), float_widen<f80, reason=assign>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%[[VALUE_sW]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_23]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%[[VALUE_sW]])))));
@@ -2319,7 +2319,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE316:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE315]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_24]], read<ptr<i8>>(%[[VALUE316]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE315]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(8), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(8), const<i32>(8)) [folded=true]
 // DEFAULT-NEXT:             write<f80>(field3(%[[VALUE_sX]]), float_widen<f80, reason=assign>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sX]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_24]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sX]])))));
@@ -2398,7 +2398,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE329:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE328]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_25]], read<ptr<i8>>(%[[VALUE329]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE328]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(8), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(8), const<i32>(8)) [folded=true]
 // DEFAULT-NEXT:             write<f80>(field3(%[[VALUE_sY]]), float_widen<f80, reason=assign>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sY]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_25]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sY]])))));
@@ -2477,7 +2477,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE342:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE341]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_26]], read<ptr<i8>>(%[[VALUE342]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE341]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(8), const<i32>(8))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(8), const<i32>(8)) [folded=true]
 // DEFAULT-NEXT:             write<f80>(field0(%[[VALUE_sZ]]), float_widen<f80, reason=assign>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=16..20, bits=20..32>(%[[VALUE_sZ]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_26]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=16..20, bits=20..32>(%[[VALUE_sZ]])))));

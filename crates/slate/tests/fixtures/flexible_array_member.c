@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     if 8 != (core::mem::size_of::<u64>() as u64) {
+// CHECK-NEXT:     if 8 != ((const { core::mem::size_of::<u64>() }) as u64) {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let flexible: *mut FlexibleArray = (unsafe {

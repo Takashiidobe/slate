@@ -64,7 +64,7 @@ int main(void) {
 // CHECK-NEXT:     if ((unsafe { *NlsMbCodePageTag }) as i32) > 1 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (core::mem::size_of::<u16>() as u64) != 2 {
+// CHECK-NEXT:     if ((const { core::mem::size_of::<u16>() }) as u64) != 2 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

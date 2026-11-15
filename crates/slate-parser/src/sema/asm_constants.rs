@@ -139,7 +139,7 @@ fn entry_prefix(body: &[Span<Statement>], entry: &Known) -> usize {
 }
 
 #[derive(Default)]
-struct JumpTargets {
+pub(super) struct JumpTargets {
     labels: bool,
     switches: HashSet<BindingId>,
     cases: Vec<BindingId>,
@@ -154,8 +154,15 @@ impl JumpTargets {
                 .any(|switch| !self.switches.contains(switch))
     }
 
-    fn of_statements(body: &mut Vec<Span<Statement>>) -> bool {
+    pub(super) fn of_statements(body: &mut Vec<Span<Statement>>) -> bool {
         let mut targets = Self::default();
+        walk_macro_structure(body, &mut targets);
+        targets.enterable()
+    }
+
+    pub(super) fn of_switch(id: BindingId, body: &mut Vec<Span<Statement>>) -> bool {
+        let mut targets = Self::default();
+        targets.switches.insert(id);
         walk_macro_structure(body, &mut targets);
         targets.enterable()
     }
@@ -193,6 +200,7 @@ impl MacroStructureVisitor for DeadArms<'_> {
             condition,
             then_body,
             else_body,
+            ..
         } = statement
         else {
             return;
@@ -362,13 +370,17 @@ impl Lowerer {
         pruned
     }
 
-    fn folded_condition(&self, condition: &Value) -> Option<bool> {
+    pub(super) fn folded_condition(&self, condition: &Value) -> Option<bool> {
+        self.folded_integer(condition)
+            .map(|value| value != 0.into())
+    }
+
+    pub(super) fn folded_integer(&self, value: &Value) -> Option<num_bigint::BigInt> {
         integer_with_objects(
-            condition,
+            value,
             self.types.fold_target(),
             self.types.entities.constants(),
         )
-        .map(|value| value != 0.into())
     }
 
     fn known_locals(&self, body: &mut Vec<Span<Statement>>, mut known: Known) -> Known {

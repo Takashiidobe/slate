@@ -39,7 +39,7 @@ int checked(int n) {
 // IR-NEXT:         %[[VALUE_THREE:[0-9]+]] THREE = const<i32>(3);
 // IR-NEXT:     } [size=4, align=4];
 // IR-NEXT:     fn %[[VALUE_checked:[0-9]+]] @checked(%[[VALUE_n:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0))
+// IR-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0)) [folded=false]
 // IR-NEXT:             {
 // IR-NEXT:             }
 // IR-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_n]]), const<i32>(1));

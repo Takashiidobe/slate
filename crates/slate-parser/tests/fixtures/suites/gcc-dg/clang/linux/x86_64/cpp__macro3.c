@@ -68,7 +68,7 @@ int main()
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(4))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<i32>(div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(200), const<i32>(2)), const<i32>(100))
+// DEFAULT-NEXT:         if ne<i32>(div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(200), const<i32>(2)), const<i32>(100)) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

@@ -71,7 +71,7 @@ main (void)
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_sfoo:[0-9]+]] @sfoo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_foo_2]]>(32) [c="__size_t"], const<u64>(0))
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_foo_2]]>(32) [c="__size_t"], const<u64>(0)) [folded=true]
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(size_of<u64, @type[[TYPE_foo]]>(1) [c="__size_t"]));
 // DEFAULT-NEXT:     }

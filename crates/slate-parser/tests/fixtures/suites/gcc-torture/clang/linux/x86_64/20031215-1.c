@@ -70,19 +70,19 @@ int main(void) {
 // DEFAULT-NEXT:     global %[[VALUE_ao:[0-9]+]] ao: @type[[TYPE0]] [storage=static] [const] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(2), field1 = const<i32>(2), field2 = code_units<array<i8, 3>>([79, 75, 0])) [linkage=external] [c="const pstr"];
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: ptr<const @type[[TYPE0]]> [storage=static] [const] = addr_of<ptr<const @type[[TYPE0]]>>(%[[VALUE_ao]]) [c="const pstr *"] [linkage=external] [c="const pstr *const"];
 // DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i8>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(3)>(field2(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]])))), read<i32>(field1(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]]))))))), const<i8>(0))
+// DEFAULT-NEXT:         if ne<i8>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(3)>(field2(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]])))), read<i32>(field1(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]]))))))), const<i8>(0)) [folded=false]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(array_decay<ptr<const i8>, length=Some(3)>(field2(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]]))))), read<i32>(field1(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]])))))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i8>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(3)>(field2(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]])))), read<i32>(field1(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]]))))))), const<i8>(0))
+// DEFAULT-NEXT:         if ne<i8>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(3)>(field2(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]])))), read<i32>(field1(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]]))))))), const<i8>(0)) [folded=false]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(array_decay<ptr<const i8>, length=Some(3)>(field2(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]]))))), read<i32>(field1(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]])))))), truncate<i8, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i8>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(3)>(field2(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]])))), read<i32>(field1(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]]))))))), const<i8>(0))
+// DEFAULT-NEXT:         if ne<i8>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(3)>(field2(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]])))), read<i32>(field1(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]]))))))), const<i8>(0)) [folded=false]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(array_decay<ptr<const i8>, length=Some(3)>(field2(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]]))))), read<i32>(field1(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_a]])))))), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:             }

@@ -430,6 +430,7 @@ impl Hoister {
                 condition,
                 then_body,
                 else_body,
+                folded: None,
             }));
         }
         Ok(Value {

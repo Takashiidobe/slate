@@ -82,7 +82,7 @@ main ()
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic];
-// DEFAULT-NEXT:         if not<bool>(const<bool>(true))
+// DEFAULT-NEXT:         if not<bool>(const<bool>(true)) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_a]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0))) [c="atomic_bool"] [c="atomic_bool"];
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE0]]) [c="atomic_bool"]

@@ -42,9 +42,9 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if logical_or<bool>(lt<f64, exceptions=observable>(int_to_float<f64, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<u64>(18446744073709551615)), const<f64>(1.84467440737095e19)), gt<f64, exceptions=observable>(int_to_float<f64, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<u64>(18446744073709551615)), const<f64>(1.84467440737096e19)))
+// DEFAULT-NEXT:         if logical_or<bool>(lt<f64, exceptions=observable>(int_to_float<f64, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<u64>(18446744073709551615)), const<f64>(1.84467440737095e19)), gt<f64, exceptions=observable>(int_to_float<f64, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(const<u64>(18446744073709551615)), const<f64>(1.84467440737096e19))) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i64>(16777217)), float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f64>(16777217.0)))
+// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i64>(16777217)), float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f64>(16777217.0))) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

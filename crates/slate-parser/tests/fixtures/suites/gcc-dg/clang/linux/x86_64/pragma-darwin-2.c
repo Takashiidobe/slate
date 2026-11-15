@@ -50,17 +50,17 @@ void foo(void)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(1), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(1), const<i32>(0)) [folded=true]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             if ne<i32>(const<i32>(1), const<i32>(0))
+// DEFAULT-NEXT:             if ne<i32>(const<i32>(1), const<i32>(0)) [folded=true]
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     ;
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 if ne<i32>(const<i32>(1), const<i32>(0))
+// DEFAULT-NEXT:                 if ne<i32>(const<i32>(1), const<i32>(0)) [folded=true]
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         ;
 // DEFAULT-NEXT:                     }

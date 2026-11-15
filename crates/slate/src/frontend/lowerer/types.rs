@@ -247,10 +247,15 @@ impl FunctionLowerer<'_, '_> {
             && let Ok(ty) = self.lower_c_type(queried, Some(*c))
             && let Some(query) = self.rust_layout_query(query, ty, amount)
         {
+            let query = Expr::LayoutQuery {
+                query,
+                amount: rust::TargetAmount(amount),
+            };
             return Ok(Expr::Cast {
-                expr: Box::new(Expr::LayoutQuery {
-                    query,
-                    amount: rust::TargetAmount(amount),
+                expr: Box::new(if self.const_layout {
+                    Expr::ConstBlock(Box::new(query))
+                } else {
+                    query
                 }),
                 ty: self.lower_value_type(value)?,
             });

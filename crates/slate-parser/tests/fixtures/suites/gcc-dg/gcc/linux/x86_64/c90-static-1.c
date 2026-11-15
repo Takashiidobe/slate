@@ -53,7 +53,7 @@ void g3(void) { sizeof(f3()); }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1() -> void [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_g1:[0-9]+]] @g1() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0)) [folded=false]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_f1]]);
 // DEFAULT-NEXT:             }

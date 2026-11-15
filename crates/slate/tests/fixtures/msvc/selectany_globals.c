@@ -225,9 +225,9 @@ int main(void) { return 0; }
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if (core::mem::size_of::<[i8; 6]>() as u64) != 6
-// I686-PC-WINDOWS-MSVC-NEXT:     if (core::mem::size_of::<[i8; 6]>() as u32) != 6
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     if (core::mem::size_of::<[i8; 6]>() as u64) != 6
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if ((const { core::mem::size_of::<[i8; 6]>() }) as u64) != 6
+// I686-PC-WINDOWS-MSVC-NEXT:     if ((const { core::mem::size_of::<[i8; 6]>() }) as u32) != 6
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     if ((const { core::mem::size_of::<[i8; 6]>() }) as u64) != 6
 // CHECK-NEXT:         || ((unsafe { banner[0] }) as i32) != 115
 // CHECK-NEXT:         || ((unsafe { banner[4] }) as i32) != 101
 // CHECK-NEXT:         || ((unsafe { banner[5] }) as i32) != 0

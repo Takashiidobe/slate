@@ -60,15 +60,15 @@ int main(void) {
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         if ne<f128, exceptions=ignore>(sub<f128, rounding=nearest_even, exceptions=ignore, contract=on>(read<f128>(%[[VALUE_sum]]), read<f128>(%[[VALUE_one]])), read<f128>(%[[VALUE_tiny]]))
 // DEFAULT-NEXT:             return const<i32>(2);
-// DEFAULT-NEXT:         if ne<f128, exceptions=ignore>(int_to_float<f128, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(42)), const<f128>(42))
+// DEFAULT-NEXT:         if ne<f128, exceptions=ignore>(int_to_float<f128, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(42)), const<f128>(42)) [folded=false]
 // DEFAULT-NEXT:             return const<i32>(3);
-// DEFAULT-NEXT:         if ne<i32>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f128>(42.75)), const<i32>(42))
+// DEFAULT-NEXT:         if ne<i32>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f128>(42.75)), const<i32>(42)) [folded=false]
 // DEFAULT-NEXT:             return const<i32>(4);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(const<f128>(1.5)), const<f64>(1.5))
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(const<f128>(1.5)), const<f64>(1.5)) [folded=false]
 // DEFAULT-NEXT:             return const<i32>(5);
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, f128>(16) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))) [c="__size_t"])
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, f128>(16) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))) [c="__size_t"]) [folded=false]
 // DEFAULT-NEXT:             return const<i32>(6);
-// DEFAULT-NEXT:         if ne<u64>(align_of<u64, f128>(16) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))) [c="__size_t"])
+// DEFAULT-NEXT:         if ne<u64>(align_of<u64, f128>(16) [c="__size_t"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))) [c="__size_t"]) [folded=false]
 // DEFAULT-NEXT:             return const<i32>(7);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

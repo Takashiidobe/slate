@@ -83,7 +83,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: array<f64, 32> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: array<f64, 32> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: array<f64, 32> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         if le<i32>(const<i32>(53), const<i32>(35))
+// DEFAULT-NEXT:         if le<i32>(const<i32>(53), const<i32>(35)) [folded=false]
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             init:

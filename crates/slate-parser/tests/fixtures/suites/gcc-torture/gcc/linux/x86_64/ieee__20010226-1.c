@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_mant_long:[0-9]+]] mant_long: u64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if gt<f80, exceptions=observable>(const<f80>(1.08420217248550443401E-19), const<f80>(4.65661287307739257813E-10))
+// DEFAULT-NEXT:         if gt<f80, exceptions=observable>(const<f80>(1.08420217248550443401E-19), const<f80>(4.65661287307739257813E-10)) [folded=false]
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         write<f80>(%[[VALUE_m1]], div<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(%[[VALUE_dfrom]]), const<f80>(2)));
 // DEFAULT-NEXT:         write<f80>(%[[VALUE_m2]], mul<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(%[[VALUE_m1]]), const<f80>(4294967296)));

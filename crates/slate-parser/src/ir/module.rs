@@ -1,6 +1,6 @@
 use super::{
     AbiSignature, Atomicity, BindingId, CTypeTable, Comments, CompareOp, FenceScope, Global,
-    InlineAsm, Parameters, Place, Type, TypeDefinition, Value, Variable,
+    InlineAsm, Number, Parameters, Place, Type, TypeDefinition, Value, Variable,
 };
 use crate::ast::{
     CommentAttach, CommentGroup, MacroExpansionId, MacroInvocations, NodeId, SmeAttribute, Span,
@@ -286,6 +286,7 @@ pub enum Statement {
         condition: Value,
         then_body: Vec<Span<Statement>>,
         else_body: Option<Vec<Span<Statement>>>,
+        folded: Option<bool>,
     },
     While {
         id: BindingId,
@@ -309,6 +310,7 @@ pub enum Statement {
         id: BindingId,
         discriminant: Value,
         body: Vec<Span<Statement>>,
+        folded: Option<Number>,
     },
     Case {
         switch: BindingId,

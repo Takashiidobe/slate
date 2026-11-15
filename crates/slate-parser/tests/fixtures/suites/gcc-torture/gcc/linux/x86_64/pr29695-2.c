@@ -101,7 +101,7 @@ int main(void) {
 // DEFAULT-NEXT:         return conditional<i64>(ne<u32>(and<u32>(read<u32>(%[[VALUE_d]]), const<u32>(2147483648)), const<u32>(0)), neg<i64, overflow=ub>(const<i64>(2147483648)), const<i64>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(const<i32>(128))), neg<i32, overflow=ub>(const<i32>(128))), ne<i64>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=explicit, fits=unknown>(const<u32>(2147483648))), neg<i64, overflow=ub>(const<i64>(2147483648))))
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(const<i32>(128))), neg<i32, overflow=ub>(const<i32>(128))), ne<i64>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=explicit, fits=unknown>(const<u32>(2147483648))), neg<i64, overflow=ub>(const<i64>(2147483648)))) [folded=false]
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_f1]]), const<i32>(128))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

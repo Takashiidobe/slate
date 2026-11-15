@@ -81,11 +81,11 @@ enum E2 { e20 = (unsigned) INT_MAX, e21 }; /* { dg-warning "ISO C restricts enum
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_B]] [storage=automatic] = int_to_enum<@type[[TYPE_B]], reason=assign>(neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         if not<bool>(lt<i32>(enum_to_int<i32, reason=promotion>(read<@type[[TYPE_A]]>(%[[VALUE_a]])), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_A1]]);
-// DEFAULT-NEXT:         if not<bool>(lt<i32>(const<i32>(-1), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(lt<i32>(const<i32>(-1), const<i32>(0))) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_A1]]);
 // DEFAULT-NEXT:         if not<bool>(lt<i32>(enum_to_int<i32, reason=promotion>(read<@type[[TYPE_B]]>(%[[VALUE_b]])), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_A1]]);
-// DEFAULT-NEXT:         if not<bool>(lt<i32>(const<i32>(-1), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(lt<i32>(const<i32>(-1), const<i32>(0))) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_A1]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

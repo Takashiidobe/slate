@@ -306,7 +306,7 @@ chunk         = "i" digits | float_type | "pair<" float_type ">" | "quad<" float
 ```ebnf
 statement  = simple { metadata } ";"
            | "macro_body #" digits { metadata } body
-           | "if" value { metadata } body [ "else" body ]
+           | "if" value [ "[folded=" ( "true" | "false" ) "]" ] { metadata } body [ "else" body ]
            | "while" binding evaluation { metadata } body
            | "do" binding { metadata } body "while" evaluation ";"
            | "for" binding { metadata }
@@ -315,7 +315,7 @@ statement  = simple { metadata } ";"
                "increment:" ( evaluation | "omitted" )
                [ "counted:" binding "in" value ( ".." | "..=" ) value ]
                "body:" body
-           | "switch" binding value { metadata } body
+           | "switch" binding value [ "[folded=" [ "-" ] digits "]" ] { metadata } body
            | "case" binding value [ "..." value ] ":" { metadata } body
            | "default" binding ":" { metadata } body
            | "label" binding c_identifier ":" { metadata } body

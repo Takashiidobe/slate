@@ -208,7 +208,7 @@ int main(void) {
 // DEFAULT-NEXT:                     let %[[VALUE_y:[0-9]+]] y: u64 [storage=automatic];
 // DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], call<u64, signature=fn(unprototyped) -> u64>(%[[VALUE_random_bitstring]]));
 // DEFAULT-NEXT:                     write<u64>(%[[VALUE_y]], call<u64, signature=fn(unprototyped) -> u64>(%[[VALUE_random_bitstring]]));
-// DEFAULT-NEXT:                     if eq<u64>(size_of<u64, i32>(4) [c="__size_t"], size_of<u64, i64>(8) [c="__size_t"])
+// DEFAULT-NEXT:                     if eq<u64>(size_of<u64, i32>(4) [c="__size_t"], size_of<u64, i64>(8) [c="__size_t"]) [folded=false]
 // DEFAULT-NEXT:                         goto %[[VALUE_save_time:[0-9]+]];
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         let %[[VALUE_xx:[0-9]+]] xx: u64 [storage=automatic] = read<u64>(%[[VALUE_x_2]]);

@@ -16,6 +16,7 @@ mod effects_statements;
 mod entity;
 mod expression;
 mod fold;
+mod folded_branches;
 pub(crate) mod function;
 mod initializer;
 mod macro_structure;

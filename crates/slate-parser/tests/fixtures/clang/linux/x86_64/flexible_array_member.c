@@ -66,7 +66,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_free:[0-9]+]] @free(%[[VALUE___ptr:[0-9]+]] __ptr: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_FlexibleArray]]>(8) [c="__size_t"], size_of<u64, u64>(8) [c="__size_t"])
+// DEFAULT-NEXT:         if ne<u64>(size_of<u64, @type[[TYPE_FlexibleArray]]>(8) [c="__size_t"], size_of<u64, u64>(8) [c="__size_t"]) [folded=false]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(1);
 // DEFAULT-NEXT:             }

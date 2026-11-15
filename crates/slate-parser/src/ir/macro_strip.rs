@@ -147,6 +147,7 @@ impl<V: MacroStructureVisitor> Walker<'_, V> {
                 condition,
                 then_body,
                 else_body,
+                ..
             } => {
                 self.value(condition);
                 self.statements(then_body);

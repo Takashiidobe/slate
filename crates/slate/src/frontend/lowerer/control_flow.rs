@@ -357,10 +357,15 @@ impl<'a> Graph<'a> {
                 condition,
                 then_body,
                 else_body,
+                folded,
             } => {
                 let yes = self.list(then_body, next);
                 let no = self.list(else_body.as_deref().unwrap_or_default(), next);
-                self.push(Node::Branch(condition, yes, no))
+                match folded {
+                    Some(true) => self.push(Node::Jump(yes)),
+                    Some(false) => self.push(Node::Jump(no)),
+                    None => self.push(Node::Branch(condition, yes, no)),
+                }
             }
             ir::Statement::While {
                 id,
@@ -414,12 +419,24 @@ impl<'a> Graph<'a> {
                 id,
                 discriminant,
                 body,
+                folded,
             } => {
                 self.breaks.insert(*id, next);
                 self.list(body, next);
                 let cases = self.cases.remove(id).unwrap_or_default();
                 let default = self.defaults.remove(id).unwrap_or(next);
-                self.push(Node::Switch(discriminant, cases, default))
+                let live = folded.as_ref().and_then(|folded| {
+                    cases.iter().try_fold(None, |found, case| {
+                        match super::switch::folded_case(case.start, case.end, folded)? {
+                            true => Some(found.or(Some(case.entry))),
+                            false => Some(found),
+                        }
+                    })
+                });
+                match live {
+                    Some(entry) => self.push(Node::Jump(entry.unwrap_or(default))),
+                    None => self.push(Node::Switch(discriminant, cases, default)),
+                }
             }
             ir::Statement::Case {
                 switch,

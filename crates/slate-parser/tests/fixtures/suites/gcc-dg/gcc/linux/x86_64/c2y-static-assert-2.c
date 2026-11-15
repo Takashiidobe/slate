@@ -106,7 +106,7 @@ g2 ()
 // DEFAULT-NEXT:         const<i32>(0);
 // DEFAULT-NEXT:         const<i32>(0);
 // DEFAULT-NEXT:         conditional<void>(ne<i32>(const<i32>(1), const<i32>(0)), void, void);
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(1), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(1), const<i32>(0)) [folded=true]
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -116,7 +116,7 @@ g2 ()
 // DEFAULT-NEXT:         while %[[VALUE2:[0-9]+]] const<bool>(true)
 // DEFAULT-NEXT:         do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:         while const<bool>(false);
-// DEFAULT-NEXT:         switch %[[VALUE4:[0-9]+]] const<i32>(16)
+// DEFAULT-NEXT:         switch %[[VALUE4:[0-9]+]] const<i32>(16) [folded=16]
 // DEFAULT-NEXT:         void;
 // DEFAULT-NEXT:         void;
 // DEFAULT-NEXT:     }
@@ -124,7 +124,7 @@ g2 ()
 // DEFAULT-NEXT:         const<i32>(0);
 // DEFAULT-NEXT:         const<i32>(0);
 // DEFAULT-NEXT:         conditional<void>(ne<i32>(const<i32>(1), const<i32>(0)), void, void);
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(1), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(1), const<i32>(0)) [folded=true]
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:         for %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             init:
@@ -134,7 +134,7 @@ g2 ()
 // DEFAULT-NEXT:         while %[[VALUE6:[0-9]+]] const<bool>(true)
 // DEFAULT-NEXT:         do %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:         while const<bool>(false);
-// DEFAULT-NEXT:         switch %[[VALUE8:[0-9]+]] const<i32>(16)
+// DEFAULT-NEXT:         switch %[[VALUE8:[0-9]+]] const<i32>(16) [folded=16]
 // DEFAULT-NEXT:         void;
 // DEFAULT-NEXT:         void;
 // DEFAULT-NEXT:     }

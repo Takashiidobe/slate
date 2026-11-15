@@ -418,6 +418,7 @@ impl Lowerer {
         self.finish_functions(unit.dialect.inline_semantics())?;
         self.complete_declaration_abis()?;
         self.constant_asm_operands();
+        self.mark_folded_branches();
         let declared: Vec<_> = self.types.entities.types().collect();
         let access = declared
             .iter()
@@ -2414,6 +2415,7 @@ impl Lowerer {
                         .as_ref()
                         .map(|body| self.statements(std::slice::from_ref(body), return_type))
                         .transpose()?,
+                    folded: None,
                 }
             }
             StmtKind::While { condition, body } => {
@@ -2537,6 +2539,7 @@ impl Lowerer {
                     id,
                     discriminant: discriminant.value,
                     body: body?,
+                    folded: None,
                 }
             }
             StmtKind::SwitchLabel { label, body } => {
@@ -2612,6 +2615,7 @@ impl Lowerer {
                     condition,
                     then_body,
                     else_body,
+                    folded: None,
                 }));
                 Ok(body)
             })?),
@@ -2636,6 +2640,7 @@ impl Lowerer {
                     id,
                     discriminant: discriminant.value,
                     body: body?,
+                    folded: None,
                 }));
                 Ok(statements)
             })?),

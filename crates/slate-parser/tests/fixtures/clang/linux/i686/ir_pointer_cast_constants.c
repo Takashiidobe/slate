@@ -44,7 +44,7 @@ int values(void) {
 // IR-NEXT:         %[[VALUE_HIGH_BITS_DROPPED:[0-9]+]] HIGH_BITS_DROPPED = const<i32>(4);
 // IR-NEXT:     } [size=4, align=4];
 // IR-NEXT:     fn %[[VALUE_values:[0-9]+]] @values() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         switch %[[VALUE0:[0-9]+]] const<i32>(1)
+// IR-NEXT:         switch %[[VALUE0:[0-9]+]] const<i32>(1) [folded=1]
 // IR-NEXT:             {
 // IR-NEXT:                 case %[[VALUE0]] const<i32>(1):
 // IR-NEXT:                     return add<i32>(add<i32>(const<i32>(1), const<i32>(1)), const<i32>(4));

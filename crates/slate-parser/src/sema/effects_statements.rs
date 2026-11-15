@@ -136,10 +136,12 @@ impl Hoister {
                     condition,
                     then_body,
                     else_body,
+                    folded,
                 } => Statement::If {
                     condition: self.value(condition, &mut out)?,
                     then_body: self.statements(then_body)?,
                     else_body: else_body.map(|b| self.statements(b)).transpose()?,
+                    folded,
                 },
                 Statement::While {
                     id,
@@ -178,10 +180,12 @@ impl Hoister {
                     id,
                     discriminant,
                     body,
+                    folded,
                 } => Statement::Switch {
                     id,
                     discriminant: self.value(discriminant, &mut out)?,
                     body: self.statements(body)?,
+                    folded,
                 },
                 Statement::Case {
                     switch,

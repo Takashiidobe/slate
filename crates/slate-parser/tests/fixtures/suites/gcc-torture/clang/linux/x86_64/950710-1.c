@@ -112,7 +112,7 @@ int main(void) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             {
-// DEFAULT-NEXT:                                 if ne<i32>(const<i32>(0), const<i32>(0))
+// DEFAULT-NEXT:                                 if ne<i32>(const<i32>(0), const<i32>(0)) [folded=false]
 // DEFAULT-NEXT:                                     {
 // DEFAULT-NEXT:                                         let %[[VALUE_k:[0-9]+]] k: i32 [storage=automatic];
 // DEFAULT-NEXT:                                         for %[[VALUE7:[0-9]+]]

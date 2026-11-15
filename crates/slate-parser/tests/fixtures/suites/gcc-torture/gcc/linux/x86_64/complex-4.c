@@ -41,7 +41,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=observable>(real_to_complex<complex<f64>, reason=explicit>(const<f64>(0.0)), real_to_complex<complex<f64>, reason=explicit>(neg<f64>(const<f64>(0.0))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(const<f64>(0.0), neg<f64>(const<f64>(0.0)))
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(const<f64>(0.0), neg<f64>(const<f64>(0.0))) [folded=false]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

@@ -51,7 +51,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], read<i32>(%[[VALUE_code]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0)) [folded=false]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_die]], const<i32>(1));
 // DEFAULT-NEXT:             }

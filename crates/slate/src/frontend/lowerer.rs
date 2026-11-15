@@ -213,6 +213,7 @@ struct FunctionLowerer<'a, 'm> {
     dispatching: bool,
     switch_lets: HashSet<BindingId>,
     erased_copy: Option<(*const ir::Place, String)>,
+    const_layout: bool,
 }
 
 impl FunctionLowerer<'_, '_> {
