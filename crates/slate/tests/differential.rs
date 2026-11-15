@@ -842,6 +842,8 @@ fn freestanding_projects_build_for_bare_metal_targets() {
                 "\"-Zfunction-return=thunk-extern\"",
                 "\"-Ctarget-feature=-x87\"",
                 "\"-Zmerge-functions=disabled\"",
+                "\"-Zunstable-options\"",
+                "\"-Cpanic=immediate-abort\"",
                 "build-std = [\"core\", \"compiler_builtins\"]",
             ][..],
         ),
@@ -853,6 +855,7 @@ fn freestanding_projects_build_for_bare_metal_targets() {
             &[
                 "\"-Crelocation-model=static\"",
                 "\"-Zmerge-functions=disabled\"",
+                "\"-Cpanic=immediate-abort\"",
                 "json-target-spec = true",
             ][..],
         ),

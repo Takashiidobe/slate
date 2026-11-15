@@ -168,8 +168,11 @@
   (`static void *t[] = {&&a}`) and label deltas (`&&a - &&b`, folded to an
   integer) are constant initializers; offsets from a label address use
   `wrapping_offset`. Computed goto matches `target as usize` against every
-  label in the function, each arm jumping to that label's state, and any
-  other value is `unreachable!()`.
+  label in the function, each arm jumping to that label's state. The default
+  arm of that match and of the `__slate_state` match is `unreachable!()` in a
+  std crate and `core::hint::unreachable_unchecked()` in a core-only crate,
+  where a panic call is unwanted (kernel objtool flags any call out of
+  `.noinstr.text` or with UACCESS on).
 - Dispatch can retain costly copies of locals at the common loop merge even in
   release builds; inspect optimized code before relying on elimination.
 - Retained Rust-to-Rust structuring and proposed tail-call optimization are in

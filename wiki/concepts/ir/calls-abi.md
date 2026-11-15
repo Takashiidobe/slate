@@ -308,7 +308,12 @@ selects the flavor. How to add one: [adding-a-target](../adding-a-target.md).
   generated `i386-unknown-none.json` spec (`-m32`/`-m16`), with rustflags
   derived from these facts plus `-Zmerge-functions=disabled` (C compilers do
   not merge functions, and LLVM's merged bodies land in `.text..Lanon.*`
-  sections that the kernel linker script does not place), and rejects a crate
+  sections that the kernel linker script does not place) and
+  `-Zunstable-options -Cpanic=immediate-abort` (core's panic functions inline
+  to `ud2`, so checked `[i]` indexing and `unreachable!()` emit no call that
+  objtool's noinstr/UACCESS checks would flag; the emitted `#[panic_handler]`
+  is then unused but kept, since host-triple core crates still need it), and
+  rejects a crate
   whose units derive different targets or flags (`project::build_target`).
 - `{x86_64,aarch64,i686,thumbv7a}-pc-windows-msvc`: 32-bit `long`, binary64
   `long double`, unsigned 16-bit `wchar_t`, Microsoft record layout.

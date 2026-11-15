@@ -72,7 +72,9 @@ fn is_exit_path(expr: &Expr) -> bool {
     let segments: Vec<&str> = path.segments.iter().map(|s| s.as_str()).collect();
     matches!(
         segments.as_slice(),
-        ["std", "process", "exit"] | ["std", "process", "abort"]
+        ["std", "process", "exit"]
+            | ["std", "process", "abort"]
+            | ["core", "hint", "unreachable_unchecked"]
     )
 }
 

@@ -508,6 +508,23 @@ fn jump(index: usize) -> Vec<Stmt> {
 }
 
 impl FunctionLowerer<'_, '_> {
+    fn dispatch_unreachable(&self) -> Stmt {
+        Stmt::Expr(if self.tables.runtime.has_std() {
+            Expr::Macro {
+                name: "unreachable".into(),
+                args: Vec::new(),
+            }
+        } else {
+            Expr::Call {
+                func: Box::new(Expr::Path(rust::Path::new(
+                    ["core", "hint", "unreachable_unchecked"].map(rust::Ident::from),
+                ))),
+                args: Vec::new(),
+                binding: CallBinding::Generated,
+            }
+        })
+    }
+
     fn slot_name(&self, id: BindingId) -> String {
         format!("__slate_slot_{}", self.local_index(id))
     }
@@ -775,10 +792,7 @@ impl FunctionLowerer<'_, '_> {
                             .collect();
                         arms.push(rust::MatchArm {
                             pattern: rust::Pattern::Wildcard,
-                            body: vec![Stmt::Expr(Expr::Macro {
-                                name: "unreachable".into(),
-                                args: Vec::new(),
-                            })],
+                            body: vec![self.dispatch_unreachable()],
                         });
                         vec![Stmt::Match {
                             expr: Expr::Cast {
@@ -802,10 +816,7 @@ impl FunctionLowerer<'_, '_> {
         }
         arms.push(rust::MatchArm {
             pattern: rust::Pattern::Wildcard,
-            body: vec![Stmt::Expr(Expr::Macro {
-                name: "unreachable".into(),
-                args: Vec::new(),
-            })],
+            body: vec![self.dispatch_unreachable()],
         });
         let mut positioned: Vec<_> = slot_comments
             .into_iter()

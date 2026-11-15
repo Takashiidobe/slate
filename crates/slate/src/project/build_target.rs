@@ -179,7 +179,14 @@ fn shared_flags(machine: MachineCodegen, isa: X86Isa) -> impl Iterator<Item = St
         .into_iter()
         .chain(cf_protection)
         .chain(switches)
-        .chain(["-Zmerge-functions=disabled".to_string()])
+        .chain(
+            [
+                "-Zmerge-functions=disabled",
+                "-Zunstable-options",
+                "-Cpanic=immediate-abort",
+            ]
+            .map(String::from),
+        )
 }
 
 fn i386_spec(isa: X86Isa, code16: bool) -> String {
