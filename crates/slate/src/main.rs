@@ -1406,6 +1406,7 @@ fn write_project_crate(
                                             lint,
                                             rust_ast::Lint::SuspiciousRuntimeSymbolDefinitions
                                                 | rust_ast::Lint::DerefNullptr
+                                                | rust_ast::Lint::NamedAsmLabels
                                         )
                                     })
                                     .cloned(),

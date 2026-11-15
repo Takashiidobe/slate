@@ -672,6 +672,18 @@ fn numeric_local_labels(
     Ok(Cow::Owned(result))
 }
 
+fn defines_named_label(template: &str) -> bool {
+    template.split(['\n', ';']).any(|statement| {
+        let statement = statement.trim_start();
+        let name_len = statement
+            .find(|c: char| !(c.is_ascii_alphanumeric() || matches!(c, '_' | '.' | '$')))
+            .unwrap_or(statement.len());
+        name_len > 0
+            && !statement.starts_with(|c: char| c.is_ascii_digit())
+            && statement[name_len..].starts_with(':')
+    })
+}
+
 fn asm_template(
     asm: &ir::InlineAsm,
     family: TargetFamily,
@@ -1467,7 +1479,10 @@ impl FunctionLowerer<'_, '_> {
         }
         let mut names = AsmNames::new(&self.tables.asm_names, operands.len());
         for (asm, slots) in asms.iter().zip(&asm_slots) {
-            templates.push(asm_template(asm, family, slots, &[], None, &mut names)?);
+            let template = asm_template(asm, family, slots, &[], None, &mut names)?;
+            self.dependencies.named_asm_labels |=
+                kind != rust::AsmKind::Global && defines_named_label(&template);
+            templates.push(template);
         }
         for id in names.used {
             operands.push(rust::AsmOperand::Sym(self.asm_symbol(&ir::AsmSymbol {
@@ -2584,6 +2599,7 @@ impl FunctionLowerer<'_, '_> {
             .collect();
         let mut names = AsmNames::new(&self.tables.asm_names, operands.len());
         let mut template = asm_template(asm, family, &slots, &label_slots, entry, &mut names)?;
+        self.dependencies.named_asm_labels |= defines_named_label(&template);
         for id in names.used {
             operands.push(rust::AsmOperand::Sym(self.asm_symbol(&ir::AsmSymbol {
                 binding: id,

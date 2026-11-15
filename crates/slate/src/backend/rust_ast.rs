@@ -261,6 +261,7 @@ pub enum Lint {
     UnconditionalPanic,
     SuspiciousRuntimeSymbolDefinitions,
     DerefNullptr,
+    NamedAsmLabels,
     UnpredictableFunctionPointerComparisons,
     UnusedComparisons,
     RustdocAll,
@@ -279,6 +280,7 @@ impl Lint {
             Lint::UnconditionalPanic => "unconditional_panic",
             Lint::SuspiciousRuntimeSymbolDefinitions => "suspicious_runtime_symbol_definitions",
             Lint::DerefNullptr => "deref_nullptr",
+            Lint::NamedAsmLabels => "named_asm_labels",
             Lint::UnpredictableFunctionPointerComparisons => {
                 "unpredictable_function_pointer_comparisons"
             }

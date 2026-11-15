@@ -135,6 +135,7 @@ struct Dependencies {
     known_panics: bool,
     runtime_symbols: bool,
     null_deref: bool,
+    named_asm_labels: bool,
     huge_stack: bool,
     asm_goto_with_outputs: bool,
     arm_neon_asm: bool,
@@ -1379,6 +1380,9 @@ impl<'m> ModuleLowerer<'m> {
         }
         if dependencies.null_deref {
             features.push(rust::CrateAttr::Allow(vec![rust::Lint::DerefNullptr]));
+        }
+        if dependencies.named_asm_labels {
+            features.push(rust::CrateAttr::Allow(vec![rust::Lint::NamedAsmLabels]));
         }
         if dependencies.x86_interrupt {
             features.push(rust::CrateAttr::Feature(rust::Feature::AbiX86Interrupt));
