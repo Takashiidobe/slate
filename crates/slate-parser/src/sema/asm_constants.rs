@@ -519,6 +519,21 @@ impl Lowerer {
     }
 
     fn drop_unreferenced(&mut self, unresolved: &HashSet<BindingId>) {
+        let named: HashSet<String> = self
+            .module
+            .functions
+            .iter()
+            .map(|function| &function.value.symbol)
+            .chain(
+                self.module
+                    .globals
+                    .iter()
+                    .map(|global| &global.value.symbol),
+            )
+            .flat_map(|symbol| [&symbol.alias, &symbol.ifunc, &symbol.weakref])
+            .flatten()
+            .cloned()
+            .collect();
         loop {
             let mut referenced = HashSet::new();
             for function in &mut self.module.functions {
@@ -538,6 +553,7 @@ impl Lowerer {
             self.module.functions.retain(|function| {
                 let function = &function.value;
                 referenced.contains(&function.id)
+                    || named.contains(&function.name)
                     || !unresolved.contains(&function.id)
                     || !matches!(function.linkage, Linkage::Internal)
                     || function.body.is_none()
