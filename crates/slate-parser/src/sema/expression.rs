@@ -1247,6 +1247,22 @@ impl Lowerer {
         Operand { value, c }
     }
 
+    fn statically_known_query(&self, operand: &Value) -> bool {
+        self.types.dialect().options().codegen.optimization
+            != crate::compiler_options::Optimization::None
+            && matches!(
+                operand.ty,
+                Type::Bool
+                    | Type::Numeric(
+                        NumericType::Integer {
+                            bit_precise: false,
+                            ..
+                        } | NumericType::Float(FloatType::F32 | FloatType::F64)
+                    )
+            )
+            && !super::effects::has_effects(operand)
+    }
+
     pub(super) fn truth(&mut self, e: &Expr, kind: ValueKind) -> Operand {
         Operand {
             value: self.value(e, Type::Bool, kind),
@@ -3263,8 +3279,23 @@ impl Lowerer {
             {
                 let operand = constant_p_operand(callee, arguments)
                     .ok_or(ResolveError::Internal("__builtin_constant_p"))?;
-                let constant = super::types::is_folded(&self.expr(operand)?.value)
-                    || self.types.builtin_constant_p(operand);
+                let lowered = self.expr(operand)?.value;
+                let constant =
+                    super::types::is_folded(&lowered) || self.types.builtin_constant_p(operand);
+                if !constant && self.statically_known_query(&lowered) {
+                    let value = self.truth(
+                        e,
+                        ValueKind::Intrinsic {
+                            name: "llvm.is.constant".into(),
+                            arguments: vec![lowered],
+                        },
+                    );
+                    self.module.annotate(
+                        &value.value.node,
+                        [("c_builtin".into(), "__builtin_constant_p".into())],
+                    );
+                    return Ok(value);
+                }
                 let c = self.result(e)?;
                 let value = self.operand(
                     e,

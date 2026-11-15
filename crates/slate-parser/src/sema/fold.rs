@@ -383,6 +383,14 @@ fn evaluate(value: &Value, depth: usize, env: Env) -> Option<BigInt> {
     let result = match &value.node.value {
         ValueKind::LayoutQuery { amount, .. } => BigInt::from(*amount),
         ValueKind::Constant(Number::Bool(value)) => BigInt::from(u8::from(*value)),
+        ValueKind::Intrinsic { name, arguments } if name == "llvm.is.constant" => {
+            let [argument] = arguments.as_slice() else {
+                return None;
+            };
+            let known = evaluate(argument, depth, env).is_some()
+                || floating(argument, depth, env).is_some();
+            BigInt::from(u8::from(known))
+        }
         ValueKind::Constant(Number::Integer(value)) => {
             if value.bits() > u64::from(MAX_WIDTH) {
                 return None;
