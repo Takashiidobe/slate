@@ -1636,7 +1636,23 @@ def shard_units(units, project_dir, limit):
     modules = kernel_modules(linked, project_dir)
     in_module = {id(unit) for _, members in modules for unit in members}
     linked = [unit for unit in linked if id(unit) not in in_module]
-    paths = {unit["file"]: Path(os.path.relpath(unit["file"], project_dir)).parts for unit in linked}
+    archives = {}
+
+    def in_vmlinux(unit):
+        build = unit["directory"]
+        if build not in archives:
+            archive = Path(build) / "vmlinux.a"
+            archives[build] = set(subprocess.run(["ar", "t", archive.name], cwd=build, check=True, capture_output=True,
+                                                 text=True).stdout.split()) if archive.exists() else None
+        members = archives[build]
+        source = os.path.relpath(unit["file"], build)
+        if source.startswith(".."):
+            source = os.path.relpath(unit["file"], project_dir)
+        return members is None or str(Path(source).with_suffix(".o")) in members
+
+    unlinked = [unit for unit in linked if not in_vmlinux(unit)]
+    linked = [unit for unit in linked if in_vmlinux(unit)]
+    paths = {unit["file"]: Path(os.path.relpath(unit["file"], project_dir)).parts for unit in [*linked, *unlinked]}
 
     def split(prefix, members):
         if len(members) <= limit:
@@ -1687,7 +1703,8 @@ def shard_units(units, project_dir, limit):
         return mode.lstrip("-") if mode and mode != "-m64" else ""
 
     shards = []
-    for name, members in [*split((), linked), *modules]:
+    groups = [*split((), linked), *[(("unlinked", *name), members) for name, members in split((), unlinked)], *modules]
+    for name, members in groups:
         keys = collections.Counter(codegen_key(unit) for unit in members)
         variants = collections.defaultdict(list)
         for key, _ in keys.most_common():
