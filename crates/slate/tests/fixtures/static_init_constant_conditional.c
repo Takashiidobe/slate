@@ -21,7 +21,7 @@ static const struct header headers[] = {
     HEADER("CSeq", NULL),
     HEADER("From", "sip:"),
 };
-static int checked = sizeof(long) == 8 ? 64 : runtime();
+static int checked = sizeof(long long) == 8 ? 64 : runtime();
 static int nested = 0 ? runtime() : sizeof(int) == 4 ? 32 : runtime();
 static long elvis = 5 ?: runtime();
 

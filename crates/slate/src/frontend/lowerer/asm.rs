@@ -225,13 +225,21 @@ fn memory_reference(
         TargetFamily::Arm32 => return Ok(format!("[{{{index}}}]")),
         TargetFamily::X86 | TargetFamily::X86_64 => {}
     }
-    let base = format!("{{{index}:r}}");
+    let base = format!("{{{index}:{}}}", address_modifier(family));
     Ok(match (asm.dialect, displacement) {
         (Some(ir::AsmDialect::Intel), None) => format!("[{base}]"),
         (Some(ir::AsmDialect::Intel), Some(offset)) => format!("[{base}+{offset}]"),
         (_, None) => format!("({base})"),
         (_, Some(offset)) => format!("{offset}({base})"),
     })
+}
+
+fn address_modifier(family: TargetFamily) -> char {
+    if family == TargetFamily::X86 {
+        'e'
+    } else {
+        'r'
+    }
 }
 
 fn intel_size(operand: &ir::AsmOperand) -> Result<&'static str> {
@@ -319,17 +327,23 @@ fn stack_positions(asm: &ir::InlineAsm) -> Vec<Option<usize>> {
         .collect()
 }
 
-fn spill_instruction(asm: &ir::InlineAsm, spill: &Spill, load: bool) -> String {
+fn spill_instruction(
+    asm: &ir::InlineAsm,
+    family: TargetFamily,
+    spill: &Spill,
+    load: bool,
+) -> String {
     let intel = asm.dialect == Some(ir::AsmDialect::Intel);
+    let modifier = address_modifier(family);
     let memory = if intel {
         let size = match spill.bytes {
             4 => "dword",
             8 => "qword",
             _ => "tbyte",
         };
-        format!("{size} ptr [{{{}:r}}]", spill.slot)
+        format!("{size} ptr [{{{}:{modifier}}}]", spill.slot)
     } else {
-        format!("({{{}:r}})", spill.slot)
+        format!("({{{}:{modifier}}})", spill.slot)
     };
     match spill.register {
         SpillRegister::Stack(_) => {
@@ -2013,7 +2027,7 @@ impl FunctionLowerer<'_, '_> {
                 )) if bare.contains(&index) => {
                     let candidates: &[&'static str] = match class {
                         ir::AsmRegisterClass::RegAbcd => &["ax", "cx", "dx"],
-                        _ if x86_32 => &["ax", "cx", "dx", "si", "di"],
+                        _ if x86_32 => &["ax", "cx", "dx", "di"],
                         _ => &[
                             "ax", "cx", "dx", "si", "di", "r8", "r9", "r10", "r11", "r12", "r13",
                             "r14", "r15",
@@ -2162,6 +2176,7 @@ impl FunctionLowerer<'_, '_> {
                 Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::RegLegacy)) => {
                     let canonical = ["ax", "cx", "dx", "si", "di"]
                         .into_iter()
+                        .filter(|candidate| !x86_32 || *candidate != "si")
                         .find(|candidate| taken.insert(candidate))
                         .ok_or_else(|| unsupported_asm("no free legacy register"))?;
                     pinned = Some(canonical);
@@ -2178,12 +2193,14 @@ impl FunctionLowerer<'_, '_> {
                         "sp" => {
                             return Err(unsupported_asm("reserved register operand sp"));
                         }
-                        "bp" => {
+                        "bp" | "si" if canonical == "bp" || x86_32 => {
                             if reserved_operands
                                 .iter()
                                 .any(|(register, ..)| *register == canonical)
                             {
-                                return Err(unsupported_asm("second reserved register operand bp"));
+                                return Err(unsupported_asm(format!(
+                                    "second reserved register operand {canonical}"
+                                )));
                             }
                             reserved = Some(canonical);
                             rust::AsmReg::Class("reg".into())
@@ -2492,6 +2509,7 @@ impl FunctionLowerer<'_, '_> {
                 }
                 if matches!(canonical, "x19" | "x29" if !x86)
                     || matches!(canonical, "bp" | "sp" if x86)
+                    || matches!(canonical, "si" if x86_32)
                 {
                     if clobbered.insert(canonical) {
                         saved_reserved.push((canonical, operands.len(), None));
@@ -2579,12 +2597,12 @@ impl FunctionLowerer<'_, '_> {
             };
             template = loads
                 .iter()
-                .map(|spill| spill_instruction(asm, spill, true))
+                .map(|spill| spill_instruction(asm, family, spill, true))
                 .chain(std::iter::once(template))
                 .chain(
                     stores
                         .iter()
-                        .map(|spill| spill_instruction(asm, spill, false)),
+                        .map(|spill| spill_instruction(asm, family, spill, false)),
                 )
                 .chain(std::iter::repeat_n(pop.to_string(), pops))
                 .collect::<Vec<_>>()

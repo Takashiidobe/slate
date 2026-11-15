@@ -349,7 +349,7 @@ int main(void) {
 // CHECK-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: static mut pick: *mut i8 = unsafe { std::ptr::addr_of_mut!(buffer_a) as *mut i8 };
 // I686-PC-WINDOWS-MSVC-NEXT: static mut pick: *mut i8 =
-// I686-PC-WINDOWS-MSVC-NEXT:     unsafe { unsafe { std::ptr::addr_of_mut!(buffer_b) as *mut i8 }.offset(1i32 as isize) };
+// I686-PC-WINDOWS-MSVC-NEXT:     unsafe { std::ptr::addr_of_mut!(buffer_b) as *mut i8 }.wrapping_offset(1i32 as isize);
 // AARCH64-PC-WINDOWS-MSVC-NEXT: static mut pick: *mut i8 = unsafe { std::ptr::addr_of_mut!(buffer_a) as *mut i8 };
 // CHECK-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: static mut picks: __SlateAlign16<[*const u32; 2]> = __SlateAlign16([
