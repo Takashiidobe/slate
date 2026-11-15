@@ -534,7 +534,10 @@ impossible.
 - Template text that names a C function or static defined in this unit (`counter(%rip)`,
   `jmp twice`) is rewritten to a `sym` operand, in `asm!`, `naked_asm!`, and `global_asm!`.
   This keeps internal linkage and tells rustc the item escapes. It is skipped for the
-  first word of a statement (a mnemonic or label), `%`-prefixed registers, quoted strings,
-  thread-locals, and names defined twice (`gnu_toplevel_asm_symbols.c`).
+  first word of a statement (a mnemonic or label; on x86 also the word after a `rep`/`lock`/
+  `data16`/`rex*` prefix), `%`-prefixed registers (including `%%ds`, where `%%` is its own
+  piece), quoted strings, thread-locals, and names defined twice
+  (`gnu_toplevel_asm_symbols.c`, `x86_64/asm_template_symbol_words.c`). Intel-syntax register
+  names carry no `%` and are still candidates (slate-yar4.46).
 - Other immediate modifiers,
   and additional operand classes are tracked by the other `slate-3f8g.4.17` children.

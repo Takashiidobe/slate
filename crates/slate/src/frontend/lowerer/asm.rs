@@ -421,6 +421,8 @@ struct AsmNames<'t> {
     base: usize,
     used: Vec<BindingId>,
     statement_start: bool,
+    previous: Option<char>,
+    x86: bool,
 }
 
 impl<'t> AsmNames<'t> {
@@ -430,6 +432,8 @@ impl<'t> AsmNames<'t> {
             base,
             used: Vec::new(),
             statement_start: true,
+            previous: None,
+            x86: false,
         }
     }
 
@@ -448,14 +452,14 @@ impl<'t> AsmNames<'t> {
     fn text(&mut self, text: &str) -> String {
         let mut out = String::new();
         let mut quoted = false;
-        let mut previous = None;
         let mut rest = text;
         while let Some(c) = rest.chars().next() {
             if !quoted && symbol_char(c) && c != '$' {
                 let end = rest.find(|c| !symbol_char(c)).unwrap_or(rest.len());
                 let word = &rest[..end];
                 let mnemonic = std::mem::replace(&mut self.statement_start, false);
-                let candidate = !mnemonic && !c.is_ascii_digit() && previous != Some('%');
+                self.statement_start = mnemonic && self.x86 && x86_prefix(word);
+                let candidate = !mnemonic && !c.is_ascii_digit() && self.previous != Some('%');
                 match self.names.get(word).filter(|_| candidate) {
                     Some(id) => {
                         let slot = self.slot(*id);
@@ -463,12 +467,12 @@ impl<'t> AsmNames<'t> {
                     }
                     None => out.push_str(word),
                 }
-                previous = word.chars().last();
+                self.previous = word.chars().last();
                 rest = &rest[end..];
                 continue;
             }
             match c {
-                '"' if previous != Some('\\') => quoted = !quoted,
+                '"' if self.previous != Some('\\') => quoted = !quoted,
                 '\n' | ';' | ':' if !quoted => self.statement_start = true,
                 _ => {}
             }
@@ -477,7 +481,7 @@ impl<'t> AsmNames<'t> {
                 '}' => out.push_str("}}"),
                 c => out.push(c),
             }
-            previous = Some(c);
+            self.previous = Some(c);
             rest = &rest[c.len_utf8()..];
         }
         out
@@ -501,6 +505,27 @@ const SYMBOL_DIRECTIVES: [&str; 13] = [
     ".equiv",
     ".symver",
 ];
+
+fn x86_prefix(word: &str) -> bool {
+    let word = word.to_ascii_lowercase();
+    matches!(
+        word.as_str(),
+        "rep"
+            | "repe"
+            | "repz"
+            | "repne"
+            | "repnz"
+            | "lock"
+            | "xacquire"
+            | "xrelease"
+            | "notrack"
+            | "bnd"
+            | "data16"
+            | "data32"
+            | "addr16"
+            | "addr32"
+    ) || word.starts_with("rex")
+}
 
 fn symbol_char(c: char) -> bool {
     c.is_ascii_alphanumeric() || matches!(c, '_' | '.' | '$')
@@ -696,6 +721,8 @@ fn asm_template(
     let arm = family == TargetFamily::Arm32;
     let x86_64_att = family == TargetFamily::X86_64 && asm.dialect == Some(ir::AsmDialect::Att);
     names.statement_start = true;
+    names.previous = None;
+    names.x86 = x86;
     if !asm.has_sections() {
         return Ok(names.text(&asm.template));
     }
@@ -706,6 +733,7 @@ fn asm_template(
     for piece in unique_labels(&pieces)?.iter() {
         if !matches!(piece, ir::AsmPiece::Text(_)) {
             names.statement_start = false;
+            names.previous = matches!(piece, ir::AsmPiece::Percent).then_some('%');
         }
         match piece {
             ir::AsmPiece::Text(text) => template.push_str(&names.text(text)),
