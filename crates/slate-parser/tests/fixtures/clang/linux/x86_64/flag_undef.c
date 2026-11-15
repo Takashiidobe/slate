@@ -143,6 +143,7 @@ int valX[X + 1];
 // FREESTANDING-NEXT:         storage d64 [size=8, align=8];
 // FREESTANDING-NEXT:         storage d128 [size=16, align=16];
 // FREESTANDING-NEXT:     }
+// FREESTANDING-NEXT:     freestanding;
 // FREESTANDING-NEXT:     global %[[VALUE_val__STDC__:[0-9]+]] val__STDC__: array<i32, 2> [storage=static] [linkage=external];
 // FREESTANDING-NEXT:     global %[[VALUE_val__STDC_VERSION__:[0-9]+]] val__STDC_VERSION__: array<i32, 201711> [storage=static] [align=16] [linkage=external];
 // FREESTANDING-NEXT:     global %[[VALUE_val__STDC_HOSTED__:[0-9]+]] val__STDC_HOSTED__: array<i32, 1> [storage=static] [linkage=external];

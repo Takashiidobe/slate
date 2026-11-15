@@ -36,9 +36,9 @@ void main(void) {
 // CHECK-NEXT: fn __slate_main() {
 // CHECK-NEXT:     step(3i32);
 // CHECK-NEXT:     step(4i32);
-// CHECK-NEXT:     println!("{}", unsafe { counter });
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%d\n".as_ptr(), counter) };
 // CHECK-NEXT:     unsafe { fflush(slate_support::stdout()) };
-// CHECK-NEXT:     unsafe { std::process::exit((if counter == 7 { 0i32 } else { 1i32 }) as i32) };
+// CHECK-NEXT:     unsafe { exit((if counter == 7 { 0i32 } else { 1i32 }) as i32) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

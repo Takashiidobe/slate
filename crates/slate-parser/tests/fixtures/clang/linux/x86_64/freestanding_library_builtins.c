@@ -108,6 +108,7 @@ void copy(void *to, const void *from) { __builtin_memcpy(to, from, 4); }
 // FREE-NEXT:         storage d64 [size=8, align=8];
 // FREE-NEXT:         storage d128 [size=16, align=16];
 // FREE-NEXT:     }
+// FREE-NEXT:     freestanding;
 // FREE-NEXT:     global %[[VALUE_hosted:[0-9]+]] hosted: i32 [storage=static] = const<i32>(0) [linkage=external] [c="int"];
 // FREE-NEXT:     global %[[VALUE_has_stddef:[0-9]+]] has_stddef: i32 [storage=static] = const<i32>(1) [linkage=external] [c="int"];
 // FREE-NEXT:     global %[[VALUE_cfi_asm:[0-9]+]] cfi_asm: i32 [storage=static] = const<i32>(0) [linkage=external] [c="int"];
@@ -268,6 +269,7 @@ void copy(void *to, const void *from) { __builtin_memcpy(to, from, 4); }
 // FREEBUILTIN-NEXT:         storage d64 [size=8, align=8];
 // FREEBUILTIN-NEXT:         storage d128 [size=16, align=16];
 // FREEBUILTIN-NEXT:     }
+// FREEBUILTIN-NEXT:     freestanding;
 // FREEBUILTIN-NEXT:     global %[[VALUE_hosted:[0-9]+]] hosted: i32 [storage=static] = const<i32>(0) [linkage=external] [c="int"];
 // FREEBUILTIN-NEXT:     global %[[VALUE_has_stddef:[0-9]+]] has_stddef: i32 [storage=static] = const<i32>(1) [linkage=external] [c="int"];
 // FREEBUILTIN-NEXT:     global %[[VALUE_cfi_asm:[0-9]+]] cfi_asm: i32 [storage=static] = const<i32>(0) [linkage=external] [c="int"];
@@ -348,6 +350,7 @@ void copy(void *to, const void *from) { __builtin_memcpy(to, from, 4); }
 // NOSTDINC-NEXT:         storage d64 [size=8, align=8];
 // NOSTDINC-NEXT:         storage d128 [size=16, align=16];
 // NOSTDINC-NEXT:     }
+// NOSTDINC-NEXT:     nostdinc;
 // NOSTDINC-NEXT:     global %[[VALUE_hosted:[0-9]+]] hosted: i32 [storage=static] = const<i32>(1) [linkage=external] [c="int"];
 // NOSTDINC-NEXT:     global %[[VALUE_has_stddef:[0-9]+]] has_stddef: i32 [storage=static] = const<i32>(0) [linkage=external] [c="int"];
 // NOSTDINC-NEXT:     global %[[VALUE_cfi_asm:[0-9]+]] cfi_asm: i32 [storage=static] = const<i32>(1) [linkage=external] [c="int"];
@@ -388,6 +391,7 @@ void copy(void *to, const void *from) { __builtin_memcpy(to, from, 4); }
 // UNWIND-NEXT:         storage d64 [size=8, align=8];
 // UNWIND-NEXT:         storage d128 [size=16, align=16];
 // UNWIND-NEXT:     }
+// UNWIND-NEXT:     freestanding;
 // UNWIND-NEXT:     global %[[VALUE_hosted:[0-9]+]] hosted: i32 [storage=static] = const<i32>(0) [linkage=external] [c="int"];
 // UNWIND-NEXT:     global %[[VALUE_has_stddef:[0-9]+]] has_stddef: i32 [storage=static] = const<i32>(1) [linkage=external] [c="int"];
 // UNWIND-NEXT:     global %[[VALUE_cfi_asm:[0-9]+]] cfi_asm: i32 [storage=static] = const<i32>(1) [linkage=external] [c="int"];

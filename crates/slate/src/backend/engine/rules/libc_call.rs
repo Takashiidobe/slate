@@ -3,7 +3,7 @@ use super::{inline_temps, walk};
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{
-    BinOp, Block, Expr, Ident, Path, Prim, RustValue, Stmt, Type, UnaryOp,
+    BinOp, Block, Expr, Ident, Path, Prim, Runtime, RustValue, Stmt, Type, UnaryOp,
 };
 use crate::function_identity::{CallBinding, Known};
 
@@ -886,16 +886,27 @@ fn node_discards_result(arena: &Arena, kind: &NodeKind) -> bool {
     }
 }
 
-pub(super) fn rules(target: &slate_parser::target_info::TargetInfo) -> Vec<Box<dyn NodeRule>> {
+pub(super) fn rules(
+    target: &slate_parser::target_info::TargetInfo,
+    runtime: Runtime,
+) -> Vec<Box<dyn NodeRule>> {
+    let mut rules = Vec::new();
+    if runtime.has_std() {
+        rules.push(libc_call(Known::Exit, |ctx| {
+            Some(free_call(&["std", "process", "exit"], ctx.args().to_vec()))
+        }));
+        rules.push(libc_call(Known::Abort, |ctx| {
+            Some(free_call(&["std", "process", "abort"], ctx.args().to_vec()))
+        }));
+    }
+    rules.extend(core_rules(target));
+    rules
+}
+
+fn core_rules(target: &slate_parser::target_info::TargetInfo) -> Vec<Box<dyn NodeRule>> {
     let char_prim = crate::backend::engine::prelude::char_prim(target);
     let long_prim = crate::backend::engine::prelude::long_prim(target);
     vec![
-        libc_call(Known::Exit, |ctx| {
-            Some(free_call(&["std", "process", "exit"], ctx.args().to_vec()))
-        }),
-        libc_call(Known::Abort, |ctx| {
-            Some(free_call(&["std", "process", "abort"], ctx.args().to_vec()))
-        }),
         libc_call(Known::StrLen, |ctx| {
             let length = match ctx.lifted_arg(0, is_string) {
                 Some(text) => method_call(text, "len", Vec::new()),

@@ -14,6 +14,28 @@ pub fn is_temp_name(name: &str) -> bool {
 pub struct Program {
     pub items: Vec<Item>,
     pub macro_outcomes: Vec<MacroOutcome>,
+    pub runtime: Runtime,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum Runtime {
+    #[default]
+    Std,
+    Core,
+}
+
+impl Runtime {
+    pub fn for_module(module: &slate_parser::ir::Module) -> Self {
+        if module.hosted && !module.nostdinc {
+            Self::Std
+        } else {
+            Self::Core
+        }
+    }
+
+    pub fn has_std(self) -> bool {
+        self == Self::Std
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

@@ -52,7 +52,10 @@ pub(super) fn control_flow_registry() -> Vec<Box<dyn NodeRule>> {
     ]
 }
 
-pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Box<dyn NodeRule>> {
+pub(super) fn registry(
+    target: &slate_parser::target_info::TargetInfo,
+    runtime: crate::backend::rust_ast::Runtime,
+) -> Vec<Box<dyn NodeRule>> {
     let mut rules = control_flow_registry();
     rules.extend(vec![
         Box::new(remove_mut::RemoveMut) as Box<dyn NodeRule>,
@@ -86,15 +89,19 @@ pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Bo
                 Prim::U8
             },
         }),
-        Box::new(getenv_var::GetenvVar),
-        Box::new(compound_assign::CompoundAssignRecover),
+    ]);
+    if runtime.has_std() {
+        rules.push(Box::new(getenv_var::GetenvVar));
+    }
+    rules.extend(vec![
+        Box::new(compound_assign::CompoundAssignRecover) as Box<dyn NodeRule>,
         Box::new(dead_store::DeadStore),
         Box::new(pure_stmts::PureStmtDrop),
         Box::new(pure_stmts::EmptyElseDrop),
         Box::new(pure_stmts::EmptyThenInvert),
         Box::new(return_cleanup::FinalReturnTail),
     ]);
-    rules.extend(libc_call::rules(target));
+    rules.extend(libc_call::rules(target, runtime));
     rules
 }
 

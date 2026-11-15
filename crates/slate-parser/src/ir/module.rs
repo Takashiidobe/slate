@@ -27,6 +27,8 @@ pub struct Module {
     pub macro_hidden_arguments: HashMap<MacroExpansionId, Vec<BindingId>>,
     pub zero_init_padding_bits: crate::compiler_options::ZeroInitPaddingBits,
     pub alloca: AllocaLayout,
+    pub hosted: bool,
+    pub nostdinc: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -434,6 +436,8 @@ impl Module {
                 padding: 0,
                 alignment: 16,
             },
+            hosted: true,
+            nostdinc: false,
         }
     }
 

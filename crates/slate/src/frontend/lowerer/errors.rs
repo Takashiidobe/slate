@@ -74,6 +74,8 @@ pub enum Construct {
     Switch { detail: String },
     #[error("long double: {detail}")]
     LongDouble { detail: String },
+    #[error("{detail} needs std, but the unit is freestanding or -nostdinc")]
+    NeedsStd { detail: String },
 }
 
 impl Construct {
@@ -88,6 +90,7 @@ impl Construct {
             Self::Record { .. } => "record",
             Self::Switch { .. } => "switch",
             Self::LongDouble { .. } => "long-double",
+            Self::NeedsStd { .. } => "needs-std",
         }
     }
 

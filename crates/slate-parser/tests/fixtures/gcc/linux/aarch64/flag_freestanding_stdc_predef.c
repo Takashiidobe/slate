@@ -70,5 +70,6 @@ int val_STDC_PREDEF_H;
 // FREESTANDING-NEXT:         storage d64 [size=8, align=8];
 // FREESTANDING-NEXT:         storage d128 [size=16, align=16];
 // FREESTANDING-NEXT:     }
+// FREESTANDING-NEXT:     freestanding;
 // FREESTANDING-NEXT: }
 // SLATE-FILECHECK-END FREESTANDING

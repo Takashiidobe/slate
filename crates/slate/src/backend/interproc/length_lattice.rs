@@ -1389,6 +1389,21 @@ fn rewrite_signature_expr(
         Expr::Field { base, .. }
         | Expr::TupleField { base, .. }
         | Expr::ArrayPtr { array: base, .. } => rewrite_signature_expr(base, caller, ctx, proofs),
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => {
+            rewrite_signature_expr(cond, caller, ctx, proofs);
+            rewrite_signature_expr(then_expr, caller, ctx, proofs);
+            rewrite_signature_expr(else_expr, caller, ctx, proofs);
+        }
+        Expr::Match { expr, arms } => {
+            rewrite_signature_expr(expr, caller, ctx, proofs);
+            for arm in arms {
+                rewrite_signature_expr(&mut arm.value, caller, ctx, proofs);
+            }
+        }
         _ => {}
     }
 }

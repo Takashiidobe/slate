@@ -1133,6 +1133,12 @@ impl fmt::Display for DisplayModule<'_> {
             }
         }
         writeln!(f, "    }}")?;
+        if !self.module.hosted {
+            writeln!(f, "    freestanding;")?;
+        }
+        if self.module.nostdinc {
+            writeln!(f, "    nostdinc;")?;
+        }
         for asm in &self.module.asm {
             write!(f, "    asm {:?}", asm.template)?;
             asm_attributes(f, asm)?;

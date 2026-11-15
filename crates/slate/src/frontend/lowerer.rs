@@ -95,6 +95,7 @@ struct Tables<'m> {
     unit_features: Vec<&'static str>,
     zero_init_padding_bits: slate_parser::compiler_options::ZeroInitPaddingBits,
     alloca_layout: ir::AllocaLayout,
+    runtime: rust::Runtime,
     rust_layout: TargetInfo,
     metadata: &'m ir::Metadata,
     comments: &'m ir::Comments,
@@ -765,6 +766,7 @@ impl<'m> ModuleLowerer<'m> {
             unit_features,
             zero_init_padding_bits: module.zero_init_padding_bits,
             alloca_layout: module.alloca,
+            runtime: rust::Runtime::for_module(module),
             rust_layout: TargetInfo::for_triple(&module.target.triple)
                 .unwrap_or_else(|_| module.target.clone()),
             metadata: &module.metadata,
@@ -1247,7 +1249,7 @@ impl<'m> ModuleLowerer<'m> {
             mut externs,
             convention_externs,
             weak_address_decls,
-            barriers,
+            mut barriers,
             ..
         } = self;
         for (id, decl, asm) in weak_address_decls {
@@ -1653,7 +1655,15 @@ impl<'m> ModuleLowerer<'m> {
                 ir::Parameters::Prototype { fixed, .. } => fixed.len(),
                 _ => 0,
             };
-            if arity <= 3 {
+            let big_stack = match dependencies.huge_stack {
+                true => {
+                    tables.require_std("main with a huge _BitInt (runs on a 1 GiB-stack thread)")
+                }
+                false => Ok(()),
+            };
+            if let Err(error) = big_stack {
+                barriers.extend(error.into_public(Some(&main.name), Site::of(main)).ok());
+            } else if arity <= 3 {
                 features.push(rust::CrateAttr::NoMain);
                 items.push(main_wrapper(
                     arity,
@@ -1683,6 +1693,7 @@ impl<'m> ModuleLowerer<'m> {
             program: rust::Program {
                 items,
                 macro_outcomes,
+                runtime: tables.runtime,
             },
             barriers,
             address_taken: dependencies.taken_functions,

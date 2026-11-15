@@ -1748,6 +1748,7 @@ impl FunctionLowerer<'_, '_> {
                 )
             ) =>
             {
+                self.tables.require_std("alloca")?;
                 let as_usize = |expr| Expr::Cast {
                     expr: Box::new(expr),
                     ty: rust::Type::Prim(Prim::Usize),

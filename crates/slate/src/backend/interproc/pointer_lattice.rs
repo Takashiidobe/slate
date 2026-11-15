@@ -72,6 +72,7 @@ pub(in crate::backend) struct PointerFact {
     nullable: bool,
     string: bool,
     reassigned: bool,
+    heap_ownership: bool,
 }
 
 impl PointerFact {
@@ -86,6 +87,7 @@ impl PointerFact {
             nullable: false,
             string: false,
             reassigned: false,
+            heap_ownership: true,
         }
     }
 
@@ -151,7 +153,10 @@ impl PointerFact {
     }
 
     pub(in crate::backend) fn resolved(&self) -> Representation {
-        if self.reassigned || (self.escape && !(self.unique && self.free)) {
+        if self.reassigned
+            || (self.free && !self.heap_ownership)
+            || (self.escape && !(self.unique && self.free))
+        {
             let base = if self.write {
                 ResolvedPtrType::RawMut
             } else {
@@ -431,6 +436,12 @@ pub(in crate::backend) fn solve(
         }
         changed
     });
+
+    if programs.iter().any(|program| !program.runtime.has_std()) {
+        for fact in facts.values_mut() {
+            fact.heap_ownership = false;
+        }
+    }
 
     if std::env::var_os("SLATE_PTR_LATTICE_DEBUG").is_some() {
         for (binding, fact) in &facts {

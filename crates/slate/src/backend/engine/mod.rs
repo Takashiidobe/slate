@@ -99,7 +99,7 @@ pub(in crate::backend) fn apply_local(
     target: &slate_parser::target_info::TargetInfo,
 ) {
     let passes = [
-        RuleRegistry::build(rules::registry(target)),
+        RuleRegistry::build(rules::registry(target, program.runtime)),
         RuleRegistry::build(rules::late_registry()),
     ];
     for item in &mut program.items {
@@ -108,7 +108,9 @@ pub(in crate::backend) fn apply_local(
     rules::const_fold::fold_initializers(&mut program.items);
     prelude::inject(program, target);
     let place_parameters = macro_templates::finish_holes(program);
-    printf_format::rewrite(program, target);
+    if program.runtime.has_std() {
+        printf_format::rewrite(program, target);
+    }
     let passes = [RuleRegistry::build(rules::unsafe_registry())];
     for item in &mut program.items {
         apply_item(item, &passes);

@@ -165,7 +165,6 @@ pub struct CompilerArgs {
     pub isysroot: Option<String>,
     pub sysroot: Option<String>,
     pub nostdlibinc: bool,
-    pub nostdinc: bool,
     pub flavor: CompilerFlavor,
     pub compiler: Option<String>,
     pub target: TargetInfo,
@@ -180,7 +179,7 @@ impl CompilerArgs {
             None => PathBuf::from(path),
         };
         let mut system: Vec<PathBuf> = self.isystem.iter().map(|path| include_dir(path)).collect();
-        if !self.nostdinc {
+        if !self.options.nostdinc {
             system.extend(self.standard_system_paths(explicit_root.is_some(), &root)?);
         }
         system.extend(self.idirafter.iter().map(|path| include_dir(path)));
@@ -1742,6 +1741,7 @@ impl CompilerArgParser {
             enabled: options.hosted && raw.builtin.unwrap_or(true),
             disabled: raw.no_builtin,
         };
+        options.nostdinc = raw.nostdinc;
         options.implicit_stdc_predef = options.hosted && !raw.nostdinc;
         options.asynchronous_unwind_tables = raw
             .asynchronous_unwind_tables
@@ -1770,7 +1770,6 @@ impl CompilerArgParser {
             isysroot: raw.isysroot,
             sysroot: raw.sysroot,
             nostdlibinc: raw.nostdlibinc,
-            nostdinc: raw.nostdinc,
             flavor,
             compiler: raw.compiler,
             target,

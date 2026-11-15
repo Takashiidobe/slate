@@ -1,6 +1,16 @@
 use super::*;
 
 impl Tables<'_> {
+    pub(super) fn require_std(&self, detail: &str) -> Result<()> {
+        if self.runtime.has_std() {
+            return Ok(());
+        }
+        Err(Construct::NeedsStd {
+            detail: detail.into(),
+        }
+        .into())
+    }
+
     pub(super) fn variably_modified(&self, ty: &ir::Type) -> bool {
         match self.resolve_type(ty) {
             ir::Type::VariableArray { .. } => true,
@@ -135,6 +145,7 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn vla_vec_type(&mut self, ty: &ir::Type) -> Result<rust::Type> {
+        self.tables.require_std("variable-length array")?;
         if let Some((unit, _)) = self.record_buffer_layout(ty)? {
             return Ok(rust::Type::Generic {
                 name: "Vec".into(),
@@ -149,6 +160,7 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn vla_buffer(&mut self, variable: &ir::Variable) -> Result<(rust::Type, Expr)> {
+        self.tables.require_std("variable-length array")?;
         if matches!(variable.auto_init, Some(ir::AutoInit::Pattern(_))) {
             return Err(unsupported_type(&variable.ty));
         }

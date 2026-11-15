@@ -63,7 +63,8 @@ before its declaration (a function called before its definition, a loop ID in
 ## Module
 
 ```ebnf
-module     = "module" "{" target { asm } { linker_option } { type_def } { global } { function }
+module     = "module" "{" target [ "freestanding" ";" ] [ "nostdinc" ";" ]
+             { asm } { linker_option } { type_def } { global } { function }
              { macro_definition } { macro_expansion } "}" ;
 
 linker_option = "linker" string ";" ;
@@ -83,6 +84,10 @@ storage_of = "bool" | "i8, u8" | "i16, u16" | "i32, u32" | "i64, u64"
 
 - `code16` marks an `-m16` unit: C semantics and layout are the i686 target's,
   but code must be encoded for 16-bit real mode (gcc's `.code16gcc`).
+- `freestanding` marks a unit compiled with `-ffreestanding` or `-fno-hosted`
+  (`Module.hosted` false, `__STDC_HOSTED__` 0). `nostdinc` marks a unit compiled
+  with `-nostdinc` (`Module.nostdinc`): no system include directories, so no
+  system libc. Slate emits core-only Rust when either is set.
 - `storage` lines cover every scalar format a module can name (`bool`, standard
   integers, floats, in that order), only for formats the target supports.
   Bit-precise integers, pointers, `va_list`, and composites are derived at the
