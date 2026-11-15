@@ -28,6 +28,7 @@ int stdio_end_of_file = EOF;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     asm ".symver __qsort_r_compat, qsort_r@FBSD_1.0" [dialect=att];
 // DEFAULT-NEXT:     global %[[VALUE_stdio_end_of_file:[0-9]+]] stdio_end_of_file: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

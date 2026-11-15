@@ -20,11 +20,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "crates/slate-parser/tools"))
+import kernel_link
 import pp_diff
 
 SLATE = ROOT / "target/test-cache/release/slate"
 SETUP = ROOT / "crates/slate-parser/tools/c_corpus_setup.py"
-STAGES = ("native", "barriers", "translate", "check", "build", "bench", "test")
+STAGES = ("native", "barriers", "translate", "check", "build", "link", "bench", "test")
 COMPILERS = {"clang": "clang", "gcc": "gcc", "clang-aarch64": "clang"}
 
 
@@ -102,6 +103,7 @@ class TranslationOnly:
     python: str = ""
     test: list[str] = field(default_factory=list)
     shard_units: int | None = None
+    relink_vmlinux: bool = False
 
 
 RUST_NATIVE_LIBS = ["-lgcc_s", "-lutil", "-lrt", "-lpthread", "-lm", "-ldl", "-lc"]
@@ -1603,7 +1605,7 @@ RECIPES = {
     ),
     "openblas": TranslationOnly(archive="libopenblas.a", smoke="openblas",
                                 object_prefixes=["cblas_dgemm.o", "cblas_xerbla.o"]),
-    "linux": TranslationOnly(required_args=["-D__KERNEL__"], shard_units=120),
+    "linux": TranslationOnly(required_args=["-D__KERNEL__"], shard_units=120, relink_vmlinux=True),
 }
 
 
@@ -1706,21 +1708,36 @@ def rustc_error_cluster(line):
     return re.sub(r"\balloc\d+|0x[0-9a-f]+(\[noalloc\])?|-?\b\d+\b", "N", message).strip()
 
 
+def sync_tree(source, destination):
+    destination.mkdir(exist_ok=True)
+    for path in destination.rglob("*"):
+        if not (source / path.relative_to(destination)).exists():
+            shutil.rmtree(path) if path.is_dir() and not path.is_symlink() else path.unlink(missing_ok=True)
+    for path in source.rglob("*"):
+        target = destination / path.relative_to(source)
+        if path.is_dir() and not path.is_symlink():
+            target.mkdir(exist_ok=True)
+        elif not target.exists() or target.read_bytes() != path.read_bytes():
+            shutil.copyfile(path, target, follow_symlinks=False)
+
+
 def sharded_stages(units, project_dir, out, recipe, args, finish):
     shards = shard_units(units, project_dir, recipe.shard_units)
     root = out / "shards"
-    if root.exists():
-        shutil.rmtree(root)
-    root.mkdir()
-    (out / "shards.json").write_text(json.dumps(
-        {name: [os.path.relpath(unit["file"], project_dir) for unit in shard] for name, shard in shards.items()},
-        indent=1) + "\n")
+    root.mkdir(exist_ok=True)
+    for stale in set(path.name for path in root.iterdir()) - set(shards):
+        shutil.rmtree(root / stale)
+    paths = {name: [os.path.relpath(unit["file"], project_dir) for unit in shard] for name, shard in shards.items()}
+    (out / "shards.json").write_text(json.dumps(paths, indent=1) + "\n")
     log(f"{len(shards)} shards, largest {max(map(len, shards.values()))} units")
     failed = {}
     total = 0
     for index, (name, shard) in enumerate(shards.items()):
         directory = root / name
-        directory.mkdir()
+        directory.mkdir(exist_ok=True)
+        staging = directory / "next"
+        if staging.exists():
+            shutil.rmtree(staging)
         commands = directory / "compile_commands.json"
         commands.write_text(json.dumps([{key: value for key, value in unit.items()
                                          if key not in ("native", "standalone")} for unit in shard], indent=1) + "\n")
@@ -1728,12 +1745,15 @@ def sharded_stages(units, project_dir, out, recipe, args, finish):
         crate_type = ["--crate-type", recipe.crate_type]
         while True:
             code, seconds = run([SLATE, "translate-project", *crate_type, "--compile-commands", commands,
-                                 project_dir, directory / "crate"], directory / "translate.log",
+                                 project_dir, staging / "crate"], directory / "translate.log",
                                 env=dict(os.environ, SLATE_NO_FORMAT="1"))
             total += seconds
             if not (code and crate_type and "defines main" in (directory / "translate.log").read_text(errors="replace")):
                 break
             crate_type = []
+        if not code:
+            sync_tree(staging / "crate", directory / "crate")
+        shutil.rmtree(staging, ignore_errors=True)
         if code:
             lines = (directory / "translate.log").read_text(errors="replace").splitlines()
             failed[name] = next((line for line in lines if "error" in line), lines[-1] if lines else str(code))
@@ -1770,7 +1790,13 @@ def sharded_stages(units, project_dir, out, recipe, args, finish):
     (out / "build.md").write_text("\n".join(report) + "\n")
     finish("build", "failed" if broken else "ok", errors=sum(count for count, _, _ in clusters.values()),
            failed=broken, report="build.md")
-    return 1 if broken else 0
+    if not recipe.relink_vmlinux or STAGES.index(args.until) < STAGES.index("link"):
+        return 1 if broken else 0
+    built = [name for name, code, _ in results if not code]
+    code, details = kernel_link.link_stage(paths, out, project_dir, args.mode, COMPILERS[args.mode], built,
+                                           args.profile, args.jobs)
+    finish("link", "failed" if code else "ok", **details)
+    return 1 if broken or code else 0
 
 
 def main():

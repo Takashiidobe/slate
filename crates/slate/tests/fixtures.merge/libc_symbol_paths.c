@@ -30,13 +30,19 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   libc_symbol_paths.c: [] 1 compiled
 // CHECK-NEXT: total: 6 compiles across 6 targets
-// CHECK-NEXT: unit libc_symbol_paths: 10 items, 1 gated, 0 duplicated functions
+// CHECK-NEXT: unit libc_symbol_paths: 11 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(target_os = "freebsd")]
+// CHECK-NEXT: core::arch::global_asm!(
+// CHECK-NEXT:     ".symver __qsort_r_compat, qsort_r@FBSD_1.0",
+// CHECK-NEXT:     options(att_syntax)
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: mod __slate_oldnames {
