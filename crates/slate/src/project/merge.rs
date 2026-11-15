@@ -490,10 +490,9 @@ fn stem_of(path: &Path) -> Result<String, String> {
 }
 
 fn defines_main(module: &Module) -> bool {
-    module
-        .functions
-        .iter()
-        .any(|function| function.name == "main" && function.body.is_some())
+    module.functions.iter().any(|function| {
+        crate::frontend::lowerer::program_entry(module, function) && function.body.is_some()
+    })
 }
 
 fn project_macro_outcomes(module: &Module, program: &Program) -> Arc<[MacroOutcome]> {

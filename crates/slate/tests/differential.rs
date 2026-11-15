@@ -711,6 +711,14 @@ fn translation_uses_builtin_frontend() {
 }
 
 fn translate_arch_mode_project(work: &str, units: &[(&str, &[&str])]) -> (PathBuf, Output) {
+    translate_arch_mode_project_with(work, units, &[])
+}
+
+fn translate_arch_mode_project_with(
+    work: &str,
+    units: &[(&str, &[&str])],
+    args: &[&str],
+) -> (PathBuf, Output) {
     let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.arch-mode");
     let crate_dir = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("target/difftest-generated/arch-mode")
@@ -731,7 +739,9 @@ fn translate_arch_mode_project(work: &str, units: &[(&str, &[&str])]) -> (PathBu
     std::fs::write(&commands, serde_json::to_vec(&entries).unwrap()).unwrap();
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
         .env("SLATE_SYSROOTS", slate_parser::sysroot::root())
-        .args(["translate-project", "--compile-commands"])
+        .arg("translate-project")
+        .args(args)
+        .arg("--compile-commands")
         .arg(&commands)
         .arg(&fixtures)
         .arg(crate_dir.join("crate"))
@@ -880,6 +890,46 @@ fn freestanding_projects_build_for_bare_metal_targets() {
             && stderr.contains("build for different targets")
             && stderr.contains("-Ccode-model=small"),
         "{stderr}"
+    );
+}
+
+#[test]
+fn freestanding_main_links_as_an_ordinary_symbol() {
+    let (crate_dir, output) = translate_arch_mode_project_with(
+        "freestanding-entry",
+        &[("freestanding_entry.c", KERNEL_FLAGS)],
+        &["--crate-type", "staticlib"],
+    );
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let build = cargo_in(&crate_dir, "build");
+    assert!(
+        build.status.success(),
+        "{}",
+        String::from_utf8_lossy(&build.stderr)
+    );
+    let archive = crate_dir.join("../cargo-target/x86_64-unknown-none/release/libslate_crate.a");
+    let link = std::process::Command::new("cc")
+        .args([
+            "-nostdlib",
+            "-static",
+            "-Wl,-e,main",
+            "-Wl,--gc-sections",
+            "-o",
+        ])
+        .arg(crate_dir.join("../entry"))
+        .arg(Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.arch-mode/seven.S"))
+        .arg(&archive)
+        .args(["-Wl,-u,main"])
+        .output()
+        .expect("run cc");
+    assert!(
+        link.status.success(),
+        "{}",
+        String::from_utf8_lossy(&link.stderr)
     );
 }
 

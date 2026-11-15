@@ -94,7 +94,7 @@ pub(super) fn name_overload_sets(
         let Some(name) = names.get_mut(&function.value.id) else {
             continue;
         };
-        let base = function_rust_name(function);
+        let base = function_rust_name(module, function);
         if name.rust == base {
             name.rust = unique_name(format!("{base}__{}", index + 1), &mut taken);
         }

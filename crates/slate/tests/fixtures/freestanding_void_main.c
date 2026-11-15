@@ -33,22 +33,13 @@ void main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn __slate_main() {
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: extern "C-unwind" fn main() {
 // CHECK-NEXT:     step(3i32);
 // CHECK-NEXT:     step(4i32);
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%d\n".as_ptr(), counter) };
 // CHECK-NEXT:     unsafe { fflush(slate_support::stdout()) };
 // CHECK-NEXT:     unsafe { exit((if counter == 7 { 0i32 } else { 1i32 }) as i32) };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: unsafe extern "C-unwind" fn main(
-// CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
-// CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     unsafe { __slate_main() };
-// CHECK-NEXT:     0i32
 // CHECK-NEXT: }
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

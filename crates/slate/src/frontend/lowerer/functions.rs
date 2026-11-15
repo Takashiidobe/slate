@@ -429,7 +429,8 @@ impl FunctionLowerer<'_, '_> {
             .or_else(|| self.tables.odr_symbols.get(&function.name).cloned())
             .or_else(|| function.symbol.asm_name.clone())
             .or_else(|| {
-                (function_rust_name(function) != function.name).then(|| function.name.clone())
+                (function_rust_name(self.tables.module, function) != function.name)
+                    .then(|| function.name.clone())
             })
             .map(Attr::LinkName)
             .into_iter()

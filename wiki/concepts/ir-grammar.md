@@ -95,7 +95,13 @@ storage_of = "bool" | "i8, u8" | "i16, u16" | "i32, u32" | "i64, u64"
 - `freestanding` marks a unit compiled with `-ffreestanding` or `-fno-hosted`
   (`Module.hosted` false, `__STDC_HOSTED__` 0). `nostdinc` marks a unit compiled
   with `-nostdinc` (`Module.nostdinc`): no system include directories, so no
-  system libc. Slate emits core-only Rust when either is set.
+  system libc. Slate emits core-only Rust when either is set. In a `freestanding`
+  unit `main` is not the program entry (C11 5.1.2.1): slate exports it as the C
+  symbol `main` with its own signature, with no `__slate_main` rename or
+  argc/argv shim, and a project of such units is a library, so `--crate-type`
+  applies. A `nostdinc`-only unit is still hosted and keeps the shim. A `no_std`
+  crate root also defines a weak `rust_eh_personality`, because calls through
+  `C-unwind` function pointers under `panic=abort` reference it.
 - `machine` lists the machine codegen flags the unit set explicitly
   (`Module.machine`, a `MachineCodegen`), in the order above, and is omitted when
   none is set: `-mcmodel=`, the last `-fpic`/`-fPIC`/`-fpie`/`-fPIE`/`-fno-*`

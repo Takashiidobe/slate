@@ -92,6 +92,7 @@ struct Tables<'m> {
     indirect_globals: HashSet<BindingId>,
     weak_address_globals: HashSet<BindingId>,
     target: &'m TargetInfo,
+    module: &'m ir::Module,
     unit_features: Vec<&'static str>,
     zero_init_padding_bits: slate_parser::compiler_options::ZeroInitPaddingBits,
     alloca_layout: ir::AllocaLayout,
@@ -308,16 +309,21 @@ fn asm_names(
     names
 }
 
-fn exports_symbol(options: &LowerOptions, function: &ir::Function) -> bool {
-    (options.export_symbols || function.symbol.include)
+pub fn program_entry(module: &ir::Module, function: &ir::Function) -> bool {
+    module.hosted && function.name == "main"
+}
+
+fn exports_symbol(options: &LowerOptions, module: &ir::Module, function: &ir::Function) -> bool {
+    let freestanding_main = !module.hosted && function.name == "main";
+    (options.export_symbols || function.symbol.include || freestanding_main)
         && matches!(function.linkage, ir::Linkage::External)
         && !function.semantics.inline_only
         && (!function.semantics.discardable || options.odr_symbols.contains_key(&function.name))
-        && function.name != "main"
+        && !program_entry(module, function)
 }
 
-pub(crate) fn function_rust_name(function: &ir::Function) -> String {
-    if function.name == "main" {
+pub(crate) fn function_rust_name(module: &ir::Module, function: &ir::Function) -> String {
+    if program_entry(module, function) {
         "__slate_main".into()
     } else {
         path_keyword_free(&function.name)
@@ -426,7 +432,7 @@ impl<'m> ModuleLowerer<'m> {
     fn lower_function_alias(&mut self, function: &ir::Function) {
         if function.body.is_some()
             || function.symbol.alias.is_none()
-            || !exports_symbol(self.options, function)
+            || !exports_symbol(self.options, self.module, function)
             || !matches!(
                 self.tables.target.os,
                 slate_parser::target_info::TargetOs::Linux
@@ -581,7 +587,7 @@ impl<'m> ModuleLowerer<'m> {
                 (
                     function.value.id,
                     FunctionName {
-                        rust: function_rust_name(function),
+                        rust: function_rust_name(module, function),
                         builtin: module.metadata.get(&function.id).and_then(|entries| {
                             entries.iter().find_map(|(key, value)| {
                                 (key == "c_builtin").then(|| value.clone())
@@ -609,7 +615,8 @@ impl<'m> ModuleLowerer<'m> {
                             ir::Parameters::Prototype { variadic, .. } => variadic,
                             ir::Parameters::Unprototyped => function.body.is_none(),
                         },
-                        exported: function.body.is_some() && exports_symbol(options, function),
+                        exported: function.body.is_some()
+                            && exports_symbol(options, module, function),
                         identity: if function.body.is_none() {
                             let provenance = &function.provenance;
                             let system_headers: Vec<&str> = provenance
@@ -712,6 +719,7 @@ impl<'m> ModuleLowerer<'m> {
             }
         }
         let mut tables = Tables {
+            module,
             support_functions: HashMap::new(),
             support_globals: HashMap::new(),
             names,
@@ -1121,7 +1129,7 @@ impl<'m> ModuleLowerer<'m> {
             } else {
                 self.lowerer().lower_function(function, body)
             };
-            let exported = exports_symbol(self.options, function);
+            let exported = exports_symbol(self.options, self.module, function);
             let lowered = match lowered {
                 Ok(Item::Fn(mut definition))
                     if !exported
@@ -1672,6 +1680,10 @@ impl<'m> ModuleLowerer<'m> {
                     main.return_type.is_none(),
                 ));
             }
+        } else if self.module.functions.iter().any(|function| {
+            !self.module.hosted && function.name == "main" && function.body.is_some()
+        }) {
+            features.push(rust::CrateAttr::NoMain);
         }
         items.splice(0..0, dependencies.macro_templates.into_values());
         items.insert(0, Item::CrateAttrs(features));

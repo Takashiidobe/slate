@@ -1226,10 +1226,10 @@ fn translate_slate_project(
     let roots: Vec<&str> = units
         .iter()
         .filter(|unit| {
-            unit.module
-                .functions
-                .iter()
-                .any(|function| function.name == "main" && function.body.is_some())
+            unit.module.functions.iter().any(|function| {
+                slate::frontend::lowerer::program_entry(&unit.module, function)
+                    && function.body.is_some()
+            })
         })
         .map(|unit| unit.stem.as_str())
         .collect();
@@ -1412,6 +1412,9 @@ fn write_project_crate(
             .iter()
             .all(|(_, program)| !program.runtime.has_std());
     let no_std = freestanding.then_some(rust_ast::CrateAttr::NoStd);
+    if freestanding {
+        rust_features.insert(rust_ast::Feature::Linkage);
+    }
     let panic_handler = freestanding.then(|| {
         let source = match programs
             .iter()
@@ -1428,13 +1431,13 @@ fn write_project_crate(
     });
     let children: Vec<rust_ast::Item> = children.into_iter().chain(panic_handler).collect();
     for (stem, mut program) in programs {
+        let is_root = root.as_ref() == Some(&stem);
         for item in &mut program.items {
             if let rust_ast::Item::CrateAttrs(attrs) = item {
-                attrs.retain(|attr| {
-                    !matches!(
-                        attr,
-                        rust_ast::CrateAttr::Feature(_) | rust_ast::CrateAttr::Allow(_)
-                    )
+                attrs.retain(|attr| match attr {
+                    rust_ast::CrateAttr::Feature(_) | rust_ast::CrateAttr::Allow(_) => false,
+                    rust_ast::CrateAttr::NoMain => is_root,
+                    _ => true,
                 });
             }
         }

@@ -131,7 +131,10 @@ pub fn mergeable_address_taken(units: &[Unit]) -> Vec<BTreeSet<String>> {
                 .any(|arity| count(&by_arity, arity) + count(&aggregate_by_arity, arity) > 1),
         };
         if mergeable {
-            protected[definition.unit].insert(super::lowerer::function_rust_name(function));
+            protected[definition.unit].insert(super::lowerer::function_rust_name(
+                units[definition.unit].module,
+                function,
+            ));
         }
     }
     protected
@@ -164,7 +167,7 @@ pub fn section_candidates(unit: &Unit) -> SectionCandidates {
         if function.body.is_none() || function.symbol.section.is_some() {
             continue;
         }
-        let name = super::lowerer::function_rust_name(function);
+        let name = super::lowerer::function_rust_name(unit.module, function);
         if external {
             candidates
                 .exported
