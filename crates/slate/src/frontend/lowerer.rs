@@ -429,16 +429,20 @@ impl<'m> ModuleLowerer<'m> {
         Ok(())
     }
 
+    fn elf_aliases(&self) -> bool {
+        matches!(
+            self.tables.target.os,
+            slate_parser::target_info::TargetOs::Linux
+                | slate_parser::target_info::TargetOs::Android
+                | slate_parser::target_info::TargetOs::FreeBsd
+        )
+    }
+
     fn lower_function_alias(&mut self, function: &ir::Function) {
         if function.body.is_some()
             || function.symbol.alias.is_none()
             || !exports_symbol(self.options, self.module, function)
-            || !matches!(
-                self.tables.target.os,
-                slate_parser::target_info::TargetOs::Linux
-                    | slate_parser::target_info::TargetOs::Android
-                    | slate_parser::target_info::TargetOs::FreeBsd
-            )
+            || !self.elf_aliases()
         {
             return;
         }
@@ -450,17 +454,32 @@ impl<'m> ModuleLowerer<'m> {
         else {
             return;
         };
-        let symbol = function
-            .symbol
+        let target = target.rust.clone();
+        self.push_alias(&function.name, &function.symbol, &target);
+    }
+
+    fn lower_global_alias(&mut self, global: &ir::Global) {
+        let exported = (self.options.export_symbols || global.symbol.include)
+            && matches!(global.linkage, ir::Linkage::External);
+        if !exported || !self.elf_aliases() {
+            return;
+        }
+        let Some(target) = alias_target(self.module, global)
+            .filter(|target| self.tables.statics.contains(&target.variable.id))
+        else {
+            return;
+        };
+        let target = binding_name(target.variable.id, &self.tables.bindings);
+        self.push_alias(&global.variable.name, &global.symbol, &target);
+    }
+
+    fn push_alias(&mut self, name: &str, attributes: &ir::SymbolAttributes, target: &str) {
+        let symbol = attributes
             .asm_name
             .clone()
-            .unwrap_or_else(|| function.name.clone());
-        let binding = if function.symbol.weak {
-            "weak"
-        } else {
-            "globl"
-        };
-        let visibility = match function.symbol.visibility {
+            .unwrap_or_else(|| name.to_owned());
+        let binding = if attributes.weak { "weak" } else { "globl" };
+        let visibility = match attributes.visibility {
             Some(ir::Visibility::Hidden | ir::Visibility::Internal) => {
                 format!("\n.hidden {symbol}")
             }
@@ -469,9 +488,7 @@ impl<'m> ModuleLowerer<'m> {
         };
         self.items.push(Item::GlobalAsm(rust::InlineAsm {
             template: format!(".{binding} {symbol}{visibility}\n.set {symbol}, {{}}"),
-            operands: vec![rust::AsmOperand::Sym(Expr::Var(
-                target.rust.as_str().into(),
-            ))],
+            operands: vec![rust::AsmOperand::Sym(Expr::Var(target.into()))],
             options: Vec::new(),
             kind: rust::AsmKind::Global,
         }));
@@ -1069,6 +1086,9 @@ impl<'m> ModuleLowerer<'m> {
                         .into_public(Some(&function.name), Site::of(function))?,
                 ),
             }
+        }
+        for global in &module.globals {
+            self.lower_global_alias(global);
         }
         for function in &module.functions {
             self.lower_function_alias(function);
