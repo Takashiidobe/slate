@@ -325,16 +325,16 @@ int main () {
 // DEFAULT-NEXT:     global %[[VALUE_pf9a:[0-9]+]] pf9a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Wf9a:[0-9]+]]) [c="ftype *"] [linkage=internal] [used] [c="ftype *"];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_fv7:[0-9]+]] @fv7() -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] [c="vtype *(void)"] {
+// DEFAULT-NEXT:     fn %[[VALUE_fv7:[0-9]+]] @fv7() -> ptr<i32> [linkage=internal] [used] [fallthrough=ub_if_used] [c="vtype *(void)"] {
 // DEFAULT-NEXT:         return addr_of<ptr<i32>>(%[[VALUE_Wv7a]]) [c="vtype *"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fv7a:[0-9]+]] @fv7a() -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] [c="vtype *(void)"] {
+// DEFAULT-NEXT:     fn %[[VALUE_fv7a:[0-9]+]] @fv7a() -> ptr<i32> [linkage=internal] [used] [fallthrough=ub_if_used] [c="vtype *(void)"] {
 // DEFAULT-NEXT:         return addr_of<ptr<i32>>(%[[VALUE_uv7]]) [c="vtype *"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fv8a:[0-9]+]] @fv8a() -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] [c="vtype *(void)"] {
+// DEFAULT-NEXT:     fn %[[VALUE_fv8a:[0-9]+]] @fv8a() -> ptr<i32> [linkage=internal] [used] [fallthrough=ub_if_used] [c="vtype *(void)"] {
 // DEFAULT-NEXT:         return addr_of<ptr<i32>>(%[[VALUE_uv8]]) [c="vtype *"];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_fv8:[0-9]+]] @fv8() -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] [c="vtype *(void)"] {
+// DEFAULT-NEXT:     fn %[[VALUE_fv8:[0-9]+]] @fv8() -> ptr<i32> [linkage=internal] [used] [fallthrough=ub_if_used] [c="vtype *(void)"] {
 // DEFAULT-NEXT:         return addr_of<ptr<i32>>(%[[VALUE_Wv8a]]) [c="vtype *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_wf1:[0-9]+]] @wf1() -> void [linkage=external] [c="ftype"];
@@ -353,19 +353,19 @@ int main () {
 // DEFAULT-NEXT:     fn %[[VALUE_Wf6a]] @Wf6a() -> void [linkage=internal] [weakref="wf6"] [c="ftype"];
 // DEFAULT-NEXT:     fn %[[VALUE_wf6:[0-9]+]] @wf6() -> void [linkage=external] [c="ftype"];
 // DEFAULT-NEXT:     fn %[[VALUE_Wf7a:[0-9]+]] @Wf7a() -> void [linkage=internal] [weakref="uf7"] [c="ftype"];
-// DEFAULT-NEXT:     fn %[[VALUE_ff7:[0-9]+]] @ff7() -> ptr<fn() -> void> [linkage=internal] [fallthrough=ub_if_used] [c="ftype *(void)"] {
+// DEFAULT-NEXT:     fn %[[VALUE_ff7:[0-9]+]] @ff7() -> ptr<fn() -> void> [linkage=internal] [used] [fallthrough=ub_if_used] [c="ftype *(void)"] {
 // DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_Wf7a]]) [c="ftype *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_uf7:[0-9]+]] @uf7() -> void [linkage=external] [c="ftype"];
-// DEFAULT-NEXT:     fn %[[VALUE_ff7a:[0-9]+]] @ff7a() -> ptr<fn() -> void> [linkage=internal] [fallthrough=ub_if_used] [c="ftype *(void)"] {
+// DEFAULT-NEXT:     fn %[[VALUE_ff7a:[0-9]+]] @ff7a() -> ptr<fn() -> void> [linkage=internal] [used] [fallthrough=ub_if_used] [c="ftype *(void)"] {
 // DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_uf7]]) [c="ftype *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_uf8:[0-9]+]] @uf8() -> void [linkage=external] [c="ftype"];
-// DEFAULT-NEXT:     fn %[[VALUE_ff8a:[0-9]+]] @ff8a() -> ptr<fn() -> void> [linkage=internal] [fallthrough=ub_if_used] [c="ftype *(void)"] {
+// DEFAULT-NEXT:     fn %[[VALUE_ff8a:[0-9]+]] @ff8a() -> ptr<fn() -> void> [linkage=internal] [used] [fallthrough=ub_if_used] [c="ftype *(void)"] {
 // DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_uf8]]) [c="ftype *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_Wf8a:[0-9]+]] @Wf8a() -> void [linkage=internal] [weakref="uf8"] [c="ftype"];
-// DEFAULT-NEXT:     fn %[[VALUE_ff8:[0-9]+]] @ff8() -> ptr<fn() -> void> [linkage=internal] [fallthrough=ub_if_used] [c="ftype *(void)"] {
+// DEFAULT-NEXT:     fn %[[VALUE_ff8:[0-9]+]] @ff8() -> ptr<fn() -> void> [linkage=internal] [used] [fallthrough=ub_if_used] [c="ftype *(void)"] {
 // DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_Wf8a]]) [c="ftype *"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_wf9:[0-9]+]] @wf9() -> void [linkage=external] [weak] [c="ftype"];

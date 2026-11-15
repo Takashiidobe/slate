@@ -1759,6 +1759,24 @@ impl Attribute {
             Self::VectorSize(_) | Self::ExtVectorType(_) | Self::NeonVectorType(_) | Self::Mode(_)
         )
     }
+
+    pub fn is_symbol_attribute(&self) -> bool {
+        matches!(
+            self,
+            Self::Visibility(_)
+                | Self::TlsModel(_)
+                | Self::Weak
+                | Self::Alias(_)
+                | Self::WeakRef(_)
+                | Self::Ifunc(_)
+                | Self::Section(_)
+                | Self::Used
+                | Self::Retain
+                | Self::DllImport
+                | Self::DllExport
+                | Self::SelectAny
+        )
+    }
 }
 
 impl TypeSpecifier {
@@ -1796,12 +1814,23 @@ impl DeclarationSpecifiers {
         declarator: &'a Declarator,
         trailing: &'a [Span<Attribute>],
     ) -> impl Iterator<Item = &'a Span<Attribute>> + Clone {
-        self.attributes.iter().chain(trailing).chain(
-            declarator
-                .grouped_attributes()
-                .into_iter()
-                .filter(|attribute| !matches!(attribute.value, Attribute::CallingConvention(_))),
-        )
+        self.attributes
+            .iter()
+            .chain(trailing)
+            .chain(
+                declarator
+                    .grouped_attributes()
+                    .into_iter()
+                    .filter(|attribute| {
+                        !matches!(attribute.value, Attribute::CallingConvention(_))
+                    }),
+            )
+            .chain(
+                declarator
+                    .pointer_attributes()
+                    .into_iter()
+                    .filter(|attribute| attribute.value.is_symbol_attribute()),
+            )
     }
 }
 
@@ -1890,6 +1919,21 @@ impl Declarator {
         let mut layer = Some(self);
         while let Some(declarator) = layer {
             if let Self::Attributed {
+                attributes: own, ..
+            } = declarator
+            {
+                attributes.extend(own);
+            }
+            layer = declarator.inner();
+        }
+        attributes
+    }
+
+    pub fn pointer_attributes(&self) -> Vec<&Span<Attribute>> {
+        let mut attributes = Vec::new();
+        let mut layer = Some(self);
+        while let Some(declarator) = layer {
+            if let Self::Pointer {
                 attributes: own, ..
             } = declarator
             {
