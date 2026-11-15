@@ -42,7 +42,18 @@ def shard_object(staticlib, native_objects, destination, build_dir, kernel_symbo
     keep.write_text("".join(f"{name}\n" for name in sorted(exported)))
     subprocess.run(["objcopy", f"--keep-global-symbols={keep}", "--remove-section=.eh_frame",
                     "--remove-section=.rela.eh_frame", str(destination)], check=True)
+    if probestack := unreferenced_probestack(destination):
+        subprocess.run(["objcopy", f"--remove-section={probestack}", str(destination)], check=True)
     return sorted(exported - defined_globals([destination]))
+
+
+def unreferenced_probestack(path):
+    sections = re.findall(r"\] (\.text\.\S*__rust_probestack)\s", output(["readelf", "-SW", str(path)]))
+    if len(sections) != 1:
+        return None
+    references = [line for line in output(["readelf", "-rW", str(path)]).splitlines()
+                  if "__rust_probestack" in line and not line.startswith("Relocation section")]
+    return None if references else sections[0]
 
 
 def make(build_dir, compiler, jobs, log):
