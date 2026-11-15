@@ -1678,7 +1678,7 @@ def shard_units(units, project_dir, limit):
 
 def rustc_error_cluster(line):
     message = line.split(": error", 1)[1] if ": error" in line else line
-    message = re.sub(r"`[^`]*`", "`_`", message)
+    message = re.sub(r"`[^`]*`|'[^']*'", lambda m: m[0][0] + "_" + m[0][0], message)
     return re.sub(r"\balloc\d+|0x[0-9a-f]+(\[noalloc\])?|-?\b\d+\b", "N", message).strip()
 
 
@@ -1720,17 +1720,17 @@ def sharded_stages(units, project_dir, out, recipe, args, finish):
                   translate_seconds=round(total, 1), report="translate.md"):
         return 1 if failed else 0
 
-    def check(name):
+    def build(name):
         directory = root / name
         env = dict(os.environ, CARGO_TARGET_DIR=str(directory / "cargo-target"))
-        code, _ = run(["cargo", "check", "--profile", args.profile, "--message-format=short"],
-                      directory / "check.log", cwd=directory / "crate", env=env)
-        errors = [line for line in (directory / "check.log").read_text(errors="replace").splitlines()
-                  if re.search(r": error(\[E\d+\])?:", line)]
+        code, _ = run(["cargo", "build", "--profile", args.profile, "--message-format=short"],
+                      directory / "build.log", cwd=directory / "crate", env=env)
+        errors = [line for line in (directory / "build.log").read_text(errors="replace").splitlines()
+                  if re.search(r"(: |^)error(\[E\d+\])?:", line) and not line.startswith("error: could not compile")]
         return name, code, errors
 
     with concurrent.futures.ThreadPoolExecutor(max(1, args.jobs // 4)) as pool:
-        results = list(pool.map(check, shards))
+        results = list(pool.map(build, shards))
     clusters = collections.defaultdict(lambda: [0, set(), ""])
     for name, _, errors in results:
         for line in errors:
@@ -1739,13 +1739,13 @@ def sharded_stages(units, project_dir, out, recipe, args, finish):
             cluster[1].add(name)
             cluster[2] = cluster[2] or line
     broken = sorted(name for name, code, _ in results if code)
-    report = [f"# check: {len(shards) - len(broken)}/{len(shards)} shards", "",
+    report = [f"# build: {len(shards) - len(broken)}/{len(shards)} shards", "",
               "| errors | shards | cluster | example |", "| --- | --- | --- | --- |"]
     report += [f"| {count} | {len(names)} | {cluster} | `{example}` |"
                for cluster, (count, names, example) in sorted(clusters.items(), key=lambda item: -item[1][0])]
-    (out / "check.md").write_text("\n".join(report) + "\n")
-    finish("check", "failed" if broken else "ok", errors=sum(count for count, _, _ in clusters.values()),
-           failed=broken, report="check.md")
+    (out / "build.md").write_text("\n".join(report) + "\n")
+    finish("build", "failed" if broken else "ok", errors=sum(count for count, _, _ in clusters.values()),
+           failed=broken, report="build.md")
     return 1 if broken else 0
 
 
