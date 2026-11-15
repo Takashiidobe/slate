@@ -496,6 +496,9 @@ impl FunctionLowerer<'_, '_> {
         }
         match place.kind {
             PlaceKind::Binding(id) if !tables.register_globals.contains_key(&id) => {
+                if tables.strings.contains_key(&id) {
+                    self.dependencies.string_statics.insert(id);
+                }
                 Ok(self.lower_binding(id))
             }
             PlaceKind::Deref(ref pointer) => {

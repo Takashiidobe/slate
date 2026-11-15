@@ -140,6 +140,7 @@ struct Dependencies {
     asm_goto_with_outputs: bool,
     arm_neon_asm: bool,
     asm_strings: BTreeMap<String, Item>,
+    string_statics: HashSet<BindingId>,
     libatomic: bool,
     libgomp: bool,
     slate_vector: bool,
@@ -1198,6 +1199,40 @@ impl<'m> ModuleLowerer<'m> {
                             format!("in function `{}`", function.name),
                         )
                         .into_public(Some(&function.name), Site::of(function))?,
+                ),
+            }
+        }
+        self.define_string_statics()
+    }
+
+    fn define_string_statics(&mut self) -> std::result::Result<(), InvalidIr> {
+        let module = self.module;
+        for global in &module.globals {
+            if !self
+                .dependencies
+                .string_statics
+                .contains(&global.variable.id)
+            {
+                continue;
+            }
+            match self.lowerer().lower_static(global) {
+                Ok((ty, Some(init))) => self.items.push(Item::Static {
+                    comments: Vec::new(),
+                    attrs: Vec::new(),
+                    vis: rust::Visibility::Private,
+                    mutable: true,
+                    name: binding_name(global.variable.id, &self.tables.bindings),
+                    ty,
+                    init,
+                }),
+                Ok((_, None)) => unreachable!("string literals always have an initializer"),
+                Err(error) => self.barriers.push(
+                    error
+                        .within(
+                            Site::of(global),
+                            format!("in global `{}`", global.variable.name),
+                        )
+                        .into_public(None, Site::of(global))?,
                 ),
             }
         }
