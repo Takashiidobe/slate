@@ -47,7 +47,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn make(seed: i32) -> block {
 // CHECK-NEXT:     let mut b: block = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: block = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: block = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0i32..64i32 {
@@ -58,10 +58,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn summed(count: i32, mut __va_args: ...) -> block {
 // CHECK-NEXT:     let mut b: block = {
-// CHECK-NEXT:         let mut [[T_0]]: block = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: block = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             core::ffi::VaList<'_>,
@@ -74,18 +74,18 @@ int main(void) {
 // CHECK-NEXT:     return b;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: block = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: block = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: block = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_3:__slate_compound_[0-9]+]]: block = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_4:__slate_compound_[0-9]+]]: block = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_5:__slate_compound_[0-9]+]]: block = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: block = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: block = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: block = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_3:__slate_compound_[0-9]+]]: block = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_4:__slate_compound_[0-9]+]]: block = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_5:__slate_compound_[0-9]+]]: block = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..4i32 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe {
 // CHECK-NEXT:             *((*{
 // CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = make(i);
-// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:             })
 // CHECK-NEXT:                 .a
 // CHECK-NEXT:                 .as_mut_ptr() as *mut i32)
@@ -99,7 +99,7 @@ int main(void) {
 // CHECK-NEXT:             c"%d %d %c\n".as_ptr(),
 // CHECK-NEXT:             *((*{
 // CHECK-NEXT:                 [[SLATE_COMPOUND_1]] = make(3i32);
-// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
 // CHECK-NEXT:             })
 // CHECK-NEXT:                 .a
 // CHECK-NEXT:                 .as_mut_ptr() as *mut i32)
@@ -107,18 +107,18 @@ int main(void) {
 // CHECK-NEXT:             total,
 // CHECK-NEXT:             *((*{
 // CHECK-NEXT:                 [[SLATE_COMPOUND_2]] = make(4i32);
-// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
 // CHECK-NEXT:             })
 // CHECK-NEXT:                 .tag
 // CHECK-NEXT:                 .as_mut_ptr() as *mut i8)
 // CHECK-NEXT:                 .add(0) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let __slate_printf_arg0 = unsafe {
 // CHECK-NEXT:         *((*{
 // CHECK-NEXT:             [[SLATE_COMPOUND_3]] = summed(3i32, 7i32, 8i32, 9i32);
-// CHECK-NEXT:             std::ptr::addr_of_mut!([[SLATE_COMPOUND_3]])
+// CHECK-NEXT:             core::ptr::addr_of_mut!([[SLATE_COMPOUND_3]])
 // CHECK-NEXT:         })
 // CHECK-NEXT:             .a
 // CHECK-NEXT:             .as_mut_ptr() as *mut i32)
@@ -129,13 +129,13 @@ int main(void) {
 // CHECK-NEXT:             [[SLATE_COMPOUND_5]] = make(
 // CHECK-NEXT:                 *((*{
 // CHECK-NEXT:                     [[SLATE_COMPOUND_4]] = make(2i32);
-// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_4]])
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_4]])
 // CHECK-NEXT:                 })
 // CHECK-NEXT:                     .a
 // CHECK-NEXT:                     .as_mut_ptr() as *mut i32)
 // CHECK-NEXT:                     .add(3),
 // CHECK-NEXT:             );
-// CHECK-NEXT:             std::ptr::addr_of_mut!([[SLATE_COMPOUND_5]])
+// CHECK-NEXT:             core::ptr::addr_of_mut!([[SLATE_COMPOUND_5]])
 // CHECK-NEXT:         })
 // CHECK-NEXT:             .a
 // CHECK-NEXT:             .as_mut_ptr() as *mut i32)
@@ -147,8 +147,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

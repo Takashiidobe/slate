@@ -60,8 +60,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
@@ -110,7 +110,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), SUM_OF!(i, j, 3i32)) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
@@ -128,10 +128,10 @@ int main(void) {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe { slate_support::printf(c"%s: ".as_ptr(), $tag) };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $($x),*) };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -151,7 +151,7 @@ int main(void) {
 // CHECK-NEXT:             if (unsafe { verbose }) > 1 {
 // CHECK-NEXT:                 let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:                 unsafe { slate_support::printf(($x__0) as *const c_char, $($x),*) };
-// CHECK-NEXT:                 unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:                 unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;

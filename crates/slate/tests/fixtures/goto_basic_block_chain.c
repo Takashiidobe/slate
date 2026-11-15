@@ -52,8 +52,8 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: static mut trace: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT: static mut saved: *mut i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut trace: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT: static mut saved: *mut i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn mark(digit: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         trace = trace * 10 + digit;
@@ -61,11 +61,11 @@ int main(void) {
 // CHECK-NEXT:     digit
 // CHECK-NEXT: }
 // CHECK-NEXT: fn run(skip: i32) -> i32 {
-// CHECK-NEXT:     let mut value: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut result: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut value: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         result = mark(1i32);
-// CHECK-NEXT:         saved = std::ptr::addr_of_mut!(result);
+// CHECK-NEXT:         saved = core::ptr::addr_of_mut!(result);
 // CHECK-NEXT:         if skip == 0 {
 // CHECK-NEXT:             value = mark(2i32);
 // CHECK-NEXT:         }
@@ -80,7 +80,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn straight_line() -> i32 {
-// CHECK-NEXT:     let mut result: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         result = mark(6i32);
 // CHECK-NEXT:         result += mark(7i32);
@@ -104,8 +104,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

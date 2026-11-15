@@ -46,15 +46,15 @@ int main(void) {
 // CHECK-NEXT:     if f.is_null() {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::puts(c"open-fail".as_ptr()) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::fputs(c"one\n".as_ptr(), f) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::fputs(c"two\n".as_ptr(), f) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { slate_support::fclose(f) };
 // CHECK-NEXT:     let g: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         slate_support::fopen(
@@ -65,13 +65,13 @@ int main(void) {
 // CHECK-NEXT:     if g.is_null() {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::puts(c"reopen-fail".as_ptr()) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut line: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     let mut count: i32 = 0;
 // CHECK-NEXT:     while !unsafe {
-// CHECK-NEXT:         fgets(line.0.as_mut_ptr() as *mut i8, std::mem::size_of::<[i8; 64]>() as i32, g)
+// CHECK-NEXT:         fgets(line.0.as_mut_ptr() as *mut i8, core::mem::size_of::<[i8; 64]>() as i32, g)
 // CHECK-NEXT:     }
 // CHECK-NEXT:         .is_null()
 // CHECK-NEXT:     {

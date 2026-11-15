@@ -30,7 +30,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut object: OverAligned = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: OverAligned = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: OverAligned = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].value = 7i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
@@ -39,21 +39,21 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %d %d\n".as_ptr(),
-// CHECK-NEXT:             std::mem::align_of::<OverAligned>() as u64,
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(object) as u64) % 32,
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(local.0) as u64) % 64,
+// CHECK-NEXT:             core::mem::align_of::<OverAligned>() as u64,
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(object) as u64) % 32,
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(local.0) as u64) % 64,
 // CHECK-NEXT:             object.value,
 // CHECK-NEXT:             local.0,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

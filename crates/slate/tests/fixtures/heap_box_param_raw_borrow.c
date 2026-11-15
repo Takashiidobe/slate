@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-NEXT:     let ctx: *mut __SlateRecord_heap_box_param_raw_borrow_c_7 = (unsafe {
 // CHECK-NEXT:         calloc(
 // CHECK-NEXT:             1u64 as usize,
-// CHECK-NEXT:             (std::mem::size_of::<__SlateRecord_heap_box_param_raw_borrow_c_7>() as u64)
+// CHECK-NEXT:             (core::mem::size_of::<__SlateRecord_heap_box_param_raw_borrow_c_7>() as u64)
 // CHECK-NEXT:                 as usize,
 // CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     }) as *mut __SlateRecord_heap_box_param_raw_borrow_c_7;
@@ -74,15 +74,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), (*ctx).size) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     destroy(unsafe { Box::from_raw(ctx) });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

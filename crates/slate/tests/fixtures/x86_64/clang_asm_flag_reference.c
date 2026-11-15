@@ -35,7 +35,7 @@ int main(void) {
 // CHECK-NEXT:             "cmpl {2:e}, {1:e}\nsetz {0}", out(reg_byte) [[T_0]], in (reg) flag as u32, in
 // CHECK-NEXT:             (reg) other as u32, options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         flag = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
@@ -46,7 +46,7 @@ int main(void) {
 // CHECK-NEXT:             "cmpl {2:e}, {1:e}\nsetg {0}", out(reg_byte) [[T_0]], in (reg) (flag as u64) as
 // CHECK-NEXT:             u32, in (reg) other as u64, options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         flag = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (flag != 0) as i32
 // CHECK-NEXT: }
@@ -58,7 +58,7 @@ int main(void) {
 // CHECK-NEXT:             "xorl {1:e}, {1:e}\nsetz {0}", lateout(reg_byte) [[T_0]], out(reg) _,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         flag = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
@@ -71,8 +71,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

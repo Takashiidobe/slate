@@ -78,7 +78,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let partial: __SlateAlign16<[i32; 5]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i32; 5] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i32; 5] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 1i32;
 // CHECK-NEXT:         [[T_0]][1] = 2i32;
 // CHECK-NEXT:         [[T_0]]
@@ -90,39 +90,39 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", sum);
 // CHECK-NEXT:     let mut seed: i32 = 9;
 // CHECK-NEXT:     let zero: Sample = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Sample = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Sample = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].id = 0i32;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let some: Sample = {
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: Sample = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: Sample = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]].id = 3i32;
-// CHECK-NEXT:         [[T_2]].target = std::ptr::addr_of_mut!(seed);
+// CHECK-NEXT:         [[T_2]].target = core::ptr::addr_of_mut!(seed);
 // CHECK-NEXT:         [[T_2]].data = {
-// CHECK-NEXT:             let mut [[T_3:__t[0-9]+]]: [i32; 4] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_3:__t[0-9]+]]: [i32; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_3]][2] = 5i32;
 // CHECK-NEXT:             [[T_3]]
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let full: Sample = {
-// CHECK-NEXT:         let mut [[T_4:__t[0-9]+]]: Sample = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_4:__t[0-9]+]]: Sample = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_4]].id = 4i32;
 // CHECK-NEXT:         [[T_4]].scale = 1.5f64;
-// CHECK-NEXT:         [[T_4]].target = std::ptr::addr_of_mut!(seed);
+// CHECK-NEXT:         [[T_4]].target = core::ptr::addr_of_mut!(seed);
 // CHECK-NEXT:         [[T_4]].data = [1i32, 2i32, 3i32, 4i32];
 // CHECK-NEXT:         [[T_4]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {} {}", checksum(zero), checksum(some), checksum(full));
 // CHECK-NEXT:     let cells: __SlateAlign16<[Cell; 4]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_5:__t[0-9]+]]: [Cell; 4] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_5:__t[0-9]+]]: [Cell; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_5]][1] = {
-// CHECK-NEXT:             let mut [[T_6:__t[0-9]+]]: Cell = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_6:__t[0-9]+]]: Cell = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_6]].value = 7i64;
 // CHECK-NEXT:             [[T_6]]
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_5]][3] = {
-// CHECK-NEXT:             let mut [[T_7:__t[0-9]+]]: Cell = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_7:__t[0-9]+]]: Cell = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_7]].tag = 122i8;
 // CHECK-NEXT:             [[T_7]]
 // CHECK-NEXT:         };
@@ -137,15 +137,15 @@ int main(void) {
 // CHECK-NEXT:                 cells.0[i as usize].value,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

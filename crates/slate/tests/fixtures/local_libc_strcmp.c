@@ -51,17 +51,17 @@ int main(void) {
 // CHECK-NEXT:     let mut y: [i8; 4] = [97, 98, 100, 0];
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}", cmp_texts(unsafe {
-// CHECK-NEXT:         std::str::from_utf8_unchecked(std::slice::from_raw_parts(x.as_ptr() as * const
+// CHECK-NEXT:         core::str::from_utf8_unchecked(core::slice::from_raw_parts(x.as_ptr() as * const
 // CHECK-NEXT:         u8, 3 as usize)) }, unsafe {
-// CHECK-NEXT:         std::str::from_utf8_unchecked(std::slice::from_raw_parts(y.as_ptr() as * const
+// CHECK-NEXT:         core::str::from_utf8_unchecked(core::slice::from_raw_parts(y.as_ptr() as * const
 // CHECK-NEXT:         u8, 3 as usize)) }), cmp_texts(unsafe {
-// CHECK-NEXT:         std::str::from_utf8_unchecked(std::slice::from_raw_parts(y.as_ptr() as * const
+// CHECK-NEXT:         core::str::from_utf8_unchecked(core::slice::from_raw_parts(y.as_ptr() as * const
 // CHECK-NEXT:         u8, 3 as usize)) }, unsafe {
-// CHECK-NEXT:         std::str::from_utf8_unchecked(std::slice::from_raw_parts(x.as_ptr() as * const
+// CHECK-NEXT:         core::str::from_utf8_unchecked(core::slice::from_raw_parts(x.as_ptr() as * const
 // CHECK-NEXT:         u8, 3 as usize)) }), cmp_texts(unsafe {
-// CHECK-NEXT:         std::str::from_utf8_unchecked(std::slice::from_raw_parts(x.as_ptr() as * const
+// CHECK-NEXT:         core::str::from_utf8_unchecked(core::slice::from_raw_parts(x.as_ptr() as * const
 // CHECK-NEXT:         u8, 3 as usize)) }, unsafe {
-// CHECK-NEXT:         std::str::from_utf8_unchecked(std::slice::from_raw_parts(x.as_ptr() as * const
+// CHECK-NEXT:         core::str::from_utf8_unchecked(core::slice::from_raw_parts(x.as_ptr() as * const
 // CHECK-NEXT:         u8, 3 as usize)) })
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
@@ -69,8 +69,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -67,10 +67,10 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn count_down(mut value: i32) -> i32 {
-// CHECK-NEXT:     let mut steps: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut steps: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         loop {
@@ -86,7 +86,7 @@ int main(void) {
 // CHECK-NEXT:                         "subs {0}, {0}, #1\n\tbne {1}", inlateout(reg) value as u32 =>
 // CHECK-NEXT:                         [[T_0]], label { __slate_state = 1usize; }, options(nostack)
 // CHECK-NEXT:                     );
-// CHECK-NEXT:                     value = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:                     value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 2 => {
@@ -100,7 +100,7 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{} {} {}", classify(- 5i32), classify(0i32), classify(7i32));
@@ -110,8 +110,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

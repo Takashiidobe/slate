@@ -57,9 +57,9 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut storage: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32; 4]);
 // CHECK-NEXT:     let mut buf: __SlateRecord_anon_local_struct_c_7 = __SlateRecord_anon_local_struct_c_7 {
-// CHECK-NEXT:         start: std::ptr::null_mut::<i32>(),
-// CHECK-NEXT:         end: std::ptr::null_mut::<i32>(),
-// CHECK-NEXT:         pointer: std::ptr::null_mut::<i32>(),
+// CHECK-NEXT:         start: core::ptr::null_mut::<i32>(),
+// CHECK-NEXT:         end: core::ptr::null_mut::<i32>(),
+// CHECK-NEXT:         pointer: core::ptr::null_mut::<i32>(),
 // CHECK-NEXT:     };
 // CHECK-NEXT:     buf.start = storage.0.as_mut_ptr() as *mut i32;
 // CHECK-NEXT:     buf.pointer = storage.0.as_mut_ptr() as *mut i32;
@@ -81,7 +81,7 @@ int main(void) {
 // CHECK-NEXT:             buf.pointer.offset_from(buf.start as *mut i32) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -89,14 +89,14 @@ int main(void) {
 // CHECK-NEXT:             buf.end.offset_from(buf.start as *mut i32) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

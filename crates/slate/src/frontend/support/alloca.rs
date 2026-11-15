@@ -1,6 +1,6 @@
 mod __slate_alloca {
     use std::alloc::{Layout, alloc, dealloc, handle_alloc_error};
-    use std::cell::UnsafeCell;
+    use core::cell::UnsafeCell;
 
     const ALIGN: usize = 16;
     const BLOCK: usize = 1 << 20;
@@ -96,7 +96,7 @@ mod __slate_alloca {
     }
 
     #[inline]
-    pub fn alloca(size: usize, align: usize) -> *mut std::ffi::c_void {
+    pub fn alloca(size: usize, align: usize) -> *mut core::ffi::c_void {
         STACK.with(|stack| unsafe { (*stack.get()).allocate(size, align.max(1).next_power_of_two()) }).cast()
     }
 }

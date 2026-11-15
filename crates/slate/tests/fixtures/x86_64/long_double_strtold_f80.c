@@ -23,11 +23,11 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut end: *mut i8 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut end: *mut i8 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let value: LongDouble = unsafe {
 // CHECK-NEXT:         __slate_strtold__rf80_pi8_ppi8(
 // CHECK-NEXT:             c"0x1.0000000000000002p0".as_ptr(),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(end),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(end),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dump80(c"strtold".as_ptr(), value);

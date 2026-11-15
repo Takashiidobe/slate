@@ -38,7 +38,7 @@ int main(void) {
 // CHECK-NEXT:             "xchgb {0:l}, {0:h}", inlateout(reg_abcd) x as u32 => [[T_0]], options(pure,
 // CHECK-NEXT:             nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         x = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
@@ -50,7 +50,7 @@ int main(void) {
 // CHECK-NEXT:             "movb {1:h}, {0:l}", lateout(reg) [[T_0]], in (reg_abcd) x as u32, options(pure,
 // CHECK-NEXT:             nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         out = unsafe { std::mem::transmute::<u8, u8>([[T_0]] as u8) };
+// CHECK-NEXT:         out = unsafe { core::mem::transmute::<u8, u8>([[T_0]] as u8) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out as u32
 // CHECK-NEXT: }
@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-NEXT:             as u32 => [[T_0]], in (reg_abcd) b as u32, options(pure, nomem, nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         a = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         a = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     a
 // CHECK-NEXT: }
@@ -80,15 +80,15 @@ int main(void) {
 // CHECK-NEXT:                 mix(values.0[i as usize], values.0[(3 - i) as usize]),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

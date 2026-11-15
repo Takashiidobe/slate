@@ -47,10 +47,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let values: *mut i32 = allocate(
-// CHECK-NEXT:         3u64.wrapping_mul(std::mem::size_of::<i32>() as u64),
-// CHECK-NEXT:         std::mem::align_of::<i32>() as u64,
+// CHECK-NEXT:         3u64.wrapping_mul(core::mem::size_of::<i32>() as u64),
+// CHECK-NEXT:         core::mem::align_of::<i32>() as u64,
 // CHECK-NEXT:     ) as *mut i32;
-// CHECK-NEXT:     let zeroed: *mut i32 = allocate_array(2u64, std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:     let zeroed: *mut i32 = allocate_array(2u64, core::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:         as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *values.add(0) = 7;
@@ -70,8 +70,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -125,10 +125,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
-// CHECK-NEXT:             this_mix(std::ptr::addr_of_mut!(self_), 6i64, 2.5f32),
+// CHECK-NEXT:             this_mix(core::ptr::addr_of_mut!(self_), 6i64, 2.5f32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{} {}", q.a, q.b);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}", fast_ints(1i32, 2u8, 3i32, 4i16), unsafe { ff.unwrap() (5i32, 6u8, 7i32,
@@ -140,19 +140,19 @@ int main(void) {
 // CHECK-NEXT:             fast_mix(0.5f64, 1i32, 1.25f32, 2i32, 3i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%lld\n".as_ptr(), fast_wide(1i32, 1099511627776i64))
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

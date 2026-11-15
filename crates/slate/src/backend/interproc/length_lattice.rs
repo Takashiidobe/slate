@@ -1398,7 +1398,7 @@ fn buffer_bridge(ptr: Expr, len: Expr, candidate: &SignatureCandidate) -> Expr {
         let bytes = Expr::Call {
             binding: CallBinding::Generated,
             func: Box::new(Expr::Path(Path::new(
-                ["std", "slice", "from_raw_parts"].map(Ident::from),
+                ["core", "slice", "from_raw_parts"].map(Ident::from),
             ))),
             args: vec![
                 Expr::Cast {
@@ -1419,7 +1419,7 @@ fn buffer_bridge(ptr: Expr, len: Expr, candidate: &SignatureCandidate) -> Expr {
             tail: Some(Box::new(Expr::Call {
                 binding: CallBinding::Generated,
                 func: Box::new(Expr::Path(Path::new(
-                    ["std", "str", "from_utf8_unchecked"].map(Ident::from),
+                    ["core", "str", "from_utf8_unchecked"].map(Ident::from),
                 ))),
                 args: vec![bytes],
             })),
@@ -1442,8 +1442,8 @@ fn buffer_bridge(ptr: Expr, len: Expr, candidate: &SignatureCandidate) -> Expr {
         ty: Type::Prim(Prim::Usize),
     };
     let (path, args) = match candidate.kind {
-        BufferKind::Shared => (vec!["std", "slice", "from_raw_parts"], vec![ptr, len]),
-        BufferKind::Mutable => (vec!["std", "slice", "from_raw_parts_mut"], vec![ptr, len]),
+        BufferKind::Shared => (vec!["core", "slice", "from_raw_parts"], vec![ptr, len]),
+        BufferKind::Mutable => (vec!["core", "slice", "from_raw_parts_mut"], vec![ptr, len]),
         BufferKind::Owned => (vec!["Vec", "from_raw_parts"], vec![ptr, len.clone(), len]),
         BufferKind::StringOwned => (
             vec!["String", "from_raw_parts"],
@@ -1930,7 +1930,7 @@ fn apply_view(f: &mut FnDef, ptr_name: &str, elem_ty: &Type, pairing: &Pairing) 
                 binding: CallBinding::Generated,
                 func: Box::new(Expr::Path(Path::new(
                     [
-                        "std",
+                        "core",
                         "slice",
                         if pairing.kind.mutable() {
                             "from_raw_parts_mut"
@@ -3032,7 +3032,7 @@ fn const_bridge(ptr: Expr, candidate: &ConstCandidate) -> Expr {
         tail: Some(Box::new(Expr::Call {
             binding: CallBinding::Generated,
             func: Box::new(Expr::Path(Path::new(
-                ["std", "slice", method].map(Ident::from),
+                ["core", "slice", method].map(Ident::from),
             ))),
             args: vec![ptr, len],
         })),
@@ -4124,7 +4124,7 @@ fn box_from_raw(ptr: Expr, elem_ty: &Type, count: &Expr) -> Expr {
     let slice = Expr::Call {
         binding: CallBinding::Generated,
         func: Box::new(Expr::Path(Path::new(
-            ["std", "slice", "from_raw_parts_mut"].map(Ident::from),
+            ["core", "slice", "from_raw_parts_mut"].map(Ident::from),
         ))),
         args: vec![raw, len],
     };

@@ -49,7 +49,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: static mut initializers: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut initializers: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn initialize() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         initializers = initializers + 1;
@@ -57,11 +57,11 @@ int main(void) {
 // CHECK-NEXT:     19
 // CHECK-NEXT: }
 // CHECK-NEXT: fn run(mode: i32) -> i32 {
-// CHECK-NEXT:     let mut value: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut i: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut steps: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut checks: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut sum: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut value: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut steps: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut checks: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut sum: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         sum = 0;
 // CHECK-NEXT:         checks = 0;
@@ -125,8 +125,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

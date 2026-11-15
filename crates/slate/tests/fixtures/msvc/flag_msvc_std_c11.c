@@ -47,7 +47,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     check(201112i32, 201112i32);
-// CHECK-NEXT:     check(std::mem::align_of::<aligned>() as i32, 16i32);
+// CHECK-NEXT:     check(core::mem::align_of::<aligned>() as i32, 16i32);
 // CHECK-NEXT:     check(1i32, 1i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
@@ -55,8 +55,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

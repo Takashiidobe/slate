@@ -84,8 +84,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {} {} {}", 5i32, unsafe { gnu_pragma_inner_macro }, unsafe {
-// CHECK-NEXT:         gnu_pragma_outer_macro }, std::mem::size_of::< GNUPragmaPacked > () as i32,
-// CHECK-NEXT:         std::mem::offset_of!(GNUPragmaPacked, value) as i32, gnu_pragma_hidden(37i32),
+// CHECK-NEXT:         gnu_pragma_outer_macro }, core::mem::size_of::< GNUPragmaPacked > () as i32,
+// CHECK-NEXT:         core::mem::offset_of!(GNUPragmaPacked, value) as i32, gnu_pragma_hidden(37i32),
 // CHECK-NEXT:         gnu_pragma_weak_target(), gnu_pragma_renamed() + gnu_pragma_diagnostic() +
 // CHECK-NEXT:         (packed.tag as i32) + (packed.value as i32)
 // CHECK-NEXT:     );
@@ -94,8 +94,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -31,7 +31,7 @@ fn is_call_to(expr: &Expr, path: &str) -> bool {
 
 fn slot_write(expr: &Expr, slot: Ident) -> Option<&Expr> {
     match expr {
-        Expr::Call { func, args, .. } if matches!(func.as_ref(), Expr::Var(v) if v.as_str() == "std::ptr::write") => {
+        Expr::Call { func, args, .. } if matches!(func.as_ref(), Expr::Var(v) if v.as_str() == "core::ptr::write") => {
             match &args[..] {
                 [target, value] if is_var(target, slot) => Some(value),
                 _ => None,
@@ -113,9 +113,9 @@ fn plan(arena: &FunctionOptimizer, id: NodeId) -> Option<Slot> {
     else {
         return None;
     };
-    if name.as_str() != "std::mem::MaybeUninit"
+    if name.as_str() != "core::mem::MaybeUninit"
         || !matches!(&args[..], [stored] if stored == inner.as_ref())
-        || !is_call_to(init, "std::mem::MaybeUninit::uninit")
+        || !is_call_to(init, "core::mem::MaybeUninit::uninit")
         || arena.def_use_neighbors(storage) != [id]
     {
         return None;
@@ -154,7 +154,7 @@ fn zeroed() -> Expr {
     Expr::Unsafe(Box::new(Block {
         stmts: Vec::new(),
         tail: Some(Box::new(Expr::Call {
-            func: Box::new(Expr::Var("std::mem::zeroed".into())),
+            func: Box::new(Expr::Var("core::mem::zeroed".into())),
             args: Vec::new(),
             binding: CallBinding::Generated,
         })),
@@ -162,7 +162,7 @@ fn zeroed() -> Expr {
 }
 
 fn is_zeroed(expr: &Expr) -> bool {
-    matches!(expr, Expr::Unsafe(block) if block.stmts.is_empty() && block.tail.as_deref().is_some_and(|tail| is_call_to(tail, "std::mem::zeroed")))
+    matches!(expr, Expr::Unsafe(block) if block.stmts.is_empty() && block.tail.as_deref().is_some_and(|tail| is_call_to(tail, "core::mem::zeroed")))
 }
 
 fn takes_address(expr: &Expr, name: Ident) -> bool {

@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:             d_name,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

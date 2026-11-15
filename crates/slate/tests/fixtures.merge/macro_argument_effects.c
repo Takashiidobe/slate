@@ -76,8 +76,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
@@ -87,14 +87,14 @@ int main(void) {
 // CHECK-NEXT:     let mut sequence: sequence = sequence {
 // CHECK-NEXT:         items: values.as_mut_ptr() as *mut i32,
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let seq: *mut sequence = std::ptr::addr_of_mut!(sequence);
+// CHECK-NEXT:     let seq: *mut sequence = core::ptr::addr_of_mut!(sequence);
 // CHECK-NEXT:     let mut state: cursor = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: cursor = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: cursor = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].index = 0i32;
 // CHECK-NEXT:         [[T_0]].items = values.as_mut_ptr() as *mut i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let it: *mut cursor = std::ptr::addr_of_mut!(state);
+// CHECK-NEXT:     let it: *mut cursor = core::ptr::addr_of_mut!(state);
 // CHECK-NEXT:     let mut first: c_long = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe { (*it).index };
 // CHECK-NEXT:     unsafe {
@@ -118,7 +118,7 @@ int main(void) {
 // CHECK-NEXT:             (*it).index,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

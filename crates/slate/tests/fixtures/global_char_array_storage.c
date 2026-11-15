@@ -72,15 +72,15 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%s %s %s %s %s %s\n".as_ptr(),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(greeting) as *mut i8,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(padded) as *mut i8,
-// CHECK-NEXT:             std::ptr::addr_of!(label) as *const i8,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(grid[0]) as *mut i8,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(grid[1]) as *mut i8,
+// CHECK-NEXT:             core::ptr::addr_of_mut!(greeting) as *mut i8,
+// CHECK-NEXT:             core::ptr::addr_of_mut!(padded) as *mut i8,
+// CHECK-NEXT:             core::ptr::addr_of!(label) as *const i8,
+// CHECK-NEXT:             core::ptr::addr_of_mut!(grid[0]) as *mut i8,
+// CHECK-NEXT:             core::ptr::addr_of_mut!(grid[1]) as *mut i8,
 // CHECK-NEXT:             local.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {}", (unsafe { padded[5] }) as i32, total(unsafe { words.0[1] }),
 // CHECK-NEXT:         total(unsafe { words.0[2] }), (unsafe { high[0] }) as i32, (unsafe { high[1] })
@@ -89,15 +89,15 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%s\n".as_ptr(), words.0[i as usize]) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     total((unsafe { std::ptr::addr_of_mut!(greeting) as *mut i8 }) as *const i8) % 256
+// CHECK-NEXT:     total((unsafe { core::ptr::addr_of_mut!(greeting) as *mut i8 }) as *const i8) % 256
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

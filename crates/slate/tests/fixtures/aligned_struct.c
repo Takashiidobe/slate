@@ -71,62 +71,62 @@ int main(void) {
 // CHECK-NEXT:     9
 // CHECK-NEXT: }
 // CHECK-NEXT: fn effectful_case() -> i32 {
-// CHECK-NEXT:     let mut effectful: Aligned = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut effectful: Aligned = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     effectful.a = next_value() as i8;
 // CHECK-NEXT:     effectful.b = 7;
 // CHECK-NEXT:     (effectful.a as i32) + effectful.b
 // CHECK-NEXT: }
 // CHECK-NEXT: fn repeated_case() -> i32 {
-// CHECK-NEXT:     let mut repeated: Aligned = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut repeated: Aligned = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     repeated.a = 1;
 // CHECK-NEXT:     repeated.a = 2;
 // CHECK-NEXT:     repeated.b = 3;
 // CHECK-NEXT:     (repeated.a as i32) + repeated.b
 // CHECK-NEXT: }
 // CHECK-NEXT: fn dependent_case() -> i32 {
-// CHECK-NEXT:     let mut dependent: Aligned = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut dependent: Aligned = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     dependent.b = 8;
 // CHECK-NEXT:     dependent.a = dependent.b as i8;
 // CHECK-NEXT:     (dependent.a as i32) + dependent.b
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut counter: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut counter: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn touch() {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         counter = counter + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn interrupted_case() -> i32 {
-// CHECK-NEXT:     let mut interrupted: Aligned = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut interrupted: Aligned = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     interrupted.a = 4;
 // CHECK-NEXT:     touch();
 // CHECK-NEXT:     interrupted.b = 6;
 // CHECK-NEXT:     (interrupted.a as i32) + interrupted.b + unsafe { counter }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut s: Aligned = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut s: Aligned = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     s.a = 5;
 // CHECK-NEXT:     s.b = 4660;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu\n".as_ptr(),
-// CHECK-NEXT:             std::mem::size_of::<Aligned>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<Aligned>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<Aligned>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<Aligned>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu\n".as_ptr(),
-// CHECK-NEXT:             std::mem::offset_of!(Aligned, a) as u64,
-// CHECK-NEXT:             std::mem::offset_of!(Aligned, b) as u64,
+// CHECK-NEXT:             core::mem::offset_of!(Aligned, a) as u64,
+// CHECK-NEXT:             core::mem::offset_of!(Aligned, b) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%d %x\n".as_ptr(), s.a as i32, s.b) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}", effectful_case(), repeated_case(), dependent_case(),
 // CHECK-NEXT:         interrupted_case()
@@ -136,8 +136,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

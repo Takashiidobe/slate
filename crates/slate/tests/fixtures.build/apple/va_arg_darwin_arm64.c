@@ -93,69 +93,70 @@ long sum(int count, ...) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_int(mut ap: *mut i8) -> i32 {
-// CHECK-NEXT:     unsafe { __slate_darwin_arm64_va::arg::<_, i32>(std::ptr::addr_of_mut!(ap)) }
+// CHECK-NEXT:     unsafe { __slate_darwin_arm64_va::arg::<_, i32>(core::ptr::addr_of_mut!(ap)) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_char(mut ap: *mut i8) -> i8 {
-// CHECK-NEXT:     (unsafe { __slate_darwin_arm64_va::arg::<_, i32>(std::ptr::addr_of_mut!(ap)) }) as i8
+// CHECK-NEXT:     (unsafe { __slate_darwin_arm64_va::arg::<_, i32>(core::ptr::addr_of_mut!(ap)) }) as i8
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_double(mut ap: *mut i8) -> f64 {
-// CHECK-NEXT:     unsafe { __slate_darwin_arm64_va::arg::<_, f64>(std::ptr::addr_of_mut!(ap)) }
+// CHECK-NEXT:     unsafe { __slate_darwin_arm64_va::arg::<_, f64>(core::ptr::addr_of_mut!(ap)) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_long_double(mut ap: *mut i8) -> f64 {
-// CHECK-NEXT:     unsafe { __slate_darwin_arm64_va::arg::<_, f64>(std::ptr::addr_of_mut!(ap)) }
+// CHECK-NEXT:     unsafe { __slate_darwin_arm64_va::arg::<_, f64>(core::ptr::addr_of_mut!(ap)) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_pointer(mut ap: *mut i8) -> *mut i8 {
-// CHECK-NEXT:     unsafe { __slate_darwin_arm64_va::arg::<_, *mut i8>(std::ptr::addr_of_mut!(ap)) }
+// CHECK-NEXT:     unsafe { __slate_darwin_arm64_va::arg::<_, *mut i8>(core::ptr::addr_of_mut!(ap)) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_int128(mut ap: *mut i8) -> i128 {
-// CHECK-NEXT:     unsafe { __slate_darwin_arm64_va::arg::<_, i128>(std::ptr::addr_of_mut!(ap)) }
+// CHECK-NEXT:     unsafe { __slate_darwin_arm64_va::arg::<_, i128>(core::ptr::addr_of_mut!(ap)) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_small(mut ap: *mut i8) -> small {
-// CHECK-NEXT:     return unsafe { __slate_darwin_arm64_va::arg::<_, small>(std::ptr::addr_of_mut!(ap)) };
+// CHECK-NEXT:     return unsafe { __slate_darwin_arm64_va::arg::<_, small>(core::ptr::addr_of_mut!(ap)) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_big(mut ap: *mut i8) -> big {
-// CHECK-NEXT:     return unsafe { __slate_darwin_arm64_va::indirect::<_, big>(std::ptr::addr_of_mut!(ap)) };
+// CHECK-NEXT:     return unsafe { __slate_darwin_arm64_va::indirect::<_, big>(core::ptr::addr_of_mut!(ap)) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_hfa(mut ap: *mut i8) -> hfa {
-// CHECK-NEXT:     return unsafe { __slate_darwin_arm64_va::arg::<_, hfa>(std::ptr::addr_of_mut!(ap)) };
+// CHECK-NEXT:     return unsafe { __slate_darwin_arm64_va::arg::<_, hfa>(core::ptr::addr_of_mut!(ap)) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_quad(mut ap: *mut i8) -> quad {
-// CHECK-NEXT:     return unsafe { __slate_darwin_arm64_va::arg::<_, quad>(std::ptr::addr_of_mut!(ap)) };
+// CHECK-NEXT:     return unsafe { __slate_darwin_arm64_va::arg::<_, quad>(core::ptr::addr_of_mut!(ap)) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_wide(mut ap: *mut i8) -> wide {
-// CHECK-NEXT:     return unsafe { __slate_darwin_arm64_va::arg::<_, wide>(std::ptr::addr_of_mut!(ap)) };
+// CHECK-NEXT:     return unsafe { __slate_darwin_arm64_va::arg::<_, wide>(core::ptr::addr_of_mut!(ap)) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum(count: i32, mut __va_args: ...) -> i64 {
-// CHECK-NEXT:     let mut ap: *mut i8 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ap: *mut i8 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe { core::mem::transmute::<core::ffi::VaList<'_>, *mut i8>(__va_args.clone()) };
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = take_int(ap);
 // CHECK-NEXT:         total += [[V_0]] as i64;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let b: big = unsafe { __slate_darwin_arm64_va::indirect::<_, big>(std::ptr::addr_of_mut!(ap)) };
+// CHECK-NEXT:     let b: big =
+// CHECK-NEXT:         unsafe { __slate_darwin_arm64_va::indirect::<_, big>(core::ptr::addr_of_mut!(ap)) };
 // CHECK-NEXT:     total + b.a + b.c
 // CHECK-NEXT: }
 // CHECK-NOT: {{.}}

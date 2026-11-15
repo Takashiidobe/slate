@@ -80,23 +80,23 @@ int main(void) {
 // CHECK-NEXT:     let mut first: [i8; 7] = [104, 101, 108, 108, 111, 32, 0];
 // CHECK-NEXT:     let mut second: [i8; 6] = [119, 111, 114, 108, 100, 0];
 // CHECK-NEXT:     let mut out: __SlateAlign16<[slate_support::iovec; 2]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:         std::mem::zeroed()
+// CHECK-NEXT:         core::mem::zeroed()
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut r#in: __SlateAlign16<[slate_support::iovec; 2]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:         std::mem::zeroed()
+// CHECK-NEXT:         core::mem::zeroed()
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut a: [i8; 8] = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 8] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 8] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut b: [i8; 8] = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [i8; 8] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [i8; 8] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]][0] = 0i8;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut send_message: slate_support::msghdr = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut receive_message: slate_support::msghdr = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut send_message: slate_support::msghdr = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut receive_message: slate_support::msghdr = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut pair: [i32; 2] = [0i32; 2];
 // CHECK-NEXT:     out.0[0].iov_base = (first.as_mut_ptr() as *mut ()) as _;
 // CHECK-NEXT:     out.0[0].iov_len = (unsafe {
@@ -122,11 +122,11 @@ int main(void) {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             ((std::ptr::addr_of_mut!(send_message) as *mut ()) as *mut core::ffi::c_void)
-// CHECK-NEXT:                 as *mut u8,
+// CHECK-NEXT:         core::ptr::write_bytes(
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(send_message) as *mut ())
+// CHECK-NEXT:                 as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (0i32 as i32) as u8,
-// CHECK-NEXT:             ((std::mem::size_of::<slate_support::msghdr>() as u64) as usize) as usize,
+// CHECK-NEXT:             ((core::mem::size_of::<slate_support::msghdr>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     send_message.msg_iov = out.0.as_mut_ptr() as *mut slate_support::iovec;
@@ -134,7 +134,7 @@ int main(void) {
 // CHECK-NEXT:     if (unsafe {
 // CHECK-NEXT:         sendmsg(
 // CHECK-NEXT:             pair[0] as i32,
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(send_message) as *const slate_support::msghdr)
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(send_message) as *const slate_support::msghdr)
 // CHECK-NEXT:                 as *const slate_support::msghdr,
 // CHECK-NEXT:             0i32 as i32,
 // CHECK-NEXT:         ) as i64
@@ -143,11 +143,11 @@ int main(void) {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             ((std::ptr::addr_of_mut!(receive_message) as *mut ())
+// CHECK-NEXT:         core::ptr::write_bytes(
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(receive_message) as *mut ())
 // CHECK-NEXT:                 as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (0i32 as i32) as u8,
-// CHECK-NEXT:             ((std::mem::size_of::<slate_support::msghdr>() as u64) as usize) as usize,
+// CHECK-NEXT:             ((core::mem::size_of::<slate_support::msghdr>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     receive_message.msg_iov = r#in.0.as_mut_ptr() as *mut slate_support::iovec;
@@ -155,7 +155,7 @@ int main(void) {
 // CHECK-NEXT:     if (unsafe {
 // CHECK-NEXT:         recvmsg(
 // CHECK-NEXT:             pair[1] as i32,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(receive_message) as *mut slate_support::msghdr,
+// CHECK-NEXT:             core::ptr::addr_of_mut!(receive_message) as *mut slate_support::msghdr,
 // CHECK-NEXT:             0i32 as i32,
 // CHECK-NEXT:         ) as i64
 // CHECK-NEXT:     }) != 11
@@ -173,7 +173,7 @@ int main(void) {
 // CHECK-NEXT:             (receive_message.msg_iovlen as u64) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { close(pair[0] as i32) as i32 };
 // CHECK-NEXT:     unsafe { close(pair[1] as i32) as i32 };
 // CHECK-NEXT:     0
@@ -181,8 +181,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

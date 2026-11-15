@@ -112,7 +112,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: mod __slate_alloca {
 // CHECK-NEXT:     use std::alloc::{Layout, alloc, dealloc, handle_alloc_error};
-// CHECK-NEXT:     use std::cell::UnsafeCell;
+// CHECK-NEXT:     use core::cell::UnsafeCell;
 // CHECK-NEXT:     const ALIGN: usize = 16;
 // CHECK-NEXT:     const BLOCK: usize = 1 << 20;
 // CHECK-NEXT:     struct Block {
@@ -207,7 +207,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[inline]
-// CHECK-NEXT:     pub fn alloca(size: usize, align: usize) -> *mut std::ffi::c_void {
+// CHECK-NEXT:     pub fn alloca(size: usize, align: usize) -> *mut core::ffi::c_void {
 // CHECK-NEXT:         STACK
 // CHECK-NEXT:             .with(|stack| unsafe {
 // CHECK-NEXT:                 (*stack.get()).allocate(size, align.max(1).next_power_of_two())
@@ -376,7 +376,7 @@ int main(void) {
 // CHECK-NEXT:         += !unsafe {
 // CHECK-NEXT:             getcwd(
 // CHECK-NEXT:                 (current.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
-// CHECK-NEXT:                 (std::mem::size_of::<[i8; 4096]>() as u64) as usize,
+// CHECK-NEXT:                 (core::mem::size_of::<[i8; 4096]>() as u64) as usize,
 // CHECK-NEXT:             ) as *mut i8
 // CHECK-NEXT:         }
 // CHECK-NEXT:             .is_null() as i32;
@@ -408,7 +408,7 @@ int main(void) {
 // CHECK-NEXT:             as *mut i8;
 // CHECK-NEXT:         [[V_2]] = (unsafe {
 // CHECK-NEXT:             ({
-// CHECK-NEXT:                 std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:                 core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:                     ((__old as *const ()) as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:                     ((__new as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:                     (__len as usize) as usize,
@@ -434,7 +434,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_3]] = (unsafe {
 // CHECK-NEXT:         ({
-// CHECK-NEXT:             std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:             core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:                 ((__old as *const ()) as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:                 ((__new as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:                 (__len as usize) as usize,
@@ -453,11 +453,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_time_extensions() -> i32 {
 // CHECK-NEXT:     let mut epoch: slate_support::tm = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: slate_support::tm = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: slate_support::tm = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut local: slate_support::tm = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: slate_support::tm = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: slate_support::tm = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut timestamp: i64 = 0;
@@ -466,23 +466,24 @@ int main(void) {
 // CHECK-NEXT:     epoch.tm_mon = 0;
 // CHECK-NEXT:     epoch.tm_mday = 1;
 // CHECK-NEXT:     timestamp = unsafe {
-// CHECK-NEXT:         timegm(std::ptr::addr_of_mut!(epoch) as *mut slate_support::tm) as i64
+// CHECK-NEXT:         timegm(core::ptr::addr_of_mut!(epoch) as *mut slate_support::tm) as i64
 // CHECK-NEXT:     };
 // CHECK-NEXT:     total += (timestamp == 0) as i32;
 // CHECK-NEXT:     local.tm_year = 70;
 // CHECK-NEXT:     local.tm_mon = 0;
 // CHECK-NEXT:     local.tm_mday = 2;
-// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = ((unsafe { timelocal(std::ptr::addr_of_mut!(local)) }) != -1) as i32;
+// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = ((unsafe { timelocal(core::ptr::addr_of_mut!(local)) }) != -1)
+// CHECK-NEXT:         as i32;
 // CHECK-NEXT:     total += [[V_5]];
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_pattern_extensions() -> i32 {
 // CHECK-NEXT:     let mut expression: re_pattern_buffer = {
-// CHECK-NEXT:         let mut [[T_0]]: re_pattern_buffer = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: re_pattern_buffer = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut paths: __SlateRecord_glob_h_105 = {
-// CHECK-NEXT:         let mut [[T_1]]: __SlateRecord_glob_h_105 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1]]: __SlateRecord_glob_h_105 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
@@ -499,28 +500,28 @@ int main(void) {
 // CHECK-NEXT:         re_compile_pattern(
 // CHECK-NEXT:             c"sl(a|e)te".as_ptr(),
 // CHECK-NEXT:             9u64,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(expression),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(expression),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_7]] + (error.is_null() as i32);
 // CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         re_match(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(expression),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(expression),
 // CHECK-NEXT:             c"slate".as_ptr(),
 // CHECK-NEXT:             5i32,
 // CHECK-NEXT:             0i32,
-// CHECK-NEXT:             std::ptr::null_mut::<re_registers>(),
+// CHECK-NEXT:             core::ptr::null_mut::<re_registers>(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 5) as i32;
 // CHECK-NEXT:     total += [[V_8]];
-// CHECK-NEXT:     unsafe { regfree(std::ptr::addr_of_mut!(expression)) };
+// CHECK-NEXT:     unsafe { regfree(core::ptr::addr_of_mut!(expression)) };
 // CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         glob(
 // CHECK-NEXT:             c"/dev/{null,zero}".as_ptr(),
 // CHECK-NEXT:             slate_support::GLOB_BRACE as i32,
 // CHECK-NEXT:             None,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(paths),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(paths),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_9]];
@@ -541,7 +542,7 @@ int main(void) {
 // CHECK-NEXT:                 c"/dev/zero".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         }) == 0) as i32);
-// CHECK-NEXT:     unsafe { globfree(std::ptr::addr_of_mut!(paths)) };
+// CHECK-NEXT:     unsafe { globfree(core::ptr::addr_of_mut!(paths)) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.gnu_runtime_extensions")]
@@ -549,7 +550,7 @@ int main(void) {
 // CHECK-NEXT:     let mut random_bytes: [u8; 8] = [0u8; 8];
 // CHECK-NEXT:     let mut frames: __SlateAlign16<[*mut (); 8]> = __SlateAlign16([0 as *mut (); 8]);
 // CHECK-NEXT:     let mut information: __SlateRecord_dlfcn_h_94 = {
-// CHECK-NEXT:         let mut [[T_0]]: __SlateRecord_dlfcn_h_94 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: __SlateRecord_dlfcn_h_94 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let page_size: i64 = unsafe {
@@ -564,7 +565,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         getentropy(
 // CHECK-NEXT:             (random_bytes.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void,
-// CHECK-NEXT:             (std::mem::size_of::<[u8; 8]>() as u64) as usize,
+// CHECK-NEXT:             (core::mem::size_of::<[u8; 8]>() as u64) as usize,
 // CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_12]];
@@ -580,12 +581,12 @@ int main(void) {
 // CHECK-NEXT:     let [[V_4]]: i32 = ((unsafe {
 // CHECK-NEXT:         dladdr(
 // CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 std::mem::transmute::<
+// CHECK-NEXT:                 core::mem::transmute::<
 // CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn() -> i32>,
 // CHECK-NEXT:                     *mut (),
 // CHECK-NEXT:                 >(Some(gnu_runtime_extensions))
 // CHECK-NEXT:             }) as *const (),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(information),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(information),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) != 0) as i32;
 // CHECK-NEXT:     total += [[V_4]];
@@ -609,8 +610,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

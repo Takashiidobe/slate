@@ -152,12 +152,12 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT:     let r#mod: i32 = 7;
 // CHECK-NEXT:     let keywords: i32 = r#type + r#match * r#loop + r#ref * r#fn + r#impl - r#mod;
 // CHECK-NEXT:     let mut filled: i32 = 0;
-// CHECK-NEXT:     fill(unsafe { &mut (*std::ptr::addr_of_mut!(filled)) }, 77i32);
+// CHECK-NEXT:     fill(unsafe { &mut (*core::ptr::addr_of_mut!(filled)) }, 77i32);
 // CHECK-NEXT:     let mut a: i64 = 0;
 // CHECK-NEXT:     let mut b: i64 = 0;
 // CHECK-NEXT:     fill_pair(
-// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(a)) },
-// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(b)) },
+// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(a)) },
+// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(b)) },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let chosen: i32 = if x > 0 { 10 } else { 20 };
 // CHECK-NEXT:     let mut sum: i32 = 0;
@@ -177,7 +177,7 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%d %ld %ld %d %d\n".as_ptr(), filled, a, b, chosen, sum)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     total__0 + x & 63
 // CHECK-NEXT: }
 // CHECK-NEXT: fn read_static_total() -> i32 {
@@ -186,8 +186,8 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

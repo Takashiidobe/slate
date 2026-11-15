@@ -81,8 +81,8 @@ int main(void) {
 // CHECK-NEXT:             inlateout(reg) steps as u32 => [[T_0]], inlateout(reg) value as u32 => [[T_1]],
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         steps = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
-// CHECK-NEXT:         value = unsafe { std::mem::transmute::<u32, i32>([[T_1]] as u32) };
+// CHECK-NEXT:         steps = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     steps
 // CHECK-NEXT: }
@@ -93,7 +93,7 @@ int main(void) {
 // CHECK-NEXT:             "cmpl $10, {0:e}\n\tjbe 2f\n\tmovl $10, {0:e}\n2:", inlateout(reg) value as
 // CHECK-NEXT:             u32 => [[T_0]], options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         value = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
@@ -106,14 +106,14 @@ int main(void) {
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
 // CHECK-NEXT: fn first_char() -> i32 {
-// CHECK-NEXT:     let mut text: *const i8 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut text: *const i8 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             ".pushsection .rodata\n2: .asciz \"slate\"\n.popsection\n\tleaq 2b(%rip), {0:r}",
 // CHECK-NEXT:             lateout(reg) [[T_0]], options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         text = unsafe { std::mem::transmute::<u64, *const i8>([[T_0]] as u64) };
+// CHECK-NEXT:         text = unsafe { core::mem::transmute::<u64, *const i8>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     ((unsafe { *text.add(0) }) as i32) + ((unsafe { *text.add(4) }) as i32)
 // CHECK-NEXT: }
@@ -125,7 +125,7 @@ int main(void) {
 // CHECK-NEXT:             inlateout(reg) value as u32 => [[T_0]], options(pure, nomem, nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         value = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
@@ -142,14 +142,14 @@ int main(void) {
 // CHECK-NEXT:             with_own_label(500i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

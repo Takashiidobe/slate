@@ -292,7 +292,7 @@ int main(void) {
 // CHECK-NEXT:             (*(m as *mut Mixed)).__slate_bits_1.__get_small() as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -304,15 +304,19 @@ int main(void) {
 // CHECK-NEXT:                 .to_u128() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut s: __SlateAlign16<[S156; 6]> = __SlateAlign16(unsafe { std::mem::zeroed() });
-// CHECK-NEXT:     let mut t: __SlateAlign16<[T156; 6]> = __SlateAlign16(unsafe { std::mem::zeroed() });
+// CHECK-NEXT:     let mut s: __SlateAlign16<[S156; 6]> = __SlateAlign16(unsafe {
+// CHECK-NEXT:         core::mem::zeroed()
+// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut t: __SlateAlign16<[T156; 6]> = __SlateAlign16(unsafe {
+// CHECK-NEXT:         core::mem::zeroed()
+// CHECK-NEXT:     });
 // CHECK-NEXT:     let mut r: __SlateAlign16<[T156; 5]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0]]: [T156; 5] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: [T156; 5] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = {
-// CHECK-NEXT:             let mut [[T_1]]: T156 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_1]]: T156 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]].__slate_bits_0
 // CHECK-NEXT:                 .__set_a(<bitint::BInt<156, 3, 24, bitint::A8>>::from_i128(0 as i128));
 // CHECK-NEXT:             [[T_1]]
@@ -396,10 +400,10 @@ int main(void) {
 // CHECK-NEXT:                     as u64,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut m: Mixed = {
-// CHECK-NEXT:         let mut [[T_7:__t[0-9]+]]: Mixed = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_7:__t[0-9]+]]: Mixed = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_7]].__slate_bits_0.__set_tag(0i32);
 // CHECK-NEXT:         [[T_7]]
 // CHECK-NEXT:     };
@@ -437,7 +441,7 @@ int main(void) {
 // CHECK-NEXT:     m.__slate_bits_0.__set_top([[V_3]]);
 // CHECK-NEXT:     let [[T_10:__t[0-9]+]] = -50i8;
 // CHECK-NEXT:     m.__slate_bits_1.__set_small([[T_10]]);
-// CHECK-NEXT:     dump(unsafe { &mut (*std::ptr::addr_of_mut!(m)) });
+// CHECK-NEXT:     dump(unsafe { &mut (*core::ptr::addr_of_mut!(m)) });
 // CHECK-NEXT:     let mut copy: Mixed = m;
 // CHECK-NEXT:     let mut [[V_4:__v[0-9]+]]: bitint::BInt<100, 2, 16, bitint::A8> = copy.__slate_bits_0.__get_mid();
 // CHECK-NEXT:     let [[V_5:__v[0-9]+]]: bitint::BInt<100, 2, 16, bitint::A8> = [[V_4]]
@@ -458,10 +462,10 @@ int main(void) {
 // CHECK-NEXT:     copy.__slate_bits_0.__set_top([[V_7]]);
 // CHECK-NEXT:     let [[T_11:__t[0-9]+]] = 63i8;
 // CHECK-NEXT:     copy.__slate_bits_1.__set_small([[T_11]]);
-// CHECK-NEXT:     dump(unsafe { &mut (*std::ptr::addr_of_mut!(copy)) });
-// CHECK-NEXT:     dump(unsafe { &mut (*std::ptr::addr_of_mut!(m)) });
+// CHECK-NEXT:     dump(unsafe { &mut (*core::ptr::addr_of_mut!(copy)) });
+// CHECK-NEXT:     dump(unsafe { &mut (*core::ptr::addr_of_mut!(m)) });
 // CHECK-NEXT:     let mut n: Narrow = {
-// CHECK-NEXT:         let mut [[T_12:__t[0-9]+]]: Narrow = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_12:__t[0-9]+]]: Narrow = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_12]]
 // CHECK-NEXT:             .__slate_bits_0
 // CHECK-NEXT:             .__set_x(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(-4 as i128));
@@ -485,7 +489,7 @@ int main(void) {
 // CHECK-NEXT:             n.__slate_bits_0.__get_y().to_u128() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let [[T_13:__t[0-9]+]] = <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(3 as i128);
 // CHECK-NEXT:     n.__slate_bits_0.__set_x([[T_13]]);
 // CHECK-NEXT:     let mut [[V_8:__v[0-9]+]]: bitint::BUint<100, 2, 16, bitint::A8> = n.__slate_bits_0.__get_y();
@@ -509,14 +513,14 @@ int main(void) {
 // CHECK-NEXT:             24u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

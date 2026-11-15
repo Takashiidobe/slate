@@ -121,7 +121,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { vsnprintf(buffer, size, fmt, ap.clone()) }
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn report(fmt: *const i8, mut __va_args: ...) -> i32 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             core::ffi::VaList<'_>,
@@ -130,7 +130,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     let written: i32 = unsafe { vprintf(fmt, ap.clone()) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     written
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn render(
@@ -139,7 +139,7 @@ int main(void) {
 // CHECK-NEXT:     fmt: *const i8,
 // CHECK-NEXT:     mut __va_args: ...
 // CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             core::ffi::VaList<'_>,
@@ -150,7 +150,7 @@ int main(void) {
 // CHECK-NEXT:     written
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum_ints(count: i32, mut __va_args: ...) -> i64 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             core::ffi::VaList<'_>,
@@ -165,7 +165,7 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn mixed(count: i32, mut __va_args: ...) -> f64 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             core::ffi::VaList<'_>,
@@ -196,8 +196,8 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum_twice(count: i32, mut __va_args: ...) -> i32 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut copy: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut copy: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             core::ffi::VaList<'_>,
@@ -228,7 +228,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { ap.next_arg::<u32>() }
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn unsigned_pair(unused: i32, mut __va_args: ...) -> u32 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             core::ffi::VaList<'_>,
@@ -246,7 +246,7 @@ int main(void) {
 // CHECK-NEXT:     let rendered: i32 = unsafe {
 // CHECK-NEXT:         render(
 // CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             std::mem::size_of::<[i8; 64]>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<[i8; 64]>() as u64,
 // CHECK-NEXT:             c"[%d|%s|%c]".as_ptr(),
 // CHECK-NEXT:             7i32,
 // CHECK-NEXT:             c"seven".as_ptr() as *mut i8,
@@ -262,7 +262,7 @@ int main(void) {
 // CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -270,7 +270,7 @@ int main(void) {
 // CHECK-NEXT:             sum_ints(5i32, 1i32, 2i32, 3i32, 4i32, 5i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -288,19 +288,19 @@ int main(void) {
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", unsafe { sum_twice(3i32, 4i32, 5i32, 6i32) });
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%u\n".as_ptr(), unsigned_pair(0i32, 4000000000u32))
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     ((unsafe { sum_ints(3i32, 10i32, 20i32, 30i32) }) % 13) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

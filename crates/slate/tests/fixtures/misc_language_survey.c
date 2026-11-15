@@ -52,18 +52,18 @@ int main(void) {
 // CHECK-NEXT:     let escape_unknown: i8 = 37;
 // CHECK-NEXT:     println!("{} {} {}", values[0], values[1], values[2]);
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%f\n".as_ptr(), separated) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{} {}", escape_e as i32, escape_unknown as i32);
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), 1u64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", add(3i32, 4i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

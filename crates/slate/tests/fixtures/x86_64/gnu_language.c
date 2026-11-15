@@ -196,7 +196,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_local_label(input: i32) -> i32 {
-// CHECK-NEXT:     let mut result: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         result = input;
 // CHECK-NEXT:         if result > 0 {
@@ -259,7 +259,7 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut targets: __SlateAlign16<[*mut (); 3]> =
@@ -277,7 +277,7 @@ int main(void) {
 // CHECK-NEXT:             return 23;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.gnu_function_name")]
@@ -289,10 +289,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_function_pointer() -> i32 {
 // CHECK-NEXT:     let distance: i64 = ((unsafe {
-// CHECK-NEXT:         std::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(unsafe {
-// CHECK-NEXT:             std::mem::transmute::<*const u8, Option<unsafe extern "C-unwind" fn() -> i32>>(
+// CHECK-NEXT:         core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(unsafe {
+// CHECK-NEXT:             core::mem::transmute::<*const u8, Option<unsafe extern "C-unwind" fn() -> i32>>(
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     std::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
+// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
 // CHECK-NEXT:                         Some(gnu_function_name),
 // CHECK-NEXT:                     )
 // CHECK-NEXT:                 }
@@ -302,7 +302,7 @@ int main(void) {
 // CHECK-NEXT:     }) as isize)
 // CHECK-NEXT:         .wrapping_sub(
 // CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 std::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
 // CHECK-NEXT:                     Some(gnu_function_name),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             }) as isize,
@@ -322,7 +322,7 @@ int main(void) {
 // CHECK-NEXT:     let same_type: i32 = 41;
 // CHECK-NEXT:     let raw: *const i8 = c"gnu\\n".as_ptr();
 // CHECK-NEXT:     let range_values: __SlateAlign16<[i32; 6]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i32; 6] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i32; 6] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]] = 5i32;
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: usize = 1;
 // CHECK-NEXT:         while [[T_2]] <= 3 {
@@ -333,7 +333,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let old_array: [i32; 3] = {
-// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: [i32; 3] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: [i32; 3] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_3]][1] = 11i32;
 // CHECK-NEXT:         [[T_3]]
 // CHECK-NEXT:     };
@@ -354,13 +354,13 @@ int main(void) {
 // CHECK-NEXT:     let value: i32 = 67;
 // CHECK-NEXT:     [[V_3]] = value;
 // CHECK-NEXT:     spelling_total = [[V_3]]
-// CHECK-NEXT:         + (((std::mem::align_of::<i64>() as u64) >= (std::mem::align_of::<i32>() as u64)) as i32)
+// CHECK-NEXT:         + (((core::mem::align_of::<i64>() as u64) >= (core::mem::align_of::<i32>() as u64)) as i32)
 // CHECK-NEXT:         + (true as i32)
 // CHECK-NEXT:         + ((((unsafe { *raw.add(0) }) as i32) == 103) as i32)
 // CHECK-NEXT:         + ((((unsafe { *raw.add(3) }) as i32) == 92) as i32)
 // CHECK-NEXT:         + ((((unsafe { *raw.add(4) }) as i32) == 110) as i32)
 // CHECK-NEXT:         + 6
-// CHECK-NEXT:         + (std::mem::offset_of!(GNUOldInitializer, second) as i32);
+// CHECK-NEXT:         + (core::mem::offset_of!(GNUOldInitializer, second) as i32);
 // CHECK-NEXT:     gnu_dollar_dollar
 // CHECK-NEXT:         + omitted
 // CHECK-NEXT:         + side_effect
@@ -373,13 +373,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_aggregate_types() -> i32 {
 // CHECK-NEXT:     let cast_value: GNUCast = {
-// CHECK-NEXT:         let mut [[T_0]]: GNUCast = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: GNUCast = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].integer = 71i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let forward: u32 = 23;
-// CHECK-NEXT:     (((std::mem::size_of::<GNUZeroArray>() as i32)
-// CHECK-NEXT:         + (std::mem::size_of::<GNUEmpty>() as i32)
+// CHECK-NEXT:     (((core::mem::size_of::<GNUZeroArray>() as i32)
+// CHECK-NEXT:         + (core::mem::size_of::<GNUEmpty>() as i32)
 // CHECK-NEXT:         + 4
 // CHECK-NEXT:         + 0
 // CHECK-NEXT:         + unsafe { cast_value.integer }) as u32)
@@ -388,7 +388,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_pointer_semantics() -> i32 {
 // CHECK-NEXT:     let mut values: [u8; 8] = {
-// CHECK-NEXT:         let mut [[T_0]]: [u8; 8] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: [u8; 8] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let begin: *mut () = values.as_mut_ptr() as *mut ();
@@ -427,8 +427,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

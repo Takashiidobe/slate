@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-NEXT: core::arch::global_asm!(".section .drectve,\"yni\"\n.ascii \" /defaultlib:ntdll.lib\"");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn code_page() -> *mut u16 {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(*NlsAnsiCodePage) }
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(*NlsAnsiCodePage) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -57,14 +57,14 @@ int main(void) {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if ((unsafe { *page }) as i32) != ((unsafe { *NlsAnsiCodePage }) as i32)
-// CHECK-NEXT:         || page != unsafe { std::ptr::addr_of_mut!(*NlsAnsiCodePage) }
+// CHECK-NEXT:         || page != unsafe { core::ptr::addr_of_mut!(*NlsAnsiCodePage) }
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if ((unsafe { *NlsMbCodePageTag }) as i32) > 1 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (std::mem::size_of::<u16>() as u64) != 2 {
+// CHECK-NEXT:     if (core::mem::size_of::<u16>() as u64) != 2 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
@@ -73,8 +73,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

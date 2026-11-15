@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn check(value: *const i8) -> i32 {
 // CHECK-NEXT:     let mut device: *mut i8 = c"".as_ptr() as *mut i8;
-// CHECK-NEXT:     if fill(unsafe { &mut (*std::ptr::addr_of_mut!(device)) }, value) == 0 {
+// CHECK-NEXT:     if fill(unsafe { &mut (*core::ptr::addr_of_mut!(device)) }, value) == 0 {
 // CHECK-NEXT:         return -1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe {
@@ -78,7 +78,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn check_const() -> i32 {
 // CHECK-NEXT:     let mut device: *const i8 = c"cpu".as_ptr();
-// CHECK-NEXT:     retarget(unsafe { &mut (*std::ptr::addr_of_mut!(device)) });
+// CHECK-NEXT:     retarget(unsafe { &mut (*core::ptr::addr_of_mut!(device)) });
 // CHECK-NEXT:     ((unsafe {
 // CHECK-NEXT:         strcmp(
 // CHECK-NEXT:             device as *const core::ffi::c_char,
@@ -88,24 +88,24 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn length_after() -> u64 {
 // CHECK-NEXT:     let mut name: *mut i8 = c"".as_ptr() as *mut i8;
-// CHECK-NEXT:     fill(unsafe { &mut (*std::ptr::addr_of_mut!(name)) }, c"numpy".as_ptr());
+// CHECK-NEXT:     fill(unsafe { &mut (*core::ptr::addr_of_mut!(name)) }, c"numpy".as_ptr());
 // CHECK-NEXT:     unsafe { strlen((name as *const i8) as *const core::ffi::c_char) as u64 }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}", check(c"cpu".as_ptr()), check(c"cuda".as_ptr()),
-// CHECK-NEXT:         check(std::ptr::null::< i8 > ())
+// CHECK-NEXT:         check(core::ptr::null::< i8 > ())
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", check_const());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), length_after()) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

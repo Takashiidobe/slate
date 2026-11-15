@@ -86,11 +86,11 @@ fn atomic_wrapper(ty: AtomicType) -> &'static str {
 
 fn ordering_str(ordering: AtomicOrdering) -> &'static str {
     match ordering {
-        AtomicOrdering::Relaxed => "std::sync::atomic::Ordering::Relaxed",
-        AtomicOrdering::Acquire => "std::sync::atomic::Ordering::Acquire",
-        AtomicOrdering::Release => "std::sync::atomic::Ordering::Release",
-        AtomicOrdering::AcqRel => "std::sync::atomic::Ordering::AcqRel",
-        AtomicOrdering::SeqCst => "std::sync::atomic::Ordering::SeqCst",
+        AtomicOrdering::Relaxed => "core::sync::atomic::Ordering::Relaxed",
+        AtomicOrdering::Acquire => "core::sync::atomic::Ordering::Acquire",
+        AtomicOrdering::Release => "core::sync::atomic::Ordering::Release",
+        AtomicOrdering::AcqRel => "core::sync::atomic::Ordering::AcqRel",
+        AtomicOrdering::SeqCst => "core::sync::atomic::Ordering::SeqCst",
     }
 }
 
@@ -1284,7 +1284,7 @@ impl<W: Write> Codegen<W> {
                 query: LayoutQuery::SizeOf(ty),
                 ..
             } => {
-                self.out.write_str("std::mem::size_of::<")?;
+                self.out.write_str("core::mem::size_of::<")?;
                 self.ty(ty)?;
                 self.out.write_str(">()")
             }
@@ -1292,7 +1292,7 @@ impl<W: Write> Codegen<W> {
                 query: LayoutQuery::AlignOf(ty),
                 ..
             } => {
-                self.out.write_str("std::mem::align_of::<")?;
+                self.out.write_str("core::mem::align_of::<")?;
                 self.ty(ty)?;
                 self.out.write_str(">()")
             }
@@ -1300,7 +1300,7 @@ impl<W: Write> Codegen<W> {
                 query: LayoutQuery::OffsetOf { ty, fields },
                 ..
             } => {
-                self.out.write_str("std::mem::offset_of!(")?;
+                self.out.write_str("core::mem::offset_of!(")?;
                 self.ty(ty)?;
                 self.out.write_str(", ")?;
                 for (index, field) in fields.iter().enumerate() {
@@ -1505,9 +1505,9 @@ impl<W: Write> Codegen<W> {
             }
             Expr::AddrOf { mutable, expr } => {
                 self.out.write_str(if *mutable {
-                    "std::ptr::addr_of_mut!("
+                    "core::ptr::addr_of_mut!("
                 } else {
-                    "std::ptr::addr_of!("
+                    "core::ptr::addr_of!("
                 })?;
                 self.expr(expr)?;
                 self.out.write_char(')')
@@ -1576,16 +1576,20 @@ impl<W: Write> Codegen<W> {
                 )
             }
             Expr::AtomicNew { ty, value } => {
-                write!(self.out, "std::sync::atomic::{}::new(", atomic_wrapper(*ty))?;
+                write!(
+                    self.out,
+                    "core::sync::atomic::{}::new(",
+                    atomic_wrapper(*ty)
+                )?;
                 self.expr(value)?;
                 self.out.write_char(')')
             }
             Expr::AtomicFence { ordering } => self.out.write_fmt(format_args!(
-                "std::sync::atomic::fence({})",
+                "core::sync::atomic::fence({})",
                 ordering_str(*ordering)
             )),
             Expr::Transmute { from, to, expr } => {
-                self.out.write_str("unsafe { std::mem::transmute::<")?;
+                self.out.write_str("unsafe { core::mem::transmute::<")?;
                 self.ty(from)?;
                 self.out.write_str(", ")?;
                 self.ty(to)?;
@@ -1595,7 +1599,7 @@ impl<W: Write> Codegen<W> {
             }
             Expr::CopyNonoverlapping { src, dst, count } => {
                 self.out
-                    .write_str("unsafe { std::ptr::copy_nonoverlapping(")?;
+                    .write_str("unsafe { core::ptr::copy_nonoverlapping(")?;
                 self.expr(src)?;
                 self.out.write_str(", ")?;
                 self.expr(dst)?;
@@ -1612,7 +1616,7 @@ impl<W: Write> Codegen<W> {
                 } else {
                     "copy_nonoverlapping"
                 };
-                write!(self.out, "std::ptr::{f}(")?;
+                write!(self.out, "core::ptr::{f}(")?;
                 self.expr(src)?;
                 self.out.write_str(", ")?;
                 self.expr(dst)?;
@@ -1621,7 +1625,7 @@ impl<W: Write> Codegen<W> {
                 self.out.write_char(')')
             }
             Expr::WriteBytes { dst, val, count } => {
-                self.out.write_str("std::ptr::write_bytes(")?;
+                self.out.write_str("core::ptr::write_bytes(")?;
                 self.expr(dst)?;
                 self.out.write_str(", ")?;
                 self.expr(val)?;
@@ -1646,7 +1650,7 @@ impl<W: Write> Codegen<W> {
             AtomicPlace::Ptr(ptr) => {
                 write!(
                     self.out,
-                    "std::sync::atomic::{}::from_ptr(",
+                    "core::sync::atomic::{}::from_ptr(",
                     atomic_wrapper(ty)
                 )?;
                 self.expr(ptr)?;
@@ -1711,7 +1715,7 @@ impl<W: Write> Codegen<W> {
             }
             RustValue::Bool(b) => write!(self.out, "{b}"),
             RustValue::None => self.out.write_str("None"),
-            RustValue::NullPtr => self.out.write_str("std::ptr::null_mut()"),
+            RustValue::NullPtr => self.out.write_str("core::ptr::null_mut()"),
         }
     }
 

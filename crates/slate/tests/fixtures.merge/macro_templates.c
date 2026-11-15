@@ -115,7 +115,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), ($a) as i32) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: file macro_templates_helper.rs
@@ -131,7 +131,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"helper %d\n".as_ptr(), ($a) as i32) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -154,7 +154,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%ld\n".as_ptr(), ($a) as c_long) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -258,7 +258,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), ($a) as i32) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -267,7 +267,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), callee($a)) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -276,7 +276,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"inner %d\n".as_ptr(), ($a) as i32) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -286,7 +286,7 @@ int main(void) {
 // CHECK-NEXT:         while ($a) <= 2 {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe { slate_support::printf(c"small %d\n".as_ptr(), ($a) as i32) };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -300,7 +300,7 @@ int main(void) {
 // CHECK-NEXT:         INNER!($a);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"outer %d\n".as_ptr(), ($b) as i32) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -309,7 +309,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr, $local:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), ($a) + $local) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -319,7 +319,7 @@ int main(void) {
 // CHECK-NEXT:         let temp: i32 = $a;
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), temp + 1) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -329,7 +329,7 @@ int main(void) {
 // CHECK-NEXT:         let temp: i32 = ($a) as i32;
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), temp + 1) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -338,7 +338,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d\n".as_ptr(), ($a) as i32, ($a) as i32) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -347,7 +347,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), ($a) as i32) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -373,8 +373,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
@@ -415,8 +415,8 @@ int main(void) {
 // CHECK-NEXT:     TEMP__2!(byte);
 // CHECK-NEXT:     OUTER!(local, wide > 0);
 // CHECK-NEXT:     OUTER!(local + 2, 3i32);
-// CHECK-NEXT:     BUMP!(std::ptr::addr_of_mut!(s));
-// CHECK-NEXT:     BUMP!(std::ptr::addr_of_mut!(s));
+// CHECK-NEXT:     BUMP!(core::ptr::addr_of_mut!(s));
+// CHECK-NEXT:     BUMP!(core::ptr::addr_of_mut!(s));
 // CHECK-NEXT:     FILL!(s.bits, 4i32);
 // CHECK-NEXT:     ONCE!(local);
 // CHECK-NEXT:     ONCE!(local + 5);
@@ -436,7 +436,7 @@ int main(void) {
 // CHECK-NEXT:             helper(local),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -504,9 +504,9 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut total: c_long = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut total: c_long = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn helper([[ARG_0:arg[0-9]+]]: i32) -> i32;

@@ -117,7 +117,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut single: key_false = key_false {
 // CHECK-NEXT:     key: {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: key = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: key = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].enabled = 0i32;
 // CHECK-NEXT:         [[T_0]].[[SLATE_ANON_0]] = __SlateRecord_static_init_compound_literal_c_5 {
 // CHECK-NEXT:             r#type: 1u64,
@@ -126,7 +126,7 @@ int main(void) {
 // CHECK-NEXT:     },
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut spin: lock = {
-// CHECK-NEXT:     let mut [[T_0]]: lock = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0]]: lock = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].raw = 1u32;
 // CHECK-NEXT:     [[T_0]].name = (b"spin\0".as_ptr() as *mut i8) as *const i8;
 // CHECK-NEXT:     [[T_0]]
@@ -135,7 +135,7 @@ int main(void) {
 // CHECK-NEXT:     name: (b"tp\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT:     key: key_false {
 // CHECK-NEXT:         key: {
-// CHECK-NEXT:             let mut [[T_0]]: key = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_0]]: key = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_0]].enabled = 0i32;
 // CHECK-NEXT:             [[T_0]].[[SLATE_ANON_0]] = __SlateRecord_static_init_compound_literal_c_5 {
 // CHECK-NEXT:                 r#type: 1u64,
@@ -147,13 +147,13 @@ int main(void) {
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut locks: __SlateAlign16<[lock; 2]> = __SlateAlign16([
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_0]]: lock = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: lock = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].raw = 1u32;
 // CHECK-NEXT:         [[T_0]].name = (b"a\0".as_ptr() as *mut i8) as *const i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     },
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: lock = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: lock = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].raw = 1u32;
 // CHECK-NEXT:         [[T_1]].name = (b"b\0".as_ptr() as *mut i8) as *const i8;
 // CHECK-NEXT:         [[T_1]]
@@ -161,7 +161,7 @@ int main(void) {
 // CHECK-NEXT: ]);
 // CHECK-NEXT: static mut word: word = word { value: 16909060u32 };
 // CHECK-NEXT: static mut spin_address: *mut lock = unsafe {
-// CHECK-NEXT:     std::ptr::addr_of_mut!(__slate_compound_spin_address_0)
+// CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_compound_spin_address_0)
 // CHECK-NEXT: };
 // CHECK-NEXT: fn ratelimited() -> i32 {
 // CHECK-NEXT:     unsafe {
@@ -174,7 +174,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut rs: ratelimit = ratelimit {
 // CHECK-NEXT:     lock: {
-// CHECK-NEXT:         let mut [[T_0]]: lock = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: lock = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].raw = 2u32;
 // CHECK-NEXT:         [[T_0]].name = (b"rs\0".as_ptr() as *mut i8) as *const i8;
 // CHECK-NEXT:         [[T_0]]
@@ -209,7 +209,7 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut __slate_compound_spin_address_0: lock = {
-// CHECK-NEXT:     let mut [[T_0]]: lock = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0]]: lock = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].raw = 9u32;
 // CHECK-NEXT:     [[T_0]].name = (b"addr\0".as_ptr() as *mut i8) as *const i8;
 // CHECK-NEXT:     [[T_0]]
@@ -217,8 +217,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -26,7 +26,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut bits: MixedBits = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: MixedBits = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: MixedBits = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].tag = 0u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
@@ -44,10 +44,10 @@ int main(void) {
 // CHECK-NEXT:             bits.__slate_bits_0.__get_delta(),
 // CHECK-NEXT:             bits.__slate_bits_1.__get_wide(),
 // CHECK-NEXT:             bits.__slate_bits_1.__get_tail() as i32,
-// CHECK-NEXT:             std::mem::size_of::<MixedBits>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<MixedBits>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

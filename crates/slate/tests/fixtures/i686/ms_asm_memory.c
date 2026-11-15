@@ -66,8 +66,8 @@ int main(void) {
 // CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!("mov eax, [{0}]\nadd eax, [{1}]\nmov [{2}], eax", in(reg) std::ptr::addr_of!(a), in(reg) std::ptr::addr_of!(b), in(reg) std::ptr::addr_of_mut!(result), out("ax") [[T_0]]);
-// CHECK-NEXT:         [[V_0]] = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         core::arch::asm!("mov eax, [{0}]\nadd eax, [{1}]\nmov [{2}], eax", in(reg) core::ptr::addr_of!(a), in(reg) core::ptr::addr_of!(b), in(reg) core::ptr::addr_of_mut!(result), out("ax") [[T_0]]);
+// CHECK-NEXT:         [[V_0]] = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
@@ -79,8 +79,8 @@ int main(void) {
 // CHECK-NEXT:     let mut out: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!("mov eax, [{0}+4]\nadd eax, [{1}+8]\nmov [{2}], eax", in(reg) std::ptr::addr_of!(s), in(reg) std::ptr::addr_of!(arr), in(reg) std::ptr::addr_of_mut!(out), out("ax") [[T_0]]);
-// CHECK-NEXT:         [[V_0]] = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         core::arch::asm!("mov eax, [{0}+4]\nadd eax, [{1}+8]\nmov [{2}], eax", in(reg) core::ptr::addr_of!(s), in(reg) core::ptr::addr_of!(arr), in(reg) core::ptr::addr_of_mut!(out), out("ax") [[T_0]]);
+// CHECK-NEXT:         [[V_0]] = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out
 // CHECK-NEXT: }
@@ -91,8 +91,8 @@ int main(void) {
 // CHECK-NEXT:     let mut out: u32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!("movzx eax, byte ptr [{0}+2]\nmov [{1}], eax", in(reg) std::ptr::addr_of!(bytes), in(reg) std::ptr::addr_of_mut!(out), out("ax") [[T_0]]);
-// CHECK-NEXT:         [[V_0]] = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         core::arch::asm!("movzx eax, byte ptr [{0}+2]\nmov [{1}], eax", in(reg) core::ptr::addr_of!(bytes), in(reg) core::ptr::addr_of_mut!(out), out("ax") [[T_0]]);
+// CHECK-NEXT:         [[V_0]] = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out as i32
 // CHECK-NEXT: }
@@ -103,8 +103,8 @@ int main(void) {
 // CHECK-NEXT:     let mut out: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!("mov ecx, [{0}]\nmov eax, [{1}+ecx*4]\nmov [{2}], eax", in(reg) std::ptr::addr_of!(i), in(reg) std::ptr::addr_of!(arr), in(reg) std::ptr::addr_of_mut!(out), out("ax") [[T_0]], out("cx") _);
-// CHECK-NEXT:         [[V_0]] = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         core::arch::asm!("mov ecx, [{0}]\nmov eax, [{1}+ecx*4]\nmov [{2}], eax", in(reg) core::ptr::addr_of!(i), in(reg) core::ptr::addr_of!(arr), in(reg) core::ptr::addr_of_mut!(out), out("ax") [[T_0]], out("cx") _);
+// CHECK-NEXT:         [[V_0]] = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out
 // CHECK-NEXT: }
@@ -123,8 +123,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

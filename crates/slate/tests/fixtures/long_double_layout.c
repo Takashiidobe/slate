@@ -178,15 +178,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
-// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:             Some(core::cmp::Ordering::Less)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     None
 // CHECK-NEXT:                 }
@@ -212,38 +212,38 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu\n".as_ptr(),
-// CHECK-NEXT:             std::mem::size_of::<LongDouble>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<LongDouble>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<LongDouble>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<LongDouble>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
-// CHECK-NEXT:             std::mem::size_of::<ld_box>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<ld_box>() as u64,
-// CHECK-NEXT:             std::mem::offset_of!(ld_box, value) as u64,
-// CHECK-NEXT:             std::mem::offset_of!(ld_box, tail) as u64,
+// CHECK-NEXT:             core::mem::size_of::<ld_box>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<ld_box>() as u64,
+// CHECK-NEXT:             core::mem::offset_of!(ld_box, value) as u64,
+// CHECK-NEXT:             core::mem::offset_of!(ld_box, tail) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu\n".as_ptr(),
-// CHECK-NEXT:             std::mem::size_of::<ld_union>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<ld_union>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<ld_union>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<ld_union>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

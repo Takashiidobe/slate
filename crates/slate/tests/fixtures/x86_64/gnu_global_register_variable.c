@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:             core::arch::asm!("mov {}, rsp", lateout(reg) [[T_0]]);
 // CHECK-NEXT:             [[T_0]] as u64
 // CHECK-NEXT:         },
-// CHECK-NEXT:         std::ptr::addr_of_mut!(local) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(local) as *const (),
 // CHECK-NEXT:     )
 // CHECK-NEXT: }
 // CHECK-NEXT: fn read_pointer() -> i32 {
@@ -56,7 +56,7 @@ int main(void) {
 // CHECK-NEXT:             core::arch::asm!("mov {}, rsp", lateout(reg) [[T_0]]);
 // CHECK-NEXT:             [[T_0]] as *mut i8
 // CHECK-NEXT:         }) as u64,
-// CHECK-NEXT:         std::ptr::addr_of_mut!(local) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(local) as *const (),
 // CHECK-NEXT:     )
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -66,8 +66,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:     old = [[V_0]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%ld %ld %d\n".as_ptr(), old, values.0[0], index) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

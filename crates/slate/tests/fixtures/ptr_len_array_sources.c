@@ -79,7 +79,7 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn sum_prefix(values: *const i32, len: i32) -> i32 {
 // CHECK-NEXT:     let __values_view = unsafe {
-// CHECK-NEXT:         std::slice::from_raw_parts(values as *const i32, len as usize)
+// CHECK-NEXT:         core::slice::from_raw_parts(values as *const i32, len as usize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {

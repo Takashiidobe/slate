@@ -176,7 +176,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut b: int_bits = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: int_bits = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: int_bits = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].c = 1i8;
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_x(5i32);
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_y(1000i32);
@@ -185,44 +185,44 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<int_bits>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<int_bits>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<plain>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<plain>() as u64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<int_bits>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<int_bits>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<plain>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<plain>() as u32,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<int_bits>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::align_of::<int_bits>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<plain>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::align_of::<plain>() as u64,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<int_bits>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::align_of::<int_bits>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<plain>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::align_of::<plain>() as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu %zu %zu\n".as_ptr(),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<char_bits>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<char_bits>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<wide_bits>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<wide_bits>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<field_packed>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<field_packed>() as u64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<char_bits>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<char_bits>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<wide_bits>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<wide_bits>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<field_packed>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<field_packed>() as u32,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<char_bits>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::align_of::<char_bits>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<wide_bits>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::align_of::<wide_bits>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<field_packed>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::align_of::<field_packed>() as u64,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<char_bits>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::align_of::<char_bits>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<wide_bits>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::align_of::<wide_bits>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<field_packed>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::align_of::<field_packed>() as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<unnamed>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<unnamed>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<eight>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<eight>() as u64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<unnamed>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<unnamed>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<eight>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<eight>() as u32,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<unnamed>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::align_of::<unnamed>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<eight>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::align_of::<eight>() as u64,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<unnamed>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::align_of::<unnamed>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<eight>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::align_of::<eight>() as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -238,8 +238,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -10,7 +10,7 @@ fn ordering(order: &ir::MemoryOrder) -> Option<Expr> {
         ir::MemoryOrder::Dynamic(_) => return None,
     };
     Some(Expr::Var(
-        format!("std::sync::atomic::Ordering::{name}").into(),
+        format!("core::sync::atomic::Ordering::{name}").into(),
     ))
 }
 
@@ -398,17 +398,17 @@ impl FunctionLowerer<'_, '_> {
             if place.access.volatile {
                 self.dependencies.atomic_volatile = true;
                 let ptr = call(
-                    &format!("std::sync::atomic::{wrapper}::from_ptr_raw"),
+                    &format!("core::sync::atomic::{wrapper}::from_ptr_raw"),
                     vec![address],
                 );
                 let (method, args) = match value {
                     Some(value) => ("store_volatile", vec![ptr, value, order]),
                     None => ("load_volatile", vec![ptr, order]),
                 };
-                call(&format!("std::sync::atomic::{wrapper}::{method}"), args)
+                call(&format!("core::sync::atomic::{wrapper}::{method}"), args)
             } else {
                 let recv = call(
-                    &format!("std::sync::atomic::{wrapper}::from_ptr"),
+                    &format!("core::sync::atomic::{wrapper}::from_ptr"),
                     vec![address],
                 );
                 let (method, args) = match value {
@@ -459,7 +459,7 @@ impl FunctionLowerer<'_, '_> {
             _ => (lowered.clone(), AtomicRepr::Value),
         };
         let wrapper = match atomic_wrapper(&atomic_ty) {
-            Some(wrapper) => format!("std::sync::atomic::{wrapper}"),
+            Some(wrapper) => format!("core::sync::atomic::{wrapper}"),
             None if !self.tables.target.triple.contains("linux") => return Ok(None),
             None => {
                 self.dependencies.libatomic = true;
@@ -720,8 +720,8 @@ impl FunctionLowerer<'_, '_> {
         let order = ordering(&atomic.order)?;
         Some(call(
             match scope {
-                ir::FenceScope::Thread => "std::sync::atomic::fence",
-                ir::FenceScope::Signal => "std::sync::atomic::compiler_fence",
+                ir::FenceScope::Thread => "core::sync::atomic::fence",
+                ir::FenceScope::Signal => "core::sync::atomic::compiler_fence",
             },
             vec![order],
         ))

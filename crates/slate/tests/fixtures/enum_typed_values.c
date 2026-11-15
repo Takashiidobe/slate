@@ -78,7 +78,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut lamp: Lamp = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Lamp = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Lamp = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].state = 1u32;
 // CHECK-NEXT:         [[T_0]].color = 4u32;
 // CHECK-NEXT:         [[T_0]].size = 250u8;
@@ -104,20 +104,20 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu\n".as_ptr(),
-// CHECK-NEXT:             std::mem::size_of::<u32>() as u64,
-// CHECK-NEXT:             std::mem::size_of::<u8>() as u64,
-// CHECK-NEXT:             std::mem::size_of::<Lamp>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<u32>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<u8>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<Lamp>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     (((unsafe { levels[0] }) as i32) as u32).wrapping_add((unsafe { favorite }) as u32)
 // CHECK-NEXT:         as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

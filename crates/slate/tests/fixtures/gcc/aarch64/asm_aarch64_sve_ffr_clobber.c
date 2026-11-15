@@ -34,8 +34,8 @@ int main(void) {
 // CHECK-NEXT:             lateout(reg) [[T_0]], lateout(reg) [[T_1]], out("p2") _, out("p4") _, out("ffr") _,
 // CHECK-NEXT:             options(nomem, nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         active = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
-// CHECK-NEXT:         total = unsafe { std::mem::transmute::<u64, i64>([[T_1]] as u64) };
+// CHECK-NEXT:         active = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         total = unsafe { core::mem::transmute::<u64, i64>([[T_1]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (active == total) as i32
 // CHECK-NEXT: }
@@ -46,8 +46,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

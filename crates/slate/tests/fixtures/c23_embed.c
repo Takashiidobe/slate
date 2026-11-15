@@ -31,21 +31,21 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     for i in 0..std::mem::size_of::<[u8; 4]>() as u64 {
+// CHECK-NEXT:     for i in 0..core::mem::size_of::<[u8; 4]>() as u64 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::putchar(data[i as usize] as i32) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let framed_ok: i32 = ((std::mem::size_of::<[u8; 8]>() as u64) == 8
+// CHECK-NEXT:     let framed_ok: i32 = ((core::mem::size_of::<[u8; 8]>() as u64) == 8
 // CHECK-NEXT:         && ((unsafe { framed[0] }) as i32) == 170
 // CHECK-NEXT:         && ((unsafe { framed[1] }) as i32) == 187
 // CHECK-NEXT:         && ((unsafe { framed[2] }) as i32) == 67 && ((unsafe { framed[3] }) as i32) == 50
 // CHECK-NEXT:         && ((unsafe { framed[4] }) as i32) == 51 && ((unsafe { framed[5] }) as i32) == 10
 // CHECK-NEXT:         && ((unsafe { framed[6] }) as i32) == 204
 // CHECK-NEXT:         && ((unsafe { framed[7] }) as i32) == 221) as i32;
-// CHECK-NEXT:     let empty_ok: i32 = ((std::mem::size_of::<[u8; 1]>() as u64) == 1
+// CHECK-NEXT:     let empty_ok: i32 = ((core::mem::size_of::<[u8; 1]>() as u64) == 1
 // CHECK-NEXT:         && ((unsafe { empty[0] }) as i32) == 238) as i32;
-// CHECK-NEXT:     if (std::mem::size_of::<[u8; 4]>() as u64) == 4
+// CHECK-NEXT:     if (core::mem::size_of::<[u8; 4]>() as u64) == 4
 // CHECK-NEXT:         && ((unsafe { data[0] }) as i32) == 67 && ((unsafe { data[1] }) as i32) == 50
 // CHECK-NEXT:         && ((unsafe { data[2] }) as i32) == 51 && ((unsafe { data[3] }) as i32) == 10
 // CHECK-NEXT:         && framed_ok != 0 && empty_ok != 0
@@ -61,8 +61,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

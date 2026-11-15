@@ -46,7 +46,7 @@ pub(super) fn vector_constructor(ty: &rust::Type, method: &str) -> Expr {
     let base = if is_slate_vector(ty) {
         SLATE_VECTOR
     } else {
-        "std::simd::Simd"
+        "core::simd::Simd"
     };
     Expr::Var(format!("{base}::{method}").into())
 }
@@ -191,7 +191,7 @@ impl FunctionLowerer<'_, '_> {
                 .collect(),
         ));
         Ok(Expr::Macro {
-            name: "std::simd::simd_swizzle".into(),
+            name: "core::simd::simd_swizzle".into(),
             args,
         })
     }
@@ -257,7 +257,7 @@ impl FunctionLowerer<'_, '_> {
             init: Some(Expr::Call {
                 func: Box::new(vector_constructor(&result, "from_array")),
                 args: vec![Expr::Call {
-                    func: Box::new(Expr::Var("std::array::from_fn".into())),
+                    func: Box::new(Expr::Var("core::array::from_fn".into())),
                     args: vec![Expr::Closure {
                         params: vec!["__lane".into()],
                         body: Box::new(mask),
@@ -296,7 +296,7 @@ impl FunctionLowerer<'_, '_> {
                 Expr::Binary {
                     op: BinOp::Sub,
                     lhs: Box::new(Expr::Call {
-                        func: Box::new(Expr::Var("std::simd::Simd::splat".into())),
+                        func: Box::new(Expr::Var("core::simd::Simd::splat".into())),
                         args: vec![Expr::Value(rust::RustValue::I64(0))],
                         binding: CallBinding::Generated,
                     }),
@@ -368,7 +368,7 @@ impl FunctionLowerer<'_, '_> {
         Ok(Expr::Call {
             func: Box::new(Expr::GenericPath {
                 path: rust::Path::new(
-                    ["std", "simd", "num", trait_name, "cast"].map(rust::Ident::from),
+                    ["core", "simd", "num", trait_name, "cast"].map(rust::Ident::from),
                 ),
                 type_args: vec![lane],
             }),
@@ -423,13 +423,13 @@ impl FunctionLowerer<'_, '_> {
         };
         let mask = Expr::Call {
             func: Box::new(Expr::Var(
-                format!("std::simd::Mask::<i{lane_width}, {lanes}>::from_bitmask").into(),
+                format!("core::simd::Mask::<i{lane_width}, {lanes}>::from_bitmask").into(),
             )),
             args: vec![bits],
             binding: CallBinding::Generated,
         };
         Ok(Expr::Call {
-            func: Box::new(Expr::Var("std::simd::Select::select".into())),
+            func: Box::new(Expr::Var("core::simd::Select::select".into())),
             args: vec![mask, self.lower_value(left)?, self.lower_value(right)?],
             binding: CallBinding::Generated,
         })
@@ -465,12 +465,12 @@ impl FunctionLowerer<'_, '_> {
             return Err(unsupported_value(value));
         }
         let negative = Expr::Call {
-            func: Box::new(Expr::Var("std::simd::cmp::SimdPartialOrd::simd_lt".into())),
+            func: Box::new(Expr::Var("core::simd::cmp::SimdPartialOrd::simd_lt".into())),
             args: vec![
                 self.lower_value(vector)?,
                 Expr::Call {
                     func: Box::new(Expr::Var(
-                        format!("std::simd::Simd::<i{width}, {lanes}>::default").into(),
+                        format!("core::simd::Simd::<i{width}, {lanes}>::default").into(),
                     )),
                     args: vec![],
                     binding: CallBinding::Generated,
@@ -505,7 +505,7 @@ impl FunctionLowerer<'_, '_> {
             },
         };
         Ok(Expr::Call {
-            func: Box::new(Expr::Var("std::simd::Simd::load_select_ptr".into())),
+            func: Box::new(Expr::Var("core::simd::Simd::load_select_ptr".into())),
             args: vec![pointer, enable, self.lower_value(passthrough)?],
             binding: CallBinding::Generated,
         })
@@ -528,7 +528,7 @@ impl FunctionLowerer<'_, '_> {
             },
         };
         Ok(Expr::Call {
-            func: Box::new(Expr::Var("std::simd::Simd::store_select_ptr".into())),
+            func: Box::new(Expr::Var("core::simd::Simd::store_select_ptr".into())),
             args: vec![self.lower_value(vector)?, pointer, enable],
             binding: CallBinding::Generated,
         })
@@ -577,7 +577,7 @@ impl FunctionLowerer<'_, '_> {
         };
         let enable = Expr::Call {
             func: Box::new(Expr::Var(
-                format!("std::simd::Mask::<i{lane_width}, {lanes}>::from_bitmask").into(),
+                format!("core::simd::Mask::<i{lane_width}, {lanes}>::from_bitmask").into(),
             )),
             args: vec![bits],
             binding: CallBinding::Generated,

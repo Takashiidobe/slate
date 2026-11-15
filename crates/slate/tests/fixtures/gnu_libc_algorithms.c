@@ -242,7 +242,7 @@ int main(void) {
 // CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::strcmp;
 // CHECK-NEXT: fn __slate_atoi(s: *const i8) -> i32 {
-// CHECK-NEXT:     let bytes = unsafe { std::ffi::CStr::from_ptr(s) }.to_bytes();
+// CHECK-NEXT:     let bytes = unsafe { core::ffi::CStr::from_ptr(s) }.to_bytes();
 // CHECK-NEXT:     let n = bytes.len();
 // CHECK-NEXT:     let mut i = 0usize;
 // CHECK-NEXT:     while i < n && (bytes[i].is_ascii_whitespace() || bytes[i] == 11u8) {
@@ -259,7 +259,7 @@ int main(void) {
 // CHECK-NEXT:     if i == digits {
 // CHECK-NEXT:         return 0i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     return std::str::from_utf8(&bytes[start..i])
+// CHECK-NEXT:     return core::str::from_utf8(&bytes[start..i])
 // CHECK-NEXT:         .unwrap()
 // CHECK-NEXT:         .parse::<i128>()
 // CHECK-NEXT:         .unwrap_or(0i128)
@@ -325,9 +325,9 @@ int main(void) {
 // CHECK-NEXT:         qsort_r(
 // CHECK-NEXT:             values.0.as_mut_ptr() as *mut (),
 // CHECK-NEXT:             4u64,
-// CHECK-NEXT:             std::mem::size_of::<i32>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<i32>() as u64,
 // CHECK-NEXT:             Some(gnu_compare_with_direction),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(direction) as *mut (),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(direction) as *mut (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     values.0[0] * 1000 + values.0[1] * 100 + values.0[2] * 10 + values.0[3]
@@ -340,30 +340,30 @@ int main(void) {
 // CHECK-NEXT:         program.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:         number.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:         flag.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:         std::ptr::null_mut::<i8>(),
+// CHECK-NEXT:         core::ptr::null_mut::<i8>(),
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut options: __SlateAlign16<[slate_support::option; 3]> = __SlateAlign16([
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: slate_support::option = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: slate_support::option = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_0]].name = c"number".as_ptr();
 // CHECK-NEXT:             [[T_0]].has_arg = 1i32;
-// CHECK-NEXT:             [[T_0]].flag = std::ptr::null_mut::<i32>();
+// CHECK-NEXT:             [[T_0]].flag = core::ptr::null_mut::<i32>();
 // CHECK-NEXT:             [[T_0]].val = 110i32;
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: slate_support::option = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: slate_support::option = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]].name = c"flag".as_ptr();
 // CHECK-NEXT:             [[T_1]].has_arg = 0i32;
-// CHECK-NEXT:             [[T_1]].flag = std::ptr::null_mut::<i32>();
+// CHECK-NEXT:             [[T_1]].flag = core::ptr::null_mut::<i32>();
 // CHECK-NEXT:             [[T_1]].val = 102i32;
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: slate_support::option = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:             [[T_2]].name = std::ptr::null::<i8>();
+// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: slate_support::option = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_2]].name = core::ptr::null::<i8>();
 // CHECK-NEXT:             [[T_2]].has_arg = 0i32;
-// CHECK-NEXT:             [[T_2]].flag = std::ptr::null_mut::<i32>();
+// CHECK-NEXT:             [[T_2]].flag = core::ptr::null_mut::<i32>();
 // CHECK-NEXT:             [[T_2]].val = 0i32;
 // CHECK-NEXT:             [[T_2]]
 // CHECK-NEXT:         },
@@ -386,7 +386,7 @@ int main(void) {
 // CHECK-NEXT:                 c"fn:".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:                 (options.0.as_mut_ptr() as *const slate_support::option)
 // CHECK-NEXT:                     as *const slate_support::option,
-// CHECK-NEXT:                 std::ptr::null_mut::<i32>() as *mut i32,
+// CHECK-NEXT:                 core::ptr::null_mut::<i32>() as *mut i32,
 // CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         };
 // CHECK-NEXT:         option = [[V_2]];
@@ -410,7 +410,7 @@ int main(void) {
 // CHECK-NEXT: fn gnu_argp_extensions() -> i32 {
 // CHECK-NEXT:     let mut options: __SlateAlign16<[argp_option; 2]> = __SlateAlign16([
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_0]]: argp_option = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_0]]: argp_option = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_0]].name = c"number".as_ptr();
 // CHECK-NEXT:             [[T_0]].key = 110i32;
 // CHECK-NEXT:             [[T_0]].arg = c"VALUE".as_ptr();
@@ -420,12 +420,12 @@ int main(void) {
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_1]]: argp_option = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:             [[T_1]].name = std::ptr::null::<i8>();
+// CHECK-NEXT:             let mut [[T_1]]: argp_option = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_1]].name = core::ptr::null::<i8>();
 // CHECK-NEXT:             [[T_1]].key = 0i32;
-// CHECK-NEXT:             [[T_1]].arg = std::ptr::null::<i8>();
+// CHECK-NEXT:             [[T_1]].arg = core::ptr::null::<i8>();
 // CHECK-NEXT:             [[T_1]].flags = 0i32;
-// CHECK-NEXT:             [[T_1]].doc = std::ptr::null::<i8>();
+// CHECK-NEXT:             [[T_1]].doc = core::ptr::null::<i8>();
 // CHECK-NEXT:             [[T_1]].group = 0i32;
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
@@ -434,13 +434,13 @@ int main(void) {
 // CHECK-NEXT:         options: options.0.as_mut_ptr() as *const argp_option,
 // CHECK-NEXT:         parser: Some(gnu_parse_option),
 // CHECK-NEXT:         args_doc: c"ITEM".as_ptr(),
-// CHECK-NEXT:         doc: std::ptr::null::<i8>(),
-// CHECK-NEXT:         children: std::ptr::null::<argp_child>(),
+// CHECK-NEXT:         doc: core::ptr::null::<i8>(),
+// CHECK-NEXT:         children: core::ptr::null::<argp_child>(),
 // CHECK-NEXT:         help_filter: None,
-// CHECK-NEXT:         argp_domain: std::ptr::null::<i8>(),
+// CHECK-NEXT:         argp_domain: core::ptr::null::<i8>(),
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut parsed: GNUArguments = {
-// CHECK-NEXT:         let mut [[T_2]]: GNUArguments = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_2]]: GNUArguments = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut program: [i8; 6] = [112, 114, 111, 98, 101, 0];
@@ -450,23 +450,23 @@ int main(void) {
 // CHECK-NEXT:         program.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:         option.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:         item.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:         std::ptr::null_mut::<i8>(),
+// CHECK-NEXT:         core::ptr::null_mut::<i8>(),
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let result: i32 = unsafe {
 // CHECK-NEXT:         argp_parse(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(parser) as *const argp,
+// CHECK-NEXT:             core::ptr::addr_of_mut!(parser) as *const argp,
 // CHECK-NEXT:             3i32,
 // CHECK-NEXT:             arguments.0.as_mut_ptr() as *mut *mut i8,
 // CHECK-NEXT:             48u32,
-// CHECK-NEXT:             std::ptr::null_mut::<i32>(),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(parsed) as *mut (),
+// CHECK-NEXT:             core::ptr::null_mut::<i32>(),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(parsed) as *mut (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ((result == 0) as i32) + parsed.number * 10 + parsed.positional
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_search_extensions() -> i32 {
 // CHECK-NEXT:     let mut table: hsearch_data = {
-// CHECK-NEXT:         let mut [[T_0]]: hsearch_data = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: hsearch_data = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let inserted: entry = entry {
@@ -475,20 +475,20 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let query: entry = entry {
 // CHECK-NEXT:         key: c"slate".as_ptr() as *mut i8,
-// CHECK-NEXT:         data: std::ptr::null_mut::<()>(),
+// CHECK-NEXT:         data: core::ptr::null_mut::<()>(),
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut found: *mut entry = std::ptr::null_mut::<entry>();
-// CHECK-NEXT:     let mut tree: *mut () = std::ptr::null_mut::<()>();
+// CHECK-NEXT:     let mut found: *mut entry = core::ptr::null_mut::<entry>();
+// CHECK-NEXT:     let mut tree: *mut () = core::ptr::null_mut::<()>();
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([3i32, 1i32, 4i32, 2i32]);
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     total += ((unsafe { hcreate_r(8u64, std::ptr::addr_of_mut!(table)) }) != 0) as i32;
+// CHECK-NEXT:     total += ((unsafe { hcreate_r(8u64, core::ptr::addr_of_mut!(table)) }) != 0) as i32;
 // CHECK-NEXT:     total
 // CHECK-NEXT:         += ((unsafe {
 // CHECK-NEXT:             hsearch_r(
 // CHECK-NEXT:                 inserted,
 // CHECK-NEXT:                 1u32,
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(found),
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(table),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(found),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(table),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) != 0) as i32;
 // CHECK-NEXT:     total
@@ -496,8 +496,8 @@ int main(void) {
 // CHECK-NEXT:             hsearch_r(
 // CHECK-NEXT:                 query,
 // CHECK-NEXT:                 0u32,
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(found),
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(table),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(found),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(table),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) != 0) as i32;
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = total;
@@ -509,10 +509,10 @@ int main(void) {
 // CHECK-NEXT:                     c"24".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:                 ) as i32
 // CHECK-NEXT:             }) == 0) as i32);
-// CHECK-NEXT:     unsafe { hdestroy_r(std::ptr::addr_of_mut!(table)) };
+// CHECK-NEXT:     unsafe { hdestroy_r(core::ptr::addr_of_mut!(table)) };
 // CHECK-NEXT:     for index in 0u64..4u64 {
 // CHECK-NEXT:         let value: *mut i32 = (unsafe {
-// CHECK-NEXT:             malloc((std::mem::size_of::<i32>() as u64) as usize) as *mut ()
+// CHECK-NEXT:             malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut ()
 // CHECK-NEXT:         }) as *mut i32;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *value = values.0[index as usize];
@@ -520,7 +520,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             tsearch(
 // CHECK-NEXT:                 value as *const (),
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(tree),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(tree),
 // CHECK-NEXT:                 Some(gnu_compare_entries),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
@@ -528,7 +528,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = !unsafe {
 // CHECK-NEXT:         tfind(
 // CHECK-NEXT:             (values.0.as_mut_ptr() as *mut i32).add(2) as *const (),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(tree) as *const *mut (),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(tree) as *const *mut (),
 // CHECK-NEXT:             Some(gnu_compare_entries),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }
@@ -547,8 +547,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -55,7 +55,7 @@ int main(void) {
 // CHECK-NEXT:         __builtin_memchr(
 // CHECK-NEXT:             word.as_mut_ptr() as *const (),
 // CHECK-NEXT:             0i32,
-// CHECK-NEXT:             std::mem::size_of::<[i8; 4]>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<[i8; 4]>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) as *mut i8;
 // CHECK-NEXT:     let nul_equal: *mut i8 = (unsafe {
@@ -68,7 +68,7 @@ int main(void) {
 // CHECK-NEXT:         __builtin_memchr(
 // CHECK-NEXT:             buf.as_mut_ptr() as *const (),
 // CHECK-NEXT:             needle,
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(partial_count)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(partial_count)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) as *mut u8;
 // CHECK-NEXT:     let offset_base: *mut u8 = unsafe { (buf.as_mut_ptr() as *mut u8).add(2) };
@@ -79,7 +79,7 @@ int main(void) {
 // CHECK-NEXT:         __builtin_memchr(
 // CHECK-NEXT:             cbuf.as_ptr() as *const (),
 // CHECK-NEXT:             7i32,
-// CHECK-NEXT:             std::mem::size_of::<[u8; 4]>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<[u8; 4]>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) as *const u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -97,14 +97,14 @@ int main(void) {
 // CHECK-NEXT:             const_hit.offset_from(cbuf.as_ptr() as *const u8) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

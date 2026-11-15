@@ -60,8 +60,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
@@ -89,7 +89,7 @@ int main(void) {
 // CHECK-NEXT:                 WHEN!(!p.is_null()) as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -102,7 +102,7 @@ int main(void) {
 // CHECK-NEXT:                 EXPLICIT!(m) as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -118,7 +118,7 @@ int main(void) {
 // CHECK-NEXT:         println!("{} {}", EXPLICIT__2!(i) as i32, EXPLICIT!(m) as i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%d %ld\n".as_ptr(), TWICE__2!(i), TWICE!(m)) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
@@ -126,7 +126,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(c"%d %d\n".as_ptr(), UNLESS!(m) as i32, UNLESS__2!(p) as i32)
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
@@ -165,7 +165,7 @@ int main(void) {
 // CHECK-NEXT:             if (unsafe { verbose }) > 1 && $c {
 // CHECK-NEXT:                 let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:                 unsafe { slate_support::printf(($x__0) as *const c_char, $($x),*) };
-// CHECK-NEXT:                 unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:                 unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;

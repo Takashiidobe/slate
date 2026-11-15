@@ -80,22 +80,22 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let packed: PackedOne = PackedOne { tag: 29, value: 31 };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {}", std::mem::size_of::< NaturalBefore > () as
-// CHECK-NEXT:         i32, std::mem::offset_of!(NaturalBefore, value) as i32, std::mem::size_of::<
-// CHECK-NEXT:         PackedTwo > () as i32, std::mem::align_of::< PackedTwo > () as i32,
-// CHECK-NEXT:         std::mem::offset_of!(PackedTwo, value) as i32, std::mem::size_of::< PackedOne >
-// CHECK-NEXT:         () as i32, std::mem::align_of::< PackedOne > () as i32,
-// CHECK-NEXT:         std::mem::offset_of!(PackedOne, value) as i32, std::mem::size_of::<
-// CHECK-NEXT:         PackedTwoAgain > () as i32, std::mem::offset_of!(PackedTwoAgain, value) as i32,
-// CHECK-NEXT:         std::mem::offset_of!(NaturalAfter, value) as i32
+// CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {}", core::mem::size_of::< NaturalBefore > () as
+// CHECK-NEXT:         i32, core::mem::offset_of!(NaturalBefore, value) as i32, core::mem::size_of::<
+// CHECK-NEXT:         PackedTwo > () as i32, core::mem::align_of::< PackedTwo > () as i32,
+// CHECK-NEXT:         core::mem::offset_of!(PackedTwo, value) as i32, core::mem::size_of::< PackedOne >
+// CHECK-NEXT:         () as i32, core::mem::align_of::< PackedOne > () as i32,
+// CHECK-NEXT:         core::mem::offset_of!(PackedOne, value) as i32, core::mem::size_of::<
+// CHECK-NEXT:         PackedTwoAgain > () as i32, core::mem::offset_of!(PackedTwoAgain, value) as i32,
+// CHECK-NEXT:         core::mem::offset_of!(NaturalAfter, value) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     if (packed.tag as i32) == 29 && packed.value == 31 { 0 } else { 1 }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

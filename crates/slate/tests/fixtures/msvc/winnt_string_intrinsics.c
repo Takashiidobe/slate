@@ -83,17 +83,17 @@ int main(void) { return 0; }
 // CHECK-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: #[repr(C, align(16))]
 // X86_64-PC-WINDOWS-MSVC-NEXT: struct __SlateAlign16<T>(T);
-// I686-PC-WINDOWS-MSVC-NEXT: static mut bytes: [u8; 16] = unsafe { std::mem::zeroed() };
+// I686-PC-WINDOWS-MSVC-NEXT: static mut bytes: [u8; 16] = unsafe { core::mem::zeroed() };
 // X86_64-PC-WINDOWS-MSVC-EMPTY:
 // I686-PC-WINDOWS-MSVC-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: static mut bytes: __SlateAlign16<[u8; 16]> = __SlateAlign16(unsafe { std::mem::zeroed() });
-// I686-PC-WINDOWS-MSVC-NEXT: static mut words: [u16; 8] = unsafe { std::mem::zeroed() };
+// X86_64-PC-WINDOWS-MSVC-NEXT: static mut bytes: __SlateAlign16<[u8; 16]> = __SlateAlign16(unsafe { core::mem::zeroed() });
+// I686-PC-WINDOWS-MSVC-NEXT: static mut words: [u16; 8] = unsafe { core::mem::zeroed() };
 // X86_64-PC-WINDOWS-MSVC-EMPTY:
 // I686-PC-WINDOWS-MSVC-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: static mut words: __SlateAlign16<[u16; 8]> = __SlateAlign16(unsafe { std::mem::zeroed() });
+// X86_64-PC-WINDOWS-MSVC-NEXT: static mut words: __SlateAlign16<[u16; 8]> = __SlateAlign16(unsafe { core::mem::zeroed() });
 // X86_64-PC-WINDOWS-MSVC-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: static mut dwords: __SlateAlign16<[u32; 8]> = __SlateAlign16(unsafe { std::mem::zeroed() });
-// I686-PC-WINDOWS-MSVC-NEXT: static mut dwords: [u32; 8] = unsafe { std::mem::zeroed() };
+// X86_64-PC-WINDOWS-MSVC-NEXT: static mut dwords: __SlateAlign16<[u32; 8]> = __SlateAlign16(unsafe { core::mem::zeroed() });
+// I686-PC-WINDOWS-MSVC-NEXT: static mut dwords: [u32; 8] = unsafe { core::mem::zeroed() };
 // X86_64-PC-WINDOWS-MSVC-EMPTY:
 // I686-PC-WINDOWS-MSVC-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: use slate_support::__movsb;
@@ -144,10 +144,10 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:         __movsb(
 // I686-PC-WINDOWS-MSVC-NEXT:         __movsb(
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (out.0.as_mut_ptr() as *mut u8) as *mut u8,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ((std::ptr::addr_of_mut!(bytes.0) as *mut u8) as *const u8) as *const u8,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes.0) as *mut u8) as *const u8) as *const u8,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (n as u64) as usize,
 // I686-PC-WINDOWS-MSVC-NEXT:             (out.as_mut_ptr() as *mut u8) as *mut u8,
-// I686-PC-WINDOWS-MSVC-NEXT:             ((std::ptr::addr_of_mut!(bytes) as *mut u8) as *const u8) as *const u8,
+// I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes) as *mut u8) as *const u8) as *const u8,
 // I686-PC-WINDOWS-MSVC-NEXT:             n as usize,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         )
 // I686-PC-WINDOWS-MSVC-NEXT:         )
@@ -167,11 +167,11 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:     unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         __movsb(
 // I686-PC-WINDOWS-MSVC-NEXT:         __movsb(
-// X86_64-PC-WINDOWS-MSVC-NEXT:             (std::ptr::addr_of_mut!(bytes.0) as *mut u8).add(2) as *mut u8,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ((std::ptr::addr_of_mut!(bytes.0) as *mut u8) as *const u8) as *const u8,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(bytes.0) as *mut u8).add(2) as *mut u8,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes.0) as *mut u8) as *const u8) as *const u8,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (count(10u32) as u64) as usize,
-// I686-PC-WINDOWS-MSVC-NEXT:             (std::ptr::addr_of_mut!(bytes) as *mut u8).add(2) as *mut u8,
-// I686-PC-WINDOWS-MSVC-NEXT:             ((std::ptr::addr_of_mut!(bytes) as *mut u8) as *const u8) as *const u8,
+// I686-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(bytes) as *mut u8).add(2) as *mut u8,
+// I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes) as *mut u8) as *const u8) as *const u8,
 // I686-PC-WINDOWS-MSVC-NEXT:             count(10u32) as usize,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         )
 // I686-PC-WINDOWS-MSVC-NEXT:         )
@@ -237,11 +237,11 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:     unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         __movsw(
 // I686-PC-WINDOWS-MSVC-NEXT:         __movsw(
-// X86_64-PC-WINDOWS-MSVC-NEXT:             (std::ptr::addr_of_mut!(words.0) as *mut u16).add(1) as *mut u16,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ((std::ptr::addr_of_mut!(words.0) as *mut u16) as *const u16) as *const u16,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(words.0) as *mut u16).add(1) as *mut u16,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(words.0) as *mut u16) as *const u16) as *const u16,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (count(6u32) as u64) as usize,
-// I686-PC-WINDOWS-MSVC-NEXT:             (std::ptr::addr_of_mut!(words) as *mut u16).add(1) as *mut u16,
-// I686-PC-WINDOWS-MSVC-NEXT:             ((std::ptr::addr_of_mut!(words) as *mut u16) as *const u16) as *const u16,
+// I686-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(words) as *mut u16).add(1) as *mut u16,
+// I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(words) as *mut u16) as *const u16) as *const u16,
 // I686-PC-WINDOWS-MSVC-NEXT:             count(6u32) as usize,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         )
 // I686-PC-WINDOWS-MSVC-NEXT:         )
@@ -263,8 +263,8 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:     unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         __stosw(
 // I686-PC-WINDOWS-MSVC-NEXT:         __stosw(
-// X86_64-PC-WINDOWS-MSVC-NEXT:             (std::ptr::addr_of_mut!(words.0) as *mut u16) as *mut u16,
-// I686-PC-WINDOWS-MSVC-NEXT:             (std::ptr::addr_of_mut!(words) as *mut u16) as *mut u16,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(words.0) as *mut u16) as *mut u16,
+// I686-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(words) as *mut u16) as *mut u16,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             48879u16 as u16,
 // I686-PC-WINDOWS-MSVC-NEXT:             48879u16 as u16,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (count(2u32) as u64) as usize,
@@ -299,11 +299,11 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:     unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         __movsd(
 // I686-PC-WINDOWS-MSVC-NEXT:         __movsd(
-// X86_64-PC-WINDOWS-MSVC-NEXT:             (std::ptr::addr_of_mut!(dwords.0) as *mut u32) as *mut u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ((std::ptr::addr_of_mut!(dwords.0) as *mut u32).add(2) as *const u32) as *const u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(dwords.0) as *mut u32) as *mut u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(dwords.0) as *mut u32).add(2) as *const u32) as *const u32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (count(5u32) as u64) as usize,
-// I686-PC-WINDOWS-MSVC-NEXT:             (std::ptr::addr_of_mut!(dwords) as *mut u32) as *mut u32,
-// I686-PC-WINDOWS-MSVC-NEXT:             ((std::ptr::addr_of_mut!(dwords) as *mut u32).add(2) as *const u32) as *const u32,
+// I686-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(dwords) as *mut u32) as *mut u32,
+// I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(dwords) as *mut u32).add(2) as *const u32) as *const u32,
 // I686-PC-WINDOWS-MSVC-NEXT:             count(5u32) as usize,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         )
 // I686-PC-WINDOWS-MSVC-NEXT:         )
@@ -325,8 +325,8 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:     unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         __stosd(
 // I686-PC-WINDOWS-MSVC-NEXT:         __stosd(
-// X86_64-PC-WINDOWS-MSVC-NEXT:             (std::ptr::addr_of_mut!(dwords.0) as *mut u32).add(6) as *mut u32,
-// I686-PC-WINDOWS-MSVC-NEXT:             (std::ptr::addr_of_mut!(dwords) as *mut u32).add(6) as *mut u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(dwords.0) as *mut u32).add(6) as *mut u32,
+// I686-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(dwords) as *mut u32).add(6) as *mut u32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             3735928559u32 as u32,
 // I686-PC-WINDOWS-MSVC-NEXT:             3735928559u32 as u32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (count(2u32) as u64) as usize,
@@ -374,8 +374,8 @@ int main(void) { return 0; }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

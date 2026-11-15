@@ -58,11 +58,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut wc: __SlateRecord_callback_struct_field_c_11 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut wc: __SlateRecord_callback_struct_field_c_11 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     wc.style = 0;
 // CHECK-NEXT:     wc.lpfnWndProc = Some(DefDlgProcA);
 // CHECK-NEXT:     let raw: Option<unsafe extern "C-unwind" fn()> = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<
+// CHECK-NEXT:         core::mem::transmute::<
 // X86_64-PC-WINDOWS-MSVC-NEXT:             Option<unsafe extern "C-unwind" fn(*mut (), u32, u64, i64) -> i64>,
 // I686-PC-WINDOWS-MSVC-NEXT:             Option<unsafe extern "stdcall-unwind" fn(*mut (), u32, u32, i32) -> i32>,
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             Option<unsafe extern "C-unwind" fn(*mut (), u32, u64, i64) -> i64>,
@@ -72,7 +72,7 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:     let back: Option<unsafe extern "C-unwind" fn(*mut (), u32, u64, i64) -> i64> = unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:     let back: Option<unsafe extern "stdcall-unwind" fn(*mut (), u32, u32, i32) -> i32> = unsafe {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     let back: Option<unsafe extern "C-unwind" fn(*mut (), u32, u64, i64) -> i64> = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<
+// CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             Option<unsafe extern "C-unwind" fn()>,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             Option<unsafe extern "C-unwind" fn(*mut (), u32, u64, i64) -> i64>,
 // I686-PC-WINDOWS-MSVC-NEXT:             Option<unsafe extern "stdcall-unwind" fn(*mut (), u32, u32, i32) -> i32>,
@@ -80,12 +80,12 @@ int main(void) {
 // CHECK-NEXT:         >(raw)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool =
-// X86_64-PC-WINDOWS-MSVC-NEXT:         (unsafe { wc.lpfnWndProc.unwrap()(std::ptr::null_mut::<()>(), 1u32, 2u64, 3i64) }) != 6
-// X86_64-PC-WINDOWS-MSVC-NEXT:             || (unsafe { back.unwrap()(std::ptr::null_mut::<()>(), 1u32, 2u64, 3i64) }) != 6;
-// I686-PC-WINDOWS-MSVC-NEXT:         (unsafe { wc.lpfnWndProc.unwrap()(std::ptr::null_mut::<()>(), 1u32, 2u32, 3i32) }) != 6
-// I686-PC-WINDOWS-MSVC-NEXT:             || (unsafe { back.unwrap()(std::ptr::null_mut::<()>(), 1u32, 2u32, 3i32) }) != 6;
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         (unsafe { wc.lpfnWndProc.unwrap()(std::ptr::null_mut::<()>(), 1u32, 2u64, 3i64) }) != 6
-// AARCH64-PC-WINDOWS-MSVC-NEXT:             || (unsafe { back.unwrap()(std::ptr::null_mut::<()>(), 1u32, 2u64, 3i64) }) != 6;
+// X86_64-PC-WINDOWS-MSVC-NEXT:         (unsafe { wc.lpfnWndProc.unwrap()(core::ptr::null_mut::<()>(), 1u32, 2u64, 3i64) }) != 6
+// X86_64-PC-WINDOWS-MSVC-NEXT:             || (unsafe { back.unwrap()(core::ptr::null_mut::<()>(), 1u32, 2u64, 3i64) }) != 6;
+// I686-PC-WINDOWS-MSVC-NEXT:         (unsafe { wc.lpfnWndProc.unwrap()(core::ptr::null_mut::<()>(), 1u32, 2u32, 3i32) }) != 6
+// I686-PC-WINDOWS-MSVC-NEXT:             || (unsafe { back.unwrap()(core::ptr::null_mut::<()>(), 1u32, 2u32, 3i32) }) != 6;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         (unsafe { wc.lpfnWndProc.unwrap()(core::ptr::null_mut::<()>(), 1u32, 2u64, 3i64) }) != 6
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             || (unsafe { back.unwrap()(core::ptr::null_mut::<()>(), 1u32, 2u64, 3i64) }) != 6;
 // CHECK-NEXT:     if [[V_0]] {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
@@ -96,8 +96,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

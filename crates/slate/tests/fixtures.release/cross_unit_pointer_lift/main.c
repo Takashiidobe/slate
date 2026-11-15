@@ -48,12 +48,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut local: counter = counter { value: 1 };
-// CHECK-NEXT:     add_twice(unsafe { &mut (*std::ptr::addr_of_mut!(local)) }, 2i32);
+// CHECK-NEXT:     add_twice(unsafe { &mut (*core::ptr::addr_of_mut!(local)) }, 2i32);
 // CHECK-NEXT:     println!("{}", unsafe {
-// CHECK-NEXT:         counter_get(&(*(std::ptr::addr_of_mut!(local) as *const counter)))
+// CHECK-NEXT:         counter_get(&(*(core::ptr::addr_of_mut!(local) as *const counter)))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     println!("{}", unsafe {
-// CHECK-NEXT:         counter_apply(Some(doubled), std::ptr::addr_of_mut!(local))
+// CHECK-NEXT:         counter_apply(Some(doubled), core::ptr::addr_of_mut!(local))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
@@ -61,8 +61,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

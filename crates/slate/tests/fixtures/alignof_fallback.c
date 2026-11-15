@@ -253,15 +253,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
-// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:             Some(core::cmp::Ordering::Less)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     None
 // CHECK-NEXT:                 }
@@ -302,8 +302,8 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: #[repr(C, align(64))]
 // CHECK-NEXT: struct __SlateAlign64<T>(T);
-// CHECK-NEXT: static mut table: [i8; 4] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT: static mut global_align: u64 = (std::mem::align_of::<Pair>() as u64).wrapping_mul(2u64);
+// CHECK-NEXT: static mut table: [i8; 4] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT: static mut global_align: u64 = (core::mem::align_of::<Pair>() as u64).wrapping_mul(2u64);
 // CHECK-NEXT: fn f() -> i32 {
 // CHECK-NEXT:     7
 // CHECK-NEXT: }
@@ -319,72 +319,72 @@ int main(void) {
 // CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn report_folded() {
 // CHECK-NEXT:     let declared: __SlateAlign64<i32> = __SlateAlign64(0i32);
 // CHECK-NEXT:     let packed: Packed = Packed { tag: 1, value: 2 };
 // CHECK-NEXT:     println!("{}", 1i32);
 // CHECK-NEXT:     println!("{}", true as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< LongDouble > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< LongDouble > () as i32);
 // CHECK-NEXT:     println!("{}", 4i32);
 // CHECK-NEXT:     println!("{}", 16i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< i64 > () as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< f64 > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< i64 > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< f64 > () as i32);
 // CHECK-NEXT:     println!("{}", 4i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< Holder > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< Holder > () as i32);
 // CHECK-NEXT:     println!("{}", 64i32);
 // CHECK-NEXT:     println!("{}", 1i32);
 // CHECK-NEXT:     println!("{}", declared.0 + packed.value);
 // CHECK-NEXT: }
 // CHECK-NEXT: fn report_kept() {
 // CHECK-NEXT:     let values: __SlateAlign16<[i32; 5]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i32; 5] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i32; 5] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let text: *mut i8 = c"abc".as_ptr() as *mut i8;
 // CHECK-NEXT:     let pair: Pair = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Pair = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Pair = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].left = 1i32;
 // CHECK-NEXT:         [[T_1]].right = 120i8;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< i8 > () as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< i16 > () as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< i32 > () as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< i64 > () as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< i64 > () as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< f32 > () as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< f64 > () as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::<* mut () > () as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< [i32; 4] > () as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< Pair > () as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< Packed > () as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< Raised > () as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< Either > () as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< Pair > () as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< [i32; 5] > () as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::<* mut i8 > () as i32);
-// CHECK-NEXT:     println!("{}", std::mem::align_of::< i32 > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< i8 > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< i16 > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< i32 > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< i64 > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< i64 > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< f32 > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< f64 > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::<* mut () > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< [i32; 4] > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< Pair > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< Packed > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< Raised > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< Either > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< Pair > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< [i32; 5] > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::<* mut i8 > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::align_of::< i32 > () as i32);
 // CHECK-NEXT:     println!("{}", values.0[0] + ((unsafe { * text.add(0) }) as i32) + pair.left);
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     report_folded();
 // CHECK-NEXT:     report_kept();
-// CHECK-NEXT:     println!("{}", std::mem::size_of::< [i8; 4] > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::size_of::< [i8; 4] > () as i32);
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lu\n".as_ptr(), global_align) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{}", classify(std::mem::align_of::< i8 > () as u64));
-// CHECK-NEXT:     println!("{}", classify(std::mem::align_of::< i16 > () as u64));
-// CHECK-NEXT:     println!("{}", classify(std::mem::align_of::< Raised > () as u64));
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     println!("{}", classify(core::mem::align_of::< i8 > () as u64));
+// CHECK-NEXT:     println!("{}", classify(core::mem::align_of::< i16 > () as u64));
+// CHECK-NEXT:     println!("{}", classify(core::mem::align_of::< Raised > () as u64));
 // CHECK-NEXT:     f() - 7
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

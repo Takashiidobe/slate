@@ -22,7 +22,7 @@ int main(void) {
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: fn first_byte(bytes: *const u8, len: i32) -> i32 {
 // CHECK-NEXT:     let __bytes_view = unsafe {
-// CHECK-NEXT:         std::slice::from_raw_parts(bytes as *const u8, len as usize)
+// CHECK-NEXT:         core::slice::from_raw_parts(bytes as *const u8, len as usize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { strlen((bytes as *const i8) as *const core::ffi::c_char) as u64 };
 // CHECK-NEXT:     let mut value: i32 = 0;
@@ -40,8 +40,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

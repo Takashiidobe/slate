@@ -82,7 +82,7 @@ int main(void) {
 // CHECK-NEXT:             (inf - inf == inf - inf) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let third: f32 = 1.0f32 / 3.0f32;
 // CHECK-NEXT:     let sum: f32 = 0.1f32 + 0.2f32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -94,19 +94,19 @@ int main(void) {
 // CHECK-NEXT:             (sum == 0.3f32) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let dsum: f64 = 0.1f64 + 0.2f64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%.17g %d\n".as_ptr(), dsum, (dsum == 0.3f64) as i32)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut f: f32 = 16777216.0f32;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: f32 = f + 1.0f32;
 // CHECK-NEXT:     f = [[V_0]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.1f\n".as_ptr(), f as f64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut d: f64 = 2.5f64;
 // CHECK-NEXT:     d *= 3i32 as f64;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: f64 = d - 0.5f64;
@@ -114,7 +114,7 @@ int main(void) {
 // CHECK-NEXT:     d /= 4i32 as f64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%g\n".as_ptr(), d) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let i: i32 = 7;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -124,10 +124,10 @@ int main(void) {
 // CHECK-NEXT:             ((i / 2) as f64) * 1.0f64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%g %g\n".as_ptr(), -d, -0.0f64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let neg: f32 = -1.5f32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -137,7 +137,7 @@ int main(void) {
 // CHECK-NEXT:             (neg / 0.5f32) as f64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let values: __SlateAlign16<[f64; 4]> = __SlateAlign16([
 // CHECK-NEXT:         3.5f64,
 // CHECK-NEXT:         -1.25f64,
@@ -152,7 +152,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%g %g\n".as_ptr(), max, values.0[3] * (10i32 as f64))
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}", ((1.0f32 as f64) < 1.0f64) as i32, (((0.1f64 as f32) as f64) == 0.1f64)
 // CHECK-NEXT:         as i32
@@ -162,8 +162,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

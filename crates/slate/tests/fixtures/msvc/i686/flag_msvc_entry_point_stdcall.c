@@ -53,8 +53,8 @@ int main(void) {
 // CHECK-NEXT:         Some(DllMain);
 // CHECK-NEXT:     if (unsafe {
 // CHECK-NEXT:         win.unwrap()(
-// CHECK-NEXT:             std::ptr::null_mut::<()>(),
-// CHECK-NEXT:             std::ptr::null_mut::<()>(),
+// CHECK-NEXT:             core::ptr::null_mut::<()>(),
+// CHECK-NEXT:             core::ptr::null_mut::<()>(),
 // CHECK-NEXT:             c"x".as_ptr() as *mut i8,
 // CHECK-NEXT:             4i32,
 // CHECK-NEXT:         )
@@ -62,7 +62,13 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (unsafe { dll.unwrap()(std::ptr::null_mut::<()>(), 3u32, std::ptr::null_mut::<()>()) }) != 6
+// CHECK-NEXT:     if (unsafe {
+// CHECK-NEXT:         dll.unwrap()(
+// CHECK-NEXT:             core::ptr::null_mut::<()>(),
+// CHECK-NEXT:             3u32,
+// CHECK-NEXT:             core::ptr::null_mut::<()>(),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     }) != 6
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
@@ -72,8 +78,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

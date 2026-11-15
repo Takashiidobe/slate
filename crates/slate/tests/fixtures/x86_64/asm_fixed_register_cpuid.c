@@ -24,9 +24,9 @@ int main(void) { return cpuid_leaf1_nonzero(); }
 // CHECK-NEXT:             [[T_0]], lateout("cx") [[T_1]], lateout("dx") [[T_2]], in ("ax") (1 as i32) as u32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         f1a = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
-// CHECK-NEXT:         f1c = unsafe { std::mem::transmute::<u32, u32>([[T_1]] as u32) };
-// CHECK-NEXT:         f1d = unsafe { std::mem::transmute::<u32, u32>([[T_2]] as u32) };
+// CHECK-NEXT:         f1a = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         f1c = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
+// CHECK-NEXT:         f1d = unsafe { core::mem::transmute::<u32, u32>([[T_2]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (f1c | f1d != 0) as i32
 // CHECK: {{^}}}

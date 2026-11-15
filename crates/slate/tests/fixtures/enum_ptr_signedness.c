@@ -29,7 +29,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut data: [u32; 3] = [0, 1, 2];
-// CHECK-NEXT:     let mut p: palette = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut p: palette = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     p.start = data.as_mut_ptr() as *mut u32;
 // CHECK-NEXT:     p.top = unsafe { (data.as_mut_ptr() as *mut u32).add(3) };
 // CHECK-NEXT:     let c: u32 = unsafe { *p.start.add(1) };
@@ -40,8 +40,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

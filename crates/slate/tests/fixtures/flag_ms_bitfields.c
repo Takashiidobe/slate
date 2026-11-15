@@ -138,14 +138,14 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut m: mixed_units = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: mixed_units = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: mixed_units = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_a(1i8);
 // CHECK-NEXT:         [[T_0]].__slate_bits_1.__set_b(2i32);
 // CHECK-NEXT:         [[T_0]].c = 3i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut w: widening = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: widening = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: widening = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].__slate_bits_0.__set_x(1i32);
 // CHECK-NEXT:         [[T_1]].__slate_bits_1.__set_y(2i64);
 // CHECK-NEXT:         [[T_1]].__slate_bits_2.__set_z(3i32);
@@ -154,10 +154,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu\n".as_ptr(),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<mixed_units>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<widening>() as u64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<mixed_units>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<widening>() as u32,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<mixed_units>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<widening>() as u64,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<mixed_units>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<widening>() as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -177,8 +177,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

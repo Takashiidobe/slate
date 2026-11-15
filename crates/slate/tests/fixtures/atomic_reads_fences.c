@@ -70,7 +70,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut shared: i32 = 7;
-// CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: extern "C-unwind" fn callback(x: i32) -> i32 {
 // CHECK-NEXT:     x + 5
 // CHECK-NEXT: }
@@ -85,155 +85,155 @@ int main(void) {
 // CHECK-NEXT:     let mut b: i16 = -1234;
 // CHECK-NEXT:     let mut c: i32 = -765432;
 // CHECK-NEXT:     let mut d: u64 = 18364758544493064720;
-// CHECK-NEXT:     let mut p: *mut i32 = std::ptr::addr_of_mut!(c);
-// CHECK-NEXT:     let mut cp: *const i32 = std::ptr::addr_of_mut!(c) as *const i32;
+// CHECK-NEXT:     let mut p: *mut i32 = core::ptr::addr_of_mut!(c);
+// CHECK-NEXT:     let mut cp: *const i32 = core::ptr::addr_of_mut!(c) as *const i32;
 // CHECK-NEXT:     let mut r#fn: Option<unsafe extern "C-unwind" fn(i32) -> i32> = Some(callback);
 // CHECK-NEXT:     let mut flag: bool = true;
 // CHECK-NEXT:     let mut v: i32 = 17;
 // CHECK-NEXT:     let mut s: u16 = 65000;
 // CHECK-NEXT:     let mut wide: u64 = d;
 // CHECK-NEXT:     let mut counters: Counters = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Counters = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Counters = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].value = 3i32;
 // CHECK-NEXT:         [[T_0]].small = 9u16;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let av: i32 = (unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(a) as *mut u8)
-// CHECK-NEXT:             .load(std::sync::atomic::Ordering::Relaxed)
+// CHECK-NEXT:         core::sync::atomic::AtomicU8::from_ptr(core::ptr::addr_of_mut!(a) as *mut u8)
+// CHECK-NEXT:             .load(core::sync::atomic::Ordering::Relaxed)
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     let bv: i32 = (unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicI16::from_ptr(std::ptr::addr_of_mut!(b) as *mut i16)
-// CHECK-NEXT:             .load(std::sync::atomic::Ordering::Acquire)
+// CHECK-NEXT:         core::sync::atomic::AtomicI16::from_ptr(core::ptr::addr_of_mut!(b) as *mut i16)
+// CHECK-NEXT:             .load(core::sync::atomic::Ordering::Acquire)
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     let cv: i32 = unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(c) as *mut i32)
-// CHECK-NEXT:             .load(std::sync::atomic::Ordering::Acquire)
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(c) as *mut i32)
+// CHECK-NEXT:             .load(core::sync::atomic::Ordering::Acquire)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let dv: u64 = unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicU64::from_ptr(std::ptr::addr_of_mut!(d) as *mut u64)
-// CHECK-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:         core::sync::atomic::AtomicU64::from_ptr(core::ptr::addr_of_mut!(d) as *mut u64)
+// CHECK-NEXT:             .load(core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let pv: *mut i32 = unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicPtr::from_ptr(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(p) as *mut *mut i32,
+// CHECK-NEXT:         core::sync::atomic::AtomicPtr::from_ptr(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(p) as *mut *mut i32,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .load(std::sync::atomic::Ordering::Acquire) as *mut i32
+// CHECK-NEXT:             .load(core::sync::atomic::Ordering::Acquire) as *mut i32
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let cpv: *const i32 = unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicPtr::from_ptr(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(cp) as *mut *mut i32,
+// CHECK-NEXT:         core::sync::atomic::AtomicPtr::from_ptr(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(cp) as *mut *mut i32,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .load(std::sync::atomic::Ordering::Relaxed) as *const i32
+// CHECK-NEXT:             .load(core::sync::atomic::Ordering::Relaxed) as *const i32
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicPtr::from_ptr(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(r#fn) as *mut *mut u8,
+// CHECK-NEXT:         core::sync::atomic::AtomicPtr::from_ptr(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(r#fn) as *mut *mut u8,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .store(
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     std::mem::transmute::<
+// CHECK-NEXT:                     core::mem::transmute::<
 // CHECK-NEXT:                         Option<unsafe extern "C-unwind" fn(i32) -> i32>,
 // CHECK-NEXT:                         *mut u8,
 // CHECK-NEXT:                     >(Some(callback))
 // CHECK-NEXT:                 },
-// CHECK-NEXT:                 std::sync::atomic::Ordering::Relaxed,
+// CHECK-NEXT:                 core::sync::atomic::Ordering::Relaxed,
 // CHECK-NEXT:             )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let fnv: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::mem::transmute::<
+// CHECK-NEXT:             core::mem::transmute::<
 // CHECK-NEXT:                 *mut u8,
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32) -> i32>,
 // CHECK-NEXT:             >(
-// CHECK-NEXT:                 std::sync::atomic::AtomicPtr::from_ptr(
-// CHECK-NEXT:                         std::ptr::addr_of_mut!(r#fn) as *mut *mut u8,
+// CHECK-NEXT:                 core::sync::atomic::AtomicPtr::from_ptr(
+// CHECK-NEXT:                         core::ptr::addr_of_mut!(r#fn) as *mut *mut u8,
 // CHECK-NEXT:                     )
-// CHECK-NEXT:                     .load(std::sync::atomic::Ordering::Acquire),
+// CHECK-NEXT:                     .load(core::sync::atomic::Ordering::Acquire),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = (unsafe { *cpv }) != c || (unsafe { fnv.unwrap()(7i32) }) != 12;
 // CHECK-NEXT:     if [[V_0]]
 // CHECK-NEXT:         || !unsafe {
-// CHECK-NEXT:             std::sync::atomic::AtomicBool::load_volatile(
-// CHECK-NEXT:                 std::sync::atomic::AtomicBool::from_ptr_raw(
-// CHECK-NEXT:                     std::ptr::addr_of_mut!(flag) as *mut bool,
+// CHECK-NEXT:             core::sync::atomic::AtomicBool::load_volatile(
+// CHECK-NEXT:                 core::sync::atomic::AtomicBool::from_ptr_raw(
+// CHECK-NEXT:                     core::ptr::addr_of_mut!(flag) as *mut bool,
 // CHECK-NEXT:                 ),
-// CHECK-NEXT:                 std::sync::atomic::Ordering::Relaxed,
+// CHECK-NEXT:                 core::sync::atomic::Ordering::Relaxed,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }
 // CHECK-NEXT:     {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let vv: i32 = unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::load_volatile(
-// CHECK-NEXT:             std::sync::atomic::AtomicI32::from_ptr_raw(
-// CHECK-NEXT:                 once(&(*std::ptr::addr_of_mut!(v))) as *mut i32,
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::load_volatile(
+// CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr_raw(
+// CHECK-NEXT:                 once(&(*core::ptr::addr_of_mut!(v))) as *mut i32,
 // CHECK-NEXT:             ),
-// CHECK-NEXT:             std::sync::atomic::Ordering::Relaxed,
+// CHECK-NEXT:             core::sync::atomic::Ordering::Relaxed,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let sv: u16 = unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicU16::load_volatile(
-// CHECK-NEXT:             std::sync::atomic::AtomicU16::from_ptr_raw(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(s) as *mut u16,
+// CHECK-NEXT:         core::sync::atomic::AtomicU16::load_volatile(
+// CHECK-NEXT:             core::sync::atomic::AtomicU16::from_ptr_raw(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(s) as *mut u16,
 // CHECK-NEXT:             ),
-// CHECK-NEXT:             std::sync::atomic::Ordering::Acquire,
+// CHECK-NEXT:             core::sync::atomic::Ordering::Acquire,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let wv: u64 = unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicU64::load_volatile(
-// CHECK-NEXT:             std::sync::atomic::AtomicU64::from_ptr_raw(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(wide) as *mut u64,
+// CHECK-NEXT:         core::sync::atomic::AtomicU64::load_volatile(
+// CHECK-NEXT:             core::sync::atomic::AtomicU64::from_ptr_raw(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(wide) as *mut u64,
 // CHECK-NEXT:             ),
-// CHECK-NEXT:             std::sync::atomic::Ordering::SeqCst,
+// CHECK-NEXT:             core::sync::atomic::Ordering::SeqCst,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::load_volatile(
-// CHECK-NEXT:             std::sync::atomic::AtomicI32::from_ptr_raw(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(v) as *mut i32,
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::load_volatile(
+// CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr_raw(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(v) as *mut i32,
 // CHECK-NEXT:             ),
-// CHECK-NEXT:             std::sync::atomic::Ordering::Relaxed,
+// CHECK-NEXT:             core::sync::atomic::Ordering::Relaxed,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::store_volatile(
-// CHECK-NEXT:             std::sync::atomic::AtomicI32::from_ptr_raw(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(v) as *mut i32,
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::store_volatile(
+// CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr_raw(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(v) as *mut i32,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             29i32,
-// CHECK-NEXT:             std::sync::atomic::Ordering::SeqCst,
+// CHECK-NEXT:             core::sync::atomic::Ordering::SeqCst,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(shared) as *mut i32,
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(shared) as *mut i32,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .store(11i32, std::sync::atomic::Ordering::Release)
+// CHECK-NEXT:             .store(11i32, core::sync::atomic::Ordering::Release)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(counters.value) as *mut i32,
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(counters.value) as *mut i32,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .store(13i32, std::sync::atomic::Ordering::Relaxed)
+// CHECK-NEXT:             .store(13i32, core::sync::atomic::Ordering::Relaxed)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicU16::store_volatile(
-// CHECK-NEXT:             std::sync::atomic::AtomicU16::from_ptr_raw(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(counters.small) as *mut u16,
+// CHECK-NEXT:         core::sync::atomic::AtomicU16::store_volatile(
+// CHECK-NEXT:             core::sync::atomic::AtomicU16::from_ptr_raw(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(counters.small) as *mut u16,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             19u16,
-// CHECK-NEXT:             std::sync::atomic::Ordering::Release,
+// CHECK-NEXT:             core::sync::atomic::Ordering::Release,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     std::sync::atomic::fence(std::sync::atomic::Ordering::Acquire);
-// CHECK-NEXT:     std::sync::atomic::fence(std::sync::atomic::Ordering::Release);
-// CHECK-NEXT:     std::sync::atomic::fence(std::sync::atomic::Ordering::AcqRel);
-// CHECK-NEXT:     std::sync::atomic::fence(std::sync::atomic::Ordering::SeqCst);
-// CHECK-NEXT:     std::sync::atomic::compiler_fence(std::sync::atomic::Ordering::Acquire);
-// CHECK-NEXT:     std::sync::atomic::compiler_fence(std::sync::atomic::Ordering::SeqCst);
+// CHECK-NEXT:     core::sync::atomic::fence(core::sync::atomic::Ordering::Acquire);
+// CHECK-NEXT:     core::sync::atomic::fence(core::sync::atomic::Ordering::Release);
+// CHECK-NEXT:     core::sync::atomic::fence(core::sync::atomic::Ordering::AcqRel);
+// CHECK-NEXT:     core::sync::atomic::fence(core::sync::atomic::Ordering::SeqCst);
+// CHECK-NEXT:     core::sync::atomic::compiler_fence(core::sync::atomic::Ordering::Acquire);
+// CHECK-NEXT:     core::sync::atomic::compiler_fence(core::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -247,26 +247,26 @@ int main(void) {
 // CHECK-NEXT:             sv as i32,
 // CHECK-NEXT:             wv,
 // CHECK-NEXT:             calls,
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(v)),
-// CHECK-NEXT:             std::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                     std::ptr::addr_of_mut!(shared) as *mut i32,
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(v)),
+// CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                     core::ptr::addr_of_mut!(shared) as *mut i32,
 // CHECK-NEXT:                 )
-// CHECK-NEXT:                 .load(std::sync::atomic::Ordering::Acquire),
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(counters.small)) as i32,
-// CHECK-NEXT:             std::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                     std::ptr::addr_of_mut!(counters.value) as *mut i32,
+// CHECK-NEXT:                 .load(core::sync::atomic::Ordering::Acquire),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(counters.small)) as i32,
+// CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                     core::ptr::addr_of_mut!(counters.value) as *mut i32,
 // CHECK-NEXT:                 )
-// CHECK-NEXT:                 .load(std::sync::atomic::Ordering::SeqCst),
+// CHECK-NEXT:                 .load(core::sync::atomic::Ordering::SeqCst),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

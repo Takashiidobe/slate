@@ -13,7 +13,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::fprintf(slate_support::stderr(), c"error: %d\n".as_ptr(), 42i32)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

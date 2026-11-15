@@ -196,7 +196,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut global: Flags = {
-// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: Flags = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: Flags = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_x(5u32);
 // CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_set_x(2u32);
 // CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_a(-3i32);
@@ -230,7 +230,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut local: Flags = {
-// CHECK-NEXT:         let mut [[T_0]]: Flags = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: Flags = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_x(0u32);
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
@@ -265,12 +265,12 @@ int main(void) {
 // CHECK-NEXT:             local.__slate_bits_2.__get_wide(),
 // CHECK-NEXT:             local.__slate_bits_2.__get_last() as i32,
 // CHECK-NEXT:             local.after as i32,
-// CHECK-NEXT:             std::mem::size_of::<Flags>() as i32,
+// CHECK-NEXT:             core::mem::size_of::<Flags>() as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     bump(std::ptr::addr_of_mut!(local));
-// CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!(global) });
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     bump(core::ptr::addr_of_mut!(local));
+// CHECK-NEXT:     bump(unsafe { core::ptr::addr_of_mut!(global) });
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -281,26 +281,26 @@ int main(void) {
 // CHECK-NEXT:             local.__slate_bits_0.__get_ready() as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u %d %u %d %d %c %d %lld %d %d\n".as_ptr(),
-// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_0)).__get_x() as i32,
-// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_0)).__get_set_x() as i32,
-// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_0)).__get_a(),
-// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_0)).__get_A() as i32,
-// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_0)).__get_type(),
-// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_0)).__get_ready() as i32,
+// CHECK-NEXT:             (*core::ptr::addr_of!(global.__slate_bits_0)).__get_x() as i32,
+// CHECK-NEXT:             (*core::ptr::addr_of!(global.__slate_bits_0)).__get_set_x() as i32,
+// CHECK-NEXT:             (*core::ptr::addr_of!(global.__slate_bits_0)).__get_a(),
+// CHECK-NEXT:             (*core::ptr::addr_of!(global.__slate_bits_0)).__get_A() as i32,
+// CHECK-NEXT:             (*core::ptr::addr_of!(global.__slate_bits_0)).__get_type(),
+// CHECK-NEXT:             (*core::ptr::addr_of!(global.__slate_bits_0)).__get_ready() as i32,
 // CHECK-NEXT:             global.tag as i32,
-// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_1)).__get__flags2(),
-// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_2)).__get_wide(),
-// CHECK-NEXT:             (*std::ptr::addr_of!(global.__slate_bits_2)).__get_last() as i32,
+// CHECK-NEXT:             (*core::ptr::addr_of!(global.__slate_bits_1)).__get__flags2(),
+// CHECK-NEXT:             (*core::ptr::addr_of!(global.__slate_bits_2)).__get_wide(),
+// CHECK-NEXT:             (*core::ptr::addr_of!(global.__slate_bits_2)).__get_last() as i32,
 // CHECK-NEXT:             global.after as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let mut overlay: Overlay = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     let mut overlay: Overlay = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         overlay.whole = 2882400018;
 // CHECK-NEXT:     }
@@ -313,7 +313,7 @@ int main(void) {
 // CHECK-NEXT:             overlay.__slate_bits_0.__get_signed_bits(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         overlay.parts.__slate_bits_0.__set_high(74565u32);
 // CHECK-NEXT:     }
@@ -325,10 +325,10 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%x %d\n".as_ptr(),
 // CHECK-NEXT:             overlay.whole,
-// CHECK-NEXT:             std::mem::size_of::<Overlay>() as i32,
+// CHECK-NEXT:             core::mem::size_of::<Overlay>() as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::fprintf(
@@ -337,14 +337,14 @@ int main(void) {
 // CHECK-NEXT:             c"file ok".as_ptr() as *mut i8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

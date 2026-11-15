@@ -47,8 +47,8 @@ int main(void) { char b[64]; fmt(b, "%d-%s", 7, "x"); printf("%d %s\n", sum(3, 1
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum(n: i32, mut __va_args: ...) -> i32 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut aq: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut aq: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             core::ffi::VaList<'_>,
@@ -70,7 +70,7 @@ int main(void) { char b[64]; fmt(b, "%d-%s", 7, "x"); printf("%d %s\n", sum(3, 1
 // CHECK-NEXT:     t
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn fmt(buf: *mut i8, f: *const i8, mut __va_args: ...) -> i32 {
-// CHECK-NEXT:     let mut args: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut args: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     args = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             core::ffi::VaList<'_>,
@@ -103,8 +103,8 @@ int main(void) { char b[64]; fmt(b, "%d-%s", 7, "x"); printf("%d %s\n", sum(3, 1
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

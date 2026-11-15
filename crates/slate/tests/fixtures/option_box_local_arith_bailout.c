@@ -29,10 +29,10 @@ int main(void) {
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: fn compute(flag: i32) -> i32 {
-// CHECK-NEXT:     let mut p: *mut i32 = std::ptr::null_mut::<i32>();
+// CHECK-NEXT:     let mut p: *mut i32 = core::ptr::null_mut::<i32>();
 // CHECK-NEXT:     if flag != 0 {
 // CHECK-NEXT:         p = (unsafe {
-// CHECK-NEXT:             malloc((std::mem::size_of::<i32>() as u64).wrapping_mul(4) as usize)
+// CHECK-NEXT:             malloc((core::mem::size_of::<i32>() as u64).wrapping_mul(4) as usize)
 // CHECK-NEXT:                 as *mut ()
 // CHECK-NEXT:         }) as *mut i32;
 // CHECK-NEXT:     }
@@ -56,8 +56,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

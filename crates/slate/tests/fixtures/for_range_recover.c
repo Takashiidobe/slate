@@ -166,7 +166,7 @@ int main(void) {
 // CHECK-NEXT:     t
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn bound_through_pointer(mut n: i32) -> i32 {
-// CHECK-NEXT:     let p: *mut i32 = std::ptr::addr_of_mut!(n);
+// CHECK-NEXT:     let p: *mut i32 = core::ptr::addr_of_mut!(n);
 // CHECK-NEXT:     let mut t: i32 = 0;
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < n {

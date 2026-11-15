@@ -782,7 +782,7 @@ impl FunctionLowerer<'_, '_> {
             return Ok(Expr::Call {
                 func: Box::new(Expr::Var(
                     format!(
-                        "std::simd::num::{}::{method}",
+                        "core::simd::num::{}::{method}",
                         if signed { "SimdInt" } else { "SimdUint" }
                     )
                     .into(),

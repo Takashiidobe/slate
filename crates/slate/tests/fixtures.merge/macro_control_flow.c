@@ -166,8 +166,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
@@ -180,14 +180,14 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d\n".as_ptr(), checks(-1i32), checks(1i32)) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d\n".as_ptr(), tail_only(4i32), trace) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
@@ -208,7 +208,7 @@ int main(void) {
 // CHECK-NEXT:                 nested(-1i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -220,10 +220,10 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%s %d\n".as_ptr(),
 // CHECK-NEXT:             guarded_pointer(text.as_mut_ptr() as *mut c_char, 1i32),
-// CHECK-NEXT:             guarded_pointer(std::ptr::null_mut::<c_char>(), 1i32).is_null() as i32,
+// CHECK-NEXT:             guarded_pointer(core::ptr::null_mut::<c_char>(), 1i32).is_null() as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
@@ -235,7 +235,7 @@ int main(void) {
 // CHECK-NEXT:                 guarded_buffer(-1i32).is_null() as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
@@ -254,11 +254,11 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d %d\n".as_ptr(),
-// CHECK-NEXT:                 *hidden_null_return(std::ptr::addr_of_mut!(cell), 2i32),
-// CHECK-NEXT:                 hidden_null_return(std::ptr::addr_of_mut!(cell), -1i32).is_null() as i32,
+// CHECK-NEXT:                 *hidden_null_return(core::ptr::addr_of_mut!(cell), 2i32),
+// CHECK-NEXT:                 hidden_null_return(core::ptr::addr_of_mut!(cell), -1i32).is_null() as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -271,14 +271,14 @@ int main(void) {
 // CHECK-NEXT:                 hidden_buffer_return(-1i32).is_null() as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {}",
-// CHECK-NEXT:             unsafe { *hidden_null_return(std::ptr::addr_of_mut!(cell), 2i32) },
-// CHECK-NEXT:             hidden_null_return(std::ptr::addr_of_mut!(cell), -1i32).is_null() as i32
+// CHECK-NEXT:             unsafe { *hidden_null_return(core::ptr::addr_of_mut!(cell), 2i32) },
+// CHECK-NEXT:             hidden_null_return(core::ptr::addr_of_mut!(cell), -1i32).is_null() as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {}",
@@ -298,7 +298,7 @@ int main(void) {
 // CHECK-NEXT:                 value_position(2i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -312,21 +312,21 @@ int main(void) {
 // CHECK-NEXT:                 in_switch(2i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d\n".as_ptr(), in_loop(6i32), trace) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d\n".as_ptr(), with_goto(1i32), with_goto(-1i32)) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
@@ -350,7 +350,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"bails %d\n".as_ptr(), a) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
@@ -362,7 +362,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"kept going\n".as_ptr()) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
@@ -378,15 +378,15 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn guarded_buffer(n: i32) -> *mut i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut () = if n < 0 {
-// CHECK-NEXT:         std::ptr::null_mut::<()>()
+// CHECK-NEXT:         core::ptr::null_mut::<()>()
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             malloc((4 as size_t).wrapping_mul(std::mem::size_of::<i32>() as size_t) as usize)
+// CHECK-NEXT:             malloc((4 as size_t).wrapping_mul(core::mem::size_of::<i32>() as size_t) as usize)
 // CHECK-NEXT:                 as *mut ()
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let p: *mut i32 = [[V_0]] as *mut i32;
-// CHECK-NEXT:     NULL_GUARD__2!(p);
+// CHECK-NEXT:     NULL_GUARD!(p);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p.add(0) = n;
 // CHECK-NEXT:     }
@@ -394,14 +394,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn guarded_pointer(s: *mut c_char, n: i32) -> *mut c_char {
-// CHECK-NEXT:     NULL_GUARD!(s);
+// CHECK-NEXT:     NULL_GUARD__2!(s);
 // CHECK-NEXT:     unsafe { s.offset(n as isize) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn hidden_buffer_return(n: i32) -> *mut i32 {
 // CHECK-NEXT:     NEG_NULL!(n);
 // CHECK-NEXT:     let p: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc((n as size_t).wrapping_mul(std::mem::size_of::<i32>() as size_t) as usize) as *mut ()
+// CHECK-NEXT:         malloc((n as size_t).wrapping_mul(core::mem::size_of::<i32>() as size_t) as usize)
+// CHECK-NEXT:             as *mut ()
 // CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p.add(0) = n;
@@ -461,7 +462,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn with_goto(a: i32) -> i32 {
-// CHECK-NEXT:     let mut i: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         i = 0;
 // CHECK-NEXT:         loop {
@@ -522,7 +523,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! NEG_NULL {
 // CHECK-NEXT:     ($n:expr) => {{[{][{]}}
 // CHECK-NEXT:         if ($n) < 0 {
-// CHECK-NEXT:             return std::ptr::null_mut::<i32>();
+// CHECK-NEXT:             return core::ptr::null_mut::<i32>();
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }};
 // CHECK-NEXT: }
@@ -530,7 +531,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! NULL_GUARD {
 // CHECK-NEXT:     ($p:expr) => {{[{][{]}}
 // CHECK-NEXT:         if $p.is_null() {
-// CHECK-NEXT:             return std::ptr::null_mut::<c_char>();
+// CHECK-NEXT:             return core::ptr::null_mut::<i32>();
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }};
 // CHECK-NEXT: }
@@ -538,7 +539,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! NULL_GUARD__2 {
 // CHECK-NEXT:     ($p:expr) => {{[{][{]}}
 // CHECK-NEXT:         if $p.is_null() {
-// CHECK-NEXT:             return std::ptr::null_mut::<i32>();
+// CHECK-NEXT:             return core::ptr::null_mut::<c_char>();
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }};
 // CHECK-NEXT: }
@@ -587,7 +588,7 @@ int main(void) {
 // CHECK-NEXT:     }};
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut trace: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut trace: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;

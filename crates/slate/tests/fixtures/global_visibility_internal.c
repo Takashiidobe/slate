@@ -28,7 +28,7 @@ int main(void) {
 // CHECK-NEXT:     (b"boolean\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT:     (b"number\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT: ]);
-// CHECK-NEXT: static mut counter: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut counter: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: static mut opmodes: [u8; 4] = [1, 2, 4, 8];
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0i32..4i32 {
@@ -45,14 +45,14 @@ int main(void) {
 // CHECK-NEXT:             typenames.0[2],
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     if (unsafe { counter }) == 15 { 0 } else { 1 }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

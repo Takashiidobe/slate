@@ -57,7 +57,7 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut ic_myaddr: u32 = 16820416;
 // CHECK-NEXT: static mut ip_packet: packet_type = {
-// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: packet_type = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: packet_type = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].r#type = 8u16;
 // CHECK-NEXT:     [[T_0]].priority = 1i32;
 // CHECK-NEXT:     [[T_0]]
@@ -96,8 +96,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

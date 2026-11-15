@@ -34,7 +34,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut p: Packed = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut p: Packed = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     p.a = 1;
 // CHECK-NEXT:     p.b = 287454020;
 // CHECK-NEXT:     p.c = 2;
@@ -42,33 +42,33 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu\n".as_ptr(),
-// CHECK-NEXT:             std::mem::size_of::<Packed>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<Packed>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<Packed>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<Packed>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu\n".as_ptr(),
-// CHECK-NEXT:             std::mem::offset_of!(Packed, a) as u64,
-// CHECK-NEXT:             std::mem::offset_of!(Packed, b) as u64,
-// CHECK-NEXT:             std::mem::offset_of!(Packed, c) as u64,
+// CHECK-NEXT:             core::mem::offset_of!(Packed, a) as u64,
+// CHECK-NEXT:             core::mem::offset_of!(Packed, b) as u64,
+// CHECK-NEXT:             core::mem::offset_of!(Packed, c) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%d %x %d\n".as_ptr(), p.a as i32, p.b, p.c as i32)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -25,9 +25,9 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         values.0[i as usize] = i + unsafe { getchar() as i32 };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut c: cursor = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut c: cursor = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     c.ptr = unsafe { (values.0.as_mut_ptr() as *mut i32).add(1) };
-// CHECK-NEXT:     let mut d: cursor = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut d: cursor = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     d.ptr = unsafe { (values.0.as_mut_ptr() as *mut i32).add(3) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:             d.ptr.offset_from(c.ptr as *mut i32) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

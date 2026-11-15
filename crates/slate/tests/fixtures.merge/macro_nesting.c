@@ -139,22 +139,22 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     direct(4i32);
-// CHECK-NEXT:     nested(unsafe { std::ptr::addr_of!(tree) as *const code }, 0i32);
-// CHECK-NEXT:     nested(unsafe { std::ptr::addr_of!(tree) as *const code }, 1i32);
+// CHECK-NEXT:     nested(unsafe { core::ptr::addr_of!(tree) as *const code }, 0i32);
+// CHECK-NEXT:     nested(unsafe { core::ptr::addr_of!(tree) as *const code }, 1i32);
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d %d\n".as_ptr(), buffer as i32, used, total) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
@@ -172,7 +172,7 @@ int main(void) {
 // CHECK-NEXT:         #[cfg(windows)]
 // CHECK-NEXT:         {
 // CHECK-NEXT:             unsafe { slate_support::printf(c"%d\n".as_ptr(), bytes.0[i as usize] as i32) };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         #[cfg(unix)]
 // CHECK-NEXT:         {
@@ -404,14 +404,14 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut buffer: u16 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut buffer: u16 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut bytes: __SlateAlignLargeArray<[u8; 32]> =
-// CHECK-NEXT:     __SlateAlignLargeArray(unsafe { std::mem::zeroed() });
+// CHECK-NEXT:     __SlateAlignLargeArray(unsafe { core::mem::zeroed() });
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut reads: i32 = 2;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut total: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut total: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut tree: [code; 3] = [
 // CHECK-NEXT:     code {
@@ -428,7 +428,7 @@ int main(void) {
 // CHECK-NEXT:     },
 // CHECK-NEXT: ];
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut used: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut used: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NOT: {{.}}

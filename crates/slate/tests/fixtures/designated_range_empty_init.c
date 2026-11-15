@@ -63,7 +63,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut flat: __SlateAlign16<[i32; 8]> = __SlateAlign16({
-// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: [i32; 8] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: [i32; 8] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let [[T_1:__t[0-9]+]] = 7i32;
 // CHECK-NEXT:     let mut [[T_2:__t[0-9]+]]: usize = 1;
 // CHECK-NEXT:     while [[T_2]] <= 3 {
@@ -81,7 +81,7 @@ int main(void) {
 // CHECK-NEXT: });
 // CHECK-NEXT: static mut grid: __SlateAlign16<{{\[\[}}i32; 4]; 3]> = __SlateAlign16([
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_0]]: [i32; 4] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: [i32; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         let [[T_1]] = 4i32;
 // CHECK-NEXT:         let mut [[T_2]]: usize = 1;
 // CHECK-NEXT:         while [[T_2]] <= 2 {
@@ -91,13 +91,13 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     },
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_3]]: [i32; 4] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_3]]: [i32; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_3]][1] = 4i32;
 // CHECK-NEXT:         [[T_3]][2] = 5i32;
 // CHECK-NEXT:         [[T_3]]
 // CHECK-NEXT:     },
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_4]]: [i32; 4] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_4]]: [i32; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         let [[T_5:__t[0-9]+]] = 4i32;
 // CHECK-NEXT:         let mut [[T_6:__t[0-9]+]]: usize = 1;
 // CHECK-NEXT:         while [[T_6]] <= 2 {
@@ -108,11 +108,11 @@ int main(void) {
 // CHECK-NEXT:     },
 // CHECK-NEXT: ]);
 // CHECK-NEXT: static mut rows: __SlateAlign16<[row; 3]> = __SlateAlign16({
-// CHECK-NEXT:     let mut [[T_0]]: [row; 3] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0]]: [row; 3] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let [[T_1]] = {
-// CHECK-NEXT:         let mut [[T_3]]: row = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_3]]: row = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_3]].pts = {
-// CHECK-NEXT:             let mut [[T_4]]: [point; 3] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_4]]: [point; 3] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             let [[T_5]] = point { x: 1i32, y: 2i32 };
 // CHECK-NEXT:             let mut [[T_6]]: usize = 0;
 // CHECK-NEXT:             while [[T_6]] <= 1 {
@@ -131,7 +131,7 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]][2] = row {
 // CHECK-NEXT:         tag: 8i32,
 // CHECK-NEXT:         pts: {
-// CHECK-NEXT:             let mut [[T_7:__t[0-9]+]]: [point; 3] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_7:__t[0-9]+]]: [point; 3] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             let [[T_8:__t[0-9]+]] = point { x: 1i32, y: 2i32 };
 // CHECK-NEXT:             let mut [[T_9:__t[0-9]+]]: usize = 0;
 // CHECK-NEXT:             while [[T_9]] <= 1 {
@@ -144,23 +144,23 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: });
 // CHECK-NEXT: static mut scalar: i32 = {
-// CHECK-NEXT:     let mut [[T_0]]: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0]]: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut real: f64 = {
-// CHECK-NEXT:     let mut [[T_0]]: f64 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0]]: f64 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut pointer: *mut () = {
-// CHECK-NEXT:     let mut [[T_0]]: *mut () = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0]]: *mut () = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: f32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: f32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let seed: i32 = 3;
 // CHECK-NEXT:     let local: __SlateAlign16<[i32; 6]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0]]: [i32; 6] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: [i32; 6] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         let [[T_1]] = seed * 2;
 // CHECK-NEXT:         let mut [[T_2]]: usize = 0;
 // CHECK-NEXT:         while [[T_2]] <= 1 {
@@ -177,7 +177,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let many: __SlateAlign16<[point; 4]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_5]]: [point; 4] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_5]]: [point; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         let [[T_6]] = point { x: seed, y: -seed };
 // CHECK-NEXT:         let mut [[T_7]]: usize = 1;
 // CHECK-NEXT:         while [[T_7]] <= 3 {
@@ -187,11 +187,11 @@ int main(void) {
 // CHECK-NEXT:         [[T_5]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let empty: i32 = {
-// CHECK-NEXT:         let mut [[T_8]]: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_8]]: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_8]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let empty_f: f32 = {
-// CHECK-NEXT:         let mut [[T_9]]: f32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_9]]: f32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_9]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0i32..8i32 {
@@ -233,28 +233,28 @@ int main(void) {
 // CHECK-NEXT:             empty_f as f64,
 // CHECK-NEXT:             *{
 // CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = {
-// CHECK-NEXT:                     let mut [[T_10:__t[0-9]+]]: i32 = std::mem::zeroed();
+// CHECK-NEXT:                     let mut [[T_10:__t[0-9]+]]: i32 = core::mem::zeroed();
 // CHECK-NEXT:                     [[T_10]]
 // CHECK-NEXT:                 };
-// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:             }
 // CHECK-NEXT:                 + (*{
 // CHECK-NEXT:                     [[SLATE_COMPOUND_1]] = {
-// CHECK-NEXT:                         let mut [[T_11:__t[0-9]+]]: f32 = std::mem::zeroed();
+// CHECK-NEXT:                         let mut [[T_11:__t[0-9]+]]: f32 = core::mem::zeroed();
 // CHECK-NEXT:                         [[T_11]]
 // CHECK-NEXT:                     };
-// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
 // CHECK-NEXT:                 } as i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -69,10 +69,10 @@ int count_vowels(const char *text) {
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn registry_new() -> *mut registry {
 // CHECK-NEXT:     let registry: *mut registry =
-// CHECK-NEXT:         (unsafe { malloc((std::mem::size_of::<registry>() as u64) as usize) as *mut () })
+// CHECK-NEXT:         (unsafe { malloc((core::mem::size_of::<registry>() as u64) as usize) as *mut () })
 // CHECK-NEXT:             as *mut registry;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*registry).head = std::ptr::null_mut::<shape>();
+// CHECK-NEXT:         (*registry).head = core::ptr::null_mut::<shape>();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*registry).count = 0;

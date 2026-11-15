@@ -70,15 +70,15 @@ int main(void) {
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     let mut r1: i32 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = n > 5
-// CHECK-NEXT:         && bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 1i32) != 0;
+// CHECK-NEXT:         && bump(unsafe { &mut (*core::ptr::addr_of_mut!(n)) }, 1i32) != 0;
 // CHECK-NEXT:     r1 = [[V_0]] as i32;
 // CHECK-NEXT:     let mut r2: i32 = 0;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = n < 5
-// CHECK-NEXT:         || bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 1i32) != 0;
+// CHECK-NEXT:         || bump(unsafe { &mut (*core::ptr::addr_of_mut!(n)) }, 1i32) != 0;
 // CHECK-NEXT:     r2 = [[V_1]] as i32;
 // CHECK-NEXT:     let mut r3: i32 = 0;
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: bool = if bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 0i32) != 0 {
-// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i32 = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 7i32);
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: bool = if bump(unsafe { &mut (*core::ptr::addr_of_mut!(n)) }, 0i32) != 0 {
+// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i32 = bump(unsafe { &mut (*core::ptr::addr_of_mut!(n)) }, 7i32);
 // CHECK-NEXT:         b = [[V_3]];
 // CHECK-NEXT:         [[V_3]] != 0
 // CHECK-NEXT:     } else {
@@ -86,10 +86,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     r3 = [[V_2]] as i32;
 // CHECK-NEXT:     let mut r4: i32 = 0;
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: bool = if bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 0i32) != 0 {
+// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: bool = if bump(unsafe { &mut (*core::ptr::addr_of_mut!(n)) }, 0i32) != 0 {
 // CHECK-NEXT:         true
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 9i32);
+// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = bump(unsafe { &mut (*core::ptr::addr_of_mut!(n)) }, 9i32);
 // CHECK-NEXT:         b = [[V_5]];
 // CHECK-NEXT:         [[V_5]] != 0
 // CHECK-NEXT:     };
@@ -106,20 +106,20 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     r5 = [[V_7]] as i32;
 // CHECK-NEXT:     println!("{} {} {} {} {} n={} b={} i={}", r1, r2, r3, r4, r5, n, b, i);
-// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: bool = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 1i32) != 0
-// CHECK-NEXT:         && bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 2i32) != 0;
+// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: bool = bump(unsafe { &mut (*core::ptr::addr_of_mut!(n)) }, 1i32) != 0
+// CHECK-NEXT:         && bump(unsafe { &mut (*core::ptr::addr_of_mut!(n)) }, 2i32) != 0;
 // CHECK-NEXT:     if [[V_9]] {
 // CHECK-NEXT:         println!("both n={}", n);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_10:__v[0-9]+]]: bool = bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 0i32) != 0
-// CHECK-NEXT:         || bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 0i32) != 0;
+// CHECK-NEXT:     let [[V_10:__v[0-9]+]]: bool = bump(unsafe { &mut (*core::ptr::addr_of_mut!(n)) }, 0i32) != 0
+// CHECK-NEXT:         || bump(unsafe { &mut (*core::ptr::addr_of_mut!(n)) }, 0i32) != 0;
 // CHECK-NEXT:     if [[V_10]] {
 // CHECK-NEXT:         println!("unreachable");
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("n={}", n);
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let [[V_11:__v[0-9]+]]: bool = i < 10
-// CHECK-NEXT:             && bump(unsafe { &mut (*std::ptr::addr_of_mut!(n)) }, 1i32) != 0;
+// CHECK-NEXT:             && bump(unsafe { &mut (*core::ptr::addr_of_mut!(n)) }, 1i32) != 0;
 // CHECK-NEXT:         if ![[V_11]] {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
@@ -148,8 +148,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -247,15 +247,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
-// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:             Some(core::cmp::Ordering::Less)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     None
 // CHECK-NEXT:                 }
@@ -366,14 +366,14 @@ int main(void) {
 // CHECK-NEXT:     text: [97i8, 98i8, 99i8, 0i8],
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut partial_static: partial = {
-// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: partial = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: partial = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].small = 120i8;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut record_static: record_member = {
-// CHECK-NEXT:     let mut [[T_0]]: record_member = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0]]: record_member = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].record = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: padded = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: padded = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].tag = 114i8;
 // CHECK-NEXT:         [[T_1]].value = 7i32;
 // CHECK-NEXT:         [[T_1]]
@@ -381,12 +381,12 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut wide_static: long_double_member = {
-// CHECK-NEXT:     let mut [[T_0]]: long_double_member = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0]]: long_double_member = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].wide = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]);
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut bit_static: bit_field_member = {
-// CHECK-NEXT:     let mut [[T_0]]: bit_field_member = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0]]: bit_field_member = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_bits(5u32);
 // CHECK-NEXT:     }
@@ -414,13 +414,13 @@ int main(void) {
 // CHECK-NEXT:             c"%f %s %s\n".as_ptr(),
 // CHECK-NEXT:             second.real as f64,
 // CHECK-NEXT:             pointer.text,
-// CHECK-NEXT:             std::ptr::addr_of!(array.text) as *const i8,
+// CHECK-NEXT:             core::ptr::addr_of!(array.text) as *const i8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", zero_after((unsafe { std::ptr::addr_of!(partial_static) }) as * const
-// CHECK-NEXT:         (), 1u64, std::mem::size_of::< partial > () as u64), (unsafe { partial_static
+// CHECK-NEXT:         "{} {}", zero_after((unsafe { core::ptr::addr_of!(partial_static) }) as * const
+// CHECK-NEXT:         (), 1u64, core::mem::size_of::< partial > () as u64), (unsafe { partial_static
 // CHECK-NEXT:         .small }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
@@ -428,23 +428,23 @@ int main(void) {
 // CHECK-NEXT:         .record.value }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", zero_after((unsafe { std::ptr::addr_of!(record_static) }) as * const (),
-// CHECK-NEXT:         1u64, 4u64), __slate_f80_to_i32(unsafe { wide_static.wide })
+// CHECK-NEXT:         "{} {}", zero_after((unsafe { core::ptr::addr_of!(record_static) }) as * const
+// CHECK-NEXT:         (), 1u64, 4u64), __slate_f80_to_i32(unsafe { wide_static.wide })
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), bit_static.word) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let seed: i32 = 3;
 // CHECK-NEXT:     let local: same_size = same_size {
 // CHECK-NEXT:         freq: (seed * 2) as u16,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut local_partial: partial = {
-// CHECK-NEXT:         let mut [[T_0]]: partial = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: partial = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].small = seed as i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut local_array: array_member = array_member {
 // CHECK-NEXT:         text: {
-// CHECK-NEXT:             let mut [[T_1]]: [i8; 4] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_1]]: [i8; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]][0] = 97i8;
 // CHECK-NEXT:             [[T_1]][1] = (97 + seed) as i8;
 // CHECK-NEXT:             [[T_1]]
@@ -452,8 +452,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}", (unsafe { local.code }) as i32,
-// CHECK-NEXT:         zero_after(std::ptr::addr_of_mut!(local_partial) as * const (), 1u64,
-// CHECK-NEXT:         std::mem::size_of::< partial > () as u64), (unsafe { local_partial.small }) as
+// CHECK-NEXT:         zero_after(core::ptr::addr_of_mut!(local_partial) as * const (), 1u64,
+// CHECK-NEXT:         core::mem::size_of::< partial > () as u64), (unsafe { local_partial.small }) as
 // CHECK-NEXT:         i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
@@ -461,20 +461,20 @@ int main(void) {
 // CHECK-NEXT:             c"%s %d\n".as_ptr(),
 // CHECK-NEXT:             local_array.text.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             zero_after(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(local_array) as *const (),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(local_array) as *const (),
 // CHECK-NEXT:                 2u64,
-// CHECK-NEXT:                 std::mem::size_of::<array_member>() as u64,
+// CHECK-NEXT:                 core::mem::size_of::<array_member>() as u64,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

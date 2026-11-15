@@ -52,13 +52,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn likely_nonzero(x: i32) -> i32 {
 // CHECK-NEXT:     if x != 0 {
-// CHECK-NEXT:         unsafe { std::hint::assert_unchecked(x != 0) };
+// CHECK-NEXT:         unsafe { core::hint::assert_unchecked(x != 0) };
 // CHECK-NEXT:         return x + 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     -1
 // CHECK-NEXT: }
 // CHECK-NEXT: fn assume_true(x: i32) -> i32 {
-// CHECK-NEXT:     unsafe { std::hint::assert_unchecked(true) };
+// CHECK-NEXT:     unsafe { core::hint::assert_unchecked(true) };
 // CHECK-NEXT:     x + 1
 // CHECK-NEXT: }
 // CHECK-NEXT: fn guarded_trap(x: i32) -> i32 {
@@ -69,23 +69,23 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn guarded_unreachable(x: i32) -> i32 {
 // CHECK-NEXT:     if x < 0 {
-// CHECK-NEXT:         unsafe { std::hint::unreachable_unchecked() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x * 2
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let input: i32 = 5;
 // CHECK-NEXT:     let a: i32 = likely_nonzero(unsafe {
-// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(input))
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(input))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let b: i32 = assume_true(unsafe {
-// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(input))
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(input))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let c: i32 = guarded_trap(unsafe {
-// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(input))
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(input))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let d: i32 = guarded_unreachable(unsafe {
-// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(input))
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(input))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     println!("{} {} {} {}", a, b, c, d);
 // CHECK-NEXT:     0
@@ -93,8 +93,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

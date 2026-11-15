@@ -26,26 +26,26 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: Slice = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: Slice = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: Slice = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: Slice = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut first: Slice = unsafe {
 // CHECK-NEXT:         *make_slice(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(
-// CHECK-NEXT:                 * { [[SLATE_COMPOUND_0]] = { let mut [[T_0:__t[0-9]+]] : Slice = std::mem::zeroed();
-// CHECK-NEXT:                 [[T_0]] }; std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]]) }
+// CHECK-NEXT:             core::ptr::addr_of_mut!(
+// CHECK-NEXT:                 * { [[SLATE_COMPOUND_0]] = { let mut [[T_0:__t[0-9]+]] : Slice = core::mem::zeroed();
+// CHECK-NEXT:                 [[T_0]] }; core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]]) }
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             c"slate".as_ptr(),
-// CHECK-NEXT:             (std::mem::size_of::<[i8; 6]>() as u64).wrapping_sub(1),
+// CHECK-NEXT:             (core::mem::size_of::<[i8; 6]>() as u64).wrapping_sub(1),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut second: Slice = unsafe {
 // CHECK-NEXT:         *make_slice(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(
-// CHECK-NEXT:                 * { [[SLATE_COMPOUND_1]] = { let mut [[T_1:__t[0-9]+]] : Slice = std::mem::zeroed();
-// CHECK-NEXT:                 [[T_1]] }; std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]]) }
+// CHECK-NEXT:             core::ptr::addr_of_mut!(
+// CHECK-NEXT:                 * { [[SLATE_COMPOUND_1]] = { let mut [[T_1:__t[0-9]+]] : Slice = core::mem::zeroed();
+// CHECK-NEXT:                 [[T_1]] }; core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]]) }
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             c"translation".as_ptr(),
-// CHECK-NEXT:             (std::mem::size_of::<[i8; 12]>() as u64).wrapping_sub(1),
+// CHECK-NEXT:             (core::mem::size_of::<[i8; 12]>() as u64).wrapping_sub(1),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -58,7 +58,7 @@ int main(void) {
 // CHECK-NEXT:             second.length,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -87,15 +87,15 @@ int main(void) {
 // CHECK-NEXT: static mut weights: __SlateAlign128<[f64; 2]> = __SlateAlign128([0.5f64, 1.5f64]);
 // CHECK-NEXT: static mut origin: __SlateAlign16<Point> = __SlateAlign16(Point { x: 7i32, y: 8i32 });
 // CHECK-NEXT: static mut page: __SlateAlign4096<[i8; 16]> = __SlateAlign4096(unsafe {
-// CHECK-NEXT:     std::mem::zeroed()
+// CHECK-NEXT:     core::mem::zeroed()
 // CHECK-NEXT: });
-// CHECK-NEXT: static mut small: __SlateAlign16<i8> = __SlateAlign16(unsafe { std::mem::zeroed() });
+// CHECK-NEXT: static mut small: __SlateAlign16<i8> = __SlateAlign16(unsafe { core::mem::zeroed() });
 // CHECK-NEXT: static mut values_tail: *mut u32 = unsafe {
-// CHECK-NEXT:     std::ptr::addr_of_mut!(values.0) as *mut u32
+// CHECK-NEXT:     core::ptr::addr_of_mut!(values.0) as *mut u32
 // CHECK-NEXT: }
 // CHECK-NEXT:     .wrapping_offset(2i32 as isize);
-// CHECK-NEXT: static mut origin_ptr: *mut Point = unsafe { std::ptr::addr_of_mut!(origin.0) };
-// CHECK-NEXT: static mut counter_ptr: *mut i32 = unsafe { std::ptr::addr_of_mut!(counter.0) };
+// CHECK-NEXT: static mut origin_ptr: *mut Point = unsafe { core::ptr::addr_of_mut!(origin.0) };
+// CHECK-NEXT: static mut counter_ptr: *mut i32 = unsafe { core::ptr::addr_of_mut!(counter.0) };
 // CHECK-NEXT: fn aligned(pointer: *const (), alignment: u64) -> i32 {
 // CHECK-NEXT:     ((pointer as u64) % alignment == 0) as i32
 // CHECK-NEXT: }
@@ -111,9 +111,9 @@ int main(void) {
 // CHECK-NEXT:         calls.0 = calls.0 + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (unsafe { calls.0 })
-// CHECK-NEXT:         + aligned((unsafe { std::ptr::addr_of_mut!(calls.0) }) as *const (), 256u64)
+// CHECK-NEXT:         + aligned((unsafe { core::ptr::addr_of_mut!(calls.0) }) as *const (), 256u64)
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut calls: __SlateAlign256<i32> = __SlateAlign256(unsafe { std::mem::zeroed() });
+// CHECK-NEXT: static mut calls: __SlateAlign256<i32> = __SlateAlign256(unsafe { core::mem::zeroed() });
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         counter.0 = counter.0 + 10;
@@ -127,7 +127,7 @@ int main(void) {
 // CHECK-NEXT:         *[[V_0]] = [[V_1]].wrapping_add(600);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut f64 = unsafe {
-// CHECK-NEXT:         (std::ptr::addr_of_mut!(weights.0) as *mut f64).add(0)
+// CHECK-NEXT:         (core::ptr::addr_of_mut!(weights.0) as *mut f64).add(0)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: f64 = (unsafe { *[[V_2]] }) * 4.0f64;
 // CHECK-NEXT:     unsafe {
@@ -152,13 +152,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bump();
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {}", aligned((unsafe { std::ptr::addr_of_mut!(counter.0) }) as *
-// CHECK-NEXT:         const (), 64u64), aligned((unsafe { std::ptr::addr_of_mut!(values.0) as * mut u32
-// CHECK-NEXT:         }) as * const (), 32u64), aligned((unsafe { std::ptr::addr_of_mut!(weights.0) as
-// CHECK-NEXT:         * mut f64 }) as * const (), 128u64), aligned((unsafe {
-// CHECK-NEXT:         std::ptr::addr_of_mut!(origin.0) }) as * const (), 16u64), aligned((unsafe {
-// CHECK-NEXT:         std::ptr::addr_of_mut!(page.0) as * mut i8 }) as * const (), 4096u64),
-// CHECK-NEXT:         aligned((unsafe { std::ptr::addr_of_mut!(small.0) }) as * const (), 16u64)
+// CHECK-NEXT:         "{} {} {} {} {} {}", aligned((unsafe { core::ptr::addr_of_mut!(counter.0) }) as *
+// CHECK-NEXT:         const (), 64u64), aligned((unsafe { core::ptr::addr_of_mut!(values.0) as * mut
+// CHECK-NEXT:         u32 }) as * const (), 32u64), aligned((unsafe { core::ptr::addr_of_mut!(weights
+// CHECK-NEXT:         .0) as * mut f64 }) as * const (), 128u64), aligned((unsafe {
+// CHECK-NEXT:         core::ptr::addr_of_mut!(origin.0) }) as * const (), 16u64), aligned((unsafe {
+// CHECK-NEXT:         core::ptr::addr_of_mut!(page.0) as * mut i8 }) as * const (), 4096u64),
+// CHECK-NEXT:         aligned((unsafe { core::ptr::addr_of_mut!(small.0) }) as * const (), 16u64)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -168,14 +168,14 @@ int main(void) {
 // CHECK-NEXT:             values.0[1],
 // CHECK-NEXT:             values.0[2],
 // CHECK-NEXT:             total(
-// CHECK-NEXT:                 std::slice::from_raw_parts(
-// CHECK-NEXT:                     (std::ptr::addr_of_mut!(values.0) as *mut u32) as *const u32,
+// CHECK-NEXT:                 core::slice::from_raw_parts(
+// CHECK-NEXT:                     (core::ptr::addr_of_mut!(values.0) as *mut u32) as *const u32,
 // CHECK-NEXT:                     3 as usize,
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -189,24 +189,24 @@ int main(void) {
 // CHECK-NEXT:             bump(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu\n".as_ptr(),
-// CHECK-NEXT:             std::mem::size_of::<i32>() as u64,
-// CHECK-NEXT:             std::mem::size_of::<[u32; 3]>() as u64,
-// CHECK-NEXT:             std::mem::size_of::<Point>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<i32>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<[u32; 3]>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<Point>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     (unsafe { counter.0 }) % 9
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

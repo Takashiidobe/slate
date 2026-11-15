@@ -61,19 +61,19 @@ int main(void) {
 // CHECK-NEXT:             "movq {1}+16(%rip), {0:r}", lateout(reg) [[T_0]], sym arr, options(pure, nomem,
 // CHECK-NEXT:             nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         value = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         value = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-NEXT: fn address_of() -> *mut i64 {
-// CHECK-NEXT:     let mut address: *mut i64 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut address: *mut i64 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "leaq {1}+8(%rip), {0:r}", lateout(reg) [[T_0]], sym arr, options(pure, nomem,
 // CHECK-NEXT:             nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         address = unsafe { std::mem::transmute::<u64, *mut i64>([[T_0]] as u64) };
+// CHECK-NEXT:         address = unsafe { core::mem::transmute::<u64, *mut i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     address
 // CHECK-NEXT: }
@@ -85,7 +85,7 @@ int main(void) {
 // CHECK-NEXT:             "leaq {1}, {0:r}", lateout(reg) [[T_0]], const 8 as i32, options(pure, nomem,
 // CHECK-NEXT:             nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         value = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         value = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
@@ -97,7 +97,7 @@ int main(void) {
 // CHECK-NEXT:             "movq ({1:r}), {0:r}", lateout(reg) [[T_0]], in (reg) pointer as u64,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         value = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         value = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
@@ -111,7 +111,7 @@ int main(void) {
 // CHECK-NEXT:                 "movq %gs:{1}(%rip), {0:r}", lateout(reg) [[T_0]], sym word, options(pure,
 // CHECK-NEXT:                 nomem, nostack, att_syntax)
 // CHECK-NEXT:             );
-// CHECK-NEXT:             __val = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:             __val = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[V_0]] = __val;
 // CHECK-NEXT:     }
@@ -123,33 +123,33 @@ int main(void) {
 // CHECK-NEXT:             "movq %gs:{1}+24(%rip), {0:r}", lateout(reg) [[T_1]], sym arr, options(pure,
 // CHECK-NEXT:             nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         __val = unsafe { std::mem::transmute::<u64, i64>([[T_1]] as u64) };
+// CHECK-NEXT:         __val = unsafe { core::mem::transmute::<u64, i64>([[T_1]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_1]] = __val;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%ld %ld\n".as_ptr(), [[V_0]], [[V_1]]) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%ld %ld\n".as_ptr(), read_offset(), *address_of())
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%ld %ld\n".as_ptr(),
 // CHECK-NEXT:             immediate(),
-// CHECK-NEXT:             through_register((std::ptr::addr_of_mut!(arr.0) as *mut i64).add(0)),
+// CHECK-NEXT:             through_register((core::ptr::addr_of_mut!(arr.0) as *mut i64).add(0)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

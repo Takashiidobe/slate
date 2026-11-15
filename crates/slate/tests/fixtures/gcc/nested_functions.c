@@ -145,8 +145,8 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: use slate_support::qsort;
 // CHECK-NEXT: fn counter(mut total: i32) -> i32 {
-// CHECK-NEXT:     counter__bump(unsafe { &mut (*std::ptr::addr_of_mut!(total)) }, 2i32);
-// CHECK-NEXT:     counter__bump(unsafe { &mut (*std::ptr::addr_of_mut!(total)) }, 3i32);
+// CHECK-NEXT:     counter__bump(unsafe { &mut (*core::ptr::addr_of_mut!(total)) }, 2i32);
+// CHECK-NEXT:     counter__bump(unsafe { &mut (*core::ptr::addr_of_mut!(total)) }, 3i32);
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn counter__bump(__slate_capture_0: &mut i32, by: i32) {
@@ -156,8 +156,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn grandparent(n: i32) -> i32 {
 // CHECK-NEXT:     let mut base: i32 = n * 10;
-// CHECK-NEXT:     grandparent__middle(unsafe { &(*std::ptr::addr_of_mut!(base)) }, 2i32)
-// CHECK-NEXT:         + grandparent__middle(unsafe { &(*std::ptr::addr_of_mut!(base)) }, 3i32)
+// CHECK-NEXT:     grandparent__middle(unsafe { &(*core::ptr::addr_of_mut!(base)) }, 2i32)
+// CHECK-NEXT:         + grandparent__middle(unsafe { &(*core::ptr::addr_of_mut!(base)) }, 3i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn grandparent__inner(__slate_capture_0: &i32, __slate_capture_1: &i32, j: i32) -> i32 {
 // CHECK-NEXT:     (unsafe { *(__slate_capture_0 as *const i32) })
@@ -167,18 +167,18 @@ int main(void) {
 // CHECK-NEXT:     let mut scale: i32 = k + 1;
 // CHECK-NEXT:     grandparent__inner(
 // CHECK-NEXT:         __slate_capture_0,
-// CHECK-NEXT:         unsafe { &(*std::ptr::addr_of_mut!(scale)) },
+// CHECK-NEXT:         unsafe { &(*core::ptr::addr_of_mut!(scale)) },
 // CHECK-NEXT:         k,
 // CHECK-NEXT:     )
 // CHECK-NEXT:         + grandparent__inner(
 // CHECK-NEXT:             __slate_capture_0,
-// CHECK-NEXT:             unsafe { &(*std::ptr::addr_of_mut!(scale)) },
+// CHECK-NEXT:             unsafe { &(*core::ptr::addr_of_mut!(scale)) },
 // CHECK-NEXT:             1i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT: }
 // CHECK-NEXT: fn parity(n: i32) -> i32 {
 // CHECK-NEXT:     let mut calls: i32 = 0;
-// CHECK-NEXT:     parity__is_even(unsafe { &mut (*std::ptr::addr_of_mut!(calls)) }, n) * 100 + calls
+// CHECK-NEXT:     parity__is_even(unsafe { &mut (*core::ptr::addr_of_mut!(calls)) }, n) * 100 + calls
 // CHECK-NEXT: }
 // CHECK-NEXT: fn parity__is_even(__slate_capture_0: &mut i32, k: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
@@ -199,9 +199,9 @@ int main(void) {
 // CHECK-NEXT:     let mut p: point = point { x: 5, y: 6 };
 // CHECK-NEXT:     let mut cursor: *mut i32 = unsafe { (values.0.as_mut_ptr() as *mut i32).add(1) };
 // CHECK-NEXT:     aggregates__touch(
-// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(values.0)) },
-// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(p)) },
-// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(cursor)) },
+// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(values.0)) },
+// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(p)) },
+// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(cursor)) },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     values.0[0] + values.0[1] + values.0[2] + values.0[3] + p.x + p.y
 // CHECK-NEXT: }
@@ -246,7 +246,7 @@ int main(void) {
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum_vla__total(
-// CHECK-NEXT:         unsafe { &(*std::ptr::addr_of_mut!(n)) },
+// CHECK-NEXT:         unsafe { &(*core::ptr::addr_of_mut!(n)) },
 // CHECK-NEXT:         data.as_mut_ptr() as *mut [i32; 0],
 // CHECK-NEXT:     )
 // CHECK-NEXT: }
@@ -260,11 +260,11 @@ int main(void) {
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
 // CHECK-NEXT: fn with_goto(mut n: i32) -> i32 {
-// CHECK-NEXT:     let mut acc: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut acc: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         acc = 0;
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             with_goto__add(&mut (*std::ptr::addr_of_mut!(acc)), n);
+// CHECK-NEXT:             with_goto__add(&mut (*core::ptr::addr_of_mut!(acc)), n);
 // CHECK-NEXT:             let [[V_3]]: i32 = n - 1;
 // CHECK-NEXT:             n = [[V_3]];
 // CHECK-NEXT:             if [[V_3]] <= 0 {
@@ -295,9 +295,9 @@ int main(void) {
 // CHECK-NEXT:         qsort(
 // CHECK-NEXT:             (values.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void,
 // CHECK-NEXT:             5u64 as usize,
-// CHECK-NEXT:             (std::mem::size_of::<i32>() as u64) as usize,
+// CHECK-NEXT:             (core::mem::size_of::<i32>() as u64) as usize,
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::mem::transmute::<
+// CHECK-NEXT:                 core::mem::transmute::<
 // CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
 // CHECK-NEXT:                     Option<
 // CHECK-NEXT:                         unsafe extern "C" fn(
@@ -317,9 +317,9 @@ int main(void) {
 // CHECK-NEXT:         qsort(
 // CHECK-NEXT:             (values.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void,
 // CHECK-NEXT:             5u64 as usize,
-// CHECK-NEXT:             (std::mem::size_of::<i32>() as u64) as usize,
+// CHECK-NEXT:             (core::mem::size_of::<i32>() as u64) as usize,
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::mem::transmute::<
+// CHECK-NEXT:                 core::mem::transmute::<
 // CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
 // CHECK-NEXT:                     Option<
 // CHECK-NEXT:                         unsafe extern "C" fn(
@@ -341,8 +341,8 @@ int main(void) {
 // CHECK-NEXT:     (unsafe { *(a as *const i32) }) - unsafe { *(b as *const i32) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn shadowed(mut x: i32) -> i32 {
-// CHECK-NEXT:     x = shadowed__first_twice(unsafe { &(*std::ptr::addr_of_mut!(x)) });
-// CHECK-NEXT:     shadowed__first_2(unsafe { &(*std::ptr::addr_of_mut!(x)) })
+// CHECK-NEXT:     x = shadowed__first_twice(unsafe { &(*core::ptr::addr_of_mut!(x)) });
+// CHECK-NEXT:     shadowed__first_2(unsafe { &(*core::ptr::addr_of_mut!(x)) })
 // CHECK-NEXT: }
 // CHECK-NEXT: fn shadowed__first(__slate_capture_0: &i32) -> i32 {
 // CHECK-NEXT:     (unsafe { *(__slate_capture_0 as *const i32) }) + 1
@@ -359,7 +359,7 @@ int main(void) {
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < limit {
 // CHECK-NEXT:         steps += 1;
-// CHECK-NEXT:         loop_bound__shrink(unsafe { &mut (*std::ptr::addr_of_mut!(limit)) });
+// CHECK-NEXT:         loop_bound__shrink(unsafe { &mut (*core::ptr::addr_of_mut!(limit)) });
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     steps * 10 + limit
@@ -384,8 +384,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

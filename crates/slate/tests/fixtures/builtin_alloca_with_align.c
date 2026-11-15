@@ -52,7 +52,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: mod __slate_alloca {
 // CHECK-NEXT:     use std::alloc::{Layout, alloc, dealloc, handle_alloc_error};
-// CHECK-NEXT:     use std::cell::UnsafeCell;
+// CHECK-NEXT:     use core::cell::UnsafeCell;
 // CHECK-NEXT:     const ALIGN: usize = 16;
 // CHECK-NEXT:     const BLOCK: usize = 1 << 20;
 // CHECK-NEXT:     struct Block {
@@ -147,7 +147,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[inline]
-// CHECK-NEXT:     pub fn alloca(size: usize, align: usize) -> *mut std::ffi::c_void {
+// CHECK-NEXT:     pub fn alloca(size: usize, align: usize) -> *mut core::ffi::c_void {
 // CHECK-NEXT:         STACK
 // CHECK-NEXT:             .with(|stack| unsafe {
 // CHECK-NEXT:                 (*stack.get()).allocate(size, align.max(1).next_power_of_two())
@@ -191,28 +191,28 @@ int main(void) {
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = [[V_1]] as i32;
 // CHECK-NEXT:     ok &= [[V_2]];
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:         core::ptr::write_bytes(
 // CHECK-NEXT:             ((small as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (1i32 as i32) as u8,
 // CHECK-NEXT:             (3u64 as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:         core::ptr::write_bytes(
 // CHECK-NEXT:             ((a as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (2i32 as i32) as u8,
 // CHECK-NEXT:             ((n as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:         core::ptr::write_bytes(
 // CHECK-NEXT:             ((b as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (3i32 as i32) as u8,
 // CHECK-NEXT:             ((n as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:         core::ptr::write_bytes(
 // CHECK-NEXT:             ((c as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (4i32 as i32) as u8,
 // CHECK-NEXT:             ((n as u64) as usize) as usize,
@@ -227,7 +227,7 @@ int main(void) {
 // CHECK-NEXT: fn with_align_uninitialized(n: i32) -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let p: *mut i32 = (__slate_alloca::alloca(
-// CHECK-NEXT:         (std::mem::size_of::<i32>() as u64).wrapping_mul(n as u64) as usize,
+// CHECK-NEXT:         (core::mem::size_of::<i32>() as u64).wrapping_mul(n as u64) as usize,
 // CHECK-NEXT:         ((1024 as usize) / 8usize).max(16usize),
 // CHECK-NEXT:     ) as *mut ()) as *mut i32;
 // CHECK-NEXT:     for i in 0..n {
@@ -250,7 +250,7 @@ int main(void) {
 // CHECK-NEXT:             ((2048 as usize) / 8usize).max(16usize),
 // CHECK-NEXT:         ) as *mut ()) as *mut u8;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::ptr::write_bytes(
+// CHECK-NEXT:             core::ptr::write_bytes(
 // CHECK-NEXT:                 ((p as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:                 (5i32 as i32) as u8,
 // CHECK-NEXT:                 (1100000u64 as usize) as usize,
@@ -266,14 +266,14 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {}", with_align(5i32), with_align(33i32));
 // CHECK-NEXT:     println!("{}", with_align_uninitialized(10i32));
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), large_with_align()) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

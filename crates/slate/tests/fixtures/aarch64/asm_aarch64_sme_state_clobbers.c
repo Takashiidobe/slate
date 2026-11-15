@@ -27,7 +27,7 @@ int main(void){ printf("%ld %ld\n", za_roundtrip(7), fpmr_rw(5)); return 0; }
 // CHECK-NEXT:             "smstart za\n\tzero {{[{][{]}}za}}\n\tsmstop za\n\tmov {0:x}, {1:x}", lateout(reg)
 // CHECK-NEXT:             [[T_0]], in (reg) v as u64, options(nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         r = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         r = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
@@ -40,7 +40,7 @@ int main(void){ printf("%ld %ld\n", za_roundtrip(7), fpmr_rw(5)); return 0; }
 // CHECK-NEXT:             "msr fpmr, {1:x}\n\tmrs {0:x}, fpmr", lateout(reg) [[T_0]], in (reg) v as u64,
 // CHECK-NEXT:             options(nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         r = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         r = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
@@ -49,14 +49,14 @@ int main(void){ printf("%ld %ld\n", za_roundtrip(7), fpmr_rw(5)); return 0; }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%ld %ld\n".as_ptr(), za_roundtrip(7i64), fpmr_rw(5i64))
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

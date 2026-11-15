@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT:             u32 => [[T_0]], inout(reg) b as u32 => _, options(pure, nomem, nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         a = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         a = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     a
 // CHECK-NEXT: }
@@ -54,7 +54,7 @@ int main(void) {
 // CHECK-NEXT:             "xchg {0:r}, %rbx\naddl %ebx, %ebx\nxchg {0:r}, %rbx", inout(reg) x as u32 =>
 // CHECK-NEXT:             [[T_0]], options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         x = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
@@ -65,7 +65,7 @@ int main(void) {
 // CHECK-NEXT:             "leaq (%r8,%r10,4), %r8\n\taddb $1, %r8b", lateout("r8") [[T_0]], in ("r8") r8
 // CHECK-NEXT:             as u64, in ("r10") r10 as u64, options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         r8 = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         r8 = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r8
 // CHECK-NEXT: }
@@ -77,7 +77,7 @@ int main(void) {
 // CHECK-NEXT:             "movw {0:x}, %si", in (reg) x as u32, lateout("si") [[T_0]], options(pure,
 // CHECK-NEXT:             nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         w = unsafe { std::mem::transmute::<u16, u16>([[T_0]] as u16) };
+// CHECK-NEXT:         w = unsafe { core::mem::transmute::<u16, u16>([[T_0]] as u16) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     w
 // CHECK-NEXT: }
@@ -92,14 +92,14 @@ int main(void) {
 // CHECK-NEXT:             low_word(305419896u32) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

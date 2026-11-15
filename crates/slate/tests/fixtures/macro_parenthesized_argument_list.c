@@ -80,7 +80,7 @@ int main(void) {
 // CHECK-NEXT:             format,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn run() {
 // CHECK-NEXT:     loop {
@@ -90,7 +90,7 @@ int main(void) {
 // CHECK-NEXT:                     2u32,
 // CHECK-NEXT:                     38u32,
 // CHECK-NEXT:                     c"run".as_ptr(),
-// CHECK-NEXT:                     std::ptr::addr_of!(module_name) as *const i8,
+// CHECK-NEXT:                     core::ptr::addr_of!(module_name) as *const i8,
 // CHECK-NEXT:                     16u32,
 // CHECK-NEXT:                     c"exec\n".as_ptr(),
 // CHECK-NEXT:                 )
@@ -107,7 +107,7 @@ int main(void) {
 // CHECK-NEXT:                     1u32,
 // CHECK-NEXT:                     39u32,
 // CHECK-NEXT:                     c"run".as_ptr(),
-// CHECK-NEXT:                     std::ptr::addr_of!(module_name) as *const i8,
+// CHECK-NEXT:                     core::ptr::addr_of!(module_name) as *const i8,
 // CHECK-NEXT:                     16u32,
 // CHECK-NEXT:                     c"level one\n".as_ptr(),
 // CHECK-NEXT:                 )
@@ -125,8 +125,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

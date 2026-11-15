@@ -88,7 +88,7 @@ int main(void) {
 // CHECK-NEXT:         .checked_shl(63 - [[T_15]].leading_zeros()).unwrap_or(0u64) as $T } }, { let [[T_16:__t[0-9]+]] =
 // CHECK-NEXT:         x; if [[T_16]].count_ones() == 0 { 1u64 } else { if [[T_16]].count_ones() == 1 { [[T_16]]
 // CHECK-NEXT:         } else { 1u64.checked_shl(64 - [[T_16]].leading_zeros()).unwrap_or(0u64) as $T } }
-// CHECK-NEXT:         }) }; unsafe { fflush(std::ptr::null_mut()) }; if true { break; } }
+// CHECK-NEXT:         }) }; unsafe { fflush(core::ptr::null_mut()) }; if true { break; } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! REPORT__5 {
@@ -116,7 +116,7 @@ int main(void) {
 // CHECK-NEXT:         if (([[T_16]] as $T) & 1).count_ones() == 0 { 1u8 } else { if (([[T_16]] as $T) & 1)
 // CHECK-NEXT:         .count_ones() == 1 { [[T_16]] } else { (1u8.checked_shl(1 - ((([[T_16]] as $T) & 1)
 // CHECK-NEXT:         .leading_zeros() - 7)).unwrap_or(0u8) as $T) & 1 } } }) as u64) }; unsafe {
-// CHECK-NEXT:         fflush(std::ptr::null_mut()) }; if true { break; } }
+// CHECK-NEXT:         fflush(core::ptr::null_mut()) }; if true { break; } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! REPORT__2 {
@@ -142,7 +142,7 @@ int main(void) {
 // CHECK-NEXT:         16, bitint::A8 >>::from_u128(1) } else { if [[T_16]].count_ones() == 1 { [[T_16]] }
 // CHECK-NEXT:         else { < bitint::BUint < 128, 2, 16, bitint::A8 >>::from_u128(1).shl_bits((128 -
 // CHECK-NEXT:         [[T_16]].leading_zeros()) as usize) } } } .to_u128() as u64) }; unsafe {
-// CHECK-NEXT:         fflush(std::ptr::null_mut()) }; if true { break; } }
+// CHECK-NEXT:         fflush(core::ptr::null_mut()) }; if true { break; } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! REPORT__6 {
@@ -165,7 +165,8 @@ int main(void) {
 // CHECK-NEXT:         .checked_shl(63 - [[T_15]].leading_zeros()).unwrap_or(0u64) as $T } }) as $T, ({ let
 // CHECK-NEXT:         [[T_16]] = x; if [[T_16]].count_ones() == 0 { 1u64 } else { if [[T_16]].count_ones() == 1
 // CHECK-NEXT:         { [[T_16]] } else { 1u64.checked_shl(64 - [[T_16]].leading_zeros()).unwrap_or(0u64) as
-// CHECK-NEXT:         $T } } }) as $T) }; unsafe { fflush(std::ptr::null_mut()) }; if true { break; } }
+// CHECK-NEXT:         $T } } }) as $T) }; unsafe { fflush(core::ptr::null_mut()) }; if true { break; }
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! REPORT__7 {
@@ -194,7 +195,7 @@ int main(void) {
 // CHECK-NEXT:         8191).count_ones() == 0 { 1u16 } else { if (([[T_16]] as $T) & 8191).count_ones() ==
 // CHECK-NEXT:         1 { [[T_16]] } else { (1u16.checked_shl(13 - ((([[T_16]] as $T) & 8191).leading_zeros()
 // CHECK-NEXT:         - 3)).unwrap_or(0u16) as $T) & 8191 } } }) as u64) }; unsafe {
-// CHECK-NEXT:         fflush(std::ptr::null_mut()) }; if true { break; } }
+// CHECK-NEXT:         fflush(core::ptr::null_mut()) }; if true { break; } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! REPORT {
@@ -220,7 +221,7 @@ int main(void) {
 // CHECK-NEXT:         16, bitint::A8 >>::from_u128(1) } else { if [[T_16]].count_ones() == 1 { [[T_16]] }
 // CHECK-NEXT:         else { < bitint::BUint < 100, 2, 16, bitint::A8 >>::from_u128(1).shl_bits((100 -
 // CHECK-NEXT:         [[T_16]].leading_zeros()) as usize) } } } .to_u128() as u64) }; unsafe {
-// CHECK-NEXT:         fflush(std::ptr::null_mut()) }; if true { break; } }
+// CHECK-NEXT:         fflush(core::ptr::null_mut()) }; if true { break; } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! REPORT__8 {
@@ -248,7 +249,7 @@ int main(void) {
 // CHECK-NEXT:         = x; if (([[T_16]] as $T) & 127).count_ones() == 0 { 1u8 } else { if (([[T_16]] as $T)
 // CHECK-NEXT:         & 127).count_ones() == 1 { [[T_16]] } else { (1u8.checked_shl(7 - ((([[T_16]] as $T) &
 // CHECK-NEXT:         127).leading_zeros() - 1)).unwrap_or(0u8) as $T) & 127 } } }) as u64) }; unsafe {
-// CHECK-NEXT:         fflush(std::ptr::null_mut()) }; if true { break; } }
+// CHECK-NEXT:         fflush(core::ptr::null_mut()) }; if true { break; } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! REPORT__9 {
@@ -271,7 +272,7 @@ int main(void) {
 // CHECK-NEXT:         .leading_zeros()).unwrap_or(0u32) as $T } }) as u64, ({ let [[T_16]] = x; if [[T_16]]
 // CHECK-NEXT:         .count_ones() == 0 { 1u32 } else { if [[T_16]].count_ones() == 1 { [[T_16]] } else {
 // CHECK-NEXT:         1u32.checked_shl(32 - [[T_16]].leading_zeros()).unwrap_or(0u32) as $T } } }) as u64)
-// CHECK-NEXT:         }; unsafe { fflush(std::ptr::null_mut()) }; if true { break; } }
+// CHECK-NEXT:         }; unsafe { fflush(core::ptr::null_mut()) }; if true { break; } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! REPORT__10 {
@@ -302,7 +303,7 @@ int main(void) {
 // CHECK-NEXT:         as $T) & 137438953471).count_ones() == 0 { 1u64 } else { if (([[T_16]] as $T) &
 // CHECK-NEXT:         137438953471).count_ones() == 1 { [[T_16]] } else { (1u64.checked_shl(37 - ((([[T_16]]
 // CHECK-NEXT:         as $T) & 137438953471).leading_zeros() - 27)).unwrap_or(0u64) as $T) &
-// CHECK-NEXT:         137438953471 } } }) as $T) }; unsafe { fflush(std::ptr::null_mut()) }; if true {
+// CHECK-NEXT:         137438953471 } } }) as $T) }; unsafe { fflush(core::ptr::null_mut()) }; if true {
 // CHECK-NEXT:         break; } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -331,7 +332,7 @@ int main(void) {
 // CHECK-NEXT:         = x; if (([[T_16]] as $T) & 127).count_ones() == 0 { 1u8 } else { if (([[T_16]] as $T)
 // CHECK-NEXT:         & 127).count_ones() == 1 { [[T_16]] } else { (1u8.checked_shl(7 - ((([[T_16]] as $T) &
 // CHECK-NEXT:         127).leading_zeros() - 1)).unwrap_or(0u8) as $T) & 127 } } }) as u64) }; unsafe {
-// CHECK-NEXT:         fflush(std::ptr::null_mut()) }; if true { break; } }
+// CHECK-NEXT:         fflush(core::ptr::null_mut()) }; if true { break; } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! REPORT__12 {
@@ -354,8 +355,8 @@ int main(void) {
 // CHECK-NEXT:         .checked_shl(15 - [[T_15]].leading_zeros()).unwrap_or(0u16) as $T } }) as u64, ({
 // CHECK-NEXT:         let [[T_16]] = x; if [[T_16]].count_ones() == 0 { 1u16 } else { if [[T_16]].count_ones()
 // CHECK-NEXT:         == 1 { [[T_16]] } else { 1u16.checked_shl(16 - [[T_16]].leading_zeros())
-// CHECK-NEXT:         .unwrap_or(0u16) as $T } } }) as u64) }; unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:         if true { break; } }
+// CHECK-NEXT:         .unwrap_or(0u16) as $T } } }) as u64) }; unsafe { fflush(core::ptr::null_mut())
+// CHECK-NEXT:         }; if true { break; } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! REPORT__13 {
@@ -378,7 +379,7 @@ int main(void) {
 // CHECK-NEXT:         .leading_zeros()).unwrap_or(0u8) as $T } }) as u64, ({ let [[T_16]] = x; if [[T_16]]
 // CHECK-NEXT:         .count_ones() == 0 { 1u8 } else { if [[T_16]].count_ones() == 1 { [[T_16]] } else { 1u8
 // CHECK-NEXT:         .checked_shl(8 - [[T_16]].leading_zeros()).unwrap_or(0u8) as $T } } }) as u64) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) }; if true { break; } }
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) }; if true { break; } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! REPORT__14 {
@@ -407,7 +408,7 @@ int main(void) {
 // CHECK-NEXT:         8191).count_ones() == 0 { 1u16 } else { if (([[T_16]] as $T) & 8191).count_ones() ==
 // CHECK-NEXT:         1 { [[T_16]] } else { (1u16.checked_shl(13 - ((([[T_16]] as $T) & 8191).leading_zeros()
 // CHECK-NEXT:         - 3)).unwrap_or(0u16) as $T) & 8191 } } }) as u64) }; unsafe {
-// CHECK-NEXT:         fflush(std::ptr::null_mut()) }; if true { break; } }
+// CHECK-NEXT:         fflush(core::ptr::null_mut()) }; if true { break; } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! REPORT__15 {
@@ -438,7 +439,7 @@ int main(void) {
 // CHECK-NEXT:         as $T) & 137438953471).count_ones() == 0 { 1u64 } else { if (([[T_16]] as $T) &
 // CHECK-NEXT:         137438953471).count_ones() == 1 { [[T_16]] } else { (1u64.checked_shl(37 - ((([[T_16]]
 // CHECK-NEXT:         as $T) & 137438953471).leading_zeros() - 27)).unwrap_or(0u64) as $T) &
-// CHECK-NEXT:         137438953471 } } }) as $T) }; unsafe { fflush(std::ptr::null_mut()) }; if true {
+// CHECK-NEXT:         137438953471 } } }) as $T) }; unsafe { fflush(core::ptr::null_mut()) }; if true {
 // CHECK-NEXT:         break; } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -464,8 +465,8 @@ int main(void) {
 // CHECK-NEXT:         .count_ones() == 0 { < bitint::BUint < 65, 2, 16, bitint::A8 >>::from_u128(1) }
 // CHECK-NEXT:         else { if [[T_16]].count_ones() == 1 { [[T_16]] } else { < bitint::BUint < 65, 2, 16,
 // CHECK-NEXT:         bitint::A8 >>::from_u128(1).shl_bits((65 - [[T_16]].leading_zeros()) as usize) } } }
-// CHECK-NEXT:         .to_u128() as u64) }; unsafe { fflush(std::ptr::null_mut()) }; if true { break; }
-// CHECK-NEXT:         }
+// CHECK-NEXT:         .to_u128() as u64) }; unsafe { fflush(core::ptr::null_mut()) }; if true { break;
+// CHECK-NEXT:         } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
@@ -482,7 +483,8 @@ int main(void) {
 // CHECK-NEXT: fn wide() {
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
-// CHECK-NEXT:         < (std::mem::size_of::<[u64; 24]>() as u64) / (std::mem::size_of::<u64>() as u64)
+// CHECK-NEXT:         < (core::mem::size_of::<[u64; 24]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<u64>() as u64)
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut w: bitint::BUint<100, 2, 16, bitint::A8> = <bitint::BUint<
 // CHECK-NEXT:             100,
@@ -516,7 +518,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
-// CHECK-NEXT:         < (std::mem::size_of::<[u64; 24]>() as u64) / (std::mem::size_of::<u64>() as u64)
+// CHECK-NEXT:         < (core::mem::size_of::<[u64; 24]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<u64>() as u64)
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let s: u64 = unsafe { seeds.0[i as usize] };
 // CHECK-NEXT:         REPORT__13!(u8, s);
@@ -539,8 +542,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

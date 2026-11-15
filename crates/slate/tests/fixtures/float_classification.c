@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn once(x: f64) -> f64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     for i in 0i32..9i32 {
 // CHECK-NEXT:         let x: f64 = unsafe {
-// CHECK-NEXT:             std::ptr::read_volatile(
+// CHECK-NEXT:             core::ptr::read_volatile(
 // CHECK-NEXT:                 (values.0.as_mut_ptr() as *mut f64).offset(i as isize),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
@@ -98,7 +98,7 @@ int main(void) {
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     for i in 0i32..6i32 {
 // CHECK-NEXT:         let x: f32 = unsafe {
-// CHECK-NEXT:             std::ptr::read_volatile(
+// CHECK-NEXT:             core::ptr::read_volatile(
 // CHECK-NEXT:                 (small.0.as_mut_ptr() as *mut f32).offset(i as isize),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
@@ -118,8 +118,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

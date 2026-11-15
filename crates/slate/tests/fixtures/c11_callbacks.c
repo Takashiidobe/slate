@@ -46,14 +46,14 @@ int main(void) {
 // CHECK-NEXT:     let mut thread_result: i32 = 0;
 // CHECK-NEXT:     let thread_created: i32 = unsafe {
 // CHECK-NEXT:         thrd_create(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(thread),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(thread),
 // CHECK-NEXT:             Some(thread_worker),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(argument) as *mut (),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(argument) as *mut (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut thread_joined: i32 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = if thread_created == 0 {
-// CHECK-NEXT:         unsafe { thrd_join(thread, std::ptr::addr_of_mut!(thread_result)) }
+// CHECK-NEXT:         unsafe { thrd_join(thread, core::ptr::addr_of_mut!(thread_result)) }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         -1
 // CHECK-NEXT:     };
@@ -61,10 +61,10 @@ int main(void) {
 // CHECK-NEXT:     let mut control: __SlateRecord_thread_shared_types_h_112 = __SlateRecord_thread_shared_types_h_112 {
 // CHECK-NEXT:         __data: 0,
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { call_once(std::ptr::addr_of_mut!(control), Some(once_handler)) };
-// CHECK-NEXT:     unsafe { call_once(std::ptr::addr_of_mut!(control), Some(once_handler)) };
+// CHECK-NEXT:     unsafe { call_once(core::ptr::addr_of_mut!(control), Some(once_handler)) };
+// CHECK-NEXT:     unsafe { call_once(core::ptr::addr_of_mut!(control), Some(once_handler)) };
 // CHECK-NEXT:     let key_created: i32 = unsafe {
-// CHECK-NEXT:         tss_create(std::ptr::addr_of_mut!(key), Some(tss_destructor))
+// CHECK-NEXT:         tss_create(core::ptr::addr_of_mut!(key), Some(tss_destructor))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if key_created == 0 {
 // CHECK-NEXT:         unsafe { tss_delete(key) };

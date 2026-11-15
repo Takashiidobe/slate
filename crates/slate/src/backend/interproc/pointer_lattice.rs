@@ -1453,7 +1453,8 @@ fn is_null_like(expr: &Expr) -> bool {
         && let Expr::Var(name) = &**func
     {
         let name = name.as_str();
-        return name.starts_with("std::ptr::null::<") || name.starts_with("std::ptr::null_mut::<");
+        return name.starts_with("core::ptr::null::<")
+            || name.starts_with("core::ptr::null_mut::<");
     }
     matches!(
         expr,
@@ -1514,7 +1515,7 @@ fn type_for(base: ResolvedPtrType, inner: &Type) -> Type {
             inner: Box::new(inner.clone()),
         },
         ResolvedPtrType::RefCell => Type::Generic {
-            name: "std::cell::Cell".to_string(),
+            name: "core::cell::Cell".to_string(),
             args: vec![inner.clone()],
         },
         ResolvedPtrType::Slice => Type::Ref {

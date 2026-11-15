@@ -16,7 +16,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let alignment: i32 = std::mem::align_of::<i32>() as i32;
+// CHECK-NEXT:     let alignment: i32 = core::mem::align_of::<i32>() as i32;
 // CHECK-NEXT:     let repeated: i32 = (((unsafe { text[1] }) as u8) as i32)
 // CHECK-NEXT:         + (((unsafe { text[1] }) as u8) as i32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -26,20 +26,20 @@ int main(void) {
 // CHECK-NEXT:             (text[0] as u8) as i32,
 // CHECK-NEXT:             (text[1] as u8) as i32,
 // CHECK-NEXT:             (text[2] as u8) as i32,
-// CHECK-NEXT:             std::mem::size_of::<[i8; 3]>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<[i8; 3]>() as u64,
 // CHECK-NEXT:             alignment,
 // CHECK-NEXT:             repeated,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut text: [i8; 3] = [-50, -87, 0];
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

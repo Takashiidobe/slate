@@ -19,22 +19,22 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn add_via_x(
-// CHECK-NEXT:     mut lhs: std::simd::Simd<f32, 4>,
-// CHECK-NEXT:     mut rhs: std::simd::Simd<f32, 4>,
-// CHECK-NEXT: ) -> std::simd::Simd<f32, 4> {
-// CHECK-NEXT:     let mut result: std::simd::Simd<f32, 4> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     mut lhs: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     mut rhs: core::simd::Simd<f32, 4>,
+// CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
+// CHECK-NEXT:     let mut result: core::simd::Simd<f32, 4> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: core::arch::x86_64::__m128i;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "addps {0}, {0}\n# {1}", inlateout(xmm_reg) unsafe { std::mem::transmute::<
-// CHECK-NEXT:             std::simd::Simd < f32, 4 >, core::arch::x86_64::__m128i > (lhs) } => [[T_0]], in
-// CHECK-NEXT:             (xmm_reg) unsafe { std::mem::transmute::< std::simd::Simd < f32, 4 >,
+// CHECK-NEXT:             "addps {0}, {0}\n# {1}", inlateout(xmm_reg) unsafe { core::mem::transmute::<
+// CHECK-NEXT:             core::simd::Simd < f32, 4 >, core::arch::x86_64::__m128i > (lhs) } => [[T_0]],
+// CHECK-NEXT:             in (xmm_reg) unsafe { core::mem::transmute::< core::simd::Simd < f32, 4 >,
 // CHECK-NEXT:             core::arch::x86_64::__m128i > (rhs) }, options(nostack, att_syntax)
 // CHECK-NEXT:         );
 // CHECK-NEXT:         result = unsafe {
-// CHECK-NEXT:             std::mem::transmute::<
+// CHECK-NEXT:             core::mem::transmute::<
 // CHECK-NEXT:                 core::arch::x86_64::__m128i,
-// CHECK-NEXT:                 std::simd::Simd<f32, 4>,
+// CHECK-NEXT:                 core::simd::Simd<f32, 4>,
 // CHECK-NEXT:             >([[T_0]])
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }

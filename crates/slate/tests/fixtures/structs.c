@@ -36,13 +36,13 @@ int main(void) {
 // CHECK-NEXT:     right: i32,
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sum_pair(a: i32, b: i32) -> i32 {
-// CHECK-NEXT:     let mut p: Pair = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut p: Pair = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     p.left = a;
 // CHECK-NEXT:     p.right = b;
 // CHECK-NEXT:     p.left + p.right
 // CHECK-NEXT: }
 // CHECK-NEXT: fn overwrite_left(a: i32, b: i32) -> i32 {
-// CHECK-NEXT:     let mut p: Pair = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut p: Pair = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     p.left = a;
 // CHECK-NEXT:     p.right = b;
 // CHECK-NEXT:     p.left = p.right + 2;
@@ -56,8 +56,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

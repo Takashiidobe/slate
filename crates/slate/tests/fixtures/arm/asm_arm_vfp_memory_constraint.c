@@ -23,7 +23,7 @@ int main(void) {
 // CHECK-NEXT:             "ldr {0}, [{1}]", lateout(reg) [[T_0]], in (reg) address as * const i32,
 // CHECK-NEXT:             options(pure, readonly, nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         value = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK: {{^}}}

@@ -35,8 +35,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "/Zc:preprocessor" }
 // CHECK-NEXT: mod __slate_alloca {
+// CHECK-NEXT:     use core::cell::UnsafeCell;
 // CHECK-NEXT:     use std::alloc::{Layout, alloc, dealloc, handle_alloc_error};
-// CHECK-NEXT:     use std::cell::UnsafeCell;
 // CHECK-EMPTY:
 // CHECK-NEXT:     const ALIGN: usize = 16;
 // CHECK-NEXT:     const BLOCK: usize = 1 << 20;
@@ -141,7 +141,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-EMPTY:
 // CHECK-NEXT:     #[inline]
-// CHECK-NEXT:     pub fn alloca(size: usize, align: usize) -> *mut std::ffi::c_void {
+// CHECK-NEXT:     pub fn alloca(size: usize, align: usize) -> *mut core::ffi::c_void {
 // CHECK-NEXT:         STACK
 // CHECK-NEXT:             .with(|stack| unsafe {
 // CHECK-NEXT:                 (*stack.get()).allocate(size, align.max(1).next_power_of_two())
@@ -180,7 +180,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
-// CHECK-NEXT:         < (std::mem::size_of::<[i32; 10]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:         < (core::mem::size_of::<[i32; 10]>() as u64) / (core::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:     {
 // CHECK-NEXT:         probe(unsafe { sizes.0[i as usize] });
 // CHECK-NEXT:         i = i.wrapping_add(1);
@@ -195,8 +195,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

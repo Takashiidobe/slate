@@ -103,7 +103,7 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn grid() -> i32 {
 // CHECK-NEXT:     let mut g: __SlateAlign16<{{\[\[}}i32; 3]; 2]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:         std::mem::zeroed()
+// CHECK-NEXT:         core::mem::zeroed()
 // CHECK-NEXT:     });
 // CHECK-NEXT:     for i in 0i32..2i32 {
 // CHECK-NEXT:         for j in 0i32..3i32 {

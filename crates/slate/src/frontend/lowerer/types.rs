@@ -444,7 +444,7 @@ impl FunctionLowerer<'_, '_> {
                     let (storage, storage_align) = self.tables.erased_storage(size, field_align);
                     (
                         rust::Type::Generic {
-                            name: "std::mem::MaybeUninit".into(),
+                            name: "core::mem::MaybeUninit".into(),
                             args: vec![storage],
                         },
                         storage_align,
@@ -1088,7 +1088,7 @@ impl FunctionLowerer<'_, '_> {
                 self.dependencies.blocks = true;
                 return Ok(rust::Type::Ptr {
                     mutable: true,
-                    inner: Box::new(rust::Type::Custom("std::ffi::c_void".into())),
+                    inner: Box::new(rust::Type::Custom("core::ffi::c_void".into())),
                 });
             }
             ir::Type::Array { element, length } => {

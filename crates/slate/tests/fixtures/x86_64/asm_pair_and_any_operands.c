@@ -92,7 +92,7 @@ int main(void) {
 // CHECK-NEXT:             "movq %rdx, {0:r}", lateout(reg) [[T_0]], in ("ax") [[T_1]] as u64, in ("dx") ([[T_1]]
 // CHECK-NEXT:             >> 64) as u64, options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         hi = unsafe { std::mem::transmute::<u64, u64>([[T_0]] as u64) };
+// CHECK-NEXT:         hi = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     hi
 // CHECK-NEXT: }
@@ -104,7 +104,7 @@ int main(void) {
 // CHECK-NEXT:             "leaq 3({0:r}), %rax", in (reg) x as u64, lateout("ax") [[T_0]], options(pure,
 // CHECK-NEXT:             nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         r = unsafe { std::mem::transmute::<u64, u64>([[T_0]] as u64) };
+// CHECK-NEXT:         r = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
@@ -126,7 +126,7 @@ int main(void) {
 // CHECK-NEXT:             "movl $42, {0:e}", lateout(reg) [[T_0]], options(pure, nomem, nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         r = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         r = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r + x - 40
 // CHECK-NEXT: }
@@ -142,29 +142,29 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%lu %lu\n".as_ptr(), (a >> 64i32) as u64, a as u64)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%lu %lu\n".as_ptr(), (b >> 64i32) as u64, b as u64)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lu %lu %d\n".as_ptr(),
 // CHECK-NEXT:             pair_in_high((11 as u128) << 64i32 | 12),
 // CHECK-NEXT:             single_a(39u64),
-// CHECK-NEXT:             any_operands(40i32, &mut (*std::ptr::addr_of_mut!(big))),
+// CHECK-NEXT:             any_operands(40i32, &mut (*core::ptr::addr_of_mut!(big))),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -20,19 +20,19 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut table: __SlateAlign16<[u64; 64]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     std::mem::zeroed()
+// CHECK-NEXT:     core::mem::zeroed()
 // CHECK-NEXT: });
-// CHECK-NEXT: static mut table_ptr: *mut u64 = unsafe { std::ptr::addr_of_mut!(table.0) as *mut u64 };
+// CHECK-NEXT: static mut table_ptr: *mut u64 = unsafe { core::ptr::addr_of_mut!(table.0) as *mut u64 };
 // CHECK-NEXT: fn d_hash(mut [[RET_0:__ret_[0-9]+]]: u64) -> *mut u64 {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: *mut u64;
-// CHECK-NEXT:     let mut __ret: *mut u64 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut __ret: *mut u64 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "mov {1:r},{0:r}", lateout(reg) [[T_0]], in (reg) table_ptr as u64,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         __ret = unsafe { std::mem::transmute::<u64, *mut u64>([[T_0]] as u64) };
+// CHECK-NEXT:         __ret = unsafe { core::mem::transmute::<u64, *mut u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_0]] = __ret;
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: u64;
@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-NEXT:             "shrl $12,{0:e}", inlateout(reg) [[RET_0]] as u64 => [[T_1]], options(pure, nomem,
 // CHECK-NEXT:             nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         [[RET_0]] = unsafe { std::mem::transmute::<u64, u64>([[T_1]] as u64) };
+// CHECK-NEXT:         [[RET_0]] = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_1]] = [[RET_0]];
 // CHECK-NEXT:     unsafe { [[V_0]].add([[V_1]] as usize) }
@@ -52,7 +52,7 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%ld\n".as_ptr(),
 // CHECK-NEXT:             d_hash(20480u64)
-// CHECK-NEXT:                 .offset_from((std::ptr::addr_of_mut!(table.0) as *mut u64) as *mut u64)
+// CHECK-NEXT:                 .offset_from((core::ptr::addr_of_mut!(table.0) as *mut u64) as *mut u64)
 // CHECK-NEXT:                 as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -61,8 +61,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

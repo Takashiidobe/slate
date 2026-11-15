@@ -451,7 +451,7 @@ impl FunctionLowerer<'_, '_> {
                 mutable: true,
                 ty: Some(maybe_uninit(image)),
                 init: Some(Expr::Call {
-                    func: Box::new(Expr::Var("std::mem::MaybeUninit::zeroed".into())),
+                    func: Box::new(Expr::Var("core::mem::MaybeUninit::zeroed".into())),
                     args: Vec::new(),
                     binding: CallBinding::Generated,
                 }),
@@ -750,7 +750,7 @@ pub(super) fn weak_address_name(binding: &str) -> String {
 
 fn maybe_uninit(ty: rust::Type) -> rust::Type {
     rust::Type::Generic {
-        name: "std::mem::MaybeUninit".into(),
+        name: "core::mem::MaybeUninit".into(),
         args: vec![ty],
     }
 }

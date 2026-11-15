@@ -19,7 +19,7 @@ fn is_null_constant(value: &ir::Value) -> bool {
 
 pub(super) fn volatile_read(address: Expr) -> Expr {
     Expr::Call {
-        func: Box::new(Expr::Var("std::ptr::read_volatile".into())),
+        func: Box::new(Expr::Var("core::ptr::read_volatile".into())),
         args: vec![address],
         binding: CallBinding::Generated,
     }
@@ -705,7 +705,7 @@ impl FunctionLowerer<'_, '_> {
         Expr::Unsafe(Box::new(rust::Block {
             stmts: Vec::new(),
             tail: Some(Box::new(Expr::Call {
-                func: Box::new(Expr::Var("std::ptr::read_unaligned".into())),
+                func: Box::new(Expr::Var("core::ptr::read_unaligned".into())),
                 args: vec![Expr::AddrOf {
                     mutable: false,
                     expr: Box::new(storage),
@@ -725,9 +725,9 @@ impl FunctionLowerer<'_, '_> {
             return Ok(None);
         };
         let (read, write) = if volatile {
-            ("std::ptr::read_volatile", "std::ptr::write_volatile")
+            ("core::ptr::read_volatile", "core::ptr::write_volatile")
         } else {
-            ("std::ptr::read_unaligned", "std::ptr::write_unaligned")
+            ("core::ptr::read_unaligned", "core::ptr::write_unaligned")
         };
         let address = Expr::AddrOf {
             mutable: true,

@@ -79,7 +79,7 @@ int main(void) {
 // CHECK-NEXT:             "ptrue p3.d\n\tcntp {0:x}, p3, p3.d", lateout(reg) [[T_0]], out("p3") _,
 // CHECK-NEXT:             options(nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         lanes = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         lanes = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (lanes > 0) as i32
 // CHECK-NEXT: }
@@ -114,18 +114,18 @@ int main(void) {
 // CHECK-NEXT:     for index in 0i64..11i64 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%ld ".as_ptr(), out[index as usize]) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("\n{}", unsafe { lanes_positive() });
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%g\n".as_ptr(), keep_live(1.5f64)) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

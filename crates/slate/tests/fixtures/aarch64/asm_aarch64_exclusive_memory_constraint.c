@@ -31,8 +31,8 @@ int main(void) {
 // CHECK-NEXT:             out(reg) [[T_0]], in (reg) counter as * mut i32, in (reg) counter as * mut i32,
 // CHECK-NEXT:             out(reg) [[T_1]], options(nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         old = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
-// CHECK-NEXT:         status = unsafe { std::mem::transmute::<u32, i32>([[T_1]] as u32) };
+// CHECK-NEXT:         old = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         status = unsafe { core::mem::transmute::<u32, i32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     old
 // CHECK: {{^}}}

@@ -67,8 +67,8 @@ int main(void) {
 // CHECK-NEXT:             u64 => [[T_0]], lateout("cx") [[T_1]], in ("cx") r#in.wrapping_add((1 as i32) as
 // CHECK-NEXT:             u64) as u64, options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         rbx = unsafe { std::mem::transmute::<u64, u64>([[T_0]] as u64) };
-// CHECK-NEXT:         rcx = unsafe { std::mem::transmute::<u64, u64>([[T_1]] as u64) };
+// CHECK-NEXT:         rbx = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
+// CHECK-NEXT:         rcx = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(out_rcx as *mut u64) = rcx;
@@ -83,7 +83,7 @@ int main(void) {
 // CHECK-NEXT:             as u64, inout("ax") tid as u32 => [[T_0]], in ("di") (lock as * mut u32) as u64,
 // CHECK-NEXT:             in ("dx") (pop as * mut u64) as u64, options(nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         tid = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         tid = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     tid
 // CHECK-NEXT: }
@@ -94,19 +94,19 @@ int main(void) {
 // CHECK-NEXT:     let mut rcx: u64 = 0;
 // CHECK-NEXT:     let rbx: u64 = swap_through_rbx(
 // CHECK-NEXT:         5u64,
-// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(rcx)) },
+// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(rcx)) },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut lock: u32 = 7;
 // CHECK-NEXT:     let mut pop: u64 = 99;
 // CHECK-NEXT:     let seen: u32 = try_store(
-// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(lock)) },
+// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(lock)) },
 // CHECK-NEXT:         7u32,
-// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(pop)) },
+// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(pop)) },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let missed: u32 = try_store(
-// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(lock)) },
+// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(lock)) },
 // CHECK-NEXT:         3u32,
-// CHECK-NEXT:         unsafe { &mut (*std::ptr::addr_of_mut!(pop)) },
+// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(pop)) },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -121,14 +121,14 @@ int main(void) {
 // CHECK-NEXT:             unsafe { slate_abs_ref }.unwrap()(-12i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

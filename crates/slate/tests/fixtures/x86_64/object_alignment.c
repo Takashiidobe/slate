@@ -88,29 +88,31 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut pad0: i8 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut pad0: i8 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: static mut table: __SlateAlign16<{{\[\[}}u64; 64]; 64]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     std::mem::zeroed()
+// CHECK-NEXT:     core::mem::zeroed()
 // CHECK-NEXT: });
-// CHECK-NEXT: static mut pad1: i8 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut pad1: i8 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: static mut small: __SlateAlign16<[u64; 2]> = __SlateAlign16([3u64, 4u64]);
-// CHECK-NEXT: static mut pad2: i8 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut pad2: i8 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: static mut aligned32: __SlateAlign32<[u32; 3]> = __SlateAlign32(unsafe {
-// CHECK-NEXT:     std::mem::zeroed()
+// CHECK-NEXT:     core::mem::zeroed()
 // CHECK-NEXT: });
-// CHECK-NEXT: static mut pad3: i8 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut pad3: i8 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: static mut bytes: __SlateAlign16<[u8; 16]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     std::mem::zeroed()
+// CHECK-NEXT:     core::mem::zeroed()
 // CHECK-NEXT: });
 // CHECK-NEXT: fn aligned(pointer: *const (), alignment: u64) -> i32 {
 // CHECK-NEXT:     ((pointer as u64) & alignment.wrapping_sub(1) == 0) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sum_vectors(values: *const u64, count: i32) -> u64 {
-// CHECK-NEXT:     let mut total: std::simd::Simd<u64, 2> = std::simd::Simd::from_array([0u64, 0u64]);
+// CHECK-NEXT:     let mut total: core::simd::Simd<u64, 2> = core::simd::Simd::from_array([0u64, 0u64]);
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < count {
 // CHECK-NEXT:         total
-// CHECK-NEXT:             += unsafe { *(values.offset(i as isize) as *const std::simd::Simd<u64, 2>) };
+// CHECK-NEXT:             += unsafe {
+// CHECK-NEXT:                 *(values.offset(i as isize) as *const core::simd::Simd<u64, 2>)
+// CHECK-NEXT:             };
 // CHECK-NEXT:         i += 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total[0].wrapping_add(total[1])
@@ -125,7 +127,7 @@ int main(void) {
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let tag2: i8 = tag;
 // CHECK-NEXT:     let mut line: __SlateAlign64<[u8; 8]> = __SlateAlign64({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [u8; 8] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [u8; 8] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
@@ -140,7 +142,7 @@ int main(void) {
 // CHECK-NEXT:         && aligned(line.0.as_mut_ptr() as *const (), 64u64) != 0;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = [[V_0]] && aligned(block.0.as_mut_ptr() as *const (), 16u64) != 0;
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: bool = [[V_1]]
-// CHECK-NEXT:         && aligned(std::ptr::addr_of_mut!(word.0) as *const (), 16u64) != 0;
+// CHECK-NEXT:         && aligned(core::ptr::addr_of_mut!(word.0) as *const (), 16u64) != 0;
 // CHECK-NEXT:     ok = [[V_2]] as i32;
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: bool = ok != 0
 // CHECK-NEXT:         && sum_vectors(row.0.as_mut_ptr() as *const u64, 4i32)
@@ -154,12 +156,12 @@ int main(void) {
 // CHECK-NEXT:         + (block.0[0] as i32) - depth + (word.0 as i32) - 5
 // CHECK-NEXT: }
 // CHECK-NEXT: fn dispatched(n: i32) -> i32 {
-// CHECK-NEXT:     let mut values: std::mem::MaybeUninit<__SlateAlign16<[u64; 2]>> = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut [u64; 2] = std::ptr::addr_of_mut!(values) as *mut [u64; 2];
-// CHECK-NEXT:     let mut count: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut values: core::mem::MaybeUninit<__SlateAlign16<[u64; 2]>> = core::mem::MaybeUninit::uninit();
+// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut [u64; 2] = core::ptr::addr_of_mut!(values) as *mut [u64; 2];
+// CHECK-NEXT:     let mut count: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         count = 0;
-// CHECK-NEXT:         std::ptr::write([[SLATE_SLOT_0]], [10u64, 20u64]);
+// CHECK-NEXT:         core::ptr::write([[SLATE_SLOT_0]], [10u64, 20u64]);
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             if aligned((*[[SLATE_SLOT_0]]).as_mut_ptr() as *const (), 16u64) == 0 {
 // CHECK-NEXT:                 return -1;
@@ -190,42 +192,42 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "table {}", aligned((unsafe { std::ptr::addr_of_mut!(table.0) as * mut [u64; 64]
+// CHECK-NEXT:         "table {}", aligned((unsafe { core::ptr::addr_of_mut!(table.0) as * mut [u64; 64]
 // CHECK-NEXT:         }) as * const (), 16u64)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "small {}", aligned((unsafe { std::ptr::addr_of_mut!(small.0) as * mut u64 }) as
+// CHECK-NEXT:         "small {}", aligned((unsafe { core::ptr::addr_of_mut!(small.0) as * mut u64 }) as
 // CHECK-NEXT:         * const (), 16u64)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "aligned32 {}", aligned((unsafe { std::ptr::addr_of_mut!(aligned32.0) as * mut
+// CHECK-NEXT:         "aligned32 {}", aligned((unsafe { core::ptr::addr_of_mut!(aligned32.0) as * mut
 // CHECK-NEXT:         u32 }) as * const (), 32u64)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "bytes {}", aligned((unsafe { std::ptr::addr_of_mut!(bytes.0) as * mut u8 }) as *
-// CHECK-NEXT:         const (), 16u64)
+// CHECK-NEXT:         "bytes {}", aligned((unsafe { core::ptr::addr_of_mut!(bytes.0) as * mut u8 }) as
+// CHECK-NEXT:         * const (), 16u64)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"table sum %llu\n".as_ptr(),
 // CHECK-NEXT:             sum_vectors(
-// CHECK-NEXT:                 (std::ptr::addr_of_mut!(table.0[5]) as *mut u64) as *const u64,
+// CHECK-NEXT:                 (core::ptr::addr_of_mut!(table.0[5]) as *mut u64) as *const u64,
 // CHECK-NEXT:                 64i32,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"small sum %llu\n".as_ptr(),
 // CHECK-NEXT:             sum_vectors(
-// CHECK-NEXT:                 (std::ptr::addr_of_mut!(small.0) as *mut u64) as *const u64,
+// CHECK-NEXT:                 (core::ptr::addr_of_mut!(small.0) as *mut u64) as *const u64,
 // CHECK-NEXT:                 2i32,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("locals {}", locals(5i32));
 // CHECK-NEXT:     println!("dispatched {}", dispatched(4i32));
 // CHECK-NEXT:     ((unsafe { pad0 }) as i32) + ((unsafe { pad1 }) as i32) + ((unsafe { pad2 }) as i32)
@@ -234,8 +236,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

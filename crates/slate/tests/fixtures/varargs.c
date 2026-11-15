@@ -31,7 +31,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum(n: i32, mut __va_args: ...) -> i32 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             core::ffi::VaList<'_>,
@@ -46,7 +46,7 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn pick_second(marker: i32, mut __va_args: ...) -> i32 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             core::ffi::VaList<'_>,
@@ -65,8 +65,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

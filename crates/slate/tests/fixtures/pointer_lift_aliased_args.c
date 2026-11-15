@@ -90,15 +90,15 @@ int main(void) {
 // CHECK-NEXT:         w: [x, x.wrapping_add(1), 0, 0],
 // CHECK-NEXT:     };
 // CHECK-NEXT:     bigval_add(
-// CHECK-NEXT:         std::ptr::addr_of_mut!(c),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(c) as *const __SlateRecord_pointer_lift_aliased_args_c_5,
-// CHECK-NEXT:         (unsafe { std::ptr::addr_of_mut!((* (ctx as * mut poly)).h) })
+// CHECK-NEXT:         core::ptr::addr_of_mut!(c),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(c) as *const __SlateRecord_pointer_lift_aliased_args_c_5,
+// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!((* (ctx as * mut poly)).h) })
 // CHECK-NEXT:             as *const __SlateRecord_pointer_lift_aliased_args_c_5,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     bigval_add(
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!((* (ctx as * mut poly)).h) },
-// CHECK-NEXT:         std::ptr::addr_of_mut!(c) as *const __SlateRecord_pointer_lift_aliased_args_c_5,
-// CHECK-NEXT:         (unsafe { std::ptr::addr_of_mut!((* (ctx as * mut poly)).h) })
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!((* (ctx as * mut poly)).h) },
+// CHECK-NEXT:         core::ptr::addr_of_mut!(c) as *const __SlateRecord_pointer_lift_aliased_args_c_5,
+// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!((* (ctx as * mut poly)).h) })
 // CHECK-NEXT:             as *const __SlateRecord_pointer_lift_aliased_args_c_5,
 // CHECK-NEXT:     );
 // CHECK: {{^}}}

@@ -15,10 +15,10 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let null_value: *mut () = std::ptr::null_mut::<()>();
-// CHECK-NEXT:     let null_pointer: *mut i32 = std::ptr::null_mut::<i32>();
+// CHECK-NEXT:     let null_value: *mut () = core::ptr::null_mut::<()>();
+// CHECK-NEXT:     let null_pointer: *mut i32 = core::ptr::null_mut::<i32>();
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", unsafe { std::ptr::read_volatile(std::ptr::addr_of!(null_value)) }
+// CHECK-NEXT:         "{} {}", unsafe { core::ptr::read_volatile(core::ptr::addr_of!(null_value)) }
 // CHECK-NEXT:         .is_null() as i32, null_pointer.is_null() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
@@ -26,8 +26,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

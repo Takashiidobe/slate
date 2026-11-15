@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-NEXT:             "incb {0:l}", inlateout(reg) x as u32 => [[T_0]], options(pure, nomem, nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         x = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK: {{^}}}
@@ -53,7 +53,7 @@ int main(void) {
 // CHECK-NEXT:             "incw {0:x}", inlateout(reg) x as u32 => [[T_0]], options(pure, nomem, nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         x = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK: {{^}}}
@@ -64,7 +64,7 @@ int main(void) {
 // CHECK-NEXT:             "incl {0:e}", inlateout(reg) x as u64 => [[T_0]], options(pure, nomem, nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         x = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK: {{^}}}
@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT:             "incq {0:r}", inlateout(reg) x as u64 => [[T_0]], options(pure, nomem, nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         x = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK: {{^}}}

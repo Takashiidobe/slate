@@ -50,10 +50,10 @@ int main(void) {
 // CHECK-NEXT:             inlateout("cx") ecx as u32 => [[T_2]], lateout("dx") [[T_3]], options(pure, nomem,
 // CHECK-NEXT:             nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         eax = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
-// CHECK-NEXT:         ebx = unsafe { std::mem::transmute::<u32, u32>([[T_1]] as u32) };
-// CHECK-NEXT:         ecx = unsafe { std::mem::transmute::<u32, u32>([[T_2]] as u32) };
-// CHECK-NEXT:         edx = unsafe { std::mem::transmute::<u32, u32>([[T_3]] as u32) };
+// CHECK-NEXT:         eax = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         ebx = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
+// CHECK-NEXT:         ecx = unsafe { core::mem::transmute::<u32, u32>([[T_2]] as u32) };
+// CHECK-NEXT:         edx = unsafe { core::mem::transmute::<u32, u32>([[T_3]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     ebx
 // CHECK-NEXT: }
@@ -64,7 +64,7 @@ int main(void) {
 // CHECK-NEXT:             "addl %ebx, {0:e}", inlateout(reg) a as u32 => [[T_0]], in ("bx") b as u32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         a = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         a = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     a
 // CHECK-NEXT: }
@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT:             "movl {0:e}, %ebx\n\tshll $1, %ebx\n\tmovl %ebx, {0:e}", inlateout(reg) x as
 // CHECK-NEXT:             u32 => [[T_0]], out("bx") _, options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         x = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
@@ -87,7 +87,7 @@ int main(void) {
 // CHECK-NEXT:             "movl (%edi), {0:e}", lateout(reg) [[T_0]], in ("di") (p as * const u32) as u32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         v = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         v = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
@@ -100,17 +100,17 @@ int main(void) {
 // CHECK-NEXT:             (cpuid_vendor_ebx() != 0) as i32,
 // CHECK-NEXT:             add_via_ebx(40u32, 2u32),
 // CHECK-NEXT:             clobber_ebx(21u32),
-// CHECK-NEXT:             load_via_address(&(*std::ptr::addr_of_mut!(word))),
+// CHECK-NEXT:             load_via_address(&(*core::ptr::addr_of_mut!(word))),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

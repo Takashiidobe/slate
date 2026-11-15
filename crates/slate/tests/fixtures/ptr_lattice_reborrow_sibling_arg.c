@@ -86,18 +86,18 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let format: *const i8 = c"(abc)d".as_ptr();
 // CHECK-NEXT:     let mut p: *const i8 = format;
-// CHECK-NEXT:     let first: i32 = value(unsafe { &mut (*std::ptr::addr_of_mut!(p)) });
-// CHECK-NEXT:     let second: i32 = value(unsafe { &mut (*std::ptr::addr_of_mut!(p)) });
+// CHECK-NEXT:     let first: i32 = value(unsafe { &mut (*core::ptr::addr_of_mut!(p)) });
+// CHECK-NEXT:     let second: i32 = value(unsafe { &mut (*core::ptr::addr_of_mut!(p)) });
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%d %d %s\n".as_ptr(), first, second, p) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

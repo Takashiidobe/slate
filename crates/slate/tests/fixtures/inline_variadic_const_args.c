@@ -12,7 +12,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{} {}", 7i32, 8i32);
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), 42i64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

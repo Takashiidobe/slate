@@ -272,15 +272,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
-// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:             Some(core::cmp::Ordering::Less)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     None
 // CHECK-NEXT:                 }
@@ -293,21 +293,21 @@ int main(void) {
 // CHECK-NEXT:     let im: f64 = z.im;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%s ".as_ptr(), name) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     if re.is_nan() {
 // CHECK-NEXT:         print!("nan ");
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%a ".as_ptr(), re) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if im.is_nan() {
 // CHECK-NEXT:         println!("nan");
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%a\n".as_ptr(), im) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn show_ld(name: *const i8, z: num_complex::Complex<LongDouble>) {
@@ -315,21 +315,21 @@ int main(void) {
 // CHECK-NEXT:     let im: LongDouble = z.im;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%s ".as_ptr(), name) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     if __slate_f80_is_fp_class(re, 3) {
 // CHECK-NEXT:         print!("nan ");
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { __slate_printf__ri32_pi8_f80(c"%.21Lg ".as_ptr(), re) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if __slate_f80_is_fp_class(im, 3) {
 // CHECK-NEXT:         println!("nan");
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { __slate_printf__ri32_pi8_f80(c"%.21Lg\n".as_ptr(), im) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut f_add: num_complex::Complex<f32> = num_complex::Complex {
@@ -484,15 +484,15 @@ int main(void) {
 // CHECK-NEXT:     show_d(c"d_conj".as_ptr(), unsafe { d_conj });
 // CHECK-NEXT:     show_d(
 // CHECK-NEXT:         c"rt_div".as_ptr(),
-// CHECK-NEXT:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(num)) }
-// CHECK-NEXT:             .c_div(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(den)) }, false),
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(num)) }
+// CHECK-NEXT:             .c_div(unsafe { core::ptr::read_volatile(core::ptr::addr_of!(den)) }, false),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     show_d(
 // CHECK-NEXT:         c"rt_divf".as_ptr(),
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[T_4:__t[0-9]+]] = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(numf)) }
+// CHECK-NEXT:             let [[T_4:__t[0-9]+]] = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(numf)) }
 // CHECK-NEXT:                 .c_div(
-// CHECK-NEXT:                     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(denf)) },
+// CHECK-NEXT:                     unsafe { core::ptr::read_volatile(core::ptr::addr_of!(denf)) },
 // CHECK-NEXT:                     false,
 // CHECK-NEXT:                 );
 // CHECK-NEXT:             num_complex::Complex {
@@ -509,8 +509,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

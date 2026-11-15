@@ -43,13 +43,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: static mut calls__19: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut calls__19: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: static mut calls__24: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut calls__24: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: static mut count: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut count: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: unsafe extern "C" {
@@ -65,14 +65,14 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"other twice %d\n".as_ptr(), twice_counted(1i32)) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"other thrice %d\n".as_ptr(), thrice_counted(1i32)) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
@@ -146,8 +146,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
@@ -168,21 +168,21 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"tickets %d %d %d\n".as_ptr(), first, second, third) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"twice %d\n".as_ptr(), twice_counted(3i32)) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"thrice %d\n".as_ptr(), thrice_counted(5i32)) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
@@ -193,11 +193,11 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut calls__19: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut calls__19: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut calls__24: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut calls__24: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut count: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut count: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn other_unit() -> i32;

@@ -193,15 +193,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
-// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:             Some(core::cmp::Ordering::Less)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     None
 // CHECK-NEXT:                 }
@@ -230,49 +230,49 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut l: i32 = -16843010i32;
 // CHECK-NEXT:     let mut p: *mut () = 4278124286usize as *mut ();
-// CHECK-NEXT:     let mut ld: LongDouble = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ld: LongDouble = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(ld) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 12usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(ld) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 12usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut lds: [LongDouble; 2] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut lds: [LongDouble; 2] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(lds) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 24usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 10usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(12usize), 254u8, 10usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(lds) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 24usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 10usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(12usize), 254u8, 10usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut tail: tail = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut tail: tail = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(tail) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 16usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 1usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(4usize), 254u8, 10usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(tail) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 16usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 1usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(4usize), 254u8, 10usize);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"long".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(l) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<i32>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(l) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<i32>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"pointer".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(p) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<*mut ()>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(p) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<*mut ()>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"long double".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(ld) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<LongDouble>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(ld) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<LongDouble>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"long double[]".as_ptr(),
 // CHECK-NEXT:         lds.as_mut_ptr() as *const (),
-// CHECK-NEXT:         std::mem::size_of::<[LongDouble; 2]>() as u32,
+// CHECK-NEXT:         core::mem::size_of::<[LongDouble; 2]>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"tail".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(tail) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<tail>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(tail) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<tail>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
@@ -280,8 +280,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -29,13 +29,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut alloc: Allocator = Allocator {
 // CHECK-NEXT:     realloc_fn: unsafe {
-// CHECK-NEXT:         std::mem::transmute::<
+// CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             *const (),
 // CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(*mut (), u64) -> *mut ()>,
 // CHECK-NEXT:         >(realloc as *const ())
 // CHECK-NEXT:     },
 // CHECK-NEXT:     free_fn: unsafe {
-// CHECK-NEXT:         std::mem::transmute::<
+// CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             *const (),
 // CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(*mut ())>,
 // CHECK-NEXT:         >(free as *const ())
@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let p: *mut () = unsafe {
-// CHECK-NEXT:         unsafe { alloc.realloc_fn }.unwrap()(std::ptr::null_mut::<()>(), 8u64)
+// CHECK-NEXT:         unsafe { alloc.realloc_fn }.unwrap()(core::ptr::null_mut::<()>(), 8u64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { unsafe { alloc.free_fn }.unwrap()(p) };
 // CHECK-NEXT:     println!("ok");
@@ -54,8 +54,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

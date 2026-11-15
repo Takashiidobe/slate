@@ -33,11 +33,14 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut frame: __SlateAlign16<[__jmp_buf_tag; 1]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     std::mem::zeroed()
+// CHECK-NEXT:     core::mem::zeroed()
 // CHECK-NEXT: });
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     if (unsafe { _setjmp(std::ptr::addr_of_mut!(frame.0) as *mut __jmp_buf_tag) }) == 0 {
-// CHECK-NEXT:         unsafe { longjmp(std::ptr::addr_of_mut!(frame.0) as *mut __jmp_buf_tag, 42i32) };
+// CHECK-NEXT:     if (unsafe { _setjmp(core::ptr::addr_of_mut!(frame.0) as *mut __jmp_buf_tag) }) == 0
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             longjmp(core::ptr::addr_of_mut!(frame.0) as *mut __jmp_buf_tag, 42i32)
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("returned");
 // CHECK-NEXT:     0
@@ -45,8 +48,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

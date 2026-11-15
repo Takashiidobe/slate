@@ -107,7 +107,7 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut s: Segment = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut s: Segment = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     s.from.x = 1;
 // CHECK-NEXT:     s.from.y = 2;
 // CHECK-NEXT:     s.to.x = 10;
@@ -118,33 +118,33 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%ld %c %.2f\n".as_ptr(),
-// CHECK-NEXT:             segment_length(&(*std::ptr::addr_of_mut!(s))),
+// CHECK-NEXT:             segment_length(&(*core::ptr::addr_of_mut!(s))),
 // CHECK-NEXT:             s.tag as i32,
 // CHECK-NEXT:             s.weight,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let mut third: Node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     let mut third: Node = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     third.value = 3;
-// CHECK-NEXT:     third.next = std::ptr::addr_of_mut!(third);
-// CHECK-NEXT:     let mut second: Node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     third.next = core::ptr::addr_of_mut!(third);
+// CHECK-NEXT:     let mut second: Node = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     second.value = 2;
-// CHECK-NEXT:     second.next = std::ptr::addr_of_mut!(third);
-// CHECK-NEXT:     let mut first: Node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     second.next = core::ptr::addr_of_mut!(third);
+// CHECK-NEXT:     let mut first: Node = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     first.value = 1;
-// CHECK-NEXT:     first.next = std::ptr::addr_of_mut!(second);
+// CHECK-NEXT:     first.next = core::ptr::addr_of_mut!(second);
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut Node = unsafe { (*first.next).next };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*[[V_1]]).value = (*[[V_1]]).value + 4;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{}", sum_list(std::ptr::addr_of_mut!(first), 3i32));
+// CHECK-NEXT:     println!("{}", sum_list(core::ptr::addr_of_mut!(first), 3i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

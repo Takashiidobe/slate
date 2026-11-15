@@ -75,116 +75,123 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: fn as_doubles(bits: std::simd::Simd<i64, 2>) -> std::simd::Simd<f64, 2> {
+// CHECK-NEXT: fn as_doubles(bits: core::simd::Simd<i64, 2>) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         std::mem::transmute::<std::simd::Simd<i64, 2>, std::simd::Simd<f64, 2>>(bits)
+// CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<f64, 2>>(bits)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
-// CHECK-NEXT: fn as_bytes(value: std::simd::Simd<f32, 4>) -> std::simd::Simd<u8, 16> {
+// CHECK-NEXT: fn as_bytes(value: core::simd::Simd<f32, 4>) -> core::simd::Simd<u8, 16> {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         std::mem::transmute::<std::simd::Simd<f32, 4>, std::simd::Simd<u8, 16>>(value)
+// CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<f32, 4>, core::simd::Simd<u8, 16>>(value)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: std::simd::Simd<i32, 2> = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: std::simd::Simd<i32, 2> = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let bits: std::simd::Simd<i64, 2> = std::simd::Simd::from_array([
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: core::simd::Simd<i32, 2> = unsafe {
+// CHECK-NEXT:         core::mem::zeroed()
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: core::simd::Simd<i32, 2> = unsafe {
+// CHECK-NEXT:         core::mem::zeroed()
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let bits: core::simd::Simd<i64, 2> = core::simd::Simd::from_array([
 // CHECK-NEXT:         4607182418800017408i64,
 // CHECK-NEXT:         -4611686018427387904i64,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let doubles: std::simd::Simd<f64, 2> = as_doubles(bits);
+// CHECK-NEXT:     let doubles: core::simd::Simd<f64, 2> = as_doubles(bits);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%g %g\n".as_ptr(), doubles[0], doubles[1]) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let back: std::simd::Simd<i64, 2> = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<std::simd::Simd<f64, 2>, std::simd::Simd<i64, 2>>(doubles)
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     let back: core::simd::Simd<i64, 2> = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<
+// CHECK-NEXT:             core::simd::Simd<f64, 2>,
+// CHECK-NEXT:             core::simd::Simd<i64, 2>,
+// CHECK-NEXT:         >(doubles)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%llx %llx\n".as_ptr(), back[0] as u64, back[1] as u64)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let mut floats: std::simd::Simd<f32, 4> = std::simd::Simd::from_array([
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     let mut floats: core::simd::Simd<f32, 4> = core::simd::Simd::from_array([
 // CHECK-NEXT:         1.0f32,
 // CHECK-NEXT:         -0.0f32,
 // CHECK-NEXT:         2.5f32,
 // CHECK-NEXT:         -3.75f32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let bytes: std::simd::Simd<u8, 16> = as_bytes(floats);
+// CHECK-NEXT:     let bytes: core::simd::Simd<u8, 16> = as_bytes(floats);
 // CHECK-NEXT:     for i in 0i32..16i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%02x".as_ptr(), bytes[i as usize] as i32) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT:     let scalar: f64 = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<
-// CHECK-NEXT:             std::simd::Simd<i32, 2>,
+// CHECK-NEXT:         core::mem::transmute::<
+// CHECK-NEXT:             core::simd::Simd<i32, 2>,
 // CHECK-NEXT:             f64,
 // CHECK-NEXT:         >(unsafe {
 // CHECK-NEXT:             *{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = std::simd::Simd::from_array([0i32, 1074266112i32]);
-// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array([0i32, 1074266112i32]);
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:             }
 // CHECK-NEXT:         })
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%g\n".as_ptr(), scalar) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let halves: std::simd::Simd<i16, 4> = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<i64, std::simd::Simd<i16, 4>>(1125912791875585i64)
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     let halves: core::simd::Simd<i16, 4> = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<i64, core::simd::Simd<i16, 4>>(1125912791875585i64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}", halves[0] as i32, halves[1] as i32, halves[2] as i32, halves[3] as
 // CHECK-NEXT:         i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let whole: i64 = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<std::simd::Simd<i16, 4>, i64>(halves)
+// CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i16, 4>, i64>(halves)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%llx\n".as_ptr(), whole as u64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let pair: pair = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<
-// CHECK-NEXT:             std::simd::Simd<i32, 2>,
+// CHECK-NEXT:         core::mem::transmute::<
+// CHECK-NEXT:             core::simd::Simd<i32, 2>,
 // CHECK-NEXT:             pair,
 // CHECK-NEXT:         >(unsafe {
 // CHECK-NEXT:             *{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_1]] = std::simd::Simd::from_array([-7i32, 9i32]);
-// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
+// CHECK-NEXT:                 [[SLATE_COMPOUND_1]] = core::simd::Simd::from_array([-7i32, 9i32]);
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
 // CHECK-NEXT:             }
 // CHECK-NEXT:         })
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {}", pair.low, pair.high);
-// CHECK-NEXT:     let packed: std::simd::Simd<i32, 2> = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<pair, std::simd::Simd<i32, 2>>(pair)
+// CHECK-NEXT:     let packed: core::simd::Simd<i32, 2> = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<pair, core::simd::Simd<i32, 2>>(pair)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {}", packed[0], packed[1]);
 // CHECK-NEXT:     let mut words: __SlateAlign16<[u32; 4]> = __SlateAlign16([0u32; 4]);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((std::ptr::addr_of_mut!(floats) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(floats) as *const ()) as *const core::ffi::c_void)
 // CHECK-NEXT:                 as *const u8,
 // CHECK-NEXT:             ((words.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:             ((std::mem::size_of::<[u32; 4]>() as u64) as usize) as usize,
+// CHECK-NEXT:             ((core::mem::size_of::<[u32; 4]>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut rebuilt: std::simd::Simd<f32, 4> = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<
-// CHECK-NEXT:             std::simd::Simd<u8, 16>,
-// CHECK-NEXT:             std::simd::Simd<f32, 4>,
+// CHECK-NEXT:     let mut rebuilt: core::simd::Simd<f32, 4> = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<
+// CHECK-NEXT:             core::simd::Simd<u8, 16>,
+// CHECK-NEXT:             core::simd::Simd<f32, 4>,
 // CHECK-NEXT:         >(unsafe {
-// CHECK-NEXT:             std::mem::transmute::<
-// CHECK-NEXT:                 std::simd::Simd<f32, 4>,
-// CHECK-NEXT:                 std::simd::Simd<u8, 16>,
+// CHECK-NEXT:             core::mem::transmute::<
+// CHECK-NEXT:                 core::simd::Simd<f32, 4>,
+// CHECK-NEXT:                 core::simd::Simd<u8, 16>,
 // CHECK-NEXT:             >(floats)
 // CHECK-NEXT:         })
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let __slate_printf_arg0 = ((unsafe {
 // CHECK-NEXT:         memcmp(
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(rebuilt) as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(rebuilt) as *const ()) as *const core::ffi::c_void,
 // CHECK-NEXT:             (words.0.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
-// CHECK-NEXT:             (std::mem::size_of::<[u32; 4]>() as u64) as usize,
+// CHECK-NEXT:             (core::mem::size_of::<[u32; 4]>() as u64) as usize,
 // CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0);
@@ -193,8 +200,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

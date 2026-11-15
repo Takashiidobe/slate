@@ -46,7 +46,7 @@ int main(void) {
 // CHECK-NEXT:             "msr nzcv, {1:x}\nnop\ncset {0:w}, cs", out(reg) [[T_0]], in (reg) (flag as u32)
 // CHECK-NEXT:             as u64, options(pure, nomem, nostack)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         flag = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
@@ -57,7 +57,7 @@ int main(void) {
 // CHECK-NEXT:             "msr nzcv, {1:x}\nnop\ncset {0:w}, eq", out(reg) [[T_0]], in (reg) (flag as u32)
 // CHECK-NEXT:             as u64, options(pure, nomem, nostack)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         flag = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag as i32
 // CHECK-NEXT: }
@@ -68,7 +68,7 @@ int main(void) {
 // CHECK-NEXT:             "msr nzcv, {1:x}\nnop\ncset {0:w}, mi", out(reg) [[T_0]], in (reg) flag as u64,
 // CHECK-NEXT:             options(pure, nomem, nostack)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         flag = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
@@ -83,8 +83,8 @@ int main(void) {
 // CHECK-NEXT:             lateout(reg) [[T_1]], in (reg) left as u32, in (reg) right as u32, options(pure,
 // CHECK-NEXT:             nomem, nostack)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         flag = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
-// CHECK-NEXT:         bits = unsafe { std::mem::transmute::<u64, u64>([[T_1]] as u64) };
+// CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         bits = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bits >> 28i32
 // CHECK-NEXT: }
@@ -98,7 +98,7 @@ int main(void) {
 // CHECK-NEXT:             wide_in(1i64),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -107,14 +107,14 @@ int main(void) {
 // CHECK-NEXT:             flags_name(1i32, 2i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -50,15 +50,15 @@ int main(void) {
 // CHECK-NEXT:     if f.is_null() {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::puts(c"open-fail".as_ptr()) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::fputs(c"0123456789abcdef\n".as_ptr(), f) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::fputs(c"short\n".as_ptr(), f) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { slate_support::fclose(f) };
 // CHECK-NEXT:     let g: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         slate_support::fopen(
@@ -69,12 +69,12 @@ int main(void) {
 // CHECK-NEXT:     if g.is_null() {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::puts(c"reopen-fail".as_ptr()) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut line: [i8; 8] = [0i8; 8];
 // CHECK-NEXT:     while !unsafe {
-// CHECK-NEXT:         fgets(line.as_mut_ptr() as *mut i8, std::mem::size_of::<[i8; 8]>() as i32, g)
+// CHECK-NEXT:         fgets(line.as_mut_ptr() as *mut i8, core::mem::size_of::<[i8; 8]>() as i32, g)
 // CHECK-NEXT:     }
 // CHECK-NEXT:         .is_null()
 // CHECK-NEXT:     {
@@ -82,7 +82,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::fputs(line.as_mut_ptr() as *const i8, slate_support::stdout())
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { slate_support::fclose(g) };
 // CHECK-NEXT:     unsafe {
@@ -95,8 +95,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

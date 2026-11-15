@@ -64,15 +64,15 @@ int main(void) {
 // CHECK-NEXT: static mut headers: __SlateAlign16<[header; 2]> = __SlateAlign16([
 // CHECK-NEXT:     header {
 // CHECK-NEXT:         name: (b"CSeq\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:         name_length: (std::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),
-// CHECK-NEXT:         search: std::ptr::null::<i8>(),
+// CHECK-NEXT:         name_length: (core::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),
+// CHECK-NEXT:         search: core::ptr::null::<i8>(),
 // CHECK-NEXT:         search_length: 0u64,
 // CHECK-NEXT:     },
 // CHECK-NEXT:     header {
 // CHECK-NEXT:         name: (b"From\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:         name_length: (std::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),
+// CHECK-NEXT:         name_length: (core::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),
 // CHECK-NEXT:         search: (b"sip:\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:         search_length: (std::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),
+// CHECK-NEXT:         search_length: (core::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),
 // CHECK-NEXT:     },
 // CHECK-NEXT: ]);
 // CHECK-NEXT: static mut checked: i32 = 64;
@@ -81,7 +81,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: u32 = 0;
-// CHECK-NEXT:         while (i as u64) < (std::mem::size_of::<[u8; 4]>() as u64) {
+// CHECK-NEXT:         while (i as u64) < (core::mem::size_of::<[u8; 4]>() as u64) {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 slate_support::printf(
@@ -90,7 +90,7 @@ int main(void) {
 // CHECK-NEXT:                     descriptor[i as usize] as i32,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             i = i.wrapping_add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -99,7 +99,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(c"log %u %d\n".as_ptr(), i, log_sizes[i as usize])
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0u32..2u32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -116,7 +116,7 @@ int main(void) {
 // CHECK-NEXT:                 headers.0[i as usize].search_length,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -127,14 +127,14 @@ int main(void) {
 // CHECK-NEXT:             elvis,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

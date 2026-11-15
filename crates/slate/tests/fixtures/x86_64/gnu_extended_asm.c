@@ -54,7 +54,7 @@ int main(void) {
 // CHECK-NEXT:             "leal 3({1:e}), {0:e}", lateout(reg) [[T_0]], in (reg) input as u32,
 // CHECK-NEXT:             options(nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         output = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         output = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-NEXT:             "addl $2, {0:e}", inlateout(reg) output as u32 => [[T_1]], options(nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         output = unsafe { std::mem::transmute::<u32, i32>([[T_1]] as u32) };
+// CHECK-NEXT:         output = unsafe { core::mem::transmute::<u32, i32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: u32;
@@ -70,7 +70,7 @@ int main(void) {
 // CHECK-NEXT:             "imull {1:e}, {0:e}", inlateout(reg) output as u32 => [[T_2]], in (reg) (2 as
 // CHECK-NEXT:             i32) as u32, options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         tied = unsafe { std::mem::transmute::<u32, i32>([[T_2]] as u32) };
+// CHECK-NEXT:         tied = unsafe { core::mem::transmute::<u32, i32>([[T_2]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]]: u32;
@@ -78,7 +78,7 @@ int main(void) {
 // CHECK-NEXT:             "movl {1:e}, {0:e}\n\taddl {2:e}, {0:e}", out(reg) [[T_3]], in (reg) tied as
 // CHECK-NEXT:             u32, in (reg) (1 as i32) as u32, options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         early = unsafe { std::mem::transmute::<u32, i32>([[T_3]] as u32) };
+// CHECK-NEXT:         early = unsafe { core::mem::transmute::<u32, i32>([[T_3]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]]: u32;
@@ -86,7 +86,7 @@ int main(void) {
 // CHECK-NEXT:             "addl ${1}, {0:e}", inlateout(reg) early as u32 => [[T_4]], const 4 as i32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         early = unsafe { std::mem::transmute::<u32, i32>([[T_4]] as u32) };
+// CHECK-NEXT:         early = unsafe { core::mem::transmute::<u32, i32>([[T_4]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     early
 // CHECK-NEXT: }
@@ -98,7 +98,7 @@ int main(void) {
 // CHECK-NEXT:             "subl {1:e}, {0:e}", inlateout(reg) left as u32 => [[T_0]], in (reg) right as
 // CHECK-NEXT:             u32, options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         result = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         result = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
@@ -112,8 +112,8 @@ int main(void) {
 // CHECK-NEXT:             "movl $3, {0:e}\n\tmovl $4, {1:e}", lateout(reg) [[T_0]], lateout(reg) [[T_1]],
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         left = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
-// CHECK-NEXT:         right = unsafe { std::mem::transmute::<u32, i32>([[T_1]] as u32) };
+// CHECK-NEXT:         left = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         right = unsafe { core::mem::transmute::<u32, i32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     left * 10 + right
 // CHECK-NEXT: }
@@ -127,8 +127,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

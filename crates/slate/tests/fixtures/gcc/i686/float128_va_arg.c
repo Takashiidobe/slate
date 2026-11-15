@@ -46,17 +46,17 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum(n: i32, mut __va_args: ...) -> f128 {
-// CHECK-NEXT:     let mut ap: *mut i8 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ap: *mut i8 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, *mut i8>(__va_args.clone())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: f128 = 0i32 as f128;
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         let scale: i32 = unsafe {
-// CHECK-NEXT:             __slate_i386_va::arg::<_, i32>(std::ptr::addr_of_mut!(ap))
+// CHECK-NEXT:             __slate_i386_va::arg::<_, i32>(core::ptr::addr_of_mut!(ap))
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: f128 = (scale as f128)
-// CHECK-NEXT:             * unsafe { __slate_i386_va::arg::<_, f128>(std::ptr::addr_of_mut!(ap)) };
+// CHECK-NEXT:             * unsafe { __slate_i386_va::arg::<_, f128>(core::ptr::addr_of_mut!(ap)) };
 // CHECK-NEXT:         total += [[V_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
@@ -83,14 +83,14 @@ int main(void) {
 // CHECK-NEXT:                 == 8.07793566946316088741610050849573099E-28f128) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

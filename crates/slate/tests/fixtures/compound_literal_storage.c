@@ -56,18 +56,18 @@ int main(void) {
 // CHECK-NEXT:     values: *mut i32,
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut origin: *mut Point = unsafe {
-// CHECK-NEXT:     std::ptr::addr_of_mut!(__slate_compound_origin_0)
+// CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_compound_origin_0)
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut primes: *mut i32 = unsafe {
-// CHECK-NEXT:     std::ptr::addr_of_mut!(__slate_compound_primes_0) as *mut i32
+// CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_compound_primes_0) as *mut i32
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut pair: Pair = Pair {
-// CHECK-NEXT:     first: unsafe { std::ptr::addr_of_mut!(__slate_compound_pair_0) },
-// CHECK-NEXT:     values: unsafe { std::ptr::addr_of_mut!(__slate_compound_pair_1) as *mut i32 },
+// CHECK-NEXT:     first: unsafe { core::ptr::addr_of_mut!(__slate_compound_pair_0) },
+// CHECK-NEXT:     values: unsafe { core::ptr::addr_of_mut!(__slate_compound_pair_1) as *mut i32 },
 // CHECK-NEXT: };
 // CHECK-NEXT: fn sum(values: *const i32, count: i32) -> i32 {
 // CHECK-NEXT:     let __values_view = unsafe {
-// CHECK-NEXT:         std::slice::from_raw_parts(values as *const i32, count as usize)
+// CHECK-NEXT:         core::slice::from_raw_parts(values as *const i32, count as usize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..count {
@@ -76,9 +76,9 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: Point = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: [i32; 4] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: Point = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: [i32; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut Point = unsafe { origin };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*[[V_0]]).x = (*[[V_0]]).x + 10;
@@ -96,9 +96,9 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..3i32 {
 // CHECK-NEXT:         let counter: *mut i32 = unsafe {
-// CHECK-NEXT:             std::ptr::addr_of_mut!(
+// CHECK-NEXT:             core::ptr::addr_of_mut!(
 // CHECK-NEXT:                 * { [[SLATE_COMPOUND_0]] = i * 10;
-// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]]) }
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]]) }
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe {
@@ -111,18 +111,18 @@ int main(void) {
 // CHECK-NEXT:     let copied: Point = unsafe {
 // CHECK-NEXT:         *{
 // CHECK-NEXT:             [[SLATE_COMPOUND_1]] = {
-// CHECK-NEXT:                 let mut [[T_0:__t[0-9]+]]: Point = std::mem::zeroed();
+// CHECK-NEXT:                 let mut [[T_0:__t[0-9]+]]: Point = core::mem::zeroed();
 // CHECK-NEXT:                 [[T_0]].y = 7i32;
 // CHECK-NEXT:                 [[T_0]]
 // CHECK-NEXT:             };
-// CHECK-NEXT:             std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
+// CHECK-NEXT:             core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let total: i32 = sum(
 // CHECK-NEXT:         (unsafe {
 // CHECK-NEXT:             (*{
 // CHECK-NEXT:                 [[SLATE_COMPOUND_2]] = [1i32, 2i32, 3i32, copied.y];
-// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
 // CHECK-NEXT:             })
 // CHECK-NEXT:                 .as_mut_ptr() as *mut i32
 // CHECK-NEXT:         }) as *const i32,
@@ -138,8 +138,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

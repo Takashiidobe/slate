@@ -34,7 +34,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: macro_rules! va_copy {
 // CHECK-NEXT:     ($d:expr, $s:expr) => {
-// CHECK-NEXT:         $d = unsafe { (* std::ptr::addr_of_mut!($s)).clone() };
+// CHECK-NEXT:         $d = unsafe { (* core::ptr::addr_of_mut!($s)).clone() };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
@@ -50,14 +50,14 @@ int main(void) {
 // CHECK-NEXT:     va: *mut core::ffi::VaList<'static>,
 // CHECK-NEXT: }
 // CHECK-NEXT: fn emit(vaf: *mut va_format) {
-// CHECK-NEXT:     let mut va: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut va: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     va_copy!(va, * unsafe { (* vaf).va });
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { vprintf((*vaf).fmt, va.clone()) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn outer(fmt: *const i8, mut __va_args: ...) {
-// CHECK-NEXT:     let mut args: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut args: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     args = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             core::ffi::VaList<'_>,
@@ -66,10 +66,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut vaf: va_format = va_format {
 // CHECK-NEXT:         fmt: fmt,
-// CHECK-NEXT:         va: std::ptr::addr_of_mut!(args),
+// CHECK-NEXT:         va: core::ptr::addr_of_mut!(args),
 // CHECK-NEXT:     };
-// CHECK-NEXT:     emit(std::ptr::addr_of_mut!(vaf));
-// CHECK-NEXT:     emit(std::ptr::addr_of_mut!(vaf));
+// CHECK-NEXT:     emit(core::ptr::addr_of_mut!(vaf));
+// CHECK-NEXT:     emit(core::ptr::addr_of_mut!(vaf));
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe { outer(c"%d-%s\n".as_ptr(), 7i32, c"x".as_ptr() as *mut i8) };
@@ -78,8 +78,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

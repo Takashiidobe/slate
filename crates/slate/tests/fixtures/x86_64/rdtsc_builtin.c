@@ -28,8 +28,8 @@ int main(void) {
 // CHECK-NEXT:     let start: u64 = unsafe { __slate_intrinsic_9e72945d5c6a2d09() };
 // CHECK-NEXT:     let mut sink: i32 = 0;
 // CHECK-NEXT:     for i in 0i32..1000i32 {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(sink)) };
-// CHECK-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(sink), [[V_0]] + i) };
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(sink)) };
+// CHECK-NEXT:         unsafe { core::ptr::write_volatile(core::ptr::addr_of_mut!(sink), [[V_0]] + i) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { __slate_intrinsic_9e72945d5c6a2d09() }.wrapping_sub(start)
 // CHECK-NEXT: }
@@ -41,8 +41,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

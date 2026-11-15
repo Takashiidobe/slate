@@ -32,6 +32,6 @@ int same_name_b(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}feature early
 // CHECK-NEXT: + struct __SlateRecord_records_c_4
-// CHECK-NEXT: + static mut early_value: __SlateRecord_records_c_4 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: + static mut early_value: __SlateRecord_records_c_4 = unsafe { core::mem::zeroed() };
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

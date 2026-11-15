@@ -180,7 +180,7 @@ fn ato_int_prelude(name: &str, ret: Prim, target: &slate_parser::target_info::Ta
     let cstr = Expr::Call {
         binding: CallBinding::Generated,
         func: Box::new(Expr::Path(Path::new(
-            ["std", "ffi", "CStr", "from_ptr"].map(Ident::from),
+            ["core", "ffi", "CStr", "from_ptr"].map(Ident::from),
         ))),
         args: vec![var("s")],
     };
@@ -206,7 +206,7 @@ fn ato_int_prelude(name: &str, ret: Prim, target: &slate_parser::target_info::Ta
     let text = Expr::Call {
         binding: CallBinding::Generated,
         func: Box::new(Expr::Path(Path::new(
-            ["std", "str", "from_utf8"].map(Ident::from),
+            ["core", "str", "from_utf8"].map(Ident::from),
         ))),
         args: vec![slice],
     };

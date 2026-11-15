@@ -35,7 +35,7 @@ int main(void) {
 // CHECK-NEXT:     let mut cw: u16 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fstcw ({0:r})", in (reg) std::ptr::addr_of_mut!(cw), options(nostack,
+// CHECK-NEXT:             "fstcw ({0:r})", in (reg) core::ptr::addr_of_mut!(cw), options(nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
@@ -44,7 +44,7 @@ int main(void) {
 // CHECK-NEXT: fn set_control_word(mut cw: u16) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fldcw ({0:r})", in (reg) std::ptr::addr_of!(cw), options(nostack,
+// CHECK-NEXT:             "fldcw ({0:r})", in (reg) core::ptr::addr_of!(cw), options(nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
@@ -53,7 +53,7 @@ int main(void) {
 // CHECK-NEXT:     let saved: u16 = control_word();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"cw %04x\n".as_ptr(), (saved as i32) & 7999) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     set_control_word(((saved as i32) & !3072 | 3072) as u16);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-NEXT:             (control_word() as i32) & 3072,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     set_control_word(saved);
 // CHECK-NEXT:     println!("restored {}", ((control_word() as i32) == (saved as i32)) as i32);
 // CHECK-NEXT:     let mut byte: u8 = 90;
@@ -72,8 +72,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "notb ({0:r})\n\tnotl ({1:r})\n\tnegq ({2:r})\n\tincw ({3:r})", in (reg)
-// CHECK-NEXT:             std::ptr::addr_of_mut!(byte), in (reg) std::ptr::addr_of_mut!(word), in (reg)
-// CHECK-NEXT:             std::ptr::addr_of_mut!(quad), in (reg) std::ptr::addr_of_mut!(half),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(byte), in (reg) core::ptr::addr_of_mut!(word), in
+// CHECK-NEXT:             (reg) core::ptr::addr_of_mut!(quad), in (reg) core::ptr::addr_of_mut!(half),
 // CHECK-NEXT:             options(nostack, att_syntax)
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
@@ -87,14 +87,14 @@ int main(void) {
 // CHECK-NEXT:             half as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

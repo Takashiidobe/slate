@@ -170,7 +170,7 @@ pub(super) fn zeroed() -> Expr {
     Expr::Unsafe(Box::new(rust::Block {
         stmts: Vec::new(),
         tail: Some(Box::new(Expr::Call {
-            func: Box::new(Expr::Var("std::mem::zeroed".into())),
+            func: Box::new(Expr::Var("core::mem::zeroed".into())),
             args: Vec::new(),
             binding: CallBinding::Generated,
         })),
@@ -2022,10 +2022,10 @@ impl FunctionLowerer<'_, '_> {
             {
                 let (hint, args) = match (self.tables.builtin_name(*id), arguments.as_slice()) {
                     (Some("__builtin_unreachable"), []) => {
-                        ("std::hint::unreachable_unchecked", Vec::new())
+                        ("core::hint::unreachable_unchecked", Vec::new())
                     }
                     (_, [condition]) => (
-                        "std::hint::assert_unchecked",
+                        "core::hint::assert_unchecked",
                         vec![self.lower_value(condition)?],
                     ),
                     _ => return Err(unsupported_value(value)),

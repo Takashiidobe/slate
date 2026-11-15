@@ -360,15 +360,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
-// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:             Some(core::cmp::Ordering::Less)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     None
 // CHECK-NEXT:                 }
@@ -668,283 +668,283 @@ int main(void) {
 // CHECK-NEXT:     let mut i: i32 = -16843010i32;
 // CHECK-NEXT:     let mut f: f32 = f32::from_bits(4278124286u32);
 // CHECK-NEXT:     let mut d: f64 = f64::from_bits(18374403900871474942u64);
-// CHECK-NEXT:     let mut ld: LongDouble = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ld: LongDouble = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(ld) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 16usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 10usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(ld) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 16usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 10usize);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut p: *mut () = 18374403900871474942usize as *mut ();
 // CHECK-NEXT:     let mut lone: bool = false;
-// CHECK-NEXT:     let mut cf: num_complex::Complex<f32> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut cf: num_complex::Complex<f32> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(cf) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 8usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(cf) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 8usize);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut arr: [i32; 3] = [-16843010i32; 3];
-// CHECK-NEXT:     let mut mix: mixed = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut mix: mixed = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(mix) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 24usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 9usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(16usize), 254u8, 8usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(mix) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 24usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 9usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(16usize), 254u8, 8usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut fl: flags = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut fl: flags = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(fl) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 3usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(fl) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 3usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut bf: bits = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut bf: bits = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(bf) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 8usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 3usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(3usize), 2u8, 1usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(4usize), 254u8, 1usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(bf) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 8usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 3usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(3usize), 2u8, 1usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(4usize), 254u8, 1usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut un: either = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut un: either = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(un) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 8usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(un) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 8usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut nr: narrow = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut nr: narrow = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(nr) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 4usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 6u8, 1usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(nr) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 4usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 6u8, 1usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut sv: seven = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut sv: seven = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(sv) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 4usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 126u8, 1usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(sv) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 4usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 126u8, 1usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut nn: nine = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut nn: nine = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(nn) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 4usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 1usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(nn) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 4usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 1usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut sp: split = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut sp: split = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(sp) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 4usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 30u8, 1usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(1usize), 254u8, 1usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(2usize), 30u8, 1usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(sp) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 4usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 30u8, 1usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(1usize), 254u8, 1usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(2usize), 30u8, 1usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut wd: wide = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut wd: wide = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(wd) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 8usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 5usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(5usize), 6u8, 1usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(wd) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 8usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 5usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(5usize), 6u8, 1usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut holes: holes = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut holes: holes = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(holes) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 8usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 5usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(holes) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 8usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 5usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut bits_only: bits_only = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut bits_only: bits_only = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(bits_only) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 4usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 2usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(bits_only) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 4usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 2usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut nested_bits: nested_bits = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut nested_bits: nested_bits = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(nested_bits) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 4usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 1usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(1usize), 6u8, 1usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(nested_bits) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 4usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 1usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(1usize), 6u8, 1usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut padded_member: padded_member = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut padded_member: padded_member = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(padded_member) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 8usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(padded_member) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 8usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut tail: tail = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut tail: tail = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(tail) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 32usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 1usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(16usize), 254u8, 10usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(tail) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 32usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 1usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(16usize), 254u8, 10usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut cld: num_complex::Complex<LongDouble> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut cld: num_complex::Complex<LongDouble> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(cld) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 32usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(cld) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 32usize);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut b7: u8 = 0;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(b7) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 126u8, 1usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(b7) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 126u8, 1usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut b65: bitint::BInt<65, 2, 16, bitint::A8> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut b65: bitint::BInt<65, 2, 16, bitint::A8> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(b65) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 16usize);
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 8usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(b65) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 16usize);
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 8usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut pairs: __SlateAlign16<[pair; 600]> = __SlateAlign16(unsafe { std::mem::zeroed() });
+// CHECK-NEXT:     let mut pairs: __SlateAlign16<[pair; 600]> = __SlateAlign16(unsafe { core::mem::zeroed() });
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(pairs.0) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 4800usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(pairs.0) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 4800usize);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"int".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(i) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<i32>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(i) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<i32>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"float".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(f) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<f32>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(f) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<f32>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"double".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(d) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<f64>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(d) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<f64>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"long double".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(ld) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(ld) as *const (),
 // CHECK-NEXT:         10u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"pointer".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(p) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<*mut ()>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(p) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<*mut ()>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"lone bool".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(lone) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<bool>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(lone) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<bool>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"complex".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(cf) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(cf) as *const (),
 // CHECK-NEXT:         8u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"array".as_ptr(),
 // CHECK-NEXT:         arr.as_mut_ptr() as *const (),
-// CHECK-NEXT:         std::mem::size_of::<[i32; 3]>() as u32,
+// CHECK-NEXT:         core::mem::size_of::<[i32; 3]>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"mixed.i".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(mix.i) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<i32>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(mix.i) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<i32>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"mixed.f".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(mix.f) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<f32>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(mix.f) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<f32>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"mixed.c".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(mix.c) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<i8>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(mix.c) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<i8>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"mixed.d".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(mix.d) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<f64>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(mix.d) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<f64>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"flags.b".as_ptr(),
 // CHECK-NEXT:         fl.b.as_mut_ptr() as *const (),
-// CHECK-NEXT:         std::mem::size_of::<[bool; 2]>() as u32,
+// CHECK-NEXT:         core::mem::size_of::<[bool; 2]>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"flags.c".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(fl.c) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<i8>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(fl.c) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<i8>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"bits.pre".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(bf.pre) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<i8>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(bf.pre) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<i8>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"bits.post".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(bf.post) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<i8>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(bf.post) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<i8>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"bits".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(bf) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(bf) as *const (),
 // CHECK-NEXT:         4u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"union".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(un) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<either>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(un) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<either>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"narrow".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(nr) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(nr) as *const (),
 // CHECK-NEXT:         1u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"seven".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(sv) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(sv) as *const (),
 // CHECK-NEXT:         1u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"nine".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(nn) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(nn) as *const (),
 // CHECK-NEXT:         2u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"split".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(sp) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(sp) as *const (),
 // CHECK-NEXT:         3u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"wide".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(wd) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(wd) as *const (),
 // CHECK-NEXT:         6u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"holes".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(holes) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<holes>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(holes) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<holes>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"bits_only".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(bits_only) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<bits_only>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(bits_only) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<bits_only>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"nested_bits".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(nested_bits) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<nested_bits>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(nested_bits) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<nested_bits>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"padded_member".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(padded_member) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<padded_member>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(padded_member) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<padded_member>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"tail".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(tail) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<tail>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(tail) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<tail>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"complex long double".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(cld) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(cld) as *const (),
 // CHECK-NEXT:         32u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"bitint7".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(b7) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(b7) as *const (),
 // CHECK-NEXT:         1u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"bitint65".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(b65) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(b65) as *const (),
 // CHECK-NEXT:         16u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
@@ -952,7 +952,7 @@ int main(void) {
 // CHECK-NEXT:             c"pairs: %08x\n".as_ptr(),
 // CHECK-NEXT:             hash(
 // CHECK-NEXT:                 pairs.0.as_mut_ptr() as *const (),
-// CHECK-NEXT:                 std::mem::size_of::<[pair; 600]>() as u32,
+// CHECK-NEXT:                 core::mem::size_of::<[pair; 600]>() as u32,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -962,8 +962,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -61,7 +61,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: static mut observed: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut observed: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn forwarding_cycle(stop: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         if stop != 0 {
@@ -70,14 +70,14 @@ int main(void) {
 // CHECK-NEXT:             loop {}
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn run(mode: i32) -> i32 {
-// CHECK-NEXT:     let mut i: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut steps: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut checks: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut visits: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut sum: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut steps: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut checks: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut visits: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut sum: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut __slate_state: usize = 10usize;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         sum = 0;
@@ -94,7 +94,7 @@ int main(void) {
 // CHECK-NEXT:             match __slate_state {
 // CHECK-NEXT:                 8 => {
 // CHECK-NEXT:                     sum += 3;
-// CHECK-NEXT:                     std::ptr::write_volatile(std::ptr::addr_of_mut!(observed), sum);
+// CHECK-NEXT:                     core::ptr::write_volatile(core::ptr::addr_of_mut!(observed), sum);
 // CHECK-NEXT:                     visits += 1;
 // CHECK-NEXT:                     if visits < 4 {
 // CHECK-NEXT:                         __slate_state = 9;
@@ -104,7 +104,7 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 _ => {
 // CHECK-NEXT:                     sum += 2;
-// CHECK-NEXT:                     std::ptr::write_volatile(std::ptr::addr_of_mut!(observed), sum);
+// CHECK-NEXT:                     core::ptr::write_volatile(core::ptr::addr_of_mut!(observed), sum);
 // CHECK-NEXT:                     visits += 1;
 // CHECK-NEXT:                     if visits < 4 {
 // CHECK-NEXT:                         __slate_state = 8;
@@ -130,7 +130,7 @@ int main(void) {
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     let [[V_1:__v[0-9]+]]: i32 = sum
-// CHECK-NEXT:                         + std::ptr::read_volatile(std::ptr::addr_of!(observed));
+// CHECK-NEXT:                         + core::ptr::read_volatile(core::ptr::addr_of!(observed));
 // CHECK-NEXT:                     sum = [[V_1]];
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 steps += 1;
@@ -141,7 +141,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {} {} {} {}", sum, visits, checks, steps,
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(observed))
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(observed))
 // CHECK-NEXT:         );
 // CHECK-NEXT:         return sum;
 // CHECK-NEXT:     }
@@ -155,8 +155,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

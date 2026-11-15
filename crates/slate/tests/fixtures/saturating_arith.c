@@ -57,7 +57,7 @@ int main(void) {
 // CHECK-NEXT:     let sub_u: u32 = 5u32.saturating_sub(10u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), sub_u) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let u128a: u128 = (0 as u128).wrapping_sub(1 as u128);
 // CHECK-NEXT:     let add_u128: u128 = u128a.saturating_add(5 as u128);
 // CHECK-NEXT:     println!("{}", (add_u128 == (0 as u128).wrapping_sub(1 as u128)) as i32);
@@ -89,27 +89,27 @@ int main(void) {
 // CHECK-NEXT:         "{}", (sub_u200.compare(< bitint::BUint < 200, 4, 32, bitint::A8 >>::from_bint(<
 // CHECK-NEXT:         bitint::BInt < 200, 4, 32, bitint::A8 >>::from_i128(0 as i128))) == 0) as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let va: std::simd::Simd<i32, 4> = std::simd::Simd::from_array([
+// CHECK-NEXT:     let va: core::simd::Simd<i32, 4> = core::simd::Simd::from_array([
 // CHECK-NEXT:         2147483647i32,
 // CHECK-NEXT:         1i32,
 // CHECK-NEXT:         -2147483648i32,
 // CHECK-NEXT:         0i32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let vb: std::simd::Simd<i32, 4> = std::simd::Simd::from_array([
+// CHECK-NEXT:     let vb: core::simd::Simd<i32, 4> = core::simd::Simd::from_array([
 // CHECK-NEXT:         10i32,
 // CHECK-NEXT:         1i32,
 // CHECK-NEXT:         -10i32,
 // CHECK-NEXT:         0i32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let vr: std::simd::Simd<i32, 4> = std::simd::num::SimdInt::saturating_add(va, vb);
+// CHECK-NEXT:     let vr: core::simd::Simd<i32, 4> = core::simd::num::SimdInt::saturating_add(va, vb);
 // CHECK-NEXT:     println!("{} {} {} {}", vr[0], vr[1], vr[2], vr[3]);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

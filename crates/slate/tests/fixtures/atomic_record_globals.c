@@ -50,7 +50,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: mod __slate_libatomic {
-// CHECK-NEXT:     use std::sync::atomic::Ordering;
+// CHECK-NEXT:     use core::sync::atomic::Ordering;
 // CHECK-NEXT:     #[link(name = "atomic")]
 // CHECK-NEXT:     unsafe extern "C" {
 // CHECK-NEXT:         pub fn __atomic_load_16(pointer: *const u128, order: i32) -> u128;
@@ -144,12 +144,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     pub struct AtomicGeneric<T>(*mut T);
 // CHECK-NEXT:     impl<T: Copy> AtomicGeneric<T> {
-// CHECK-NEXT:         const SIZE: usize = std::mem::size_of::<T>();
+// CHECK-NEXT:         const SIZE: usize = core::mem::size_of::<T>();
 // CHECK-NEXT:         pub unsafe fn from_ptr(pointer: *mut T) -> Self {
 // CHECK-NEXT:             Self(pointer)
 // CHECK-NEXT:         }
 // CHECK-NEXT:         pub fn load(&self, ordering: Ordering) -> T {
-// CHECK-NEXT:             let mut result = std::mem::MaybeUninit::<T>::uninit();
+// CHECK-NEXT:             let mut result = core::mem::MaybeUninit::<T>::uninit();
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 atomic_load(
 // CHECK-NEXT:                     Self::SIZE,
@@ -171,7 +171,7 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         pub fn swap(&self, mut value: T, ordering: Ordering) -> T {
-// CHECK-NEXT:             let mut result = std::mem::MaybeUninit::<T>::uninit();
+// CHECK-NEXT:             let mut result = core::mem::MaybeUninit::<T>::uninit();
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 atomic_exchange(
 // CHECK-NEXT:                     Self::SIZE,
@@ -256,81 +256,81 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut small: __SlateAlign4<Small> = __SlateAlign4(unsafe { std::mem::zeroed() });
-// CHECK-NEXT: static mut large: Large = unsafe { std::mem::zeroed() };
-// CHECK-NEXT: static mut holder: Holder = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut small: __SlateAlign4<Small> = __SlateAlign4(unsafe { core::mem::zeroed() });
+// CHECK-NEXT: static mut large: Large = unsafe { core::mem::zeroed() };
+// CHECK-NEXT: static mut holder: Holder = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: Small = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: Large = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: Small = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: Small = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: Large = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: Small = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu\n".as_ptr(), 4u64, 4u64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu\n".as_ptr(), 20u64, 4u64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), 12u64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut loaded: Small = unsafe {
 // CHECK-NEXT:         __slate_libatomic::AtomicGeneric::from_ptr(
-// CHECK-NEXT:                 std::ptr::addr_of!(small.0) as *mut Small,
+// CHECK-NEXT:                 core::ptr::addr_of!(small.0) as *mut Small,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:             .load(core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {} {}", loaded.a[0] as i32, loaded.a[1] as i32, loaded.a[2] as i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_libatomic::AtomicGeneric::from_ptr(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(small.0) as *mut Small,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(small.0) as *mut Small,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .store(
 // CHECK-NEXT:                 *{
 // CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = Small { a: [7, 8, 9] };
-// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:                 },
-// CHECK-NEXT:                 std::sync::atomic::Ordering::SeqCst,
+// CHECK-NEXT:                 core::sync::atomic::Ordering::SeqCst,
 // CHECK-NEXT:             )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     loaded = unsafe {
 // CHECK-NEXT:         __slate_libatomic::AtomicGeneric::from_ptr(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(small.0) as *mut Small,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(small.0) as *mut Small,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:             .load(core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {} {}", loaded.a[0] as i32, loaded.a[1] as i32, loaded.a[2] as i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_libatomic::AtomicGeneric::from_ptr(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(large) as *mut Large,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(large) as *mut Large,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .store(
 // CHECK-NEXT:                 *{
 // CHECK-NEXT:                     [[SLATE_COMPOUND_1]] = Large {
 // CHECK-NEXT:                         values: [10, 20, 30, 40, 50],
 // CHECK-NEXT:                     };
-// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
 // CHECK-NEXT:                 },
-// CHECK-NEXT:                 std::sync::atomic::Ordering::Release,
+// CHECK-NEXT:                 core::sync::atomic::Ordering::Release,
 // CHECK-NEXT:             )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut big: Large = unsafe {
 // CHECK-NEXT:         __slate_libatomic::AtomicGeneric::from_ptr(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(large) as *mut Large,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(large) as *mut Large,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .load(std::sync::atomic::Ordering::Acquire)
+// CHECK-NEXT:             .load(core::sync::atomic::Ordering::Acquire)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {}", big.values[0], big.values[4]);
 // CHECK-NEXT:     big.values[4] = 99;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_libatomic::AtomicGeneric::from_ptr(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(large) as *mut Large,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(large) as *mut Large,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .store(big, std::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:             .store(big, core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let again: Large = unsafe {
 // CHECK-NEXT:         __slate_libatomic::AtomicGeneric::from_ptr(
-// CHECK-NEXT:                 std::ptr::addr_of!(large) as *mut Large,
+// CHECK-NEXT:                 core::ptr::addr_of!(large) as *mut Large,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:             .load(core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{}", again.values[4]);
 // CHECK-NEXT:     unsafe {
@@ -338,14 +338,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_libatomic::AtomicGeneric::from_ptr(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(holder.value) as *mut Small,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(holder.value) as *mut Small,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .store(
 // CHECK-NEXT:                 *{
 // CHECK-NEXT:                     [[SLATE_COMPOUND_2]] = Small { a: [4, 5, 6] };
-// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
 // CHECK-NEXT:                 },
-// CHECK-NEXT:                 std::sync::atomic::Ordering::SeqCst,
+// CHECK-NEXT:                 core::sync::atomic::Ordering::SeqCst,
 // CHECK-NEXT:             )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -353,9 +353,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let inner: Small = unsafe {
 // CHECK-NEXT:         __slate_libatomic::AtomicGeneric::from_ptr(
-// CHECK-NEXT:                 std::ptr::addr_of!(holder.value) as *mut Small,
+// CHECK-NEXT:                 core::ptr::addr_of!(holder.value) as *mut Small,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:             .load(core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -368,14 +368,14 @@ int main(void) {
 // CHECK-NEXT:             holder.tail as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

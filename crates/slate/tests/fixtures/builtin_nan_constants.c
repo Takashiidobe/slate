@@ -59,12 +59,12 @@ int main(void) {
 // CHECK-NEXT: fn bits_f(mut value: f32) -> u32 {
 // CHECK-NEXT:     let mut bits: u32 = 0;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((std::ptr::addr_of_mut!(value) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(value) as *const ()) as *const core::ffi::c_void)
 // CHECK-NEXT:                 as *const u8,
-// CHECK-NEXT:             ((std::ptr::addr_of_mut!(bits) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(bits) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
-// CHECK-NEXT:             ((std::mem::size_of::<u32>() as u64) as usize) as usize,
+// CHECK-NEXT:             ((core::mem::size_of::<u32>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     bits
@@ -72,12 +72,12 @@ int main(void) {
 // CHECK-NEXT: fn bits_d(mut value: f64) -> u64 {
 // CHECK-NEXT:     let mut bits: u64 = 0;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((std::ptr::addr_of_mut!(value) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(value) as *const ()) as *const core::ffi::c_void)
 // CHECK-NEXT:                 as *const u8,
-// CHECK-NEXT:             ((std::ptr::addr_of_mut!(bits) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(bits) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
-// CHECK-NEXT:             ((std::mem::size_of::<u64>() as u64) as usize) as usize,
+// CHECK-NEXT:             ((core::mem::size_of::<u64>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     bits
@@ -93,7 +93,7 @@ int main(void) {
 // CHECK-NEXT:             bits_f(signaling_payload_f),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -104,7 +104,7 @@ int main(void) {
 // CHECK-NEXT:             bits_d(signaling_payload_d),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -113,14 +113,14 @@ int main(void) {
 // CHECK-NEXT:             bits_d(table.0[1]),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -127,7 +127,7 @@ int main(void) {
 // CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: fn gnu_string_extensions() -> i32 {
 // CHECK-NEXT:     let mut destination: __SlateAlign16<[i8; 16]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut repeated: [i8; 5] = [97, 98, 99, 97, 0];
@@ -144,7 +144,7 @@ int main(void) {
 // CHECK-NEXT:     let mut token_score: i32 = 0;
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i8 = unsafe {
-// CHECK-NEXT:             strsep(std::ptr::addr_of_mut!(cursor), c":".as_ptr())
+// CHECK-NEXT:             strsep(core::ptr::addr_of_mut!(cursor), c":".as_ptr())
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let token: *mut i8 = [[V_0]];
 // CHECK-NEXT:         if [[V_0]].is_null() {
@@ -204,7 +204,7 @@ int main(void) {
 // CHECK-NEXT:             as i64)) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_argz_extensions() -> i32 {
-// CHECK-NEXT:     let mut argz: *mut i8 = std::ptr::null_mut::<i8>();
+// CHECK-NEXT:     let mut argz: *mut i8 = core::ptr::null_mut::<i8>();
 // CHECK-NEXT:     let mut length: u64 = 0;
 // CHECK-NEXT:     let mut arguments: __SlateAlign16<[*mut i8; 6]> = __SlateAlign16([0 as *mut i8; 6]);
 // CHECK-NEXT:     let mut replacements: u32 = 0;
@@ -213,8 +213,8 @@ int main(void) {
 // CHECK-NEXT:         argz_create_sep(
 // CHECK-NEXT:             c"one:two:three".as_ptr(),
 // CHECK-NEXT:             58i32,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(argz),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(length),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(argz),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(length),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_0]];
@@ -233,19 +233,19 @@ int main(void) {
 // CHECK-NEXT:         }) == 0) as i32);
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         argz_add(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(argz),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(length),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(argz),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(length),
 // CHECK-NEXT:             c"four".as_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_3]];
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = ((unsafe {
 // CHECK-NEXT:         argz_replace(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(argz),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(length),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(argz),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(length),
 // CHECK-NEXT:             c"three".as_ptr(),
 // CHECK-NEXT:             c"THREE".as_ptr(),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(replacements),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(replacements),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_4]];
@@ -265,13 +265,13 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_envz_extensions() -> i32 {
-// CHECK-NEXT:     let mut envz: *mut i8 = std::ptr::null_mut::<i8>();
+// CHECK-NEXT:     let mut envz: *mut i8 = core::ptr::null_mut::<i8>();
 // CHECK-NEXT:     let mut length: u64 = 0;
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let [[V_0]]: i32 = ((unsafe {
 // CHECK-NEXT:         envz_add(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(envz),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(length),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(envz),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(length),
 // CHECK-NEXT:             c"ALPHA".as_ptr(),
 // CHECK-NEXT:             c"one".as_ptr(),
 // CHECK-NEXT:         )
@@ -279,10 +279,10 @@ int main(void) {
 // CHECK-NEXT:     total += [[V_0]];
 // CHECK-NEXT:     let [[V_1]]: i32 = ((unsafe {
 // CHECK-NEXT:         envz_add(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(envz),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(length),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(envz),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(length),
 // CHECK-NEXT:             c"BETA".as_ptr(),
-// CHECK-NEXT:             std::ptr::null::<i8>(),
+// CHECK-NEXT:             core::ptr::null::<i8>(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     total += [[V_1]];
@@ -301,8 +301,8 @@ int main(void) {
 // CHECK-NEXT:             as i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         envz_remove(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(envz),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(length),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(envz),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(length),
 // CHECK-NEXT:             c"ALPHA".as_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -310,7 +310,9 @@ int main(void) {
 // CHECK-NEXT:     total = [[V_4]]
 // CHECK-NEXT:         + (unsafe { envz_get(envz as *const i8, length, c"ALPHA".as_ptr()) }.is_null()
 // CHECK-NEXT:             as i32);
-// CHECK-NEXT:     unsafe { envz_strip(std::ptr::addr_of_mut!(envz), std::ptr::addr_of_mut!(length)) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         envz_strip(core::ptr::addr_of_mut!(envz), core::ptr::addr_of_mut!(length))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     total += (length == 0) as i32;
 // CHECK-NEXT:     unsafe { free((envz as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     total
@@ -324,8 +326,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -48,21 +48,21 @@ int main(void) {
 // CHECK-NEXT:     let x: i32 = 40;
 // CHECK-NEXT:     let y: u8 = 200;
 // CHECK-NEXT:     let z: i64 = 9000000000;
-// CHECK-NEXT:     let mut bx: Box = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut bx: Box = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     bx.value = add_alias(x, 2i32);
 // CHECK-NEXT:     bx.tag = y;
 // CHECK-NEXT:     println!("{}", bx.value);
 // CHECK-NEXT:     println!("{}", bx.tag as i32);
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), z) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{}", std::mem::size_of::< i32 > () as i32);
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     println!("{}", core::mem::size_of::< i32 > () as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

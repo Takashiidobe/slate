@@ -326,7 +326,7 @@ impl FunctionLowerer<'_, '_> {
         Ok(Expr::Call {
             func: Box::new(Expr::Var(
                 format!(
-                    "std::ptr::{}::<{}>",
+                    "core::ptr::{}::<{}>",
                     if mutable { "null_mut" } else { "null" },
                     crate::backend::codegen::type_to_string(&inner)
                 )

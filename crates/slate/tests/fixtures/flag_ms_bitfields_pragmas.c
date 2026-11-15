@@ -220,16 +220,16 @@ int main(void) { printf("%zu %zu %zu %zu %zu\n", sizeof(struct plain), sizeof(st
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu %zu\n".as_ptr(),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<plain>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<gs>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<off>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<reset>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<on>() as u64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<plain>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<gs>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<off>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<reset>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<on>() as u32,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<plain>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<gs>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<off>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<reset>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<on>() as u64,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<plain>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<gs>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<off>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<reset>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<on>() as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0
@@ -238,8 +238,8 @@ int main(void) { printf("%zu %zu %zu %zu %zu\n", sizeof(struct plain), sizeof(st
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

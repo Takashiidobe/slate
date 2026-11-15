@@ -73,7 +73,7 @@ int main(void) {
 // CHECK-NEXT:     let ushort_value: u16 = 65000;
 // CHECK-NEXT:     let signed_value: i32 = add_i32(100000i32, short_value);
 // CHECK-NEXT:     let wide: u64 = widen_u32(unsafe { global_u32 });
-// CHECK-NEXT:     let mut pair: FixedPair = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut pair: FixedPair = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     pair.left = short_value;
 // CHECK-NEXT:     pair.right = unsafe { global_u32 };
 // CHECK-NEXT:     pair.count = unsafe { global_size }.wrapping_add(3);
@@ -85,15 +85,15 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", add_i32(10i32, 20i16));
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lu\n".as_ptr(), widen_u32(5u32)) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", use_fixed_types());
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

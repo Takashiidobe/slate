@@ -40,9 +40,9 @@ int main(void) {
 // CHECK-NEXT: };
 // CHECK-NEXT: fn add(isDirect: i32, amount: u64) {
 // CHECK-NEXT:     let target: *mut u64 = if isDirect != 0 {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(acc.direct) }
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(acc.direct) }
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         unsafe { std::ptr::addr_of_mut!(acc.indirect) }
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(acc.indirect) }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u64 = unsafe { *target };
 // CHECK-NEXT:     unsafe {
@@ -55,14 +55,14 @@ int main(void) {
 // CHECK-NEXT:     add(1i32, 7u64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), acc.direct, acc.indirect) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

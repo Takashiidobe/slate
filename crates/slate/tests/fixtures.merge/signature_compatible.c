@@ -84,8 +84,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
@@ -107,12 +107,12 @@ int main(void) {
 // CHECK-NEXT:                 scale(2i32) as c_long,
 // CHECK-NEXT:                 native_long((3 as c_long)),
 // CHECK-NEXT:                 unprototyped(4i32),
-// CHECK-NEXT:                 *(std::ptr::addr_of_mut!(table) as *mut i32).add(1),
-// CHECK-NEXT:                 *(std::ptr::addr_of_mut!(big_unsized) as *mut i32).add(2),
+// CHECK-NEXT:                 *(core::ptr::addr_of_mut!(table) as *mut i32).add(1),
+// CHECK-NEXT:                 *(core::ptr::addr_of_mut!(big_unsized) as *mut i32).add(2),
 // CHECK-NEXT:                 big_sized[3],
 // CHECK-NEXT:                 label(),
 // CHECK-NEXT:                 read_opaque(make_opaque()),
-// CHECK-NEXT:                 read_handle(std::ptr::null_mut::<__SlateRecord_signature_compatible_c_13>()),
+// CHECK-NEXT:                 read_handle(core::ptr::null_mut::<__SlateRecord_signature_compatible_c_13>()),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
@@ -124,16 +124,16 @@ int main(void) {
 // CHECK-NEXT:                 scale((2 as c_long)),
 // CHECK-NEXT:                 native_long((3 as c_long)),
 // CHECK-NEXT:                 unprototyped(4i32),
-// CHECK-NEXT:                 *(std::ptr::addr_of_mut!(table) as *mut i32).add(1),
-// CHECK-NEXT:                 *(std::ptr::addr_of_mut!(big_unsized) as *mut i32).add(2),
+// CHECK-NEXT:                 *(core::ptr::addr_of_mut!(table) as *mut i32).add(1),
+// CHECK-NEXT:                 *(core::ptr::addr_of_mut!(big_unsized) as *mut i32).add(2),
 // CHECK-NEXT:                 big_sized[3],
 // CHECK-NEXT:                 label(),
 // CHECK-NEXT:                 read_opaque(make_opaque()),
-// CHECK-NEXT:                 read_handle(std::ptr::null_mut::<__SlateRecord_signature_compatible_c_13>()),
+// CHECK-NEXT:                 read_handle(core::ptr::null_mut::<__SlateRecord_signature_compatible_c_13>()),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { quit(0i32) };
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
@@ -160,7 +160,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(feature = "beta")]
 // CHECK-NEXT: static mut shared: opaque = {
-// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: opaque = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: opaque = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].value = 7i32;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
@@ -201,12 +201,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn make_opaque() -> *mut opaque {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(shared) }
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(shared) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn native_long(x: c_long) -> c_long {
-// CHECK-NEXT:     x + (std::mem::size_of::<c_long>() as c_long)
+// CHECK-NEXT:     x + (core::mem::size_of::<c_long>() as c_long)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -236,7 +236,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut big_sized: __SlateAlignLargeArray<[i32; 32]> = __SlateAlignLargeArray({
-// CHECK-NEXT:     let mut [[T_0]]: [i32; 32] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0]]: [i32; 32] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]][0] = 1i32;
 // CHECK-NEXT:     [[T_0]][1] = 2i32;
 // CHECK-NEXT:     [[T_0]][2] = 3i32;
@@ -246,7 +246,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut big_unsized: __SlateAlignLargeArray<[i32; 32]> = __SlateAlignLargeArray({
-// CHECK-NEXT:     let mut [[T_0]]: [i32; 32] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0]]: [i32; 32] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]][0] = 1i32;
 // CHECK-NEXT:     [[T_0]][1] = 2i32;
 // CHECK-NEXT:     [[T_0]][2] = 3i32;

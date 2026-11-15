@@ -173,11 +173,11 @@ fn call_effects(expr: &Expr) -> Effects {
         };
     };
     match name.as_str() {
-        "std::ptr::read_volatile" | "core::ptr::read_volatile" => Effects {
+        "core::ptr::read_volatile" => Effects {
             volatile_read: true,
             ..Default::default()
         },
-        "std::ptr::write_volatile" | "core::ptr::write_volatile" => Effects {
+        "core::ptr::write_volatile" => Effects {
             volatile_write: true,
             ..Default::default()
         },

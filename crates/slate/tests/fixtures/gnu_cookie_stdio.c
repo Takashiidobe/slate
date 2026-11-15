@@ -57,7 +57,7 @@ int main(void) {
 // CHECK-NEXT:     size: u64,
 // CHECK-NEXT: ) -> i64 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             ((buffer as *const ()) as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((((*(state as *mut GNUCookie)).bytes.as_mut_ptr() as *mut i8)
 // CHECK-NEXT:                 .offset((*(state as *mut GNUCookie)).length as isize) as *mut ())
@@ -79,18 +79,18 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn gnu_cookie_stdio() -> i32 {
 // CHECK-NEXT:     let mut cookie: GNUCookie = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: GNUCookie = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: GNUCookie = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut functions: _IO_cookie_io_functions_t = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: _IO_cookie_io_functions_t = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: _IO_cookie_io_functions_t = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     functions.write = Some(gnu_cookie_write);
 // CHECK-NEXT:     functions.close = Some(gnu_cookie_close);
 // CHECK-NEXT:     let stream: *mut slate_support::FILE = unsafe {
-// CHECK-NEXT:         fopencookie(std::ptr::addr_of_mut!(cookie) as *mut (), c"w".as_ptr(), functions)
+// CHECK-NEXT:         fopencookie(core::ptr::addr_of_mut!(cookie) as *mut (), c"w".as_ptr(), functions)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_0]] + (!stream.is_null() as i32);

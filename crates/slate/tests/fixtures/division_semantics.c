@@ -70,8 +70,8 @@ int main(void) {
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
-// CHECK-NEXT:         < (std::mem::size_of::<{{\[\[}}i32; 2]; 7]>() as u64)
-// CHECK-NEXT:             / (std::mem::size_of::<[i32; 2]>() as u64)
+// CHECK-NEXT:         < (core::mem::size_of::<{{\[\[}}i32; 2]; 7]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<[i32; 2]>() as u64)
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let a: i32 = pairs.0[i as usize][0];
 // CHECK-NEXT:         let b: i32 = pairs.0[i as usize][1];
@@ -99,7 +99,7 @@ int main(void) {
 // CHECK-NEXT:             ubig_rem,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut sc: i8 = -100;
 // CHECK-NEXT:     let mut uc: u8 = 250;
 // CHECK-NEXT:     let mut sh: i16 = -30000;
@@ -129,8 +129,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

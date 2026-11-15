@@ -24,7 +24,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut state: __SlateRecord_anonymous_header_types_h_10 = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: __SlateRecord_anonymous_header_types_h_10 = unsafe {
-// CHECK-NEXT:             std::mem::zeroed()
+// CHECK-NEXT:             core::mem::zeroed()
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_0]].count = 0i32;
 // CHECK-NEXT:         [[T_0]]
@@ -37,8 +37,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

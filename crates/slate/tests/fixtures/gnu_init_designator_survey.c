@@ -82,14 +82,14 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut sized: __SlateStorage_sized = {
-// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: __SlateStorage_sized = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: __SlateStorage_sized = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].n = 3i32;
 // CHECK-NEXT:     [[T_0]].data = [10i32, 20i32, 30i32];
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let range_values: __SlateAlign16<[i32; 10]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0]]: [i32; 10] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: [i32; 10] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]] = 9i32;
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: usize = 2;
 // CHECK-NEXT:         while [[T_2]] <= 5 {
@@ -99,7 +99,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let old_index: [i32; 3] = {
-// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: [i32; 3] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: [i32; 3] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_3]][1] = 11i32;
 // CHECK-NEXT:         [[T_3]]
 // CHECK-NEXT:     };
@@ -110,23 +110,23 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {} {} {}", range_values.0[3], old_index[1], p.x + p.y, unsafe { c.i });
 // CHECK-NEXT:     println!("{}", (f as u32) as i32);
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu\n".as_ptr(), 4u64, 0u64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", unsafe { * (std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(sized)
-// CHECK-NEXT:         as * mut Sized)).data) as * mut i32).add(0) }, unsafe { *
-// CHECK-NEXT:         (std::ptr::addr_of_mut!((* (std::ptr::addr_of_mut!(sized) as * mut Sized)).data)
-// CHECK-NEXT:         as * mut i32).add(1) }, unsafe { * (std::ptr::addr_of_mut!((*
-// CHECK-NEXT:         (std::ptr::addr_of_mut!(sized) as * mut Sized)).data) as * mut i32).add(2) }
+// CHECK-NEXT:         "{} {} {}", unsafe { * (core::ptr::addr_of_mut!((*
+// CHECK-NEXT:         (core::ptr::addr_of_mut!(sized) as * mut Sized)).data) as * mut i32).add(0) },
+// CHECK-NEXT:         unsafe { * (core::ptr::addr_of_mut!((* (core::ptr::addr_of_mut!(sized) as * mut
+// CHECK-NEXT:         Sized)).data) as * mut i32).add(1) }, unsafe { * (core::ptr::addr_of_mut!((*
+// CHECK-NEXT:         (core::ptr::addr_of_mut!(sized) as * mut Sized)).data) as * mut i32).add(2) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), 4u64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

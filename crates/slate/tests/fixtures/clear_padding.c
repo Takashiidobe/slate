@@ -108,24 +108,24 @@ int main(void) {
 // CHECK-NEXT:     let bytes: *const u8 = p as *const u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%s:".as_ptr(), name) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(c" %02x".as_ptr(), *bytes.add(i as usize) as i32)
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut h: holes = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut h: holes = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             ((std::ptr::addr_of_mut!(h) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:         core::ptr::write_bytes(
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(h) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             (171i32 as i32) as u8,
-// CHECK-NEXT:             ((std::mem::size_of::<holes>() as u64) as usize) as usize,
+// CHECK-NEXT:             ((core::mem::size_of::<holes>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     h.c = 1;
@@ -133,27 +133,27 @@ int main(void) {
 // CHECK-NEXT:     h.s = 3;
 // CHECK-NEXT:     h.d = 4.0f64;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: *mut u8 = std::ptr::addr_of_mut!(h) as *mut u8;
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: *mut u8 = core::ptr::addr_of_mut!(h) as *mut u8;
 // CHECK-NEXT:         [[T_0]].add(1usize).write_bytes(0u8, 3usize);
 // CHECK-NEXT:         [[T_0]].add(10usize).write_bytes(0u8, 6usize);
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"holes".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(h) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<holes>() as u64,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(h) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<holes>() as u64,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut n: nested = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut n: nested = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             ((std::ptr::addr_of_mut!(n) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:         core::ptr::write_bytes(
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(n) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             (205i32 as i32) as u8,
-// CHECK-NEXT:             ((std::mem::size_of::<nested>() as u64) as usize) as usize,
+// CHECK-NEXT:             ((core::mem::size_of::<nested>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     n.tail = 9;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]]: *mut u8 = std::ptr::addr_of_mut!(n) as *mut u8;
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]]: *mut u8 = core::ptr::addr_of_mut!(n) as *mut u8;
 // CHECK-NEXT:         [[T_1]].add(1usize).write_bytes(0u8, 3usize);
 // CHECK-NEXT:         [[T_1]].add(10usize).write_bytes(0u8, 6usize);
 // CHECK-NEXT:         [[T_1]].add(25usize).write_bytes(0u8, 3usize);
@@ -162,39 +162,39 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"nested".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(n) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<nested>() as u64,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(n) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<nested>() as u64,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut b: bits = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut b: bits = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             ((std::ptr::addr_of_mut!(b) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:         core::ptr::write_bytes(
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(b) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             (255i32 as i32) as u8,
-// CHECK-NEXT:             ((std::mem::size_of::<bits>() as u64) as usize) as usize,
+// CHECK-NEXT:             ((core::mem::size_of::<bits>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     b.__slate_bits_0.__set_a(1i32);
 // CHECK-NEXT:     b.__slate_bits_0.__set_b(2i32);
 // CHECK-NEXT:     b.c = 3;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]]: *mut u8 = std::ptr::addr_of_mut!(b) as *mut u8;
+// CHECK-NEXT:         let [[T_2:__t[0-9]+]]: *mut u8 = core::ptr::addr_of_mut!(b) as *mut u8;
 // CHECK-NEXT:         *[[T_2]].add(0usize) &= 231u8;
 // CHECK-NEXT:         *[[T_2]].add(1usize) &= 3u8;
 // CHECK-NEXT:         [[T_2]].add(3usize).write_bytes(0u8, 1usize);
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"bits".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(b) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<bits>() as u64,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(b) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<bits>() as u64,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

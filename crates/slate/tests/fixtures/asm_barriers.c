@@ -110,7 +110,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "\n# {0:e}", inlateout(reg) x as u32 => [[T_0]], options(nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         x = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x.wrapping_mul(3)
 // CHECK-NEXT: }
@@ -120,7 +120,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "\n# {0:r}", inlateout(reg) x as u64 => [[T_0]], options(nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         x = unsafe { std::mem::transmute::<u64, u64>([[T_0]] as u64) };
+// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x.wrapping_add(1)
 // CHECK-NEXT: }
@@ -143,14 +143,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn verify_volatile(x: *const u8, y: *const u8, n: i32) -> i32 {
-// CHECK-NEXT:     let __y_view = unsafe { std::slice::from_raw_parts(y as *const u8, n as usize) };
-// CHECK-NEXT:     let __x_view = unsafe { std::slice::from_raw_parts(x as *const u8, n as usize) };
+// CHECK-NEXT:     let __y_view = unsafe { core::slice::from_raw_parts(y as *const u8, n as usize) };
+// CHECK-NEXT:     let __x_view = unsafe { core::slice::from_raw_parts(x as *const u8, n as usize) };
 // CHECK-NEXT:     let mut d: u16 = 0;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: u16 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) };
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: u16 = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(d)) };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::ptr::write_volatile(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(d),
+// CHECK-NEXT:             core::ptr::write_volatile(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(d),
 // CHECK-NEXT:                 (([[V_0]] as i32)
 // CHECK-NEXT:                     | (__x_view[i as usize] as i32) ^ (__y_view[i as usize] as i32))
 // CHECK-NEXT:                     as u16,
@@ -160,16 +160,16 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u16;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "\n# {0:x}", inlateout(reg) std::ptr::read_volatile(std::ptr::addr_of!(d)) as
-// CHECK-NEXT:             u16 => [[T_0]], options(nostack, att_syntax)
+// CHECK-NEXT:             "\n# {0:x}", inlateout(reg) core::ptr::read_volatile(core::ptr::addr_of!(d))
+// CHECK-NEXT:             as u16 => [[T_0]], options(nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         std::ptr::write_volatile(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(d),
-// CHECK-NEXT:             unsafe { std::mem::transmute::<u16, u16>([[T_0]] as u16) },
+// CHECK-NEXT:         core::ptr::write_volatile(
+// CHECK-NEXT:             core::ptr::addr_of_mut!(d),
+// CHECK-NEXT:             unsafe { core::mem::transmute::<u16, u16>([[T_0]] as u16) },
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (1
-// CHECK-NEXT:         & ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) }) as i32) - 1
+// CHECK-NEXT:         & ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(d)) }) as i32) - 1
 // CHECK-NEXT:             >> 8i32) - 1
 // CHECK-NEXT: }
 // CHECK-NEXT: fn nonvolatile_guard(x: &[u8]) -> i32 {
@@ -185,7 +185,7 @@ int main(void) {
 // CHECK-NEXT:             "\n# {0:x}", inlateout(reg) e as u16 => [[T_0]], options(pure, nomem, nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         e = unsafe { std::mem::transmute::<u16, u16>([[T_0]] as u16) };
+// CHECK-NEXT:         e = unsafe { core::mem::transmute::<u16, u16>([[T_0]] as u16) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (1 & (e as i32) - 1 >> 8i32) - 1
 // CHECK-NEXT: }
@@ -209,7 +209,7 @@ int main(void) {
 // CHECK-NEXT:     let mut bytes: [u8; 4] = [1, 2, 3, 4];
 // CHECK-NEXT:     empty_volatile();
 // CHECK-NEXT:     let __slate_printf_arg1 = memory_barrier(unsafe {
-// CHECK-NEXT:         &mut (*std::ptr::addr_of_mut!(cell))
+// CHECK-NEXT:         &mut (*core::ptr::addr_of_mut!(cell))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     println!("{} {}", typecheck_probe(), __slate_printf_arg1);
 // CHECK-NEXT:     unsafe {
@@ -219,11 +219,11 @@ int main(void) {
 // CHECK-NEXT:             value_barrier_memory(41u64),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let __slate_printf_arg0 = input_barrier(&mut bytes);
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0);
 // CHECK-NEXT:     let mut zeros: [u8; 4] = {
-// CHECK-NEXT:         let mut [[T_0]]: [u8; 4] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: [u8; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
@@ -247,8 +247,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -19,7 +19,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut x: __SlateRecord_bitfield_init_increment_c_7 = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: __SlateRecord_bitfield_init_increment_c_7 = unsafe {
-// CHECK-NEXT:             std::mem::zeroed()
+// CHECK-NEXT:             core::mem::zeroed()
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_a(1i32);
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_b(2i32);
@@ -33,7 +33,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = x.__slate_bits_0.__get_c();
 // CHECK-NEXT:     x.__slate_bits_0.__set_c([[V_2]] + 1);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", [[V_0]], [[V_1]], [[V_2]], std::mem::size_of::<
+// CHECK-NEXT:         "{} {} {} {}", [[V_0]], [[V_1]], [[V_2]], core::mem::size_of::<
 // CHECK-NEXT:         __SlateRecord_bitfield_init_increment_c_7 > () as u64
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = x.__slate_bits_0.__get_a();

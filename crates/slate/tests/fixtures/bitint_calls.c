@@ -119,7 +119,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn mkpair(a: i16, b: bitint::BInt<100, 2, 16, bitint::A8>) -> pair {
 // CHECK-NEXT:     let p: pair = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: pair = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: pair = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].a = a;
 // CHECK-NEXT:         [[T_0]].b = b;
 // CHECK-NEXT:         [[T_0]]
@@ -137,7 +137,7 @@ int main(void) {
 // CHECK-NEXT:     v.shr_bits(100 as usize).to_i128() as i64
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn vsum(n: i32, mut __va_args: ...) -> i64 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -173,7 +173,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%u\n".as_ptr(), add17(100000u32, 40000u32) as u32)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -191,7 +191,7 @@ int main(void) {
 // CHECK-NEXT:                 .to_i128() as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut r: bitint::BUint<128, 2, 16, bitint::A8> = rot(
 // CHECK-NEXT:         <bitint::BUint<
 // CHECK-NEXT:             128,
@@ -220,7 +220,7 @@ int main(void) {
 // CHECK-NEXT:             r.shr_bits(64 as usize).to_u128() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let s: bitint::BInt<200, 4, 32, bitint::A8> = sum200(
 // CHECK-NEXT:         <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(1 as i128)
 // CHECK-NEXT:             .shl_bits(150 as usize),
@@ -231,7 +231,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld %lld\n".as_ptr(), lo(s), hi(s)) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut b: bitint::BUint<300, 5, 40, bitint::A8> = big(
 // CHECK-NEXT:         <bitint::BUint<
 // CHECK-NEXT:             300,
@@ -266,7 +266,7 @@ int main(void) {
 // CHECK-NEXT:             b.shr_bits(256 as usize).to_u128() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut p: pair = mkpair(
 // CHECK-NEXT:         -7i16,
 // CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(1 as i128)
@@ -281,10 +281,10 @@ int main(void) {
 // CHECK-NEXT:             p.b.shr_bits(70 as usize).to_i128() as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), usepair(p).to_i128() as i64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let fp: Option<
 // CHECK-NEXT:         unsafe extern "C-unwind" fn(
 // CHECK-NEXT:             i16,
@@ -305,7 +305,7 @@ int main(void) {
 // CHECK-NEXT:                 .to_i128() as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -313,14 +313,14 @@ int main(void) {
 // CHECK-NEXT:             vsum(5i32, -3i32, 70000u32, -5000000000i64, 5u32, 99i64),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

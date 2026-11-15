@@ -57,11 +57,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut values: __SlateAlign16<[NestedBitInt; 2]> = __SlateAlign16([
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: NestedBitInt = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: NestedBitInt = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].tag = 1i8;
 // CHECK-NEXT:         [[T_0]].inner = {
 // CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: __SlateRecord_bitint_record_layout_c_10 = unsafe {
-// CHECK-NEXT:                 std::mem::zeroed()
+// CHECK-NEXT:                 core::mem::zeroed()
 // CHECK-NEXT:             };
 // CHECK-NEXT:             [[T_1]].prefix = 2i32;
 // CHECK-NEXT:             [[T_1]].value = <bitint::BInt<
@@ -76,11 +76,11 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     },
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: NestedBitInt = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: NestedBitInt = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]].tag = 5i8;
 // CHECK-NEXT:         [[T_2]].inner = {
 // CHECK-NEXT:             let mut [[T_3:__t[0-9]+]]: __SlateRecord_bitint_record_layout_c_10 = unsafe {
-// CHECK-NEXT:                 std::mem::zeroed()
+// CHECK-NEXT:                 core::mem::zeroed()
 // CHECK-NEXT:             };
 // CHECK-NEXT:             [[T_3]].prefix = 6i32;
 // CHECK-NEXT:             [[T_3]].value = <bitint::BInt<
@@ -97,9 +97,9 @@ int main(void) {
 // CHECK-NEXT: ]);
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let item: BitIntOrArray = {
-// CHECK-NEXT:         let mut [[T_0]]: BitIntOrArray = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: BitIntOrArray = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].bytes = {
-// CHECK-NEXT:             let mut [[T_1]]: [i8; 20] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_1]]: [i8; 20] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]][0] = 97i8;
 // CHECK-NEXT:             [[T_1]][1] = 98i8;
 // CHECK-NEXT:             [[T_1]][2] = 99i8;
@@ -122,14 +122,14 @@ int main(void) {
 // CHECK-NEXT:             item.bytes[2] as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

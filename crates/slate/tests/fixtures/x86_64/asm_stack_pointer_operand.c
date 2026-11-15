@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-NEXT:             "popcntl {1:e}, {0:e}", lateout(reg) [[T_0]], in (reg) w as u32, options(pure,
 // CHECK-NEXT:             nomem, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         res = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         res = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     res
 // CHECK-NEXT: }
@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "movq %rsp, {0:r}", lateout(reg) [[T_0]], options(pure, nomem, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         copy = unsafe { std::mem::transmute::<u64, u64>([[T_0]] as u64) };
+// CHECK-NEXT:         copy = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (copy != 0 && copy & 7 == 0) as i32
 // CHECK-NEXT: }
@@ -77,14 +77,14 @@ int main(void) {
 // CHECK-NEXT:             stack_nonzero(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

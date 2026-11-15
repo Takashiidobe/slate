@@ -183,15 +183,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
-// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:             Some(core::cmp::Ordering::Less)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     None
 // CHECK-NEXT:                 }
@@ -208,15 +208,15 @@ int main(void) {
 // CHECK-NEXT: use slate_support::memcpy;
 // CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut src: ld_union = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut dst: ld_union = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut src: ld_union = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut dst: ld_union = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             ((std::ptr::addr_of_mut!(src) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:         core::ptr::write_bytes(
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(src) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             (0i32 as i32) as u8,
-// CHECK-NEXT:             ((std::mem::size_of::<ld_union>() as u64) as usize) as usize,
+// CHECK-NEXT:             ((core::mem::size_of::<ld_union>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     while i < 10 {
@@ -226,12 +226,12 @@ int main(void) {
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((std::ptr::addr_of_mut!(src) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(src) as *const ()) as *const core::ffi::c_void)
 // CHECK-NEXT:                 as *const u8,
-// CHECK-NEXT:             ((std::ptr::addr_of_mut!(dst) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(dst) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
-// CHECK-NEXT:             ((std::mem::size_of::<ld_union>() as u64) as usize) as usize,
+// CHECK-NEXT:             ((core::mem::size_of::<ld_union>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     i = 0;
@@ -245,14 +245,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::puts(c"ok".as_ptr()) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

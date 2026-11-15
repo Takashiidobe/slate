@@ -64,55 +64,55 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut state16: __SlateRecord___mbstate_t_h_21 = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: __SlateRecord___mbstate_t_h_21 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: __SlateRecord___mbstate_t_h_21 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].__count = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut state32: __SlateRecord___mbstate_t_h_21 = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: __SlateRecord___mbstate_t_h_21 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: __SlateRecord___mbstate_t_h_21 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].__count = 0i32;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut converted16: u16 = 0;
 // CHECK-NEXT:     let mut converted32: u32 = 0;
 // CHECK-NEXT:     let mut multibyte16: [i8; 4] = {
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: [i8; 4] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: [i8; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]][0] = 0i8;
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut multibyte32: [i8; 4] = {
-// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: [i8; 4] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: [i8; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_3]][0] = 0i8;
 // CHECK-NEXT:         [[T_3]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let read16: u64 = unsafe {
 // CHECK-NEXT:         mbrtoc16(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(converted16),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(converted16),
 // CHECK-NEXT:             c"A".as_ptr(),
 // CHECK-NEXT:             1u64,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(state16),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(state16),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let write16: u64 = unsafe {
 // CHECK-NEXT:         c16rtomb(
 // CHECK-NEXT:             multibyte16.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             65u16,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(state16),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(state16),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let read32: u64 = unsafe {
 // CHECK-NEXT:         mbrtoc32(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(converted32),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(converted32),
 // CHECK-NEXT:             c"B".as_ptr(),
 // CHECK-NEXT:             1u64,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(state32),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(state32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let write32: u64 = unsafe {
 // CHECK-NEXT:         c32rtomb(
 // CHECK-NEXT:             multibyte32.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             66u32,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(state32),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(state32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -129,14 +129,14 @@ int main(void) {
 // CHECK-NEXT:             multibyte32[0] as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

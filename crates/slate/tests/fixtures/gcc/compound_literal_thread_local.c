@@ -73,19 +73,19 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn counter() -> *mut i32 {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(__slate_compound_counter_0) }
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(__slate_compound_counter_0) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn point() -> *mut Point {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(__slate_compound_point_0) }
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(__slate_compound_point_0) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn pair_a() -> *mut i32 {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(__slate_compound_pair_a_0) as *mut i32 }
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(__slate_compound_pair_a_0) as *mut i32 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn pair_b() -> *mut i32 {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(__slate_compound_pair_b_0) as *mut i32 }
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(__slate_compound_pair_b_0) as *mut i32 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn step(bump: i32) -> i32 {
@@ -130,14 +130,14 @@ int main(void) {
 // CHECK-NEXT:     let mut worker_result: i32 = -1;
 // CHECK-NEXT:     let created: i32 = unsafe {
 // CHECK-NEXT:         thrd_create(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(thread),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(thread),
 // CHECK-NEXT:             Some(worker),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(bump) as *mut (),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(bump) as *mut (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut joined: i32 = 0;
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = if created == 0 {
-// CHECK-NEXT:         unsafe { thrd_join(thread, std::ptr::addr_of_mut!(worker_result)) }
+// CHECK-NEXT:         unsafe { thrd_join(thread, core::ptr::addr_of_mut!(worker_result)) }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         -1
 // CHECK-NEXT:     };
@@ -169,8 +169,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

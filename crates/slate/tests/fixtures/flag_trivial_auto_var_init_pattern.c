@@ -36,12 +36,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn show() {
 // CHECK-NEXT:     let scalar: i32 = -1431655766i32;
-// CHECK-NEXT:     let mut r: record = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut r: record = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(r) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 8usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(r) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 8usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let bytes: *mut u8 = std::ptr::addr_of_mut!(r) as *mut u8;
+// CHECK-NEXT:     let bytes: *mut u8 = core::ptr::addr_of_mut!(r) as *mut u8;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%x %02x %02x\n".as_ptr(),
@@ -60,8 +60,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

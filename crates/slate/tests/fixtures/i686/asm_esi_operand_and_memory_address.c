@@ -61,9 +61,9 @@ int main(void) {
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
 // CHECK-NEXT:         diff = ([[T_0]] as u8) != 0;
-// CHECK-NEXT:         s1 = unsafe { std::mem::transmute::<u32, *const ()>([[T_1]] as u32) };
-// CHECK-NEXT:         s2 = unsafe { std::mem::transmute::<u32, *const ()>([[T_2]] as u32) };
-// CHECK-NEXT:         len = unsafe { std::mem::transmute::<u32, u32>([[T_3]] as u32) };
+// CHECK-NEXT:         s1 = unsafe { core::mem::transmute::<u32, *const ()>([[T_1]] as u32) };
+// CHECK-NEXT:         s2 = unsafe { core::mem::transmute::<u32, *const ()>([[T_2]] as u32) };
+// CHECK-NEXT:         len = unsafe { core::mem::transmute::<u32, u32>([[T_3]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     diff as i32
 // CHECK-NEXT: }
@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT:             inlateout(reg) a as u32 => [[T_0]], in (reg) b as u32, out(reg) _, options(pure,
 // CHECK-NEXT:             nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         a = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         a = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     a
 // CHECK-NEXT: }
@@ -87,7 +87,7 @@ int main(void) {
 // CHECK-NEXT:             inlateout(reg) x as u32 => [[T_0]], out(reg) _, options(pure, nomem, nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         x = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
@@ -97,7 +97,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "fninit ; fnstsw ({0:e}) ; fnstcw ({1:e})", in (reg)
-// CHECK-NEXT:             std::ptr::addr_of_mut!(fsw), in (reg) std::ptr::addr_of_mut!(fcw),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(fsw), in (reg) core::ptr::addr_of_mut!(fcw),
 // CHECK-NEXT:             options(nostack, att_syntax)
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
@@ -114,10 +114,10 @@ int main(void) {
 // CHECK-NEXT: fn root(mut x: f64) -> f64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: f64 = x;
-// CHECK-NEXT:         let mut [[T_1]]: f64 = std::mem::zeroed();
+// CHECK-NEXT:         let mut [[T_1]]: f64 = core::mem::zeroed();
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fldl ({0:e})\nfsqrt\nfstpl ({1:e})", in (reg) std::ptr::addr_of!([[T_0]]), in
-// CHECK-NEXT:             (reg) std::ptr::addr_of_mut!([[T_1]]), lateout("st(0)") _, lateout("st(1)") _,
+// CHECK-NEXT:             "fldl ({0:e})\nfsqrt\nfstpl ({1:e})", in (reg) core::ptr::addr_of!([[T_0]]), in
+// CHECK-NEXT:             (reg) core::ptr::addr_of_mut!([[T_1]]), lateout("st(0)") _, lateout("st(1)") _,
 // CHECK-NEXT:             lateout("st(2)") _, lateout("st(3)") _, lateout("st(4)") _, lateout("st(5)")
 // CHECK-NEXT:             _, lateout("st(6)") _, lateout("st(7)") _, options(nostack, att_syntax)
 // CHECK-NEXT:         );
@@ -129,7 +129,7 @@ int main(void) {
 // CHECK-NEXT:     let mut a: [i8; 6] = [115, 108, 97, 116, 101, 0];
 // CHECK-NEXT:     let mut b: [i8; 6] = [115, 108, 97, 116, 102, 0];
 // CHECK-NEXT:     let mut word: u32 = 0;
-// CHECK-NEXT:     set_bit(5i32, unsafe { &mut (*(std::ptr::addr_of_mut!(word) as *mut ())) });
+// CHECK-NEXT:     set_bit(5i32, unsafe { &mut (*(core::ptr::addr_of_mut!(word) as *mut ())) });
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -143,14 +143,14 @@ int main(void) {
 // CHECK-NEXT:             root(16.0f64),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

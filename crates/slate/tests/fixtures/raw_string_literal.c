@@ -35,7 +35,7 @@ second)";
 // CHECK-NEXT:     let multiline: *const i8 = c"first\nsecond".as_ptr();
 // CHECK-NEXT:     let utf8: *const i8 = c"A".as_ptr();
 // CHECK-NEXT:     let wide: *const i32 =
-// CHECK-NEXT:         (unsafe { std::ptr::addr_of_mut!(__slate_str22) as *mut i32 }) as *const i32;
+// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(__slate_str22) as *mut i32 }) as *const i32;
 // CHECK-NEXT:     let joined: *const i8 = c"left\\A".as_ptr();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -49,18 +49,18 @@ second)";
 // CHECK-NEXT:             joined,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %d\n".as_ptr(),
 // CHECK-NEXT:             "gnu\\n".len() as u64,
-// CHECK-NEXT:             std::mem::size_of::<[i8; 3]>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<[i8; 3]>() as u64,
 // CHECK-NEXT:             wcslen(wide as *const i32) as u64,
 // CHECK-NEXT:             *wide.add(1),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -72,8 +72,8 @@ second)";
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

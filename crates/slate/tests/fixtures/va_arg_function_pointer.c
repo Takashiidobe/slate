@@ -23,7 +23,7 @@ int main(void) {
 // CHECK-NEXT:     2 * x
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn invoke(x: i32, mut __va_args: ...) -> i32 {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             core::ffi::VaList<'_>,
@@ -32,7 +32,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let first: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::mem::transmute::<
+// CHECK-NEXT:             core::mem::transmute::<
 // CHECK-NEXT:                 *const u8,
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32) -> i32>,
 // CHECK-NEXT:             >(ap.next_arg::<*const u8>())
@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let second: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::mem::transmute::<
+// CHECK-NEXT:             core::mem::transmute::<
 // CHECK-NEXT:                 *const u8,
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32) -> i32>,
 // CHECK-NEXT:             >(ap.next_arg::<*const u8>())
@@ -51,12 +51,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", unsafe { invoke(4i32, unsafe { std::mem::transmute::< Option < unsafe
+// CHECK-NEXT:         "{} {}", unsafe { invoke(4i32, unsafe { core::mem::transmute::< Option < unsafe
 // CHECK-NEXT:         extern "C-unwind" fn (i32) -> i32 >, * const u8 > (Some(twice)) }, unsafe {
-// CHECK-NEXT:         std::mem::transmute::< Option < unsafe extern "C-unwind" fn (i32) -> i32 >, *
+// CHECK-NEXT:         core::mem::transmute::< Option < unsafe extern "C-unwind" fn (i32) -> i32 >, *
 // CHECK-NEXT:         const u8 > (Some(twice)) }) }, unsafe { invoke(7i32, unsafe {
-// CHECK-NEXT:         std::mem::transmute::< Option < unsafe extern "C-unwind" fn (i32) -> i32 >, *
-// CHECK-NEXT:         const u8 > (Some(twice)) }, unsafe { std::mem::transmute::< Option < unsafe
+// CHECK-NEXT:         core::mem::transmute::< Option < unsafe extern "C-unwind" fn (i32) -> i32 >, *
+// CHECK-NEXT:         const u8 > (Some(twice)) }, unsafe { core::mem::transmute::< Option < unsafe
 // CHECK-NEXT:         extern "C-unwind" fn (i32) -> i32 >, * const u8 > (None) }) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
@@ -64,8 +64,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

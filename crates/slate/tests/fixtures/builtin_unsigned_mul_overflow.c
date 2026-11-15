@@ -34,11 +34,11 @@ int main(void) {
 // CHECK-NEXT:         $T, $MAX], [$MAX, 2i32 as $T], [$MAX, $MAX]]); '__slate_label_2 : for i in 0i32
 // CHECK-NEXT:         as $T ..4i32 as $T { let overflow : i32 = ({ let __t : i128 = values.0[i as
 // CHECK-NEXT:         usize] [0] as i128; let [[T_0:__t[0-9]+]] : i128 = values.0[i as usize] [1] as i128; let [[T_1:__t[0-9]+]]
-// CHECK-NEXT:         : i128 = __t.wrapping_mul([[T_0]]); unsafe { * std::ptr::addr_of_mut!(r) = [[T_1]] as
+// CHECK-NEXT:         : i128 = __t.wrapping_mul([[T_0]]); unsafe { * core::ptr::addr_of_mut!(r) = [[T_1]] as
 // CHECK-NEXT:         $T; } __t.checked_mul([[T_0]]).is_none() || (([[T_1]] as $T) as i128) != [[T_1]] }) as
 // CHECK-NEXT:         i32; let _ = std::io::Write::flush(& mut std::io::stdout()); unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%d %llu\n".as_ptr(), overflow, r as u64) }; unsafe {
-// CHECK-NEXT:         fflush(std::ptr::null_mut()) }; } if true { break; } }
+// CHECK-NEXT:         fflush(core::ptr::null_mut()) }; } if true { break; } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! TEST {
@@ -48,11 +48,11 @@ int main(void) {
 // CHECK-NEXT:         $T, $MAX], [$MAX, 2i32 as $T], [$MAX, $MAX]]); '__slate_label_2 : for i in 0u32
 // CHECK-NEXT:         ..4u32 { let overflow : i32 = ({ let __t : i128 = values.0[i as usize] [0] as
 // CHECK-NEXT:         i128; let [[T_0]] : i128 = values.0[i as usize] [1] as i128; let [[T_1]] : i128 = __t
-// CHECK-NEXT:         .wrapping_mul([[T_0]]); unsafe { * std::ptr::addr_of_mut!(r) = [[T_1]] as $T; } __t
+// CHECK-NEXT:         .wrapping_mul([[T_0]]); unsafe { * core::ptr::addr_of_mut!(r) = [[T_1]] as $T; } __t
 // CHECK-NEXT:         .checked_mul([[T_0]]).is_none() || (([[T_1]] as $T) as i128) != [[T_1]] }) as i32; let _ =
 // CHECK-NEXT:         std::io::Write::flush(& mut std::io::stdout()); unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%d %llu\n".as_ptr(), overflow, r) }; unsafe {
-// CHECK-NEXT:         fflush(std::ptr::null_mut()) }; } if true { break; } }
+// CHECK-NEXT:         fflush(core::ptr::null_mut()) }; } if true { break; } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
@@ -70,13 +70,13 @@ int main(void) {
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]]: i128 = 4294967295u32 as i128;
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]]: i128 = [[T_2]].wrapping_mul([[T_3]]);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *std::ptr::addr_of_mut!(r) = [[T_4]] as u32;
+// CHECK-NEXT:             *core::ptr::addr_of_mut!(r) = [[T_4]] as u32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_2]].checked_mul([[T_3]]).is_none() || (([[T_4]] as u32) as i128) != [[T_4]]
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%d %u\n".as_ptr(), overflow, r) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut a: u32 = 3;
 // CHECK-NEXT:     let mut b: u32 = 4;
 // CHECK-NEXT:     let mut results: [u32; 2] = [0, 0];
@@ -107,14 +107,14 @@ int main(void) {
 // CHECK-NEXT:             p.offset_from(results.as_mut_ptr() as *mut u32) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -52,7 +52,7 @@ int main(void) {
 // CHECK-NEXT:             ".intel_syntax noprefix\n\tadd eax, 7\n\t.att_syntax prefix", inlateout("ax")
 // CHECK-NEXT:             value as u32 => [[T_0]], options(nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         value = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK: {{^}}}
@@ -63,7 +63,7 @@ int main(void) {
 // CHECK-NEXT:             "subl $2, {0:e}", inlateout(reg) value as u32 => [[T_0]], options(nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         value = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK: {{^}}}

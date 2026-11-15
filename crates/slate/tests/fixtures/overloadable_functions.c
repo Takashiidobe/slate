@@ -79,13 +79,13 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut s: spinlock = spinlock { held: 0 };
 // CHECK-NEXT:     let mut m: mutex = mutex { owner: 0, depth: 1 };
-// CHECK-NEXT:     lock_ctx__1(unsafe { &mut (*std::ptr::addr_of_mut!(s)) });
-// CHECK-NEXT:     lock_ctx__2(unsafe { &mut (*std::ptr::addr_of_mut!(m)) });
+// CHECK-NEXT:     lock_ctx__1(unsafe { &mut (*core::ptr::addr_of_mut!(s)) });
+// CHECK-NEXT:     lock_ctx__2(unsafe { &mut (*core::ptr::addr_of_mut!(m)) });
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d\n".as_ptr(),
-// CHECK-NEXT:             held__1(&(*(std::ptr::addr_of_mut!(s) as *const spinlock))),
-// CHECK-NEXT:             held__2(&(*(std::ptr::addr_of_mut!(m) as *const mutex))),
+// CHECK-NEXT:             held__1(&(*(core::ptr::addr_of_mut!(s) as *const spinlock))),
+// CHECK-NEXT:             held__2(&(*(core::ptr::addr_of_mut!(m) as *const mutex))),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -93,7 +93,7 @@ int main(void) {
 // CHECK-NEXT:             c"%d %d %d %d\n".as_ptr(),
 // CHECK-NEXT:             [[PICK__1_0]](97i32),
 // CHECK-NEXT:             pick__2(1.5f32 as f64),
-// CHECK-NEXT:             pick__3(std::ptr::addr_of_mut!(s) as *mut ()),
+// CHECK-NEXT:             pick__3(core::ptr::addr_of_mut!(s) as *mut ()),
 // CHECK-NEXT:             pick__1,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -103,8 +103,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

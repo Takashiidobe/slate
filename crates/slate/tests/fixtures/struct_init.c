@@ -33,13 +33,13 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let full: Triple = Triple { x: 1, y: 2, z: 3 };
 // CHECK-NEXT:     let partial: Triple = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Triple = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Triple = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].x = 4i32;
 // CHECK-NEXT:         [[T_0]].y = 5i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let designated: Triple = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Triple = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Triple = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].x = 7i32;
 // CHECK-NEXT:         [[T_1]].z = 9i32;
 // CHECK-NEXT:         [[T_1]]
@@ -55,8 +55,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -33,7 +33,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn next() -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (unsafe { calls }) + 1;
 // CHECK-NEXT:     unsafe {
@@ -94,7 +94,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_11:__v[0-9]+]]: u8 = 3u8;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}", (small.wrapping_add([[V_10]]) & ! [[V_10]]) as i32, (small & ! [[V_11]]) as
-// CHECK-NEXT:         i32, std::mem::size_of::< u8 > () as i32
+// CHECK-NEXT:         i32, core::mem::size_of::< u8 > () as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = next().wrapping_sub(1);
 // CHECK-NEXT:     println!("{} {}", 100i32.wrapping_add([[V_12]]) & ! [[V_12]], unsafe { calls });
@@ -128,8 +128,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

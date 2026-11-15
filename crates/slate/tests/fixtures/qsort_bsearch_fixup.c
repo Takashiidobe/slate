@@ -63,9 +63,9 @@ int main(void) {
 // CHECK-NEXT:         qsort(
 // CHECK-NEXT:             (nums.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void,
 // CHECK-NEXT:             5u64 as usize,
-// CHECK-NEXT:             (std::mem::size_of::<i32>() as u64) as usize,
+// CHECK-NEXT:             (core::mem::size_of::<i32>() as u64) as usize,
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::mem::transmute::<
+// CHECK-NEXT:                 core::mem::transmute::<
 // CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
 // CHECK-NEXT:                     Option<
 // CHECK-NEXT:                         unsafe extern "C" fn(
@@ -79,12 +79,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let hit: *mut i32 = (unsafe {
 // CHECK-NEXT:         bsearch(
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(key) as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(key) as *const ()) as *const core::ffi::c_void,
 // CHECK-NEXT:             (nums.0.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
 // CHECK-NEXT:             5u64 as usize,
-// CHECK-NEXT:             (std::mem::size_of::<i32>() as u64) as usize,
+// CHECK-NEXT:             (core::mem::size_of::<i32>() as u64) as usize,
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::mem::transmute::<
+// CHECK-NEXT:                 core::mem::transmute::<
 // CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
 // CHECK-NEXT:                     Option<
 // CHECK-NEXT:                         unsafe extern "C" fn(
@@ -107,9 +107,9 @@ int main(void) {
 // CHECK-NEXT:         qsort(
 // CHECK-NEXT:             (items.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void,
 // CHECK-NEXT:             4u64 as usize,
-// CHECK-NEXT:             (std::mem::size_of::<Item>() as u64) as usize,
+// CHECK-NEXT:             (core::mem::size_of::<Item>() as u64) as usize,
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::mem::transmute::<
+// CHECK-NEXT:                 core::mem::transmute::<
 // CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
 // CHECK-NEXT:                     Option<
 // CHECK-NEXT:                         unsafe extern "C" fn(
@@ -123,12 +123,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let found: *mut Item = (unsafe {
 // CHECK-NEXT:         bsearch(
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(needle) as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(needle) as *const ()) as *const core::ffi::c_void,
 // CHECK-NEXT:             (items.0.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
 // CHECK-NEXT:             4u64 as usize,
-// CHECK-NEXT:             (std::mem::size_of::<Item>() as u64) as usize,
+// CHECK-NEXT:             (core::mem::size_of::<Item>() as u64) as usize,
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::mem::transmute::<
+// CHECK-NEXT:                 core::mem::transmute::<
 // CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
 // CHECK-NEXT:                     Option<
 // CHECK-NEXT:                         unsafe extern "C" fn(
@@ -149,8 +149,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

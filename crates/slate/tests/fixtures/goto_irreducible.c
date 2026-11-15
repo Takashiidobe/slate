@@ -23,13 +23,13 @@ done:
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut x: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut choose_b: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut x: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut choose_b: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut __slate_state: usize = 3usize;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         choose_b = 0;
 // CHECK-NEXT:         x = 0;
-// CHECK-NEXT:         if std::ptr::read_volatile(std::ptr::addr_of!(choose_b)) != 0 {
+// CHECK-NEXT:         if core::ptr::read_volatile(core::ptr::addr_of!(choose_b)) != 0 {
 // CHECK-NEXT:             __slate_state = 1;
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             __slate_state = 2;
@@ -61,8 +61,8 @@ done:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

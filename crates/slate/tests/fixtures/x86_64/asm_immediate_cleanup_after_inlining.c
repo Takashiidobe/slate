@@ -82,11 +82,11 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn unlock(p: *mut i32) {
-// CHECK-NEXT:     if branch__const1(unsafe { std::ptr::addr_of_mut!(k1) }) != 0 {
+// CHECK-NEXT:     if branch__const1(unsafe { core::ptr::addr_of_mut!(k1) }) != 0 {
 // CHECK-NEXT:         println!("unlock {}", unsafe { *p });
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -96,7 +96,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn guarded(mut guard: *mut i32) -> i32 {
-// CHECK-NEXT:     let __slate_cleanup_ptr_0 = std::ptr::addr_of_mut!(guard) as *mut _;
+// CHECK-NEXT:     let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(guard) as *mut _;
 // CHECK-NEXT:     let __slate_cleanup_0 = __slate_cleanup::Guard(|| release(__slate_cleanup_ptr_0 as *mut _));
 // CHECK-NEXT:     println!("held {}", unsafe { *guard });
 // CHECK-NEXT:     (unsafe { *guard }) + 1
@@ -104,15 +104,15 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut value: i32 = 4;
-// CHECK-NEXT:     println!("{}", guarded(std::ptr::addr_of_mut!(value)));
+// CHECK-NEXT:     println!("{}", guarded(core::ptr::addr_of_mut!(value)));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

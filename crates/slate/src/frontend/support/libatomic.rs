@@ -1,5 +1,5 @@
 mod __slate_libatomic {
-    use std::sync::atomic::Ordering;
+    use core::sync::atomic::Ordering;
 
     #[link(name = "atomic")]
     unsafe extern "C" {
@@ -185,14 +185,14 @@ mod __slate_libatomic {
     pub struct AtomicGeneric<T>(*mut T);
 
     impl<T: Copy> AtomicGeneric<T> {
-        const SIZE: usize = std::mem::size_of::<T>();
+        const SIZE: usize = core::mem::size_of::<T>();
 
         pub unsafe fn from_ptr(pointer: *mut T) -> Self {
             Self(pointer)
         }
 
         pub fn load(&self, ordering: Ordering) -> T {
-            let mut result = std::mem::MaybeUninit::<T>::uninit();
+            let mut result = core::mem::MaybeUninit::<T>::uninit();
             unsafe {
                 atomic_load(
                     Self::SIZE,
@@ -216,7 +216,7 @@ mod __slate_libatomic {
         }
 
         pub fn swap(&self, mut value: T, ordering: Ordering) -> T {
-            let mut result = std::mem::MaybeUninit::<T>::uninit();
+            let mut result = core::mem::MaybeUninit::<T>::uninit();
             unsafe {
                 atomic_exchange(
                     Self::SIZE,

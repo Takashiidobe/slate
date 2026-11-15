@@ -54,9 +54,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut ctx: context = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: context = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: context = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].super_ = {
-// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: writer = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: writer = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]].name = c"out".as_ptr();
 // CHECK-NEXT:             [[T_1]].phase = 2i32;
 // CHECK-NEXT:             [[T_1]]
@@ -76,15 +76,15 @@ int main(void) {
 // CHECK-NEXT:             ctx.crate_ + ctx.Self_,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", combine(ctx.self_, ctx.crate_));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -29,7 +29,7 @@ int main(void) {
 // CHECK-NEXT:     ($cond:expr) => {
 // CHECK-NEXT:         loop { if $cond { let _ = std::io::Write::flush(& mut std::io::stdout()); unsafe
 // CHECK-NEXT:         { slate_support::puts(c"unreachable".as_ptr()) }; unsafe {
-// CHECK-NEXT:         fflush(std::ptr::null_mut()) }; } if true { break; } }
+// CHECK-NEXT:         fflush(core::ptr::null_mut()) }; } if true { break; } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! fence_init {
@@ -57,7 +57,7 @@ int main(void) {
 // CHECK-NEXT:         mut (), u32) -> i32 > = Some(notify); __slate_function }) == None) as i32, (({
 // CHECK-NEXT:         let __slate_function : Option < unsafe extern "C-unwind" fn (* mut (), u32) ->
 // CHECK-NEXT:         i32 > = Some(notify); __slate_function }) != None) as i32, unsafe {
-// CHECK-NEXT:         std::mem::transmute::< Option < unsafe extern "C-unwind" fn (* mut (), u32) ->
+// CHECK-NEXT:         core::mem::transmute::< Option < unsafe extern "C-unwind" fn (* mut (), u32) ->
 // CHECK-NEXT:         i32 >, * mut () > (Some(notify)) } .is_null() as i32, (fp == Some(notify)) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     if ({
@@ -69,13 +69,13 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     notify(std::ptr::null_mut::<()>(), 0u32)
+// CHECK-NEXT:     notify(core::ptr::null_mut::<()>(), 0u32)
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

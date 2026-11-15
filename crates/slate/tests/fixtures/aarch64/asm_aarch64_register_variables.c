@@ -51,7 +51,7 @@ int main(void) {
 // CHECK-NEXT:             "svc #0", inlateout("x0") x0 as u64 => [[T_0]], in ("x8") x8 as u64, in ("x1")
 // CHECK-NEXT:             x1 as u64, in ("x2") x2 as u64, options(nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         x0 = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         x0 = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x0
 // CHECK-NEXT: }
@@ -64,7 +64,7 @@ int main(void) {
 // CHECK-NEXT:             "svc #0", lateout("x0") [[T_0]], in ("x8") x8 as u64, options(nostack,
 // CHECK-NEXT:             preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         x0 = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         x0 = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x0
 // CHECK-NEXT: }
@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT:             "add w1, w1, {0:w}", in (reg) b as u32, inlateout("x1") w as u32 => [[T_0]],
 // CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         w = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         w = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     w
 // CHECK-NEXT: }
@@ -83,10 +83,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fadd d3, d3, d3", inlateout("v3") unsafe { std::mem::transmute::< f64, u64 >
-// CHECK-NEXT:             (d) } => [[T_0]], options(pure, nomem, nostack, preserves_flags)
+// CHECK-NEXT:             "fadd d3, d3, d3", inlateout("v3") unsafe { core::mem::transmute::< f64, u64
+// CHECK-NEXT:             > (d) } => [[T_0]], options(pure, nomem, nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         d = unsafe { std::mem::transmute::<u64, f64>([[T_0]] as u64) };
+// CHECK-NEXT:         d = unsafe { core::mem::transmute::<u64, f64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     d
 // CHECK-NEXT: }
@@ -95,8 +95,8 @@ int main(void) {
 // CHECK-NEXT:     let written: i64 = syscall3(
 // CHECK-NEXT:         64i64,
 // CHECK-NEXT:         1i64,
-// CHECK-NEXT:         (unsafe { std::ptr::addr_of!(message) as *const u8 }) as i64,
-// CHECK-NEXT:         (std::mem::size_of::<[u8; 16]>() as u64).wrapping_sub(1) as i64,
+// CHECK-NEXT:         (unsafe { core::ptr::addr_of!(message) as *const u8 }) as i64,
+// CHECK-NEXT:         (core::mem::size_of::<[u8; 16]>() as u64).wrapping_sub(1) as i64,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -106,7 +106,7 @@ int main(void) {
 // CHECK-NEXT:             (syscall0(172i64) == ((getpid() as i32) as i64)) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -115,7 +115,7 @@ int main(void) {
 // CHECK-NEXT:             double_d3(1.25f64),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut message: [u8; 16] = [
@@ -124,8 +124,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

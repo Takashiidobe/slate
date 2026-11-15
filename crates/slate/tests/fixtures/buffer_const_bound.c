@@ -59,14 +59,14 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut arr: __SlateAlign16<[i32; 4]> = __SlateAlign16([10i32, 20i32, 30i32, 40i32]);
 // CHECK-NEXT:     let r: i32 = sum_fixed(unsafe {
-// CHECK-NEXT:         std::slice::from_raw_parts(arr.0.as_mut_ptr() as *const i32, 4usize)
+// CHECK-NEXT:         core::slice::from_raw_parts(arr.0.as_mut_ptr() as *const i32, 4usize)
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut a: [i32; 3] = [1, 2, 3];
 // CHECK-NEXT:     scale_fixed(unsafe {
-// CHECK-NEXT:         std::slice::from_raw_parts_mut(a.as_mut_ptr() as *mut i32, 3usize)
+// CHECK-NEXT:         core::slice::from_raw_parts_mut(a.as_mut_ptr() as *mut i32, 3usize)
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let m: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc(3u64.wrapping_mul(std::mem::size_of::<i32>() as u64) as usize) as *mut ()
+// CHECK-NEXT:         malloc(3u64.wrapping_mul(core::mem::size_of::<i32>() as u64) as usize) as *mut ()
 // CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *m.add(0) = 5;
@@ -77,7 +77,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *m.add(2) = 7;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let r2: i32 = sum3(unsafe { std::slice::from_raw_parts(m as *const i32, 3usize) });
+// CHECK-NEXT:     let r2: i32 = sum3(unsafe { core::slice::from_raw_parts(m as *const i32, 3usize) });
 // CHECK-NEXT:     unsafe { free((m as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     let mut big: __SlateAlign16<[i32; 6]> = __SlateAlign16([
 // CHECK-NEXT:         1i32, 2i32, 3i32, 4i32, 5i32, 6i32,

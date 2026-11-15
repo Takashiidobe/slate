@@ -40,18 +40,18 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn add_atomic_value(value: i32) -> i32 {
 // CHECK-NEXT:     let local: i32 = (unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of!(value) as *mut i32)
-// CHECK-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of!(value) as *mut i32)
+// CHECK-NEXT:             .load(core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     })
 // CHECK-NEXT:         + unsafe {
-// CHECK-NEXT:             std::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                     std::ptr::addr_of!(atomic_counter) as *mut i32,
+// CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                     core::ptr::addr_of!(atomic_counter) as *mut i32,
 // CHECK-NEXT:                 )
-// CHECK-NEXT:                 .load(std::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:                 .load(core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:         };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of!(local) as *mut i32)
-// CHECK-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of!(local) as *mut i32)
+// CHECK-NEXT:             .load(core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -59,8 +59,8 @@ int main(void) {
 // CHECK-NEXT:     let mut right: i32 = 11;
 // CHECK-NEXT:     println!("{}", add_const_param(2i32));
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", add_restrict_pointers(unsafe { & (* std::ptr::addr_of_mut!(left)) }, unsafe
-// CHECK-NEXT:         { & (* std::ptr::addr_of_mut!(right)) })
+// CHECK-NEXT:         "{}", add_restrict_pointers(unsafe { & (* core::ptr::addr_of_mut!(left)) },
+// CHECK-NEXT:         unsafe { & (* core::ptr::addr_of_mut!(right)) })
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", add_atomic_value(6i32));
 // CHECK-NEXT:     0
@@ -68,8 +68,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -160,7 +160,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn dump(count: i32, mut __va_args: ...) {
-// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             core::ffi::VaList<'_>,
@@ -169,30 +169,30 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for round in 0..count {
 // CHECK-NEXT:         let t: Tiny = unsafe {
-// CHECK-NEXT:             __slate_sysv_va::arg::<_, Tiny>(std::ptr::addr_of_mut!(ap), 1u32)
+// CHECK-NEXT:             __slate_sysv_va::arg::<_, Tiny>(core::ptr::addr_of_mut!(ap), 1u32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let p: Pair = unsafe {
-// CHECK-NEXT:             __slate_sysv_va::arg::<_, Pair>(std::ptr::addr_of_mut!(ap), 5u32)
+// CHECK-NEXT:             __slate_sysv_va::arg::<_, Pair>(core::ptr::addr_of_mut!(ap), 5u32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let marker: i32 = unsafe { ap.next_arg::<i32>() };
 // CHECK-NEXT:         let f2: F2 = unsafe {
-// CHECK-NEXT:             __slate_sysv_va::arg::<_, F2>(std::ptr::addr_of_mut!(ap), 2u32)
+// CHECK-NEXT:             __slate_sysv_va::arg::<_, F2>(core::ptr::addr_of_mut!(ap), 2u32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let f3: F3 = unsafe {
-// CHECK-NEXT:             __slate_sysv_va::arg::<_, F3>(std::ptr::addr_of_mut!(ap), 10u32)
+// CHECK-NEXT:             __slate_sysv_va::arg::<_, F3>(core::ptr::addr_of_mut!(ap), 10u32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let scale: f64 = unsafe { ap.next_arg::<f64>() };
 // CHECK-NEXT:         let d4: D4 = unsafe {
-// CHECK-NEXT:             __slate_sysv_va::arg::<_, D4>(std::ptr::addr_of_mut!(ap), 0u32)
+// CHECK-NEXT:             __slate_sysv_va::arg::<_, D4>(core::ptr::addr_of_mut!(ap), 0u32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let m: Mixed = unsafe {
-// CHECK-NEXT:             __slate_sysv_va::arg::<_, Mixed>(std::ptr::addr_of_mut!(ap), 1u32)
+// CHECK-NEXT:             __slate_sysv_va::arg::<_, Mixed>(core::ptr::addr_of_mut!(ap), 1u32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let big: Big = unsafe {
-// CHECK-NEXT:             __slate_sysv_va::arg::<_, Big>(std::ptr::addr_of_mut!(ap), 0u32)
+// CHECK-NEXT:             __slate_sysv_va::arg::<_, Big>(core::ptr::addr_of_mut!(ap), 0u32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let ud: UD = unsafe {
-// CHECK-NEXT:             __slate_sysv_va::arg::<_, UD>(std::ptr::addr_of_mut!(ap), 10u32)
+// CHECK-NEXT:             __slate_sysv_va::arg::<_, UD>(core::ptr::addr_of_mut!(ap), 10u32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
@@ -219,7 +219,7 @@ int main(void) {
 // CHECK-NEXT:                 m.i,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
@@ -230,13 +230,13 @@ int main(void) {
 // CHECK-NEXT:                 ud.e[1],
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let t: Tiny = Tiny { c: [97, 98, 99] };
 // CHECK-NEXT:     let p: Pair = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Pair = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Pair = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].a = 1099511627776i64;
 // CHECK-NEXT:         [[T_0]].b = -7i32;
 // CHECK-NEXT:         [[T_0]]
@@ -296,8 +296,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -283,8 +283,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: C99Pair = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: [i32; 2] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: C99Pair = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: [i32; 2] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let α: i32 = 7;
 // CHECK-NEXT:     let boolean_value: bool = true;
 // CHECK-NEXT:     let signed_long_long: i64 = -9000000000;
@@ -353,7 +353,7 @@ int main(void) {
 // CHECK-NEXT:                 }) as i32);
 // CHECK-NEXT:     let mut flexible_total: i32 = 0;
 // CHECK-NEXT:     let flexible: *mut C99Flexible = (unsafe {
-// CHECK-NEXT:         malloc(8u64.wrapping_add(3u64.wrapping_mul(std::mem::size_of::<i32>() as u64)) as usize)
+// CHECK-NEXT:         malloc(8u64.wrapping_add(3u64.wrapping_mul(core::mem::size_of::<i32>() as u64)) as usize)
 // CHECK-NEXT:             as *mut ()
 // CHECK-NEXT:     }) as *mut C99Flexible;
 // CHECK-NEXT:     if flexible.is_null() {
@@ -366,12 +366,12 @@ int main(void) {
 // CHECK-NEXT:         let mut index: u64 = 0;
 // CHECK-NEXT:         while index < unsafe { (*flexible).count } {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *(std::ptr::addr_of_mut!((*flexible).values) as *mut i32).add(index as usize) =
+// CHECK-NEXT:                 *(core::ptr::addr_of_mut!((*flexible).values) as *mut i32).add(index as usize) =
 // CHECK-NEXT:                     (index as i32) + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = flexible_total
 // CHECK-NEXT:                 + unsafe {
-// CHECK-NEXT:                     *(std::ptr::addr_of_mut!((*flexible).values) as *mut i32).add(index as usize)
+// CHECK-NEXT:                     *(core::ptr::addr_of_mut!((*flexible).values) as *mut i32).add(index as usize)
 // CHECK-NEXT:                 };
 // CHECK-NEXT:             flexible_total = [[V_0]];
 // CHECK-NEXT:             index = index.wrapping_add(1);
@@ -403,7 +403,7 @@ int main(void) {
 // CHECK-NEXT:         second: 23,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let designated_array: [i32; 4] = {
-// CHECK-NEXT:         let mut [[T_4:__t[0-9]+]]: [i32; 4] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_4:__t[0-9]+]]: [i32; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_4]][0] = 27i32;
 // CHECK-NEXT:         [[T_4]][2] = 29i32;
 // CHECK-NEXT:         [[T_4]]
@@ -412,9 +412,9 @@ int main(void) {
 // CHECK-NEXT:     let idempotent_const_value: i32 = const_value;
 // CHECK-NEXT:     let volatile_value: i32 = 37;
 // CHECK-NEXT:     let idempotent_volatile_value: i32 =
-// CHECK-NEXT:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(volatile_value)) };
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(volatile_value)) };
 // CHECK-NEXT:     let mut restricted_value: i32 = 41;
-// CHECK-NEXT:     let restricted_pointer: *mut i32 = std::ptr::addr_of_mut!(restricted_value);
+// CHECK-NEXT:     let restricted_pointer: *mut i32 = core::ptr::addr_of_mut!(restricted_value);
 // CHECK-NEXT:     let hexadecimal_float: f64 = 3.0f64;
 // CHECK-NEXT:     let compound_pair: C99Pair = unsafe {
 // CHECK-NEXT:         *{
@@ -422,13 +422,13 @@ int main(void) {
 // CHECK-NEXT:                 first: 43,
 // CHECK-NEXT:                 second: 47,
 // CHECK-NEXT:             };
-// CHECK-NEXT:             std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:             core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let compound_array_value: i32 = unsafe {
 // CHECK-NEXT:         *((*{
 // CHECK-NEXT:             [[SLATE_COMPOUND_1]] = [51i32, 53i32];
-// CHECK-NEXT:             std::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
+// CHECK-NEXT:             core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
 // CHECK-NEXT:         })
 // CHECK-NEXT:         .as_mut_ptr() as *mut i32)
 // CHECK-NEXT:             .add(1)
@@ -453,17 +453,17 @@ int main(void) {
 // CHECK-NEXT:     let fenv_flags: i32 = unsafe { fetestexcept(31i32) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n".as_ptr(), c"main".as_ptr() as *mut u8, α, c99_external_identifier_with_more_than_thirty_one_significant_characters, slash_comment_value, enhanced_arithmetic, flexible_total, vm_total, nonconstant_initializer.first + nonconstant_initializer.second, designated_initializer.first + designated_initializer.second, designated_array[0] + designated_array[2], idempotent_const_value, std::ptr::read_volatile(std::ptr::addr_of!(idempotent_volatile_value)), *restricted_pointer, hexadecimal_float as i32, compound_pair.first + compound_pair.second, compound_array_value, signed_quotient, signed_remainder, mixed_order, declaration_after_statement, for_total, c99_inline_square(8i32), c99_qualified_array_sum(qualified_values.as_mut_ptr() as *mut i32), macro_total, translation_limit_total, 17i32, fenv_clear, fenv_flags, c99_restrict_sum((qualified_values.as_mut_ptr() as *mut i32).add(0) as *const i32, (qualified_values.as_mut_ptr() as *mut i32).add(1) as *const i32))
+// CHECK-NEXT:         slate_support::printf(c"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n".as_ptr(), c"main".as_ptr() as *mut u8, α, c99_external_identifier_with_more_than_thirty_one_significant_characters, slash_comment_value, enhanced_arithmetic, flexible_total, vm_total, nonconstant_initializer.first + nonconstant_initializer.second, designated_initializer.first + designated_initializer.second, designated_array[0] + designated_array[2], idempotent_const_value, core::ptr::read_volatile(core::ptr::addr_of!(idempotent_volatile_value)), *restricted_pointer, hexadecimal_float as i32, compound_pair.first + compound_pair.second, compound_array_value, signed_quotient, signed_remainder, mixed_order, declaration_after_statement, for_total, c99_inline_square(8i32), c99_qualified_array_sum(qualified_values.as_mut_ptr() as *mut i32), macro_total, translation_limit_total, 17i32, fenv_clear, fenv_flags, c99_restrict_sum((qualified_values.as_mut_ptr() as *mut i32).add(0) as *const i32, (qualified_values.as_mut_ptr() as *mut i32).add(1) as *const i32))
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

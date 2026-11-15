@@ -69,34 +69,34 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn struct_values() -> i32 {
-// CHECK-NEXT:     let mut m: Mixed = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut m: Mixed = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     m.tag = 65;
 // CHECK-NEXT:     m.code = 200;
 // CHECK-NEXT:     m.ratio = 1.5f32;
 // CHECK-NEXT:     m.total = 2.25f64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%c\n".as_ptr(), m.tag as i32) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), m.code as i32) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%f\n".as_ptr(), m.ratio as f64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%f\n".as_ptr(), m.total) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     m.code as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn union_double(value: f64) -> f64 {
-// CHECK-NEXT:     let mut s: Scalar = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut s: Scalar = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         s.total = value;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { s.total }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn union_char(value: i8) -> i32 {
-// CHECK-NEXT:     let mut s: Scalar = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut s: Scalar = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         s.tag = value;
 // CHECK-NEXT:     }
@@ -105,15 +105,15 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", struct_values());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%f\n".as_ptr(), union_double(4.5f64)) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", union_char(90i8));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -73,7 +73,7 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut present: kobj_attribute = kobj_attribute {
 // CHECK-NEXT:     attr: {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: attribute = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: attribute = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].name = (b"present\0".as_ptr() as *mut i8) as *const i8;
 // CHECK-NEXT:         [[T_0]].mode = 292i32;
 // CHECK-NEXT:         [[T_0]]
@@ -81,16 +81,16 @@ int main(void) {
 // CHECK-NEXT:     show: None,
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut attributes: __SlateAlign16<[*mut attribute; 4]> = __SlateAlign16([
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(present.attr) },
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(__slate_weak_address_missing_vendor.attr) },
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(__slate_weak_address_missing_runtime.attr) },
-// CHECK-NEXT:     std::ptr::null_mut::<attribute>(),
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(present.attr) },
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(__slate_weak_address_missing_vendor.attr) },
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(__slate_weak_address_missing_runtime.attr) },
+// CHECK-NEXT:     core::ptr::null_mut::<attribute>(),
 // CHECK-NEXT: ]);
 // CHECK-NEXT: static mut counter: *mut i32 = unsafe {
-// CHECK-NEXT:     std::ptr::addr_of_mut!(__slate_weak_address_missing_counter)
+// CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_weak_address_missing_counter)
 // CHECK-NEXT: };
 // CHECK-NEXT: static mut whole: *mut kobj_attribute = unsafe {
-// CHECK-NEXT:     std::ptr::addr_of_mut!(__slate_weak_address_missing_runtime)
+// CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_weak_address_missing_runtime)
 // CHECK-NEXT: };
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0u32..4u32 {
@@ -100,22 +100,22 @@ int main(void) {
 // CHECK-NEXT:                 c"attribute %u null %d offset %zu\n".as_ptr(),
 // CHECK-NEXT:                 i,
 // CHECK-NEXT:                 unsafe { attributes.0[i as usize] }.is_null() as i32,
-// CHECK-NEXT:                 if attributes.0[i as usize] == std::ptr::addr_of_mut!(present.attr) {
+// CHECK-NEXT:                 if attributes.0[i as usize] == core::ptr::addr_of_mut!(present.attr) {
 // CHECK-NEXT:                     0u64
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     attributes.0[i as usize] as u64
 // CHECK-NEXT:                 },
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "counter {} whole {}", unsafe { counter } .is_null() as i32, unsafe { whole }
 // CHECK-NEXT:         .is_null() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "runtime {} {}", unsafe { std::ptr::addr_of_mut!(* missing_vendor) } .is_null()
-// CHECK-NEXT:         as i32, unsafe { std::ptr::addr_of_mut!(* missing_counter) } .is_null() as i32
+// CHECK-NEXT:         "runtime {} {}", unsafe { core::ptr::addr_of_mut!(* missing_vendor) } .is_null()
+// CHECK-NEXT:         as i32, unsafe { core::ptr::addr_of_mut!(* missing_counter) } .is_null() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
@@ -125,8 +125,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

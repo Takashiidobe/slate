@@ -68,8 +68,8 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct al16 {
-// CHECK-NEXT:     c: std::mem::MaybeUninit<[u8; 1]>,
-// CHECK-NEXT:     i: std::mem::MaybeUninit<[u8; 4]>,
+// CHECK-NEXT:     c: core::mem::MaybeUninit<[u8; 1]>,
+// CHECK-NEXT:     i: core::mem::MaybeUninit<[u8; 4]>,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
@@ -101,23 +101,23 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %zu | %zu %zu | %zu %zu | %zu %zu | %zu %zu | %zu %zu | %zu %zu | %zu %zu\n"
 // CHECK-NEXT:                 .as_ptr(),
-// CHECK-NEXT:             std::mem::size_of::<ua>() as u64,
-// CHECK-NEXT:             std::mem::offset_of!(ua, i) as u64,
-// CHECK-NEXT:             std::mem::align_of::<ua>() as u64,
-// CHECK-NEXT:             std::mem::size_of::<p4>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<p4>() as u64,
-// CHECK-NEXT:             std::mem::size_of::<reset>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<reset>() as u64,
-// CHECK-NEXT:             std::mem::size_of::<p8>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<p8>() as u64,
-// CHECK-NEXT:             std::mem::size_of::<popped>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<popped>() as u64,
-// CHECK-NEXT:             std::mem::size_of::<al16>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<al16>() as u64,
-// CHECK-NEXT:             std::mem::size_of::<u>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<u>() as u64,
-// CHECK-NEXT:             std::mem::size_of::<bf>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<bf>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<ua>() as u64,
+// CHECK-NEXT:             core::mem::offset_of!(ua, i) as u64,
+// CHECK-NEXT:             core::mem::align_of::<ua>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<p4>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<p4>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<reset>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<reset>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<p8>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<p8>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<popped>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<popped>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<al16>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<al16>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<u>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<u>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<bf>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<bf>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0
@@ -126,8 +126,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

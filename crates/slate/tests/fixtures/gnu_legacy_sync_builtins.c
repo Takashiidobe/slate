@@ -59,90 +59,90 @@ int main(void) {
 // CHECK-NEXT:     let mut v: i32 = 5;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", unsafe { let [[T_0:__t[0-9]+]] = 3i32; let [[T_1:__t[0-9]+]] =
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v) as * mut i32)
-// CHECK-NEXT:         .fetch_add([[T_0]], std::sync::atomic::Ordering::SeqCst); [[T_1]] }
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(v) as * mut i32)
+// CHECK-NEXT:         .fetch_add([[T_0]], core::sync::atomic::Ordering::SeqCst); [[T_1]] }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", v);
 // CHECK-NEXT:     v = 5;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", unsafe { let [[T_2:__t[0-9]+]] = 3i32; let [[T_3:__t[0-9]+]] =
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v) as * mut i32)
-// CHECK-NEXT:         .fetch_sub([[T_2]], std::sync::atomic::Ordering::SeqCst); [[T_3]] }
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(v) as * mut i32)
+// CHECK-NEXT:         .fetch_sub([[T_2]], core::sync::atomic::Ordering::SeqCst); [[T_3]] }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", v);
 // CHECK-NEXT:     v = 15;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", unsafe { let [[T_4:__t[0-9]+]] = 240i32; let [[T_5:__t[0-9]+]] =
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v) as * mut i32)
-// CHECK-NEXT:         .fetch_or([[T_4]], std::sync::atomic::Ordering::SeqCst); [[T_5]] }
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(v) as * mut i32)
+// CHECK-NEXT:         .fetch_or([[T_4]], core::sync::atomic::Ordering::SeqCst); [[T_5]] }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", v);
 // CHECK-NEXT:     v = 255;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", unsafe { let [[T_6:__t[0-9]+]] = 15i32; let [[T_7:__t[0-9]+]] =
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v) as * mut i32)
-// CHECK-NEXT:         .fetch_and([[T_6]], std::sync::atomic::Ordering::SeqCst); [[T_7]] }
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(v) as * mut i32)
+// CHECK-NEXT:         .fetch_and([[T_6]], core::sync::atomic::Ordering::SeqCst); [[T_7]] }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", v);
 // CHECK-NEXT:     v = 15;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", unsafe { let [[T_8:__t[0-9]+]] = 255i32; let [[T_9:__t[0-9]+]] =
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v) as * mut i32)
-// CHECK-NEXT:         .fetch_xor([[T_8]], std::sync::atomic::Ordering::SeqCst); [[T_9]] }
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(v) as * mut i32)
+// CHECK-NEXT:         .fetch_xor([[T_8]], core::sync::atomic::Ordering::SeqCst); [[T_9]] }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", v);
 // CHECK-NEXT:     v = 5;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", unsafe { let [[T_10:__t[0-9]+]] = 3i32; let [[T_11:__t[0-9]+]] =
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v) as * mut i32)
-// CHECK-NEXT:         .fetch_nand([[T_10]], std::sync::atomic::Ordering::SeqCst); [[T_11]] }
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(v) as * mut i32)
+// CHECK-NEXT:         .fetch_nand([[T_10]], core::sync::atomic::Ordering::SeqCst); [[T_11]] }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", v);
 // CHECK-NEXT:     v = 5;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", unsafe { let [[T_12:__t[0-9]+]] = 3i32; let [[T_13:__t[0-9]+]] =
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v) as * mut i32)
-// CHECK-NEXT:         .fetch_sub([[T_12]], std::sync::atomic::Ordering::SeqCst); [[T_13]].wrapping_sub([[T_12]])
-// CHECK-NEXT:         }
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(v) as * mut i32)
+// CHECK-NEXT:         .fetch_sub([[T_12]], core::sync::atomic::Ordering::SeqCst); [[T_13]]
+// CHECK-NEXT:         .wrapping_sub([[T_12]]) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", v);
 // CHECK-NEXT:     v = 15;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", unsafe { let [[T_14:__t[0-9]+]] = 240i32; let [[T_15:__t[0-9]+]] =
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v) as * mut i32)
-// CHECK-NEXT:         .fetch_or([[T_14]], std::sync::atomic::Ordering::SeqCst); [[T_15]] | [[T_14]] }
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(v) as * mut i32)
+// CHECK-NEXT:         .fetch_or([[T_14]], core::sync::atomic::Ordering::SeqCst); [[T_15]] | [[T_14]] }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", v);
 // CHECK-NEXT:     v = 255;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", unsafe { let [[T_16:__t[0-9]+]] = 15i32; let [[T_17:__t[0-9]+]] =
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v) as * mut i32)
-// CHECK-NEXT:         .fetch_and([[T_16]], std::sync::atomic::Ordering::SeqCst); [[T_17]] & [[T_16]] }
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(v) as * mut i32)
+// CHECK-NEXT:         .fetch_and([[T_16]], core::sync::atomic::Ordering::SeqCst); [[T_17]] & [[T_16]] }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", v);
 // CHECK-NEXT:     v = 15;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", unsafe { let [[T_18:__t[0-9]+]] = 255i32; let [[T_19:__t[0-9]+]] =
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v) as * mut i32)
-// CHECK-NEXT:         .fetch_xor([[T_18]], std::sync::atomic::Ordering::SeqCst); [[T_19]] ^ [[T_18]] }
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(v) as * mut i32)
+// CHECK-NEXT:         .fetch_xor([[T_18]], core::sync::atomic::Ordering::SeqCst); [[T_19]] ^ [[T_18]] }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", v);
 // CHECK-NEXT:     v = 5;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}", unsafe { let [[T_20:__t[0-9]+]] = 3i32; let [[T_21:__t[0-9]+]] =
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v) as * mut i32)
-// CHECK-NEXT:         .fetch_nand([[T_20]], std::sync::atomic::Ordering::SeqCst); ! ([[T_21]] & [[T_20]]) }
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(v) as * mut i32)
+// CHECK-NEXT:         .fetch_nand([[T_20]], core::sync::atomic::Ordering::SeqCst); ! ([[T_21]] & [[T_20]]) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", v);
-// CHECK-NEXT:     std::sync::atomic::fence(std::sync::atomic::Ordering::SeqCst);
+// CHECK-NEXT:     core::sync::atomic::fence(core::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:     println!("ok");
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

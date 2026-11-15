@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct W {
-// CHECK-NEXT:     v: std::simd::Simd<i64, 2>,
+// CHECK-NEXT:     v: core::simd::Simd<i64, 2>,
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
@@ -65,24 +65,24 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn sum(p: *mut S) -> i64 {
-// CHECK-NEXT:     (unsafe { std::ptr::addr_of!((* p).x).read_unaligned() })
-// CHECK-NEXT:         + ((unsafe { std::ptr::addr_of!((* p).y).read_unaligned() }) as i64)
+// CHECK-NEXT:     (unsafe { core::ptr::addr_of!((* p).x).read_unaligned() })
+// CHECK-NEXT:         + ((unsafe { core::ptr::addr_of!((* p).y).read_unaligned() }) as i64)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn set(p: *mut S) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::addr_of_mut!((* p).x).write_unaligned(7i64);
+// CHECK-NEXT:         core::ptr::addr_of_mut!((* p).x).write_unaligned(7i64);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::addr_of_mut!((* p).y).write_unaligned(9i32);
+// CHECK-NEXT:         core::ptr::addr_of_mut!((* p).y).write_unaligned(9i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn lane(q: *mut W, i: i32) -> i64 {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of!((* q).v).read_unaligned()[i as usize] }
+// CHECK-NEXT:     unsafe { core::ptr::addr_of!((* q).v).read_unaligned()[i as usize] }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn put(q: *mut W, i: i32, v: i64) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = v;
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = std::ptr::addr_of_mut!((* q).v);
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::ptr::addr_of_mut!((* q).v);
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]] = [[T_1]].read_unaligned();
 // CHECK-NEXT:         [[T_2]][i as usize] = [[T_0]];
 // CHECK-NEXT:         [[T_1]].write_unaligned([[T_2]]);
@@ -91,10 +91,10 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:         core::ptr::write_bytes(
 // CHECK-NEXT:             ((buffer.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (0i32 as i32) as u8,
-// CHECK-NEXT:             ((std::mem::size_of::<[i8; 64]>() as u64) as usize) as usize,
+// CHECK-NEXT:             ((core::mem::size_of::<[i8; 64]>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     store((unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(1) }) as *mut i32, 42i32);
@@ -110,7 +110,7 @@ int main(void) {
 // CHECK-NEXT:             sum((buffer.0.as_mut_ptr() as *mut i8).add(3) as *mut S),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     put((unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(17) }) as *mut W, 1i32, 5i64);
 // CHECK-NEXT:     put((unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(17) }) as *mut W, 0i32, 4i64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -121,14 +121,14 @@ int main(void) {
 // CHECK-NEXT:             lane((buffer.0.as_mut_ptr() as *mut i8).add(17) as *mut W, 1i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

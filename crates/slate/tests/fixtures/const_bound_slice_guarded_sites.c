@@ -87,9 +87,11 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0);
 // CHECK-NEXT:     let __slate_printf_arg0_1 = two_loops(
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::slice::from_raw_parts(small.0.as_mut_ptr() as *const i32, 4usize)
+// CHECK-NEXT:             core::slice::from_raw_parts(small.0.as_mut_ptr() as *const i32, 4usize)
 // CHECK-NEXT:         },
-// CHECK-NEXT:         unsafe { std::slice::from_raw_parts_mut(big.0.as_mut_ptr() as *mut i32, 8usize) },
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::slice::from_raw_parts_mut(big.0.as_mut_ptr() as *mut i32, 8usize)
+// CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0_1);
 // CHECK-NEXT:     println!("{}", big.0[7]);
@@ -100,8 +102,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

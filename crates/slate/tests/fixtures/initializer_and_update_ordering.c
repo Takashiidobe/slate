@@ -56,7 +56,7 @@ int main(void) {
 // CHECK-NEXT: static mut flags: [u32; 1] = [2];
 // CHECK-NEXT: static mut calls: i32 = 0;
 // CHECK-NEXT: fn mark() -> u32 {
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut u32 = unsafe { (std::ptr::addr_of_mut!(flags) as *mut u32).add(0) };
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut u32 = unsafe { (core::ptr::addr_of_mut!(flags) as *mut u32).add(0) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_0]] = *[[V_0]] | 128;
 // CHECK-NEXT:     }
@@ -69,42 +69,42 @@ int main(void) {
 // CHECK-NEXT:     unsafe { p.add(1) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut self_: node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut self_: node = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     self_ = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: node = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].value = 7i32;
-// CHECK-NEXT:         [[T_0]].next = std::ptr::addr_of_mut!(self_);
+// CHECK-NEXT:         [[T_0]].next = core::ptr::addr_of_mut!(self_);
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut ring: __SlateAlign16<[node; 2]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:         std::mem::zeroed()
+// CHECK-NEXT:         core::mem::zeroed()
 // CHECK-NEXT:     });
 // CHECK-NEXT:     ring.0 = [
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: node = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]].value = 1i32;
 // CHECK-NEXT:             [[T_1]].next = unsafe { (ring.0.as_mut_ptr() as *mut node).add(1) };
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: node = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_2]].value = 2i32;
 // CHECK-NEXT:             [[T_2]].next = unsafe { (ring.0.as_mut_ptr() as *mut node).add(0) };
 // CHECK-NEXT:             [[T_2]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", (self_.next == std::ptr::addr_of_mut!(self_)) as i32, unsafe { (*
+// CHECK-NEXT:         "{} {} {}", (self_.next == core::ptr::addr_of_mut!(self_)) as i32, unsafe { (*
 // CHECK-NEXT:         ring.0[0].next).value }, unsafe { (* ring.0[1].next).value }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let [[V_0]]: u32 = mark();
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut u32 = unsafe { (std::ptr::addr_of_mut!(flags) as *mut u32).add(0) };
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut u32 = unsafe { (core::ptr::addr_of_mut!(flags) as *mut u32).add(0) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_1]] = *[[V_1]] | [[V_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), flags[0]) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut data: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32, 1i32, 2i32, 3i32]);
 // CHECK-NEXT:     let mut p: *mut i32 = data.0.as_mut_ptr() as *mut i32;
 // CHECK-NEXT:     let mut i: i32 = 0;
@@ -120,8 +120,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

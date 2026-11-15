@@ -226,15 +226,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
-// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:             Some(core::cmp::Ordering::Less)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     None
 // CHECK-NEXT:                 }
@@ -267,14 +267,14 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut w: wide = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: wide = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: wide = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].c = 1i8;
 // CHECK-NEXT:         [[T_0]].d = 2.5f64;
 // CHECK-NEXT:         [[T_0]].l = 3i64;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut e: extended = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: extended = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: extended = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].c = 2i8;
 // CHECK-NEXT:         [[T_1]].x = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 255, 63]);
 // CHECK-NEXT:         [[T_1]].z = num_complex::Complex {
@@ -297,15 +297,15 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %u %u\n".as_ptr(),
-// CHECK-NEXT:             std::mem::size_of::<wide>() as u32,
-// CHECK-NEXT:             std::mem::align_of::<wide>() as u32,
+// CHECK-NEXT:             core::mem::size_of::<wide>() as u32,
+// CHECK-NEXT:             core::mem::align_of::<wide>() as u32,
 // CHECK-NEXT:             offset(
-// CHECK-NEXT:                 &(*(std::ptr::addr_of_mut!(w) as *const ())),
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(w.d) as *const (),
+// CHECK-NEXT:                 &(*(core::ptr::addr_of_mut!(w) as *const ())),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(w.d) as *const (),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             offset(
-// CHECK-NEXT:                 &(*(std::ptr::addr_of_mut!(w) as *const ())),
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(w.l) as *const (),
+// CHECK-NEXT:                 &(*(core::ptr::addr_of_mut!(w) as *const ())),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(w.l) as *const (),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -315,7 +315,7 @@ int main(void) {
 // CHECK-NEXT:             c"%zu %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             8u32,
 // CHECK-NEXT:             8u32,
-// CHECK-NEXT:             std::mem::align_of::<LongDouble>() as u32,
+// CHECK-NEXT:             core::mem::align_of::<LongDouble>() as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -336,8 +336,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

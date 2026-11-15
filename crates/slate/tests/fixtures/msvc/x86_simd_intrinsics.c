@@ -278,9 +278,9 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         _mm_storeu_si128(
 // I686-PC-WINDOWS-MSVC-NEXT:         _mm_storeu_si128(
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (out.0.as_mut_ptr() as *mut __m128i) as *mut core::arch::x86_64::__m128i,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(v) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:             unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(v) },
 // I686-PC-WINDOWS-MSVC-NEXT:             (out.as_mut_ptr() as *mut __m128i) as *mut core::arch::x86::__m128i,
-// I686-PC-WINDOWS-MSVC-NEXT:             unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(v) },
+// I686-PC-WINDOWS-MSVC-NEXT:             unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(v) },
 // X86_64-PC-WINDOWS-MSVC-NEXT:         )
 // I686-PC-WINDOWS-MSVC-NEXT:         )
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
@@ -321,10 +321,10 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:             memcmp(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 (basic.0.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 (extended.0.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 (std::mem::size_of::<[i32; 4]>() as u64) as usize,
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 (core::mem::size_of::<[i32; 4]>() as u64) as usize,
 // I686-PC-WINDOWS-MSVC-NEXT:                 (basic.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
 // I686-PC-WINDOWS-MSVC-NEXT:                 (extended.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
-// I686-PC-WINDOWS-MSVC-NEXT:                 (std::mem::size_of::<[i32; 4]>() as u32) as usize,
+// I686-PC-WINDOWS-MSVC-NEXT:                 (core::mem::size_of::<[i32; 4]>() as u32) as usize,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             ) as i32
 // I686-PC-WINDOWS-MSVC-NEXT:             ) as i32
 // X86_64-PC-WINDOWS-MSVC-NEXT:         }) != 0;
@@ -369,8 +369,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let a: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set_epi32(
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set_epi32(
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set_epi32(
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set_epi32(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 4i32 as i32,
 // I686-PC-WINDOWS-MSVC-NEXT:                 4i32 as i32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 3i32 as i32,
@@ -389,10 +389,10 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let b: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set1_epi32(
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set1_epi32(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 10i32 as i32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             ))
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set1_epi32(10i32 as i32))
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set1_epi32(10i32 as i32))
 // X86_64-PC-WINDOWS-MSVC-NEXT:         }
 // I686-PC-WINDOWS-MSVC-NEXT:         }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
@@ -401,12 +401,12 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let sum: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_add_epi32(
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(a) },
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(b) },
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_add_epi32(
-// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(a) },
-// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(b) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_add_epi32(
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(a) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(b) },
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_add_epi32(
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(a) },
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(b) },
 // X86_64-PC-WINDOWS-MSVC-NEXT:             ))
 // I686-PC-WINDOWS-MSVC-NEXT:             ))
 // X86_64-PC-WINDOWS-MSVC-NEXT:         }
@@ -425,14 +425,14 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     if (unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         _mm_cvtsi128_si32(unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         _mm_cvtsi128_si32(unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_xor_si128(
-// X86_64-PC-WINDOWS-MSVC-NEXT:                     unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(sum) },
-// X86_64-PC-WINDOWS-MSVC-NEXT:                     unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(sum) },
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<__m128i, core::arch::x86::__m128i>(unsafe {
-// I686-PC-WINDOWS-MSVC-NEXT:                 std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_xor_si128(
-// I686-PC-WINDOWS-MSVC-NEXT:                     unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(sum) },
-// I686-PC-WINDOWS-MSVC-NEXT:                     unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(sum) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(unsafe {
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_xor_si128(
+// X86_64-PC-WINDOWS-MSVC-NEXT:                     unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(sum) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:                     unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(sum) },
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<__m128i, core::arch::x86::__m128i>(unsafe {
+// I686-PC-WINDOWS-MSVC-NEXT:                 core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_xor_si128(
+// I686-PC-WINDOWS-MSVC-NEXT:                     unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(sum) },
+// I686-PC-WINDOWS-MSVC-NEXT:                     unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(sum) },
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 ))
 // I686-PC-WINDOWS-MSVC-NEXT:                 ))
 // X86_64-PC-WINDOWS-MSVC-NEXT:             })
@@ -451,10 +451,10 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let rotated: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_shuffle_epi32(
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(a) },
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_shuffle_epi32(
-// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(a) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_shuffle_epi32(
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(a) },
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_shuffle_epi32(
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(a) },
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 57i32 as i32,
 // I686-PC-WINDOWS-MSVC-NEXT:                 57i32 as i32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             ))
@@ -475,10 +475,10 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let shifted: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_srli_si128(
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(a) },
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_srli_si128(
-// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(a) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_srli_si128(
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(a) },
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_srli_si128(
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(a) },
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 4i32 as i32,
 // I686-PC-WINDOWS-MSVC-NEXT:                 4i32 as i32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             ))
@@ -499,8 +499,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let f: __m128 = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128, __m128>(_mm_set_ps(
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128, __m128>(_mm_set_ps(
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128, __m128>(_mm_set_ps(
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128, __m128>(_mm_set_ps(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 4.0f32 as f32,
 // I686-PC-WINDOWS-MSVC-NEXT:                 4.0f32 as f32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 3.0f32 as f32,
@@ -519,14 +519,14 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     if (unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         _mm_cvtss_f32(unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         _mm_cvtss_f32(unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<__m128, core::arch::x86_64::__m128>(unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 std::mem::transmute::<core::arch::x86_64::__m128, __m128>(_mm_mul_ps(
-// X86_64-PC-WINDOWS-MSVC-NEXT:                     unsafe { std::mem::transmute::<__m128, core::arch::x86_64::__m128>(f) },
-// X86_64-PC-WINDOWS-MSVC-NEXT:                     unsafe { std::mem::transmute::<__m128, core::arch::x86_64::__m128>(f) },
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<__m128, core::arch::x86::__m128>(unsafe {
-// I686-PC-WINDOWS-MSVC-NEXT:                 std::mem::transmute::<core::arch::x86::__m128, __m128>(_mm_mul_ps(
-// I686-PC-WINDOWS-MSVC-NEXT:                     unsafe { std::mem::transmute::<__m128, core::arch::x86::__m128>(f) },
-// I686-PC-WINDOWS-MSVC-NEXT:                     unsafe { std::mem::transmute::<__m128, core::arch::x86::__m128>(f) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<__m128, core::arch::x86_64::__m128>(unsafe {
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 core::mem::transmute::<core::arch::x86_64::__m128, __m128>(_mm_mul_ps(
+// X86_64-PC-WINDOWS-MSVC-NEXT:                     unsafe { core::mem::transmute::<__m128, core::arch::x86_64::__m128>(f) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:                     unsafe { core::mem::transmute::<__m128, core::arch::x86_64::__m128>(f) },
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<__m128, core::arch::x86::__m128>(unsafe {
+// I686-PC-WINDOWS-MSVC-NEXT:                 core::mem::transmute::<core::arch::x86::__m128, __m128>(_mm_mul_ps(
+// I686-PC-WINDOWS-MSVC-NEXT:                     unsafe { core::mem::transmute::<__m128, core::arch::x86::__m128>(f) },
+// I686-PC-WINDOWS-MSVC-NEXT:                     unsafe { core::mem::transmute::<__m128, core::arch::x86::__m128>(f) },
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 ))
 // I686-PC-WINDOWS-MSVC-NEXT:                 ))
 // X86_64-PC-WINDOWS-MSVC-NEXT:             })
@@ -545,8 +545,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let d: __m128d = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128d, __m128d>(_mm_set_pd(
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128d, __m128d>(_mm_set_pd(
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128d, __m128d>(_mm_set_pd(
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128d, __m128d>(_mm_set_pd(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 2.0f64 as f64,
 // I686-PC-WINDOWS-MSVC-NEXT:                 2.0f64 as f64,
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 0.5f64 as f64,
@@ -561,14 +561,14 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     if (unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         _mm_cvtsd_f64(unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         _mm_cvtsd_f64(unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<__m128d, core::arch::x86_64::__m128d>(unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 std::mem::transmute::<core::arch::x86_64::__m128d, __m128d>(_mm_add_pd(
-// X86_64-PC-WINDOWS-MSVC-NEXT:                     unsafe { std::mem::transmute::<__m128d, core::arch::x86_64::__m128d>(d) },
-// X86_64-PC-WINDOWS-MSVC-NEXT:                     unsafe { std::mem::transmute::<__m128d, core::arch::x86_64::__m128d>(d) },
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<__m128d, core::arch::x86::__m128d>(unsafe {
-// I686-PC-WINDOWS-MSVC-NEXT:                 std::mem::transmute::<core::arch::x86::__m128d, __m128d>(_mm_add_pd(
-// I686-PC-WINDOWS-MSVC-NEXT:                     unsafe { std::mem::transmute::<__m128d, core::arch::x86::__m128d>(d) },
-// I686-PC-WINDOWS-MSVC-NEXT:                     unsafe { std::mem::transmute::<__m128d, core::arch::x86::__m128d>(d) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<__m128d, core::arch::x86_64::__m128d>(unsafe {
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 core::mem::transmute::<core::arch::x86_64::__m128d, __m128d>(_mm_add_pd(
+// X86_64-PC-WINDOWS-MSVC-NEXT:                     unsafe { core::mem::transmute::<__m128d, core::arch::x86_64::__m128d>(d) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:                     unsafe { core::mem::transmute::<__m128d, core::arch::x86_64::__m128d>(d) },
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<__m128d, core::arch::x86::__m128d>(unsafe {
+// I686-PC-WINDOWS-MSVC-NEXT:                 core::mem::transmute::<core::arch::x86::__m128d, __m128d>(_mm_add_pd(
+// I686-PC-WINDOWS-MSVC-NEXT:                     unsafe { core::mem::transmute::<__m128d, core::arch::x86::__m128d>(d) },
+// I686-PC-WINDOWS-MSVC-NEXT:                     unsafe { core::mem::transmute::<__m128d, core::arch::x86::__m128d>(d) },
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 ))
 // I686-PC-WINDOWS-MSVC-NEXT:                 ))
 // X86_64-PC-WINDOWS-MSVC-NEXT:             })
@@ -601,8 +601,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let bytes: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set_epi8(
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set_epi8(
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set_epi8(
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set_epi8(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 15i8 as core::ffi::c_char,
 // I686-PC-WINDOWS-MSVC-NEXT:                 15i8 as core::ffi::c_char,
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 14i8 as core::ffi::c_char,
@@ -645,8 +645,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let reverse: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set_epi8(
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set_epi8(
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set_epi8(
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set_epi8(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 0i8 as core::ffi::c_char,
 // I686-PC-WINDOWS-MSVC-NEXT:                 0i8 as core::ffi::c_char,
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 1i8 as core::ffi::c_char,
@@ -689,12 +689,12 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let swapped: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_shuffle_epi8(
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(bytes) },
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(reverse) },
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_shuffle_epi8(
-// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(bytes) },
-// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(reverse) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_shuffle_epi8(
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(bytes) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(reverse) },
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_shuffle_epi8(
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(bytes) },
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(reverse) },
 // X86_64-PC-WINDOWS-MSVC-NEXT:             ))
 // I686-PC-WINDOWS-MSVC-NEXT:             ))
 // X86_64-PC-WINDOWS-MSVC-NEXT:         }
@@ -705,8 +705,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     if (unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         _mm_extract_epi32(
 // I686-PC-WINDOWS-MSVC-NEXT:         _mm_extract_epi32(
-// X86_64-PC-WINDOWS-MSVC-NEXT:             unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(swapped) },
-// I686-PC-WINDOWS-MSVC-NEXT:             unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(swapped) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:             unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(swapped) },
+// I686-PC-WINDOWS-MSVC-NEXT:             unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(swapped) },
 // X86_64-PC-WINDOWS-MSVC-NEXT:             0i32 as i32,
 // I686-PC-WINDOWS-MSVC-NEXT:             0i32 as i32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         ) as i32
@@ -725,14 +725,14 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:         _mm_extract_epi32(
 // X86_64-PC-WINDOWS-MSVC-NEXT:             unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:             unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:                     std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_insert_epi32(
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(unsafe {
+// X86_64-PC-WINDOWS-MSVC-NEXT:                     core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_insert_epi32(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:                             std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(bytes)
+// X86_64-PC-WINDOWS-MSVC-NEXT:                             core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(bytes)
 // X86_64-PC-WINDOWS-MSVC-NEXT:                         },
-// I686-PC-WINDOWS-MSVC-NEXT:                 std::mem::transmute::<__m128i, core::arch::x86::__m128i>(unsafe {
-// I686-PC-WINDOWS-MSVC-NEXT:                     std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_insert_epi32(
-// I686-PC-WINDOWS-MSVC-NEXT:                         unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(bytes) },
+// I686-PC-WINDOWS-MSVC-NEXT:                 core::mem::transmute::<__m128i, core::arch::x86::__m128i>(unsafe {
+// I686-PC-WINDOWS-MSVC-NEXT:                     core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_insert_epi32(
+// I686-PC-WINDOWS-MSVC-NEXT:                         unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(bytes) },
 // X86_64-PC-WINDOWS-MSVC-NEXT:                         99i32 as i32,
 // I686-PC-WINDOWS-MSVC-NEXT:                         99i32 as i32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:                         2i32 as i32,
@@ -773,8 +773,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let state: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set_epi32(
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set_epi32(
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set_epi32(
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set_epi32(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 19088743i32 as i32,
 // I686-PC-WINDOWS-MSVC-NEXT:                 19088743i32 as i32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 -1985229329i32 as i32,
@@ -793,8 +793,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let key: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set1_epi32(
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set1_epi32(
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set1_epi32(
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set1_epi32(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 1515870810i32 as i32,
 // I686-PC-WINDOWS-MSVC-NEXT:                 1515870810i32 as i32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             ))
@@ -807,12 +807,12 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let round: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_aesenc_si128(
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(state) },
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(key) },
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_aesenc_si128(
-// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(state) },
-// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(key) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_aesenc_si128(
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(state) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(key) },
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_aesenc_si128(
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(state) },
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(key) },
 // X86_64-PC-WINDOWS-MSVC-NEXT:             ))
 // I686-PC-WINDOWS-MSVC-NEXT:             ))
 // X86_64-PC-WINDOWS-MSVC-NEXT:         }
@@ -823,28 +823,30 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let back: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_aesdeclast_si128(
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_aesdeclast_si128(
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_aesdeclast_si128(
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_aesdeclast_si128(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:                 unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:                     std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:                         std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(
-// I686-PC-WINDOWS-MSVC-NEXT:                     std::mem::transmute::<__m128i, core::arch::x86::__m128i>(unsafe {
-// I686-PC-WINDOWS-MSVC-NEXT:                         std::mem::transmute::<core::arch::x86::__m128i, __m128i>(
+// X86_64-PC-WINDOWS-MSVC-NEXT:                     core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(unsafe {
+// X86_64-PC-WINDOWS-MSVC-NEXT:                         core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(
+// I686-PC-WINDOWS-MSVC-NEXT:                     core::mem::transmute::<__m128i, core::arch::x86::__m128i>(unsafe {
+// I686-PC-WINDOWS-MSVC-NEXT:                         core::mem::transmute::<core::arch::x86::__m128i, __m128i>(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                             _mm_aesenclast_si128(
 // I686-PC-WINDOWS-MSVC-NEXT:                             _mm_aesenclast_si128(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                                 unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:                                 unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:                                     std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(
+// X86_64-PC-WINDOWS-MSVC-NEXT:                                     core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                                         state,
 // X86_64-PC-WINDOWS-MSVC-NEXT:                                     )
-// I686-PC-WINDOWS-MSVC-NEXT:                                     std::mem::transmute::<__m128i, core::arch::x86::__m128i>(state)
+// I686-PC-WINDOWS-MSVC-NEXT:                                     core::mem::transmute::<__m128i, core::arch::x86::__m128i>(state)
 // X86_64-PC-WINDOWS-MSVC-NEXT:                                 },
 // I686-PC-WINDOWS-MSVC-NEXT:                                 },
 // X86_64-PC-WINDOWS-MSVC-NEXT:                                 unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:                                 unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:                                     std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(key)
-// I686-PC-WINDOWS-MSVC-NEXT:                                     std::mem::transmute::<__m128i, core::arch::x86::__m128i>(key)
+// X86_64-PC-WINDOWS-MSVC-NEXT:                                     core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(
+// X86_64-PC-WINDOWS-MSVC-NEXT:                                         key,
+// X86_64-PC-WINDOWS-MSVC-NEXT:                                     )
+// I686-PC-WINDOWS-MSVC-NEXT:                                     core::mem::transmute::<__m128i, core::arch::x86::__m128i>(key)
 // X86_64-PC-WINDOWS-MSVC-NEXT:                                 },
 // I686-PC-WINDOWS-MSVC-NEXT:                                 },
 // X86_64-PC-WINDOWS-MSVC-NEXT:                             ),
@@ -855,8 +857,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:                     })
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 },
 // I686-PC-WINDOWS-MSVC-NEXT:                 },
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(key) },
-// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(key) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(key) },
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(key) },
 // X86_64-PC-WINDOWS-MSVC-NEXT:             ))
 // I686-PC-WINDOWS-MSVC-NEXT:             ))
 // X86_64-PC-WINDOWS-MSVC-NEXT:         }
@@ -877,8 +879,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let x: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set_epi32(
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set_epi32(
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set_epi32(
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set_epi32(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 0i32 as i32,
 // I686-PC-WINDOWS-MSVC-NEXT:                 0i32 as i32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 0i32 as i32,
@@ -897,12 +899,12 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let product: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_clmulepi64_si128(
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(x) },
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(x) },
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_clmulepi64_si128(
-// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(x) },
-// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(x) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_clmulepi64_si128(
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(x) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(x) },
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_clmulepi64_si128(
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(x) },
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(x) },
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 0i32 as i32,
 // I686-PC-WINDOWS-MSVC-NEXT:                 0i32 as i32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             ))
@@ -915,8 +917,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     if (unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         _mm_cvtsi128_si32(unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         _mm_cvtsi128_si32(unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(product)
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<__m128i, core::arch::x86::__m128i>(product)
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(product)
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<__m128i, core::arch::x86::__m128i>(product)
 // X86_64-PC-WINDOWS-MSVC-NEXT:         }) as i32
 // I686-PC-WINDOWS-MSVC-NEXT:         }) as i32
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }) != 5
@@ -943,8 +945,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let a: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set_epi32(
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set_epi32(
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set_epi32(
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set_epi32(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 1i32 as i32,
 // I686-PC-WINDOWS-MSVC-NEXT:                 1i32 as i32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 2i32 as i32,
@@ -963,8 +965,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let b: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set_epi32(
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set_epi32(
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_set_epi32(
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_set_epi32(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 5i32 as i32,
 // I686-PC-WINDOWS-MSVC-NEXT:                 5i32 as i32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 6i32 as i32,
@@ -983,12 +985,12 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let msg: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_sha256msg1_epu32(
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(a) },
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(b) },
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_sha256msg1_epu32(
-// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(a) },
-// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(b) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_sha256msg1_epu32(
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(a) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(b) },
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_sha256msg1_epu32(
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(a) },
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(b) },
 // X86_64-PC-WINDOWS-MSVC-NEXT:             ))
 // I686-PC-WINDOWS-MSVC-NEXT:             ))
 // X86_64-PC-WINDOWS-MSVC-NEXT:         }
@@ -999,14 +1001,14 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:     let rounds: __m128i = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_sha256rnds2_epu32(
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(a) },
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(b) },
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(msg) },
-// I686-PC-WINDOWS-MSVC-NEXT:             std::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_sha256rnds2_epu32(
-// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(a) },
-// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(b) },
-// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { std::mem::transmute::<__m128i, core::arch::x86::__m128i>(msg) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, __m128i>(_mm_sha256rnds2_epu32(
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(a) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(b) },
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86_64::__m128i>(msg) },
+// I686-PC-WINDOWS-MSVC-NEXT:             core::mem::transmute::<core::arch::x86::__m128i, __m128i>(_mm_sha256rnds2_epu32(
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(a) },
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(b) },
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { core::mem::transmute::<__m128i, core::arch::x86::__m128i>(msg) },
 // X86_64-PC-WINDOWS-MSVC-NEXT:             ))
 // I686-PC-WINDOWS-MSVC-NEXT:             ))
 // X86_64-PC-WINDOWS-MSVC-NEXT:         }
@@ -1039,8 +1041,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:             4294967295u32 as u32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             2u32 as u32,
 // I686-PC-WINDOWS-MSVC-NEXT:             2u32 as u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::ptr::addr_of_mut!(low) as *mut u32,
-// I686-PC-WINDOWS-MSVC-NEXT:             std::ptr::addr_of_mut!(low) as *mut u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::ptr::addr_of_mut!(low) as *mut u32,
+// I686-PC-WINDOWS-MSVC-NEXT:             core::ptr::addr_of_mut!(low) as *mut u32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         ) as u8
 // I686-PC-WINDOWS-MSVC-NEXT:         ) as u8
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
@@ -1061,8 +1063,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:             0u32 as u32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             0u32 as u32,
 // I686-PC-WINDOWS-MSVC-NEXT:             0u32 as u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::ptr::addr_of_mut!(low) as *mut u32,
-// I686-PC-WINDOWS-MSVC-NEXT:             std::ptr::addr_of_mut!(low) as *mut u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::ptr::addr_of_mut!(low) as *mut u32,
+// I686-PC-WINDOWS-MSVC-NEXT:             core::ptr::addr_of_mut!(low) as *mut u32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         ) as u8
 // I686-PC-WINDOWS-MSVC-NEXT:         ) as u8
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
@@ -1078,7 +1080,7 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         _umul128(
 // X86_64-PC-WINDOWS-MSVC-NEXT:             18446744073709551615u64 as u64,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             3u64 as u64,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::ptr::addr_of_mut!(high) as *mut u64,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::ptr::addr_of_mut!(high) as *mut u64,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         ) as u64
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     if product != 18446744073709551613 || high != 2 {
@@ -1090,7 +1092,7 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:             1u8 as u8,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             18446744073709551615u64 as u64,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             1u64 as u64,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::ptr::addr_of_mut!(sum) as *mut u64,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::ptr::addr_of_mut!(sum) as *mut u64,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         ) as u8
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     if (carry as i32) != 1 || sum != 1 {
@@ -1101,7 +1103,7 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:             0u8 as u8,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             1u64 as u64,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             2u64 as u64,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::ptr::addr_of_mut!(sum) as *mut u64,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::ptr::addr_of_mut!(sum) as *mut u64,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         ) as u8
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     if (carry as i32) != 1 || sum != 18446744073709551615 {
@@ -1130,8 +1132,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

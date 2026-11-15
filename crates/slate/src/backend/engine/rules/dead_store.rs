@@ -28,7 +28,7 @@ fn is_inert_init(expr: &Expr) -> bool {
             Expr::Var(name) if args.is_empty() => {
                 matches!(
                     name.as_str(),
-                    "std::mem::MaybeUninit::uninit" | "std::mem::zeroed"
+                    "core::mem::MaybeUninit::uninit" | "core::mem::zeroed"
                 )
             }
             Expr::Var(name) if args.len() == 1 => {

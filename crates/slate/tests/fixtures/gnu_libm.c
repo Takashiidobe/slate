@@ -278,15 +278,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
-// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:             Some(core::cmp::Ordering::Less)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     None
 // CHECK-NEXT:                 }
@@ -303,16 +303,20 @@ int main(void) {
 // CHECK-NEXT:     let mut cosine_l: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         sincos(0.5f64, std::ptr::addr_of_mut!(sine), std::ptr::addr_of_mut!(cosine))
+// CHECK-NEXT:         sincos(0.5f64, core::ptr::addr_of_mut!(sine), core::ptr::addr_of_mut!(cosine))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         sincosf(0.5f32, std::ptr::addr_of_mut!(sine_f), std::ptr::addr_of_mut!(cosine_f))
+// CHECK-NEXT:         sincosf(
+// CHECK-NEXT:             0.5f32,
+// CHECK-NEXT:             core::ptr::addr_of_mut!(sine_f),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(cosine_f),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_sincosl__rv_f80_pf80_pf80(
 // CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(sine_l),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(cosine_l),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(sine_l),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(cosine_l),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = ((unsafe { fabs(sine - sin(0.5f64)) }) == 0.0f64) as i32;
@@ -350,7 +354,7 @@ int main(void) {
 // CHECK-NEXT:         __slate_exp10l__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]))
 // CHECK-NEXT:     }) == LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 64])) as i32;
 // CHECK-NEXT:     total += [[V_2]];
-// CHECK-NEXT:     let [[V_3]]: i32 = ((unsafe { lgamma_r(0.5f64, std::ptr::addr_of_mut!(sign)) })
+// CHECK-NEXT:     let [[V_3]]: i32 = ((unsafe { lgamma_r(0.5f64, core::ptr::addr_of_mut!(sign)) })
 // CHECK-NEXT:         == unsafe { lgamma(0.5f64) }) as i32;
 // CHECK-NEXT:     total += [[V_3]];
 // CHECK-NEXT:     total += (sign == 1) as i32;
@@ -434,8 +438,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

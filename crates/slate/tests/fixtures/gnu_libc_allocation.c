@@ -137,9 +137,9 @@ int main(void) {
 // CHECK-NEXT: fn gnu_allocation_extensions() -> i32 {
 // CHECK-NEXT:     let values: *mut i32 = (unsafe {
 // CHECK-NEXT:         reallocarray(
-// CHECK-NEXT:             std::ptr::null_mut::<()>() as *mut core::ffi::c_void,
+// CHECK-NEXT:             core::ptr::null_mut::<()>() as *mut core::ffi::c_void,
 // CHECK-NEXT:             4u64 as usize,
-// CHECK-NEXT:             (std::mem::size_of::<i32>() as u64) as usize,
+// CHECK-NEXT:             (core::mem::size_of::<i32>() as u64) as usize,
 // CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     let aligned: *mut () = unsafe { memalign(64u64, 80u64) };
@@ -158,7 +158,7 @@ int main(void) {
 // CHECK-NEXT:         += (unsafe { *values.add(0) }) + unsafe { *values.add(1) }
 // CHECK-NEXT:             + unsafe { *values.add(2) } + unsafe { *values.add(3) };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = ((unsafe { malloc_usable_size(values as *mut ()) })
-// CHECK-NEXT:         >= 4u64.wrapping_mul(std::mem::size_of::<i32>() as u64)) as i32;
+// CHECK-NEXT:         >= 4u64.wrapping_mul(core::mem::size_of::<i32>() as u64)) as i32;
 // CHECK-NEXT:     total += [[V_0]];
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_1]] + ((!aligned.is_null() && (aligned as u64) % 64 == 0) as i32);
@@ -179,26 +179,26 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_obstack_extensions() -> i32 {
-// CHECK-NEXT:     let mut storage: obstack = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut storage: obstack = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _obstack_begin(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(storage),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(storage),
 // CHECK-NEXT:             0i32,
 // CHECK-NEXT:             0i32,
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::mem::transmute::<
+// CHECK-NEXT:                 core::mem::transmute::<
 // CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(u64) -> *mut ()>,
 // CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(i64) -> *mut ()>,
 // CHECK-NEXT:                 >(unsafe {
-// CHECK-NEXT:                     std::mem::transmute::<
+// CHECK-NEXT:                     core::mem::transmute::<
 // CHECK-NEXT:                         *const (),
 // CHECK-NEXT:                         Option<unsafe extern "C-unwind" fn(u64) -> *mut ()>,
 // CHECK-NEXT:                     >(malloc as *const ())
 // CHECK-NEXT:                 })
 // CHECK-NEXT:             },
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::mem::transmute::<
+// CHECK-NEXT:                 core::mem::transmute::<
 // CHECK-NEXT:                     *const (),
 // CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*mut ())>,
 // CHECK-NEXT:                 >(free as *const ())
@@ -207,7 +207,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut [[V_6:__v[0-9]+]]: *mut ();
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let __h: *mut obstack = std::ptr::addr_of_mut!(storage);
+// CHECK-NEXT:         let __h: *mut obstack = core::ptr::addr_of_mut!(storage);
 // CHECK-NEXT:         let __o: *mut obstack = __h;
 // CHECK-NEXT:         let __len: i32 = 3;
 // CHECK-NEXT:         if (unsafe { unsafe { (*__o).next_free }.offset(__len as isize).add(1) })
@@ -216,7 +216,7 @@ int main(void) {
 // CHECK-NEXT:             unsafe { _obstack_newchunk(__o, __len + 1) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:             core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:                 ((b"gnu\0".as_ptr() as *const ()) as *const core::ffi::c_void)
 // CHECK-NEXT:                     as *const u8,
 // CHECK-NEXT:                 (((*__o).next_free as *mut ()) as *mut core::ffi::c_void) as *mut u8,
@@ -243,22 +243,22 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*__o1).next_free = if (std::mem::size_of::<i64>() as u64)
-// CHECK-NEXT:                 < (std::mem::size_of::<*mut ()>() as u64)
+// CHECK-NEXT:             (*__o1).next_free = if (core::mem::size_of::<i64>() as u64)
+// CHECK-NEXT:                 < (core::mem::size_of::<*mut ()>() as u64)
 // CHECK-NEXT:             {
 // CHECK-NEXT:                 (*__o1).object_base
 // CHECK-NEXT:             } else {
-// CHECK-NEXT:                 std::ptr::null_mut::<i8>()
+// CHECK-NEXT:                 core::ptr::null_mut::<i8>()
 // CHECK-NEXT:             }
 // CHECK-NEXT:                 .offset(
 // CHECK-NEXT:                     ((unsafe { (*__o1).next_free }
 // CHECK-NEXT:                         .offset_from(
-// CHECK-NEXT:                             (if (std::mem::size_of::<i64>() as u64)
-// CHECK-NEXT:                                 < (std::mem::size_of::<*mut ()>() as u64)
+// CHECK-NEXT:                             (if (core::mem::size_of::<i64>() as u64)
+// CHECK-NEXT:                                 < (core::mem::size_of::<*mut ()>() as u64)
 // CHECK-NEXT:                             {
 // CHECK-NEXT:                                 (*__o1).object_base
 // CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 std::ptr::null_mut::<i8>()
+// CHECK-NEXT:                                 core::ptr::null_mut::<i8>()
 // CHECK-NEXT:                             }) as *mut i8,
 // CHECK-NEXT:                         ) as i64) + ((*__o1).alignment_mask as i64)
 // CHECK-NEXT:                         & (!(*__o1).alignment_mask as i64)) as isize,
@@ -283,7 +283,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let first: *mut i8 = [[V_6]] as *mut i8;
 // CHECK-NEXT:     let mut [[V_2]]: *mut ();
-// CHECK-NEXT:     let __h: *mut obstack = std::ptr::addr_of_mut!(storage);
+// CHECK-NEXT:     let __h: *mut obstack = core::ptr::addr_of_mut!(storage);
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let __o: *mut obstack = __h;
 // CHECK-NEXT:         let __len: i32 = 4;
@@ -293,7 +293,7 @@ int main(void) {
 // CHECK-NEXT:             unsafe { _obstack_newchunk(__o, __len + 1) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:             core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:                 ((b"libc\0".as_ptr() as *const ()) as *const core::ffi::c_void)
 // CHECK-NEXT:                     as *const u8,
 // CHECK-NEXT:                 (((*__o).next_free as *mut ()) as *mut core::ffi::c_void) as *mut u8,
@@ -321,22 +321,22 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*__o1).next_free = if (std::mem::size_of::<i64>() as u64)
-// CHECK-NEXT:             < (std::mem::size_of::<*mut ()>() as u64)
+// CHECK-NEXT:         (*__o1).next_free = if (core::mem::size_of::<i64>() as u64)
+// CHECK-NEXT:             < (core::mem::size_of::<*mut ()>() as u64)
 // CHECK-NEXT:         {
 // CHECK-NEXT:             (*__o1).object_base
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             std::ptr::null_mut::<i8>()
+// CHECK-NEXT:             core::ptr::null_mut::<i8>()
 // CHECK-NEXT:         }
 // CHECK-NEXT:             .offset(
 // CHECK-NEXT:                 ((unsafe { (*__o1).next_free }
 // CHECK-NEXT:                     .offset_from(
-// CHECK-NEXT:                         (if (std::mem::size_of::<i64>() as u64)
-// CHECK-NEXT:                             < (std::mem::size_of::<*mut ()>() as u64)
+// CHECK-NEXT:                         (if (core::mem::size_of::<i64>() as u64)
+// CHECK-NEXT:                             < (core::mem::size_of::<*mut ()>() as u64)
 // CHECK-NEXT:                         {
 // CHECK-NEXT:                             (*__o1).object_base
 // CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             std::ptr::null_mut::<i8>()
+// CHECK-NEXT:                             core::ptr::null_mut::<i8>()
 // CHECK-NEXT:                         }) as *mut i8,
 // CHECK-NEXT:                     ) as i64) + ((*__o1).alignment_mask as i64)
 // CHECK-NEXT:                     & (!(*__o1).alignment_mask as i64)) as isize,
@@ -376,14 +376,14 @@ int main(void) {
 // CHECK-NEXT:         }) == 0) as i32);
 // CHECK-NEXT:     let mut [[V_13:__v[0-9]+]]: u32;
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let __o: *const obstack = std::ptr::addr_of_mut!(storage) as *const obstack;
+// CHECK-NEXT:         let __o: *const obstack = core::ptr::addr_of_mut!(storage) as *const obstack;
 // CHECK-NEXT:         [[V_13]] = ((unsafe {
 // CHECK-NEXT:             unsafe { (*__o).next_free }.offset_from((*__o).object_base as *mut i8)
 // CHECK-NEXT:         }) as i64) as u32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total += ([[V_13]] == 0) as i32;
-// CHECK-NEXT:     let __o: *mut obstack = std::ptr::addr_of_mut!(storage);
-// CHECK-NEXT:     let __obj: *mut () = std::ptr::null_mut::<()>();
+// CHECK-NEXT:     let __o: *mut obstack = core::ptr::addr_of_mut!(storage);
+// CHECK-NEXT:     let __obj: *mut () = core::ptr::null_mut::<()>();
 // CHECK-NEXT:     if __obj > ((unsafe { (*__o).chunk }) as *mut ())
 // CHECK-NEXT:         && __obj < ((unsafe { (*__o).chunk_limit }) as *mut ())
 // CHECK-NEXT:     {
@@ -406,8 +406,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -75,9 +75,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: static mut slots: __SlateAlign16<[i32; 6]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     std::mem::zeroed()
+// CHECK-NEXT:     core::mem::zeroed()
 // CHECK-NEXT: });
 // CHECK-NEXT: fn idx() -> i32 {
 // CHECK-NEXT:     unsafe {
@@ -89,7 +89,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 10;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { (std::ptr::addr_of_mut!(slots.0) as *mut i32).add(2) }
+// CHECK-NEXT:     unsafe { (core::ptr::addr_of_mut!(slots.0) as *mut i32).add(2) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn produce() -> i32 {
 // CHECK-NEXT:     unsafe {
@@ -117,7 +117,7 @@ int main(void) {
 // CHECK-NEXT:     b = 11;
 // CHECK-NEXT:     e = twice(11i32);
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *mut i32 = unsafe {
-// CHECK-NEXT:         (std::ptr::addr_of_mut!(slots.0) as *mut i32).offset(idx() as isize)
+// CHECK-NEXT:         (core::ptr::addr_of_mut!(slots.0) as *mut i32).offset(idx() as isize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_3]] = *[[V_3]] + 5;
@@ -151,7 +151,7 @@ int main(void) {
 // CHECK-NEXT:         length += ((ch as i32) == 111) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[i32; 4]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i32; 4] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i32; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
@@ -164,18 +164,18 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut second: Node = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Node = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].value = 2i32;
-// CHECK-NEXT:         [[T_1]].next = std::ptr::null_mut::<Node>();
+// CHECK-NEXT:         [[T_1]].next = core::ptr::null_mut::<Node>();
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut first: Node = {
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: Node = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]].value = 1i32;
-// CHECK-NEXT:         [[T_2]].next = std::ptr::addr_of_mut!(second);
+// CHECK-NEXT:         [[T_2]].next = core::ptr::addr_of_mut!(second);
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut node: *mut Node = std::ptr::addr_of_mut!(first);
+// CHECK-NEXT:     let mut node: *mut Node = core::ptr::addr_of_mut!(first);
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let [[V_9:__v[0-9]+]]: *mut Node = unsafe { (*node).next };
@@ -224,8 +224,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

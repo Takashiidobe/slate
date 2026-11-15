@@ -165,14 +165,14 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn width_of_long() -> size_t {
-// CHECK-NEXT:     std::mem::size_of::<c_long>() as size_t
+// CHECK-NEXT:     core::mem::size_of::<c_long>() as size_t
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
@@ -186,7 +186,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut tally: tally = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: tally = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: tally = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].count = (5 as c_long);
 // CHECK-NEXT:         [[T_0]].bytes = (6 as size_t);
 // CHECK-NEXT:         [[T_0]].tag = (97 as c_char);
@@ -205,10 +205,10 @@ int main(void) {
 // CHECK-NEXT:             bytes,
 // CHECK-NEXT:             widen(1u32),
 // CHECK-NEXT:             shared.tag as i32,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(shared.label) as *mut c_char,
+// CHECK-NEXT:             core::ptr::addr_of_mut!(shared.label) as *mut c_char,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -217,16 +217,16 @@ int main(void) {
 // CHECK-NEXT:             shared.wide,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lu %ld\n".as_ptr(),
 // CHECK-NEXT:             clamp_base((65530 as c_ulong), 200u8, (3 as size_t)),
-// CHECK-NEXT:             tally_sum(std::ptr::addr_of_mut!(tally) as *const tally),
+// CHECK-NEXT:             tally_sum(core::ptr::addr_of_mut!(tally) as *const tally),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
@@ -234,23 +234,23 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d\n".as_ptr(),
-// CHECK-NEXT:                 (width_of_long() == (std::mem::size_of::<c_long>() as size_t)) as i32,
+// CHECK-NEXT:                 (width_of_long() == (core::mem::size_of::<c_long>() as size_t)) as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{}",
-// CHECK-NEXT:             (width_of_long() == (std::mem::size_of::<c_long>() as size_t)) as i32
+// CHECK-NEXT:             (width_of_long() == (core::mem::size_of::<c_long>() as size_t)) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut shared: counters = {
-// CHECK-NEXT:     let mut [[T_0]]: counters = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0]]: counters = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].total = (1 as c_ulong);
 // CHECK-NEXT:     [[T_0]].delta = -(2 as c_long);
 // CHECK-NEXT:     [[T_0]].bytes = (3 as size_t);

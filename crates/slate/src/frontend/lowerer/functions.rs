@@ -145,7 +145,7 @@ pub(super) fn main_wrapper(arity: usize, huge_stack: bool, returns_void: bool) -
         mutable: true,
         inner: Box::new(rust::Type::Ptr {
             mutable: true,
-            inner: Box::new(rust::Type::Custom("std::ffi::c_char".into())),
+            inner: Box::new(rust::Type::Custom("core::ffi::c_char".into())),
         }),
     };
     let params = [

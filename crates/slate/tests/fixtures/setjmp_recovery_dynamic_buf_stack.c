@@ -60,7 +60,7 @@ int main(void) {
 // CHECK-NEXT:     __mask_was_saved: i32,
 // CHECK-NEXT:     __saved_mask: __SlateRecord___sigset_t_h_8,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut jb_stack: *mut [__jmp_buf_tag; 1] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut jb_stack: *mut [__jmp_buf_tag; 1] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: static mut jb_top: i32 = 0;
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
@@ -90,7 +90,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         jb_stack = (malloc(
-// CHECK-NEXT:             (std::mem::size_of::<[__jmp_buf_tag; 1]>() as u64).wrapping_mul(8) as usize,
+// CHECK-NEXT:             (core::mem::size_of::<[__jmp_buf_tag; 1]>() as u64).wrapping_mul(8) as usize,
 // CHECK-NEXT:         ) as *mut ()) as *mut [__jmp_buf_tag; 1];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     run_case(0i32, 0i32);
@@ -102,8 +102,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

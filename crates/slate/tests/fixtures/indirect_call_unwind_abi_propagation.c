@@ -81,11 +81,11 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: static mut env: __SlateAlign16<[__jmp_buf_tag; 1]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     std::mem::zeroed()
+// CHECK-NEXT:     core::mem::zeroed()
 // CHECK-NEXT: });
 // CHECK-NEXT: static mut failures: i32 = 0;
 // CHECK-NEXT: static mut g_callback: Option<unsafe extern "C-unwind" fn(i32)> = unsafe {
-// CHECK-NEXT:     std::mem::zeroed()
+// CHECK-NEXT:     core::mem::zeroed()
 // CHECK-NEXT: };
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.quiet_callback")]
 // CHECK-NEXT: extern "C-unwind" fn quiet_callback(x: i32) {
@@ -94,7 +94,7 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.panicky_callback")]
 // CHECK-NEXT: extern "C-unwind" fn panicky_callback(x: i32) {
 // CHECK-NEXT:     if x == 2 {
-// CHECK-NEXT:         unsafe { longjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1i32) };
+// CHECK-NEXT:         unsafe { longjmp(core::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1i32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("panicky {}", x);
 // CHECK-NEXT: }
@@ -102,13 +102,14 @@ int main(void) {
 // CHECK-NEXT:     unsafe { unsafe { g_callback }.unwrap()(x) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut c: Ctx = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut c: Ctx = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     c.run = Some(dispatcher);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         g_callback = Some(quiet_callback);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..2i32 {
-// CHECK-NEXT:         if (unsafe { _setjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) }) != 0
+// CHECK-NEXT:         if (unsafe { _setjmp(core::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) })
+// CHECK-NEXT:             != 0
 // CHECK-NEXT:         {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 failures = failures + 1;
@@ -122,7 +123,8 @@ int main(void) {
 // CHECK-NEXT:         g_callback = Some(panicky_callback);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..5i32 {
-// CHECK-NEXT:         if (unsafe { _setjmp(std::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) }) != 0
+// CHECK-NEXT:         if (unsafe { _setjmp(core::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) })
+// CHECK-NEXT:             != 0
 // CHECK-NEXT:         {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 failures = failures + 1;
@@ -138,8 +140,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

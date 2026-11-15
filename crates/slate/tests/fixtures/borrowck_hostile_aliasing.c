@@ -146,7 +146,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn alias_same_object() -> i32 {
 // CHECK-NEXT:     let mut x: i32 = 5;
-// CHECK-NEXT:     add_in_place(std::ptr::addr_of_mut!(x), std::ptr::addr_of_mut!(x));
+// CHECK-NEXT:     add_in_place(core::ptr::addr_of_mut!(x), core::ptr::addr_of_mut!(x));
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
@@ -156,17 +156,17 @@ int main(void) {
 // CHECK-NEXT:     hi: i32,
 // CHECK-NEXT: }
 // CHECK-NEXT: fn pair_lo(p: &mut Pair) -> *mut i32 {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!((* (p as * mut Pair)).lo) }
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!((* (p as * mut Pair)).lo) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn pair_hi(p: &mut Pair) -> *mut i32 {
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!((* (p as * mut Pair)).hi) }
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!((* (p as * mut Pair)).hi) }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: fn alias_struct_fields() -> i32 {
 // CHECK-NEXT:     let mut pair: Pair = Pair { lo: 1, hi: 2 };
-// CHECK-NEXT:     let lo: *mut i32 = pair_lo(unsafe { &mut (*std::ptr::addr_of_mut!(pair)) });
-// CHECK-NEXT:     let hi: *mut i32 = pair_hi(unsafe { &mut (*std::ptr::addr_of_mut!(pair)) });
+// CHECK-NEXT:     let lo: *mut i32 = pair_lo(unsafe { &mut (*core::ptr::addr_of_mut!(pair)) });
+// CHECK-NEXT:     let hi: *mut i32 = pair_hi(unsafe { &mut (*core::ptr::addr_of_mut!(pair)) });
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *lo = *lo + *hi;
 // CHECK-NEXT:     }
@@ -184,33 +184,33 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn circular_list() -> i32 {
 // CHECK-NEXT:     let mut a: Node = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Node = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].val = 1i32;
-// CHECK-NEXT:         [[T_0]].next = std::ptr::null_mut::<Node>();
-// CHECK-NEXT:         [[T_0]].prev = std::ptr::null_mut::<Node>();
+// CHECK-NEXT:         [[T_0]].next = core::ptr::null_mut::<Node>();
+// CHECK-NEXT:         [[T_0]].prev = core::ptr::null_mut::<Node>();
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut b: Node = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: Node = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].val = 2i32;
-// CHECK-NEXT:         [[T_1]].next = std::ptr::null_mut::<Node>();
-// CHECK-NEXT:         [[T_1]].prev = std::ptr::null_mut::<Node>();
+// CHECK-NEXT:         [[T_1]].next = core::ptr::null_mut::<Node>();
+// CHECK-NEXT:         [[T_1]].prev = core::ptr::null_mut::<Node>();
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut c: Node = {
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: Node = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: Node = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]].val = 3i32;
-// CHECK-NEXT:         [[T_2]].next = std::ptr::null_mut::<Node>();
-// CHECK-NEXT:         [[T_2]].prev = std::ptr::null_mut::<Node>();
+// CHECK-NEXT:         [[T_2]].next = core::ptr::null_mut::<Node>();
+// CHECK-NEXT:         [[T_2]].prev = core::ptr::null_mut::<Node>();
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     a.next = std::ptr::addr_of_mut!(b);
-// CHECK-NEXT:     b.next = std::ptr::addr_of_mut!(c);
-// CHECK-NEXT:     c.next = std::ptr::addr_of_mut!(a);
-// CHECK-NEXT:     a.prev = std::ptr::addr_of_mut!(c);
-// CHECK-NEXT:     b.prev = std::ptr::addr_of_mut!(a);
-// CHECK-NEXT:     c.prev = std::ptr::addr_of_mut!(b);
-// CHECK-NEXT:     let mut cur: *mut Node = std::ptr::addr_of_mut!(a);
+// CHECK-NEXT:     a.next = core::ptr::addr_of_mut!(b);
+// CHECK-NEXT:     b.next = core::ptr::addr_of_mut!(c);
+// CHECK-NEXT:     c.next = core::ptr::addr_of_mut!(a);
+// CHECK-NEXT:     a.prev = core::ptr::addr_of_mut!(c);
+// CHECK-NEXT:     b.prev = core::ptr::addr_of_mut!(a);
+// CHECK-NEXT:     c.prev = core::ptr::addr_of_mut!(b);
+// CHECK-NEXT:     let mut cur: *mut Node = core::ptr::addr_of_mut!(a);
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0i32..6i32 {
 // CHECK-NEXT:         sum += unsafe { (*cur).val };
@@ -232,31 +232,31 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn parent_pointer_tree() -> i32 {
 // CHECK-NEXT:     let mut root: Tree = {
-// CHECK-NEXT:         let mut [[T_0]]: Tree = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: Tree = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].val = 1i32;
-// CHECK-NEXT:         [[T_0]].parent = std::ptr::null_mut::<Tree>();
-// CHECK-NEXT:         [[T_0]].left = std::ptr::null_mut::<Tree>();
-// CHECK-NEXT:         [[T_0]].right = std::ptr::null_mut::<Tree>();
+// CHECK-NEXT:         [[T_0]].parent = core::ptr::null_mut::<Tree>();
+// CHECK-NEXT:         [[T_0]].left = core::ptr::null_mut::<Tree>();
+// CHECK-NEXT:         [[T_0]].right = core::ptr::null_mut::<Tree>();
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut left: Tree = {
-// CHECK-NEXT:         let mut [[T_1]]: Tree = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1]]: Tree = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].val = 2i32;
-// CHECK-NEXT:         [[T_1]].parent = std::ptr::addr_of_mut!(root);
-// CHECK-NEXT:         [[T_1]].left = std::ptr::null_mut::<Tree>();
-// CHECK-NEXT:         [[T_1]].right = std::ptr::null_mut::<Tree>();
+// CHECK-NEXT:         [[T_1]].parent = core::ptr::addr_of_mut!(root);
+// CHECK-NEXT:         [[T_1]].left = core::ptr::null_mut::<Tree>();
+// CHECK-NEXT:         [[T_1]].right = core::ptr::null_mut::<Tree>();
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut right: Tree = {
-// CHECK-NEXT:         let mut [[T_2]]: Tree = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_2]]: Tree = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]].val = 3i32;
-// CHECK-NEXT:         [[T_2]].parent = std::ptr::addr_of_mut!(root);
-// CHECK-NEXT:         [[T_2]].left = std::ptr::null_mut::<Tree>();
-// CHECK-NEXT:         [[T_2]].right = std::ptr::null_mut::<Tree>();
+// CHECK-NEXT:         [[T_2]].parent = core::ptr::addr_of_mut!(root);
+// CHECK-NEXT:         [[T_2]].left = core::ptr::null_mut::<Tree>();
+// CHECK-NEXT:         [[T_2]].right = core::ptr::null_mut::<Tree>();
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     root.left = std::ptr::addr_of_mut!(left);
-// CHECK-NEXT:     root.right = std::ptr::addr_of_mut!(right);
+// CHECK-NEXT:     root.left = core::ptr::addr_of_mut!(left);
+// CHECK-NEXT:     root.right = core::ptr::addr_of_mut!(right);
 // CHECK-NEXT:     let [[V_0]]: *mut Tree = left.parent;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*[[V_0]]).val = (*[[V_0]]).val + left.val;
@@ -274,7 +274,7 @@ int main(void) {
 // CHECK-NEXT:     cursor: *mut i8,
 // CHECK-NEXT: }
 // CHECK-NEXT: fn self_referential_struct() -> i32 {
-// CHECK-NEXT:     let mut buf: Buf = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut buf: Buf = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         buf.data[i as usize] = (97 + i) as i8;
 // CHECK-NEXT:     }
@@ -311,7 +311,7 @@ int main(void) {
 // CHECK-NEXT:     values.0[0] * 10000 + values.0[1] * 1000 + values.0[2] * 100 + values.0[3] * 10
 // CHECK-NEXT:         + values.0[4]
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut g_ptr: *mut i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut g_ptr: *mut i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn capture_global(p: *mut i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         g_ptr = p;
@@ -319,7 +319,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn global_alias_with_local() -> i32 {
 // CHECK-NEXT:     let mut x: i32 = 7;
-// CHECK-NEXT:     capture_global(std::ptr::addr_of_mut!(x));
+// CHECK-NEXT:     capture_global(core::ptr::addr_of_mut!(x));
 // CHECK-NEXT:     let [[V_0]]: *mut i32 = unsafe { g_ptr };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_0]] = *[[V_0]] + 1;
@@ -334,7 +334,7 @@ int main(void) {
 // CHECK-NEXT:     f: f32,
 // CHECK-NEXT: }
 // CHECK-NEXT: fn type_punning() -> i32 {
-// CHECK-NEXT:     let mut u: Pun = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut u: Pun = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         u.f = 1.0f32;
 // CHECK-NEXT:     }
@@ -355,8 +355,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

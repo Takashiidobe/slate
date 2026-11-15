@@ -82,7 +82,7 @@ impl FunctionLowerer<'_, '_> {
         factors.push(Expr::Call {
             func: Box::new(Expr::Var(
                 format!(
-                    "std::mem::size_of::<{}>",
+                    "core::mem::size_of::<{}>",
                     crate::backend::codegen::type_to_string(&element)
                 )
                 .into(),

@@ -38,21 +38,21 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let full_src: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     let mut full_dst: [u8; 8] = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [u8; 8] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [u8; 8] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { full_dst[0usize..8usize].copy_from_slice(&full_src[0usize..8usize]) };
 // CHECK-NEXT:     let partial_src: [u8; 8] = [9, 8, 7, 6, 5, 4, 3, 2];
 // CHECK-NEXT:     let mut partial_dst: [u8; 8] = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [u8; 8] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [u8; 8] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]][0] = 0u8;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { partial_dst[0usize..4usize].copy_from_slice(&partial_src[0usize..4usize]) };
 // CHECK-NEXT:     let mut alias_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             (((alias_buf.as_mut_ptr() as *mut u8).add(4) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((alias_buf.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
@@ -61,13 +61,13 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut dyn_src: [u8; 8] = [1, 1, 1, 1, 1, 1, 1, 1];
 // CHECK-NEXT:     let mut dyn_dst: [u8; 8] = {
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: [u8; 8] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: [u8; 8] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]][0] = 0u8;
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let n: i32 = get_count();
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             ((dyn_src.as_mut_ptr() as *const ()) as *const core::ffi::c_void)
 // CHECK-NEXT:                 as *const u8,
 // CHECK-NEXT:             ((dyn_dst.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,

@@ -220,7 +220,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn field_use() -> i32 {
-// CHECK-NEXT:     let mut s: state = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut s: state = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     s.head = 1;
 // CHECK-NEXT:     s.tail = 2;
 // CHECK-NEXT:     #[cfg(feature = "alpha")]
@@ -228,7 +228,7 @@ int main(void) {
 // CHECK-NEXT:         s.extra = 4;
 // CHECK-NEXT:         s.tail += s.extra;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     s.head + s.tail + (std::mem::size_of::<state>() as i32)
+// CHECK-NEXT:     s.head + s.tail + (core::mem::size_of::<state>() as i32)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -293,10 +293,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn shifted_names(value: i32, limit: i32) -> i32 {
-// CHECK-NEXT:     let mut i: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     #[cfg(feature = "alpha")]
-// CHECK-NEXT:     let mut [[I_0:i_[0-9]+]]: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut result: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[I_0:i_[0-9]+]]: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         result = 0;
 // CHECK-NEXT:         #[cfg(feature = "alpha")]
@@ -381,8 +381,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
@@ -400,7 +400,7 @@ int main(void) {
 // CHECK-NEXT:                 nested_in_loop(4i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -409,7 +409,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(c"%d %d\n".as_ptr(), gated_local(1i32), different_tail(1i32))
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -422,7 +422,7 @@ int main(void) {
 // CHECK-NEXT:                 shifted_names(99i32, 5i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -436,14 +436,14 @@ int main(void) {
 // CHECK-NEXT:                 switched(2i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d\n".as_ptr(), gamma_value(), field_use()) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {

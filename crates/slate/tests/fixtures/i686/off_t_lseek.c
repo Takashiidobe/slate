@@ -24,6 +24,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN i686-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
+// CHECK-NEXT: #![allow(suspicious_runtime_symbol_definitions)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn open([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: i32, ...) -> i32;
@@ -70,7 +71,7 @@ int main(void) {
 // CHECK-NEXT:     if (unsafe {
 // CHECK-NEXT:         read(
 // CHECK-NEXT:             fd as i32,
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(c) as *mut ()) as *mut core::ffi::c_void,
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(c) as *mut ()) as *mut core::ffi::c_void,
 // CHECK-NEXT:             1u32 as usize,
 // CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     }) != 1
@@ -81,21 +82,21 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %ld %ld %c\n".as_ptr(),
-// CHECK-NEXT:             std::mem::size_of::<i32>() as u32,
+// CHECK-NEXT:             core::mem::size_of::<i32>() as u32,
 // CHECK-NEXT:             end,
 // CHECK-NEXT:             mid,
 // CHECK-NEXT:             c as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { close(fd as i32) as i32 };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

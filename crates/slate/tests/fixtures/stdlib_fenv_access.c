@@ -36,32 +36,32 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let x: f64 = 3.0f64;
 // CHECK-NEXT:     let y: f64 = 7.0f64;
-// CHECK-NEXT:     let before: f64 = (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) })
-// CHECK-NEXT:         + unsafe { std::ptr::read_volatile(std::ptr::addr_of!(y)) };
+// CHECK-NEXT:     let before: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) })
+// CHECK-NEXT:         + unsafe { core::ptr::read_volatile(core::ptr::addr_of!(y)) };
 // CHECK-NEXT:     let mut contended: f64 = 0 as f64;
 // CHECK-NEXT:     let mut after: f64 = 0 as f64;
 // CHECK-NEXT:     unsafe { fesetround(1024i32) };
 // CHECK-NEXT:     contended = unsafe {
 // CHECK-NEXT:         __slate_fenv_div_f64(
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(x)),
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(y)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(x)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(y)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fesetround(0i32) };
-// CHECK-NEXT:     after = (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) })
-// CHECK-NEXT:         + unsafe { std::ptr::read_volatile(std::ptr::addr_of!(y)) };
+// CHECK-NEXT:     after = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) })
+// CHECK-NEXT:         + unsafe { core::ptr::read_volatile(core::ptr::addr_of!(y)) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%.20e %.20e %.20e\n".as_ptr(), before, contended, after)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -60,8 +60,8 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn counted(n: i32) -> i32 {
-// CHECK-NEXT:     let mut total: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut i: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut total: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         i = 0;
 // CHECK-NEXT:         total = 0;
@@ -76,13 +76,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn escaped(n: i32) -> i32 {
-// CHECK-NEXT:     let mut k: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut x: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut k: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut x: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         x = n;
 // CHECK-NEXT:         k = 0;
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             bump(&mut (*std::ptr::addr_of_mut!(x)));
+// CHECK-NEXT:             bump(&mut (*core::ptr::addr_of_mut!(x)));
 // CHECK-NEXT:             k += 1;
 // CHECK-NEXT:             if k >= 3 {
 // CHECK-NEXT:                 break;
@@ -92,11 +92,11 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn record(n: i32) -> i32 {
-// CHECK-NEXT:     let mut k: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut p: std::mem::MaybeUninit<Pair> = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut Pair = std::ptr::addr_of_mut!(p) as *mut Pair;
+// CHECK-NEXT:     let mut k: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut p: core::mem::MaybeUninit<Pair> = core::mem::MaybeUninit::uninit();
+// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut Pair = core::ptr::addr_of_mut!(p) as *mut Pair;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write([[SLATE_SLOT_0]], Pair { a: 1, b: 2 });
+// CHECK-NEXT:         core::ptr::write([[SLATE_SLOT_0]], Pair { a: 1, b: 2 });
 // CHECK-NEXT:         k = 0;
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             (*[[SLATE_SLOT_0]]).a += (*[[SLATE_SLOT_0]]).b;
@@ -110,11 +110,11 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn aligned(n: i32) -> i32 {
-// CHECK-NEXT:     let mut k: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut v: std::mem::MaybeUninit<__SlateAlign32<i32>> = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut i32 = std::ptr::addr_of_mut!(v) as *mut i32;
+// CHECK-NEXT:     let mut k: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut v: core::mem::MaybeUninit<__SlateAlign32<i32>> = core::mem::MaybeUninit::uninit();
+// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut i32 = core::ptr::addr_of_mut!(v) as *mut i32;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write([[SLATE_SLOT_0]], 1i32);
+// CHECK-NEXT:         core::ptr::write([[SLATE_SLOT_0]], 1i32);
 // CHECK-NEXT:         k = 0;
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             *[[SLATE_SLOT_0]] *= 2;

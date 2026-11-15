@@ -65,53 +65,53 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     let mut f: f32 = 0 as f32;
-// CHECK-NEXT:     let mut p: *mut () = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut p: *mut () = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut b: bool = false;
 // CHECK-NEXT:     let mut arr: __SlateAlign16<[i32; 64]> = __SlateAlign16([0i32; 64]);
-// CHECK-NEXT:     let mut s: padded = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut s: padded = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(s) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 24usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(s) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 24usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut many: __SlateAlign16<[padded; 4]> = __SlateAlign16(unsafe { std::mem::zeroed() });
+// CHECK-NEXT:     let mut many: __SlateAlign16<[padded; 4]> = __SlateAlign16(unsafe { core::mem::zeroed() });
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let __slate_auto_bytes = (std::ptr::addr_of_mut!(many.0) as *mut _) as *mut u8;
-// CHECK-NEXT:         std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 96usize);
+// CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(many.0) as *mut _) as *mut u8;
+// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 96usize);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"int".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(i) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<i32>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(i) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<i32>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"float".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(f) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<f32>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(f) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<f32>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"pointer".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(p) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<*mut ()>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(p) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<*mut ()>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"bool".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(b) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<bool>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(b) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<bool>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"array".as_ptr(),
 // CHECK-NEXT:         arr.0.as_mut_ptr() as *const (),
-// CHECK-NEXT:         std::mem::size_of::<[i32; 64]>() as u32,
+// CHECK-NEXT:         core::mem::size_of::<[i32; 64]>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"padded".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(s) as *const (),
-// CHECK-NEXT:         std::mem::size_of::<padded>() as u32,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(s) as *const (),
+// CHECK-NEXT:         core::mem::size_of::<padded>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"padded[]".as_ptr(),
 // CHECK-NEXT:         many.0.as_mut_ptr() as *const (),
-// CHECK-NEXT:         std::mem::size_of::<[padded; 4]>() as u32,
+// CHECK-NEXT:         core::mem::size_of::<[padded; 4]>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
@@ -119,8 +119,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

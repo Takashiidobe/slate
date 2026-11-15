@@ -30,7 +30,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut forward_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy(
+// CHECK-NEXT:         core::ptr::copy(
 // CHECK-NEXT:             ((forward_buf.as_mut_ptr() as *const ()) as *const core::ffi::c_void)
 // CHECK-NEXT:                 as *const u8,
 // CHECK-NEXT:             (((forward_buf.as_mut_ptr() as *mut u8).add(1) as *mut ())
@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut backward_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy(
+// CHECK-NEXT:         core::ptr::copy(
 // CHECK-NEXT:             (((backward_buf.as_mut_ptr() as *mut u8).add(1) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((backward_buf.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void)
@@ -51,7 +51,7 @@ int main(void) {
 // CHECK-NEXT:     let mut dyn_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     let n: i32 = get_count();
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy(
+// CHECK-NEXT:         core::ptr::copy(
 // CHECK-NEXT:             (((dyn_buf.as_mut_ptr() as *mut u8).add(1) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((dyn_buf.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,

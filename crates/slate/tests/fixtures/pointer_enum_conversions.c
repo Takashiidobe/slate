@@ -76,12 +76,12 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", color as u32);
 // CHECK-NEXT:     println!("{} {}", flip(- 3i32) as i32, ((flip(3i32) as i32) < 0) as i32);
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%u %d\n".as_ptr(), 4294967295u32, true as i32) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let wide: i64 = -3;
 // CHECK-NEXT:     let narrow: u8 = 253u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld %u\n".as_ptr(), wide, narrow as u32) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([
 // CHECK-NEXT:         10i32, 20i32, 30i32, 40i32,
 // CHECK-NEXT:     ]);
@@ -109,13 +109,13 @@ int main(void) {
 // CHECK-NEXT:             *bytes.add(1) as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let null: *mut () = std::ptr::null_mut::<()>();
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     let null: *mut () = core::ptr::null_mut::<()>();
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}", null.is_null() as i32, null.is_null() as i32, ((null as i64) == 0) as
 // CHECK-NEXT:         i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let from_zero: *mut i32 = std::ptr::null_mut::<i32>();
+// CHECK-NEXT:     let from_zero: *mut i32 = core::ptr::null_mut::<i32>();
 // CHECK-NEXT:     println!("{}", from_zero.is_null() as i32);
 // CHECK-NEXT:     println!("{}", ! p.is_null() as i32);
 // CHECK-NEXT:     0
@@ -123,8 +123,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -44,9 +44,9 @@ int main(void) {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     let mut count: i32 = 0;
 // CHECK-NEXT:     let mut it: *mut i32 = unsafe {
-// CHECK-NEXT:         std::ptr::addr_of_mut!(__start_slate_gnu_section) as *mut i32
+// CHECK-NEXT:         core::ptr::addr_of_mut!(__start_slate_gnu_section) as *mut i32
 // CHECK-NEXT:     };
-// CHECK-NEXT:     while it < unsafe { std::ptr::addr_of_mut!(__stop_slate_gnu_section) as *mut i32 } {
+// CHECK-NEXT:     while it < unsafe { core::ptr::addr_of_mut!(__stop_slate_gnu_section) as *mut i32 } {
 // CHECK-NEXT:         sum += unsafe { *it };
 // CHECK-NEXT:         count += 1;
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = it;
@@ -61,8 +61,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

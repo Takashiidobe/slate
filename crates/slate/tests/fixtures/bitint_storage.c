@@ -104,13 +104,13 @@ int main(void) {
 // CHECK-NEXT:     let bytes: *const u8 = p as *const u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%s %zu:".as_ptr(), name, n) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(c" %02x".as_ptr(), *bytes.add(i as usize) as i32)
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT: }
@@ -162,7 +162,7 @@ int main(void) {
 // CHECK-NEXT:     ]),
 // CHECK-NEXT: );
 // CHECK-NEXT: static mut global_mixed: Mixed = {
-// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: Mixed = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: Mixed = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].tag = 3i8;
 // CHECK-NEXT:     [[T_0]].small = -7i16;
 // CHECK-NEXT:     [[T_0]].mid = <bitint::BUint<
@@ -218,9 +218,9 @@ int main(void) {
 // CHECK-NEXT:             forty as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     dump(c"nine".as_ptr(), std::ptr::addr_of_mut!(nine) as *const (), 2u64);
-// CHECK-NEXT:     dump(c"forty".as_ptr(), std::ptr::addr_of_mut!(forty) as *const (), 8u64);
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     dump(c"nine".as_ptr(), core::ptr::addr_of_mut!(nine) as *const (), 2u64);
+// CHECK-NEXT:     dump(c"forty".as_ptr(), core::ptr::addr_of_mut!(forty) as *const (), 8u64);
 // CHECK-NEXT:     let mut sixty_five: bitint::BInt<65, 2, 16, bitint::A8> = <bitint::BInt<
 // CHECK-NEXT:         65,
 // CHECK-NEXT:         2,
@@ -241,7 +241,7 @@ int main(void) {
 // CHECK-NEXT:     >>::from_i128(((1311768467463790320i64.wrapping_neg() as i64) << 2 >> 2) as i128);
 // CHECK-NEXT:     let mut wide: bitint::BInt<200, 4, 32, bitint::A8> = widen(sixty_five);
 // CHECK-NEXT:     let mut mid: bitint::BUint<100, 2, 16, bitint::A8> = narrow(
-// CHECK-NEXT:         (unsafe { std::ptr::addr_of_mut!(global_wide) })
+// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(global_wide) })
 // CHECK-NEXT:             as *const bitint::BInt<200, 4, 32, bitint::A8>,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let flag: bool = true;
@@ -263,34 +263,38 @@ int main(void) {
 // CHECK-NEXT:             from_bool.to_i128() as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     dump(c"sixty_five".as_ptr(), std::ptr::addr_of_mut!(sixty_five) as *const (), 16u64);
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     dump(
+// CHECK-NEXT:         c"sixty_five".as_ptr(),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(sixty_five) as *const (),
+// CHECK-NEXT:         16u64,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"unsigned_sixty_five".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(unsigned_sixty_five) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(unsigned_sixty_five) as *const (),
 // CHECK-NEXT:         16u64,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"one_twenty_eight".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(one_twenty_eight) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(one_twenty_eight) as *const (),
 // CHECK-NEXT:         16u64,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     dump(c"wide".as_ptr(), std::ptr::addr_of_mut!(wide) as *const (), 32u64);
-// CHECK-NEXT:     dump(c"mid".as_ptr(), std::ptr::addr_of_mut!(mid) as *const (), 16u64);
+// CHECK-NEXT:     dump(c"wide".as_ptr(), core::ptr::addr_of_mut!(wide) as *const (), 32u64);
+// CHECK-NEXT:     dump(c"mid".as_ptr(), core::ptr::addr_of_mut!(mid) as *const (), 16u64);
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"global_wide".as_ptr(),
-// CHECK-NEXT:         (unsafe { std::ptr::addr_of_mut!(global_wide) }) as *const (),
+// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(global_wide) }) as *const (),
 // CHECK-NEXT:         32u64,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"global_huge".as_ptr(),
-// CHECK-NEXT:         (unsafe { std::ptr::addr_of_mut!(global_huge) }) as *const (),
+// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(global_huge) }) as *const (),
 // CHECK-NEXT:         72u64,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"global_pair".as_ptr(),
 // CHECK-NEXT:         (unsafe {
-// CHECK-NEXT:             std::ptr::addr_of_mut!(global_pair.0)
+// CHECK-NEXT:             core::ptr::addr_of_mut!(global_pair.0)
 // CHECK-NEXT:                 as *mut bitint::BInt<128, 2, 16, bitint::A8>
 // CHECK-NEXT:         }) as *const (),
 // CHECK-NEXT:         32u64,
@@ -316,12 +320,12 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", truncated as i32);
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"widened_huge".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(widened_huge) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(widened_huge) as *const (),
 // CHECK-NEXT:         40u64,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"narrowed_huge".as_ptr(),
-// CHECK-NEXT:         std::ptr::addr_of_mut!(narrowed_huge) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(narrowed_huge) as *const (),
 // CHECK-NEXT:         24u64,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut local: Mixed = unsafe { global_mixed };
@@ -345,17 +349,21 @@ int main(void) {
 // CHECK-NEXT:             8u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{} {} {}", local.tag as i32, local.small as i32, local.gap as i32);
-// CHECK-NEXT:     dump(c"local.mid".as_ptr(), std::ptr::addr_of_mut!(local.mid) as *const (), 16u64);
-// CHECK-NEXT:     dump(c"local.wide".as_ptr(), std::ptr::addr_of_mut!(local.wide) as *const (), 32u64);
+// CHECK-NEXT:     dump(c"local.mid".as_ptr(), core::ptr::addr_of_mut!(local.mid) as *const (), 16u64);
+// CHECK-NEXT:     dump(
+// CHECK-NEXT:         c"local.wide".as_ptr(),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(local.wide) as *const (),
+// CHECK-NEXT:         32u64,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

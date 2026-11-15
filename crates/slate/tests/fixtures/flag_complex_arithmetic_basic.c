@@ -24,8 +24,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let big: f64 = 1e300f64;
 // CHECK-NEXT:     let mut z: num_complex::Complex<f64> =
-// CHECK-NEXT:         (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(big)) })
-// CHECK-NEXT:             + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(big)) })
+// CHECK-NEXT:         (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
+// CHECK-NEXT:             + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
 // CHECK-NEXT:                 * num_complex::Complex {
 // CHECK-NEXT:                     re: 0.0f64,
 // CHECK-NEXT:                     im: 1.0f64,
@@ -64,15 +64,15 @@ int main(void) {
 // CHECK-NEXT:             small.im,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -29,14 +29,14 @@ int main(void) {
 // CHECK-NEXT: macro_rules! ilog2 {
 // CHECK-NEXT:     ($n:expr) => {
 // CHECK-NEXT:         if false { if ($n) < 2 { 0i32 } else { 63 - ($n .leading_zeros() as i32) } } else
-// CHECK-NEXT:         { if (std::mem::size_of::< u64 > () as u64) <= 4 { __ilog2_u32(($n) as u32) }
+// CHECK-NEXT:         { if (core::mem::size_of::< u64 > () as u64) <= 4 { __ilog2_u32(($n) as u32) }
 // CHECK-NEXT:         else { __ilog2_u64($n) } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! ilog2__2 {
 // CHECK-NEXT:     ($n:expr) => {
 // CHECK-NEXT:         if true { if ($n) < 2 { 0i32 } else { 63 - ((($n) as u64).leading_zeros() as i32)
-// CHECK-NEXT:         } } else { if (std::mem::size_of::< u32 > () as u64) <= 4 { __ilog2_u32($n) }
+// CHECK-NEXT:         } } else { if (core::mem::size_of::< u32 > () as u64) <= 4 { __ilog2_u32($n) }
 // CHECK-NEXT:         else { __ilog2_u64(($n) as u64) } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -63,7 +63,7 @@ int main(void) {
 // CHECK-NEXT:             "mov ${1}, {0:e}", lateout(reg) [[T_0]], const 6 as i32, options(pure, nomem,
 // CHECK-NEXT:             nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         v = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         v = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT:             "mov {1:e}, {0:e}\n# {2}", lateout(reg) [[T_0]], in (reg) (x.count_ones() as
 // CHECK-NEXT:             i32) as u32, const 4 as i32, options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         v = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         v = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
@@ -86,8 +86,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

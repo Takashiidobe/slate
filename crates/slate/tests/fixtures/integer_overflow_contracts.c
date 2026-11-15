@@ -81,7 +81,7 @@ int main(void) {
 // CHECK-NEXT:             negated,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -90,7 +90,7 @@ int main(void) {
 // CHECK-NEXT:             mix(42u64),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut narrow: i32 = 0;
 // CHECK-NEXT:     let mut wide: i64 = 0;
 // CHECK-NEXT:     let mut unsigned_out: u32 = 0;
@@ -100,7 +100,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: i128 = 1 as i128;
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: i128 = [[T_0]].wrapping_add([[T_1]]);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *std::ptr::addr_of_mut!(wide) = [[T_2]] as i64;
+// CHECK-NEXT:             *core::ptr::addr_of_mut!(wide) = [[T_2]] as i64;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_0]].checked_add([[T_1]]).is_none() || (([[T_2]] as i64) as i128) != [[T_2]]
 // CHECK-NEXT:     }) as i32;
@@ -109,7 +109,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]]: i128 = 1 as i128;
 // CHECK-NEXT:         let [[T_5:__t[0-9]+]]: i128 = [[T_3]].wrapping_add([[T_4]]);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *std::ptr::addr_of_mut!(narrow) = [[T_5]] as i32;
+// CHECK-NEXT:             *core::ptr::addr_of_mut!(narrow) = [[T_5]] as i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_3]].checked_add([[T_4]]).is_none() || (([[T_5]] as i32) as i128) != [[T_5]]
 // CHECK-NEXT:     }) as i32;
@@ -118,7 +118,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_7:__t[0-9]+]]: i128 = 1 as i128;
 // CHECK-NEXT:         let [[T_8:__t[0-9]+]]: i128 = [[T_6]].wrapping_sub([[T_7]]);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *std::ptr::addr_of_mut!(narrow) = [[T_8]] as i32;
+// CHECK-NEXT:             *core::ptr::addr_of_mut!(narrow) = [[T_8]] as i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_6]].checked_sub([[T_7]]).is_none() || (([[T_8]] as i32) as i128) != [[T_8]]
 // CHECK-NEXT:     }) as i32;
@@ -127,7 +127,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_10:__t[0-9]+]]: i128 = 0 as i128;
 // CHECK-NEXT:         let [[T_11:__t[0-9]+]]: i128 = [[T_9]].wrapping_sub([[T_10]]);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *std::ptr::addr_of_mut!(unsigned_out) = [[T_11]] as u32;
+// CHECK-NEXT:             *core::ptr::addr_of_mut!(unsigned_out) = [[T_11]] as u32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_9]].checked_sub([[T_10]]).is_none() || (([[T_11]] as u32) as i128) != [[T_11]]
 // CHECK-NEXT:     }) as i32;
@@ -136,7 +136,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_13:__t[0-9]+]]: i128 = 4294967295u32 as i128;
 // CHECK-NEXT:         let [[T_14:__t[0-9]+]]: i128 = [[T_12]].wrapping_mul([[T_13]]);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *std::ptr::addr_of_mut!(ll_out) = [[T_14]] as i64;
+// CHECK-NEXT:             *core::ptr::addr_of_mut!(ll_out) = [[T_14]] as i64;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_12]].checked_mul([[T_13]]).is_none() || (([[T_14]] as i64) as i128) != [[T_14]]
 // CHECK-NEXT:     }) as i32;
@@ -145,7 +145,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_16:__t[0-9]+]]: i128 = -1 as i128;
 // CHECK-NEXT:         let [[T_17:__t[0-9]+]]: i128 = [[T_15]].wrapping_mul([[T_16]]);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *std::ptr::addr_of_mut!(ll_out) = [[T_17]] as i64;
+// CHECK-NEXT:             *core::ptr::addr_of_mut!(ll_out) = [[T_17]] as i64;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_15]].checked_mul([[T_16]]).is_none() || (([[T_17]] as i64) as i128) != [[T_17]]
 // CHECK-NEXT:     }) as i32;
@@ -154,7 +154,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_19:__t[0-9]+]]: i128 = 6 as i128;
 // CHECK-NEXT:         let [[T_20:__t[0-9]+]]: i128 = [[T_18]].wrapping_mul([[T_19]]);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *std::ptr::addr_of_mut!(narrow) = [[T_20]] as i32;
+// CHECK-NEXT:             *core::ptr::addr_of_mut!(narrow) = [[T_20]] as i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_18]].checked_mul([[T_19]]).is_none() || (([[T_20]] as i32) as i128) != [[T_20]]
 // CHECK-NEXT:     }) as i32;
@@ -170,32 +170,32 @@ int main(void) {
 // CHECK-NEXT:             unsigned_out,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%d %d %lld %d %d\n".as_ptr(), e, f, ll_out, g, narrow)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     if {
 // CHECK-NEXT:         let [[T_21:__t[0-9]+]]: i128 = 18446744073709551615u64 as i128;
 // CHECK-NEXT:         let [[T_22:__t[0-9]+]]: i128 = 2 as i128;
 // CHECK-NEXT:         let [[T_23:__t[0-9]+]]: i128 = [[T_21]].wrapping_add([[T_22]]);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *std::ptr::addr_of_mut!(unsigned_out) = [[T_23]] as u32;
+// CHECK-NEXT:             *core::ptr::addr_of_mut!(unsigned_out) = [[T_23]] as u32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_21]].checked_add([[T_22]]).is_none() || (([[T_23]] as u32) as i128) != [[T_23]]
 // CHECK-NEXT:     } {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"wrapped %u\n".as_ptr(), unsigned_out) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (top.wrapping_add(zero) as i32) & 63
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

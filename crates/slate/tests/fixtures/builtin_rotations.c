@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-NEXT:                     x.rotate_right((n as u8) as u32) as u64,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
@@ -82,7 +82,7 @@ int main(void) {
 // CHECK-NEXT:                     x.rotate_right((n as u16) as u32) as u64,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
@@ -105,7 +105,7 @@ int main(void) {
 // CHECK-NEXT:                     x.rotate_right(n as u32) as u64,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
@@ -128,7 +128,7 @@ int main(void) {
 // CHECK-NEXT:                     x.rotate_right((n as u64) as u32),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if true {
 // CHECK-NEXT:             break;
@@ -144,14 +144,14 @@ int main(void) {
 // CHECK-NEXT:     r = [[V_0]].rotate_left([[V_1]] as u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%u %u %u\n".as_ptr(), r, x, n) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

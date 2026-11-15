@@ -266,88 +266,88 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             c"plain".as_ptr() as *mut i8,
-// CHECK-NEXT:             std::mem::size_of::<plain>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<plain>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<plain>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<plain>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             c"packed".as_ptr() as *mut i8,
-// CHECK-NEXT:             std::mem::size_of::<packed>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<packed>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<packed>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<packed>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             c"wide".as_ptr() as *mut i8,
-// CHECK-NEXT:             std::mem::size_of::<wide>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<wide>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<wide>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<wide>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             c"zero_width".as_ptr() as *mut i8,
-// CHECK-NEXT:             std::mem::size_of::<zero_width>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<zero_width>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<zero_width>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<zero_width>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             c"packed_pragma".as_ptr() as *mut i8,
-// CHECK-NEXT:             std::mem::size_of::<packed_pragma>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<packed_pragma>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<packed_pragma>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<packed_pragma>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             c"pragma".as_ptr() as *mut i8,
-// CHECK-NEXT:             std::mem::size_of::<pragma>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<pragma>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<pragma>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<pragma>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             c"named_after".as_ptr() as *mut i8,
-// CHECK-NEXT:             std::mem::size_of::<named_after>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<named_after>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<named_after>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<named_after>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             c"unnamed_union".as_ptr() as *mut i8,
-// CHECK-NEXT:             std::mem::size_of::<unnamed_union>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<unnamed_union>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<unnamed_union>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<unnamed_union>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             c"named_union".as_ptr() as *mut i8,
-// CHECK-NEXT:             std::mem::size_of::<named_union>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<named_union>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<named_union>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<named_union>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             c"mixed_union".as_ptr() as *mut i8,
-// CHECK-NEXT:             std::mem::size_of::<mixed_union>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<mixed_union>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<mixed_union>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<mixed_union>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%s %zu %zu\n".as_ptr(),
 // CHECK-NEXT:             c"pragma_union".as_ptr() as *mut i8,
-// CHECK-NEXT:             std::mem::size_of::<pragma_union>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<pragma_union>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<pragma_union>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<pragma_union>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0
@@ -355,8 +355,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

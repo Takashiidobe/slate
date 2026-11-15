@@ -29,25 +29,25 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let x: f64 = 1.9999999999999998f64;
-// CHECK-NEXT:     let y: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
-// CHECK-NEXT:     let z: f64 = -((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) })
-// CHECK-NEXT:         * unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) });
-// CHECK-NEXT:     let contracted: f64 = (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) }) * y
-// CHECK-NEXT:         + z;
-// CHECK-NEXT:     let uncontracted: f64 = (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) })
+// CHECK-NEXT:     let y: f64 = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) };
+// CHECK-NEXT:     let z: f64 = -((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) })
+// CHECK-NEXT:         * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) });
+// CHECK-NEXT:     let contracted: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) })
+// CHECK-NEXT:         * y + z;
+// CHECK-NEXT:     let uncontracted: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) })
 // CHECK-NEXT:         * y + z;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%.20e %.20e\n".as_ptr(), contracted, uncontracted)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -122,15 +122,15 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: struct __SlateAlign32<T>(T);
-// CHECK-NEXT: static mut gnu_builtin_never: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut gnu_builtin_never: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn gnu_builtin_nonlocal() -> i32 {
-// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: __slate_builtin_setjmp::Buffer = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: __slate_builtin_setjmp::Buffer = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[*mut (); 5]> = __SlateAlign16([0 as *mut (); 5]);
 // CHECK-NEXT:     if (unsafe {
-// CHECK-NEXT:         *(buffer.0.as_mut_ptr() as *mut *mut __slate_builtin_setjmp::Buffer) = std::ptr::addr_of_mut!(
+// CHECK-NEXT:         *(buffer.0.as_mut_ptr() as *mut *mut __slate_builtin_setjmp::Buffer) = core::ptr::addr_of_mut!(
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         );
-// CHECK-NEXT:         __slate_builtin_setjmp::_setjmp(std::ptr::addr_of_mut!([[T_0]])) as i32
+// CHECK-NEXT:         __slate_builtin_setjmp::_setjmp(core::ptr::addr_of_mut!([[T_0]])) as i32
 // CHECK-NEXT:     }) == 0
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
@@ -161,49 +161,52 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_builtin_control() -> i32 {
 // CHECK-NEXT:     let mut storage: __SlateAlign32<[u8; 64]> = __SlateAlign32({
-// CHECK-NEXT:         let mut [[T_0]]: [u8; 64] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: [u8; 64] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut code: [u8; 8] = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [u8; 8] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [u8; 8] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let assumed: *mut () = storage.0.as_mut_ptr() as *mut ();
 // CHECK-NEXT:     let likely: i32 = 29;
 // CHECK-NEXT:     let probable: i32 = 31;
-// CHECK-NEXT:     unsafe { std::hint::assert_unchecked((storage.0[0] as i32) == 0) };
+// CHECK-NEXT:     unsafe { core::hint::assert_unchecked((storage.0[0] as i32) == 0) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_intrinsic_7eb885185d29c159(
 // CHECK-NEXT:             code.as_mut_ptr() as *mut (),
 // CHECK-NEXT:             (code.as_mut_ptr() as *mut i8)
-// CHECK-NEXT:                 .offset(std::mem::size_of::<[u8; 8]>() as isize) as *mut (),
+// CHECK-NEXT:                 .offset(core::mem::size_of::<[u8; 8]>() as isize) as *mut (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     if (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gnu_builtin_never)) }) != 0 {
+// CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(gnu_builtin_never)) }) != 0
+// CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { __slate_intrinsic_b996fac1ccf0610c() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gnu_builtin_never)) }) != 0 {
+// CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(gnu_builtin_never)) }) != 0
+// CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { __slate_intrinsic_46d8fd79c9d1f86c() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gnu_builtin_never)) }) != 0 {
-// CHECK-NEXT:         unsafe { std::hint::unreachable_unchecked() };
+// CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(gnu_builtin_never)) }) != 0
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     likely + probable + ((assumed == (storage.0.as_mut_ptr() as *mut ())) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_builtin_sizes() -> i32 {
 // CHECK-NEXT:     __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0]]: [u8; 24] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: [u8; 24] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut value: i32 = 37;
-// CHECK-NEXT:     let address: *mut i32 = std::ptr::addr_of_mut!(value);
+// CHECK-NEXT:     let address: *mut i32 = core::ptr::addr_of_mut!(value);
 // CHECK-NEXT:     let mut up: u64 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u64 = 15u64;
 // CHECK-NEXT:     up = 65u64.wrapping_add([[V_0]]) & ![[V_0]];
 // CHECK-NEXT:     let mut down: u64 = 0;
 // CHECK-NEXT:     down = 64u64;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u64 = 15u64;
-// CHECK-NEXT:     24 + 24 + 12 + ((address == std::ptr::addr_of_mut!(value)) as i32) + (up as i32)
+// CHECK-NEXT:     24 + 24 + 12 + ((address == core::ptr::addr_of_mut!(value)) as i32) + (up as i32)
 // CHECK-NEXT:         + (down as i32) + ((up & [[V_1]] == 0) as i32) + ((1i32 != 0) as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_builtin_source() -> i32 {
@@ -226,8 +229,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -356,15 +356,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
-// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:             Some(core::cmp::Ordering::Less)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     None
 // CHECK-NEXT:                 }
@@ -425,7 +425,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn c89_variadic_sum(count: i32, mut __va_args: ...) -> i32 {
-// CHECK-NEXT:     let mut arguments: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut arguments: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     arguments = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -447,8 +447,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut calls: i32 = 0;
 // CHECK-NEXT: fn c89_control_flow(value: i32) -> i32 {
-// CHECK-NEXT:     let mut index: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut result: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut index: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         result = 0;
 // CHECK-NEXT:         index = 0;
@@ -492,9 +492,9 @@ int main(void) {
 // CHECK-NEXT:     let double_value: f64 = 3.5f64;
 // CHECK-NEXT:     let wide_character: i32 = 90;
 // CHECK-NEXT:     let color: u32 = 5;
-// CHECK-NEXT:     let mut point: C89Point = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut bits: C89Bits = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut number: C89Number = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut point: C89Point = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut bits: C89Bits = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut number: C89Number = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut array: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32; 4]);
 // CHECK-NEXT:     let mut copied_value: i32 = 0;
 // CHECK-NEXT:     let mut source_value: i32 = 43;
@@ -503,7 +503,7 @@ int main(void) {
 // CHECK-NEXT:     let mut logical: i32 = 0;
 // CHECK-NEXT:     let mut conditional: i32 = 0;
 // CHECK-NEXT:     let mut comma_value: i32 = 0;
-// CHECK-NEXT:     let string_length: i32 = (std::mem::size_of::<[i8; 3]>() as i32) - 1;
+// CHECK-NEXT:     let string_length: i32 = (core::mem::size_of::<[i8; 3]>() as i32) - 1;
 // CHECK-NEXT:     let mut static_calls: i32 = 0;
 // CHECK-NEXT:     let mut variadic_total: i32 = 0;
 // CHECK-NEXT:     let mut control_total: i32 = 0;
@@ -523,8 +523,8 @@ int main(void) {
 // CHECK-NEXT:     let pointer: *mut i32 = array.0.as_mut_ptr() as *mut i32;
 // CHECK-NEXT:     let const_pointer: *const i32 = pointer as *const i32;
 // CHECK-NEXT:     c89_store(
-// CHECK-NEXT:         unsafe { &mut (*(std::ptr::addr_of_mut!(copied_value) as *mut ())) },
-// CHECK-NEXT:         unsafe { &(*(std::ptr::addr_of_mut!(source_value) as *const ())) },
+// CHECK-NEXT:         unsafe { &mut (*(core::ptr::addr_of_mut!(copied_value) as *mut ())) },
+// CHECK-NEXT:         unsafe { &(*(core::ptr::addr_of_mut!(source_value) as *const ())) },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let operation: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> = Some(c89_add);
 // CHECK-NEXT:     arithmetic = (automatic_value + register_value) * 4 - 3;
@@ -541,7 +541,7 @@ int main(void) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
 // CHECK-NEXT:         unsafe { c89_external_value }, unsafe { c89_const_global }, unsafe {
-// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(c89_volatile_global)) }, unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(c89_volatile_global)) }, unsafe {
 // CHECK-NEXT:         c89_joined_value }, 13i32, standard_macro, signed_value, unsigned_value as i32,
 // CHECK-NEXT:         signed_character as i32, float_value as i32, double_value as i32,
 // CHECK-NEXT:         __slate_f80_to_i32(long_double_value), wide_character, color as u32, point.x +
@@ -556,8 +556,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

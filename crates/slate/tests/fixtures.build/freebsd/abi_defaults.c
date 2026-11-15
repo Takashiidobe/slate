@@ -103,12 +103,12 @@ unsigned int cpu_capacity(void) { return CPU_SETSIZE; }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn cpu_set_size(set: *mut _cpuset) -> u64 {
-// CHECK-NEXT:     std::mem::size_of::<_cpuset>() as u64
+// CHECK-NEXT:     core::mem::size_of::<_cpuset>() as u64
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn tcp_info_size(info: *mut tcp_info) -> u64 {
-// CHECK-NEXT:     std::mem::size_of::<tcp_info>() as u64
+// CHECK-NEXT:     core::mem::size_of::<tcp_info>() as u64
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

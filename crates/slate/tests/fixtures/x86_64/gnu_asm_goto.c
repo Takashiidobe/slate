@@ -58,11 +58,11 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_asm_goto_output(value: i32) -> i32 {
-// CHECK-NEXT:     let mut output: std::mem::MaybeUninit<i32> = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut i32 = std::ptr::addr_of_mut!(output) as *mut i32;
+// CHECK-NEXT:     let mut output: core::mem::MaybeUninit<i32> = core::mem::MaybeUninit::uninit();
+// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut i32 = core::ptr::addr_of_mut!(output) as *mut i32;
 // CHECK-NEXT:     let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         loop {
@@ -74,7 +74,7 @@ int main(void) {
 // CHECK-NEXT:                     return *[[SLATE_SLOT_0]] + 1;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     std::ptr::write([[SLATE_SLOT_0]], value);
+// CHECK-NEXT:                     core::ptr::write([[SLATE_SLOT_0]], value);
 // CHECK-NEXT:                     __slate_state = 1usize;
 // CHECK-NEXT:                     let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:                     core::arch::asm!(
@@ -83,7 +83,7 @@ int main(void) {
 // CHECK-NEXT:                         options(nostack, att_syntax)
 // CHECK-NEXT:                     );
 // CHECK-NEXT:                     *[[SLATE_SLOT_0]] = unsafe {
-// CHECK-NEXT:                         std::mem::transmute::<u32, i32>([[T_0]] as u32)
+// CHECK-NEXT:                         core::mem::transmute::<u32, i32>([[T_0]] as u32)
 // CHECK-NEXT:                     };
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
@@ -93,7 +93,7 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
@@ -105,8 +105,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

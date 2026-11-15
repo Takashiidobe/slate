@@ -53,13 +53,13 @@ int main(void) {
 // CHECK-NEXT: fn first() -> i32 {
 // CHECK-NEXT:     let mut items: __SlateAlign16<[Rec__6; 2]> = __SlateAlign16([
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: Rec__6 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: Rec__6 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_0]].text = c"a".as_ptr();
 // CHECK-NEXT:             [[T_0]].code = 0u32;
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: Rec__6 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: Rec__6 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]].text = c"bb".as_ptr();
 // CHECK-NEXT:             [[T_1]].code = 5u32;
 // CHECK-NEXT:             [[T_1]]
@@ -68,8 +68,8 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
-// CHECK-NEXT:         < (std::mem::size_of::<[Rec__6; 2]>() as u64)
-// CHECK-NEXT:             / (std::mem::size_of::<Rec__6>() as u64)
+// CHECK-NEXT:         < (core::mem::size_of::<[Rec__6; 2]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<Rec__6>() as u64)
 // CHECK-NEXT:     {
 // CHECK-NEXT:         total
 // CHECK-NEXT:             += ((items.0[i as usize].code as u32) as i32)
@@ -81,14 +81,14 @@ int main(void) {
 // CHECK-NEXT: fn second() -> i32 {
 // CHECK-NEXT:     let mut items: __SlateAlign16<[Rec__18; 2]> = __SlateAlign16([
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_0]]: Rec__18 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_0]]: Rec__18 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_0]].n = 5u64;
 // CHECK-NEXT:             [[T_0]].text = c"x".as_ptr();
 // CHECK-NEXT:             [[T_0]].code = 0u32;
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_1]]: Rec__18 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_1]]: Rec__18 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]].n = 6u64;
 // CHECK-NEXT:             [[T_1]].text = c"y".as_ptr();
 // CHECK-NEXT:             [[T_1]].code = 5u32;
@@ -98,8 +98,8 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
-// CHECK-NEXT:         < (std::mem::size_of::<[Rec__18; 2]>() as u64)
-// CHECK-NEXT:             / (std::mem::size_of::<Rec__18>() as u64)
+// CHECK-NEXT:         < (core::mem::size_of::<[Rec__18; 2]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<Rec__18>() as u64)
 // CHECK-NEXT:     {
 // CHECK-NEXT:         total
 // CHECK-NEXT:             += (items.0[i as usize].n as i32)
@@ -116,8 +116,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

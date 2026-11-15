@@ -41,7 +41,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut w: wide = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: wide = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: wide = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].c = 1i8;
 // CHECK-NEXT:         [[T_0]].d = 2.5f64;
 // CHECK-NEXT:         [[T_0]].l = 3i64;
@@ -50,15 +50,15 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %u %u\n".as_ptr(),
-// CHECK-NEXT:             std::mem::size_of::<wide>() as u32,
-// CHECK-NEXT:             std::mem::align_of::<wide>() as u32,
+// CHECK-NEXT:             core::mem::size_of::<wide>() as u32,
+// CHECK-NEXT:             core::mem::align_of::<wide>() as u32,
 // CHECK-NEXT:             offset(
-// CHECK-NEXT:                 &(*(std::ptr::addr_of_mut!(w) as *const ())),
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(w.d) as *const (),
+// CHECK-NEXT:                 &(*(core::ptr::addr_of_mut!(w) as *const ())),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(w.d) as *const (),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             offset(
-// CHECK-NEXT:                 &(*(std::ptr::addr_of_mut!(w) as *const ())),
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(w.l) as *const (),
+// CHECK-NEXT:                 &(*(core::ptr::addr_of_mut!(w) as *const ())),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(w.l) as *const (),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -69,8 +69,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

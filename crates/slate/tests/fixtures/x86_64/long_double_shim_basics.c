@@ -217,15 +217,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
-// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:             Some(core::cmp::Ordering::Less)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     None
 // CHECK-NEXT:                 }
@@ -234,7 +234,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut scale: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]);
-// CHECK-NEXT: static mut zeroed_global: LongDouble = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut zeroed_global: LongDouble = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn average(a: LongDouble, b: LongDouble) -> LongDouble {
 // CHECK-NEXT:     (a + b) / LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64])
 // CHECK-NEXT: }
@@ -256,7 +256,7 @@ int main(void) {
 // CHECK-NEXT:             uninit,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80_f80(
@@ -265,7 +265,7 @@ int main(void) {
 // CHECK-NEXT:             zeroed_global,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let i: i32 = __slate_f80_to_i32(y * LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 64]));
 // CHECK-NEXT:     let big: u64 = __slate_f80_to_u64(
 // CHECK-NEXT:         LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 62, 64]),
@@ -289,7 +289,7 @@ int main(void) {
 // CHECK-NEXT:             f as f64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80_f80(
@@ -298,7 +298,7 @@ int main(void) {
 // CHECK-NEXT:             from_double,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{} {} {}", compare(x, y), compare(y, x), compare(x, x));
 // CHECK-NEXT:     println!("{}", (x == __slate_f80_from_f64(d)) as i32);
 // CHECK-NEXT:     let root: LongDouble = unsafe {
@@ -312,10 +312,10 @@ int main(void) {
 // CHECK-NEXT:             __slate_fabsl__rf80_f80(-root),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), root * root) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut acc: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // CHECK-NEXT:     for k in 1..11i32 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: LongDouble = acc;
@@ -324,14 +324,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%.18Lf\n".as_ptr(), acc) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     if y > x { 0 } else { 1 }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: mod __slate_vector {
-// CHECK-NEXT:     use std::ops::*;
+// CHECK-NEXT:     use core::ops::*;
 // CHECK-NEXT:     #[repr(C)]
 // CHECK-NEXT:     pub struct __SlateVector<T, const N: usize, A>(pub [T; N], pub [A; 0]);
 // CHECK-NEXT:     impl<T: Copy, const N: usize, A: Copy> Clone for __SlateVector<T, N, A> {
@@ -136,7 +136,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut seed: std::simd::Simd<u8, 2> = std::simd::Simd::from_array([3u8, 250u8]);
+// CHECK-NEXT:     let mut seed: core::simd::Simd<u8, 2> = core::simd::Simd::from_array([3u8, 250u8]);
 // CHECK-NEXT:     let mut spread: __slate_vector::__SlateVector<u8, 128, __slate_vector::Align128> = {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = seed.to_array();
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]] = seed.to_array();
@@ -286,9 +286,9 @@ int main(void) {
 // CHECK-NEXT:             spread[127] as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut f: __slate_vector::__SlateVector<f32, 128, __slate_vector::Align512> = __slate_vector::__SlateVector::from_array({
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: [f32; 128] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: [f32; 128] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     for i in 0i32..128i32 {
@@ -297,19 +297,19 @@ int main(void) {
 // CHECK-NEXT:     f = f * f - f / __slate_vector::__SlateVector::splat(2i32 as f32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"f %g %g\n".as_ptr(), f[3] as f64, f[127] as f64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut w: __slate_vector::__SlateVector<i32, 96, __slate_vector::Align512> = __slate_vector::__SlateVector::from_array({
-// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: [i32; 96] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: [i32; 96] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_3]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     w[95] = 7;
 // CHECK-NEXT:     w = w << __slate_vector::__SlateVector::splat(2i32)
 // CHECK-NEXT:         | __slate_vector::__SlateVector::splat(1i32);
 // CHECK-NEXT:     println!("w {} {}", w[0], w[95]);
-// CHECK-NEXT:     let pair: std::simd::Simd<u8, 2> = {
+// CHECK-NEXT:     let pair: core::simd::Simd<u8, 2> = {
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]] = spread.to_array();
 // CHECK-NEXT:         let [[T_5:__t[0-9]+]] = spread.to_array();
-// CHECK-NEXT:         std::simd::Simd::from_array([[[T_4]][1], [[T_4]][127]])
+// CHECK-NEXT:         core::simd::Simd::from_array([[[T_4]][1], [[T_4]][127]])
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("pair {} {}", pair[0] as i32, pair[1] as i32);
 // CHECK-NEXT:     unsafe {
@@ -321,14 +321,14 @@ int main(void) {
 // CHECK-NEXT:             512u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

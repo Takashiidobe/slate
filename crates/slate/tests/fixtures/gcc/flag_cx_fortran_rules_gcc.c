@@ -219,15 +219,15 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT: }
 // I686-UNKNOWN-LINUX-GNU-EMPTY:
 // I686-UNKNOWN-LINUX-GNU-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// I686-UNKNOWN-LINUX-GNU-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// I686-UNKNOWN-LINUX-GNU-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // I686-UNKNOWN-LINUX-GNU-NEXT:         if __slate_f80_lt(*self, *__other) {
-// I686-UNKNOWN-LINUX-GNU-NEXT:             Some(std::cmp::Ordering::Less)
+// I686-UNKNOWN-LINUX-GNU-NEXT:             Some(core::cmp::Ordering::Less)
 // I686-UNKNOWN-LINUX-GNU-NEXT:         } else {
 // I686-UNKNOWN-LINUX-GNU-NEXT:             if __slate_f80_gt(*self, *__other) {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 Some(std::cmp::Ordering::Greater)
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 Some(core::cmp::Ordering::Greater)
 // I686-UNKNOWN-LINUX-GNU-NEXT:             } else {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     Some(std::cmp::Ordering::Equal)
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     Some(core::cmp::Ordering::Equal)
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 } else {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     None
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 }
@@ -241,7 +241,7 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT: fn show(name: *const u8, z: num_complex::Complex<f64>) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%s %a %a\n".as_ptr(), name, z.re, z.im) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -252,8 +252,8 @@ int main(void) {
 // CHECK-NEXT:     let zero: f64 = 0.0f64;
 // CHECK-NEXT:     let inf: f64 = f64::INFINITY;
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     let mut z: num_complex::Complex<f64> =
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:         (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(big)) })
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(big)) })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:         (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 * num_complex::Complex {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                     re: 0.0f64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                     im: 1.0f64,
@@ -261,7 +261,7 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     show(c"big".as_ptr(), z.c_div_improved(z));
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     show(
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         c"small".as_ptr(),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             + num_complex::Complex {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 re: 0.0f64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 im: 2.0f64,
@@ -276,7 +276,7 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     );
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     show(
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         c"tilted".as_ptr(),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             + num_complex::Complex {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 re: 0.0f64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 im: 2.0f64,
@@ -291,7 +291,7 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     );
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     show(
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         c"equal".as_ptr(),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             + num_complex::Complex {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 re: 0.0f64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 im: 2.0f64,
@@ -306,29 +306,29 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     );
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     show(
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         c"zero".as_ptr(),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 * num_complex::Complex {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                     re: 0.0f64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                     im: 1.0f64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 })
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         .c_div_improved(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(zero)) })
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(zero)) })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(zero)) })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(zero)) })
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                     * num_complex::Complex {
 // I686-UNKNOWN-LINUX-GNU-NEXT:     let z: num_complex::Complex<f64> = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:         let [[T_0:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_1:__t[0-9]+]] =
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 __slate_f80_from_f64(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(big)) });
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 __slate_f80_from_f64(unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) });
 // I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_2:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_3:__t[0-9]+]] = __slate_f80_from_f64(unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     std::ptr::read_volatile(std::ptr::addr_of!(big))
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(big))
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 });
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_4:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_5:__t[0-9]+]] = num_complex::Complex {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     let mut z: num_complex::Complex<f64> =
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(big)) })
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(big)) })
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 * num_complex::Complex {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                     re: 0.0f64,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                     im: 1.0f64,
@@ -336,7 +336,7 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     show(c"big".as_ptr(), z.c_div_improved(z));
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     show(
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         c"small".as_ptr(),
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:             + num_complex::Complex {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 re: 0.0f64,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 im: 2.0f64,
@@ -351,7 +351,7 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     );
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     show(
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         c"tilted".as_ptr(),
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:             + num_complex::Complex {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 re: 0.0f64,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 im: 2.0f64,
@@ -366,7 +366,7 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     );
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     show(
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         c"equal".as_ptr(),
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:             + num_complex::Complex {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 re: 0.0f64,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 im: 2.0f64,
@@ -381,15 +381,15 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     );
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     show(
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         c"zero".as_ptr(),
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 * num_complex::Complex {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                     re: 0.0f64,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                     im: 1.0f64,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 })
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         .c_div_improved(
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(zero)) })
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(zero)) })
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(zero)) })
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(zero)) })
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                     * num_complex::Complex {
 // CHECK-NEXT:                         re: 0.0f64,
 // CHECK-NEXT:                         im: 1.0f64,
@@ -398,15 +398,15 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     );
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     show(
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         c"inf".as_ptr(),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(inf)) })
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(inf)) })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 * num_complex::Complex {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                     re: 0.0f64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                     im: 1.0f64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 })
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         .c_div_improved(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                     * num_complex::Complex {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     };
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     num_complex::Complex {
@@ -455,7 +455,7 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:         let [[T_9:__t[0-9]+]] = __slate_cf80_div_improved(
 // I686-UNKNOWN-LINUX-GNU-NEXT:             {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_10:__t[0-9]+]] = __slate_f80_from_f64(unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     std::ptr::read_volatile(std::ptr::addr_of!(one))
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(one))
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 });
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_11:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_12:__t[0-9]+]] = num_complex::Complex {
@@ -464,15 +464,15 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     );
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     show(
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         c"inf".as_ptr(),
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(inf)) })
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(inf)) })
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 * num_complex::Complex {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                     re: 0.0f64,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                     im: 1.0f64,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 })
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         .c_div_improved(
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                     * num_complex::Complex {
 // CHECK-NEXT:                         re: 0.0f64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                         im: 1.0f64,
@@ -481,15 +481,15 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     );
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     show(
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         c"mul".as_ptr(),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(inf)) })
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(inf)) })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(inf)) })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(inf)) })
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 * num_complex::Complex {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                     re: 0.0f64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                     im: 1.0f64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 })
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         .c_mul(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(zero)) })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(zero)) })
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                     * num_complex::Complex {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                         im: 2.0f64,
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     };
@@ -513,15 +513,15 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     );
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     show(
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         c"mul".as_ptr(),
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(inf)) })
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(inf)) })
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(inf)) })
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(inf)) })
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 * num_complex::Complex {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                     re: 0.0f64,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                     im: 1.0f64,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 })
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         .c_mul(
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(zero)) })
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(zero)) })
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                     * num_complex::Complex {
 // CHECK-NEXT:                         re: 0.0f64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                         im: 1.0f64,
@@ -551,7 +551,7 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:         let [[T_16:__t[0-9]+]] = __slate_cf80_div_improved(
 // I686-UNKNOWN-LINUX-GNU-NEXT:             {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_17:__t[0-9]+]] = __slate_f80_from_f64(unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     std::ptr::read_volatile(std::ptr::addr_of!(one))
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(one))
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 });
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_18:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_19:__t[0-9]+]] = num_complex::Complex {
@@ -595,7 +595,7 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:         let [[T_23:__t[0-9]+]] = __slate_cf80_div_improved(
 // I686-UNKNOWN-LINUX-GNU-NEXT:             {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_24:__t[0-9]+]] = __slate_f80_from_f64(unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     std::ptr::read_volatile(std::ptr::addr_of!(one))
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(one))
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 });
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_25:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_26:__t[0-9]+]] = num_complex::Complex {
@@ -639,11 +639,11 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:         let [[T_30:__t[0-9]+]] = __slate_cf80_div_improved(
 // I686-UNKNOWN-LINUX-GNU-NEXT:             {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_31:__t[0-9]+]] = __slate_f80_from_f64(unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     std::ptr::read_volatile(std::ptr::addr_of!(one))
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(one))
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 });
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_32:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_33:__t[0-9]+]] = __slate_f80_from_f64(unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         std::ptr::read_volatile(std::ptr::addr_of!(one))
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         core::ptr::read_volatile(core::ptr::addr_of!(one))
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     });
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_34:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_35:__t[0-9]+]] = num_complex::Complex {
@@ -667,11 +667,11 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:             },
 // I686-UNKNOWN-LINUX-GNU-NEXT:             {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_36:__t[0-9]+]] = __slate_f80_from_f64(unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     std::ptr::read_volatile(std::ptr::addr_of!(zero))
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(zero))
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 });
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_37:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_38:__t[0-9]+]] = __slate_f80_from_f64(unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         std::ptr::read_volatile(std::ptr::addr_of!(zero))
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         core::ptr::read_volatile(core::ptr::addr_of!(zero))
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     });
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_39:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_40:__t[0-9]+]] = num_complex::Complex {
@@ -703,11 +703,11 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:         let [[T_41:__t[0-9]+]] = __slate_cf80_div_improved(
 // I686-UNKNOWN-LINUX-GNU-NEXT:             {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_42:__t[0-9]+]] = __slate_f80_from_f64(unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     std::ptr::read_volatile(std::ptr::addr_of!(inf))
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(inf))
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 });
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_43:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_44:__t[0-9]+]] = __slate_f80_from_f64(unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         std::ptr::read_volatile(std::ptr::addr_of!(one))
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         core::ptr::read_volatile(core::ptr::addr_of!(one))
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     });
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_45:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_46:__t[0-9]+]] = num_complex::Complex {
@@ -731,11 +731,11 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:             },
 // I686-UNKNOWN-LINUX-GNU-NEXT:             {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_47:__t[0-9]+]] = __slate_f80_from_f64(unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     std::ptr::read_volatile(std::ptr::addr_of!(one))
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(one))
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 });
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_48:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_49:__t[0-9]+]] = __slate_f80_from_f64(unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         std::ptr::read_volatile(std::ptr::addr_of!(one))
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         core::ptr::read_volatile(core::ptr::addr_of!(one))
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     });
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_50:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_51:__t[0-9]+]] = num_complex::Complex {
@@ -767,11 +767,11 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:         let [[T_52:__t[0-9]+]] = __slate_cf80_mul_basic(
 // I686-UNKNOWN-LINUX-GNU-NEXT:             {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_53:__t[0-9]+]] = __slate_f80_from_f64(unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     std::ptr::read_volatile(std::ptr::addr_of!(inf))
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(inf))
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 });
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_54:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_55:__t[0-9]+]] = __slate_f80_from_f64(unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         std::ptr::read_volatile(std::ptr::addr_of!(inf))
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         core::ptr::read_volatile(core::ptr::addr_of!(inf))
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     });
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_56:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_57:__t[0-9]+]] = num_complex::Complex {
@@ -795,11 +795,11 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:             },
 // I686-UNKNOWN-LINUX-GNU-NEXT:             {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_58:__t[0-9]+]] = __slate_f80_from_f64(unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     std::ptr::read_volatile(std::ptr::addr_of!(one))
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(one))
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 });
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_59:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_60:__t[0-9]+]] = __slate_f80_from_f64(unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         std::ptr::read_volatile(std::ptr::addr_of!(zero))
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         core::ptr::read_volatile(core::ptr::addr_of!(zero))
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     });
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_61:__t[0-9]+]] = {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_62:__t[0-9]+]] = num_complex::Complex {
@@ -838,8 +838,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -47,26 +47,26 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut inr: __SlateRecord_goto_temp_cross_state_c_8 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut inr: __SlateRecord_goto_temp_cross_state_c_8 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     inr.pad = 0;
 // CHECK-NEXT:     inr.x = 3;
 // CHECK-NEXT:     inr.y = 4;
-// CHECK-NEXT:     let mut ou: __SlateRecord_goto_temp_cross_state_c_13 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut ou: __SlateRecord_goto_temp_cross_state_c_13 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ou.lead = 0;
 // CHECK-NEXT:     ou.r#in = inr;
-// CHECK-NEXT:     let mut s: __SlateRecord_goto_temp_cross_state_c_17 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     s.dict = std::ptr::addr_of_mut!(ou);
+// CHECK-NEXT:     let mut s: __SlateRecord_goto_temp_cross_state_c_17 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     s.dict = core::ptr::addr_of_mut!(ou);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
 // CHECK-NEXT:         compute(
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 &(*(std::ptr::addr_of_mut!(s) as *const __SlateRecord_goto_temp_cross_state_c_17))
+// CHECK-NEXT:                 &(*(core::ptr::addr_of_mut!(s) as *const __SlateRecord_goto_temp_cross_state_c_17))
 // CHECK-NEXT:             },
 // CHECK-NEXT:             0i32
 // CHECK-NEXT:         ),
 // CHECK-NEXT:         compute(
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 &(*(std::ptr::addr_of_mut!(s) as *const __SlateRecord_goto_temp_cross_state_c_17))
+// CHECK-NEXT:                 &(*(core::ptr::addr_of_mut!(s) as *const __SlateRecord_goto_temp_cross_state_c_17))
 // CHECK-NEXT:             },
 // CHECK-NEXT:             1i32
 // CHECK-NEXT:         )

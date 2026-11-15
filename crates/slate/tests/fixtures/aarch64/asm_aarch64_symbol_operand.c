@@ -44,46 +44,46 @@ int main(void) {
 // CHECK-NEXT:     value * 2
 // CHECK-NEXT: }
 // CHECK-NEXT: fn address_of() -> *mut () {
-// CHECK-NEXT:     let mut address: *mut () = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut address: *mut () = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "adrp {0:x}, {1}\n\tadd {0:x}, {0:x}, :lo12:{1}", lateout(reg) [[T_0]], sym
 // CHECK-NEXT:             counter, options(pure, nomem, nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         address = unsafe { std::mem::transmute::<u64, *mut ()>([[T_0]] as u64) };
+// CHECK-NEXT:         address = unsafe { core::mem::transmute::<u64, *mut ()>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     address
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", (address_of() == ((unsafe { std::ptr::addr_of_mut!(counter) }) as * mut
+// CHECK-NEXT:         "{}", (address_of() == ((unsafe { core::ptr::addr_of_mut!(counter) }) as * mut
 // CHECK-NEXT:         ())) as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut slot: *mut i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut slot: *mut i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "adrp {0:x}, {1}+8\n\tadd {0:x}, {0:x}, :lo12:{1}+8", lateout(reg) [[T_0]], sym
 // CHECK-NEXT:             table, options(pure, nomem, nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         slot = unsafe { std::mem::transmute::<u64, *mut i32>([[T_0]] as u64) };
+// CHECK-NEXT:         slot = unsafe { core::mem::transmute::<u64, *mut i32>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", unsafe { * slot });
-// CHECK-NEXT:     let mut place: *mut i64 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut place: *mut i64 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "adrp {0:x}, {1}\n\tadd {0:x}, {0:x}, :lo12:{1}", lateout(reg) [[T_1]], sym
 // CHECK-NEXT:             hidden, options(pure, nomem, nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         place = unsafe { std::mem::transmute::<u64, *mut i64>([[T_1]] as u64) };
+// CHECK-NEXT:         place = unsafe { core::mem::transmute::<u64, *mut i64>([[T_1]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), *place) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut function: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {
-// CHECK-NEXT:         std::mem::zeroed()
+// CHECK-NEXT:         core::mem::zeroed()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: u64;
@@ -92,7 +92,7 @@ int main(void) {
 // CHECK-NEXT:             preserves_flags)
 // CHECK-NEXT:         );
 // CHECK-NEXT:         function = unsafe {
-// CHECK-NEXT:             std::mem::transmute::<
+// CHECK-NEXT:             core::mem::transmute::<
 // CHECK-NEXT:                 u64,
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32) -> i32>,
 // CHECK-NEXT:             >([[T_2]] as u64)
@@ -106,7 +106,7 @@ int main(void) {
 // CHECK-NEXT:             "adrp {0:x}, {1}+12\n\tldr {0:w}, [{0:x}, :lo12:{1}+12]", out(reg) [[T_3]], sym
 // CHECK-NEXT:             table, options(pure, nomem, nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         loaded = unsafe { std::mem::transmute::<u32, i32>([[T_3]] as u32) };
+// CHECK-NEXT:         loaded = unsafe { core::mem::transmute::<u32, i32>([[T_3]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", loaded);
 // CHECK-NEXT:     0
@@ -114,8 +114,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -1,5 +1,5 @@
 mod __slate_vector {
-    use std::ops::*;
+    use core::ops::*;
 
     #[repr(C)]
     pub struct __SlateVector<T, const N: usize, A>(pub [T; N], pub [A; 0]);

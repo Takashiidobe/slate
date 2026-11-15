@@ -46,7 +46,7 @@ int late = 99;
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut total: i32 = 10;
-// CHECK-NEXT: static mut scale: i64 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut scale: i64 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Tally {
@@ -54,7 +54,7 @@ int late = 99;
 // CHECK-NEXT:     weight: i64,
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut tally: Tally = {
-// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: Tally = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: Tally = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].hits = 1i32;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
@@ -77,17 +77,17 @@ int late = 99;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let before: i32 = unsafe { total };
 // CHECK-NEXT:     let mut total__0: i32 = 3;
-// CHECK-NEXT:     bump(std::ptr::addr_of_mut!(total__0), 4i32);
+// CHECK-NEXT:     bump(core::ptr::addr_of_mut!(total__0), 4i32);
 // CHECK-NEXT:     println!("local {}", total__0);
-// CHECK-NEXT:     bump(unsafe { std::ptr::addr_of_mut!(total) }, 5i32);
+// CHECK-NEXT:     bump(unsafe { core::ptr::addr_of_mut!(total) }, 5i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         scale = 7;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     record(unsafe { std::ptr::addr_of_mut!(tally) }, unsafe { scale });
-// CHECK-NEXT:     record(unsafe { std::ptr::addr_of_mut!(tally) }, (unsafe { scale }) * 2);
+// CHECK-NEXT:     record(unsafe { core::ptr::addr_of_mut!(tally) }, unsafe { scale });
+// CHECK-NEXT:     record(unsafe { core::ptr::addr_of_mut!(tally) }, (unsafe { scale }) * 2);
 // CHECK-NEXT:     println!("{} {} {}", before, unsafe { total }, shadow_param(unsafe { total }));
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%d %ld\n".as_ptr(), tally.hits, tally.weight) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("late {}", unsafe { late });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
@@ -95,8 +95,8 @@ int late = 99;
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

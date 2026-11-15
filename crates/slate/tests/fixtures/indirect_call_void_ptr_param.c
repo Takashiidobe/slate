@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:     d: *mut Data,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     if flag != 0 {
-// CHECK-NEXT:         unsafe { handler.unwrap()(std::ptr::addr_of!(c) as *const (), 0i32) };
+// CHECK-NEXT:         unsafe { handler.unwrap()(core::ptr::addr_of!(c) as *const (), 0i32) };
 // CHECK-NEXT:         return;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { handler.unwrap()(d as *const (), 42i32) };
@@ -60,15 +60,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut d: Data = Data { value: 7 };
-// CHECK-NEXT:     process(1i32, Some(print_handler), std::ptr::addr_of_mut!(d));
-// CHECK-NEXT:     process(0i32, Some(print_handler), std::ptr::addr_of_mut!(d));
+// CHECK-NEXT:     process(1i32, Some(print_handler), core::ptr::addr_of_mut!(d));
+// CHECK-NEXT:     process(0i32, Some(print_handler), core::ptr::addr_of_mut!(d));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

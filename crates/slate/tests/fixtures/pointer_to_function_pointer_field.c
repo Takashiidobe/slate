@@ -56,13 +56,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut suite: __SlateRecord_pointer_to_function_pointer_field_c_9 = unsafe {
-// CHECK-NEXT:         std::mem::zeroed()
+// CHECK-NEXT:         core::mem::zeroed()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     suite.tests = (unsafe {
 // CHECK-NEXT:         malloc(
 // CHECK-NEXT:             2u64
 // CHECK-NEXT:                 .wrapping_mul(
-// CHECK-NEXT:                     std::mem::size_of::<Option<unsafe extern "C-unwind" fn()>>() as u64,
+// CHECK-NEXT:                     core::mem::size_of::<Option<unsafe extern "C-unwind" fn()>>() as u64,
 // CHECK-NEXT:                 ) as usize,
 // CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     }) as *mut Option<unsafe extern "C-unwind" fn()>;
@@ -85,8 +85,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

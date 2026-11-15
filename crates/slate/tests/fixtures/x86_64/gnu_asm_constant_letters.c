@@ -33,7 +33,7 @@ int main(void) {
 // CHECK-NEXT:             "addl ${1}, {0:e}", inlateout(reg) value as u32 => [[T_0]], const 4 as i32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         value = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK: {{^}}}
@@ -44,7 +44,7 @@ int main(void) {
 // CHECK-NEXT:             "sall ${1}, {0:e}", inlateout(reg) value as u32 => [[T_0]], const 3 as i32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         value = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK: {{^}}}

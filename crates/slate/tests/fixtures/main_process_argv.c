@@ -42,14 +42,14 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:         strlen((*argv.add(0) as *const i8) as *const core::ffi::c_char) as u64
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:         core::ptr::write_bytes(
 // CHECK-NEXT:             ((*argv.add(0) as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (0i32 as i32) as u8,
 // CHECK-NEXT:             (len as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             ((b"renamed\0".as_ptr() as *const ()) as *const core::ffi::c_void)
 // CHECK-NEXT:                 as *const u8,
 // CHECK-NEXT:             ((*argv.add(0) as *mut ()) as *mut core::ffi::c_void) as *mut u8,
@@ -57,7 +57,7 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 64]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 64] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 64] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
@@ -71,7 +71,7 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:         read(
 // CHECK-NEXT:             fd as i32,
 // CHECK-NEXT:             (buf.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void,
-// CHECK-NEXT:             (std::mem::size_of::<[i8; 64]>() as u64).wrapping_sub(1) as usize,
+// CHECK-NEXT:             (core::mem::size_of::<[i8; 64]>() as u64).wrapping_sub(1) as usize,
 // CHECK-NEXT:         ) as i64
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { close(fd as i32) as i32 };
@@ -83,7 +83,7 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:             buf.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "environ after argv {}", (unsafe { * unsafe { environ } .add(0) } .is_null() ||
 // CHECK-NEXT:         (unsafe { * unsafe { environ } .add(0) }) > unsafe { * argv.offset((argc - 1) as
@@ -94,8 +94,8 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main(argc as _, argv as _, envp as _) }
 // CHECK-NEXT: }

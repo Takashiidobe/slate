@@ -48,8 +48,8 @@ int main(void) {
 // CHECK-NEXT: fn count_null_pairs() -> i32 {
 // CHECK-NEXT:     let pairs: __SlateAlign16<[pair; 1]> = __SlateAlign16([
 // CHECK-NEXT:         pair {
-// CHECK-NEXT:             name: std::ptr::null::<i8>(),
-// CHECK-NEXT:             value: std::ptr::null::<i8>(),
+// CHECK-NEXT:             name: core::ptr::null::<i8>(),
+// CHECK-NEXT:             value: core::ptr::null::<i8>(),
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut total: i32 = 0;
@@ -63,8 +63,8 @@ int main(void) {
 // CHECK-NEXT: fn count_true_flags() -> i32 {
 // CHECK-NEXT:     let values: [bool; 2] = [true, false];
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0..((std::mem::size_of::<[bool; 2]>() as u64)
-// CHECK-NEXT:         / (std::mem::size_of::<bool>() as u64))
+// CHECK-NEXT:     for i in 0..((core::mem::size_of::<[bool; 2]>() as u64)
+// CHECK-NEXT:         / (core::mem::size_of::<bool>() as u64))
 // CHECK-NEXT:     {
 // CHECK-NEXT:         if values[i as usize] {
 // CHECK-NEXT:             total += 1;
@@ -79,8 +79,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

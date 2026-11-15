@@ -300,17 +300,17 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: macro_rules! C11_TYPE_KIND {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         11
+// CHECK-NEXT:         11i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! C11_TYPE_KIND__2 {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         22
+// CHECK-NEXT:         22i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! C11_TYPE_KIND__3 {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         33
+// CHECK-NEXT:         33i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
@@ -518,15 +518,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
-// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:             Some(core::cmp::Ordering::Less)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     None
 // CHECK-NEXT:                 }
@@ -596,14 +596,14 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(64))]
 // CHECK-NEXT: struct __SlateAlign64<T>(T);
 // CHECK-NEXT: static mut c11_aligned_buffer: __SlateAlign64<[u8; 64]> = __SlateAlign64(unsafe {
-// CHECK-NEXT:     std::mem::zeroed()
+// CHECK-NEXT:     core::mem::zeroed()
 // CHECK-NEXT: });
-// CHECK-NEXT: static mut c11_atomic_total: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut c11_atomic_total: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: #[thread_local]
-// CHECK-NEXT: static mut c11_thread_local_value: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT: static mut c11_evaluation_total: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT: static mut c11_never_flag: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT: static mut c11_once_total: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut c11_thread_local_value: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT: static mut c11_evaluation_total: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT: static mut c11_never_flag: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT: static mut c11_once_total: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn c11_make_temporary(base: i32) -> C11Temporary {
 // CHECK-NEXT:     let result: C11Temporary = C11Temporary {
 // CHECK-NEXT:         values: [base, base + 1, base + 2],
@@ -627,10 +627,10 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = increment;
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = std::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(c11_atomic_total) as *mut i32,
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(c11_atomic_total) as *mut i32,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .fetch_add([[T_0]], std::sync::atomic::Ordering::SeqCst);
+// CHECK-NEXT:             .fetch_add([[T_0]], core::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (unsafe { c11_thread_local_value })
@@ -644,10 +644,10 @@ int main(void) {
 // CHECK-NEXT: extern "C-unwind" fn c11_quick_handler() {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]] = 100i32;
-// CHECK-NEXT:         let [[T_1]] = std::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(c11_atomic_total) as *mut i32,
+// CHECK-NEXT:         let [[T_1]] = core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(c11_atomic_total) as *mut i32,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .fetch_add([[T_0]], std::sync::atomic::Ordering::Relaxed);
+// CHECK-NEXT:             .fetch_add([[T_0]], core::sync::atomic::Ordering::Relaxed);
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -664,30 +664,30 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::fopen(path, c"wx".as_ptr()) }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: C11Temporary = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: C11Temporary = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let utf16_character: u16 = 937;
 // CHECK-NEXT:     let utf32_character: u32 = 128578;
 // CHECK-NEXT:     let mut anonymous: C11Anonymous = {
-// CHECK-NEXT:         let mut [[T_1]]: C11Anonymous = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1]]: C11Anonymous = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].[[SLATE_ANON_0]] = {
-// CHECK-NEXT:             let mut [[T_0]]: __SlateRecord_c11_c_56 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_0]]: __SlateRecord_c11_c_56 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_0]].integer = 0i32;
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut aligned_object: C11OverAligned = {
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: C11OverAligned = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: C11OverAligned = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]].value = 0u8;
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut utf16_state: __SlateRecord___mbstate_t_h_21 = {
-// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: __SlateRecord___mbstate_t_h_21 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: __SlateRecord___mbstate_t_h_21 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_3]].__count = 0i32;
 // CHECK-NEXT:         [[T_3]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut utf32_state: __SlateRecord___mbstate_t_h_21 = {
-// CHECK-NEXT:         let mut [[T_4:__t[0-9]+]]: __SlateRecord___mbstate_t_h_21 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_4:__t[0-9]+]]: __SlateRecord___mbstate_t_h_21 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_4]].__count = 0i32;
 // CHECK-NEXT:         [[T_4]]
 // CHECK-NEXT:     };
@@ -700,8 +700,8 @@ int main(void) {
 // CHECK-NEXT:         tv_nsec: 0,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut thread: u64 = 0;
-// CHECK-NEXT:     let mut mutex: __SlateRecord_threads_h_66 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut condition: __SlateRecord_threads_h_72 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut mutex: __SlateRecord_threads_h_66 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut condition: __SlateRecord_threads_h_72 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut once_control: __SlateRecord_thread_shared_types_h_112 = __SlateRecord_thread_shared_types_h_112 {
 // CHECK-NEXT:         __data: 0,
 // CHECK-NEXT:     };
@@ -710,11 +710,11 @@ int main(void) {
 // CHECK-NEXT:     let mut thread_result: i32 = 0;
 // CHECK-NEXT:     let mut thread_created: i32 = 0;
 // CHECK-NEXT:     let mut thread_joined: i32 = 0;
-// CHECK-NEXT:     let mut alignment_total: i32 = (std::mem::align_of::<i32>() as i32)
-// CHECK-NEXT:         + (std::mem::align_of::<C11OverAligned>() as i32)
-// CHECK-NEXT:         + ((((unsafe { std::ptr::addr_of_mut!(c11_aligned_buffer.0) as *mut u8 }) as u64)
-// CHECK-NEXT:             % 64 == 0) as i32)
-// CHECK-NEXT:         + (((std::ptr::addr_of_mut!(aligned_object) as u64) % 32 == 0) as i32);
+// CHECK-NEXT:     let mut alignment_total: i32 = (core::mem::align_of::<i32>() as i32)
+// CHECK-NEXT:         + (core::mem::align_of::<C11OverAligned>() as i32)
+// CHECK-NEXT:         + ((((unsafe { core::ptr::addr_of_mut!(c11_aligned_buffer.0) as *mut u8 })
+// CHECK-NEXT:             as u64) % 64 == 0) as i32)
+// CHECK-NEXT:         + (((core::ptr::addr_of_mut!(aligned_object) as u64) % 32 == 0) as i32);
 // CHECK-NEXT:     let unicode_total: i32 = (((unsafe { utf8_text[0] }) as u8) as i32)
 // CHECK-NEXT:         + (((unsafe { utf8_text[1] }) as u8) as i32)
 // CHECK-NEXT:         + ((unsafe { utf16_text[0] }) as i32) + ((unsafe { utf32_text[0] }) as i32)
@@ -750,14 +750,14 @@ int main(void) {
 // CHECK-NEXT:     temporary_total = unsafe {
 // CHECK-NEXT:         *((*{
 // CHECK-NEXT:             [[SLATE_COMPOUND_0]] = c11_make_temporary(43i32);
-// CHECK-NEXT:             std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:             core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:         })
 // CHECK-NEXT:             .values
 // CHECK-NEXT:             .as_mut_ptr() as *mut i32)
 // CHECK-NEXT:             .add(1)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *std::ptr::addr_of_mut!(c11_atomic_total) = 5;
+// CHECK-NEXT:         *core::ptr::addr_of_mut!(c11_atomic_total) = 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         c11_thread_local_value = 17;
@@ -767,86 +767,86 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     thread_created = unsafe {
 // CHECK-NEXT:         thrd_create(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(thread),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(thread),
 // CHECK-NEXT:             Some(c11_thread_worker),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(thread_increment) as *mut (),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(thread_increment) as *mut (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = if thread_created == 0 {
-// CHECK-NEXT:         unsafe { thrd_join(thread, std::ptr::addr_of_mut!(thread_result)) }
+// CHECK-NEXT:         unsafe { thrd_join(thread, core::ptr::addr_of_mut!(thread_result)) }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         -1
 // CHECK-NEXT:     };
 // CHECK-NEXT:     thread_joined = [[V_0]];
 // CHECK-NEXT:     atomic_total = unsafe {
-// CHECK-NEXT:         std::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(c11_atomic_total) as *mut i32,
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(c11_atomic_total) as *mut i32,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:             .load(core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     thread_total = ((thread_created == 0) as i32) + ((thread_joined == 0) as i32)
 // CHECK-NEXT:         + thread_result + unsafe { c11_thread_local_value }
 // CHECK-NEXT:         + (((unsafe { *slate_support::errno_location() }) == 0) as i32);
-// CHECK-NEXT:     if (unsafe { mtx_init(std::ptr::addr_of_mut!(mutex), 0i32) }) == 0 {
+// CHECK-NEXT:     if (unsafe { mtx_init(core::ptr::addr_of_mut!(mutex), 0i32) }) == 0 {
 // CHECK-NEXT:         concurrency_total += 1;
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = ((unsafe { mtx_lock(std::ptr::addr_of_mut!(mutex)) }) == 0)
+// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = ((unsafe { mtx_lock(core::ptr::addr_of_mut!(mutex)) }) == 0)
 // CHECK-NEXT:             as i32;
 // CHECK-NEXT:         concurrency_total += [[V_1]];
-// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: i32 = ((unsafe { mtx_unlock(std::ptr::addr_of_mut!(mutex)) }) == 0)
+// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: i32 = ((unsafe { mtx_unlock(core::ptr::addr_of_mut!(mutex)) }) == 0)
 // CHECK-NEXT:             as i32;
 // CHECK-NEXT:         concurrency_total += [[V_2]];
-// CHECK-NEXT:         unsafe { mtx_destroy(std::ptr::addr_of_mut!(mutex)) };
+// CHECK-NEXT:         unsafe { mtx_destroy(core::ptr::addr_of_mut!(mutex)) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (unsafe { cnd_init(std::ptr::addr_of_mut!(condition)) }) == 0 {
+// CHECK-NEXT:     if (unsafe { cnd_init(core::ptr::addr_of_mut!(condition)) }) == 0 {
 // CHECK-NEXT:         concurrency_total += 1;
-// CHECK-NEXT:         unsafe { cnd_destroy(std::ptr::addr_of_mut!(condition)) };
+// CHECK-NEXT:         unsafe { cnd_destroy(core::ptr::addr_of_mut!(condition)) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         c11_once_total = 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { call_once(std::ptr::addr_of_mut!(once_control), Some(c11_once_handler)) };
-// CHECK-NEXT:     unsafe { call_once(std::ptr::addr_of_mut!(once_control), Some(c11_once_handler)) };
+// CHECK-NEXT:     unsafe { call_once(core::ptr::addr_of_mut!(once_control), Some(c11_once_handler)) };
+// CHECK-NEXT:     unsafe { call_once(core::ptr::addr_of_mut!(once_control), Some(c11_once_handler)) };
 // CHECK-NEXT:     concurrency_total += unsafe { c11_once_total };
-// CHECK-NEXT:     if (unsafe { tss_create(std::ptr::addr_of_mut!(thread_key), None) }) == 0 {
+// CHECK-NEXT:     if (unsafe { tss_create(core::ptr::addr_of_mut!(thread_key), None) }) == 0 {
 // CHECK-NEXT:         concurrency_total += 1;
 // CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i32 = ((unsafe {
-// CHECK-NEXT:             tss_set(thread_key, std::ptr::addr_of_mut!(thread_increment) as *mut ())
+// CHECK-NEXT:             tss_set(thread_key, core::ptr::addr_of_mut!(thread_increment) as *mut ())
 // CHECK-NEXT:         }) == 0) as i32;
 // CHECK-NEXT:         concurrency_total += [[V_3]];
 // CHECK-NEXT:         let [[V_4:__v[0-9]+]]: i32 = ((unsafe { tss_get(thread_key) })
-// CHECK-NEXT:             == (std::ptr::addr_of_mut!(thread_increment) as *mut ())) as i32;
+// CHECK-NEXT:             == (core::ptr::addr_of_mut!(thread_increment) as *mut ())) as i32;
 // CHECK-NEXT:         concurrency_total += [[V_4]];
 // CHECK-NEXT:         unsafe { tss_delete(thread_key) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     concurrency_total += true as i32;
 // CHECK-NEXT:     conversion_total = ((unsafe {
 // CHECK-NEXT:         mbrtoc16(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(converted16),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(converted16),
 // CHECK-NEXT:             c"A".as_ptr(),
 // CHECK-NEXT:             1u64,
-// CHECK-NEXT:             std::ptr::addr_of_mut!(utf16_state),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(utf16_state),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) as i32)
 // CHECK-NEXT:         + ((unsafe {
 // CHECK-NEXT:             c16rtomb(
 // CHECK-NEXT:                 multibyte16.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:                 65u16,
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(utf16_state),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(utf16_state),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) as i32)
 // CHECK-NEXT:         + ((unsafe {
 // CHECK-NEXT:             mbrtoc32(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(converted32),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(converted32),
 // CHECK-NEXT:                 c"B".as_ptr(),
 // CHECK-NEXT:                 1u64,
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(utf32_state),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(utf32_state),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) as i32)
 // CHECK-NEXT:         + ((unsafe {
 // CHECK-NEXT:             c32rtomb(
 // CHECK-NEXT:                 multibyte32.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:                 66u32,
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(utf32_state),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(utf32_state),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) as i32) + (converted16 as i32) + (converted32 as i32)
 // CHECK-NEXT:         + (multibyte16.0[0] as i32) + (multibyte32.0[0] as i32);
@@ -878,7 +878,7 @@ int main(void) {
 // CHECK-NEXT:         remove(c"slate-c11-exclusive.tmp".as_ptr() as *const core::ffi::c_char) as i32
 // CHECK-NEXT:     };
 // CHECK-NEXT:     timespec_total = ((unsafe {
-// CHECK-NEXT:         timespec_get(std::ptr::addr_of_mut!(current_time), 1i32)
+// CHECK-NEXT:         timespec_get(core::ptr::addr_of_mut!(current_time), 1i32)
 // CHECK-NEXT:     }) == 1 && current_time.tv_nsec >= 0 && current_time.tv_nsec < 1000000000) as i32;
 // CHECK-NEXT:     let complex_value: num_complex::Complex<f64> = num_complex::Complex {
 // CHECK-NEXT:         re: 2.0f64,
@@ -892,7 +892,7 @@ int main(void) {
 // CHECK-NEXT:             > LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) as i32)
 // CHECK-NEXT:         + ((1i32 >= -1i32) as i32) + ((1i32 >= -1i32) as i32) + ((1i32 >= -1i32) as i32);
 // CHECK-NEXT:     limits_total += 0;
-// CHECK-NEXT:     if (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c11_never_flag)) }) != 0 {
+// CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(c11_never_flag)) }) != 0 {
 // CHECK-NEXT:         c11_never_return(99i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     print!(
@@ -904,7 +904,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::putchar(10i32) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut utf8_text: [i8; 3] = [-50, -87, 0];
@@ -913,8 +913,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

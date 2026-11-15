@@ -92,7 +92,10 @@ int main(void) {
 // CHECK-NEXT:             ("r5") ([[T_3]] >> 32) as u32, options(pure, nomem, nostack)
 // CHECK-NEXT:         );
 // CHECK-NEXT:         result = unsafe {
-// CHECK-NEXT:             std::mem::transmute::<u64, u64>((([[T_1]] as u64) << 32 | ([[T_0]] as u64)) as u64)
+// CHECK-NEXT:             core::mem::transmute::<
+// CHECK-NEXT:                 u64,
+// CHECK-NEXT:                 u64,
+// CHECK-NEXT:             >((([[T_1]] as u64) << 32 | ([[T_0]] as u64)) as u64)
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
@@ -107,7 +110,10 @@ int main(void) {
 // CHECK-NEXT:             inlateout("r1") ([[T_0]] >> 32) as u32 => [[T_2]], options(pure, nomem, nostack)
 // CHECK-NEXT:         );
 // CHECK-NEXT:         value = unsafe {
-// CHECK-NEXT:             std::mem::transmute::<u64, i64>((([[T_2]] as u64) << 32 | ([[T_1]] as u64)) as u64)
+// CHECK-NEXT:             core::mem::transmute::<
+// CHECK-NEXT:                 u64,
+// CHECK-NEXT:                 i64,
+// CHECK-NEXT:             >((([[T_2]] as u64) << 32 | ([[T_1]] as u64)) as u64)
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
@@ -125,7 +131,10 @@ int main(void) {
 // CHECK-NEXT:             u32, options(pure, nomem, nostack, preserves_flags)
 // CHECK-NEXT:         );
 // CHECK-NEXT:         result = unsafe {
-// CHECK-NEXT:             std::mem::transmute::<u64, u64>((([[T_2]] as u64) << 32 | ([[T_1]] as u64)) as u64)
+// CHECK-NEXT:             core::mem::transmute::<
+// CHECK-NEXT:                 u64,
+// CHECK-NEXT:                 u64,
+// CHECK-NEXT:             >((([[T_2]] as u64) << 32 | ([[T_1]] as u64)) as u64)
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
@@ -140,7 +149,10 @@ int main(void) {
 // CHECK-NEXT:             out("r0") [[T_0]], out("r1") [[T_1]], options(nostack, preserves_flags)
 // CHECK-NEXT:         );
 // CHECK-NEXT:         result = unsafe {
-// CHECK-NEXT:             std::mem::transmute::<u64, u64>((([[T_1]] as u64) << 32 | ([[T_0]] as u64)) as u64)
+// CHECK-NEXT:             core::mem::transmute::<
+// CHECK-NEXT:                 u64,
+// CHECK-NEXT:                 u64,
+// CHECK-NEXT:             >((([[T_1]] as u64) << 32 | ([[T_0]] as u64)) as u64)
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
@@ -149,12 +161,12 @@ int main(void) {
 // CHECK-NEXT:     let mut result: f64 = 0 as f64;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         let [[T_1]]: u64 = unsafe { std::mem::transmute::<f64, u64>(value) };
+// CHECK-NEXT:         let [[T_1]]: u64 = unsafe { core::mem::transmute::<f64, u64>(value) };
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "vmov {0}, r0, r1", lateout(dreg_low16) [[T_0]], in ("r0") [[T_1]] as u32, in
 // CHECK-NEXT:             ("r1") ([[T_1]] >> 32) as u32, options(pure, nomem, nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         result = unsafe { std::mem::transmute::<u64, f64>([[T_0]] as u64) };
+// CHECK-NEXT:         result = unsafe { core::mem::transmute::<u64, f64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
@@ -168,7 +180,7 @@ int main(void) {
 // CHECK-NEXT:             const i32, sym counter, out("r1") _, options(pure, readonly, nostack,
 // CHECK-NEXT:             preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         result = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         result = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
@@ -179,7 +191,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%llx\n".as_ptr(), add64(4294967295u64, 4294967297u64))
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -188,23 +200,23 @@ int main(void) {
 // CHECK-NEXT:             increment(4294967295i64),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%llx\n".as_ptr(), swap_halves(pair)) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%llx\n".as_ptr(),
-// CHECK-NEXT:             exclusive_load(&mut (*std::ptr::addr_of_mut!(pair))),
+// CHECK-NEXT:             exclusive_load(&mut (*core::ptr::addr_of_mut!(pair))),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.2f\n".as_ptr(), double_from_pair(3.25f64)) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", modifiers(unsafe { & (* std::ptr::addr_of_mut!(value)) }), unsafe {
+// CHECK-NEXT:         "{} {}", modifiers(unsafe { & (* core::ptr::addr_of_mut!(value)) }), unsafe {
 // CHECK-NEXT:         counter }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
@@ -212,8 +224,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -40,15 +40,15 @@ int main(void) {
 // CHECK-NEXT:     let copy: i32 = value + 1;
 // CHECK-NEXT:     check(202312i32, 202312i32);
 // CHECK-NEXT:     check(copy, 8i32);
-// CHECK-NEXT:     check(std::mem::size_of::<i8>() as i32, 1i32);
+// CHECK-NEXT:     check(core::mem::size_of::<i8>() as i32, 1i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

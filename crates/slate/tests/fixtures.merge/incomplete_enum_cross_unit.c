@@ -101,13 +101,13 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn mode_config_new() -> *mut mode_config {
 // CHECK-NEXT:     let config: *mut mode_config =
-// CHECK-NEXT:         (unsafe { malloc((std::mem::size_of::<mode_config>() as size_t) as usize) as *mut () })
+// CHECK-NEXT:         (unsafe { malloc((core::mem::size_of::<mode_config>() as size_t) as usize) as *mut () })
 // CHECK-NEXT:             as *mut mode_config;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*config).funcs = std::ptr::addr_of!(funcs);
+// CHECK-NEXT:         (*config).funcs = core::ptr::addr_of!(funcs);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*config).pending = std::ptr::addr_of_mut!(pending_access);
+// CHECK-NEXT:         (*config).pending = core::ptr::addr_of_mut!(pending_access);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*config).count = 1;
@@ -116,7 +116,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut funcs: mode_funcs = {
-// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: mode_funcs = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: mode_funcs = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].mode_valid = Some(mode_valid);
 // CHECK-NEXT:     [[T_0]].access = Some(access_for);
 // CHECK-NEXT:     [[T_0]].id = 7i32;
@@ -165,8 +165,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
@@ -187,7 +187,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(c"%d\n".as_ptr(), config_score(config as *const mode_config))
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -201,7 +201,7 @@ int main(void) {
 // CHECK-NEXT:                 mode_config_check(config as *const mode_config, 0i32, 3i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -214,7 +214,7 @@ int main(void) {
 // CHECK-NEXT:                 mode_config_access(config, 2i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {

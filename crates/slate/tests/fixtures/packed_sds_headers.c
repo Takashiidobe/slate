@@ -309,7 +309,7 @@ int main(void) {
 // CHECK-NEXT:         _ => {}
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             ((init as *const ()) as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((s as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (len.wrapping_add(1) as usize) as usize,
@@ -385,43 +385,43 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu %zu\n".as_ptr(), 3u64, 5u64, 17u64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu %zu\n".as_ptr(), 2u64, 4u64, 17u64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
-// CHECK-NEXT:             std::mem::size_of::<payloadHeader>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<payloadHeader>() as u64,
-// CHECK-NEXT:             std::mem::size_of::<event>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<event>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<payloadHeader>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<payloadHeader>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<event>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<event>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
-// CHECK-NEXT:             std::mem::size_of::<holder>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<holder>() as u64,
-// CHECK-NEXT:             std::mem::offset_of!(holder, events) as u64,
-// CHECK-NEXT:             std::mem::offset_of!(holder, tail) as u64,
+// CHECK-NEXT:             core::mem::size_of::<holder>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<holder>() as u64,
+// CHECK-NEXT:             core::mem::offset_of!(holder, events) as u64,
+// CHECK-NEXT:             core::mem::offset_of!(holder, tail) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
-// CHECK-NEXT:             std::mem::size_of::<pack_two>() as u64,
-// CHECK-NEXT:             std::mem::align_of::<pack_two>() as u64,
-// CHECK-NEXT:             std::mem::offset_of!(pack_two, value) as u64,
-// CHECK-NEXT:             std::mem::offset_of!(pack_two, wide) as u64,
+// CHECK-NEXT:             core::mem::size_of::<pack_two>() as u64,
+// CHECK-NEXT:             core::mem::align_of::<pack_two>() as u64,
+// CHECK-NEXT:             core::mem::offset_of!(pack_two, value) as u64,
+// CHECK-NEXT:             core::mem::offset_of!(pack_two, wide) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let types: [i32; 3] = [1, 2, 4];
 // CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         let s: *mut i8 = sdsnew(c"hello".as_ptr(), types[i as usize]);
@@ -436,7 +436,7 @@ int main(void) {
 // CHECK-NEXT:                 s,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             free(
 // CHECK-NEXT:                 (s
@@ -452,10 +452,10 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[u8; 64]> = __SlateAlign16([0u8; 64]);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:         core::ptr::write_bytes(
 // CHECK-NEXT:             ((buffer.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (0i32 as i32) as u8,
-// CHECK-NEXT:             ((std::mem::size_of::<[u8; 64]>() as u64) as usize) as usize,
+// CHECK-NEXT:             ((core::mem::size_of::<[u8; 64]>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut used: u64 = 0;
@@ -477,7 +477,7 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:             used = used
 // CHECK-NEXT:                 .wrapping_add(
-// CHECK-NEXT:                     (std::mem::size_of::<payloadHeader>() as u64).wrapping_add(i as u64),
+// CHECK-NEXT:                     (core::mem::size_of::<payloadHeader>() as u64).wrapping_add(i as u64),
 // CHECK-NEXT:                 );
 // CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
@@ -486,14 +486,14 @@ int main(void) {
 // CHECK-NEXT:         let mut offset: u64 = 0;
 // CHECK-NEXT:         let mut i: u64 = 1;
 // CHECK-NEXT:         while offset < used {
-// CHECK-NEXT:             let mut header: payloadHeader = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut header: payloadHeader = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:                 core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:                     (((buffer.0.as_mut_ptr() as *mut u8).add(offset as usize)
 // CHECK-NEXT:                         as *const ()) as *const core::ffi::c_void) as *const u8,
-// CHECK-NEXT:                     ((std::ptr::addr_of_mut!(header) as *mut ())
+// CHECK-NEXT:                     ((core::ptr::addr_of_mut!(header) as *mut ())
 // CHECK-NEXT:                         as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:                     ((std::mem::size_of::<payloadHeader>() as u64) as usize) as usize,
+// CHECK-NEXT:                     ((core::mem::size_of::<payloadHeader>() as u64) as usize) as usize,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -505,21 +505,21 @@ int main(void) {
 // CHECK-NEXT:                     header.payload_type as i32,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             offset = offset
 // CHECK-NEXT:                 .wrapping_add(
-// CHECK-NEXT:                     (std::mem::size_of::<payloadHeader>() as u64).wrapping_add(i),
+// CHECK-NEXT:                     (core::mem::size_of::<payloadHeader>() as u64).wrapping_add(i),
 // CHECK-NEXT:                 );
 // CHECK-NEXT:             i = i.wrapping_add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut holder: holder = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut holder: holder = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(
-// CHECK-NEXT:             ((std::ptr::addr_of_mut!(holder) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:         core::ptr::write_bytes(
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(holder) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             (0i32 as i32) as u8,
-// CHECK-NEXT:             ((std::mem::size_of::<holder>() as u64) as usize) as usize,
+// CHECK-NEXT:             ((core::mem::size_of::<holder>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     holder.tag = 104;
@@ -550,9 +550,9 @@ int main(void) {
 // CHECK-NEXT:             holder.tail as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut two: pack_two = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: pack_two = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: pack_two = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].tag = 116i8;
 // CHECK-NEXT:         [[T_0]].value = 3735928559u32;
 // CHECK-NEXT:         [[T_0]].wide = 72623859790382856u64;
@@ -569,14 +569,14 @@ int main(void) {
 // CHECK-NEXT:             two.wide,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -51,7 +51,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn choose(value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-NEXT:     value % 4
 // CHECK-NEXT: }
 // CHECK-NEXT: fn accumulate(n: i32, total: *mut i32) {
-// CHECK-NEXT:     let mut i: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         i = 0;
 // CHECK-NEXT:         loop {
@@ -133,7 +133,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             calls = 0;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         accumulate(n, std::ptr::addr_of_mut!(total));
+// CHECK-NEXT:         accumulate(n, core::ptr::addr_of_mut!(total));
 // CHECK-NEXT:         println!("{} {} {}", n, unsafe { calls }, total);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
@@ -145,8 +145,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

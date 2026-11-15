@@ -75,21 +75,21 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let self_: *mut HINSTANCE__ = unsafe { GetModuleHandleA(std::ptr::null::<i8>()) };
+// CHECK-NEXT:     let self_: *mut HINSTANCE__ = unsafe { GetModuleHandleA(core::ptr::null::<i8>()) };
 // CHECK-NEXT:     let exported: Option<unsafe extern "C-unwind" fn() -> i32> = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<
+// CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             Option<unsafe extern "stdcall-unwind" fn() -> i32>,
 // CHECK-NEXT:             Option<unsafe extern "C-unwind" fn() -> i32>,
 // CHECK-NEXT:         >(unsafe { GetProcAddress(self_, c"exp_fn".as_ptr()) })
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let aliased: Option<unsafe extern "C-unwind" fn() -> i32> = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<
+// CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             Option<unsafe extern "stdcall-unwind" fn() -> i32>,
 // CHECK-NEXT:             Option<unsafe extern "C-unwind" fn() -> i32>,
 // CHECK-NEXT:         >(unsafe { GetProcAddress(self_, c"alias_fn".as_ptr()) })
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let data: *mut i32 = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<Option<unsafe extern "stdcall-unwind" fn() -> i32>, *mut i32>(
+// CHECK-NEXT:         core::mem::transmute::<Option<unsafe extern "stdcall-unwind" fn() -> i32>, *mut i32>(
 // CHECK-NEXT:             unsafe { GetProcAddress(self_, c"exp_data".as_ptr()) },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -113,8 +113,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

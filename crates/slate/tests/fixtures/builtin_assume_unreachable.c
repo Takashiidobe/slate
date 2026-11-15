@@ -67,11 +67,11 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         _ => {}
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::hint::unreachable_unchecked() };
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::hint::unreachable_unchecked() };
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn positive_half(x: i32) -> i32 {
-// CHECK-NEXT:     unsafe { std::hint::assert_unchecked(x > 0) };
+// CHECK-NEXT:     unsafe { core::hint::assert_unchecked(x > 0) };
 // CHECK-NEXT:     x / 2
 // CHECK-NEXT: }
 // CHECK-NEXT: fn bump(counter: &mut i32) -> i32 {
@@ -85,14 +85,14 @@ int main(void) {
 // CHECK-NEXT:     if x < 100 {
 // CHECK-NEXT:         return x.wrapping_mul(3);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::hint::unreachable_unchecked() };
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::hint::unreachable_unchecked() };
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let counter: i32 = 0;
 // CHECK-NEXT:     let x: i32 = 5;
-// CHECK-NEXT:     unsafe { std::hint::assert_unchecked(true) };
-// CHECK-NEXT:     unsafe { std::hint::assert_unchecked(true) };
+// CHECK-NEXT:     unsafe { core::hint::assert_unchecked(true) };
+// CHECK-NEXT:     unsafe { core::hint::assert_unchecked(true) };
 // CHECK-NEXT:     println!("{} {} {}", x, counter, positive_half(9i32));
 // CHECK-NEXT:     for i in 0i32..6i32 {
 // CHECK-NEXT:         print!("{} ", classify(i));
@@ -100,14 +100,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"\n%u\n".as_ptr(), checked(7u32)) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

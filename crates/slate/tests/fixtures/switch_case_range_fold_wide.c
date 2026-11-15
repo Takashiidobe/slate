@@ -53,7 +53,7 @@ int main(void) {
 // CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn classify_bitint(seed: i32) -> i32 {
 // CHECK-NEXT:     let mut v: bitint::BInt<128, 2, 16, bitint::A8> = <bitint::BInt<
@@ -74,6 +74,6 @@ int main(void) {
 // CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -40,17 +40,17 @@ done:
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut y: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut x: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut pick_b: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut pick_a: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut y: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut x: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut pick_b: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut pick_a: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut __slate_state: usize = 6usize;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         pick_a = 1;
 // CHECK-NEXT:         pick_b = 0;
 // CHECK-NEXT:         x = 0;
 // CHECK-NEXT:         y = 0;
-// CHECK-NEXT:         if std::ptr::read_volatile(std::ptr::addr_of!(pick_a)) != 0 {
+// CHECK-NEXT:         if core::ptr::read_volatile(core::ptr::addr_of!(pick_a)) != 0 {
 // CHECK-NEXT:             __slate_state = 4;
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             __slate_state = 5;
@@ -75,7 +75,7 @@ done:
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if std::ptr::read_volatile(std::ptr::addr_of!(pick_b)) != 0 {
+// CHECK-NEXT:         if core::ptr::read_volatile(core::ptr::addr_of!(pick_b)) != 0 {
 // CHECK-NEXT:             __slate_state = 1;
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             __slate_state = 2;

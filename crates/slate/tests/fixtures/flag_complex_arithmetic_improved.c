@@ -442,24 +442,24 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-EMPTY:
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: impl core::cmp::PartialOrd for LongDouble {
 // I686-UNKNOWN-LINUX-GNU-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
-// I686-UNKNOWN-LINUX-GNU-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
+// I686-UNKNOWN-LINUX-GNU-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         if __slate_f80_lt(*self, *__other) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:         if __slate_f80_lt(*self, *__other) {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             Some(std::cmp::Ordering::Less)
-// I686-UNKNOWN-LINUX-GNU-NEXT:             Some(std::cmp::Ordering::Less)
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             Some(core::cmp::Ordering::Less)
+// I686-UNKNOWN-LINUX-GNU-NEXT:             Some(core::cmp::Ordering::Less)
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         } else {
 // I686-UNKNOWN-LINUX-GNU-NEXT:         } else {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             if __slate_f80_gt(*self, *__other) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:             if __slate_f80_gt(*self, *__other) {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 Some(std::cmp::Ordering::Greater)
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 Some(std::cmp::Ordering::Greater)
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 Some(core::cmp::Ordering::Greater)
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 Some(core::cmp::Ordering::Greater)
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             } else {
 // I686-UNKNOWN-LINUX-GNU-NEXT:             } else {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 if __slate_f80_eq(*self, *__other) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     Some(std::cmp::Ordering::Equal)
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     Some(std::cmp::Ordering::Equal)
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     Some(core::cmp::Ordering::Equal)
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     Some(core::cmp::Ordering::Equal)
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 } else {
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 } else {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                     None
@@ -484,7 +484,7 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT: fn show(name: *const u8, z: num_complex::Complex<f64>) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%s %a %a\n".as_ptr(), name, z.re, z.im) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::memcpy;
@@ -494,7 +494,7 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT: fn showf(name: *const u8, z: num_complex::Complex<f32>) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%s %a %a\n".as_ptr(), name, z.re as f64, z.im as f64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut state: u64 = 88172645463325252;
@@ -537,16 +537,16 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         let mut parts: [f64; 2] = [q.re, q.im];
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         let mut bits: [u64; 2] = [0u64; 2];
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:             core::ptr::copy_nonoverlapping(
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((parts.0.as_mut_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((bits.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((std::mem::size_of::<[u64; 2]>() as u64) as usize) as usize,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((core::mem::size_of::<[u64; 2]>() as u64) as usize) as usize,
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 ((parts.as_mut_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 ((bits.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 ((std::mem::size_of::<[u64; 2]>() as u32) as usize) as usize,
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 ((core::mem::size_of::<[u64; 2]>() as u32) as usize) as usize,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 ((parts.as_mut_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 ((bits.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 ((std::mem::size_of::<[u64; 2]>() as u64) as usize) as usize,
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 ((core::mem::size_of::<[u64; 2]>() as u64) as usize) as usize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         hash = hash
@@ -571,12 +571,12 @@ int main(void) {
 // CHECK-NEXT:         let mut partsf: [f32; 2] = [qf.re, qf.im];
 // CHECK-NEXT:         let mut bitsf: [u32; 2] = [0u32; 2];
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:             core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:                 ((partsf.as_mut_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:                 ((bitsf.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((std::mem::size_of::<[u32; 2]>() as u64) as usize) as usize,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 ((std::mem::size_of::<[u32; 2]>() as u32) as usize) as usize,
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 ((std::mem::size_of::<[u32; 2]>() as u64) as usize) as usize,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ((core::mem::size_of::<[u32; 2]>() as u64) as usize) as usize,
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 ((core::mem::size_of::<[u32; 2]>() as u32) as usize) as usize,
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 ((core::mem::size_of::<[u32; 2]>() as u64) as usize) as usize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         hashf = hashf
@@ -585,14 +585,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"hash %llx %llx\n".as_ptr(), hash, hashf) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let big: f64 = 1e300f64;
 // CHECK-NEXT:     let one: f64 = 1.0f64;
 // CHECK-NEXT:     let zero: f64 = 0.0f64;
 // CHECK-NEXT:     let inf: f64 = f64::INFINITY;
 // CHECK-NEXT:     let mut z: num_complex::Complex<f64> =
-// CHECK-NEXT:         (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(big)) })
-// CHECK-NEXT:             + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(big)) })
+// CHECK-NEXT:         (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
+// CHECK-NEXT:             + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
 // CHECK-NEXT:                 * num_complex::Complex {
 // CHECK-NEXT:                     re: 0.0f64,
 // CHECK-NEXT:                     im: 1.0f64,
@@ -600,7 +600,7 @@ int main(void) {
 // CHECK-NEXT:     show(c"big".as_ptr(), z.c_div_improved(z));
 // CHECK-NEXT:     show(
 // CHECK-NEXT:         c"small".as_ptr(),
-// CHECK-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// CHECK-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // CHECK-NEXT:             + num_complex::Complex {
 // CHECK-NEXT:                 re: 0.0f64,
 // CHECK-NEXT:                 im: 2.0f64,
@@ -615,7 +615,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     show(
 // CHECK-NEXT:         c"tilted".as_ptr(),
-// CHECK-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// CHECK-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // CHECK-NEXT:             + num_complex::Complex {
 // CHECK-NEXT:                 re: 0.0f64,
 // CHECK-NEXT:                 im: 2.0f64,
@@ -630,7 +630,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     show(
 // CHECK-NEXT:         c"equal".as_ptr(),
-// CHECK-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// CHECK-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // CHECK-NEXT:             + num_complex::Complex {
 // CHECK-NEXT:                 re: 0.0f64,
 // CHECK-NEXT:                 im: 2.0f64,
@@ -645,15 +645,15 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     show(
 // CHECK-NEXT:         c"zero".as_ptr(),
-// CHECK-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
-// CHECK-NEXT:             + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// CHECK-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
+// CHECK-NEXT:             + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // CHECK-NEXT:                 * num_complex::Complex {
 // CHECK-NEXT:                     re: 0.0f64,
 // CHECK-NEXT:                     im: 1.0f64,
 // CHECK-NEXT:                 })
 // CHECK-NEXT:         .c_div_improved(
-// CHECK-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(zero)) })
-// CHECK-NEXT:                 + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(zero)) })
+// CHECK-NEXT:             (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(zero)) })
+// CHECK-NEXT:                 + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(zero)) })
 // CHECK-NEXT:                     * num_complex::Complex {
 // CHECK-NEXT:                         re: 0.0f64,
 // CHECK-NEXT:                         im: 1.0f64,
@@ -662,15 +662,15 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     show(
 // CHECK-NEXT:         c"inf".as_ptr(),
-// CHECK-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(inf)) })
-// CHECK-NEXT:             + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// CHECK-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(inf)) })
+// CHECK-NEXT:             + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // CHECK-NEXT:                 * num_complex::Complex {
 // CHECK-NEXT:                     re: 0.0f64,
 // CHECK-NEXT:                     im: 1.0f64,
 // CHECK-NEXT:                 })
 // CHECK-NEXT:         .c_div_improved(
-// CHECK-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
-// CHECK-NEXT:                 + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// CHECK-NEXT:             (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
+// CHECK-NEXT:                 + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // CHECK-NEXT:                     * num_complex::Complex {
 // CHECK-NEXT:                         re: 0.0f64,
 // CHECK-NEXT:                         im: 1.0f64,
@@ -680,7 +680,7 @@ int main(void) {
 // CHECK-NEXT:     show(
 // CHECK-NEXT:         c"real".as_ptr(),
 // CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) },
+// CHECK-NEXT:             re: unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) },
 // CHECK-NEXT:             im: 0.0,
 // CHECK-NEXT:         }
 // CHECK-NEXT:         .c_div_improved(
@@ -693,7 +693,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     show(
 // CHECK-NEXT:         c"imaginary".as_ptr(),
-// CHECK-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
+// CHECK-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
 // CHECK-NEXT:             + num_complex::Complex {
 // CHECK-NEXT:                 re: 0.0f64,
 // CHECK-NEXT:                 im: 2.0f64,
@@ -705,15 +705,15 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     show(
 // CHECK-NEXT:         c"mul".as_ptr(),
-// CHECK-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(inf)) })
-// CHECK-NEXT:             + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(inf)) })
+// CHECK-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(inf)) })
+// CHECK-NEXT:             + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(inf)) })
 // CHECK-NEXT:                 * num_complex::Complex {
 // CHECK-NEXT:                     re: 0.0f64,
 // CHECK-NEXT:                     im: 1.0f64,
 // CHECK-NEXT:                 })
 // CHECK-NEXT:         .c_mul(
-// CHECK-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) })
-// CHECK-NEXT:                 + (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(zero)) })
+// CHECK-NEXT:             (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
+// CHECK-NEXT:                 + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(zero)) })
 // CHECK-NEXT:                     * num_complex::Complex {
 // CHECK-NEXT:                         re: 0.0f64,
 // CHECK-NEXT:                         im: 1.0f64,
@@ -722,7 +722,7 @@ int main(void) {
 // CHECK-NEXT:         ),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut f: num_complex::Complex<f32> =
-// CHECK-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) }) as f32)
+// CHECK-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) }) as f32)
 // CHECK-NEXT:             + num_complex::Complex {
 // CHECK-NEXT:                 re: 0.0f32,
 // CHECK-NEXT:                 im: 2.0f32,
@@ -741,8 +741,8 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:     let mut l: num_complex::Complex<LongDouble> = {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         let [[T_0:__t[0-9]+]] =
 // I686-UNKNOWN-LINUX-GNU-NEXT:         let [[T_0:__t[0-9]+]] =
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             __slate_f80_from_f64(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) });
-// I686-UNKNOWN-LINUX-GNU-NEXT:             __slate_f80_from_f64(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) });
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             __slate_f80_from_f64(unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) });
+// I686-UNKNOWN-LINUX-GNU-NEXT:             __slate_f80_from_f64(unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) });
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         let [[T_1:__t[0-9]+]] = num_complex::Complex {
 // I686-UNKNOWN-LINUX-GNU-NEXT:         let [[T_1:__t[0-9]+]] = num_complex::Complex {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -784,7 +784,7 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     });
 // I686-UNKNOWN-LINUX-GNU-NEXT:     });
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     let mut l: num_complex::Complex<f128> =
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) }) as f128)
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) }) as f128)
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:             + num_complex::Complex {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 re: 0f128,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 im: 2f128,
@@ -801,15 +801,15 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     unsafe { __slate_printf__ri32_pi8_f80_f80(c"long %.6Lf %.6Lf\n".as_ptr(), l.re, l.im) };
 // I686-UNKNOWN-LINUX-GNU-NEXT:     unsafe { __slate_printf__ri32_pi8_f80_f80(c"long %.6Lf %.6Lf\n".as_ptr(), l.re, l.im) };
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     unsafe { slate_support::printf(c"long %.6Lf %.6Lf\n".as_ptr(), l.re, l.im) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

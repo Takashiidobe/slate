@@ -53,7 +53,7 @@ int main(void) {
 // CHECK-NEXT:         memcpy(
 // CHECK-NEXT:             (_S1 as *mut ()) as *mut core::ffi::c_void,
 // CHECK-NEXT:             (_S2 as *const ()) as *const core::ffi::c_void,
-// CHECK-NEXT:             _N.wrapping_mul(std::mem::size_of::<u16>() as u32) as usize,
+// CHECK-NEXT:             _N.wrapping_mul(core::mem::size_of::<u16>() as u32) as usize,
 // CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     }) as *mut u16
 // CHECK-NEXT: }
@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut source: [u16; 5] = [119, 105, 100, 101, 0];
 // CHECK-NEXT:     let mut target: [u16; 5] = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [u16; 5] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [u16; 5] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0u16;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
@@ -93,7 +93,7 @@ int main(void) {
 // CHECK-NEXT:         || (unsafe {
 // CHECK-NEXT:             wcscmp(
 // CHECK-NEXT:                 target.as_mut_ptr() as *const u16,
-// CHECK-NEXT:                 (std::ptr::addr_of_mut!(__slate_str28) as *mut u16) as *const u16,
+// CHECK-NEXT:                 (core::ptr::addr_of_mut!(__slate_str28) as *mut u16) as *const u16,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) != 0;
 // CHECK-NEXT:     if [[V_0]] {
@@ -107,8 +107,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

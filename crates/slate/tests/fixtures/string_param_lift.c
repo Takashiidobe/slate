@@ -21,7 +21,7 @@ int main(void) {
 // CHECK-NEXT: use slate_support::atoi;
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: fn __slate_atoi(s: *const i8) -> i32 {
-// CHECK-NEXT:     let bytes = unsafe { std::ffi::CStr::from_ptr(s) }.to_bytes();
+// CHECK-NEXT:     let bytes = unsafe { core::ffi::CStr::from_ptr(s) }.to_bytes();
 // CHECK-NEXT:     let n = bytes.len();
 // CHECK-NEXT:     let mut i = 0usize;
 // CHECK-NEXT:     while i < n && (bytes[i].is_ascii_whitespace() || bytes[i] == 11u8) {
@@ -38,7 +38,7 @@ int main(void) {
 // CHECK-NEXT:     if i == digits {
 // CHECK-NEXT:         return 0i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     return std::str::from_utf8(&bytes[start..i])
+// CHECK-NEXT:     return core::str::from_utf8(&bytes[start..i])
 // CHECK-NEXT:         .unwrap()
 // CHECK-NEXT:         .parse::<i128>()
 // CHECK-NEXT:         .unwrap_or(0i128)
@@ -66,8 +66,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

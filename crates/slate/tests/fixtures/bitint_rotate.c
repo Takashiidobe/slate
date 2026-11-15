@@ -94,7 +94,8 @@ int main(void) {
 // CHECK-NEXT:     let x: u8 = 165;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
-// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let l: u8 = x
 // CHECK-NEXT:             .rotate_left(
@@ -106,7 +107,7 @@ int main(void) {
 // CHECK-NEXT:             );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -114,7 +115,8 @@ int main(void) {
 // CHECK-NEXT:     let x: u16 = 35889;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
-// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let l: u16 = x
 // CHECK-NEXT:             .rotate_left(
@@ -126,7 +128,7 @@ int main(void) {
 // CHECK-NEXT:             );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -134,7 +136,8 @@ int main(void) {
 // CHECK-NEXT:     let x: u32 = 2160132078;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
-// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let l: u32 = x
 // CHECK-NEXT:             .rotate_left(
@@ -146,7 +149,7 @@ int main(void) {
 // CHECK-NEXT:             );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -154,7 +157,8 @@ int main(void) {
 // CHECK-NEXT:     let x: u64 = 9305357566071262703;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
-// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let l: u64 = x
 // CHECK-NEXT:             .rotate_left(
@@ -166,7 +170,7 @@ int main(void) {
 // CHECK-NEXT:             );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l, r) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -174,7 +178,8 @@ int main(void) {
 // CHECK-NEXT:     let x: u8 = 21u8;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while (i as u64)
-// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let l: u8 = {
 // CHECK-NEXT:             let [[T_0:__t[0-9]+]] = x;
@@ -188,7 +193,7 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -196,7 +201,8 @@ int main(void) {
 // CHECK-NEXT:     let x: u16 = 421u16;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_0]]: while (i as u64)
-// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let l: u16 = {
 // CHECK-NEXT:             let [[T_0]] = x;
@@ -210,7 +216,7 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -218,7 +224,8 @@ int main(void) {
 // CHECK-NEXT:     let x: u64 = 7532965393;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_0]]: while (i as u64)
-// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let l: u64 = {
 // CHECK-NEXT:             let [[T_0]] = x;
@@ -232,7 +239,7 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -240,7 +247,8 @@ int main(void) {
 // CHECK-NEXT:     let x: u64 = 17297757509875842799;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
-// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let l: u64 = x
 // CHECK-NEXT:             .rotate_left(
@@ -252,7 +260,7 @@ int main(void) {
 // CHECK-NEXT:             );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -274,7 +282,8 @@ int main(void) {
 // CHECK-NEXT:         );
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
-// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut l: bitint::BUint<100, 2, 16, bitint::A8> = x
 // CHECK-NEXT:             .rotate_left_bits(
@@ -294,7 +303,7 @@ int main(void) {
 // CHECK-NEXT:                 r.shr_bits(64 as usize).to_u128() as u64,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -316,7 +325,8 @@ int main(void) {
 // CHECK-NEXT:         );
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
-// CHECK-NEXT:         < (std::mem::size_of::<[i32; 24]>() as u64) / (std::mem::size_of::<i32>() as u64)
+// CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut l: bitint::BUint<128, 2, 16, bitint::A8> = x
 // CHECK-NEXT:             .rotate_left_bits(
@@ -336,7 +346,7 @@ int main(void) {
 // CHECK-NEXT:                 r.shr_bits(64 as usize).to_u128() as u64,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -356,8 +366,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

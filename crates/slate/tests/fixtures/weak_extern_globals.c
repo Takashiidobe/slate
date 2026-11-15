@@ -38,7 +38,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: use slate_support::memcmp;
 // CHECK-NEXT: fn read_counter() -> i32 {
-// CHECK-NEXT:     if !unsafe { std::ptr::addr_of_mut!(* missing_counter) }.is_null() {
+// CHECK-NEXT:     if !unsafe { core::ptr::addr_of_mut!(* missing_counter) }.is_null() {
 // CHECK-NEXT:         unsafe { *missing_counter }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         -1
@@ -46,18 +46,18 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "ehdr {}", (! unsafe { std::ptr::addr_of_mut!(* __ehdr_start) as * mut i8 }
-// CHECK-NEXT:         .is_null() && (unsafe { memcmp(((std::ptr::addr_of_mut!(* __ehdr_start) as * mut
+// CHECK-NEXT:         "ehdr {}", (! unsafe { core::ptr::addr_of_mut!(* __ehdr_start) as * mut i8 }
+// CHECK-NEXT:         .is_null() && (unsafe { memcmp(((core::ptr::addr_of_mut!(* __ehdr_start) as * mut
 // CHECK-NEXT:         i8) as * const ()) as * const core::ffi::c_void, (b"\x7fELF\0".as_ptr() as *
 // CHECK-NEXT:         const ()) as * const core::ffi::c_void, 4u64 as usize) as i32 }) == 0) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "init {}", ((unsafe { std::ptr::addr_of!(* __init_array_start) }) <= unsafe {
-// CHECK-NEXT:         std::ptr::addr_of!(* __init_array_end) }) as i32
+// CHECK-NEXT:         "init {}", ((unsafe { core::ptr::addr_of!(* __init_array_start) }) <= unsafe {
+// CHECK-NEXT:         core::ptr::addr_of!(* __init_array_end) }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "missing {} {}", unsafe { std::ptr::addr_of_mut!(* missing_counter) } .is_null()
-// CHECK-NEXT:         as i32, unsafe { std::ptr::addr_of!(* missing_table) as * const u64 } .is_null()
+// CHECK-NEXT:         "missing {} {}", unsafe { core::ptr::addr_of_mut!(* missing_counter) } .is_null()
+// CHECK-NEXT:         as i32, unsafe { core::ptr::addr_of!(* missing_table) as * const u64 } .is_null()
 // CHECK-NEXT:         as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("counter {}", read_counter());
@@ -66,8 +66,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

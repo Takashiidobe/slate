@@ -64,8 +64,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
@@ -80,7 +80,7 @@ int main(void) {
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: pair = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: pair = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
@@ -91,13 +91,13 @@ int main(void) {
 // CHECK-NEXT:                 widen(1i32),
 // CHECK-NEXT:                 (*{
 // CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = make_pair(2i32);
-// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:                 })
 // CHECK-NEXT:                 .first,
 // CHECK-NEXT:                 table_size,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
@@ -107,7 +107,7 @@ int main(void) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 (*{
 // CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = make_pair(2i32);
-// CHECK-NEXT:                     std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:                 })
 // CHECK-NEXT:                 .first
 // CHECK-NEXT:             },
@@ -162,7 +162,7 @@ int main(void) {
 // CHECK-NEXT:     let mut pair: pair = pair { first: 0 };
 // CHECK-NEXT:     #[cfg(feature = "beta")]
 // CHECK-NEXT:     let mut pair: pair = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: pair = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: pair = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].first = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };

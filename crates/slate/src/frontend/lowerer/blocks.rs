@@ -6,7 +6,7 @@ const SUPPORT: &str = "__slate_blocks";
 fn void_pointer(mutable: bool) -> rust::Type {
     rust::Type::Ptr {
         mutable,
-        inner: Box::new(rust::Type::Custom("std::ffi::c_void".into())),
+        inner: Box::new(rust::Type::Custom("core::ffi::c_void".into())),
     }
 }
 
@@ -161,10 +161,10 @@ impl FunctionLowerer<'_, '_> {
             name: slot.as_str().into(),
             mutable: true,
             ty: Some(rust::Type::Generic {
-                name: "std::mem::MaybeUninit".into(),
+                name: "core::mem::MaybeUninit".into(),
                 args: vec![ty.clone()],
             }),
-            init: Some(Expr::Var("std::mem::MaybeUninit::uninit()".into())),
+            init: Some(Expr::Var("core::mem::MaybeUninit::uninit()".into())),
         });
         self.after_declaration = Some(Stmt::Let {
             name: format!("{name}_scope").as_str().into(),
@@ -219,7 +219,7 @@ impl FunctionLowerer<'_, '_> {
                 retained.push(support_call(
                     kind,
                     vec![Expr::Macro {
-                        name: "std::mem::offset_of".into(),
+                        name: "core::mem::offset_of".into(),
                         args: vec![
                             Expr::Var(captures_name.as_str().into()),
                             Expr::Var(field.as_str().into()),
@@ -335,9 +335,9 @@ impl FunctionLowerer<'_, '_> {
             name: slot.as_str().into(),
             mutable: true,
             ty: Some(rust::Type::Custom(format!(
-                "std::mem::MaybeUninit<{SUPPORT}::Block<{captures_name}>>"
+                "core::mem::MaybeUninit<{SUPPORT}::Block<{captures_name}>>"
             ))),
-            init: Some(Expr::Var("std::mem::MaybeUninit::uninit()".into())),
+            init: Some(Expr::Var("core::mem::MaybeUninit::uninit()".into())),
         });
         Ok(Expr::Unsafe(Box::new(rust::Block {
             stmts: Vec::new(),

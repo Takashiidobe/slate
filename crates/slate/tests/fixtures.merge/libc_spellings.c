@@ -336,7 +336,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(target_os = "freebsd")]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         count(unsafe {
-// CHECK-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// CHECK-NEXT:             core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // CHECK-NEXT:                 isdigit as *const (),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) + unsafe { *(__error() as *mut i32) }
@@ -349,7 +349,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         count(unsafe {
-// CHECK-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// CHECK-NEXT:             core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // CHECK-NEXT:                 isdigit as *const (),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) + unsafe { *(__errno_location() as *mut i32) }
@@ -362,7 +362,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(target_env = "musl")]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         count(unsafe {
-// CHECK-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// CHECK-NEXT:             core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // CHECK-NEXT:                 isdigit as *const (),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) + unsafe { *(__errno_location() as *mut i32) }
@@ -380,7 +380,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         count(unsafe {
-// CHECK-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// CHECK-NEXT:             core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // CHECK-NEXT:                 isdigit as *const (),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) + unsafe { *_errno() }
@@ -486,8 +486,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
@@ -516,10 +516,10 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut position: i32 = 0;
 // CHECK-NEXT:     let mut graphs: i32 = graph_at(c" a".as_ptr(), unsafe {
-// CHECK-NEXT:         &mut (*std::ptr::addr_of_mut!(position))
+// CHECK-NEXT:         &mut (*core::ptr::addr_of_mut!(position))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let [[V_1]]: i32 = graph_at(c" a".as_ptr(), unsafe {
-// CHECK-NEXT:         &mut (*std::ptr::addr_of_mut!(position))
+// CHECK-NEXT:         &mut (*core::ptr::addr_of_mut!(position))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     graphs += [[V_1]];
 // CHECK-NEXT:     unsafe {
@@ -552,14 +552,14 @@ int main(void) {
 // CHECK-NEXT:                 hand_written(97i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), count_digits()) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {

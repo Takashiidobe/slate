@@ -35,7 +35,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn bump_through_pointer(mut local: i32) -> i32 {
-// CHECK-NEXT:     let ptr: *mut i32 = std::ptr::addr_of_mut!(local);
+// CHECK-NEXT:     let ptr: *mut i32 = core::ptr::addr_of_mut!(local);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *ptr = *ptr + 3;
 // CHECK-NEXT:     }

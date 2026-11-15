@@ -44,18 +44,18 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn walk(limit: i32) -> i32 {
-// CHECK-NEXT:     let mut s: std::mem::MaybeUninit<padded> = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut padded = std::ptr::addr_of_mut!(s) as *mut padded;
-// CHECK-NEXT:     let mut total: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut round: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut s: core::mem::MaybeUninit<padded> = core::mem::MaybeUninit::uninit();
+// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut padded = core::ptr::addr_of_mut!(s) as *mut padded;
+// CHECK-NEXT:     let mut total: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut round: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         round = 0;
 // CHECK-NEXT:         total = 0;
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let __slate_auto_bytes = [[SLATE_SLOT_0]] as *mut u8;
-// CHECK-NEXT:             std::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 8usize);
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 8usize);
 // CHECK-NEXT:             let n: i32 = -1431655766i32;
-// CHECK-NEXT:             let raw: *const u8 = std::ptr::addr_of_mut!(*[[SLATE_SLOT_0]]) as *const u8;
+// CHECK-NEXT:             let raw: *const u8 = core::ptr::addr_of_mut!(*[[SLATE_SLOT_0]]) as *const u8;
 // CHECK-NEXT:             total += (*raw.add(0) as i32) + (*raw.add(1) as i32) + ((n as u8) as i32);
 // CHECK-NEXT:             round += 1;
 // CHECK-NEXT:             if round >= limit {
@@ -74,8 +74,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

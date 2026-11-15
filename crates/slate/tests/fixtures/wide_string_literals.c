@@ -28,12 +28,12 @@ int main(void) {
 // CHECK-NEXT:     104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 0,
 // CHECK-NEXT: ];
 // CHECK-NEXT: static mut greeting: *const i32 = (unsafe {
-// CHECK-NEXT:     std::ptr::addr_of_mut!(__slate_str19) as *mut i32
+// CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_str19) as *mut i32
 // CHECK-NEXT: }) as *const i32;
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let u16: *const u16 = (unsafe { std::ptr::addr_of_mut!(__slate_str20) as *mut u16 })
+// CHECK-NEXT:     let u16: *const u16 = (unsafe { core::ptr::addr_of_mut!(__slate_str20) as *mut u16 })
 // CHECK-NEXT:         as *const u16;
-// CHECK-NEXT:     let u32: *const u32 = (unsafe { std::ptr::addr_of_mut!(__slate_str21) as *mut u32 })
+// CHECK-NEXT:     let u32: *const u32 = (unsafe { core::ptr::addr_of_mut!(__slate_str21) as *mut u32 })
 // CHECK-NEXT:         as *const u32;
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i32; 6]> = __SlateAlign16([
 // CHECK-NEXT:         108i32, 111i32, 99i32, 97i32, 108i32, 0i32,
@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-NEXT:             *unsafe { greeting }.add(10),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -59,20 +59,20 @@ int main(void) {
 // CHECK-NEXT:             *u32.add(1),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%ls %zu\n".as_ptr(),
 // CHECK-NEXT:             buf.0.as_mut_ptr() as *mut i32,
-// CHECK-NEXT:             std::mem::size_of::<[i32; 4]>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<[i32; 4]>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}", unsafe { __slate_str26[1] }, (unsafe { *
-// CHECK-NEXT:         ((std::ptr::addr_of_mut!(__slate_str27) as * mut i32) as * const i8).add(4) }) as
-// CHECK-NEXT:         i32
+// CHECK-NEXT:         ((core::ptr::addr_of_mut!(__slate_str27) as * mut i32) as * const i8).add(4) })
+// CHECK-NEXT:         as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
@@ -84,8 +84,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

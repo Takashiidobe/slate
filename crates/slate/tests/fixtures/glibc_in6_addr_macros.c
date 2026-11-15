@@ -72,7 +72,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bool;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let __a: *const in6_addr = unsafe {
-// CHECK-NEXT:             std::ptr::addr_of!((* (address as * const sockaddr_in6)).sin6_addr)
+// CHECK-NEXT:             core::ptr::addr_of!((* (address as * const sockaddr_in6)).sin6_addr)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[V_0]] = (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(0) })
 // CHECK-NEXT:             == 0
@@ -88,7 +88,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: bool;
 // CHECK-NEXT:     let __a: *const in6_addr = unsafe {
-// CHECK-NEXT:         std::ptr::addr_of!((* (address as * const sockaddr_in6)).sin6_addr)
+// CHECK-NEXT:         core::ptr::addr_of!((* (address as * const sockaddr_in6)).sin6_addr)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     [[V_1]] = (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(0) }) == 0
 // CHECK-NEXT:         && (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(1) }) == 0
@@ -105,15 +105,15 @@ int main(void) {
 // CHECK-NEXT:         c"::ffff:10.0.0.1".as_ptr(),
 // CHECK-NEXT:         c"2001:db8::1".as_ptr(),
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let mut address: sockaddr_in6 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut address: sockaddr_in6 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut sum: u32 = 0;
 // CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::ptr::write_bytes(
-// CHECK-NEXT:                 ((std::ptr::addr_of_mut!(address) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:             core::ptr::write_bytes(
+// CHECK-NEXT:                 ((core::ptr::addr_of_mut!(address) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                     as *mut u8,
 // CHECK-NEXT:                 (0i32 as i32) as u8,
-// CHECK-NEXT:                 ((std::mem::size_of::<sockaddr_in6>() as u64) as usize) as usize,
+// CHECK-NEXT:                 ((core::mem::size_of::<sockaddr_in6>() as u64) as usize) as usize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         address.sin6_family = 10;
@@ -121,7 +121,7 @@ int main(void) {
 // CHECK-NEXT:             inet_pton(
 // CHECK-NEXT:                 10i32,
 // CHECK-NEXT:                 inputs.0[i as usize],
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(address.sin6_addr) as *mut (),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(address.sin6_addr) as *mut (),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) != 1
 // CHECK-NEXT:         {
@@ -139,10 +139,10 @@ int main(void) {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%s: %d\n".as_ptr(),
 // CHECK-NEXT:                 inputs.0[i as usize],
-// CHECK-NEXT:                 classify(&(*(std::ptr::addr_of_mut!(address) as *const sockaddr_in6))),
+// CHECK-NEXT:                 classify(&(*(core::ptr::addr_of_mut!(address) as *const sockaddr_in6))),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         address.sin6_addr.__in6_u.__u6_addr8[15] = 7;
@@ -155,14 +155,14 @@ int main(void) {
 // CHECK-NEXT:             address.sin6_addr.__in6_u.__u6_addr8[15] as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

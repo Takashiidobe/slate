@@ -95,7 +95,7 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn aggregates() -> i64 {
 // CHECK-NEXT:     let p: Point = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Point = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Point = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].x = 1i32;
 // CHECK-NEXT:         [[T_0]].y = 2i64;
 // CHECK-NEXT:         [[T_0]]

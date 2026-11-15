@@ -68,20 +68,20 @@ int main(void) {
 // CHECK-NEXT: static mut table: __SlateAlign16<[ctl; 2]> = __SlateAlign16([
 // CHECK-NEXT:     ctl {
 // CHECK-NEXT:         name: (b"one\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:         min: unsafe { std::ptr::addr_of!(sysctl_vals.0) as *const i32 }
+// CHECK-NEXT:         min: unsafe { core::ptr::addr_of!(sysctl_vals.0) as *const i32 }
 // CHECK-NEXT:             .wrapping_offset(1i32 as isize) as *mut (),
-// CHECK-NEXT:         max: unsafe { std::ptr::addr_of!(sysctl_vals.0) as *const i32 }
+// CHECK-NEXT:         max: unsafe { core::ptr::addr_of!(sysctl_vals.0) as *const i32 }
 // CHECK-NEXT:             .wrapping_offset(3i32 as isize) as *mut (),
 // CHECK-NEXT:     },
 // CHECK-NEXT:     ctl {
-// CHECK-NEXT:         name: std::ptr::null::<i8>(),
-// CHECK-NEXT:         min: std::ptr::null_mut::<()>(),
-// CHECK-NEXT:         max: std::ptr::null_mut::<()>(),
+// CHECK-NEXT:         name: core::ptr::null::<i8>(),
+// CHECK-NEXT:         min: core::ptr::null_mut::<()>(),
+// CHECK-NEXT:         max: core::ptr::null_mut::<()>(),
 // CHECK-NEXT:     },
 // CHECK-NEXT: ]);
-// CHECK-NEXT: static mut later: *const i32 = unsafe { std::ptr::addr_of!(unsized_vals) as *const i32 }
+// CHECK-NEXT: static mut later: *const i32 = unsafe { core::ptr::addr_of!(unsized_vals) as *const i32 }
 // CHECK-NEXT:     .wrapping_offset(2i32 as isize);
-// CHECK-NEXT: static mut past: *const i32 = unsafe { std::ptr::addr_of!(sysctl_vals.0) as *const i32 }
+// CHECK-NEXT: static mut past: *const i32 = unsafe { core::ptr::addr_of!(sysctl_vals.0) as *const i32 }
 // CHECK-NEXT:     .wrapping_offset(4i32 as isize);
 // CHECK-NEXT: static mut unsized_vals: [i32; 3] = [7, 8, 9];
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -113,7 +113,7 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d\n".as_ptr(),
 // CHECK-NEXT:             *later,
-// CHECK-NEXT:             (past == (std::ptr::addr_of!(sysctl_vals.0) as *const i32).add(4)) as i32,
+// CHECK-NEXT:             (past == (core::ptr::addr_of!(sysctl_vals.0) as *const i32).add(4)) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0
@@ -121,8 +121,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

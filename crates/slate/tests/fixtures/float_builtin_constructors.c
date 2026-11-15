@@ -35,7 +35,7 @@ int main(void) {
 // CHECK-NEXT:     value: f64,
 // CHECK-NEXT:     bits: u64,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut calls: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn payload() -> *const i8 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
@@ -56,8 +56,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %d %d %08x %016llx %d\n".as_ptr(),
-// CHECK-NEXT:             ((if std::ptr::read_volatile(std::ptr::addr_of!(infinity)).is_infinite() {
-// CHECK-NEXT:                 if std::ptr::read_volatile(std::ptr::addr_of!(infinity))
+// CHECK-NEXT:             ((if core::ptr::read_volatile(core::ptr::addr_of!(infinity)).is_infinite() {
+// CHECK-NEXT:                 if core::ptr::read_volatile(core::ptr::addr_of!(infinity))
 // CHECK-NEXT:                     .is_sign_negative()
 // CHECK-NEXT:                 {
 // CHECK-NEXT:                     -1i32
@@ -67,8 +67,9 @@ int main(void) {
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0i32
 // CHECK-NEXT:             }) != 0) as i32,
-// CHECK-NEXT:             ((if std::ptr::read_volatile(std::ptr::addr_of!(huge)).is_infinite() {
-// CHECK-NEXT:                 if std::ptr::read_volatile(std::ptr::addr_of!(huge)).is_sign_negative() {
+// CHECK-NEXT:             ((if core::ptr::read_volatile(core::ptr::addr_of!(huge)).is_infinite() {
+// CHECK-NEXT:                 if core::ptr::read_volatile(core::ptr::addr_of!(huge)).is_sign_negative()
+// CHECK-NEXT:                 {
 // CHECK-NEXT:                     -1i32
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     1i32
@@ -76,20 +77,20 @@ int main(void) {
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0i32
 // CHECK-NEXT:             }) != 0) as i32,
-// CHECK-NEXT:             !(!std::ptr::read_volatile(std::ptr::addr_of!(nan)).is_nan()) as i32,
+// CHECK-NEXT:             !(!core::ptr::read_volatile(core::ptr::addr_of!(nan)).is_nan()) as i32,
 // CHECK-NEXT:             f.bits,
 // CHECK-NEXT:             d.bits,
 // CHECK-NEXT:             calls,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     ((unsafe { calls }) != 1) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -46,7 +46,7 @@ int main(void) {
 // CHECK-NEXT: static mut ull: u64 = 12884901888;
 // CHECK-NEXT: static mut u128: u128 = (1i32 as u128) << 100i32;
 // CHECK-NEXT: static mut zero: u32 = 0;
-// CHECK-NEXT: static mut side_effects: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut side_effects: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn fallback(value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         side_effects = side_effects + 1;
@@ -55,55 +55,57 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "uc {} {} {}", unsafe { std::ptr::read_volatile(std::ptr::addr_of!(uc)) }
-// CHECK-NEXT:         .leading_zeros() as i32, unsafe { std::ptr::read_volatile(std::ptr::addr_of!(uc))
-// CHECK-NEXT:         } .trailing_zeros() as i32, unsafe {
-// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(uc)) } .count_ones() as i32
-// CHECK-NEXT:     );
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "us {} {} {}", unsafe { std::ptr::read_volatile(std::ptr::addr_of!(us)) }
-// CHECK-NEXT:         .leading_zeros() as i32, unsafe { std::ptr::read_volatile(std::ptr::addr_of!(us))
-// CHECK-NEXT:         } .trailing_zeros() as i32, unsafe {
-// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(us)) } .count_ones() as i32
-// CHECK-NEXT:     );
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "ui {} {} {}", unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ui)) }
-// CHECK-NEXT:         .leading_zeros() as i32, unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ui))
-// CHECK-NEXT:         } .trailing_zeros() as i32, unsafe {
-// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(ui)) } .count_ones() as i32
-// CHECK-NEXT:     );
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "ul {} {} {}", unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ul)) }
-// CHECK-NEXT:         .leading_zeros() as i32, unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ul))
-// CHECK-NEXT:         } .trailing_zeros() as i32, unsafe {
-// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(ul)) } .count_ones() as i32
-// CHECK-NEXT:     );
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "ull {} {} {}", unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ull)) }
+// CHECK-NEXT:         "uc {} {} {}", unsafe { core::ptr::read_volatile(core::ptr::addr_of!(uc)) }
 // CHECK-NEXT:         .leading_zeros() as i32, unsafe {
-// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(ull)) } .trailing_zeros() as i32,
-// CHECK-NEXT:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ull)) } .count_ones() as i32
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(uc)) } .trailing_zeros() as i32,
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(uc)) } .count_ones() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "u128 {} {} {}", unsafe { std::ptr::read_volatile(std::ptr::addr_of!(u128)) }
+// CHECK-NEXT:         "us {} {} {}", unsafe { core::ptr::read_volatile(core::ptr::addr_of!(us)) }
 // CHECK-NEXT:         .leading_zeros() as i32, unsafe {
-// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(u128)) } .trailing_zeros() as i32,
-// CHECK-NEXT:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(u128)) } .count_ones() as i32
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(us)) } .trailing_zeros() as i32,
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(us)) } .count_ones() as i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "ui {} {} {}", unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ui)) }
+// CHECK-NEXT:         .leading_zeros() as i32, unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(ui)) } .trailing_zeros() as i32,
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ui)) } .count_ones() as i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "ul {} {} {}", unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ul)) }
+// CHECK-NEXT:         .leading_zeros() as i32, unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(ul)) } .trailing_zeros() as i32,
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ul)) } .count_ones() as i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "ull {} {} {}", unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ull)) }
+// CHECK-NEXT:         .leading_zeros() as i32, unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(ull)) } .trailing_zeros() as i32,
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ull)) } .count_ones() as
+// CHECK-NEXT:         i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "u128 {} {} {}", unsafe { core::ptr::read_volatile(core::ptr::addr_of!(u128)) }
+// CHECK-NEXT:         .leading_zeros() as i32, unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(u128)) } .trailing_zeros() as i32,
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(u128)) } .count_ones() as
+// CHECK-NEXT:         i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "zero {} {} {}", { let [[T_0:__t[0-9]+]] = unsafe {
-// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(zero)) }; let [[T_1:__t[0-9]+]] = - 1i32; if [[T_0]]
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(zero)) }; let [[T_1:__t[0-9]+]] = - 1i32; if [[T_0]]
 // CHECK-NEXT:         == 0 { [[T_1]] } else { [[T_0]].leading_zeros() as i32 } }, { let [[T_2:__t[0-9]+]] = unsafe {
-// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(zero)) }; let [[T_3:__t[0-9]+]] = 99i32; if [[T_2]] ==
-// CHECK-NEXT:         0 { [[T_3]] } else { [[T_2]].trailing_zeros() as i32 } }, unsafe {
-// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(zero)) } .count_ones() as i32
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(zero)) }; let [[T_3:__t[0-9]+]] = 99i32; if [[T_2]]
+// CHECK-NEXT:         == 0 { [[T_3]] } else { [[T_2]].trailing_zeros() as i32 } }, unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(zero)) } .count_ones() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "nonzero {} {}", { let [[T_4:__t[0-9]+]] = unsafe {
-// CHECK-NEXT:         std::ptr::read_volatile(std::ptr::addr_of!(ui)) }; let [[T_5:__t[0-9]+]] = fallback(- 1i32);
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(ui)) }; let [[T_5:__t[0-9]+]] = fallback(- 1i32);
 // CHECK-NEXT:         if [[T_4]] == 0 { [[T_5]] } else { [[T_4]].leading_zeros() as i32 } }, { let [[T_6:__t[0-9]+]] = unsafe
-// CHECK-NEXT:         { std::ptr::read_volatile(std::ptr::addr_of!(ui)) }; let [[T_7:__t[0-9]+]] = fallback(99i32);
-// CHECK-NEXT:         if [[T_6]] == 0 { [[T_7]] } else { [[T_6]].trailing_zeros() as i32 } }
+// CHECK-NEXT:         { core::ptr::read_volatile(core::ptr::addr_of!(ui)) }; let [[T_7:__t[0-9]+]] =
+// CHECK-NEXT:         fallback(99i32); if [[T_6]] == 0 { [[T_7]] } else { [[T_6]].trailing_zeros() as i32 } }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("side effects {}", unsafe { side_effects });
 // CHECK-NEXT:     0
@@ -111,8 +113,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

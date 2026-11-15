@@ -85,11 +85,11 @@ int main(void) { return 0; }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:     let process_id: Option<unsafe extern "C-unwind" fn() -> u32> = unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn() -> u32>>(
+// X86_64-PC-WINDOWS-MSVC-NEXT:         core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn() -> u32>>(
 // I686-PC-WINDOWS-MSVC-NEXT:     let process_id: Option<unsafe extern "stdcall-unwind" fn() -> u32> = unsafe {
-// I686-PC-WINDOWS-MSVC-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "stdcall-unwind" fn() -> u32>>(
+// I686-PC-WINDOWS-MSVC-NEXT:         core::mem::transmute::<*const (), Option<unsafe extern "stdcall-unwind" fn() -> u32>>(
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     let process_id: Option<unsafe extern "C-unwind" fn() -> u32> = unsafe {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn() -> u32>>(
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn() -> u32>>(
 // CHECK-NEXT:             GetCurrentProcessId as *const (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -98,17 +98,17 @@ int main(void) { return 0; }
 // CHECK-NEXT:     if [[V_0]] {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut time: _SYSTEMTIME = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     unsafe { GetSystemTime(std::ptr::addr_of_mut!(time)) };
+// CHECK-NEXT:     let mut time: _SYSTEMTIME = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     unsafe { GetSystemTime(core::ptr::addr_of_mut!(time)) };
 // CHECK-NEXT:     if (time.wYear as i32) < 2020 || (time.wMonth as i32) < 1 || (time.wMonth as i32) > 12 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let event: *mut () = unsafe {
 // CHECK-NEXT:         CreateEventW(
-// CHECK-NEXT:             std::ptr::null_mut::<_SECURITY_ATTRIBUTES>(),
+// CHECK-NEXT:             core::ptr::null_mut::<_SECURITY_ATTRIBUTES>(),
 // CHECK-NEXT:             0i32,
 // CHECK-NEXT:             0i32,
-// CHECK-NEXT:             std::ptr::null::<u16>(),
+// CHECK-NEXT:             core::ptr::null::<u16>(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = event.is_null() || (unsafe { SetEvent(event) }) == 0;
@@ -126,8 +126,8 @@ int main(void) { return 0; }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

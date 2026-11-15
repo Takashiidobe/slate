@@ -224,8 +224,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
@@ -247,7 +247,7 @@ int main(void) {
 // CHECK-NEXT:         right: 9,
 // CHECK-NEXT:         wide: 10,
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let p: *mut pair = std::ptr::addr_of_mut!(s);
+// CHECK-NEXT:     let p: *mut pair = core::ptr::addr_of_mut!(s);
 // CHECK-NEXT:     let r#fn: Option<unsafe extern "C-unwind" fn(i32) -> i32> = Some(thrice);
 // CHECK-NEXT:     SWAP!(i32, i, j);
 // CHECK-NEXT:     SWAP!(c_long, m, n);
@@ -271,17 +271,17 @@ int main(void) {
 // CHECK-NEXT:     let q: i32 = 9;
 // CHECK-NEXT:     let r: i32 = MEMBER_NAME!(left);
 // CHECK-NEXT:     let mut oc: only_cast = only_cast { value: 42 };
-// CHECK-NEXT:     let erased: *mut () = std::ptr::addr_of_mut!(oc) as *mut ();
+// CHECK-NEXT:     let erased: *mut () = core::ptr::addr_of_mut!(oc) as *mut ();
 // CHECK-NEXT:     let v: i32 = unsafe { (*(erased as *mut only_cast)).value };
 // CHECK-NEXT:     let mut odd: odd_fields = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: odd_fields = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: odd_fields = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].r#type = 1i32;
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_flag(2u32);
 // CHECK-NEXT:         [[T_0]].count = 3i32;
 // CHECK-NEXT:         [[T_0]].[[SLATE_ANON_0]] = __SlateRecord_macro_arguments_c_32 { inner_value: 4 };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let op: *mut odd_fields = std::ptr::addr_of_mut!(odd);
+// CHECK-NEXT:     let op: *mut odd_fields = core::ptr::addr_of_mut!(odd);
 // CHECK-NEXT:     SET_FIELD!(op, r#type, 20i32);
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         unsafe {
@@ -305,7 +305,7 @@ int main(void) {
 // CHECK-NEXT:                 FIELD__3!(op, inner_value),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
@@ -349,7 +349,7 @@ int main(void) {
 // CHECK-NEXT:             v,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -455,7 +455,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SIZE_PLUS {
 // CHECK-NEXT:     ($T:ty, $n:expr) => {
-// CHECK-NEXT:         (std::mem::size_of::<$T>() as size_t).wrapping_add(($n) as size_t)
+// CHECK-NEXT:         (core::mem::size_of::<$T>() as size_t).wrapping_add(($n) as size_t)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -477,7 +477,7 @@ int main(void) {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $($x),*) };
-// CHECK-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }

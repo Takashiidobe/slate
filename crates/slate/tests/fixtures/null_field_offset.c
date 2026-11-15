@@ -15,22 +15,22 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: macro_rules! OFFSET {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         24
+// CHECK-NEXT:         24u64
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! OFFSET__2 {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         16
+// CHECK-NEXT:         16u64
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! OFFSET__3 {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         8
+// CHECK-NEXT:         8u64
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! OFFSET__4 {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         0
+// CHECK-NEXT:         0u64
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
@@ -62,14 +62,14 @@ int main(void) {
 // CHECK-NEXT:             OFFSET__4!(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     (20 != (std::mem::offset_of!(Record, nested.second) as u64)) as i32
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     (20 != (core::mem::offset_of!(Record, nested.second) as u64)) as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = [[T_0]].wrapping_add([[T_1]]);
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]]: i128 = [[T_2]].to_i128() as i128;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *std::ptr::addr_of_mut!(r) = [[T_3]];
+// CHECK-NEXT:             *core::ptr::addr_of_mut!(r) = [[T_3]];
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_2]].compare(<bitint::BInt<258, 5, 40, bitint::A8>>::from_i128([[T_3]] as i128))
 // CHECK-NEXT:             != 0
@@ -61,7 +61,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_6:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = [[T_4]].wrapping_add([[T_5]]);
 // CHECK-NEXT:         let [[T_7:__t[0-9]+]]: u128 = [[T_6]].to_i128() as u128;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *std::ptr::addr_of_mut!(ur) = [[T_7]];
+// CHECK-NEXT:             *core::ptr::addr_of_mut!(ur) = [[T_7]];
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_6]].compare(<bitint::BInt<258, 5, 40, bitint::A8>>::from_u128([[T_7]] as u128))
 // CHECK-NEXT:             != 0
@@ -83,7 +83,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_10:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = [[T_8]].wrapping_mul([[T_9]]);
 // CHECK-NEXT:         let [[T_11:__t[0-9]+]]: u128 = [[T_10]].to_i128() as u128;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *std::ptr::addr_of_mut!(ur) = [[T_11]];
+// CHECK-NEXT:             *core::ptr::addr_of_mut!(ur) = [[T_11]];
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_10]].compare(<bitint::BInt<258, 5, 40, bitint::A8>>::from_u128([[T_11]] as u128))
 // CHECK-NEXT:             != 0
@@ -105,7 +105,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_14:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = [[T_12]].wrapping_sub([[T_13]]);
 // CHECK-NEXT:         let [[T_15:__t[0-9]+]]: i128 = [[T_14]].to_i128() as i128;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *std::ptr::addr_of_mut!(r) = [[T_15]];
+// CHECK-NEXT:             *core::ptr::addr_of_mut!(r) = [[T_15]];
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_14]].compare(<bitint::BInt<258, 5, 40, bitint::A8>>::from_i128([[T_15]] as i128))
 // CHECK-NEXT:             != 0
@@ -116,8 +116,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -310,7 +310,7 @@ int main(void) {
 // CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn switch_wide_selector(mut [[T_0:__t[0-9]+]]: bitint::BInt<256, 4, 32, bitint::A8>) -> i32 {
@@ -357,7 +357,7 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn switch_wide_selector_unsigned(mut [[T_0]]: bitint::BUint<256, 4, 32, bitint::A8>) -> i32 {
@@ -393,7 +393,7 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn switch_wide_fallthrough(mut [[T_0]]: bitint::BInt<256, 4, 32, bitint::A8>) -> i32 {
@@ -639,7 +639,7 @@ int main(void) {
 // CHECK-NEXT:     let mut sum128: bitint::BInt<128, 2, 16, bitint::A8> = add128(x128, y128);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), sum128.to_i128() as i64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let p128: bitint::BUint<128, 2, 16, bitint::A8> =
 // CHECK-NEXT:         <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(1000000000000 as u128);
 // CHECK-NEXT:     let q128: bitint::BUint<128, 2, 16, bitint::A8> =
@@ -649,8 +649,8 @@ int main(void) {
 // CHECK-NEXT:     let mut prod128: bitint::BUint<128, 2, 16, bitint::A8> = mul128(p128, q128);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%llu\n".as_ptr(), prod128.to_u128() as u64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let mut w: W = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     let mut w: W = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     w.tag = 1;
 // CHECK-NEXT:     w.s = <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(-5 as i128);
 // CHECK-NEXT:     w.u = <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(12345678901234567890 as u128);
@@ -668,13 +668,13 @@ int main(void) {
 // CHECK-NEXT:     w.u = [[V_3]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), 40u64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), w.s.to_i128() as i64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%llu\n".as_ptr(), w.u.to_u128() as u64) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut x256: bitint::BInt<256, 4, 32, bitint::A8> =
 // CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(12345 as i128);
 // CHECK-NEXT:     let mut y256: bitint::BInt<256, 4, 32, bitint::A8> =
@@ -816,8 +816,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

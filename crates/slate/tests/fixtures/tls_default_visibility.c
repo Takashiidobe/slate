@@ -64,9 +64,9 @@ int main(void) {
 // CHECK-NEXT:     as *const i8;
 // CHECK-NEXT: static mut exported_count: i32 = 3;
 // CHECK-NEXT: #[thread_local]
-// CHECK-NEXT: static mut reusable_buffer: *mut i8 = std::ptr::null_mut::<i8>();
+// CHECK-NEXT: static mut reusable_buffer: *mut i8 = core::ptr::null_mut::<i8>();
 // CHECK-NEXT: #[thread_local]
-// CHECK-NEXT: static mut reusable_used: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut reusable_used: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: #[thread_local]
 // CHECK-NEXT: static mut thread_index: i64 = -1;
 // CHECK-NEXT: fn detect() -> i32 {
@@ -98,14 +98,14 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *out.add(3) = detect() as i64;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     std::ptr::null_mut::<()>()
+// CHECK-NEXT:     core::ptr::null_mut::<()>()
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         thread_index = 7;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         reusable_buffer = std::ptr::addr_of_mut!(storage) as *mut i8;
+// CHECK-NEXT:         reusable_buffer = core::ptr::addr_of_mut!(storage) as *mut i8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         reusable_used = 5;
@@ -114,8 +114,8 @@ int main(void) {
 // CHECK-NEXT:     let mut thread: u64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         pthread_create(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(thread),
-// CHECK-NEXT:             std::ptr::null::<slate_support::pthread_attr_t>(),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(thread),
+// CHECK-NEXT:             core::ptr::null::<slate_support::pthread_attr_t>(),
 // CHECK-NEXT:             Some(worker),
 // CHECK-NEXT:             seen.0.as_mut_ptr() as *mut (),
 // CHECK-NEXT:         )
@@ -123,7 +123,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         pthread_join(
 // CHECK-NEXT:             thread as u64,
-// CHECK-NEXT:             std::ptr::null_mut::<*mut ()>() as *mut *mut core::ffi::c_void,
+// CHECK-NEXT:             core::ptr::null_mut::<*mut ()>() as *mut *mut core::ffi::c_void,
 // CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -140,15 +140,15 @@ int main(void) {
 // CHECK-NEXT:             exported_count,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut storage: [i8; 8] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut storage: [i8; 8] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

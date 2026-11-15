@@ -18,7 +18,7 @@ impl FunctionLowerer<'_, '_> {
             return Ok(Stmt::Expr(Expr::Unsafe(Box::new(rust::Block {
                 stmts: Vec::new(),
                 tail: Some(Box::new(Expr::Call {
-                    func: Box::new(Expr::Var("std::ptr::write_volatile".into())),
+                    func: Box::new(Expr::Var("core::ptr::write_volatile".into())),
                     args: vec![self.lower_address(place, true)?, value],
                     binding: CallBinding::Generated,
                 })),

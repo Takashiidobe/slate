@@ -162,13 +162,13 @@ fn f80_partial_eq_impl() -> Item {
 fn f80_partial_ord_impl() -> Item {
     let ordering = || Type::Generic {
         name: "Option".into(),
-        args: vec![Type::Custom("std::cmp::Ordering".into())],
+        args: vec![Type::Custom("core::cmp::Ordering".into())],
     };
     let some = |ordering: &str| Expr::Call {
         binding: CallBinding::Generated,
         func: Box::new(Expr::Path(Path::new([Ident::from("Some")]))),
         args: vec![Expr::Path(Path::new(
-            ["std", "cmp", "Ordering", ordering].map(Ident::from),
+            ["core", "cmp", "Ordering", ordering].map(Ident::from),
         ))],
     };
     let cmp = |shim: &str| {

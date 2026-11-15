@@ -158,7 +158,7 @@ int main(void) {
 // CHECK-NEXT:         strerror_r(
 // CHECK-NEXT:             slate_support::ENOENT as i32,
 // CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             std::mem::size_of::<[i8; 128]>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<[i8; 128]>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut timer: slate_support::itimerval = slate_support::itimerval {
@@ -171,39 +171,39 @@ int main(void) {
 // CHECK-NEXT:             tv_usec: 0,
 // CHECK-NEXT:         },
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut old: slate_support::itimerval = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut limit: slate_support::rlimit = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut usage: rusage = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut old: slate_support::itimerval = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut limit: slate_support::rlimit = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut usage: rusage = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"strerror_r: %s\n".as_ptr(), message) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "setitimer: {}", unsafe { setitimer((slate_support::ITIMER_REAL as i32) as u32,
-// CHECK-NEXT:         std::ptr::addr_of_mut!(timer) as * const slate_support::itimerval,
-// CHECK-NEXT:         std::ptr::addr_of_mut!(old)) }
+// CHECK-NEXT:         core::ptr::addr_of_mut!(timer) as * const slate_support::itimerval,
+// CHECK-NEXT:         core::ptr::addr_of_mut!(old)) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"getitimer: %d %ld\n".as_ptr(),
 // CHECK-NEXT:             getitimer(
 // CHECK-NEXT:                 (slate_support::ITIMER_REAL as i32) as u32,
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(old),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(old),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             old.it_value.tv_sec,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "getrlimit: {}", unsafe { getrlimit((slate_support::RLIMIT_NOFILE as i32) as u32,
-// CHECK-NEXT:         std::ptr::addr_of_mut!(limit)) }
+// CHECK-NEXT:         core::ptr::addr_of_mut!(limit)) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "setrlimit: {}", unsafe { setrlimit((slate_support::RLIMIT_NOFILE as i32) as u32,
-// CHECK-NEXT:         std::ptr::addr_of_mut!(limit) as * const slate_support::rlimit) }
+// CHECK-NEXT:         core::ptr::addr_of_mut!(limit) as * const slate_support::rlimit) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "getrusage: {}", unsafe { getrusage(slate_support::RUSAGE_SELF as i32,
-// CHECK-NEXT:         std::ptr::addr_of_mut!(usage)) }
+// CHECK-NEXT:         core::ptr::addr_of_mut!(usage)) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *slate_support::errno_location() = 0;
@@ -219,8 +219,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

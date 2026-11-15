@@ -34,8 +34,8 @@ int main(void) {
 // CHECK-NEXT: macro_rules! hybrid_var {
 // CHECK-NEXT:     ($_pmu:expr, $_var:expr) => {
 // CHECK-NEXT:         { let mut __v : * mut {{\[\[}}u64; 3]; 2]; let mut [[V_0:__v[0-9]+]] : * mut {{\[\[}}u64; 3]; 2] = unsafe
-// CHECK-NEXT:         { std::ptr::addr_of_mut!($_var) }; if is_hybrid($_pmu) != 0 { [[V_0]] = unsafe {
-// CHECK-NEXT:         std::ptr::addr_of_mut!((*$_pmu).regs) }; } __v = [[V_0]]; unsafe { (* __v)
+// CHECK-NEXT:         { core::ptr::addr_of_mut!($_var) }; if is_hybrid($_pmu) != 0 { [[V_0]] = unsafe {
+// CHECK-NEXT:         core::ptr::addr_of_mut!((*$_pmu).regs) }; } __v = [[V_0]]; unsafe { (* __v)
 // CHECK-NEXT:         .as_mut_ptr() as * mut [u64; 3] } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -51,7 +51,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut regs: __SlateAlign16<{{\[\[}}u64; 3]; 2]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     std::mem::zeroed()
+// CHECK-NEXT:     core::mem::zeroed()
 // CHECK-NEXT: });
 // CHECK-NEXT: static mut source: __SlateAlign16<{{\[\[}}u64; 3]; 2]> = __SlateAlign16([
 // CHECK-NEXT:     [1u64, 2u64, 3u64],
@@ -63,31 +63,31 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut hybrid: pmu = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: pmu = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: pmu = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].hybrid = 1i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut plain: pmu = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: pmu = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: pmu = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].hybrid = 0i32;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((std::ptr::addr_of!(source.0) as *const [u64; 3]) as *const ())
+// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
+// CHECK-NEXT:             (((core::ptr::addr_of!(source.0) as *const [u64; 3]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
-// CHECK-NEXT:             ((hybrid_var!(std::ptr::addr_of_mut!(hybrid), regs.0) as *mut ())
+// CHECK-NEXT:             ((hybrid_var!(core::ptr::addr_of_mut!(hybrid), regs.0) as *mut ())
 // CHECK-NEXT:                 as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:             ((std::mem::size_of::<{{\[\[}}u64; 3]; 2]>() as u64) as usize) as usize,
+// CHECK-NEXT:             ((core::mem::size_of::<{{\[\[}}u64; 3]; 2]>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((std::ptr::addr_of!(source.0) as *const [u64; 3]) as *const ())
+// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
+// CHECK-NEXT:             (((core::ptr::addr_of!(source.0) as *const [u64; 3]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
-// CHECK-NEXT:             ((hybrid_var!(std::ptr::addr_of_mut!(plain), regs.0) as *mut ())
+// CHECK-NEXT:             ((hybrid_var!(core::ptr::addr_of_mut!(plain), regs.0) as *mut ())
 // CHECK-NEXT:                 as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:             ((std::mem::size_of::<{{\[\[}}u64; 3]; 2]>() as u64) as usize) as usize,
+// CHECK-NEXT:             ((core::mem::size_of::<{{\[\[}}u64; 3]; 2]>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -99,14 +99,14 @@ int main(void) {
 // CHECK-NEXT:             regs.0[0][1],
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

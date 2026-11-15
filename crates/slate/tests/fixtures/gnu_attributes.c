@@ -199,10 +199,10 @@ int main(void) {
 // CHECK-NEXT:     integer: i32,
 // CHECK-NEXT:     unsigned_integer: u32,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut gnu_cleanup_total: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT: static mut gnu_constructor_total: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT: static mut gnu_common_value: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT: static mut gnu_nocommon_value: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut gnu_cleanup_total: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT: static mut gnu_constructor_total: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT: static mut gnu_common_value: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT: static mut gnu_nocommon_value: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: #[used(linker)]
 // CHECK-NEXT: #[unsafe(link_section = ".data.gnu_attribute")]
 // CHECK-NEXT: static mut gnu_section_value: i32 = 3;
@@ -296,7 +296,7 @@ int main(void) {
 // CHECK-NEXT: fn gnu_attribute_cleanup_scope() -> i32 {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut value: i32 = 53;
-// CHECK-NEXT:         let __slate_cleanup_ptr_0 = std::ptr::addr_of_mut!(value) as *mut _;
+// CHECK-NEXT:         let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(value) as *mut _;
 // CHECK-NEXT:         let __slate_cleanup_0 = __slate_cleanup::Guard(|| gnu_attribute_cleanup(
 // CHECK-NEXT:             __slate_cleanup_ptr_0 as *mut _,
 // CHECK-NEXT:         ));
@@ -312,20 +312,20 @@ int main(void) {
 // CHECK-NEXT:         value: 59,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let aligned: GNUAttributeAligned = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: GNUAttributeAligned = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: GNUAttributeAligned = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].value = 61u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let alias_value: i32 = 67;
 // CHECK-NEXT:     let byte_value: u8 = 255;
-// CHECK-NEXT:     let vector_value: std::simd::Simd<u32, 4> = std::simd::Simd::from_array([
+// CHECK-NEXT:     let vector_value: core::simd::Simd<u32, 4> = core::simd::Simd::from_array([
 // CHECK-NEXT:         2u32, 3u32, 5u32, 7u32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     (std::mem::size_of::<GNUAttributePacked>() as i32)
-// CHECK-NEXT:         + (std::mem::offset_of!(GNUAttributePacked, value) as i32)
-// CHECK-NEXT:         + (std::mem::align_of::<GNUAttributeAligned>() as i32) + (packed.tag as i32)
+// CHECK-NEXT:     (core::mem::size_of::<GNUAttributePacked>() as i32)
+// CHECK-NEXT:         + (core::mem::offset_of!(GNUAttributePacked, value) as i32)
+// CHECK-NEXT:         + (core::mem::align_of::<GNUAttributeAligned>() as i32) + (packed.tag as i32)
 // CHECK-NEXT:         + (packed.value as i32) + (aligned.value as i32) + alias_value
-// CHECK-NEXT:         + (std::mem::size_of::<u8>() as i32) + (byte_value as i32) + 16
+// CHECK-NEXT:         + (core::mem::size_of::<u8>() as i32) + (byte_value as i32) + 16
 // CHECK-NEXT:         + (vector_value[0] as i32) + (vector_value[3] as i32)
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -337,7 +337,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         gnu_nocommon_value = 79;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(never)) }) != 0 {
+// CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(never)) }) != 0 {
 // CHECK-NEXT:         gnu_attribute_noreturn();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
@@ -346,10 +346,10 @@ int main(void) {
 // CHECK-NEXT:         gnu_attribute_target(83i32), gnu_attribute_target(89i32), gnu_attribute_weak(),
 // CHECK-NEXT:         gnu_attribute_decorated(97i32) + gnu_attribute_flatten(101i32),
 // CHECK-NEXT:         gnu_attribute_const(103i32) + gnu_attribute_pure(unsafe { & (*
-// CHECK-NEXT:         (std::ptr::addr_of_mut!(value) as * const i32)) }) + gnu_attribute_nonnull(unsafe
-// CHECK-NEXT:         { & (* (std::ptr::addr_of_mut!(value) as * const i32)) }),
-// CHECK-NEXT:         gnu_attribute_result(107i32) + gnu_attribute_deprecated(109i32), (unsafe {
-// CHECK-NEXT:         gnu_attribute_sentinel(113i32, std::ptr::null_mut::< () > ()) }) +
+// CHECK-NEXT:         (core::ptr::addr_of_mut!(value) as * const i32)) }) +
+// CHECK-NEXT:         gnu_attribute_nonnull(unsafe { & (* (core::ptr::addr_of_mut!(value) as * const
+// CHECK-NEXT:         i32)) }), gnu_attribute_result(107i32) + gnu_attribute_deprecated(109i32),
+// CHECK-NEXT:         (unsafe { gnu_attribute_sentinel(113i32, core::ptr::null_mut::< () > ()) }) +
 // CHECK-NEXT:         gnu_attribute_returns_twice() + gnu_attribute_leaf(127i32) +
 // CHECK-NEXT:         gnu_attribute_transparent(__SlateRecord_gnu_attributes_c_22 { integer : 131 }) +
 // CHECK-NEXT:         unsafe { gnu_common_value } + unsafe { gnu_nocommon_value } + unsafe {
@@ -364,8 +364,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -77,7 +77,7 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut targets: __SlateAlign16<[*mut (); 3]> = __SlateAlign16([
 // CHECK-NEXT:     4usize as *mut (),
@@ -87,15 +87,15 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let input: i32 = 2;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", jump_probe(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) })
+// CHECK-NEXT:         "{}", jump_probe(unsafe { core::ptr::read_volatile(core::ptr::addr_of!(input)) })
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

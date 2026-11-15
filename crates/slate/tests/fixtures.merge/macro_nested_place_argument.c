@@ -71,8 +71,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
@@ -82,7 +82,7 @@ int main(void) {
 // CHECK-NEXT:     let mut strides: [c_long; 1] = [1];
 // CHECK-NEXT:     let mut plain: view = view {
 // CHECK-NEXT:         buf: data.as_mut_ptr() as *mut c_char,
-// CHECK-NEXT:         suboffsets: std::ptr::null_mut::<c_long>(),
+// CHECK-NEXT:         suboffsets: core::ptr::null_mut::<c_long>(),
 // CHECK-NEXT:         strides: strides.as_mut_ptr() as *mut c_long,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut rows: __SlateAlignLargeArray<[*mut c_char; 2]> =
@@ -90,7 +90,7 @@ int main(void) {
 // CHECK-NEXT:             (data.as_mut_ptr() as *mut c_char).add(1)
 // CHECK-NEXT:         }]);
 // CHECK-NEXT:     let mut subs: [c_long; 1] = [1];
-// CHECK-NEXT:     let mut one: [c_long; 1] = [std::mem::size_of::<*mut c_char>() as c_long];
+// CHECK-NEXT:     let mut one: [c_long; 1] = [core::mem::size_of::<*mut c_char>() as c_long];
 // CHECK-NEXT:     let mut indirect: view = view {
 // CHECK-NEXT:         buf: rows.0.as_mut_ptr() as *mut c_char,
 // CHECK-NEXT:         suboffsets: subs.as_mut_ptr() as *mut c_long,
@@ -101,18 +101,18 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%c %c\n".as_ptr(),
 // CHECK-NEXT:             *lookup(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(plain) as *const view,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(plain) as *const view,
 // CHECK-NEXT:                 (2 as c_long),
 // CHECK-NEXT:                 0i32,
 // CHECK-NEXT:             ) as i32,
 // CHECK-NEXT:             *lookup(
-// CHECK-NEXT:                 std::ptr::addr_of_mut!(indirect) as *const view,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(indirect) as *const view,
 // CHECK-NEXT:                 (1 as c_long),
 // CHECK-NEXT:                 0i32,
 // CHECK-NEXT:             ) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

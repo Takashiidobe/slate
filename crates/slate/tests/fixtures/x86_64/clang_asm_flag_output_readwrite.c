@@ -28,7 +28,7 @@ int main(void) {
 // CHECK-NEXT:             "cmpl {2:e}, {1:e}\nsetz {0}", out(reg_byte) [[T_0]], in (reg) left as u32, in
 // CHECK-NEXT:             (reg) right as u32, options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         flag = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
@@ -41,8 +41,8 @@ int main(void) {
 // CHECK-NEXT:             "addl {2:e}, {1:e}\nsetc {0}", out(reg_byte) [[T_0]], inlateout(reg) a as u32 =>
 // CHECK-NEXT:             [[T_1]], in (reg) b as u32, options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         flag = unsafe { std::mem::transmute::<u8, u8>([[T_0]] as u8) };
-// CHECK-NEXT:         a = unsafe { std::mem::transmute::<u32, u32>([[T_1]] as u32) };
+// CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u8, u8>([[T_0]] as u8) };
+// CHECK-NEXT:         a = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     ((flag as i32) * 10 + ((a == 0) as i32)) as u8
 // CHECK-NEXT: }
@@ -56,8 +56,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

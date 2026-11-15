@@ -190,15 +190,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
-// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:             Some(core::cmp::Ordering::Less)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     None
 // CHECK-NEXT:                 }
@@ -231,17 +231,17 @@ int main(void) {
 // CHECK-NEXT:             expo,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu\n".as_ptr(),
-// CHECK-NEXT:             std::mem::size_of::<f32>() as u64,
-// CHECK-NEXT:             std::mem::size_of::<LongDouble>() as u64,
-// CHECK-NEXT:             std::mem::size_of::<f32>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<f32>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<LongDouble>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<f32>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let tenth: f64 = 0.1f32 as f64;
 // CHECK-NEXT:     let third: f64 = (1.0f32 / 3.0f32) as f64;
 // CHECK-NEXT:     let exact: LongDouble = LongDouble([205, 204, 204, 204, 204, 204, 204, 204, 251, 63]);
@@ -249,11 +249,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f64_f64_f80(c"%.17g %.17g %.17Lg\n".as_ptr(), tenth, third, exact)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
 // CHECK-NEXT:         (tenth == (0.1f32 as f64)) as i32,
-// CHECK-NEXT:         ((std::mem::size_of::<f32>() as u64) == (std::mem::size_of::<f64>() as u64)) as i32
+// CHECK-NEXT:         ((core::mem::size_of::<f32>() as u64) == (core::mem::size_of::<f64>() as u64)) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
@@ -261,8 +261,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

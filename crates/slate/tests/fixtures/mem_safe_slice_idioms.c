@@ -57,7 +57,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut dst_a: [u8; 8] = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [u8; 8] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [u8; 8] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
@@ -73,7 +73,7 @@ int main(void) {
 // CHECK-NEXT:     let mut dst_e: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     let mut src_e: [u8; 8] = [9, 9, 9, 9, 9, 9, 9, 9];
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             (((src_e.as_mut_ptr() as *mut u8).add(2) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((dst_e.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
@@ -84,7 +84,7 @@ int main(void) {
 // CHECK-NEXT:     let mut src_f: [u8; 8] = [9, 9, 9, 9, 9, 9, 9, 9];
 // CHECK-NEXT:     let n: i32 = get_n();
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             ((src_f.as_mut_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((dst_f.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             ((n as u64) as usize) as usize,
@@ -93,14 +93,14 @@ int main(void) {
 // CHECK-NEXT:     let mut dst_g: [u8; 4] = [0, 0, 0, 0];
 // CHECK-NEXT:     let src_g: *mut u8 = (unsafe { malloc(4u64 as usize) as *mut () }) as *mut u8;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:         core::ptr::write_bytes(
 // CHECK-NEXT:             ((src_g as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (5i32 as i32) as u8,
 // CHECK-NEXT:             (4u64 as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             ((src_g as *const ()) as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((dst_g.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (4u64 as usize) as usize,

@@ -105,7 +105,7 @@ fn strippable(expr: &Expr) -> bool {
 fn fixed(expr: &Expr) -> bool {
     match expr {
         Expr::Call { func, .. } => {
-            !matches!(func.as_ref(), Expr::Var(v) if v.as_str() == "std::mem::zeroed")
+            !matches!(func.as_ref(), Expr::Var(v) if v.as_str() == "core::mem::zeroed")
         }
         Expr::Transmute { .. } | Expr::Todo(_) => false,
         Expr::Block(block) | Expr::Unsafe(block) => block.tail.as_deref().is_some_and(fixed),

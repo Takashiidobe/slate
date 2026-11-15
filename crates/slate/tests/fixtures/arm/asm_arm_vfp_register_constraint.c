@@ -36,10 +36,10 @@ int main(void) {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "vmov.f32 {0}, {1}", lateout(sreg) [[T_0]], in (sreg) unsafe {
-// CHECK-NEXT:             std::mem::transmute::< f32, u32 > (value) }, options(nostack,
+// CHECK-NEXT:             core::mem::transmute::< f32, u32 > (value) }, options(nostack,
 // CHECK-NEXT:             preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         result = unsafe { std::mem::transmute::<u32, f32>([[T_0]] as u32) };
+// CHECK-NEXT:         result = unsafe { core::mem::transmute::<u32, f32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK: {{^}}}
@@ -49,10 +49,10 @@ int main(void) {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "fcpyd {0}, {1}", lateout(dreg_low16) [[T_0]], in (dreg_low16) unsafe {
-// CHECK-NEXT:             std::mem::transmute::< f64, u64 > (value) }, options(nostack,
+// CHECK-NEXT:             core::mem::transmute::< f64, u64 > (value) }, options(nostack,
 // CHECK-NEXT:             preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         result = unsafe { std::mem::transmute::<u64, f64>([[T_0]] as u64) };
+// CHECK-NEXT:         result = unsafe { core::mem::transmute::<u64, f64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK: {{^}}}
@@ -62,10 +62,10 @@ int main(void) {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "fcpyd {0}, {1}", lateout(dreg_low8) [[T_0]], in (dreg_low8) unsafe {
-// CHECK-NEXT:             std::mem::transmute::< f64, u64 > (value) }, options(nostack,
+// CHECK-NEXT:             core::mem::transmute::< f64, u64 > (value) }, options(nostack,
 // CHECK-NEXT:             preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         result = unsafe { std::mem::transmute::<u64, f64>([[T_0]] as u64) };
+// CHECK-NEXT:         result = unsafe { core::mem::transmute::<u64, f64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK: {{^}}}

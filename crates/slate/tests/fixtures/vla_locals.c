@@ -162,7 +162,7 @@ int main(void) {
 // CHECK-NEXT: fn format_port(port: i32) -> i32 {
 // CHECK-NEXT:     let length: i32 = unsafe {
 // CHECK-NEXT:         snprintf(
-// CHECK-NEXT:             std::ptr::null_mut::<i8>() as *mut core::ffi::c_char,
+// CHECK-NEXT:             core::ptr::null_mut::<i8>() as *mut core::ffi::c_char,
 // CHECK-NEXT:             0u64 as usize,
 // CHECK-NEXT:             c"%d".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:             port,
@@ -199,7 +199,7 @@ int main(void) {
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::write_bytes(
+// CHECK-NEXT:         core::ptr::write_bytes(
 // CHECK-NEXT:             ((buf.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (120i32 as i32) as u8,
 // CHECK-NEXT:             ([[V_0]].wrapping_mul(1).wrapping_sub(1) as usize) as usize,
@@ -230,7 +230,7 @@ int main(void) {
 // CHECK-NEXT:                 *((grid.as_mut_ptr() as *mut [i32; 0])
 // CHECK-NEXT:                     .byte_offset(
 // CHECK-NEXT:                         (r as isize)
-// CHECK-NEXT:                             * ((([[V_1]] as usize) * std::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                             * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize),
 // CHECK-NEXT:                     ) as *mut i32)
 // CHECK-NEXT:                     .offset(c as isize) = r * 10 + c;
 // CHECK-NEXT:             }
@@ -239,7 +239,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: u64 = cols as u64;
 // CHECK-NEXT:     let row: *mut [i32; 0] = (unsafe {
 // CHECK-NEXT:         (grid.as_mut_ptr() as *mut [i32; 0])
-// CHECK-NEXT:             .byte_offset(1 * ((([[V_1]] as usize) * std::mem::size_of::<i32>()) as isize))
+// CHECK-NEXT:             .byte_offset(1 * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize))
 // CHECK-NEXT:     }) as *mut [i32; 0];
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for c in 0..cols {
@@ -248,14 +248,15 @@ int main(void) {
 // CHECK-NEXT:             + ((unsafe {
 // CHECK-NEXT:                 *(row
 // CHECK-NEXT:                     .byte_offset(
-// CHECK-NEXT:                         0 * ((([[V_3]] as usize) * std::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                         0 * ((([[V_3]] as usize) * core::mem::size_of::<i32>()) as isize),
 // CHECK-NEXT:                     ) as *mut i32)
 // CHECK-NEXT:                     .offset(c as isize)
 // CHECK-NEXT:             })
 // CHECK-NEXT:                 + unsafe {
 // CHECK-NEXT:                     *(row
 // CHECK-NEXT:                         .byte_offset(
-// CHECK-NEXT:                             1 * ((([[V_3]] as usize) * std::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                             1
+// CHECK-NEXT:                                 * ((([[V_3]] as usize) * core::mem::size_of::<i32>()) as isize),
 // CHECK-NEXT:                         ) as *mut i32)
 // CHECK-NEXT:                         .offset(c as isize)
 // CHECK-NEXT:                 });
@@ -264,12 +265,12 @@ int main(void) {
 // CHECK-NEXT:         ((grid.as_mut_ptr() as *mut [i32; 0])
 // CHECK-NEXT:             .byte_offset(
 // CHECK-NEXT:                 (rows as isize)
-// CHECK-NEXT:                     * ((([[V_1]] as usize) * std::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                     * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize),
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .byte_offset(-1 * ((([[V_1]] as usize) * std::mem::size_of::<i32>()) as isize))
+// CHECK-NEXT:             .byte_offset(-1 * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize))
 // CHECK-NEXT:             as *const u8)
 // CHECK-NEXT:             .offset_from(grid.as_mut_ptr() as *const u8)
-// CHECK-NEXT:     }) / ((([[V_1]] as usize) * std::mem::size_of::<i32>()) as isize)) as i64;
+// CHECK-NEXT:     }) / ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize)) as i64;
 // CHECK-NEXT:     sum * 100 + (distance as i32) * 10
 // CHECK-NEXT:         + (([[V_0]].wrapping_mul([[V_1]].wrapping_mul(4)) / [[V_1]].wrapping_mul(4)) as i32)
 // CHECK-NEXT: }
@@ -321,7 +322,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), wrap_objects(4i32)) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", format_port(6379i32));
 // CHECK-NEXT:     println!("{}", const_bound());
 // CHECK-NEXT:     println!("{}", matrix(3i32, 4i32));
@@ -333,8 +334,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

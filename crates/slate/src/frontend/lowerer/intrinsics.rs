@@ -83,7 +83,7 @@ pub(super) fn simd_type(element: rust::Type, lanes: u64) -> Option<rust::Type> {
         return None;
     }
     Some(rust::Type::Generic {
-        name: "std::simd::Simd".into(),
+        name: "core::simd::Simd".into(),
         args: vec![element, rust::Type::Custom(lanes.to_string())],
     })
 }
@@ -95,7 +95,7 @@ fn simd_parts(ty: &rust::Type) -> Option<(&rust::Type, u64)> {
     let [element, rust::Type::Custom(lanes)] = args.as_slice() else {
         return None;
     };
-    (name == "std::simd::Simd").then_some((element, lanes.parse().ok()?))
+    (name == "core::simd::Simd").then_some((element, lanes.parse().ok()?))
 }
 
 fn scalar_type(name: &str) -> Option<rust::Type> {

@@ -1,6 +1,6 @@
 mod __slate_blocks {
-    use std::ffi::c_void;
-    use std::mem::{MaybeUninit, offset_of, size_of};
+    use core::ffi::c_void;
+    use core::mem::{MaybeUninit, offset_of, size_of};
 
     #[cfg(not(target_vendor = "apple"))]
     use slate_blocks as _;
@@ -37,7 +37,7 @@ mod __slate_blocks {
     pub unsafe fn byref<T>(slot: *mut MaybeUninit<Byref<T>>) -> *mut Byref<T> {
         unsafe {
             let byref = slot.cast::<Byref<T>>();
-            (&raw mut (*byref).isa).write(std::ptr::null());
+            (&raw mut (*byref).isa).write(core::ptr::null());
             (&raw mut (*byref).forwarding).write(byref);
             (&raw mut (*byref).flags).write(0);
             (&raw mut (*byref).size).write(size_of::<Byref<T>>() as i32);

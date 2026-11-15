@@ -86,28 +86,28 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut options: __SlateAlign16<[FlagDef; 4]> = __SlateAlign16([
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: FlagDef = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: FlagDef = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].offset = (4usize as u64) as u16;
 // CHECK-NEXT:         [[T_0]].flags = 1u16;
 // CHECK-NEXT:         [[T_0]].name = (b"all\0".as_ptr() as *mut i8) as *const i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     },
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: FlagDef = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: FlagDef = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].offset = (5usize as u64) as u16;
 // CHECK-NEXT:         [[T_1]].flags = 0u16;
 // CHECK-NEXT:         [[T_1]].name = (b"error\0".as_ptr() as *mut i8) as *const i8;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     },
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: FlagDef = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: FlagDef = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]].offset = (10usize as u64) as u16;
 // CHECK-NEXT:         [[T_2]].flags = 0u16;
 // CHECK-NEXT:         [[T_2]].name = (b"nested\0".as_ptr() as *mut i8) as *const i8;
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     },
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: FlagDef = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: FlagDef = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_3]].offset = (16usize as u64) as u16;
 // CHECK-NEXT:         [[T_3]].flags = 2u16;
 // CHECK-NEXT:         [[T_3]].name = (b"tail\0".as_ptr() as *mut i8) as *const i8;
@@ -118,15 +118,15 @@ int main(void) {
 // CHECK-NEXT: static mut narrow_offset: u32 = (6usize as u64) as u32;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut state: State = {
-// CHECK-NEXT:         let mut [[T_0]]: State = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: State = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].mode = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     for i in 0..((std::mem::size_of::<[FlagDef; 4]>() as u64)
-// CHECK-NEXT:         / (std::mem::size_of::<FlagDef>() as u64))
+// CHECK-NEXT:     for i in 0..((core::mem::size_of::<[FlagDef; 4]>() as u64)
+// CHECK-NEXT:         / (core::mem::size_of::<FlagDef>() as u64))
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let field: *mut u8 = unsafe {
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(state) as *mut u8)
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(state) as *mut u8)
 // CHECK-NEXT:                 .offset((options.0[i as usize].offset as i32) as isize)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe {
@@ -141,7 +141,7 @@ int main(void) {
 // CHECK-NEXT:                 options.0[i as usize].flags as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -153,7 +153,7 @@ int main(void) {
 // CHECK-NEXT:             (state.tail & 255) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let span: u8 = NULL_OFFSETOF!().wrapping_sub(NULL_OFFSETOF__2!()) as u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -164,14 +164,14 @@ int main(void) {
 // CHECK-NEXT:             span as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

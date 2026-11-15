@@ -141,7 +141,7 @@ int main(void) {
 // CHECK-NEXT:             compound(a, a, c) as f64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let x: num_complex::Complex<f16> = {
 // CHECK-NEXT:         let [[T_2]] = (a as f32)
 // CHECK-NEXT:             + (a as f32)
@@ -208,7 +208,7 @@ int main(void) {
 // CHECK-NEXT:             q.im as f64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let w: num_complex::Complex<f64> = num_complex::Complex {
 // CHECK-NEXT:         re: 2.0f64,
 // CHECK-NEXT:         im: 0.0,
@@ -227,8 +227,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -68,8 +68,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
@@ -90,13 +90,13 @@ int main(void) {
 // CHECK-NEXT:     report(slate_support::stdout(), 2i32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::fputs(c"three\n".as_ptr(), slate_support::stdout()) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::putc(52i32, slate_support::stdout()) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::fputc(10i32, slate_support::stdout()) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { fflush(saved) };
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     {
@@ -106,7 +106,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::fprintf(slate_support::stderr(), c"reassigned %d\n".as_ptr(), 5i32) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::fprintf(
@@ -115,7 +115,7 @@ int main(void) {
 // CHECK-NEXT:             stream_layout(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let file: *mut slate_support::FILE =
 // CHECK-NEXT:         unsafe { slate_support::fopen(c"/nonexistent/slate".as_ptr(), c"r".as_ptr()) };
 // CHECK-NEXT:     #[cfg(unix)]
@@ -127,7 +127,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"missing %d\n".as_ptr(), file.is_null() as i32) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
@@ -140,7 +140,7 @@ int main(void) {
 // CHECK-NEXT:     ($x__0:expr, $x__1:expr $(, $x:expr)*) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::fprintf($x__0, ($x__1) as *const c_char, $($x),*) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -260,7 +260,7 @@ int main(void) {
 // CHECK-NEXT: extern "C-unwind" fn stream_layout() -> i32 {
 // CHECK-NEXT:     #[cfg(target_os = "android")]
 // CHECK-NEXT:     let write: Option<unsafe extern "C-unwind" fn(i32, *mut __sFILE) -> i32> = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<
+// CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             *const (),
 // CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(i32, *mut __sFILE) -> i32>,
 // CHECK-NEXT:         >(fputc as *const ())
@@ -270,16 +270,22 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             write.unwrap()(
 // CHECK-NEXT:                 119i32,
-// CHECK-NEXT:                 (std::ptr::addr_of_mut!(__sF) as *mut __sFILE).add(1),
+// CHECK-NEXT:                 (core::ptr::addr_of_mut!(__sF) as *mut __sFILE).add(1),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { write.unwrap()(10i32, (std::ptr::addr_of_mut!(__sF) as *mut __sFILE).add(1)) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             write.unwrap()(
+// CHECK-NEXT:                 10i32,
+// CHECK-NEXT:                 (core::ptr::addr_of_mut!(__sF) as *mut __sFILE).add(1),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let write: Option<unsafe extern "C-unwind" fn(i32, *mut _iobuf) -> i32> = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32, *mut _iobuf) -> i32>>(
-// CHECK-NEXT:             fputc as *const (),
-// CHECK-NEXT:         )
+// CHECK-NEXT:         core::mem::transmute::<
+// CHECK-NEXT:             *const (),
+// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(i32, *mut _iobuf) -> i32>,
+// CHECK-NEXT:         >(fputc as *const ())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
@@ -292,7 +298,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     let write: Option<unsafe extern "C-unwind" fn(i32, *mut _IO_FILE) -> i32> = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<
+// CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             *const (),
 // CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(i32, *mut _IO_FILE) -> i32>,
 // CHECK-NEXT:         >(fputc as *const ())

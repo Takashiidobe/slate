@@ -64,7 +64,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: mod __slate_alloca {
 // CHECK-NEXT:     use std::alloc::{Layout, alloc, dealloc, handle_alloc_error};
-// CHECK-NEXT:     use std::cell::UnsafeCell;
+// CHECK-NEXT:     use core::cell::UnsafeCell;
 // CHECK-NEXT:     const ALIGN: usize = 16;
 // CHECK-NEXT:     const BLOCK: usize = 1 << 20;
 // CHECK-NEXT:     struct Block {
@@ -159,7 +159,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[inline]
-// CHECK-NEXT:     pub fn alloca(size: usize, align: usize) -> *mut std::ffi::c_void {
+// CHECK-NEXT:     pub fn alloca(size: usize, align: usize) -> *mut core::ffi::c_void {
 // CHECK-NEXT:         STACK
 // CHECK-NEXT:             .with(|stack| unsafe {
 // CHECK-NEXT:                 (*stack.get()).allocate(size, align.max(1).next_power_of_two())
@@ -259,15 +259,15 @@ int main(void) {
 // CHECK-NEXT:         109u8, 110u8, 111u8, 0u8,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut first: __SlateAlign16<[u8; 32]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [u8; 32] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [u8; 32] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut second: __SlateAlign16<[u8; 32]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [u8; 32] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [u8; 32] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut third: __SlateAlign16<[u8; 32]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: [u8; 32] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: [u8; 32] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let end: *mut () = unsafe {
@@ -306,7 +306,7 @@ int main(void) {
 // CHECK-NEXT:             (first.0.as_mut_ptr() as *mut u8).add(8) as *mut (),
 // CHECK-NEXT:             (source.0.as_mut_ptr() as *mut u8).add(8) as *const (),
 // CHECK-NEXT:             8u64,
-// CHECK-NEXT:             (std::mem::size_of::<[u8; 32]>() as u64).wrapping_sub(8),
+// CHECK-NEXT:             (core::mem::size_of::<[u8; 32]>() as u64).wrapping_sub(8),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -314,7 +314,7 @@ int main(void) {
 // CHECK-NEXT:             (second.0.as_mut_ptr() as *mut u8).add(1) as *mut (),
 // CHECK-NEXT:             second.0.as_mut_ptr() as *const (),
 // CHECK-NEXT:             7u64,
-// CHECK-NEXT:             (std::mem::size_of::<[u8; 32]>() as u64).wrapping_sub(1),
+// CHECK-NEXT:             (core::mem::size_of::<[u8; 32]>() as u64).wrapping_sub(1),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -322,7 +322,7 @@ int main(void) {
 // CHECK-NEXT:             (second.0.as_mut_ptr() as *mut u8).add(16) as *mut (),
 // CHECK-NEXT:             9i32,
 // CHECK-NEXT:             4u64,
-// CHECK-NEXT:             (std::mem::size_of::<[u8; 32]>() as u64).wrapping_sub(16),
+// CHECK-NEXT:             (core::mem::size_of::<[u8; 32]>() as u64).wrapping_sub(16),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ((end == ((unsafe { (first.0.as_mut_ptr() as *mut u8).add(8) }) as *mut ())) as i32)
@@ -349,15 +349,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_builtin_strings() -> i32 {
 // CHECK-NEXT:     let mut first: __SlateAlign16<[i8; 64]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0]]: [i8; 64] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0]]: [i8; 64] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut second: __SlateAlign16<[i8; 64]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_1]]: [i8; 64] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1]]: [i8; 64] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut third: __SlateAlign16<[i8; 64]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_2]]: [i8; 64] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_2]]: [i8; 64] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     });
 // CHECK-NEXT:     unsafe { __builtin_strcpy(first.0.as_mut_ptr() as *mut i8, c"gnu".as_ptr()) };
@@ -377,21 +377,21 @@ int main(void) {
 // CHECK-NEXT:         __builtin___strcpy_chk(
 // CHECK-NEXT:             second.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             c"clang".as_ptr(),
-// CHECK-NEXT:             std::mem::size_of::<[i8; 64]>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<[i8; 64]>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin___stpcpy_chk(
 // CHECK-NEXT:             (second.0.as_mut_ptr() as *mut i8).add(5),
 // CHECK-NEXT:             c"-head".as_ptr(),
-// CHECK-NEXT:             (std::mem::size_of::<[i8; 64]>() as u64).wrapping_sub(5),
+// CHECK-NEXT:             (core::mem::size_of::<[i8; 64]>() as u64).wrapping_sub(5),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin___strcat_chk(
 // CHECK-NEXT:             second.0.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             c"-gnu".as_ptr(),
-// CHECK-NEXT:             std::mem::size_of::<[i8; 64]>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<[i8; 64]>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ((unsafe { __builtin_strlen(first.0.as_mut_ptr() as *const i8) }) as i32)
@@ -432,8 +432,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

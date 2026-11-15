@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-NEXT:             inout(reg) reserved as u64 => [[T_0]], out(reg) _, options(pure, nomem, nostack,
 // CHECK-NEXT:             preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         reserved = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         reserved = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     reserved
 // CHECK-NEXT: }
@@ -72,7 +72,7 @@ int main(void) {
 // CHECK-NEXT:             lateout(reg) [[T_0]], in (reg) reserved as u64, in (reg) other as u64, out(reg)
 // CHECK-NEXT:             _, options(pure, nomem, nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         result = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         result = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
@@ -84,7 +84,7 @@ int main(void) {
 // CHECK-NEXT:             "mov {1:x}, x19\nmov x19, #7\nmov {0:x}, x19\nmov x19, {1:x}", out(reg) [[T_0]],
 // CHECK-NEXT:             out(reg) _, options(pure, nomem, nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         reserved = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         reserved = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     reserved
 // CHECK-NEXT: }
@@ -96,7 +96,7 @@ int main(void) {
 // CHECK-NEXT:             inout(reg) reserved as u32 => [[T_0]], out(reg) _, options(pure, nomem, nostack,
 // CHECK-NEXT:             preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         reserved = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         reserved = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     reserved
 // CHECK-NEXT: }
@@ -108,7 +108,7 @@ int main(void) {
 // CHECK-NEXT:             inout(reg) frame as u64 => [[T_0]], out(reg) _, options(pure, nomem, nostack,
 // CHECK-NEXT:             preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         frame = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         frame = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     frame
 // CHECK-NEXT: }
@@ -121,7 +121,7 @@ int main(void) {
 // CHECK-NEXT:             out(reg) [[T_0]], in (reg) low as u64, in (reg) high as u64, out(reg) _,
 // CHECK-NEXT:             out(reg) _, options(pure, nomem, nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         result = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         result = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
@@ -135,7 +135,7 @@ int main(void) {
 // CHECK-NEXT:             write_x19(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -145,14 +145,14 @@ int main(void) {
 // CHECK-NEXT:             both(20i64, 22i64),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

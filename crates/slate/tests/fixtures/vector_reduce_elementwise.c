@@ -45,148 +45,150 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
-// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.add.v4i32"]
-// CHECK-NEXT:     fn __slate_intrinsic_1d26b5d36a7eb498([[ARG_0:arg[0-9]+]]: std::simd::Simd<i32, 4>) -> i32;
-// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.fmax.v4f32"]
-// CHECK-NEXT:     fn __slate_intrinsic_26093aef5960597([[ARG_0]]: std::simd::Simd<f32, 4>) -> f32;
-// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.xor.v4i32"]
-// CHECK-NEXT:     fn __slate_intrinsic_2784696dc045b6b0([[ARG_0]]: std::simd::Simd<u32, 4>) -> u32;
-// CHECK-NEXT:     #[link_name = "llvm.smin.v4i32"]
-// CHECK-NEXT:     fn __slate_intrinsic_37cf22be76d4abf7(
-// CHECK-NEXT:         [[ARG_0]]: std::simd::Simd<i32, 4>,
-// CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: std::simd::Simd<i32, 4>,
-// CHECK-NEXT:     ) -> std::simd::Simd<i32, 4>;
-// CHECK-NEXT:     #[link_name = "llvm.minnum.f64"]
-// CHECK-NEXT:     fn __slate_intrinsic_4013add02cebaf25([[ARG_0]]: f64, [[ARG_1]]: f64) -> f64;
-// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.smax.v4i32"]
-// CHECK-NEXT:     fn __slate_intrinsic_4e03cac4e2787ee5([[ARG_0]]: std::simd::Simd<i32, 4>) -> i32;
-// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.and.v4i32"]
-// CHECK-NEXT:     fn __slate_intrinsic_5726e58fbf88b603([[ARG_0]]: std::simd::Simd<u32, 4>) -> u32;
-// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.smin.v2i64"]
-// CHECK-NEXT:     fn __slate_intrinsic_8b4a63d8549d5fe9([[ARG_0]]: std::simd::Simd<i64, 2>) -> i64;
-// CHECK-NEXT:     #[link_name = "llvm.maxnum.v2f64"]
-// CHECK-NEXT:     fn __slate_intrinsic_94c3816d21b3babc(
-// CHECK-NEXT:         [[ARG_0]]: std::simd::Simd<f64, 2>,
-// CHECK-NEXT:         [[ARG_1]]: std::simd::Simd<f64, 2>,
-// CHECK-NEXT:     ) -> std::simd::Simd<f64, 2>;
-// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.or.v4i32"]
-// CHECK-NEXT:     fn __slate_intrinsic_aa0abfe0bf34f9a3([[ARG_0]]: std::simd::Simd<u32, 4>) -> u32;
-// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.add.v2i64"]
-// CHECK-NEXT:     fn __slate_intrinsic_b914587e1d9172a0([[ARG_0]]: std::simd::Simd<i64, 2>) -> i64;
-// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.fminimum.v2f64"]
-// CHECK-NEXT:     fn __slate_intrinsic_bd507a298a8afc73([[ARG_0]]: std::simd::Simd<f64, 2>) -> f64;
-// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.fmaximum.v4f32"]
-// CHECK-NEXT:     fn __slate_intrinsic_c218738e4a75ae17([[ARG_0]]: std::simd::Simd<f32, 4>) -> f32;
 // CHECK-NEXT:     #[link_name = "llvm.vector.reduce.mul.v4i32"]
-// CHECK-NEXT:     fn __slate_intrinsic_e1d90ef8d282d235([[ARG_0]]: std::simd::Simd<i32, 4>) -> i32;
+// CHECK-NEXT:     fn __slate_intrinsic_272366d7b5a63fe7([[ARG_0:arg[0-9]+]]: core::simd::Simd<i32, 4>) -> i32;
+// CHECK-NEXT:     #[link_name = "llvm.minnum.f64"]
+// CHECK-NEXT:     fn __slate_intrinsic_4013add02cebaf25([[ARG_0]]: f64, [[ARG_1:arg[0-9]+]]: f64) -> f64;
 // CHECK-NEXT:     #[link_name = "llvm.smax.v4i32"]
-// CHECK-NEXT:     fn __slate_intrinsic_e3673729f976a086(
-// CHECK-NEXT:         [[ARG_0]]: std::simd::Simd<i32, 4>,
-// CHECK-NEXT:         [[ARG_1]]: std::simd::Simd<i32, 4>,
-// CHECK-NEXT:     ) -> std::simd::Simd<i32, 4>;
+// CHECK-NEXT:     fn __slate_intrinsic_5c586c009dd3a02a(
+// CHECK-NEXT:         [[ARG_0]]: core::simd::Simd<i32, 4>,
+// CHECK-NEXT:         [[ARG_1]]: core::simd::Simd<i32, 4>,
+// CHECK-NEXT:     ) -> core::simd::Simd<i32, 4>;
+// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.add.v2i64"]
+// CHECK-NEXT:     fn __slate_intrinsic_6b1441a4f890a44b([[ARG_0]]: core::simd::Simd<i64, 2>) -> i64;
+// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.smin.v2i64"]
+// CHECK-NEXT:     fn __slate_intrinsic_8e2bed00753c2d9f([[ARG_0]]: core::simd::Simd<i64, 2>) -> i64;
+// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.fminimum.v2f64"]
+// CHECK-NEXT:     fn __slate_intrinsic_9404457a09d642bf([[ARG_0]]: core::simd::Simd<f64, 2>) -> f64;
+// CHECK-NEXT:     #[link_name = "llvm.maxnum.v2f64"]
+// CHECK-NEXT:     fn __slate_intrinsic_975641039b05f855(
+// CHECK-NEXT:         [[ARG_0]]: core::simd::Simd<f64, 2>,
+// CHECK-NEXT:         [[ARG_1]]: core::simd::Simd<f64, 2>,
+// CHECK-NEXT:     ) -> core::simd::Simd<f64, 2>;
+// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.add.v4i32"]
+// CHECK-NEXT:     fn __slate_intrinsic_98bc3c92f4c5619d([[ARG_0]]: core::simd::Simd<i32, 4>) -> i32;
+// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.smax.v4i32"]
+// CHECK-NEXT:     fn __slate_intrinsic_9a56b33d8f4248b0([[ARG_0]]: core::simd::Simd<i32, 4>) -> i32;
+// CHECK-NEXT:     #[link_name = "llvm.smin.v4i32"]
+// CHECK-NEXT:     fn __slate_intrinsic_afca5a85971f27f(
+// CHECK-NEXT:         [[ARG_0]]: core::simd::Simd<i32, 4>,
+// CHECK-NEXT:         [[ARG_1]]: core::simd::Simd<i32, 4>,
+// CHECK-NEXT:     ) -> core::simd::Simd<i32, 4>;
+// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.xor.v4i32"]
+// CHECK-NEXT:     fn __slate_intrinsic_bc86ae159bf686c3([[ARG_0]]: core::simd::Simd<u32, 4>) -> u32;
+// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.fmax.v4f32"]
+// CHECK-NEXT:     fn __slate_intrinsic_bd76d7a2c2f49a4([[ARG_0]]: core::simd::Simd<f32, 4>) -> f32;
+// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.fmaximum.v4f32"]
+// CHECK-NEXT:     fn __slate_intrinsic_c0dad194a31100d9([[ARG_0]]: core::simd::Simd<f32, 4>) -> f32;
 // CHECK-NEXT:     #[link_name = "llvm.vector.reduce.smin.v4i32"]
-// CHECK-NEXT:     fn __slate_intrinsic_e38776902fc0d037([[ARG_0]]: std::simd::Simd<i32, 4>) -> i32;
-// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.fmin.v2f64"]
-// CHECK-NEXT:     fn __slate_intrinsic_eb3fade2525a27fc([[ARG_0]]: std::simd::Simd<f64, 2>) -> f64;
+// CHECK-NEXT:     fn __slate_intrinsic_c5bcd0d7d8d03b90([[ARG_0]]: core::simd::Simd<i32, 4>) -> i32;
+// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.add.v16i8"]
+// CHECK-NEXT:     fn __slate_intrinsic_e62fac7f3940d02a([[ARG_0]]: core::simd::Simd<u8, 16>) -> u8;
 // CHECK-NEXT:     #[link_name = "llvm.smax.i32"]
 // CHECK-NEXT:     fn __slate_intrinsic_ebb2f05c022cc220([[ARG_0]]: i32, [[ARG_1]]: i32) -> i32;
-// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.add.v16i8"]
-// CHECK-NEXT:     fn __slate_intrinsic_f05269fefaa055b0([[ARG_0]]: std::simd::Simd<u8, 16>) -> u8;
+// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.fmin.v2f64"]
+// CHECK-NEXT:     fn __slate_intrinsic_ed102465d708c3ea([[ARG_0]]: core::simd::Simd<f64, 2>) -> f64;
+// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.and.v4i32"]
+// CHECK-NEXT:     fn __slate_intrinsic_f3b9f4e6415b47e2([[ARG_0]]: core::simd::Simd<u32, 4>) -> u32;
+// CHECK-NEXT:     #[link_name = "llvm.vector.reduce.or.v4i32"]
+// CHECK-NEXT:     fn __slate_intrinsic_fea3c7216354bd59([[ARG_0]]: core::simd::Simd<u32, 4>) -> u32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: std::simd::Simd<f64, 2> = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut i: std::simd::Simd<i32, 4> = std::simd::Simd::from_array([
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: core::simd::Simd<f64, 2> = unsafe {
+// CHECK-NEXT:         core::mem::zeroed()
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut i: core::simd::Simd<i32, 4> = core::simd::Simd::from_array([
 // CHECK-NEXT:         3i32,
 // CHECK-NEXT:         -7i32,
 // CHECK-NEXT:         12i32,
 // CHECK-NEXT:         5i32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let u: std::simd::Simd<u32, 4> = std::simd::Simd::from_array([
+// CHECK-NEXT:     let u: core::simd::Simd<u32, 4> = core::simd::Simd::from_array([
 // CHECK-NEXT:         3u32, 7u32, 12u32, 5u32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let b: std::simd::Simd<u8, 16> = std::simd::Simd::from_array([
+// CHECK-NEXT:     let b: core::simd::Simd<u8, 16> = core::simd::Simd::from_array([
 // CHECK-NEXT:         1u8, 2u8, 3u8, 4u8, 5u8, 6u8, 7u8, 8u8, 9u8, 10u8, 11u8, 12u8, 13u8, 14u8, 15u8,
 // CHECK-NEXT:         250u8,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let l: std::simd::Simd<i64, 2> = std::simd::Simd::from_array([-4i64, 9i64]);
-// CHECK-NEXT:     let mut f: std::simd::Simd<f32, 4> = std::simd::Simd::from_array([
+// CHECK-NEXT:     let l: core::simd::Simd<i64, 2> = core::simd::Simd::from_array([-4i64, 9i64]);
+// CHECK-NEXT:     let mut f: core::simd::Simd<f32, 4> = core::simd::Simd::from_array([
 // CHECK-NEXT:         1.5f32,
 // CHECK-NEXT:         -2.5f32,
 // CHECK-NEXT:         4.0f32,
 // CHECK-NEXT:         0.5f32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let d: std::simd::Simd<f64, 2> = std::simd::Simd::from_array([2.5f64, -8.0f64]);
+// CHECK-NEXT:     let d: core::simd::Simd<f64, 2> = core::simd::Simd::from_array([2.5f64, -8.0f64]);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", unsafe { __slate_intrinsic_1d26b5d36a7eb498(i) }, unsafe {
-// CHECK-NEXT:         __slate_intrinsic_e1d90ef8d282d235(i) }, unsafe {
-// CHECK-NEXT:         __slate_intrinsic_4e03cac4e2787ee5(i) }
+// CHECK-NEXT:         "{} {} {}", unsafe { __slate_intrinsic_98bc3c92f4c5619d(i) }, unsafe {
+// CHECK-NEXT:         __slate_intrinsic_272366d7b5a63fe7(i) }, unsafe {
+// CHECK-NEXT:         __slate_intrinsic_9a56b33d8f4248b0(i) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %u %u\n".as_ptr(),
-// CHECK-NEXT:             __slate_intrinsic_e38776902fc0d037(i),
-// CHECK-NEXT:             __slate_intrinsic_5726e58fbf88b603(u),
-// CHECK-NEXT:             __slate_intrinsic_aa0abfe0bf34f9a3(u),
+// CHECK-NEXT:             __slate_intrinsic_c5bcd0d7d8d03b90(i),
+// CHECK-NEXT:             __slate_intrinsic_f3b9f4e6415b47e2(u),
+// CHECK-NEXT:             __slate_intrinsic_fea3c7216354bd59(u),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u\n".as_ptr(),
-// CHECK-NEXT:             __slate_intrinsic_2784696dc045b6b0(u),
-// CHECK-NEXT:             __slate_intrinsic_f05269fefaa055b0(b) as i32,
+// CHECK-NEXT:             __slate_intrinsic_bc86ae159bf686c3(u),
+// CHECK-NEXT:             __slate_intrinsic_e62fac7f3940d02a(b) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld %lld\n".as_ptr(),
-// CHECK-NEXT:             __slate_intrinsic_b914587e1d9172a0(l),
-// CHECK-NEXT:             __slate_intrinsic_8b4a63d8549d5fe9(l),
+// CHECK-NEXT:             __slate_intrinsic_6b1441a4f890a44b(l),
+// CHECK-NEXT:             __slate_intrinsic_8e2bed00753c2d9f(l),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%.2f %.2f\n".as_ptr(),
-// CHECK-NEXT:             __slate_intrinsic_26093aef5960597(f) as f64,
-// CHECK-NEXT:             __slate_intrinsic_eb3fade2525a27fc(d),
+// CHECK-NEXT:             __slate_intrinsic_bd76d7a2c2f49a4(f) as f64,
+// CHECK-NEXT:             __slate_intrinsic_ed102465d708c3ea(d),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%.2f %.2f\n".as_ptr(),
-// CHECK-NEXT:             __slate_intrinsic_c218738e4a75ae17(f) as f64,
-// CHECK-NEXT:             __slate_intrinsic_bd507a298a8afc73(d),
+// CHECK-NEXT:             __slate_intrinsic_c0dad194a31100d9(f) as f64,
+// CHECK-NEXT:             __slate_intrinsic_9404457a09d642bf(d),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     let ia: std::simd::Simd<i32, 4> = std::simd::Simd::from_array(
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     let ia: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:         i.to_array().map(|__lane| __lane.wrapping_abs()),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let imax: std::simd::Simd<i32, 4> = unsafe {
-// CHECK-NEXT:         __slate_intrinsic_e3673729f976a086(i, ia)
+// CHECK-NEXT:     let imax: core::simd::Simd<i32, 4> = unsafe {
+// CHECK-NEXT:         __slate_intrinsic_5c586c009dd3a02a(i, ia)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let imin: std::simd::Simd<i32, 4> = unsafe {
-// CHECK-NEXT:         __slate_intrinsic_37cf22be76d4abf7(i, ia)
+// CHECK-NEXT:     let imin: core::simd::Simd<i32, 4> = unsafe {
+// CHECK-NEXT:         __slate_intrinsic_afca5a85971f27f(i, ia)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let fa: std::simd::Simd<f32, 4> = std::simd::Simd::from_array(
+// CHECK-NEXT:     let fa: core::simd::Simd<f32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:         f.to_array().map(|__lane| __lane.abs()),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let dmax: std::simd::Simd<f64, 2> = unsafe {
-// CHECK-NEXT:         __slate_intrinsic_94c3816d21b3babc(
+// CHECK-NEXT:     let dmax: core::simd::Simd<f64, 2> = unsafe {
+// CHECK-NEXT:         __slate_intrinsic_975641039b05f855(
 // CHECK-NEXT:             d,
 // CHECK-NEXT:             *{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = std::simd::Simd::from_array([0.0f64, 1.0f64]);
-// CHECK-NEXT:                 std::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array([0.0f64, 1.0f64]);
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -202,10 +204,10 @@ int main(void) {
 // CHECK-NEXT:             fa[3] as f64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.2f %.2f\n".as_ptr(), dmax[0], dmax[1]) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -215,14 +217,14 @@ int main(void) {
 // CHECK-NEXT:             __slate_intrinsic_4013add02cebaf25(2.5f64, -1.0f64),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

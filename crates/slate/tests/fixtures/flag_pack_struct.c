@@ -50,7 +50,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let m: mixed = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: mixed = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: mixed = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].c = 1i8;
 // CHECK-NEXT:         [[T_0]].i = 2i32;
 // CHECK-NEXT:         [[T_0]].h = 3i16;
@@ -58,10 +58,10 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let n: nested = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: nested = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: nested = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].tag = 7i8;
 // CHECK-NEXT:         [[T_1]].inner = {
-// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: mixed = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: mixed = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_2]].c = 8i8;
 // CHECK-NEXT:             [[T_2]].i = 9i32;
 // CHECK-NEXT:             [[T_2]].h = 10i16;
@@ -73,23 +73,23 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu\n".as_ptr(),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<mixed>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::offset_of!(mixed, i) as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::offset_of!(mixed, d) as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<mixed>() as u64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<mixed>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::offset_of!(mixed, i) as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::offset_of!(mixed, d) as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::align_of::<mixed>() as u32,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<mixed>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::offset_of!(mixed, i) as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::offset_of!(mixed, d) as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::align_of::<mixed>() as u64,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<mixed>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::offset_of!(mixed, i) as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::offset_of!(mixed, d) as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::align_of::<mixed>() as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu\n".as_ptr(),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<nested>() as u64,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             std::mem::offset_of!(nested, inner) as u64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::size_of::<nested>() as u32,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             std::mem::offset_of!(nested, inner) as u32,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<nested>() as u64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::offset_of!(nested, inner) as u64,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::size_of::<nested>() as u32,
+// I686-UNKNOWN-LINUX-GNU-NEXT:             core::mem::offset_of!(nested, inner) as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -109,8 +109,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

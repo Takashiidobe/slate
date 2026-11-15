@@ -138,9 +138,9 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut t: table = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     fill(unsafe { &mut (*std::ptr::addr_of_mut!(t)) });
-// CHECK-NEXT:     fill_via_ptr(unsafe { &mut (*std::ptr::addr_of_mut!(t)) }, 2i32);
+// CHECK-NEXT:     let mut t: table = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     fill(unsafe { &mut (*core::ptr::addr_of_mut!(t)) });
+// CHECK-NEXT:     fill_via_ptr(unsafe { &mut (*core::ptr::addr_of_mut!(t)) }, 2i32);
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
@@ -149,12 +149,12 @@ int main(void) {
 // CHECK-NEXT:                 t.rows[i as usize].as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut c: cube = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     fill_cube(unsafe { &mut (*std::ptr::addr_of_mut!(c)) });
+// CHECK-NEXT:     let mut c: cube = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     fill_cube(unsafe { &mut (*core::ptr::addr_of_mut!(c)) });
 // CHECK-NEXT:     let __slate_printf_arg2 = sum_cube_via_ptr(unsafe {
-// CHECK-NEXT:         &mut (*std::ptr::addr_of_mut!(c))
+// CHECK-NEXT:         &mut (*core::ptr::addr_of_mut!(c))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     println!("{} {} {}", c.v[0] [0] [0], c.v[1] [2] [3], __slate_printf_arg2);
 // CHECK-NEXT:     0
@@ -162,8 +162,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

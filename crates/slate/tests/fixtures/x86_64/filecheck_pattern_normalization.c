@@ -21,8 +21,8 @@ int main(void) {
 // CHECK-NEXT:             "movl $3, {0:e}\n\tmovl $4, {1:e}", lateout(reg) [[T_0]], lateout(reg) [[T_1]],
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         left = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
-// CHECK-NEXT:         right = unsafe { std::mem::transmute::<u32, i32>([[T_1]] as u32) };
+// CHECK-NEXT:         left = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         right = unsafe { core::mem::transmute::<u32, i32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{} _v9 anon_4 anon_struct_i32", left * 10 + right);
 // CHECK-NEXT:     0
@@ -30,8 +30,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

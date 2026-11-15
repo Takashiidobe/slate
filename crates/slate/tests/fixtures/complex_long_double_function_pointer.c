@@ -239,15 +239,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
-// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:             Some(core::cmp::Ordering::Less)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     None
 // CHECK-NEXT:                 }
@@ -317,7 +317,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_icall__rcf80_cf80(
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::mem::transmute::<
+// CHECK-NEXT:                 core::mem::transmute::<
 // CHECK-NEXT:                     Option<
 // CHECK-NEXT:                         unsafe extern "C-unwind" fn(
 // CHECK-NEXT:                             num_complex::Complex<LongDouble>,
@@ -339,7 +339,7 @@ int main(void) {
 // CHECK-NEXT:         >; 4],
 // CHECK-NEXT:     > = __SlateAlign16([
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::mem::transmute::<
+// CHECK-NEXT:             core::mem::transmute::<
 // CHECK-NEXT:                 *const (),
 // CHECK-NEXT:                 Option<
 // CHECK-NEXT:                     unsafe extern "C-unwind" fn(
@@ -349,7 +349,7 @@ int main(void) {
 // CHECK-NEXT:             >(__slate_ldfp_complex_long_double_function_pointer_twice as *const ())
 // CHECK-NEXT:         },
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::mem::transmute::<
+// CHECK-NEXT:             core::mem::transmute::<
 // CHECK-NEXT:                 *const (),
 // CHECK-NEXT:                 Option<
 // CHECK-NEXT:                     unsafe extern "C-unwind" fn(
@@ -359,7 +359,7 @@ int main(void) {
 // CHECK-NEXT:             >(__slate_ldfp_complex_long_double_function_pointer_swap as *const ())
 // CHECK-NEXT:         },
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::mem::transmute::<
+// CHECK-NEXT:             core::mem::transmute::<
 // CHECK-NEXT:                 *const (),
 // CHECK-NEXT:                 Option<
 // CHECK-NEXT:                     unsafe extern "C-unwind" fn(
@@ -369,7 +369,7 @@ int main(void) {
 // CHECK-NEXT:             >(__slate_ldfp_complex_long_double_function_pointer_conjl as *const ())
 // CHECK-NEXT:         },
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::mem::transmute::<
+// CHECK-NEXT:             core::mem::transmute::<
 // CHECK-NEXT:                 *const (),
 // CHECK-NEXT:                 Option<
 // CHECK-NEXT:                     unsafe extern "C-unwind" fn(
@@ -401,7 +401,7 @@ int main(void) {
 // CHECK-NEXT:                 __slate_cimagl__rf80_cf80(z),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let parts: __SlateAlign16<
 // CHECK-NEXT:         [Option<
@@ -409,7 +409,7 @@ int main(void) {
 // CHECK-NEXT:         >; 3],
 // CHECK-NEXT:     > = __SlateAlign16([
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::mem::transmute::<
+// CHECK-NEXT:             core::mem::transmute::<
 // CHECK-NEXT:                 *const (),
 // CHECK-NEXT:                 Option<
 // CHECK-NEXT:                     unsafe extern "C-unwind" fn(
@@ -419,7 +419,7 @@ int main(void) {
 // CHECK-NEXT:             >(__slate_ldfp_complex_long_double_function_pointer_imag_part as *const ())
 // CHECK-NEXT:         },
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::mem::transmute::<
+// CHECK-NEXT:             core::mem::transmute::<
 // CHECK-NEXT:                 *const (),
 // CHECK-NEXT:                 Option<
 // CHECK-NEXT:                     unsafe extern "C-unwind" fn(
@@ -429,7 +429,7 @@ int main(void) {
 // CHECK-NEXT:             >(__slate_ldfp_complex_long_double_function_pointer_creall as *const ())
 // CHECK-NEXT:         },
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             std::mem::transmute::<
+// CHECK-NEXT:             core::mem::transmute::<
 // CHECK-NEXT:                 *const (),
 // CHECK-NEXT:                 Option<
 // CHECK-NEXT:                     unsafe extern "C-unwind" fn(
@@ -447,7 +447,7 @@ int main(void) {
 // CHECK-NEXT:                 i,
 // CHECK-NEXT:                 __slate_icall__rf80_cf80(
 // CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         std::mem::transmute::<
+// CHECK-NEXT:                         core::mem::transmute::<
 // CHECK-NEXT:                             Option<
 // CHECK-NEXT:                                 unsafe extern "C-unwind" fn(
 // CHECK-NEXT:                                     num_complex::Complex<LongDouble>,
@@ -470,11 +470,11 @@ int main(void) {
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "eq {} {}", (table.0[0] == table.0[3]) as i32, (table.0[0] == unsafe {
-// CHECK-NEXT:         std::mem::transmute::<* const (), Option < unsafe extern "C-unwind" fn
+// CHECK-NEXT:         core::mem::transmute::<* const (), Option < unsafe extern "C-unwind" fn
 // CHECK-NEXT:         (num_complex::Complex < LongDouble >) -> num_complex::Complex < LongDouble >>>
 // CHECK-NEXT:         (__slate_ldfp_complex_long_double_function_pointer_twice as * const ()) }) as i32
 // CHECK-NEXT:     );
@@ -483,8 +483,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

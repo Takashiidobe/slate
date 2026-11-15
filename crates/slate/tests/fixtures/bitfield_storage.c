@@ -17,10 +17,10 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut value: U = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: U = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: U = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].bits = {
 // CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: __SlateRecord_bitfield_storage_c_2 = unsafe {
-// CHECK-NEXT:                 std::mem::zeroed()
+// CHECK-NEXT:                 core::mem::zeroed()
 // CHECK-NEXT:             };
 // CHECK-NEXT:             [[T_1]].__slate_bits_0.__set_first(0u32);
 // CHECK-NEXT:             [[T_1]]

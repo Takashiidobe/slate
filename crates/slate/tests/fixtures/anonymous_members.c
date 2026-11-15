@@ -58,7 +58,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut value: container = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: container = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: container = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].prefix = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
@@ -76,10 +76,10 @@ int main(void) {
 // CHECK-NEXT:             value.[[SLATE_ANON_0]].integer,
 // CHECK-NEXT:             value.[[SLATE_ANON_1]].x,
 // CHECK-NEXT:             value.[[SLATE_ANON_1]].y,
-// CHECK-NEXT:             std::mem::size_of::<container>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<container>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         value.[[SLATE_ANON_0]].real = 2.5f32;
 // CHECK-NEXT:     }
@@ -101,7 +101,7 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:         [[SLATE_ANON_1]]: {
 // CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: __SlateRecord_anonymous_members_c_9 = unsafe {
-// CHECK-NEXT:                 std::mem::zeroed()
+// CHECK-NEXT:                 core::mem::zeroed()
 // CHECK-NEXT:             };
 // CHECK-NEXT:             [[T_1]].y = 7i32;
 // CHECK-NEXT:             [[T_1]]
@@ -120,8 +120,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -51,10 +51,10 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut shapes: __SlateAlign16<[shape; 3]> = __SlateAlign16([
 // CHECK-NEXT:         shape {
-// CHECK-NEXT:             next: std::ptr::null_mut::<shape>(),
+// CHECK-NEXT:             next: core::ptr::null_mut::<shape>(),
 // CHECK-NEXT:             origin: __SlateRecord_shapes_h_9 { x: 1, y: 2 },
 // CHECK-NEXT:             flags: {
-// CHECK-NEXT:                 let mut [[T_0:__t[0-9]+]]: flags = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:                 let mut [[T_0:__t[0-9]+]]: flags = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:                 [[T_0]].__slate_bits_0.__set_ready(1u32);
 // CHECK-NEXT:                 [[T_0]].__slate_bits_0.__set_level(0u32);
 // CHECK-NEXT:                 [[T_0]].id = 10i32;
@@ -62,10 +62,10 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:         },
 // CHECK-NEXT:         shape {
-// CHECK-NEXT:             next: std::ptr::null_mut::<shape>(),
+// CHECK-NEXT:             next: core::ptr::null_mut::<shape>(),
 // CHECK-NEXT:             origin: __SlateRecord_shapes_h_9 { x: 3, y: 4 },
 // CHECK-NEXT:             flags: {
-// CHECK-NEXT:                 let mut [[T_1:__t[0-9]+]]: flags = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:                 let mut [[T_1:__t[0-9]+]]: flags = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:                 [[T_1]].__slate_bits_0.__set_ready(0u32);
 // CHECK-NEXT:                 [[T_1]].__slate_bits_0.__set_level(2u32);
 // CHECK-NEXT:                 [[T_1]].id = 11i32;
@@ -73,10 +73,10 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:         },
 // CHECK-NEXT:         shape {
-// CHECK-NEXT:             next: std::ptr::null_mut::<shape>(),
+// CHECK-NEXT:             next: core::ptr::null_mut::<shape>(),
 // CHECK-NEXT:             origin: __SlateRecord_shapes_h_9 { x: 5, y: 6 },
 // CHECK-NEXT:             flags: {
-// CHECK-NEXT:                 let mut [[T_2:__t[0-9]+]]: flags = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:                 let mut [[T_2:__t[0-9]+]]: flags = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:                 [[T_2]].__slate_bits_0.__set_ready(1u32);
 // CHECK-NEXT:                 [[T_2]].__slate_bits_0.__set_level(3u32);
 // CHECK-NEXT:                 [[T_2]].id = 12i32;
@@ -101,7 +101,7 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut tag: __SlateRecord_shapes_h_18 = {
-// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: __SlateRecord_shapes_h_18 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: __SlateRecord_shapes_h_18 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_3]].label = c"heavy".as_ptr();
 // CHECK-NEXT:         [[T_3]].weight = 21i32;
 // CHECK-NEXT:         [[T_3]]
@@ -119,10 +119,12 @@ int main(void) {
 // CHECK-NEXT:             shapes.0[2].flags.id,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
-// CHECK-NEXT:         unsafe { tag_score(&(*(std::ptr::addr_of_mut!(tag) as *const __SlateRecord_shapes_h_18))) },
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             tag_score(&(*(core::ptr::addr_of_mut!(tag) as *const __SlateRecord_shapes_h_18)))
+// CHECK-NEXT:         },
 // CHECK-NEXT:         unsafe { count_vowels(c"translation unit".as_ptr()) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { registry_free(registry) };
@@ -132,8 +134,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

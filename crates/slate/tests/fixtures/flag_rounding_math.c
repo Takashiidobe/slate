@@ -213,64 +213,65 @@ int main(void) {
 // CHECK-NEXT:         let foldedf: f32 = unsafe { __slate_fenv_div_f32(1.0f32, 3.0f32) };
 // CHECK-NEXT:         let quot: f64 = unsafe {
 // CHECK-NEXT:             __slate_fenv_div_f64(
-// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(one)),
-// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(three)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(one)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(three)),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         let mut acc: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(one)) };
-// CHECK-NEXT:         acc =
-// CHECK-NEXT:             unsafe { __slate_fenv_add_f64(acc, std::ptr::read_volatile(std::ptr::addr_of!(tiny))) };
+// CHECK-NEXT:         let mut acc: f64 = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) };
+// CHECK-NEXT:         acc = unsafe {
+// CHECK-NEXT:             __slate_fenv_add_f64(acc, core::ptr::read_volatile(core::ptr::addr_of!(tiny)))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         acc = unsafe {
 // CHECK-NEXT:             __slate_fenv_sub_f64(
 // CHECK-NEXT:                 acc,
 // CHECK-NEXT:                 __slate_fenv_mul_f64(
-// CHECK-NEXT:                     std::ptr::read_volatile(std::ptr::addr_of!(tiny)),
+// CHECK-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(tiny)),
 // CHECK-NEXT:                     3i32 as f64,
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         acc = unsafe {
-// CHECK-NEXT:             __slate_fenv_mul_f64(acc, std::ptr::read_volatile(std::ptr::addr_of!(three)))
+// CHECK-NEXT:             __slate_fenv_mul_f64(acc, core::ptr::read_volatile(core::ptr::addr_of!(three)))
 // CHECK-NEXT:         };
 // CHECK-NEXT:         acc = unsafe {
-// CHECK-NEXT:             __slate_fenv_div_f64(acc, std::ptr::read_volatile(std::ptr::addr_of!(three)))
+// CHECK-NEXT:             __slate_fenv_div_f64(acc, core::ptr::read_volatile(core::ptr::addr_of!(three)))
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let quotf: f32 = unsafe {
 // CHECK-NEXT:             __slate_fenv_div_f32(
-// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(onef)),
-// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(threef)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(onef)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(threef)),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let narrow: f32 = unsafe { __slate_fenv_f64_to_f32(quot) };
 // CHECK-NEXT:         let narrowc: f32 = unsafe { __slate_fenv_f64_to_f32(__slate_fenv_div_f64(1.0f64, 3.0f64)) };
 // CHECK-NEXT:         let fromi: f64 = unsafe {
-// CHECK-NEXT:             __slate_fenv_i64_to_f64(std::ptr::read_volatile(std::ptr::addr_of!(big)) as i64)
+// CHECK-NEXT:             __slate_fenv_i64_to_f64(core::ptr::read_volatile(core::ptr::addr_of!(big)) as i64)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let fromu: f64 = unsafe {
-// CHECK-NEXT:             __slate_fenv_u64_to_f64(std::ptr::read_volatile(std::ptr::addr_of!(ubig)) as u64)
+// CHECK-NEXT:             __slate_fenv_u64_to_f64(core::ptr::read_volatile(core::ptr::addr_of!(ubig)) as u64)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let fromodd: f32 = unsafe {
-// CHECK-NEXT:             __slate_fenv_i64_to_f32(std::ptr::read_volatile(std::ptr::addr_of!(odd)) as i64)
+// CHECK-NEXT:             __slate_fenv_i64_to_f32(core::ptr::read_volatile(core::ptr::addr_of!(odd)) as i64)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let fromi64: f32 = unsafe {
-// CHECK-NEXT:             __slate_fenv_i64_to_f32(std::ptr::read_volatile(std::ptr::addr_of!(big)) as i64)
+// CHECK-NEXT:             __slate_fenv_i64_to_f32(core::ptr::read_volatile(core::ptr::addr_of!(big)) as i64)
 // CHECK-NEXT:         };
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         let fromwide: f64 = __slate_rounding::i128_to_f64(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(wide)) },
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(wide)) },
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             __slate_fenv_i64_to_f64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         );
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         let fromuwide: f32 = __slate_rounding::u128_to_f32(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(uwide)) },
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(uwide)) },
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             __slate_fenv_i64_to_f32,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         );
 // I686-UNKNOWN-LINUX-GNU-NEXT:         let fromwide: f64 = 0i32 as f64;
 // I686-UNKNOWN-LINUX-GNU-NEXT:         let fromuwide: f32 = unsafe { __slate_fenv_i64_to_f32(0i64) };
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         let fromwide: f64 = __slate_rounding::i128_to_f64(
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(wide)) },
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(wide)) },
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:             __slate_fenv_i64_to_f64,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         );
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         let fromuwide: f32 = __slate_rounding::u128_to_f32(
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(uwide)) },
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(uwide)) },
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:             __slate_fenv_i64_to_f32,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         );
 // CHECK-NEXT:         unsafe { fesetround(0i32) };
@@ -286,7 +287,7 @@ int main(void) {
 // CHECK-NEXT:                 foldedf as f64,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
@@ -299,7 +300,7 @@ int main(void) {
 // CHECK-NEXT:                 narrowc as f64,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
@@ -313,7 +314,7 @@ int main(void) {
 // CHECK-NEXT:                 fromuwide as f64,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
@@ -321,8 +322,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

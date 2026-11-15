@@ -15,12 +15,12 @@ char *entry_name(struct dirent *entry) { return entry->d_name; }
 // X86_64-APPLE-DARWIN-NEXT:     d_name: [i8; 256],
 // AARCH64-APPLE-DARWIN: {{^}}#[unsafe(no_mangle)]
 // AARCH64-APPLE-DARWIN-NEXT: extern "C-unwind" fn entry_size(entry: *mut slate_support::dirent) -> u64 {
-// AARCH64-APPLE-DARWIN-NEXT:     std::mem::size_of::<slate_support::dirent>() as u64
+// AARCH64-APPLE-DARWIN-NEXT:     core::mem::size_of::<slate_support::dirent>() as u64
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // X86_64-APPLE-DARWIN-NEXT: extern "C-unwind" fn entry_size(entry: *mut dirent) -> u64 {
-// X86_64-APPLE-DARWIN-NEXT:     std::mem::size_of::<dirent>() as u64
+// X86_64-APPLE-DARWIN-NEXT:     core::mem::size_of::<dirent>() as u64
 // X86_64-APPLE-DARWIN-NEXT: }
 // X86_64-APPLE-DARWIN-EMPTY:
 // X86_64-APPLE-DARWIN-NEXT: #[unsafe(no_mangle)]

@@ -293,15 +293,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
-// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:             Some(core::cmp::Ordering::Less)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     None
 // CHECK-NEXT:                 }
@@ -386,7 +386,7 @@ int main(void) {
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Erasing {
 // CHECK-NEXT:     tag: i8,
-// CHECK-NEXT:     raised: std::mem::MaybeUninit<[u8; 16]>,
+// CHECK-NEXT:     raised: core::mem::MaybeUninit<[u8; 16]>,
 // CHECK-NEXT: }
 // CHECK-NEXT: mod __slate_bits {
 // CHECK-NEXT:     #[bitfields::bitfield(
@@ -407,8 +407,8 @@ int main(void) {
 // CHECK-NEXT:         pub high: u32,
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut table: [i8; 4] = unsafe { std::mem::zeroed() };
-// CHECK-NEXT: static mut global_offset: u64 = (std::mem::offset_of!(Outer, r#type) as u64)
+// CHECK-NEXT: static mut table: [i8; 4] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT: static mut global_offset: u64 = (core::mem::offset_of!(Outer, r#type) as u64)
 // CHECK-NEXT:     .wrapping_mul(2u64);
 // CHECK-NEXT: fn classify(offset: u64) -> i32 {
 // CHECK-NEXT:     match offset {
@@ -422,64 +422,64 @@ int main(void) {
 // CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::mem::zeroed() }
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn report_folded(index: i32) {
 // CHECK-NEXT:     println!("{}", 32i32);
 // CHECK-NEXT:     println!("{}", 52i32);
 // CHECK-NEXT:     println!("{}", 24u64.wrapping_add((index as u64).wrapping_mul(4)) as i32);
-// CHECK-NEXT:     println!("{}", std::mem::offset_of!(Holder, tag) as i32);
+// CHECK-NEXT:     println!("{}", core::mem::offset_of!(Holder, tag) as i32);
 // CHECK-NEXT:     println!("{}", 4i32);
 // CHECK-NEXT:     println!("{}", 8i32);
 // CHECK-NEXT:     println!("{}", 16i32);
 // CHECK-NEXT:     println!("{}", 5i32);
 // CHECK-NEXT: }
 // CHECK-NEXT: fn report_kept() {
-// CHECK-NEXT:     println!("{}", std::mem::offset_of!(Inner, value) as i32);
-// CHECK-NEXT:     println!("{}", std::mem::offset_of!(Outer, inner) as i32);
-// CHECK-NEXT:     println!("{}", std::mem::offset_of!(Outer, inner.value) as i32);
-// CHECK-NEXT:     println!("{}", std::mem::offset_of!(Outer, either.inner.value) as i32);
-// CHECK-NEXT:     println!("{}", std::mem::offset_of!(Outer, r#type) as i32);
-// CHECK-NEXT:     println!("{}", std::mem::offset_of!(Outer, list) as i32);
-// CHECK-NEXT:     println!("{}", std::mem::offset_of!(Either, small) as i32);
-// CHECK-NEXT:     println!("{}", std::mem::offset_of!(Either, inner.value) as i32);
-// CHECK-NEXT:     println!("{}", std::mem::offset_of!(Packed, value) as i32);
-// CHECK-NEXT:     println!("{}", std::mem::offset_of!(Spaced, value) as i32);
-// CHECK-NEXT:     println!("{}", std::mem::offset_of!(Spaced, last) as i32);
-// CHECK-NEXT:     println!("{}", std::mem::offset_of!(Bits, after) as i32);
-// CHECK-NEXT:     println!("{}", std::mem::offset_of!(Anonymous, tag) as i32);
+// CHECK-NEXT:     println!("{}", core::mem::offset_of!(Inner, value) as i32);
+// CHECK-NEXT:     println!("{}", core::mem::offset_of!(Outer, inner) as i32);
+// CHECK-NEXT:     println!("{}", core::mem::offset_of!(Outer, inner.value) as i32);
+// CHECK-NEXT:     println!("{}", core::mem::offset_of!(Outer, either.inner.value) as i32);
+// CHECK-NEXT:     println!("{}", core::mem::offset_of!(Outer, r#type) as i32);
+// CHECK-NEXT:     println!("{}", core::mem::offset_of!(Outer, list) as i32);
+// CHECK-NEXT:     println!("{}", core::mem::offset_of!(Either, small) as i32);
+// CHECK-NEXT:     println!("{}", core::mem::offset_of!(Either, inner.value) as i32);
+// CHECK-NEXT:     println!("{}", core::mem::offset_of!(Packed, value) as i32);
+// CHECK-NEXT:     println!("{}", core::mem::offset_of!(Spaced, value) as i32);
+// CHECK-NEXT:     println!("{}", core::mem::offset_of!(Spaced, last) as i32);
+// CHECK-NEXT:     println!("{}", core::mem::offset_of!(Bits, after) as i32);
+// CHECK-NEXT:     println!("{}", core::mem::offset_of!(Anonymous, tag) as i32);
 // CHECK-NEXT:     println!("{}", 1i32);
 // CHECK-NEXT: }
 // CHECK-NEXT: fn value_of(value: *mut i32) -> i32 {
 // CHECK-NEXT:     let owner: *mut Inner = (unsafe {
-// CHECK-NEXT:         (value as *mut i8).offset(-(std::mem::offset_of!(Inner, value) as isize))
+// CHECK-NEXT:         (value as *mut i8).offset(-(core::mem::offset_of!(Inner, value) as isize))
 // CHECK-NEXT:     }) as *mut Inner;
 // CHECK-NEXT:     ((unsafe { (*owner).tag }) as i32) + unsafe { (*owner).value }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut inner: Inner = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Inner = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Inner = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].tag = 1i8;
 // CHECK-NEXT:         [[T_0]].value = 41i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     report_folded(3i32);
 // CHECK-NEXT:     report_kept();
-// CHECK-NEXT:     println!("{}", std::mem::size_of::< [i8; 4] > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::size_of::< [i8; 4] > () as i32);
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lu\n".as_ptr(), global_offset) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", 20i32);
-// CHECK-NEXT:     println!("{}", classify(std::mem::offset_of!(Inner, tag) as u64));
-// CHECK-NEXT:     println!("{}", classify(std::mem::offset_of!(Inner, value) as u64));
-// CHECK-NEXT:     println!("{}", classify(std::mem::offset_of!(Outer, r#type) as u64));
-// CHECK-NEXT:     println!("{}", value_of(std::ptr::addr_of_mut!(inner.value)));
+// CHECK-NEXT:     println!("{}", classify(core::mem::offset_of!(Inner, tag) as u64));
+// CHECK-NEXT:     println!("{}", classify(core::mem::offset_of!(Inner, value) as u64));
+// CHECK-NEXT:     println!("{}", classify(core::mem::offset_of!(Outer, r#type) as u64));
+// CHECK-NEXT:     println!("{}", value_of(core::ptr::addr_of_mut!(inner.value)));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -27,7 +27,7 @@ int main(void) {
 // CHECK-NEXT:             "add {0}, {0}, #1", inlateout(reg) x as u32 => [[T_0]], options(pure, nomem,
 // CHECK-NEXT:             nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         x = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK: {{^}}}
@@ -38,7 +38,7 @@ int main(void) {
 // CHECK-NEXT:             "add {0}, {0}, #1", inlateout(reg) x as u32 => [[T_0]], options(pure, nomem,
 // CHECK-NEXT:             nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         x = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK: {{^}}}

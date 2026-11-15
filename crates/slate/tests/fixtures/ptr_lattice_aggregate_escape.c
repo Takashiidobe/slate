@@ -60,7 +60,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn fire(retval: *mut obj) -> i32 {
 // CHECK-NEXT:     let args: __SlateAlign16<[*mut obj; 2]> = __SlateAlign16([
-// CHECK-NEXT:         std::ptr::null_mut::<obj>(),
+// CHECK-NEXT:         core::ptr::null_mut::<obj>(),
 // CHECK-NEXT:         retval,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     sum(&args.0)
@@ -71,28 +71,28 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn wrap(length: i64, items: *mut *mut i32) -> i64 {
 // CHECK-NEXT:     let mut l: list = list { n: length, items: items };
-// CHECK-NEXT:     count(unsafe { &(*std::ptr::addr_of_mut!(l)) })
+// CHECK-NEXT:     count(unsafe { &(*core::ptr::addr_of_mut!(l)) })
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut o: obj = obj { v: 7 };
 // CHECK-NEXT:     let mut x: i32 = 3;
-// CHECK-NEXT:     let mut p: *mut i32 = std::ptr::addr_of_mut!(x);
+// CHECK-NEXT:     let mut p: *mut i32 = core::ptr::addr_of_mut!(x);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %ld\n".as_ptr(),
-// CHECK-NEXT:             fire(std::ptr::addr_of_mut!(o)),
-// CHECK-NEXT:             wrap(2i64, std::ptr::addr_of_mut!(p)),
+// CHECK-NEXT:             fire(core::ptr::addr_of_mut!(o)),
+// CHECK-NEXT:             wrap(2i64, core::ptr::addr_of_mut!(p)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

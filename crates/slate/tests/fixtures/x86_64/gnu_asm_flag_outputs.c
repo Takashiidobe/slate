@@ -53,9 +53,9 @@ int main(void) {
 // CHECK-NEXT:             lateout(reg_byte) [[T_1]], lateout(reg_byte) [[T_2]], in (reg) left as u32, in
 // CHECK-NEXT:             (reg) right as u32, options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         equal = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
-// CHECK-NEXT:         above = unsafe { std::mem::transmute::<u32, i32>([[T_1]] as u32) };
-// CHECK-NEXT:         less = unsafe { std::mem::transmute::<u32, i32>([[T_2]] as u32) };
+// CHECK-NEXT:         equal = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         above = unsafe { core::mem::transmute::<u32, i32>([[T_1]] as u32) };
+// CHECK-NEXT:         less = unsafe { core::mem::transmute::<u32, i32>([[T_2]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     equal * 100 + above * 10 + less
 // CHECK: {{^}}}
@@ -70,8 +70,8 @@ int main(void) {
 // CHECK-NEXT:             lateout(reg_byte) [[T_1]], in (reg) value as u32, options(pure, nomem, nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         sign = unsafe { std::mem::transmute::<u16, u16>([[T_0]] as u16) };
-// CHECK-NEXT:         nonzero = unsafe { std::mem::transmute::<u64, u64>([[T_1]] as u64) };
+// CHECK-NEXT:         sign = unsafe { core::mem::transmute::<u16, u16>([[T_0]] as u16) };
+// CHECK-NEXT:         nonzero = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (((sign as i32) * 10) as u64).wrapping_add(nonzero) as i32
 // CHECK: {{^}}}

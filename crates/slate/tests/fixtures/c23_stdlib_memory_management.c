@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:     let q: *mut () = unsafe { aligned_alloc(16u64 as usize, 32u64 as usize) as *mut () };
 // CHECK-NEXT:     unsafe { free_aligned_sized(q, 16u64, 32u64) };
 // CHECK-NEXT:     let r: *mut () = unsafe {
-// CHECK-NEXT:         realloc(std::ptr::null_mut::<()>() as *mut core::ffi::c_void, 0u64 as usize)
+// CHECK-NEXT:         realloc(core::ptr::null_mut::<()>() as *mut core::ffi::c_void, 0u64 as usize)
 // CHECK-NEXT:             as *mut ()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { free(r as *mut core::ffi::c_void) };
@@ -50,8 +50,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

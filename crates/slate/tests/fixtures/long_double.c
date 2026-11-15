@@ -473,15 +473,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
-// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:             Some(core::cmp::Ordering::Less)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     None
 // CHECK-NEXT:                 }
@@ -502,7 +502,7 @@ int main(void) {
 // CHECK-NEXT: fn print_ld(name: *const i8, v: LongDouble) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_pi8_f80(c"%s=%La\n".as_ptr(), name, v) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn check_int_casts() {
@@ -552,7 +552,7 @@ int main(void) {
 // CHECK-NEXT:             u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn check_i128_casts() {
@@ -577,7 +577,7 @@ int main(void) {
 // CHECK-NEXT:             (u128 & 18446744073709551615) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn check_bitint_casts() {
@@ -672,7 +672,7 @@ int main(void) {
 // CHECK-NEXT:             ub300.to_u128() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn check_math_functions() {
@@ -797,7 +797,7 @@ int main(void) {
 // CHECK-NEXT:     print_ld(c"frexp".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_frexpl__rf80_f80_pi32(
 // CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 64]),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(exp),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(exp),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     println!("frexp_exp={}", exp);
@@ -838,62 +838,62 @@ int main(void) {
 // CHECK-NEXT:     let mut ipart: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // CHECK-NEXT:     let frac: LongDouble = unsafe {
 // CHECK-NEXT:         __slate_modfl__rf80_f80_pf80(
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten))
-// CHECK-NEXT:                 / std::ptr::read_volatile(std::ptr::addr_of!(three)),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(ipart),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:                 / core::ptr::read_volatile(core::ptr::addr_of!(three)),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(ipart),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     print_ld(c"modf_ipart".as_ptr(), ipart);
 // CHECK-NEXT:     print_ld(c"modf_frac".as_ptr(), frac);
 // CHECK-NEXT:     print_ld(c"remainder".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_remainderl__rf80_f80_f80(
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten)),
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(three)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(three)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let mut quo: i32 = 0;
 // CHECK-NEXT:     print_ld(c"remquo".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_remquol__rf80_f80_f80_pi32(
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten)),
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(three)),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(quo),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(three)),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(quo),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     println!("remquo_quo={}", quo);
 // CHECK-NEXT:     print_ld(c"scalbn".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_scalbnl__rf80_f80_i32(std::ptr::read_volatile(std::ptr::addr_of!(ten)), 3i32)
+// CHECK-NEXT:         __slate_scalbnl__rf80_f80_i32(core::ptr::read_volatile(core::ptr::addr_of!(ten)), 3i32)
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"scalbln".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_scalblnl__rf80_f80_i64(std::ptr::read_volatile(std::ptr::addr_of!(ten)), 3i64)
+// CHECK-NEXT:         __slate_scalblnl__rf80_f80_i64(core::ptr::read_volatile(core::ptr::addr_of!(ten)), 3i64)
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"nextafter".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_nextafterl__rf80_f80_f80(
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten)),
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(three)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(three)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"nexttoward".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_nexttowardl__rf80_f80_f80(
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten)),
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(three)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(three)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"fdim".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_fdiml__rf80_f80_f80(
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten)),
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(three)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(three)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"rint".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_rintl__rf80_f80(
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten))
-// CHECK-NEXT:                 / std::ptr::read_volatile(std::ptr::addr_of!(three)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:                 / core::ptr::read_volatile(core::ptr::addr_of!(three)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"nearbyint".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_nearbyintl__rf80_f80(
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten))
-// CHECK-NEXT:                 / std::ptr::read_volatile(std::ptr::addr_of!(three)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:                 / core::ptr::read_volatile(core::ptr::addr_of!(three)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -901,47 +901,47 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"lrint=%ld llrint=%lld lround=%ld llround=%lld\n".as_ptr(),
 // CHECK-NEXT:             __slate_lrintl__ri64_f80(
-// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(ten))
-// CHECK-NEXT:                     / std::ptr::read_volatile(std::ptr::addr_of!(three)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:                     / core::ptr::read_volatile(core::ptr::addr_of!(three)),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             __slate_llrintl__ri64_f80(
-// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(ten))
-// CHECK-NEXT:                     / std::ptr::read_volatile(std::ptr::addr_of!(three)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:                     / core::ptr::read_volatile(core::ptr::addr_of!(three)),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             __slate_lroundl__ri64_f80(
-// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(ten))
-// CHECK-NEXT:                     / std::ptr::read_volatile(std::ptr::addr_of!(three)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:                     / core::ptr::read_volatile(core::ptr::addr_of!(three)),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             __slate_llroundl__ri64_f80(
-// CHECK-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(ten))
-// CHECK-NEXT:                     / std::ptr::read_volatile(std::ptr::addr_of!(three)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:                     / core::ptr::read_volatile(core::ptr::addr_of!(three)),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("ilogb={}", unsafe {
-// CHECK-NEXT:         __slate_ilogbl__ri32_f80(std::ptr::read_volatile(std::ptr::addr_of!(ten)))
+// CHECK-NEXT:         __slate_ilogbl__ri32_f80(core::ptr::read_volatile(core::ptr::addr_of!(ten)))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"logb".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_logbl__rf80_f80(std::ptr::read_volatile(std::ptr::addr_of!(ten)))
+// CHECK-NEXT:         __slate_logbl__rf80_f80(core::ptr::read_volatile(core::ptr::addr_of!(ten)))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"erf".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_erfl__rf80_f80(
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten))
-// CHECK-NEXT:                 / std::ptr::read_volatile(std::ptr::addr_of!(three)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:                 / core::ptr::read_volatile(core::ptr::addr_of!(three)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"erfc".as_ptr(), unsafe {
 // CHECK-NEXT:         __slate_erfcl__rf80_f80(
-// CHECK-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(ten))
-// CHECK-NEXT:                 / std::ptr::read_volatile(std::ptr::addr_of!(three)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:                 / core::ptr::read_volatile(core::ptr::addr_of!(three)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"tgamma".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_tgammal__rf80_f80(std::ptr::read_volatile(std::ptr::addr_of!(three)))
+// CHECK-NEXT:         __slate_tgammal__rf80_f80(core::ptr::read_volatile(core::ptr::addr_of!(three)))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     print_ld(c"lgamma".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_lgammal__rf80_f80(std::ptr::read_volatile(std::ptr::addr_of!(ten)))
+// CHECK-NEXT:         __slate_lgammal__rf80_f80(core::ptr::read_volatile(core::ptr::addr_of!(ten)))
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let vnan: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // CHECK-NEXT:     let vinf: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
@@ -950,37 +950,37 @@ int main(void) {
 // CHECK-NEXT:     let vsub: LongDouble = LongDouble([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bool;
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let __u: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vnan)) };
-// CHECK-NEXT:         let __v: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
-// CHECK-NEXT:         [[V_0]] = (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__u)) })
-// CHECK-NEXT:             != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__v)) }
-// CHECK-NEXT:             && ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__u)) })
-// CHECK-NEXT:                 != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__u)) }
-// CHECK-NEXT:                 || (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__v)) })
-// CHECK-NEXT:                     != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__v)) });
+// CHECK-NEXT:         let __u: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vnan)) };
+// CHECK-NEXT:         let __v: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vone)) };
+// CHECK-NEXT:         [[V_0]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
+// CHECK-NEXT:             != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) }
+// CHECK-NEXT:             && ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
+// CHECK-NEXT:                 != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) }
+// CHECK-NEXT:                 || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) })
+// CHECK-NEXT:                     != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) });
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: bool;
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let __u: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
-// CHECK-NEXT:         let __v: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vzero)) };
-// CHECK-NEXT:         [[V_1]] = (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__u)) })
-// CHECK-NEXT:             != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__v)) }
-// CHECK-NEXT:             && ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__u)) })
-// CHECK-NEXT:                 != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__u)) }
-// CHECK-NEXT:                 || (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__v)) })
-// CHECK-NEXT:                     != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__v)) });
+// CHECK-NEXT:         let __u: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vone)) };
+// CHECK-NEXT:         let __v: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vzero)) };
+// CHECK-NEXT:         [[V_1]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
+// CHECK-NEXT:             != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) }
+// CHECK-NEXT:             && ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
+// CHECK-NEXT:                 != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) }
+// CHECK-NEXT:                 || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) })
+// CHECK-NEXT:                     != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) });
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "isnan_v={} isinf_v={} isfinite_v={} isnormal_v={} isunordered_v={} isunordered_ok={}",
 // CHECK-NEXT:         __slate_f80_is_fp_class(
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vnan)) },
+// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vnan)) },
 // CHECK-NEXT:             3
 // CHECK-NEXT:         ) as i32,
 // CHECK-NEXT:         if __slate_f80_is_fp_class(
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vinf)) },
+// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vinf)) },
 // CHECK-NEXT:             516
 // CHECK-NEXT:         ) {
-// CHECK-NEXT:             if __slate_f80_signbit(unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vinf)) }) {
+// CHECK-NEXT:             if __slate_f80_signbit(unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vinf)) }) {
 // CHECK-NEXT:                 -1i32
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 1i32
@@ -989,11 +989,11 @@ int main(void) {
 // CHECK-NEXT:             0i32
 // CHECK-NEXT:         },
 // CHECK-NEXT:         __slate_f80_is_fp_class(
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) },
+// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vone)) },
 // CHECK-NEXT:             504
 // CHECK-NEXT:         ) as i32,
 // CHECK-NEXT:         __slate_f80_is_fp_class(
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) },
+// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vone)) },
 // CHECK-NEXT:             264
 // CHECK-NEXT:         ) as i32,
 // CHECK-NEXT:         [[V_0]] as i32,
@@ -1002,70 +1002,70 @@ int main(void) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "subnormal_isnormal={}",
 // CHECK-NEXT:         __slate_f80_is_fp_class(
-// CHECK-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vsub)) },
+// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vsub)) },
 // CHECK-NEXT:             264
 // CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let vtwo: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
 // CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: bool;
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let __x: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
-// CHECK-NEXT:         let __y: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vtwo)) };
+// CHECK-NEXT:         let __x: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vone)) };
+// CHECK-NEXT:         let __y: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vtwo)) };
 // CHECK-NEXT:         let mut [[V_3:__v[0-9]+]]: bool;
-// CHECK-NEXT:         let __u: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__x)) };
-// CHECK-NEXT:         let __v: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__y)) };
-// CHECK-NEXT:         [[V_3]] = (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__u)) })
-// CHECK-NEXT:             != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__v)) }
-// CHECK-NEXT:             && ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__u)) })
-// CHECK-NEXT:                 != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__u)) }
-// CHECK-NEXT:                 || (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__v)) })
-// CHECK-NEXT:                     != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__v)) });
+// CHECK-NEXT:         let __u: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__x)) };
+// CHECK-NEXT:         let __v: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__y)) };
+// CHECK-NEXT:         [[V_3]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
+// CHECK-NEXT:             != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) }
+// CHECK-NEXT:             && ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
+// CHECK-NEXT:                 != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) }
+// CHECK-NEXT:                 || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) })
+// CHECK-NEXT:                     != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) });
 // CHECK-NEXT:         [[V_2]] = ![[V_3]]
-// CHECK-NEXT:             && (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__x)) })
-// CHECK-NEXT:                 != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__y)) };
+// CHECK-NEXT:             && (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__x)) })
+// CHECK-NEXT:                 != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__y)) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_4:__v[0-9]+]]: bool;
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let __x: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
-// CHECK-NEXT:         let __y: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
+// CHECK-NEXT:         let __x: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vone)) };
+// CHECK-NEXT:         let __y: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vone)) };
 // CHECK-NEXT:         let mut [[V_5:__v[0-9]+]]: bool;
-// CHECK-NEXT:         let __u: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__x)) };
-// CHECK-NEXT:         let __v: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__y)) };
-// CHECK-NEXT:         [[V_5]] = (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__u)) })
-// CHECK-NEXT:             != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__v)) }
-// CHECK-NEXT:             && ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__u)) })
-// CHECK-NEXT:                 != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__u)) }
-// CHECK-NEXT:                 || (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__v)) })
-// CHECK-NEXT:                     != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__v)) });
+// CHECK-NEXT:         let __u: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__x)) };
+// CHECK-NEXT:         let __v: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__y)) };
+// CHECK-NEXT:         [[V_5]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
+// CHECK-NEXT:             != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) }
+// CHECK-NEXT:             && ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
+// CHECK-NEXT:                 != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) }
+// CHECK-NEXT:                 || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) })
+// CHECK-NEXT:                     != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) });
 // CHECK-NEXT:         [[V_4]] = ![[V_5]]
-// CHECK-NEXT:             && (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__x)) })
-// CHECK-NEXT:                 != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__y)) };
+// CHECK-NEXT:             && (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__x)) })
+// CHECK-NEXT:                 != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__y)) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_6:__v[0-9]+]]: bool;
-// CHECK-NEXT:     let __x: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vnan)) };
-// CHECK-NEXT:     let __y: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
+// CHECK-NEXT:     let __x: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vnan)) };
+// CHECK-NEXT:     let __y: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vone)) };
 // CHECK-NEXT:     let mut [[V_7:__v[0-9]+]]: bool;
-// CHECK-NEXT:     let __u: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__x)) };
-// CHECK-NEXT:     let __v: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__y)) };
-// CHECK-NEXT:     [[V_7]] = (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__u)) })
-// CHECK-NEXT:         != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__v)) }
-// CHECK-NEXT:         && ((unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__u)) })
-// CHECK-NEXT:             != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__u)) }
-// CHECK-NEXT:             || (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__v)) })
-// CHECK-NEXT:                 != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__v)) });
+// CHECK-NEXT:     let __u: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__x)) };
+// CHECK-NEXT:     let __v: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__y)) };
+// CHECK-NEXT:     [[V_7]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
+// CHECK-NEXT:         != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) }
+// CHECK-NEXT:         && ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
+// CHECK-NEXT:             != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) }
+// CHECK-NEXT:             || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) })
+// CHECK-NEXT:                 != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) });
 // CHECK-NEXT:     [[V_6]] = ![[V_7]]
-// CHECK-NEXT:         && (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__x)) })
-// CHECK-NEXT:             != unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__y)) };
+// CHECK-NEXT:         && (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__x)) })
+// CHECK-NEXT:             != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__y)) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "islessgreater_lt={} islessgreater_eq={} islessgreater_nan={}",
 // CHECK-NEXT:         [[V_2]] as i32, [[V_4]] as i32, [[V_6]] as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut ten_plain: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// CHECK-NEXT:     let mut ten_plain: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) };
 // CHECK-NEXT:     let mut canon: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // CHECK-NEXT:     let canon_r: i32 = unsafe {
 // CHECK-NEXT:         canonicalizel(
-// CHECK-NEXT:             std::ptr::addr_of_mut!(canon),
-// CHECK-NEXT:             std::ptr::addr_of_mut!(ten_plain) as *const LongDouble,
+// CHECK-NEXT:             core::ptr::addr_of_mut!(canon),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(ten_plain) as *const LongDouble,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     print_ld(c"canonicalize".as_ptr(), canon);
@@ -1110,8 +1110,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

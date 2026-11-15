@@ -32,7 +32,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut copy: __SlateAlign16<[i8; 16]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     });
@@ -41,7 +41,7 @@ int main(void) {
 // CHECK-NEXT:         0i8,
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     let mut trunc_copy: __SlateAlign16<[i8; 16]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [i8; 16] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [i8; 16] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]][0] = 0i8;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     });
@@ -88,14 +88,14 @@ int main(void) {
 // CHECK-NEXT:             ) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

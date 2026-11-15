@@ -53,7 +53,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn xor_block(vblk: *mut (), len: i32) {
 // CHECK-NEXT:     let __vblk_view = unsafe {
-// CHECK-NEXT:         std::slice::from_raw_parts_mut(vblk as *mut u8, len as usize)
+// CHECK-NEXT:         core::slice::from_raw_parts_mut(vblk as *mut u8, len as usize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut k: u32 = 0;
 // CHECK-NEXT:     while (k as i32) < len {
@@ -66,7 +66,7 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn rc4_block(handle: &mut (), vblk: *mut (), len: i32) {
 // CHECK-NEXT:     let __vblk_view = unsafe {
-// CHECK-NEXT:         std::slice::from_raw_parts_mut(vblk as *mut u8, len as usize)
+// CHECK-NEXT:         core::slice::from_raw_parts_mut(vblk as *mut u8, len as usize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut k: u32 = 0;
 // CHECK-NEXT:     let mut tmp: u8 = 0;

@@ -40,8 +40,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut bytes: [u8; 4] = [97, 98, 99, 0];
 // CHECK-NEXT:     let score: i32 = forward_text(unsafe {
-// CHECK-NEXT:         std::str::from_utf8_unchecked(
-// CHECK-NEXT:             std::slice::from_raw_parts(bytes.as_ptr() as *const u8, 3 as usize),
+// CHECK-NEXT:         core::str::from_utf8_unchecked(
+// CHECK-NEXT:             core::slice::from_raw_parts(bytes.as_ptr() as *const u8, 3 as usize),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     });
 // CHECK-NEXT:     println!("{}", score);
@@ -50,8 +50,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

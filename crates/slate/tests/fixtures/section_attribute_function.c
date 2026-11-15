@@ -47,13 +47,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn inside(function: Option<unsafe extern "C-unwind" fn(i32) -> i32>) -> i32 {
 // CHECK-NEXT:     let address: *mut i8 = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<
+// CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(i32) -> i32>,
 // CHECK-NEXT:             *mut i8,
 // CHECK-NEXT:         >(function)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     (address >= unsafe { std::ptr::addr_of_mut!(__start_slate_gnu_text) as *mut i8 }
-// CHECK-NEXT:         && address < unsafe { std::ptr::addr_of_mut!(__stop_slate_gnu_text) as *mut i8 })
+// CHECK-NEXT:     (address >= unsafe { core::ptr::addr_of_mut!(__start_slate_gnu_text) as *mut i8 }
+// CHECK-NEXT:         && address
+// CHECK-NEXT:             < unsafe { core::ptr::addr_of_mut!(__stop_slate_gnu_text) as *mut i8 })
 // CHECK-NEXT:         as i32
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -67,8 +68,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -50,11 +50,11 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let len: i32 = 4;
 // CHECK-NEXT:     let text: *mut i8 = (unsafe {
-// CHECK-NEXT:         malloc((len as u64).wrapping_mul(std::mem::size_of::<i8>() as u64) as usize)
+// CHECK-NEXT:         malloc((len as u64).wrapping_mul(core::mem::size_of::<i8>() as u64) as usize)
 // CHECK-NEXT:             as *mut ()
 // CHECK-NEXT:     }) as *mut i8;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         std::ptr::copy_nonoverlapping(
+// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             ((b"abc\0".as_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((text as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             ((len as u64) as usize) as usize,
@@ -69,8 +69,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

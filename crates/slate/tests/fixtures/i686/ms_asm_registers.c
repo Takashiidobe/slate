@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-fms-extensions" }
-// CHECK-NEXT: static mut sink: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut sink: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.bump")]
 // CHECK-NEXT: extern "C-unwind" fn bump() {
@@ -60,7 +60,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!("mov ecx, 3\nmov edx, 4\nadd ecx, edx", lateout("ax") [[T_0]], out("cx") _, out("dx") _);
-// CHECK-NEXT:         [[V_0]] = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         [[V_0]] = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r + 1
 // CHECK-NEXT: }
@@ -71,7 +71,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!("push 7\npush 8\npop ecx\npop edx\nadd ecx, edx", lateout("ax") [[T_0]], out("cx") _, out("dx") _);
-// CHECK-NEXT:         [[V_0]] = unsafe { std::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         [[V_0]] = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
@@ -86,8 +86,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

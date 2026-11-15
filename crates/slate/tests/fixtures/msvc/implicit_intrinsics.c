@@ -86,7 +86,7 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         _umul128(
 // X86_64-PC-WINDOWS-MSVC-NEXT:             4294967296u64 as u64,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             4294967296u64 as u64,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             std::ptr::addr_of_mut!(high) as *mut u64,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             core::ptr::addr_of_mut!(high) as *mut u64,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         ) as u64
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     if low != 0 || high != 1 {
@@ -109,8 +109,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -23,16 +23,16 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut h: hooks = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut h: hooks = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     h.malloc_fn = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<
+// CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             *const (),
 // CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(u64) -> *mut ()>,
 // CHECK-NEXT:         >(malloc as *const ())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let matches: i32 = (h.malloc_fn
 // CHECK-NEXT:         == unsafe {
-// CHECK-NEXT:             std::mem::transmute::<
+// CHECK-NEXT:             core::mem::transmute::<
 // CHECK-NEXT:                 *const (),
 // CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(u64) -> *mut ()>,
 // CHECK-NEXT:             >(malloc as *const ())
@@ -42,8 +42,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

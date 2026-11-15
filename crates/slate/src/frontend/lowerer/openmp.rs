@@ -75,7 +75,7 @@ impl FunctionLowerer<'_, '_> {
                 body.push(Stmt::Assign {
                     target: self.lower_binding(private.copy.id),
                     value: Expr::Call {
-                        func: Box::new(Expr::Var("std::ptr::read".into())),
+                        func: Box::new(Expr::Var("core::ptr::read".into())),
                         args: vec![Expr::Var(pointer.into())],
                         binding: CallBinding::Generated,
                     },

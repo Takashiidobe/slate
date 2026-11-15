@@ -564,11 +564,11 @@ impl FunctionLowerer<'_, '_> {
                 name: storage.clone(),
                 mutable: true,
                 ty: Some(rust::Type::Generic {
-                    name: "std::mem::MaybeUninit".into(),
+                    name: "core::mem::MaybeUninit".into(),
                     args: vec![stored],
                 }),
                 init: Some(Expr::Call {
-                    func: Box::new(Expr::Var("std::mem::MaybeUninit::uninit".into())),
+                    func: Box::new(Expr::Var("core::mem::MaybeUninit::uninit".into())),
                     args: Vec::new(),
                     binding: CallBinding::Generated,
                 }),
@@ -656,7 +656,7 @@ impl FunctionLowerer<'_, '_> {
                                 }]
                             }
                             Some((id, Some(initializer))) => vec![Stmt::Expr(Expr::Call {
-                                func: Box::new(Expr::Var("std::ptr::write".into())),
+                                func: Box::new(Expr::Var("core::ptr::write".into())),
                                 args: vec![self.slot_pointer(id), self.lower_value(initializer)?],
                                 binding: CallBinding::Generated,
                             })],
@@ -666,7 +666,7 @@ impl FunctionLowerer<'_, '_> {
                             {
                                 if let Some(value) = self.auto_init_value(&variable.ty, auto)? {
                                     vec![Stmt::Expr(Expr::Call {
-                                        func: Box::new(Expr::Var("std::ptr::write".into())),
+                                        func: Box::new(Expr::Var("core::ptr::write".into())),
                                         args: vec![self.slot_pointer(variable.id), value],
                                         binding: CallBinding::Generated,
                                     })]

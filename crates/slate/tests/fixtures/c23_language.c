@@ -220,22 +220,22 @@ int main(void) {
 // CHECK-NEXT: const _: () = __SLATE_WARNING_0;
 // CHECK-NEXT: macro_rules! C23_TYPE_KIND {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         3
+// CHECK-NEXT:         3i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! C23_TYPE_KIND__2 {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         2
+// CHECK-NEXT:         2i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! C23_TYPE_KIND__3 {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         1
+// CHECK-NEXT:         1i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: macro_rules! C23_TYPE_KIND__4 {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         4
+// CHECK-NEXT:         4i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut c23_embedded: [u8; 3] = [67, 50, 51];
@@ -257,7 +257,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[thread_local]
 // CHECK-NEXT: static mut c23_thread_value: i32 = 53;
-// CHECK-NEXT: static mut c23_never_flag: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut c23_never_flag: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: use slate_support::exit;
 // CHECK-NEXT: static mut c23_file_constant: i32 = 59;
 // CHECK-NEXT: fn c23_unnamed_parameter([[V_0:__v[0-9]+]]: i32, value: i32) -> i32 {
@@ -287,7 +287,7 @@ int main(void) {
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn c23_relaxed_variadic(mut __va_args: ...) -> i32 {
-// CHECK-NEXT:     let mut arguments: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut arguments: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut first: i32 = 0;
 // CHECK-NEXT:     let mut second: i32 = 0;
 // CHECK-NEXT:     arguments = unsafe {
@@ -312,25 +312,25 @@ int main(void) {
 // CHECK-NEXT:     let binary_value: i32 = 165;
 // CHECK-NEXT:     let utf8_character: u8 = 90;
 // CHECK-NEXT:     let empty_struct: C23Empty = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: C23Empty = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: C23Empty = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let empty_array: [i32; 3] = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [i32; 3] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [i32; 3] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let qualified_array: [i32; 3] = [2, 3, 5];
 // CHECK-NEXT:     let fixed_value: u16 = 37;
 // CHECK-NEXT:     let wide_value: u64 = 8589934591;
-// CHECK-NEXT:     let null_value: *mut () = std::ptr::null_mut::<()>();
-// CHECK-NEXT:     let null_pointer: *mut i32 = std::ptr::null_mut::<i32>();
+// CHECK-NEXT:     let null_value: *mut () = core::ptr::null_mut::<()>();
+// CHECK-NEXT:     let null_pointer: *mut i32 = core::ptr::null_mut::<i32>();
 // CHECK-NEXT:     let boolean_value: bool = true;
 // CHECK-NEXT:     let false_value: bool = false;
 // CHECK-NEXT:     let static_compound_value: i32 = 83;
 // CHECK-NEXT:     let language_total: i32 = (((unsafe { c23_file_constant }) + local_constant
 // CHECK-NEXT:         + inferred_value + same_type_value + unqualified_value + (signed_precise as i32)
 // CHECK-NEXT:         + ((unsigned_precise as u32) as i32) + binary_value + aligned_value.0) as u64)
-// CHECK-NEXT:         .wrapping_add(std::mem::align_of::<i32>() as u64)
+// CHECK-NEXT:         .wrapping_add(core::mem::align_of::<i32>() as u64)
 // CHECK-NEXT:         .wrapping_add(α as u64)
 // CHECK-NEXT:         .wrapping_add((utf8_character as i32) as u64)
 // CHECK-NEXT:         .wrapping_add(((unsafe { utf8_text[0] }) as i32) as u64)
@@ -358,7 +358,7 @@ int main(void) {
 // CHECK-NEXT:         + c23_label_declaration(101i32) + c23_switch_fallthrough(1i32)
 // CHECK-NEXT:         + unsafe { c23_relaxed_variadic(103i32, 107i32) };
 // CHECK-NEXT:     let removal_total: i32 = true as i32;
-// CHECK-NEXT:     if (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c23_never_flag)) }) != 0 {
+// CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(c23_never_flag)) }) != 0 {
 // CHECK-NEXT:         c23_never_return();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     c23_label_before_brace();
@@ -372,8 +372,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

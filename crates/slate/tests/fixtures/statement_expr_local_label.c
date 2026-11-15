@@ -26,10 +26,10 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut result: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut [[RESULT_0:result_[0-9]+]]: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut first: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut value: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut [[RESULT_0:result_[0-9]+]]: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut first: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut value: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         value = 0;
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = value + 1;

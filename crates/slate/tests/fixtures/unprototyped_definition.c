@@ -23,7 +23,7 @@ int later() { return bump() * 10; }
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-std=gnu17" }
-// CHECK-NEXT: static mut counter: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut counter: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump() -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (unsafe { counter }) + 1;
@@ -50,8 +50,8 @@ int later() { return bump() * 10; }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

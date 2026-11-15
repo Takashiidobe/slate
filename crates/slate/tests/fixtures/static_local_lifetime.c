@@ -130,7 +130,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut count__11: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut count__11: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn other_counter() -> i32 {
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = unsafe { count__16 };
 // CHECK-NEXT:     unsafe {
@@ -147,12 +147,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slots.0[([[V_1]] % 4) as usize] = value;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(slots.0) as *mut i32 }
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(slots.0) as *mut i32 }
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut slots: __SlateAlign16<[i32; 4]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     std::mem::zeroed()
+// CHECK-NEXT:     core::mem::zeroed()
 // CHECK-NEXT: });
-// CHECK-NEXT: static mut next: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut next: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn moved(dx: i32) -> *mut Point {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         point.x = point.x + dx;
@@ -160,13 +160,13 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         point.y = point.y * 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { std::ptr::addr_of_mut!(point) }
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(point) }
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut point: Point = Point { x: 1i32, y: 2i32 };
 // CHECK-NEXT: fn base_pointer() -> *mut i32 {
 // CHECK-NEXT:     unsafe { pointer }
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut pointer: *mut i32 = unsafe { std::ptr::addr_of_mut!(global_base) };
+// CHECK-NEXT: static mut pointer: *mut i32 = unsafe { core::ptr::addr_of_mut!(global_base) };
 // CHECK-NEXT: fn depth(n: i32) -> i32 {
 // CHECK-NEXT:     if n > unsafe { deepest } {
 // CHECK-NEXT:         unsafe {
@@ -176,7 +176,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_1]]: i32 = if n == 0 { unsafe { deepest } } else { depth(n - 1) };
 // CHECK-NEXT:     [[V_1]]
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut deepest: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut deepest: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn running_mean(sample: f64) -> f64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         sum = sum + sample;
@@ -187,8 +187,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (unsafe { sum }) / ([[V_2]] as f64)
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut sum: f64 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT: static mut samples: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT: static mut sum: f64 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT: static mut samples: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn name_of(index: i32) -> *const i8 {
 // CHECK-NEXT:     unsafe { names.0[index as usize] }
 // CHECK-NEXT: }
@@ -256,10 +256,10 @@ int main(void) {
 // CHECK-NEXT:     running_mean(2.0f64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%g\n".as_ptr(), running_mean(6.0f64)) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%s %s\n".as_ptr(), name_of(2i32), name_of(0i32)) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let first: i32 = loop_scoped();
 // CHECK-NEXT:     let second: i32 = loop_scoped();
 // CHECK-NEXT:     println!("{} {}", first, second);
@@ -268,8 +268,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

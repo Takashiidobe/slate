@@ -117,8 +117,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
@@ -130,7 +130,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d\n".as_ptr(), run(3i32), run(7i32)) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
@@ -144,19 +144,19 @@ int main(void) {
 // CHECK-NEXT:     let mut c: ent = ent {
 // CHECK-NEXT:         hash: 2,
 // CHECK-NEXT:         key: 30,
-// CHECK-NEXT:         next: std::ptr::null_mut::<ent>(),
+// CHECK-NEXT:         next: core::ptr::null_mut::<ent>(),
 // CHECK-NEXT:     };
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let mut b: ent = ent {
 // CHECK-NEXT:         hash: 1,
 // CHECK-NEXT:         key: 20,
-// CHECK-NEXT:         next: std::ptr::addr_of_mut!(c),
+// CHECK-NEXT:         next: core::ptr::addr_of_mut!(c),
 // CHECK-NEXT:     };
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let mut a: ent = ent {
 // CHECK-NEXT:         hash: 0,
 // CHECK-NEXT:         key: 10,
-// CHECK-NEXT:         next: std::ptr::addr_of_mut!(b),
+// CHECK-NEXT:         next: core::ptr::addr_of_mut!(b),
 // CHECK-NEXT:     };
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -165,68 +165,68 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d %d %d\n".as_ptr(),
-// CHECK-NEXT:                 find(std::ptr::addr_of_mut!(a), 2u32, (30 as c_ulong)),
-// CHECK-NEXT:                 find(std::ptr::addr_of_mut!(a), 1u32, (20 as c_ulong)),
-// CHECK-NEXT:                 find(std::ptr::addr_of_mut!(a), 9u32, (99 as c_ulong)),
+// CHECK-NEXT:                 find(core::ptr::addr_of_mut!(a), 2u32, (30 as c_ulong)),
+// CHECK-NEXT:                 find(core::ptr::addr_of_mut!(a), 1u32, (20 as c_ulong)),
+// CHECK-NEXT:                 find(core::ptr::addr_of_mut!(a), 9u32, (99 as c_ulong)),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     let mut c: ent = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: ent = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: ent = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].hash = 2u32;
 // CHECK-NEXT:         [[T_0]].key = (30 as c_ulong);
-// CHECK-NEXT:         [[T_0]].next = std::ptr::null_mut::<ent>();
+// CHECK-NEXT:         [[T_0]].next = core::ptr::null_mut::<ent>();
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     let mut b: ent = {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: ent = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: ent = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].hash = 1u32;
 // CHECK-NEXT:         [[T_1]].key = (20 as c_ulong);
-// CHECK-NEXT:         [[T_1]].next = std::ptr::addr_of_mut!(c);
+// CHECK-NEXT:         [[T_1]].next = core::ptr::addr_of_mut!(c);
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     let mut a: ent = {
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: ent = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: ent = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]].hash = 0u32;
 // CHECK-NEXT:         [[T_2]].key = (10 as c_ulong);
-// CHECK-NEXT:         [[T_2]].next = std::ptr::addr_of_mut!(b);
+// CHECK-NEXT:         [[T_2]].next = core::ptr::addr_of_mut!(b);
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {} {}",
-// CHECK-NEXT:             find(std::ptr::addr_of_mut!(a), 2u32, (30 as c_ulong)),
-// CHECK-NEXT:             find(std::ptr::addr_of_mut!(a), 1u32, (20 as c_ulong)),
-// CHECK-NEXT:             find(std::ptr::addr_of_mut!(a), 9u32, (99 as c_ulong))
+// CHECK-NEXT:             find(core::ptr::addr_of_mut!(a), 2u32, (30 as c_ulong)),
+// CHECK-NEXT:             find(core::ptr::addr_of_mut!(a), 1u32, (20 as c_ulong)),
+// CHECK-NEXT:             find(core::ptr::addr_of_mut!(a), 9u32, (99 as c_ulong))
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn run(n: i32) -> i32 {
-// CHECK-NEXT:     let mut total: i32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut func: std::mem::MaybeUninit<Option<unsafe extern "C-unwind" fn(i32) -> i32>> =
-// CHECK-NEXT:         std::mem::MaybeUninit::uninit();
+// CHECK-NEXT:     let mut total: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut func: core::mem::MaybeUninit<Option<unsafe extern "C-unwind" fn(i32) -> i32>> =
+// CHECK-NEXT:         core::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut Option<unsafe extern "C-unwind" fn(i32) -> i32> =
-// CHECK-NEXT:         std::ptr::addr_of_mut!(func) as *mut Option<unsafe extern "C-unwind" fn(i32) -> i32>;
-// CHECK-NEXT:     let mut s: std::mem::MaybeUninit<slot> = std::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_1:__slate_slot_[0-9]+]]: *mut slot = std::ptr::addr_of_mut!(s) as *mut slot;
+// CHECK-NEXT:         core::ptr::addr_of_mut!(func) as *mut Option<unsafe extern "C-unwind" fn(i32) -> i32>;
+// CHECK-NEXT:     let mut s: core::mem::MaybeUninit<slot> = core::mem::MaybeUninit::uninit();
+// CHECK-NEXT:     let [[SLATE_SLOT_1:__slate_slot_[0-9]+]]: *mut slot = core::ptr::addr_of_mut!(s) as *mut slot;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         total = 0;
 // CHECK-NEXT:         *[[SLATE_SLOT_0]] = None;
 // CHECK-NEXT:         if n > 5 {
 // CHECK-NEXT:             *[[SLATE_SLOT_0]] = Some(twice);
-// CHECK-NEXT:             PUSH!(std::ptr::addr_of_mut!(*[[SLATE_SLOT_1]]), *[[SLATE_SLOT_0]]);
+// CHECK-NEXT:             PUSH!(core::ptr::addr_of_mut!(*[[SLATE_SLOT_1]]), *[[SLATE_SLOT_0]]);
 // CHECK-NEXT:             total = (*[[SLATE_SLOT_1]]).func.unwrap()(n * 10);
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             *[[SLATE_SLOT_0]] = Some(twice);
 // CHECK-NEXT:             if *[[SLATE_SLOT_0]] != None {
-// CHECK-NEXT:                 PUSH!(std::ptr::addr_of_mut!(*[[SLATE_SLOT_1]]), *[[SLATE_SLOT_0]]);
+// CHECK-NEXT:                 PUSH!(core::ptr::addr_of_mut!(*[[SLATE_SLOT_1]]), *[[SLATE_SLOT_0]]);
 // CHECK-NEXT:             }
 // CHECK-NEXT:             total = (*[[SLATE_SLOT_1]]).func.unwrap()(n) + (*[[SLATE_SLOT_1]]).num;
 // CHECK-NEXT:         }

@@ -38,8 +38,8 @@ int main(void) {
 // CHECK-NEXT:     name: u32,
 // CHECK-NEXT: }
 // CHECK-NEXT: fn pick(fd: &fd, name: u32, k: i32) -> i32 {
-// CHECK-NEXT:     let mut name__1: u32 = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:     let mut total: i32 = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut name__1: u32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut total: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         total = name as i32;
 // CHECK-NEXT:         if k == 0 {
@@ -59,17 +59,17 @@ int main(void) {
 // CHECK-NEXT:     let mut small: fd = fd { name: 3 };
 // CHECK-NEXT:     let mut big: fd = fd { name: 9 };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", pick(unsafe { & (* std::ptr::addr_of_mut!(small)) }, 2u32, 0i32),
-// CHECK-NEXT:         pick(unsafe { & (* std::ptr::addr_of_mut!(big)) }, 2u32, 0i32), pick(unsafe { &
-// CHECK-NEXT:         (* std::ptr::addr_of_mut!(small)) }, 2u32, 1i32)
+// CHECK-NEXT:         "{} {} {}", pick(unsafe { & (* core::ptr::addr_of_mut!(small)) }, 2u32, 0i32),
+// CHECK-NEXT:         pick(unsafe { & (* core::ptr::addr_of_mut!(big)) }, 2u32, 0i32), pick(unsafe { &
+// CHECK-NEXT:         (* core::ptr::addr_of_mut!(small)) }, 2u32, 1i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -68,32 +68,32 @@ int main(void) {
 // CHECK-NEXT:     ASSIGN!(d, e);
 // CHECK-NEXT: }
 // CHECK-NEXT: fn fill_null(e: *mut entry) {
-// CHECK-NEXT:     ASSIGN!(std::ptr::null_mut::< def > (), e);
+// CHECK-NEXT:     ASSIGN!(core::ptr::null_mut::< def > (), e);
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut c: chan = chan { band: 3 };
 // CHECK-NEXT:     let mut d: def = {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: def = unsafe { std::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].chan = std::ptr::addr_of_mut!(c);
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: def = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].chan = core::ptr::addr_of_mut!(c);
 // CHECK-NEXT:         [[T_0]].width = 5i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut e: entry = entry { band: 9, width: 9 };
-// CHECK-NEXT:     fill(std::ptr::addr_of_mut!(e), std::ptr::addr_of_mut!(d));
+// CHECK-NEXT:     fill(core::ptr::addr_of_mut!(e), core::ptr::addr_of_mut!(d));
 // CHECK-NEXT:     println!("{} {}", e.band, e.width);
-// CHECK-NEXT:     fill_null(std::ptr::addr_of_mut!(e));
+// CHECK-NEXT:     fill_null(core::ptr::addr_of_mut!(e));
 // CHECK-NEXT:     println!("{}", e.band);
 // CHECK-NEXT:     let mut prev: u8 = 0;
-// CHECK-NEXT:     let a: i32 = FIND!(2i32, std::ptr::addr_of_mut!(prev));
-// CHECK-NEXT:     let b: i32 = FIND!(3i32, std::ptr::null_mut::< u8 > ());
+// CHECK-NEXT:     let a: i32 = FIND!(2i32, core::ptr::addr_of_mut!(prev));
+// CHECK-NEXT:     let b: i32 = FIND!(3i32, core::ptr::null_mut::< u8 > ());
 // CHECK-NEXT:     println!("{} {} {}", a, b, prev as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

@@ -47,7 +47,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C-unwind" fn total(count: i32, mut __va_args: ...) -> i32 {
-// CHECK-NEXT:     let mut args: core::ffi::VaList<'static> = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut args: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     args = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             core::ffi::VaList<'_>,
@@ -84,7 +84,7 @@ int main(void) {
 // CHECK-NEXT:     let format: Option<
 // CHECK-NEXT:         unsafe extern "C-unwind" fn(*mut i8, u64, *const i8, ...) -> i32,
 // CHECK-NEXT:     > = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<
+// CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             *const (),
 // CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(*mut i8, u64, *const i8, ...) -> i32>,
 // CHECK-NEXT:         >(snprintf as *const ())
@@ -94,7 +94,7 @@ int main(void) {
 // CHECK-NEXT:         format
 // CHECK-NEXT:             .unwrap()(
 // CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             std::mem::size_of::<[i8; 32]>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<[i8; 32]>() as u64,
 // CHECK-NEXT:             c"%d %.1f".as_ptr(),
 // CHECK-NEXT:             a as i32,
 // CHECK-NEXT:             b as f64,
@@ -105,14 +105,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::puts(buffer.0.as_mut_ptr() as *const i8) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

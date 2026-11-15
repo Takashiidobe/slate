@@ -187,8 +187,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
@@ -208,7 +208,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d\n".as_ptr(), read_table(3i32), read_local(10i32)) };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -222,7 +222,7 @@ int main(void) {
 // CHECK-NEXT:                 read_crossing(),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -241,9 +241,9 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%s %s %s\n".as_ptr(),
-// CHECK-NEXT:                 std::ptr::addr_of!(explicit_large.0) as *const c_char,
-// CHECK-NEXT:                 std::ptr::addr_of!(larger.0) as *const c_char,
-// CHECK-NEXT:                 std::ptr::addr_of!(opted_out) as *const c_char,
+// CHECK-NEXT:                 core::ptr::addr_of!(explicit_large.0) as *const c_char,
+// CHECK-NEXT:                 core::ptr::addr_of!(larger.0) as *const c_char,
+// CHECK-NEXT:                 core::ptr::addr_of!(opted_out) as *const c_char,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
@@ -252,22 +252,22 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%s %s %s\n".as_ptr(),
-// CHECK-NEXT:                 std::ptr::addr_of!(explicit_large.0) as *const c_char,
-// CHECK-NEXT:                 std::ptr::addr_of!(larger.0) as *const c_char,
-// CHECK-NEXT:                 std::ptr::addr_of!(opted_out.0) as *const c_char,
+// CHECK-NEXT:                 core::ptr::addr_of!(explicit_large.0) as *const c_char,
+// CHECK-NEXT:                 core::ptr::addr_of!(larger.0) as *const c_char,
+// CHECK-NEXT:                 core::ptr::addr_of!(opted_out.0) as *const c_char,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// CHECK-NEXT:     if ((unsafe { std::ptr::addr_of!(explicit_large.0) as *const c_char }) as uintptr_t) % 16 != 0
-// CHECK-NEXT:         || ((unsafe { std::ptr::addr_of!(larger.0) as *const c_char }) as uintptr_t) % 32 != 0
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     if ((unsafe { core::ptr::addr_of!(explicit_large.0) as *const c_char }) as uintptr_t) % 16 != 0
+// CHECK-NEXT:         || ((unsafe { core::ptr::addr_of!(larger.0) as *const c_char }) as uintptr_t) % 32 != 0
 // CHECK-NEXT:     {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", unix))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         if ((unsafe { std::ptr::addr_of!(table.0) as *const code }) as uintptr_t) % 16 != 0
-// CHECK-NEXT:             || ((unsafe { std::ptr::addr_of!(exported.0) as *const u8 }) as uintptr_t) % 16 != 0
+// CHECK-NEXT:         if ((unsafe { core::ptr::addr_of!(table.0) as *const code }) as uintptr_t) % 16 != 0
+// CHECK-NEXT:             || ((unsafe { core::ptr::addr_of!(exported.0) as *const u8 }) as uintptr_t) % 16 != 0
 // CHECK-NEXT:         {
 // CHECK-NEXT:             return 2;
 // CHECK-NEXT:         }
@@ -275,10 +275,10 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut descriptor: *const code = unsafe { std::ptr::addr_of!(table.0) as *const code };
+// CHECK-NEXT: static mut descriptor: *const code = unsafe { core::ptr::addr_of!(table.0) as *const code };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut small: [u8; 15] = {
-// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: [u8; 15] = unsafe { std::mem::zeroed() };
+// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: [u8; 15] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]][0] = 1u8;
 // CHECK-NEXT:     [[T_0]][1] = 2u8;
 // CHECK-NEXT:     [[T_0]][2] = 3u8;

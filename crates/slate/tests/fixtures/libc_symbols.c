@@ -85,9 +85,9 @@ int main(void) {
 // CHECK-NEXT:         qsort(
 // CHECK-NEXT:             (values.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void,
 // CHECK-NEXT:             3u64 as usize,
-// CHECK-NEXT:             (std::mem::size_of::<i32>() as u64) as usize,
+// CHECK-NEXT:             (core::mem::size_of::<i32>() as u64) as usize,
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 std::mem::transmute::<
+// CHECK-NEXT:                 core::mem::transmute::<
 // CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
 // CHECK-NEXT:                     Option<
 // CHECK-NEXT:                         unsafe extern "C" fn(
@@ -100,7 +100,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let process_id: Option<unsafe extern "C-unwind" fn() -> i32> = unsafe {
-// CHECK-NEXT:         std::mem::transmute::<
+// CHECK-NEXT:         core::mem::transmute::<
 // CHECK-NEXT:             *const (),
 // CHECK-NEXT:             Option<unsafe extern "C-unwind" fn() -> i32>,
 // CHECK-NEXT:         >(getpid as *const ())
@@ -117,7 +117,7 @@ int main(void) {
 // CHECK-NEXT:     let written: i64 = unsafe {
 // CHECK-NEXT:         write(
 // CHECK-NEXT:             descriptors[1] as i32,
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(byte) as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(byte) as *const ()) as *const core::ffi::c_void,
 // CHECK-NEXT:             1u64 as usize,
 // CHECK-NEXT:         ) as i64
 // CHECK-NEXT:     };
@@ -125,7 +125,7 @@ int main(void) {
 // CHECK-NEXT:     let received: i64 = unsafe {
 // CHECK-NEXT:         read(
 // CHECK-NEXT:             descriptors[0] as i32,
-// CHECK-NEXT:             (std::ptr::addr_of_mut!(result) as *mut ()) as *mut core::ffi::c_void,
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(result) as *mut ()) as *mut core::ffi::c_void,
 // CHECK-NEXT:             1u64 as usize,
 // CHECK-NEXT:         ) as i64
 // CHECK-NEXT:     };
@@ -147,11 +147,11 @@ int main(void) {
 // CHECK-NEXT:             limit_value(4u64),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", ((unsafe { memcmp((std::ptr::addr_of!(in6addr_any) as * const ()) as *
-// CHECK-NEXT:         const core::ffi::c_void, (std::ptr::addr_of!(in6addr_loopback) as * const ()) as
-// CHECK-NEXT:         * const core::ffi::c_void, (std::mem::size_of::< in6_addr > () as u64) as usize)
+// CHECK-NEXT:         "{}", ((unsafe { memcmp((core::ptr::addr_of!(in6addr_any) as * const ()) as *
+// CHECK-NEXT:         const core::ffi::c_void, (core::ptr::addr_of!(in6addr_loopback) as * const ()) as
+// CHECK-NEXT:         * const core::ffi::c_void, (core::mem::size_of::< in6_addr > () as u64) as usize)
 // CHECK-NEXT:         as i32 }) != 0) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
@@ -163,8 +163,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

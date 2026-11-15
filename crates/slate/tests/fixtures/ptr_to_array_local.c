@@ -20,7 +20,7 @@ int main(void) {
 // CHECK-NEXT:     let mut src: __SlateAlign16<[i32; 5]> = __SlateAlign16([
 // CHECK-NEXT:         1i32, 2i32, 3i32, 4i32, 5i32,
 // CHECK-NEXT:     ]);
-// CHECK-NEXT:     let p: *mut [i32; 5] = std::ptr::addr_of_mut!(src.0);
+// CHECK-NEXT:     let p: *mut [i32; 5] = core::ptr::addr_of_mut!(src.0);
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0i32..5i32 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = sum;

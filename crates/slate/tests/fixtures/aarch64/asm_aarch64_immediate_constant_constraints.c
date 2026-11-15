@@ -34,7 +34,7 @@ int main(void) {
 // CHECK-NEXT:             "add {0:w}, {0:w}, {1}", inlateout(reg) value as u32 => [[T_0]], const 100 as
 // CHECK-NEXT:             i32, options(pure, nomem, nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         value = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK: {{^}}}
@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:             "and {0:w}, {0:w}, {1}", inlateout(reg) value as u32 => [[T_0]], const 255 as
 // CHECK-NEXT:             i32, options(pure, nomem, nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         value = unsafe { std::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK: {{^}}}
@@ -56,7 +56,7 @@ int main(void) {
 // CHECK-NEXT:             "and {0:x}, {0:x}, {1}", inlateout(reg) value as u64 => [[T_0]], const 255 as
 // CHECK-NEXT:             i64, options(pure, nomem, nostack, preserves_flags)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         value = unsafe { std::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:         value = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK: {{^}}}

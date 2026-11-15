@@ -230,15 +230,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
-// CHECK-NEXT:             Some(std::cmp::Ordering::Less)
+// CHECK-NEXT:             Some(core::cmp::Ordering::Less)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(std::cmp::Ordering::Greater)
+// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(std::cmp::Ordering::Equal)
+// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     None
 // CHECK-NEXT:                 }
@@ -260,7 +260,7 @@ int main(void) {
 // CHECK-NEXT:     let l: LongDouble = LongDouble(a.to_f80_bytes());
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), l) };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut b: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
 // CHECK-NEXT:         200,
 // CHECK-NEXT:         4,
@@ -276,7 +276,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), LongDouble(b.to_f80_bytes()))
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut c: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
 // CHECK-NEXT:         200,
 // CHECK-NEXT:         4,
@@ -295,7 +295,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), LongDouble(c.to_f80_bytes()))
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(
@@ -303,7 +303,7 @@ int main(void) {
 // CHECK-NEXT:             LongDouble(c.wrapping_neg().to_f80_bytes()),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut tie: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
 // CHECK-NEXT:         200,
 // CHECK-NEXT:         4,
@@ -322,7 +322,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), LongDouble(tie.to_f80_bytes()))
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut [[V_8:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = tie;
 // CHECK-NEXT:     tie = [[V_8]]
 // CHECK-NEXT:         .wrapping_add(
@@ -333,7 +333,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), LongDouble(tie.to_f80_bytes()))
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut u: bitint::BUint<200, 4, 32, bitint::A8> = <bitint::BUint<
 // CHECK-NEXT:         200,
 // CHECK-NEXT:         4,
@@ -346,7 +346,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), LongDouble(u.to_f80_bytes()))
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut z: bitint::BInt<135, 3, 24, bitint::A8> = <bitint::BInt<
 // CHECK-NEXT:         135,
 // CHECK-NEXT:         3,
@@ -357,7 +357,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), LongDouble(z.to_f80_bytes()))
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn ld_from() {
 // CHECK-NEXT:     let values: [LongDouble; 6] = [
@@ -392,7 +392,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(c"%.17g %.17g\n".as_ptr(), s.to_f64(), u.to_f64())
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{}", s.wrapping_rem(< bitint::BInt < 200, 4, 32, bitint::A8
 // CHECK-NEXT:             >>::from_i128(1000 as i128)).to_i128() as i32
@@ -457,8 +457,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }

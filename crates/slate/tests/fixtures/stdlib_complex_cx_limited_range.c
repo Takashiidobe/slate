@@ -41,12 +41,12 @@ int main(void) {
 // CHECK-NEXT:     let real: f64 = 0.5f64;
 // CHECK-NEXT:     let imaginary: f64 = -0.25f64;
 // CHECK-NEXT:     let mut a: num_complex::Complex<f64> = num_complex::Complex {
-// CHECK-NEXT:         re: unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) },
-// CHECK-NEXT:         im: unsafe { std::ptr::read_volatile(std::ptr::addr_of!(imaginary)) },
+// CHECK-NEXT:         re: unsafe { core::ptr::read_volatile(core::ptr::addr_of!(real)) },
+// CHECK-NEXT:         im: unsafe { core::ptr::read_volatile(core::ptr::addr_of!(imaginary)) },
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let b: num_complex::Complex<f64> = num_complex::Complex {
-// CHECK-NEXT:         re: unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) },
-// CHECK-NEXT:         im: -unsafe { std::ptr::read_volatile(std::ptr::addr_of!(imaginary)) },
+// CHECK-NEXT:         re: unsafe { core::ptr::read_volatile(core::ptr::addr_of!(real)) },
+// CHECK-NEXT:         im: -unsafe { core::ptr::read_volatile(core::ptr::addr_of!(imaginary)) },
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let product: num_complex::Complex<f64> = a.c_mul(b, true);
 // CHECK-NEXT:     let quotient: num_complex::Complex<f64> = a.c_div(b, false);
@@ -60,7 +60,7 @@ int main(void) {
 // CHECK-NEXT:             cimag(quotient),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     if (unsafe { creal(product) }) == 0.3125f64 && (unsafe { cimag(product) }) == 0.0f64
 // CHECK-NEXT:         && (unsafe { creal(quotient) }) == 0.6f64
 // CHECK-NEXT:         && (unsafe { cimag(quotient) }) == -0.8f64
@@ -73,8 +73,8 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
-// CHECK-NEXT:     argv: *mut *mut std::ffi::c_char,
-// CHECK-NEXT:     envp: *mut *mut std::ffi::c_char,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
