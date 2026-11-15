@@ -1767,7 +1767,7 @@ def sharded_stages(units, project_dir, out, recipe, args, finish):
 
     def build(name):
         directory = root / name
-        env = dict(os.environ, CARGO_TARGET_DIR=str(directory / "cargo-target"))
+        env = dict(os.environ, CARGO_TARGET_DIR=str(directory / "cargo-target"), CARGO_INCREMENTAL="1")
         code, _ = run(["cargo", "build", "--profile", args.profile, "--message-format=short"],
                       directory / "build.log", cwd=directory / "crate", env=env)
         errors = [line for line in (directory / "build.log").read_text(errors="replace").splitlines()
