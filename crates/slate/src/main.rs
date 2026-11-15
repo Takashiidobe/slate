@@ -1431,6 +1431,7 @@ fn write_project_crate(
     });
     let children: Vec<rust_ast::Item> = children.into_iter().chain(panic_handler).collect();
     for (stem, mut program) in programs {
+        program.no_unwind = freestanding;
         let is_root = root.as_ref() == Some(&stem);
         for item in &mut program.items {
             if let rust_ast::Item::CrateAttrs(attrs) = item {
@@ -1513,6 +1514,7 @@ fn write_project_crate(
             crate_src.join("lib.rs"),
             rust_ast::Program {
                 items,
+                no_unwind: freestanding,
                 ..Default::default()
             },
         ));

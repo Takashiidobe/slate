@@ -15,6 +15,7 @@ pub struct Program {
     pub items: Vec<Item>,
     pub macro_outcomes: Vec<MacroOutcome>,
     pub runtime: Runtime,
+    pub no_unwind: bool,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]

@@ -34,7 +34,7 @@ void main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn main() {
+// CHECK-NEXT: extern "C" fn main() {
 // CHECK-NEXT:     step(3i32);
 // CHECK-NEXT:     step(4i32);
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%d\n".as_ptr(), counter) };

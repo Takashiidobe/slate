@@ -111,14 +111,15 @@ fn rmw_method(op: AtomicRmwOp) -> &'static str {
 pub struct Codegen<W: Write> {
     out: W,
     macro_params: Vec<String>,
+    no_unwind: bool,
 }
 
 impl<W: Write> Codegen<W> {
-    /// Creates a code generator that writes to `out`.
     pub fn new(out: W) -> Self {
         Self {
             out,
             macro_params: Vec::new(),
+            no_unwind: false,
         }
     }
 
@@ -152,6 +153,7 @@ impl<W: Write> Codegen<W> {
 
     /// Emits a complete Rust program.
     pub fn program(&mut self, program: &Program) -> fmt::Result {
+        self.no_unwind = program.no_unwind;
         for (i, item) in program.items.iter().enumerate() {
             if i > 0
                 && !matches!(program.items[i - 1], Item::Comment(_))
@@ -761,7 +763,12 @@ impl<W: Write> Codegen<W> {
     }
 
     fn abi(&mut self, abi: Abi) -> fmt::Result {
-        write!(self.out, "extern \"{}\"", abi.spelling())
+        let spelling = if self.no_unwind && abi != Abi::Rust {
+            abi.foreign_block()
+        } else {
+            abi.spelling()
+        };
+        write!(self.out, "extern \"{spelling}\"")
     }
 
     fn generics(&mut self, generics: &[GenericParam]) -> fmt::Result {

@@ -47,7 +47,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn main() -> i32 {
+// CHECK-NEXT: extern "C" fn main() -> i32 {
 // CHECK-NEXT:     let cell: *mut i32 =
 // CHECK-NEXT:         (unsafe { malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut () }) as *mut i32;
 // CHECK-NEXT:     unsafe {

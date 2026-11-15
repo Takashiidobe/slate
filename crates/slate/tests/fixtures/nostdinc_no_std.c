@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT: unsafe extern "C" fn main(
 // CHECK-NEXT:     argc: i32,
 // CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
 // CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
