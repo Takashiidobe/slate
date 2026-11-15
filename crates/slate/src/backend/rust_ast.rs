@@ -270,6 +270,7 @@ pub enum CrateAttr {
     Deny(Vec<Lint>),
     Feature(Feature),
     NoMain,
+    NoStd,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

@@ -411,9 +411,18 @@ fn crate_manifest(
     tests: &[String],
     c_shims: bool,
     blocks: bool,
+    freestanding: bool,
     cargo_features: &BTreeSet<String>,
     lib_crate_types: Option<&[String]>,
 ) -> String {
+    let (dev_panic, release_profile, support_features) = match freestanding {
+        true => (
+            "panic = \"abort\"\n",
+            "\n[profile.release]\npanic = \"abort\"\n",
+            ", default-features = false",
+        ),
+        false => ("", "", ""),
+    };
     let test_targets: String = tests
         .iter()
         .map(|test| {
@@ -469,7 +478,7 @@ edition = "2024"
 [workspace]
 
 [dependencies]
-slate-support = {{ path = "slate-support" }}
+slate-support = {{ path = "slate-support"{support_features} }}
 aligned = {{ path = "aligned" }}
 bitint = {{ path = "bitint" }}
 num-complex = {{ path = "num-complex", default-features = false }}
@@ -479,17 +488,22 @@ bitfields = {{ path = "{}" }}
 overflow-checks = false
 debug-assertions = false
 codegen-units = 256
-{test_targets}{features_section}"#,
+{dev_panic}{release_profile}{test_targets}{features_section}"#,
         bitfields_path.display()
     )
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "each argument is a distinct manifest section"
+)]
 fn write_crate_manifest(
     crate_dir: &Path,
     package: &str,
     tests: &[String],
     c_shims: bool,
     blocks: bool,
+    freestanding: bool,
     cargo_features: &BTreeSet<String>,
     lib_crate_types: Option<&[String]>,
 ) -> Result<(), String> {
@@ -500,6 +514,7 @@ fn write_crate_manifest(
             tests,
             c_shims,
             blocks,
+            freestanding,
             cargo_features,
             lib_crate_types,
         ),
@@ -517,6 +532,7 @@ fn init_crate(crate_dir: &Path, lib_crate_types: Option<&[String]>) -> Result<()
         crate_dir,
         &package,
         &[],
+        false,
         false,
         false,
         &BTreeSet::new(),
@@ -605,6 +621,10 @@ fn write_slate_support(crate_dir: &Path) -> Result<(), String> {
     write_file(
         &src_dir.join("lib.rs"),
         include_str!("../vendor/slate-support/src/lib.rs"),
+    )?;
+    write_file(
+        &src_dir.join("hosted.rs"),
+        include_str!("../vendor/slate-support/src/hosted.rs"),
     )
 }
 
@@ -1303,6 +1323,29 @@ fn write_cargo_config(crate_dir: &Path, target: Option<(&str, bool)>) -> Result<
 
 const SHARED_MACROS_MODULE: &str = "__slate_macros";
 
+fn declares_c_panic(program: &rust_ast::Program) -> bool {
+    let takes_message = |params: &[rust_ast::FnParam]| {
+        matches!(
+            params.first(),
+            Some(rust_ast::FnParam {
+                ty: rust_ast::Type::Ptr { .. },
+                ..
+            })
+        )
+    };
+    program.items.iter().any(|item| match item {
+        rust_ast::Item::Fn(function) => function.name == "panic" && takes_message(&function.params),
+        rust_ast::Item::ExternBlock { abi, decls } => {
+            abi != "llvm-intrinsic"
+                && decls.iter().any(|decl| {
+                    matches!(decl, rust_ast::ExternDecl::Fn(function)
+                        if function.name == "panic" && takes_message(&function.params))
+                })
+        }
+        _ => false,
+    })
+}
+
 #[expect(
     clippy::too_many_arguments,
     reason = "each argument is a distinct project artifact"
@@ -1420,6 +1463,26 @@ fn write_project_crate(
     }
     let carried_allow = (!carried_lints.is_empty())
         .then(|| rust_ast::CrateAttr::Allow(carried_lints.into_iter().collect()));
+    let freestanding = !programs.is_empty()
+        && programs
+            .iter()
+            .all(|(_, program)| !program.runtime.has_std());
+    let no_std = freestanding.then_some(rust_ast::CrateAttr::NoStd);
+    let panic_handler = freestanding.then(|| {
+        let source = match programs
+            .iter()
+            .any(|(_, program)| declares_c_panic(program))
+        {
+            true => include_str!("frontend/support/panic_c.rs"),
+            false => include_str!("frontend/support/panic_loop.rs"),
+        };
+        rust_ast::Item::SupportModule(rust_ast::SupportModule {
+            name: rust_ast::Ident::new("__slate_panic"),
+            source: source.into(),
+            exports: Vec::new(),
+        })
+    });
+    let children: Vec<rust_ast::Item> = children.into_iter().chain(panic_handler).collect();
     for (stem, mut program) in programs {
         for item in &mut program.items {
             if let rust_ast::Item::CrateAttrs(attrs) = item {
@@ -1439,10 +1502,15 @@ fn write_project_crate(
             }
         }
         let file = if root.as_ref() == Some(&stem) {
-            let mut crate_attrs: Vec<_> = rust_features
-                .iter()
-                .copied()
-                .map(rust_ast::CrateAttr::Feature)
+            let mut crate_attrs: Vec<_> = no_std
+                .clone()
+                .into_iter()
+                .chain(
+                    rust_features
+                        .iter()
+                        .copied()
+                        .map(rust_ast::CrateAttr::Feature),
+                )
                 .chain(carried_allow.clone())
                 .collect();
             program.items.retain(|item| match item {
@@ -1476,21 +1544,22 @@ fn write_project_crate(
         outputs.push((crate_src.join(file).with_extension("rs"), program));
     }
     if root.is_none() {
-        let crate_attrs = [rust_ast::CrateAttr::Allow(vec![
-            rust_ast::Lint::NonCamelCaseTypes,
-            rust_ast::Lint::NonSnakeCase,
-            rust_ast::Lint::NonUpperCaseGlobals,
-            rust_ast::Lint::RustdocAll,
-        ])]
-        .into_iter()
-        .chain(carried_allow)
-        .chain(
-            rust_features
-                .iter()
-                .copied()
-                .map(rust_ast::CrateAttr::Feature),
-        )
-        .collect();
+        let crate_attrs = no_std
+            .into_iter()
+            .chain([rust_ast::CrateAttr::Allow(vec![
+                rust_ast::Lint::NonCamelCaseTypes,
+                rust_ast::Lint::NonSnakeCase,
+                rust_ast::Lint::NonUpperCaseGlobals,
+                rust_ast::Lint::RustdocAll,
+            ])])
+            .chain(carried_allow)
+            .chain(
+                rust_features
+                    .iter()
+                    .copied()
+                    .map(rust_ast::CrateAttr::Feature),
+            )
+            .collect();
         let mut items = vec![rust_ast::Item::CrateAttrs(crate_attrs)];
         items.extend(children);
         outputs.push((
@@ -1524,6 +1593,16 @@ fn write_project_crate(
         )
         .map_err(|e| format!("write {}: {e}", shim_path.display()))?;
         written.push(shim_path);
+    } else {
+        for stale in [
+            crate_dir.join("build.rs"),
+            crate_src.join("slate_long_double.c"),
+        ] {
+            if stale.exists() {
+                std::fs::remove_file(&stale)
+                    .map_err(|e| format!("remove {}: {e}", stale.display()))?;
+            }
+        }
     }
     if uses_blocks {
         write_blocks_support(crate_dir)?;
@@ -1534,6 +1613,7 @@ fn write_project_crate(
         &[],
         has_shims,
         uses_blocks,
+        freestanding,
         &cargo_features,
         lib_crate_types.as_deref(),
     )?;

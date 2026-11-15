@@ -361,6 +361,7 @@ fn collect_item_shim_names(
                 collect_item_shim_names(std::slice::from_ref(item), Some(&nested), names);
             }
             Item::InlineMod { items, .. } => collect_item_shim_names(items, gate, names),
+            Item::ExternBlock { abi, .. } if abi == "llvm-intrinsic" => {}
             Item::ExternBlock { decls, .. } => {
                 names.extend(decls.iter().filter_map(|decl| match decl {
                     ExternDecl::Fn(shim) => Some((shim.name.clone(), gate.cloned())),

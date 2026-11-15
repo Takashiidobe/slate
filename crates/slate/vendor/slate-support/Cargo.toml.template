@@ -3,8 +3,12 @@ name = "slate-support"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+default = ["hosted"]
+hosted = ["dep:libc"]
+
 [dependencies]
-libc = { path = "../libc" }
+libc = { path = "../libc", optional = true }
 
 [target.'cfg(target_vendor = "apple")'.dependencies]
 mach2 = { path = "../mach2" }

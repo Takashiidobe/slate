@@ -630,6 +630,7 @@ impl<W: Write> Codegen<W> {
                 return write!(self.out, "feature({})", feature.spelling());
             }
             CrateAttr::NoMain => return self.out.write_str("no_main"),
+            CrateAttr::NoStd => return self.out.write_str("no_std"),
         };
         write!(self.out, "{kind}(")?;
         for (i, lint) in lints.iter().enumerate() {
