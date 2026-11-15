@@ -15,6 +15,12 @@ int folded_or_rejected(int *p, int x) {
          __builtin_constant_p(x = 1);
 }
 
+enum freq { NORMAL, LIKELY };
+
+int enum_operand(const enum freq fr) {
+  return __builtin_constant_p(fr) + __builtin_constant_p(LIKELY);
+}
+
 int local_min(void) {
   int y = 2;
   return __builtin_constant_p(y) && y >= 0;
@@ -43,12 +49,19 @@ int local_min(void) {
 // O0-NEXT:         storage d64 [size=8, align=8];
 // O0-NEXT:         storage d128 [size=16, align=16];
 // O0-NEXT:     }
-// O0-NEXT:     global %[[VALUE_g:[0-9]+]] g: i32 [storage=static] [linkage=external];
-// O0-NEXT:     fn %[[VALUE_scalar:[0-9]+]] @scalar(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_d:[0-9]+]] d: f64, %[[VALUE_b:[0-9]+]] b: bool) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// O0-NEXT:     type @type[[TYPE_freq:[0-9]+]] freq = enum : u32 {
+// O0-NEXT:         %[[VALUE_NORMAL:[0-9]+]] NORMAL = const<i32>(0);
+// O0-NEXT:         %[[VALUE_LIKELY:[0-9]+]] LIKELY = const<i32>(1);
+// O0-NEXT:     } [size=4, align=4];
+// O0-NEXT:     global %[[VALUE_NORMAL]] g: i32 [storage=static] [linkage=external];
+// O0-NEXT:     fn %[[VALUE_LIKELY]] @scalar(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_d:[0-9]+]] d: f64, %[[VALUE_b:[0-9]+]] b: bool) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // O0-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(0), const<i32>(0)), const<i32>(0));
 // O0-NEXT:     }
 // O0-NEXT:     fn %[[VALUE_folded_or_rejected:[0-9]+]] @folded_or_rejected(%[[VALUE_p:[0-9]+]] p: ptr<i32>, %[[VALUE_x_2:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // O0-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(1), const<i32>(0)), const<i32>(0)), const<i32>(0));
+// O0-NEXT:     }
+// O0-NEXT:     fn %[[VALUE_enum_operand:[0-9]+]] @enum_operand(%[[VALUE_fr:[0-9]+]] fr: @type[[TYPE_freq]] [const]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(const enum freq)"] {
+// O0-NEXT:         return add<i32, overflow=ub>(const<i32>(0), const<i32>(1));
 // O0-NEXT:     }
 // O0-NEXT:     fn %[[VALUE_local_min:[0-9]+]] @local_min() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // O0-NEXT:         let %[[VALUE_y:[0-9]+]] y: i32 [storage=automatic] = const<i32>(2);
@@ -79,12 +92,19 @@ int local_min(void) {
 // O2-NEXT:         storage d64 [size=8, align=8];
 // O2-NEXT:         storage d128 [size=16, align=16];
 // O2-NEXT:     }
-// O2-NEXT:     global %[[VALUE_g:[0-9]+]] g: i32 [storage=static] [linkage=external];
-// O2-NEXT:     fn %[[VALUE_scalar:[0-9]+]] @scalar(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_d:[0-9]+]] d: f64, %[[VALUE_b:[0-9]+]] b: bool) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// O2-NEXT:     type @type[[TYPE_freq:[0-9]+]] freq = enum : u32 {
+// O2-NEXT:         %[[VALUE_NORMAL:[0-9]+]] NORMAL = const<i32>(0);
+// O2-NEXT:         %[[VALUE_LIKELY:[0-9]+]] LIKELY = const<i32>(1);
+// O2-NEXT:     } [size=4, align=4];
+// O2-NEXT:     global %[[VALUE_NORMAL]] g: i32 [storage=static] [linkage=external];
+// O2-NEXT:     fn %[[VALUE_LIKELY]] @scalar(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_d:[0-9]+]] d: f64, %[[VALUE_b:[0-9]+]] b: bool) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // O2-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(from_bool<i32, reason=promotion>(intrinsic<bool, llvm.is.constant>(read<i32>(%[[VALUE_x]]))), from_bool<i32, reason=promotion>(intrinsic<bool, llvm.is.constant>(read<f64>(%[[VALUE_d]])))), from_bool<i32, reason=promotion>(intrinsic<bool, llvm.is.constant>(read<bool>(%[[VALUE_b]]))));
 // O2-NEXT:     }
 // O2-NEXT:     fn %[[VALUE_folded_or_rejected:[0-9]+]] @folded_or_rejected(%[[VALUE_p:[0-9]+]] p: ptr<i32>, %[[VALUE_x_2:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // O2-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(1), const<i32>(0)), const<i32>(0)), const<i32>(0));
+// O2-NEXT:     }
+// O2-NEXT:     fn %[[VALUE_enum_operand:[0-9]+]] @enum_operand(%[[VALUE_fr:[0-9]+]] fr: @type[[TYPE_freq]] [const]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(const enum freq)"] {
+// O2-NEXT:         return add<i32, overflow=ub>(from_bool<i32, reason=promotion>(intrinsic<bool, llvm.is.constant>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_freq]]>(%[[VALUE_fr]])))), const<i32>(1));
 // O2-NEXT:     }
 // O2-NEXT:     fn %[[VALUE_local_min:[0-9]+]] @local_min() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // O2-NEXT:         let %[[VALUE_y:[0-9]+]] y: i32 [storage=automatic] = const<i32>(2);

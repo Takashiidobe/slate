@@ -35,8 +35,9 @@ Lowered in `slate-parser/src/sema/expression.rs`; constant and type queries
 resolve through `sema/types.rs` and `sema/ctype/`.
 
 `__builtin_constant_p` folds to `const<i32>(1)` when its operand folds. When it
-does not, at `-O1` and above an integer, `_Bool`, `float` or `double` operand
-without side effects becomes `intrinsic<bool, llvm.is.constant>(x)`, as clang
+does not, at `-O1` and above an integer, enum (converted with `enum_to_int` to
+its underlying type), `_Bool`, `float` or `double` operand without side effects
+becomes `intrinsic<bool, llvm.is.constant>(x)`, as clang
 emits it, so the answer comes after inlining (kernel `min()`'s
 `__is_nonneg(local)` guarding `__compiletime_assert_N`). Everything else, and
 every operand at `-O0`, folds to 0. The constant folder evaluates the intrinsic

@@ -3282,6 +3282,7 @@ impl Lowerer {
                 let lowered = self.expr(operand)?.value;
                 let constant =
                     super::types::is_folded(&lowered) || self.types.builtin_constant_p(operand);
+                let lowered = self.enum_integer(lowered);
                 if !constant && self.statically_known_query(&lowered) {
                     let value = self.truth(
                         e,
