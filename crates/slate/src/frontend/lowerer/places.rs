@@ -7,6 +7,16 @@ pub(super) fn without_macro_holes(mut place: &ir::Place) -> &ir::Place {
     place
 }
 
+fn is_null_constant(value: &ir::Value) -> bool {
+    match &value.node.value {
+        ValueKind::Null => true,
+        ValueKind::Convert { operand, .. } | ValueKind::MacroArg { value: operand, .. } => {
+            is_null_constant(operand)
+        }
+        _ => false,
+    }
+}
+
 pub(super) fn volatile_read(address: Expr) -> Expr {
     Expr::Call {
         func: Box::new(Expr::Var("std::ptr::read_volatile".into())),
@@ -488,10 +498,15 @@ impl FunctionLowerer<'_, '_> {
             PlaceKind::Binding(id) if !tables.register_globals.contains_key(&id) => {
                 Ok(self.lower_binding(id))
             }
-            PlaceKind::Deref(ref pointer) => Ok(Expr::Unary {
-                op: rust::UnaryOp::Deref,
-                expr: Box::new(self.lower_value(pointer)?),
-            }),
+            PlaceKind::Deref(ref pointer) => {
+                if is_null_constant(pointer) {
+                    self.dependencies.null_deref = true;
+                }
+                Ok(Expr::Unary {
+                    op: rust::UnaryOp::Deref,
+                    expr: Box::new(self.lower_value(pointer)?),
+                })
+            }
             PlaceKind::Index {
                 ref base,
                 ref index,

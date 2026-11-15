@@ -260,6 +260,7 @@ pub enum Lint {
     ArithmeticOverflow,
     UnconditionalPanic,
     SuspiciousRuntimeSymbolDefinitions,
+    DerefNullptr,
     UnpredictableFunctionPointerComparisons,
     UnusedComparisons,
     RustdocAll,
@@ -277,6 +278,7 @@ impl Lint {
             Lint::ArithmeticOverflow => "arithmetic_overflow",
             Lint::UnconditionalPanic => "unconditional_panic",
             Lint::SuspiciousRuntimeSymbolDefinitions => "suspicious_runtime_symbol_definitions",
+            Lint::DerefNullptr => "deref_nullptr",
             Lint::UnpredictableFunctionPointerComparisons => {
                 "unpredictable_function_pointer_comparisons"
             }

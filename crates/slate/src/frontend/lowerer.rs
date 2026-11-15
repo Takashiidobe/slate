@@ -134,6 +134,7 @@ struct Dependencies {
     long_const_eval: bool,
     known_panics: bool,
     runtime_symbols: bool,
+    null_deref: bool,
     huge_stack: bool,
     asm_goto_with_outputs: bool,
     arm_neon_asm: bool,
@@ -1375,6 +1376,9 @@ impl<'m> ModuleLowerer<'m> {
             features.push(rust::CrateAttr::Allow(vec![
                 rust::Lint::SuspiciousRuntimeSymbolDefinitions,
             ]));
+        }
+        if dependencies.null_deref {
+            features.push(rust::CrateAttr::Allow(vec![rust::Lint::DerefNullptr]));
         }
         if dependencies.x86_interrupt {
             features.push(rust::CrateAttr::Feature(rust::Feature::AbiX86Interrupt));
