@@ -44,6 +44,18 @@ pub(super) fn integer_with_objects(
     evaluate(value, MAX_DEPTH, Env::constant(target, Some(objects)))
 }
 
+pub(super) fn branch_integer_with_objects(
+    value: &Value,
+    target: Target,
+    objects: &Objects,
+) -> Option<BigInt> {
+    let env = Env {
+        defer_queries: true,
+        ..Env::constant(target, Some(objects))
+    };
+    evaluate(value, MAX_DEPTH, env)
+}
+
 pub(super) fn read_with_objects(
     place: &Place,
     target: Target,
@@ -175,6 +187,7 @@ struct Env<'a> {
     flavor: Option<CompilerFlavor>,
     pointer_width: Option<u32>,
     objects: Option<&'a Objects>,
+    defer_queries: bool,
 }
 
 impl<'a> Env<'a> {
@@ -183,6 +196,7 @@ impl<'a> Env<'a> {
             flavor: Some(target.flavor),
             pointer_width: Some(target.pointer_width),
             objects,
+            defer_queries: false,
         }
     }
 }
@@ -389,6 +403,9 @@ fn evaluate(value: &Value, depth: usize, env: Env) -> Option<BigInt> {
             };
             let known = evaluate(argument, depth, env).is_some()
                 || floating(argument, depth, env).is_some();
+            if !known && env.defer_queries {
+                return None;
+            }
             BigInt::from(u8::from(known))
         }
         ValueKind::Constant(Number::Integer(value)) => {

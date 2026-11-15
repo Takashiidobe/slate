@@ -132,6 +132,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn probe(n: i32) {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let a: *mut i8 = (__slate_alloca::alloca(((n as u64) as usize) + 8usize, 16usize)

@@ -244,10 +244,12 @@ int main(void) {
 // CHECK-NEXT: fn gnu_attribute_weak() -> i32 {
 // CHECK-NEXT:     11
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: #[unsafe(link_section = ".text.gnu_attribute")]
 // CHECK-NEXT: fn gnu_attribute_decorated(value: i32) -> i32 {
 // CHECK-NEXT:     value + 13
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn gnu_attribute_inline(value: i32) -> i32 {
 // CHECK-NEXT:     value + 17
 // CHECK-NEXT: }

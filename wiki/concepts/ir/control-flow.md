@@ -53,7 +53,8 @@ form was.
   to the promoted switch type.
 - `[folded=V]` on `if` and `switch` (`sema/folded_branches.rs`, after
   `constant_asm_operands`) records that the condition or discriminant folds
-  to `V`, as clang's `EmitIfStmt`/`EmitSwitchStmt` see it. Arms are never
+  to `V`, as clang's `EmitIfStmt`/`EmitSwitchStmt` see it; a condition with
+  an unanswered `llvm.is.constant` does not fold (see builtins). Arms are never
   removed. An `if` gets it only when its dead arm holds no label and no case
   of an enclosing switch; a `switch` only when its body holds no label and no
   case of another switch. Rust lowering keeps every arm and emits each

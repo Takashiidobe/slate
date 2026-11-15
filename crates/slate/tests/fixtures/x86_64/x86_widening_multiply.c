@@ -58,6 +58,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_mul_epu32(
 // CHECK-NEXT:     __a: core::simd::Simd<i64, 2>,
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 2>,
@@ -93,6 +94,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_set_epi32(
 // CHECK-NEXT:     __i3: i32,
 // CHECK-NEXT:     __i2: i32,
@@ -120,6 +122,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_storeu_si128(
 // CHECK-NEXT:     __p: *mut core::simd::Simd<i64, 2>,
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 2>,
@@ -130,6 +133,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse4.1")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_mul_epi32(
 // CHECK-NEXT:     __V1: core::simd::Simd<i64, 2>,
 // CHECK-NEXT:     __V2: core::simd::Simd<i64, 2>,
@@ -158,6 +162,7 @@ int main(void) {
 // CHECK-NEXT:         }) << core::simd::Simd::splat(32i64) >> core::simd::Simd::splat(32i64));
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_loadu_si256(
 // CHECK-NEXT:     __p: *const core::simd::Simd<i64, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 4> {
@@ -166,6 +171,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_storeu_si256(
 // CHECK-NEXT:     __p: *mut core::simd::Simd<i64, 4>,
 // CHECK-NEXT:     __a: core::simd::Simd<i64, 4>,
@@ -176,6 +182,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_mul_epi32(
 // CHECK-NEXT:     __a: core::simd::Simd<i64, 4>,
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 4>,
@@ -204,6 +211,7 @@ int main(void) {
 // CHECK-NEXT:         }) << core::simd::Simd::splat(32i64) >> core::simd::Simd::splat(32i64));
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_mul_epu32(
 // CHECK-NEXT:     __a: core::simd::Simd<i64, 4>,
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 4>,
@@ -238,6 +246,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn mul_epu32(
 // CHECK-NEXT:     a: core::simd::Simd<i64, 2>,
 // CHECK-NEXT:     b: core::simd::Simd<i64, 2>,
@@ -245,6 +254,7 @@ int main(void) {
 // CHECK-NEXT:     return unsafe { _mm_mul_epu32(a, b) };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse4.1")]
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: unsafe fn mul_epi32(
 // CHECK-NEXT:     a: core::simd::Simd<i64, 2>,
 // CHECK-NEXT:     b: core::simd::Simd<i64, 2>,
@@ -252,6 +262,7 @@ int main(void) {
 // CHECK-NEXT:     return unsafe { _mm_mul_epi32(a, b) };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: unsafe fn avx2_products(
 // CHECK-NEXT:     x: *const i32,
 // CHECK-NEXT:     y: *const i32,

@@ -55,6 +55,7 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_loadu_si128(
 // CHECK-NEXT:     __p: *const core::simd::Simd<i64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 2> {
@@ -63,6 +64,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_storeu_si128(
 // CHECK-NEXT:     __p: *mut core::simd::Simd<i64, 2>,
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 2>,
@@ -73,6 +75,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_loadu_si256(
 // CHECK-NEXT:     __p: *const core::simd::Simd<i64, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 4> {
@@ -81,6 +84,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_storeu_si256(
 // CHECK-NEXT:     __p: *mut core::simd::Simd<i64, 4>,
 // CHECK-NEXT:     __a: core::simd::Simd<i64, 4>,
@@ -90,6 +94,7 @@ int main(void) {
 // CHECK-NEXT:             .write_unaligned(__a);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn sse2_shuffles(r#in: *const i32, out: *mut i32) {
 // CHECK-NEXT:     let v: core::simd::Simd<i64, 2> = unsafe {
 // CHECK-NEXT:         _mm_loadu_si128(r#in as *const core::simd::Simd<i64, 2>)
@@ -144,6 +149,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: unsafe fn avx2_shuffle(r#in: *const i32, out: *mut i32) {
 // CHECK-NEXT:     let v: core::simd::Simd<i64, 4> = unsafe {
 // CHECK-NEXT:         _mm256_loadu_si256(r#in as *const core::simd::Simd<i64, 4>)

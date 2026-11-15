@@ -82,6 +82,7 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_add_epi8(
 // CHECK-NEXT:     __a: core::simd::Simd<i64, 2>,
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 2>,
@@ -107,6 +108,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_add_epi16(
 // CHECK-NEXT:     __a: core::simd::Simd<i64, 2>,
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 2>,
@@ -132,6 +134,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_loadu_si128(
 // CHECK-NEXT:     __p: *const core::simd::Simd<i64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 2> {
@@ -140,6 +143,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_setzero_si128() -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: core::simd::Simd<i64, 2> = unsafe {
 // CHECK-NEXT:         core::mem::zeroed()
@@ -152,6 +156,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_storeu_si128(
 // CHECK-NEXT:     __p: *mut core::simd::Simd<i64, 2>,
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 2>,
@@ -162,6 +167,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_loadu_si256(
 // CHECK-NEXT:     __p: *const core::simd::Simd<i64, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 4> {
@@ -170,6 +176,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_storeu_si256(
 // CHECK-NEXT:     __p: *mut core::simd::Simd<i64, 4>,
 // CHECK-NEXT:     __a: core::simd::Simd<i64, 4>,
@@ -180,6 +187,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_add_epi32(
 // CHECK-NEXT:     __a: core::simd::Simd<i64, 4>,
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 4>,
@@ -205,6 +213,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_sub_epi64(
 // CHECK-NEXT:     __A: core::simd::Simd<i64, 8>,
 // CHECK-NEXT:     __B: core::simd::Simd<i64, 8>,
@@ -230,6 +239,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_mask_sub_epi64(
 // CHECK-NEXT:     __W: core::simd::Simd<i64, 8>,
 // CHECK-NEXT:     __U: u8,
@@ -243,12 +253,14 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_loadu_si512(__P: *const ()) -> core::simd::Simd<i64, 8> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::ptr::addr_of!((* (__P as * const __loadu_si512)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_storeu_si512(__P: *mut (), __A: core::simd::Simd<i64, 8>) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::addr_of_mut!((* (__P as * mut __storeu_si512)).__v)
@@ -256,6 +268,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512vl")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_mask_add_epi32(
 // CHECK-NEXT:     __W: core::simd::Simd<i64, 4>,
 // CHECK-NEXT:     __U: u8,
@@ -286,6 +299,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512vl,avx512bw")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_maskz_add_epi8(
 // CHECK-NEXT:     __U: u16,
 // CHECK-NEXT:     __A: core::simd::Simd<i64, 2>,
@@ -315,6 +329,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512vl,avx512bw")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_mask_add_epi16(
 // CHECK-NEXT:     __W: core::simd::Simd<i64, 2>,
 // CHECK-NEXT:     __U: u8,
@@ -345,6 +360,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f,avx512vl,avx512bw")]
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: unsafe fn selects(
 // CHECK-NEXT:     mask: u32,
 // CHECK-NEXT:     a: *const i64,

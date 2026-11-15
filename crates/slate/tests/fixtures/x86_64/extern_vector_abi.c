@@ -292,6 +292,7 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave,sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_set_ps(__z: f32, __y: f32, __x: f32, __w: f32) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: core::simd::Simd<f32, 4> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     return unsafe {
@@ -303,6 +304,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave,sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_storeu_ps(__p: *mut f32, __a: core::simd::Simd<f32, 4>) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::addr_of_mut!((*(__p as *mut __storeu_ps__2095)).__v).write_unaligned(__a);
@@ -310,6 +312,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_storeu_ps(__p: *mut f32, __a: core::simd::Simd<f32, 8>) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::addr_of_mut!((*(__p as *mut __storeu_ps__3282)).__v).write_unaligned(__a);
@@ -322,6 +325,7 @@ int main(void) {
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_set_ps(
 // CHECK-NEXT:     __a: f32,
 // CHECK-NEXT:     __b: f32,
@@ -343,11 +347,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_set1_ps(__w: f32) -> core::simd::Simd<f32, 8> {
 // CHECK-NEXT:     return unsafe { _mm256_set_ps(__w, __w, __w, __w, __w, __w, __w, __w) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_set1_ps(__w: f32) -> core::simd::Simd<f32, 16> {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0]]: core::simd::Simd<f32, 16> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     return unsafe {
@@ -361,6 +367,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_set1_pd(__w: f64) -> core::simd::Simd<f64, 8> {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0]]: core::simd::Simd<f64, 8> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     return unsafe {
@@ -373,6 +380,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_storeu_ps(__P: *mut (), __A: core::simd::Simd<f32, 16>) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::addr_of_mut!((*(__P as *mut __storeu_ps__4291)).__v).write_unaligned(__A);
@@ -380,6 +388,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_set_pd(
 // CHECK-NEXT:     __A: f64,
 // CHECK-NEXT:     __B: f64,

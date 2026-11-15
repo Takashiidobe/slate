@@ -86,6 +86,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     steps
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn clamp_ten(mut value: u32) -> u32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;

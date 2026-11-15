@@ -42,7 +42,14 @@ emits it, so the answer comes after inlining (kernel `min()`'s
 `__is_nonneg(local)` guarding `__compiletime_assert_N`). Everything else, and
 every operand at `-O0`, folds to 0. The constant folder evaluates the intrinsic
 to 1 when its argument folds and 0 otherwise, which is what asm dead-arm
-pruning and specialization see.
+pruning and specialization see. `[folded=V]` on `if`/`switch` uses
+`fold::branch_integer_with_objects` instead, where an unanswered intrinsic
+leaves the condition unfolded: clang's `EmitIfStmt` does not fold it either,
+and a goto state machine would otherwise keep only the assert arm
+(`__rhashtable_lookup`'s `BUILD_BUG_ON(!__builtin_constant_p(freq))`). Rust
+lowering emits `[inline=always]`/`[inline=never]` as `#[inline(always)]`/
+`#[inline(never)]`, so the query is answered after inlining in every codegen
+unit, not only the one that defines the helper.
 
 `__builtin_classify_type` also folds inside constant expressions (for
 `__builtin_choose_expr` conditions).

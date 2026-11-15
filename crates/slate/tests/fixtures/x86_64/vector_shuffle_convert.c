@@ -252,6 +252,7 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_storeu_ps(__p: *mut f32, __a: core::simd::Simd<f32, 4>) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::addr_of_mut!((*(__p as *mut __storeu_ps)).__v).write_unaligned(__a);
@@ -259,6 +260,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_storeu_si256(__p: *mut core::simd::Simd<i64, 4>, __a: core::simd::Simd<i64, 4>) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::addr_of_mut!((*(__p as *mut __storeu_si256)).__v).write_unaligned(__a);
@@ -266,6 +268,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_set_ps(
 // CHECK-NEXT:     __a: f32,
 // CHECK-NEXT:     __b: f32,
@@ -287,6 +290,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_set_epi64x(__a: i64, __b: i64, __c: i64, __d: i64) -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0]]: core::simd::Simd<i64, 4> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     return unsafe {
@@ -298,6 +302,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_setr_ps(
 // CHECK-NEXT:     __a: f32,
 // CHECK-NEXT:     __b: f32,
@@ -312,26 +317,31 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_setr_epi64x(__a: i64, __b: i64, __c: i64, __d: i64) -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     return unsafe { _mm256_set_epi64x(__d, __c, __b, __a) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_set1_epi64x(__q: i64) -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     return unsafe { _mm256_set_epi64x(__q, __q, __q, __q) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_castps256_ps128(mut __a: core::simd::Simd<f32, 8>) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(__a, __a, [0, 1, 2, 3]);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_castsi256_si128(mut __a: core::simd::Simd<i64, 4>) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(__a, __a, [0, 1]);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_andnot_si256(
 // CHECK-NEXT:     __a: core::simd::Simd<i64, 4>,
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 4>,
@@ -348,6 +358,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_cvtepi8_epi16(__V: core::simd::Simd<i64, 2>) -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     // This function always performs a signed extension, but __v16qi is a char
 // CHECK-NEXT:     // which may be signed or unsigned, so use __v16qs.

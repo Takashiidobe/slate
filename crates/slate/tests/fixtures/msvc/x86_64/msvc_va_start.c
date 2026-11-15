@@ -95,6 +95,7 @@ int main(void) {
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __crt_multibyte_data {}
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn __local_stdio_printf_options() -> *mut u64 {
 // CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(_OptionsStorage) }
 // CHECK-NEXT: }

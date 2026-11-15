@@ -33,14 +33,17 @@ int main(void) {
 // CHECK-NEXT:     static mut __start_slate_gnu_text: [i8; 0];
 // CHECK-NEXT:     static mut __stop_slate_gnu_text: [i8; 0];
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: #[unsafe(link_section = "slate_gnu_text")]
 // CHECK-NEXT: extern "C-unwind" fn placed(value: i32) -> i32 {
 // CHECK-NEXT:     value + 13
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: #[unsafe(link_section = "slate_gnu_text")]
 // CHECK-NEXT: extern "C-unwind" fn placed_static(value: i32) -> i32 {
 // CHECK-NEXT:     value * 2
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.elsewhere")]
 // CHECK-NEXT: extern "C-unwind" fn elsewhere(value: i32) -> i32 {
 // CHECK-NEXT:     value - 1

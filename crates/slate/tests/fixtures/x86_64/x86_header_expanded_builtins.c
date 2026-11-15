@@ -268,10 +268,12 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_sqrt_ps(__a: core::simd::Simd<f32, 4>) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return unsafe { __slate_intrinsic_8b85c43cba315222(__a) };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpeq_ss(
 // CHECK-NEXT:     mut [[V_0:__v[0-9]+]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_1:__v[0-9]+]]: core::simd::Simd<f32, 4>,
@@ -286,6 +288,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpeq_ps(
 // CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
@@ -307,6 +310,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmplt_ss(
 // CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
@@ -321,6 +325,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmplt_ps(
 // CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
@@ -342,6 +347,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmple_ss(
 // CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
@@ -356,6 +362,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmple_ps(
 // CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
@@ -377,6 +384,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpgt_ss(
 // CHECK-NEXT:     mut __a: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
@@ -393,6 +401,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpgt_ps(
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
@@ -414,6 +423,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpge_ps(
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
@@ -435,6 +445,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpneq_ss(
 // CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
@@ -449,6 +460,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpneq_ps(
 // CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
@@ -470,6 +482,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpnlt_ss(
 // CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
@@ -484,6 +497,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpnlt_ps(
 // CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
@@ -509,6 +523,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpnle_ps(
 // CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
@@ -534,6 +549,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpngt_ps(
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
@@ -559,6 +575,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpnge_ps(
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
@@ -584,6 +601,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpord_ss(
 // CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
@@ -602,6 +620,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpord_ps(
 // CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
@@ -639,6 +658,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpunord_ss(
 // CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
@@ -657,6 +677,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpunord_ps(
 // CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
@@ -694,16 +715,19 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_loadu_ps(__p: *const f32) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::ptr::addr_of!((* (__p as * const __loadu_ps__1858)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_sqrt_pd(__a: core::simd::Simd<f64, 2>) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     return unsafe { __slate_intrinsic_5ae72a4046d571b1(__a) };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpeq_pd(
 // CHECK-NEXT:     [[V_0]]: core::simd::Simd<f64, 2>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f64, 2>,
@@ -725,6 +749,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmplt_pd(
 // CHECK-NEXT:     [[V_0]]: core::simd::Simd<f64, 2>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f64, 2>,
@@ -746,6 +771,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpord_pd(
 // CHECK-NEXT:     [[V_0]]: core::simd::Simd<f64, 2>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f64, 2>,
@@ -783,6 +809,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpunord_pd(
 // CHECK-NEXT:     [[V_0]]: core::simd::Simd<f64, 2>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f64, 2>,
@@ -820,6 +847,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpneq_pd(
 // CHECK-NEXT:     [[V_0]]: core::simd::Simd<f64, 2>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f64, 2>,
@@ -841,6 +869,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmplt_sd(
 // CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f64, 2>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f64, 2>,
@@ -855,6 +884,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpord_sd(
 // CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f64, 2>,
 // CHECK-NEXT:     [[V_1]]: core::simd::Simd<f64, 2>,
@@ -873,12 +903,14 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_loadu_pd(__dp: *const f64) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::ptr::addr_of!((* (__dp as * const __loadu_pd__1620)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_loadu_si128(
 // CHECK-NEXT:     __p: *const core::simd::Simd<i64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 2> {
@@ -887,6 +919,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_set_epi16(
 // CHECK-NEXT:     __w7: i16,
 // CHECK-NEXT:     __w6: i16,
@@ -922,30 +955,36 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_set1_epi16(__w: i16) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     return unsafe { _mm_set_epi16(__w, __w, __w, __w, __w, __w, __w, __w) };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_sqrt_pd(__a: core::simd::Simd<f64, 4>) -> core::simd::Simd<f64, 4> {
 // CHECK-NEXT:     return unsafe { __slate_intrinsic_5995f58c42e15c3a(__a) };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_sqrt_ps(__a: core::simd::Simd<f32, 8>) -> core::simd::Simd<f32, 8> {
 // CHECK-NEXT:     return unsafe { __slate_intrinsic_f23ee88b97748596(__a) };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_loadu_pd(__p: *const f64) -> core::simd::Simd<f64, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::ptr::addr_of!((* (__p as * const __loadu_pd__3129)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_loadu_ps(__p: *const f32) -> core::simd::Simd<f32, 8> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::ptr::addr_of!((* (__p as * const __loadu_ps__3149)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_loadu_si256(
 // CHECK-NEXT:     __p: *const core::simd::Simd<i64, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 4> {
@@ -954,6 +993,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_undefined_si256() -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -963,6 +1003,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_set_pd(
 // CHECK-NEXT:     __a: f64,
 // CHECK-NEXT:     __b: f64,
@@ -980,6 +1021,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_set_epi32(
 // CHECK-NEXT:     __i0: i32,
 // CHECK-NEXT:     __i1: i32,
@@ -1015,6 +1057,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_set_epi16(
 // CHECK-NEXT:     __w15: i16,
 // CHECK-NEXT:     __w14: i16,
@@ -1066,14 +1109,17 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_set1_pd(__w: f64) -> core::simd::Simd<f64, 4> {
 // CHECK-NEXT:     return unsafe { _mm256_set_pd(__w, __w, __w, __w) };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_set1_epi32(__i: i32) -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     return unsafe { _mm256_set_epi32(__i, __i, __i, __i, __i, __i, __i, __i) };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_set1_epi16(__w: i16) -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         _mm256_set_epi16(
@@ -1097,6 +1143,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_setzero_si256() -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0]]: core::simd::Simd<i64, 4> = unsafe {
 // CHECK-NEXT:         core::mem::zeroed()
@@ -1109,24 +1156,28 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_castps256_ps128(
 // CHECK-NEXT:     mut __a: core::simd::Simd<f32, 8>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(__a, __a, [0, 1, 2, 3]);
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_castsi256_si128(
 // CHECK-NEXT:     mut __a: core::simd::Simd<i64, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(__a, __a, [0, 1]);
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_castsi128_si256(
 // CHECK-NEXT:     mut __a: core::simd::Simd<i64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(__a, core::simd::Simd::splat(0i64), [0, 1, 2, 3]);
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_setzero_si512() -> core::simd::Simd<i64, 8> {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0]]: core::simd::Simd<i64, 8> = unsafe {
 // CHECK-NEXT:         core::mem::zeroed()
@@ -1141,6 +1192,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_undefined_epi32() -> core::simd::Simd<i64, 8> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1150,6 +1202,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_set1_epi32(__s: i32) -> core::simd::Simd<i64, 8> {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0]]: core::simd::Simd<i32, 16> = unsafe {
 // CHECK-NEXT:         core::mem::zeroed()
@@ -1184,6 +1237,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_castsi256_si512(
 // CHECK-NEXT:     mut __A: core::simd::Simd<i64, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 8> {
@@ -1192,24 +1246,28 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_castsi512_si128(
 // CHECK-NEXT:     mut __A: core::simd::Simd<i64, 8>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(__A, __A, [0, 1]);
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_castsi512_si256(
 // CHECK-NEXT:     mut __A: core::simd::Simd<i64, 8>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(__A, __A, [0, 1, 2, 3]);
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_loadu_si512(__P: *const ()) -> core::simd::Simd<i64, 8> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::ptr::addr_of!((* (__P as * const __loadu_si512)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_mask_loadu_epi32(
 // CHECK-NEXT:     __W: core::simd::Simd<i64, 8>,
 // CHECK-NEXT:     __U: u16,
@@ -1234,6 +1292,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_maskz_loadu_epi32(
 // CHECK-NEXT:     __U: u16,
 // CHECK-NEXT:     __P: *const (),
@@ -1257,12 +1316,14 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_loadu_ps(__p: *const ()) -> core::simd::Simd<f32, 16> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::ptr::addr_of!((* (__p as * const __loadu_ps__4153)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_mask_mov_epi32(
 // CHECK-NEXT:     __W: core::simd::Simd<i64, 8>,
 // CHECK-NEXT:     __U: u16,
@@ -1292,6 +1353,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512vl")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_maskz_loadu_epi32(__U: u8, __P: *const ()) -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1312,6 +1374,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_maskz_loadu_epi8(__U: u64, __P: *const ()) -> core::simd::Simd<i64, 8> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1332,6 +1395,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_movepi8_mask(__A: core::simd::Simd<i64, 8>) -> u64 {
 // CHECK-NEXT:     core::simd::cmp::SimdPartialOrd::simd_lt(
 // CHECK-NEXT:             unsafe {
@@ -1345,6 +1409,7 @@ int main(void) {
 // CHECK-NEXT:         .to_bitmask() as u64
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_movm_epi8(__A: u64) -> core::simd::Simd<i64, 8> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1360,6 +1425,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512vl,avx512bw")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_movm_epi16(__A: u16) -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1375,6 +1441,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512vl,avx512dq")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_movepi32_mask(__A: core::simd::Simd<i64, 2>) -> u8 {
 // CHECK-NEXT:     core::simd::cmp::SimdPartialOrd::simd_lt(
 // CHECK-NEXT:             unsafe {
@@ -1399,6 +1466,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse4.1")]
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: unsafe fn sse(
 // CHECK-NEXT:     fa: *const f32,
 // CHECK-NEXT:     fb: *const f32,
@@ -1550,6 +1618,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: unsafe fn avx(fa: *const f32, fb: *const f32, da: *const f64, ia: *const i32) {
 // CHECK-NEXT:     let a: core::simd::Simd<f32, 8> = unsafe { _mm256_loadu_ps(fa) };
 // CHECK-NEXT:     let b: core::simd::Simd<f32, 8> = unsafe { _mm256_loadu_ps(fb) };
@@ -2616,6 +2685,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f,avx512bw,avx512dq,avx512vl")]
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: unsafe fn avx512(
 // CHECK-NEXT:     fa: *const f32,
 // CHECK-NEXT:     fb: *const f32,

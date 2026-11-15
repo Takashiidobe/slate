@@ -181,18 +181,21 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: #[target_feature(enable = "sse")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_loadu_ps(__p: *const f32) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::ptr::addr_of!((* (__p as * const __loadu_ps__1858)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_loadu_pd(__dp: *const f64) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::ptr::addr_of!((* (__dp as * const __loadu_pd__1620)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_loadu_si128(
 // CHECK-NEXT:     __p: *const core::simd::Simd<i64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 2> {
@@ -201,18 +204,21 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_loadu_pd(__p: *const f64) -> core::simd::Simd<f64, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::ptr::addr_of!((* (__p as * const __loadu_pd__3129)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_loadu_ps(__p: *const f32) -> core::simd::Simd<f32, 8> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::ptr::addr_of!((* (__p as * const __loadu_ps__3149)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_loadu_si256(
 // CHECK-NEXT:     __p: *const core::simd::Simd<i64, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 4> {
@@ -221,86 +227,105 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_loadu_si512(__P: *const ()) -> core::simd::Simd<i64, 8> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::ptr::addr_of!((* (__P as * const __loadu_si512)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_loadu_pd(__p: *const ()) -> core::simd::Simd<f64, 8> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::ptr::addr_of!((* (__p as * const __loadu_pd__4144)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_loadu_ps(__p: *const ()) -> core::simd::Simd<f32, 16> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::ptr::addr_of!((* (__p as * const __loadu_ps__4153)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_knot(__M: u16) -> u16 {
 // CHECK-NEXT:     !__M
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kand(__A: u16, __B: u16) -> u16 {
 // CHECK-NEXT:     __A & __B
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kandn(__A: u16, __B: u16) -> u16 {
 // CHECK-NEXT:     !__A & __B
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kor(__A: u16, __B: u16) -> u16 {
 // CHECK-NEXT:     __A | __B
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kunpackb(__A: u16, __B: u16) -> u16 {
 // CHECK-NEXT:     __A << 8u16 | __B & 255
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kxnor(__A: u16, __B: u16) -> u16 {
 // CHECK-NEXT:     !(__A ^ __B)
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kxor(__A: u16, __B: u16) -> u16 {
 // CHECK-NEXT:     __A ^ __B
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _knot_mask64(__M: u64) -> u64 {
 // CHECK-NEXT:     !__M
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _cvtmask32_u32(__A: u32) -> u32 {
 // CHECK-NEXT:     __A
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _cvtu64_mask64(__A: u64) -> u64 {
 // CHECK-NEXT:     __A
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _load_mask32(__A: &u32) -> u32 {
 // CHECK-NEXT:     unsafe { *(__A as *const u32) }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _store_mask64(__A: &mut u64, __B: u64) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(__A as *mut u64) = __B;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kunpackd(__A: u64, __B: u64) -> u64 {
 // CHECK-NEXT:     __A << 32u64 | __B & 4294967295
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kunpackw(__A: u32, __B: u32) -> u32 {
 // CHECK-NEXT:     __A << 16u32 | __B & 65535
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512dq")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _kadd_mask16(__A: u16, __B: u16) -> u16 {
 // CHECK-NEXT:     __A.wrapping_add(__B)
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512dq")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _cvtmask8_u32(__A: u8) -> u32 {
 // CHECK-NEXT:     __A as u32
 // CHECK-NEXT: }
@@ -316,6 +341,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: unsafe fn avx(fa: *const f32, da: *const f64, words: *const i16) {
 // CHECK-NEXT:     let w: core::simd::Simd<i64, 2> = unsafe {
 // CHECK-NEXT:         _mm_loadu_si128(words as *const core::simd::Simd<i64, 2>)
@@ -367,6 +393,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "avx512f,avx512bw,avx512dq")]
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: unsafe fn avx512(fa: *const f32, da: *const f64, words: *const i16, seed: u32) {
 // CHECK-NEXT:     SHOW__2!(
 // CHECK-NEXT:         c"shufflelo512".as_ptr() as * mut i8, unsafe { core::mem::transmute::<

@@ -1,7 +1,8 @@
 use super::asm_constants::JumpTargets;
 use super::expression::Lowerer;
+use super::fold::branch_integer_with_objects;
 use crate::ir::*;
-use num_bigint::Sign;
+use num_bigint::{BigInt, Sign};
 
 struct FoldedBranches<'a> {
     lower: &'a Lowerer,
@@ -16,7 +17,11 @@ impl MacroStructureVisitor for FoldedBranches<'_> {
                 else_body,
                 folded,
             } => {
-                let Some(taken) = self.lower.folded_condition(condition) else {
+                let Some(taken) = self
+                    .lower
+                    .branch_integer(condition)
+                    .map(|value| value != 0.into())
+                else {
                     return;
                 };
                 let enterable = if taken {
@@ -34,7 +39,7 @@ impl MacroStructureVisitor for FoldedBranches<'_> {
                 body,
                 folded,
             } => {
-                let Some(value) = self.lower.folded_integer(discriminant) else {
+                let Some(value) = self.lower.branch_integer(discriminant) else {
                     return;
                 };
                 if JumpTargets::of_switch(*id, body) {
@@ -51,6 +56,14 @@ impl MacroStructureVisitor for FoldedBranches<'_> {
 }
 
 impl Lowerer {
+    fn branch_integer(&self, value: &Value) -> Option<BigInt> {
+        branch_integer_with_objects(
+            value,
+            self.types.fold_target(),
+            self.types.entities.constants(),
+        )
+    }
+
     pub(super) fn mark_folded_branches(&mut self) {
         for index in 0..self.module.functions.len() {
             let Some(mut body) = self.module.functions[index].value.body.take() else {

@@ -68,6 +68,7 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave,sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_add_epi32(
 // CHECK-NEXT:     __a: core::simd::Simd<i64, 2>,
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 2>,
@@ -84,6 +85,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave,sse2")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cvtsi128_si32(__a: core::simd::Simd<i64, 2>) -> i32 {
 // CHECK-NEXT:     let __b: core::simd::Simd<i32, 4> =
 // CHECK-NEXT:         unsafe { core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(__a) };
@@ -91,6 +93,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_hadd_epi32(
 // CHECK-NEXT:     __a: core::simd::Simd<i64, 2>,
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 2>,
@@ -110,11 +113,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_cvtss_f32(__a: core::simd::Simd<f32, 8>) -> f32 {
 // CHECK-NEXT:     __a[0]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_undefined_si256() -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<f64, 4>, core::simd::Simd<i64, 4>>(
@@ -124,6 +129,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_set_ps(
 // CHECK-NEXT:     __a: f32,
 // CHECK-NEXT:     __b: f32,
@@ -145,6 +151,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_set_epi32(
 // CHECK-NEXT:     __i0: i32,
 // CHECK-NEXT:     __i1: i32,
@@ -168,6 +175,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_setr_epi32(
 // CHECK-NEXT:     __i0: i32,
 // CHECK-NEXT:     __i1: i32,
@@ -182,21 +190,25 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_set1_ps(__w: f32) -> core::simd::Simd<f32, 8> {
 // CHECK-NEXT:     return unsafe { _mm256_set_ps(__w, __w, __w, __w, __w, __w, __w, __w) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_set1_epi32(__i: i32) -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     return unsafe { _mm256_set_epi32(__i, __i, __i, __i, __i, __i, __i, __i) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_castsi256_si128(mut __a: core::simd::Simd<i64, 4>) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(__a, __a, [0, 1]);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_fmadd_ps(
 // CHECK-NEXT:     __A: core::simd::Simd<f32, 8>,
 // CHECK-NEXT:     __B: core::simd::Simd<f32, 8>,

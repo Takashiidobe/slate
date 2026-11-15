@@ -22,9 +22,11 @@ int main(void) {
 // CHECK-NEXT: fn cold_path(x: i32) -> i32 {
 // CHECK-NEXT:     x * 2
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn always_inlined(x: i32) -> i32 {
 // CHECK-NEXT:     x + 1
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn never_inlined(x: i32) -> i32 {
 // CHECK-NEXT:     x - 1
 // CHECK-NEXT: }

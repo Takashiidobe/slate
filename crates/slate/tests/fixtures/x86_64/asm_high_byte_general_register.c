@@ -31,6 +31,7 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn swap_low_bytes(mut x: u32) -> u32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
@@ -42,6 +43,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn high_byte(mut x: u32) -> u32 {
 // CHECK-NEXT:     let mut out: u8 = 0;
 // CHECK-NEXT:     unsafe {
@@ -54,6 +56,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out as u32
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn mix(mut a: u32, mut b: u32) -> u32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;

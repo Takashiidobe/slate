@@ -71,12 +71,15 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn id9(x: i16) -> i16 {
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn add17(a: u32, b: u32) -> u32 {
 // CHECK-NEXT:     (a.wrapping_add(b) as u32) & 131071
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.mix100")]
 // CHECK-NEXT: extern "C-unwind" fn mix100(
 // CHECK-NEXT:     a: i16,
@@ -88,12 +91,14 @@ int main(void) {
 // CHECK-NEXT:             b.wrapping_mul(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(c as i128)),
 // CHECK-NEXT:         );
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn rot(
 // CHECK-NEXT:     mut x: bitint::BUint<128, 2, 16, bitint::A8>,
 // CHECK-NEXT:     n: i32,
 // CHECK-NEXT: ) -> bitint::BUint<128, 2, 16, bitint::A8> {
 // CHECK-NEXT:     return x.shl_bits(n as usize).bitor_bits(x.shr_bits((128 - n) as usize));
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn sum200(
 // CHECK-NEXT:     mut a: bitint::BInt<200, 4, 32, bitint::A8>,
 // CHECK-NEXT:     b: bitint::BInt<200, 4, 32, bitint::A8>,
@@ -101,6 +106,7 @@ int main(void) {
 // CHECK-NEXT: ) -> bitint::BInt<200, 4, 32, bitint::A8> {
 // CHECK-NEXT:     return a.wrapping_add(b).wrapping_add(c);
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn big(
 // CHECK-NEXT:     mut a: bitint::BUint<300, 5, 40, bitint::A8>,
 // CHECK-NEXT:     k: i32,
@@ -117,6 +123,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .wrapping_sub(b);
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn mkpair(a: i16, b: bitint::BInt<100, 2, 16, bitint::A8>) -> pair {
 // CHECK-NEXT:     let p: pair = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: pair = unsafe { core::mem::zeroed() };
@@ -126,6 +133,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     return p;
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn usepair(p: pair) -> bitint::BInt<100, 2, 16, bitint::A8> {
 // CHECK-NEXT:     return <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(p.a as i128)
 // CHECK-NEXT:         .wrapping_add(p.b);

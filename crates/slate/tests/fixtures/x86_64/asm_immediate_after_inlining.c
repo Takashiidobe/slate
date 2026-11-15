@@ -88,6 +88,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut k2: key = key { enabled: 2i32 };
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn key_address__const1(key: *mut key, next: bool) -> *const i8 {
 // CHECK-NEXT:     let mut address: *const i8 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -98,6 +99,7 @@ int main(void) {
 // CHECK-NEXT:     address
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn key_address__const2(key: *mut key, next: bool) -> *const i8 {
 // CHECK-NEXT:     let mut address: *const i8 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -108,6 +110,7 @@ int main(void) {
 // CHECK-NEXT:     address
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn branch__const4(key: *mut key, likely: bool) -> i32 {
 // CHECK-NEXT:     let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:     unsafe {
@@ -135,6 +138,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn branch__const5(key: *mut key, likely: bool) -> i32 {
 // CHECK-NEXT:     let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:     unsafe {
@@ -162,6 +166,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn branch__const8(key: *mut key, likely: bool) -> i32 {
 // CHECK-NEXT:     let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:     unsafe {
@@ -189,6 +194,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn branch__const9(key: *mut key, likely: bool) -> i32 {
 // CHECK-NEXT:     let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:     unsafe {
@@ -216,6 +222,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn bit__const6(nr: i32) -> i32 {
 // CHECK-NEXT:     let mut out: i32 = 0;
 // CHECK-NEXT:     unsafe {
@@ -226,6 +233,7 @@ int main(void) {
 // CHECK-NEXT:     out
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn bit__const7(nr: i32) -> i32 {
 // CHECK-NEXT:     let mut out: i32 = 0;
 // CHECK-NEXT:     unsafe {
@@ -236,6 +244,7 @@ int main(void) {
 // CHECK-NEXT:     out
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn outer__const3(key: *mut key) -> *const i8 {
 // CHECK-NEXT:     key_address__const2(key, false)
 // CHECK-NEXT: }

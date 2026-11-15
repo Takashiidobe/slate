@@ -34,6 +34,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut table: [Option<unsafe extern "C" fn(*mut i32, *mut ()) -> i32>; 1] = [Some(add_one)];
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn run_extensions(
 // CHECK-NEXT:     value: *mut i32,
 // CHECK-NEXT:     tbl: *const Option<unsafe extern "C" fn(*mut i32, *mut ()) -> i32>,

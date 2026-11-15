@@ -137,6 +137,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn curl_wrong_type() {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!("", options(att_syntax));

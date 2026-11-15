@@ -668,10 +668,15 @@ impl FunctionLowerer<'_, '_> {
             });
         }
         let target_feature = self.tables.target_feature_attr(function)?;
+        let inline = match function.semantics.inlining {
+            Some(ir::Inlining::Always) => Some(rust::Attr::Inline(rust::InlineHint::Always)),
+            Some(ir::Inlining::Never) => Some(rust::Attr::Inline(rust::InlineHint::Never)),
+            Some(ir::Inlining::Hint) | None => None,
+        };
         Ok(Item::Fn(FnDef {
             comments: self.claim_comments(function.id),
             unsafe_: variadic || target_feature.is_some(),
-            attrs: target_feature.into_iter().collect(),
+            attrs: target_feature.into_iter().chain(inline).collect(),
             vis: rust::Visibility::Private,
             abi: (variadic || abi != rust::Abi::CUnwind).then_some(abi),
             name: self.tables.names[&function.value.id].rust.clone(),

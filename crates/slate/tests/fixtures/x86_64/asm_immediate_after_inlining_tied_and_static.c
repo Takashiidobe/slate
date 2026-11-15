@@ -37,6 +37,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn add_imm__const1(mut x: u32, n: i32) -> u32 {
 // CHECK-NEXT:     let mut out: u32 = 0;
 // CHECK-NEXT:     unsafe {
@@ -47,6 +48,7 @@ int main(void) {
 // CHECK-NEXT:     out
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn add_inplace__const2(mut x: u32, n: i32) -> u32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -56,6 +58,7 @@ int main(void) {
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn counted__const3(n: i32) -> i32 {
 // CHECK-NEXT:     let mut out: i32 = 0;
 // CHECK-NEXT:     unsafe {
@@ -69,6 +72,7 @@ int main(void) {
 // CHECK-NEXT:     out + unsafe { calls }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn counted__const4(n: i32) -> i32 {
 // CHECK-NEXT:     let mut out: i32 = 0;
 // CHECK-NEXT:     unsafe {
@@ -84,6 +88,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn load_g__const5(mut p: &u32, n: i32) -> u32 {
 // CHECK-NEXT:     let mut out: u32 = 0;
 // CHECK-NEXT:     unsafe {

@@ -106,10 +106,12 @@ int main(int argc, char **argv) {
 // CHECK-NEXT:     (unsafe { keys.0[(pf as i32) as usize][nr as usize].enabled }) + 10
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn test_bit(nr: i64) -> i32 {
 // CHECK-NEXT:     ((unsafe { word }) >> nr & 1) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn rip_rel__const1(mut p: *mut ()) -> *mut () {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
@@ -119,6 +121,7 @@ int main(int argc, char **argv) {
 // CHECK-NEXT:     p
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn rip_rel__const2(mut p: *mut ()) -> *mut () {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
@@ -128,6 +131,7 @@ int main(int argc, char **argv) {
 // CHECK-NEXT:     p
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn rip_rel_after__const3(mut p: *mut ()) -> *mut i8 {
 // CHECK-NEXT:     let original: *mut () = p;
 // CHECK-NEXT:     unsafe {

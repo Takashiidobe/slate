@@ -64,16 +64,19 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn take_aligned(value: __SlateRecord_zero_width_bitfield_abi_c_6) -> i32 {
 // CHECK-NEXT:     value.value
 // CHECK-NEXT:         + (core::mem::size_of::<__SlateRecord_zero_width_bitfield_abi_c_6>() as i32)
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn round_trip(
 // CHECK-NEXT:     mut value: __SlateRecord_zero_width_bitfield_abi_c_12,
 // CHECK-NEXT: ) -> __SlateRecord_zero_width_bitfield_abi_c_12 {
 // CHECK-NEXT:     value.value += value.tag as i32;
 // CHECK-NEXT:     return value;
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn take_packed(value: __SlateRecord_zero_width_bitfield_abi_c_18) -> i32 {
 // CHECK-NEXT:     (value.tag as i32) + value.value
 // CHECK-NEXT:         + (core::mem::size_of::<__SlateRecord_zero_width_bitfield_abi_c_18>() as i32)

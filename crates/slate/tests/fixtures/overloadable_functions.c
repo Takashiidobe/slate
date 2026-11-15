@@ -40,11 +40,13 @@ int main(void) {
 // CHECK-NEXT:     owner: i32,
 // CHECK-NEXT:     depth: i32,
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn lock_ctx__1(lock: &mut spinlock) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*(lock as *mut spinlock)).held = 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn lock_ctx__2(lock: &mut mutex) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*(lock as *mut mutex)).owner = 7;
@@ -53,9 +55,11 @@ int main(void) {
 // CHECK-NEXT:         (*lock).depth = (*lock).depth + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn held__1(lock: &spinlock) -> i32 {
 // CHECK-NEXT:     unsafe { (*(lock as *const spinlock)).held }
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn held__2(lock: &mutex) -> i32 {
 // CHECK-NEXT:     (unsafe { (*(lock as *const mutex)).owner }) * 10
 // CHECK-NEXT:         + unsafe { (*(lock as *const mutex)).depth }

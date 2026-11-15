@@ -26,6 +26,14 @@ int local_min(void) {
   return __builtin_constant_p(y) && y >= 0;
 }
 
+void __compiletime_assert_1(void);
+
+int query_branch_not_folded(const enum freq fr, int x) {
+  if (!__builtin_constant_p(fr))
+    __compiletime_assert_1();
+  return x;
+}
+
 // SLATE-FILECHECK-BEGIN O0
 // O0: module {
 // O0-NEXT:     target "x86_64-unknown-linux-gnu" {
@@ -66,6 +74,12 @@ int local_min(void) {
 // O0-NEXT:     fn %[[VALUE_local_min:[0-9]+]] @local_min() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // O0-NEXT:         let %[[VALUE_y:[0-9]+]] y: i32 [storage=automatic] = const<i32>(2);
 // O0-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(ne<i32>(const<i32>(0), const<i32>(0)), ge<i32>(read<i32>(%[[VALUE_y]]), const<i32>(0))));
+// O0-NEXT:     }
+// O0-NEXT:     fn %[[VALUE___compiletime_assert_1:[0-9]+]] @__compiletime_assert_1() -> void [linkage=external];
+// O0-NEXT:     fn %[[VALUE_query_branch_not_folded:[0-9]+]] @query_branch_not_folded(%[[VALUE_fr_2:[0-9]+]] fr: @type[[TYPE_freq]] [const], %[[VALUE_x_3:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(const enum freq, int)"] {
+// O0-NEXT:         if not<bool>(ne<i32>(const<i32>(0), const<i32>(0))) [folded=true]
+// O0-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___compiletime_assert_1]]);
+// O0-NEXT:         return read<i32>(%[[VALUE_x_3]]);
 // O0-NEXT:     }
 // O0-NEXT: }
 // SLATE-FILECHECK-END O0
@@ -109,6 +123,12 @@ int local_min(void) {
 // O2-NEXT:     fn %[[VALUE_local_min:[0-9]+]] @local_min() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // O2-NEXT:         let %[[VALUE_y:[0-9]+]] y: i32 [storage=automatic] = const<i32>(2);
 // O2-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(intrinsic<bool, llvm.is.constant>(read<i32>(%[[VALUE_y]])), ge<i32>(read<i32>(%[[VALUE_y]]), const<i32>(0))));
+// O2-NEXT:     }
+// O2-NEXT:     fn %[[VALUE___compiletime_assert_1:[0-9]+]] @__compiletime_assert_1() -> void [linkage=external];
+// O2-NEXT:     fn %[[VALUE_query_branch_not_folded:[0-9]+]] @query_branch_not_folded(%[[VALUE_fr_2:[0-9]+]] fr: @type[[TYPE_freq]] [const], %[[VALUE_x_3:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(const enum freq, int)"] {
+// O2-NEXT:         if not<bool>(intrinsic<bool, llvm.is.constant>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_freq]]>(%[[VALUE_fr_2]]))))
+// O2-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___compiletime_assert_1]]);
+// O2-NEXT:         return read<i32>(%[[VALUE_x_3]]);
 // O2-NEXT:     }
 // O2-NEXT: }
 // SLATE-FILECHECK-END O2

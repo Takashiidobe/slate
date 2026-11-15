@@ -20,6 +20,7 @@ int main(void) {
 // CHECK-NEXT:     static mut slate_cs_start: [i8; 0];
 // CHECK-NEXT:     static mut slate_cs_end: [i8; 0];
 // CHECK-NEXT: }
+// CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn bump(x: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
