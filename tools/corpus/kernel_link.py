@@ -100,7 +100,7 @@ def link_errors(log):
         elif match := re.search(r"objtool: [^ ]*: (.*)", line):
             objtool[re.sub(r"_R[A-Za-z0-9_.]+|0x[0-9a-f]+", "_", match[1])] += 1
             continue
-        elif re.search(r"\berror\b|Error \d", line) and "__sub-make" not in line and "Makefile" not in line:
+        elif re.search(r"\berror\b|Error \d|^ERROR: ", line) and "__sub-make" not in line and "Makefile" not in line:
             cluster = clusters[re.sub(r"[0-9]+", "N", line.strip())]
         else:
             continue
