@@ -1459,13 +1459,8 @@ fn read_var_name(expr: &Expr) -> Option<Ident> {
 }
 
 fn is_null_like(expr: &Expr) -> bool {
-    if let Expr::Call { func, args, .. } = expr
-        && args.is_empty()
-        && let Expr::Var(name) = &**func
-    {
-        let name = name.as_str();
-        return name.starts_with("core::ptr::null::<")
-            || name.starts_with("core::ptr::null_mut::<");
+    if expr.is_typed_null() {
+        return true;
     }
     matches!(
         expr,

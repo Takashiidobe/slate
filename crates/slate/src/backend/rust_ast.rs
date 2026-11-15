@@ -1143,6 +1143,34 @@ impl Path {
     }
 }
 
+impl Expr {
+    pub fn typed_null(mutable: bool, pointee: Type) -> Expr {
+        let function = if mutable { "null_mut" } else { "null" };
+        Expr::Call {
+            func: Box::new(Expr::GenericPath {
+                path: Path::new(["core", "ptr", function].map(Ident::from)),
+                type_args: vec![pointee],
+            }),
+            args: Vec::new(),
+            binding: CallBinding::Generated,
+        }
+    }
+
+    pub fn is_typed_null(&self) -> bool {
+        let Expr::Call { func, args, .. } = self else {
+            return false;
+        };
+        let Expr::GenericPath { path, .. } = &**func else {
+            return false;
+        };
+        args.is_empty()
+            && matches!(
+                path.segments.iter().map(Ident::as_str).collect::<Vec<_>>()[..],
+                ["core", "ptr", "null" | "null_mut"]
+            )
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Label(Ident);
 

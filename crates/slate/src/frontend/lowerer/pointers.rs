@@ -323,17 +323,6 @@ impl FunctionLowerer<'_, '_> {
         let rust::Type::Ptr { mutable, inner } = self.lower_value_type(value)? else {
             return Err(unsupported_value(value));
         };
-        Ok(Expr::Call {
-            func: Box::new(Expr::Var(
-                format!(
-                    "core::ptr::{}::<{}>",
-                    if mutable { "null_mut" } else { "null" },
-                    crate::backend::codegen::type_to_string(&inner)
-                )
-                .into(),
-            )),
-            args: Vec::new(),
-            binding: CallBinding::Generated,
-        })
+        Ok(Expr::typed_null(mutable, *inner))
     }
 }

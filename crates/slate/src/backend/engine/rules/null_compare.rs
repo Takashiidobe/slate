@@ -10,10 +10,7 @@ type VarTypes = HashMap<Ident, Type>;
 fn is_null(expr: &Expr) -> bool {
     match expr {
         Expr::Value(RustValue::NullPtr) => true,
-        Expr::Call { func, args, .. } if args.is_empty() => matches!(&**func, Expr::Var(name)
-            if name.as_str().starts_with("core::ptr::null::<")
-                || name.as_str().starts_with("core::ptr::null_mut::<")),
-        _ => false,
+        _ => expr.is_typed_null(),
     }
 }
 
