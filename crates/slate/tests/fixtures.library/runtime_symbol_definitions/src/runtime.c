@@ -32,3 +32,5 @@ unsigned long strlen(const char *s) {
     p++;
   return (unsigned long)(p - s);
 }
+
+__asm__(".section .data.symbol_refs,\"aw\"\n.balign 8\n.globl strlen_ref\nstrlen_ref:\n.quad strlen\n.globl memcmp_ref\nmemcmp_ref:\n.quad memcmp\n.previous");

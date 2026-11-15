@@ -288,7 +288,14 @@ fn asm_names(
         .functions
         .iter()
         .filter(|function| function.body.is_some() && !function.semantics.inline_only)
-        .map(|function| (&function.name, &function.symbol, function.value.id));
+        .map(|function| {
+            let name = function.symbol.asm_name.as_ref().unwrap_or(&function.name);
+            let exported_elsewhere = exports_symbol(options, module, function)
+                && functions::runtime_symbol(name.trim_start_matches('\u{1}'), module.target.os)
+                    .is_some();
+            (name, function.value.id, exported_elsewhere)
+        });
+    let elf_aliases = elf_alias_target(&module.target);
     let globals = statics
         .iter()
         .filter(|global| {
@@ -296,17 +303,43 @@ fn asm_names(
                 && !matches!(global.variable.storage, ir::StorageDuration::Thread)
                 && !(global.common && options.imported_commons.contains(&global.variable.name))
         })
-        .map(|global| (&global.variable.name, &global.symbol, global.variable.id));
+        .map(|global| {
+            let exported_elsewhere = elf_aliases
+                && (options.export_symbols || global.symbol.include)
+                && matches!(global.linkage, ir::Linkage::External)
+                && alias_target(module, global).is_some_and(|target| {
+                    statics
+                        .iter()
+                        .any(|candidate| candidate.variable.id == target.variable.id)
+                });
+            (
+                global
+                    .symbol
+                    .asm_name
+                    .as_ref()
+                    .unwrap_or(&global.variable.name),
+                global.variable.id,
+                exported_elsewhere,
+            )
+        });
     let mut names = HashMap::new();
     let mut ambiguous = HashSet::new();
-    for (name, symbol, id) in functions.chain(globals) {
-        let name = symbol.asm_name.as_ref().unwrap_or(name);
-        if names.insert(name.clone(), id).is_some() {
+    for (name, id, exported_elsewhere) in functions.chain(globals) {
+        if exported_elsewhere || names.insert(name.clone(), id).is_some() {
             ambiguous.insert(name.clone());
         }
     }
     names.retain(|name, _| !ambiguous.contains(name));
     names
+}
+
+fn elf_alias_target(target: &slate_parser::target_info::TargetInfo) -> bool {
+    matches!(
+        target.os,
+        slate_parser::target_info::TargetOs::Linux
+            | slate_parser::target_info::TargetOs::Android
+            | slate_parser::target_info::TargetOs::FreeBsd
+    )
 }
 
 pub fn program_entry(module: &ir::Module, function: &ir::Function) -> bool {
@@ -430,12 +463,7 @@ impl<'m> ModuleLowerer<'m> {
     }
 
     fn elf_aliases(&self) -> bool {
-        matches!(
-            self.tables.target.os,
-            slate_parser::target_info::TargetOs::Linux
-                | slate_parser::target_info::TargetOs::Android
-                | slate_parser::target_info::TargetOs::FreeBsd
-        )
+        elf_alias_target(self.tables.target)
     }
 
     fn lower_function_alias(&mut self, function: &ir::Function) {
