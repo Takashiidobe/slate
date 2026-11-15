@@ -1635,15 +1635,40 @@ def shard_units(units, project_dir, limit):
                            [unit for _, shard in pending for unit in shard]))
         return packed
 
-    def arch_mode(unit):
+    families = {
+        "mode": lambda a: a in ("-m16", "-m32", "-m64", "-mx32"),
+        "march": lambda a: a.startswith("-march="),
+        "cmodel": lambda a: a.startswith("-mcmodel="),
+        "pic": lambda a: re.fullmatch(r"-f(no-)?(pic|PIC|pie|PIE)", a),
+        "redzone": lambda a: a in ("-mred-zone", "-mno-red-zone"),
+        "cf": lambda a: a.startswith("-fcf-protection"),
+        "retpoline": lambda a: a in ("-mretpoline", "-mno-retpoline"),
+        "thunk": lambda a: a in ("-mretpoline-external-thunk", "-mno-retpoline-external-thunk"),
+        "csprefix": lambda a: a in ("-mindirect-branch-cs-prefix", "-mno-indirect-branch-cs-prefix"),
+        "sse": lambda a: a in ("-msse", "-mno-sse", "-msse2", "-mno-sse2", "-msoft-float", "-mgeneral-regs-only"),
+        "x87": lambda a: a in ("-m80387", "-mno-80387"),
+    }
+
+    def codegen_key(unit):
         arguments = unit["arguments"] if "arguments" in unit else shlex.split(unit["command"])
-        modes = [argument for argument in arguments if argument in ("-m16", "-m32", "-m64", "-mx32")]
-        return modes[-1].lstrip("-") if modes and modes[-1] != "-m64" else ""
+        hosted = next((a for a in reversed(arguments) if a in ("-ffreestanding", "-fhosted")), "") != "-ffreestanding"
+        core = "-nostdinc" in arguments or not hosted
+        return (*(next((a for a in reversed(arguments) if matches(a)), "") for matches in families.values()), core)
+
+    def arch_mode(key):
+        mode = key[0]
+        return mode.lstrip("-") if mode and mode != "-m64" else ""
 
     shards = []
     for name, members in split((), linked):
-        for mode in sorted({arch_mode(unit) for unit in members}):
-            shards.append(((*name, mode) if mode else name, [unit for unit in members if arch_mode(unit) == mode]))
+        keys = collections.Counter(codegen_key(unit) for unit in members)
+        variants = collections.defaultdict(list)
+        for key, _ in keys.most_common():
+            variants[arch_mode(key)].append(key)
+        for mode in sorted(variants):
+            for index, key in enumerate(variants[mode]):
+                suffix = [part for part in (mode, f"cg{index}" if index else "") if part]
+                shards.append(((*name, *suffix), [unit for unit in members if codegen_key(unit) == key]))
     shards += [(Path(os.path.relpath(unit["file"], project_dir)).with_suffix("").parts, [unit]) for unit in standalone]
     names = ["_".join(name).replace("-", "_").replace(".", "_") or "root" for name, _ in shards]
     if len(set(names)) != len(names):

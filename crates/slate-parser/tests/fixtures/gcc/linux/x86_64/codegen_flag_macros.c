@@ -119,6 +119,8 @@ int macro_3dnow_a = -1;
 // SLATE-FILECHECK-PREFIX-ARGS THREEDNOWA -m3dnowa
 // SLATE-FILECHECK-DEFINES KERNEL
 // SLATE-FILECHECK-PREFIX-ARGS KERNEL -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-80387 -mno-fp-ret-in-387 -mno-avx -mno-sse4a -fcf-protection=branch -mcmodel=kernel -fno-PIE -fstack-protector-strong
+// SLATE-FILECHECK-DEFINES MACHINE
+// SLATE-FILECHECK-PREFIX-ARGS MACHINE -mno-red-zone -mindirect-branch-cs-prefix -mno-indirect-branch-cs-prefix -mindirect-branch-cs-prefix -mcmodel=medium
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: module {
@@ -184,6 +186,7 @@ int macro_3dnow_a = -1;
 // SMALLPIC-NEXT:         storage d64 [size=8, align=8];
 // SMALLPIC-NEXT:         storage d128 [size=16, align=16];
 // SMALLPIC-NEXT:     }
+// SMALLPIC-NEXT:     machine [pic=1];
 // SMALLPIC-NEXT:     global %[[VALUE_macro_pic:[0-9]+]] macro_pic: i32 [storage=static] = const<i32>(1) [linkage=external];
 // SMALLPIC-NEXT:     global %[[VALUE_macro_pie:[0-9]+]] macro_pie: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // SMALLPIC-NEXT:     global %[[VALUE_macro_ssp:[0-9]+]] macro_ssp: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
@@ -307,6 +310,7 @@ int macro_3dnow_a = -1;
 // CET-NEXT:         storage d64 [size=8, align=8];
 // CET-NEXT:         storage d128 [size=16, align=16];
 // CET-NEXT:     }
+// CET-NEXT:     machine [cf_protection=full];
 // CET-NEXT:     global %[[VALUE_macro_pic:[0-9]+]] macro_pic: i32 [storage=static] = const<i32>(2) [linkage=external];
 // CET-NEXT:     global %[[VALUE_macro_pie:[0-9]+]] macro_pie: i32 [storage=static] = const<i32>(2) [linkage=external];
 // CET-NEXT:     global %[[VALUE_macro_ssp:[0-9]+]] macro_ssp: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
@@ -348,6 +352,7 @@ int macro_3dnow_a = -1;
 // CHECK-NEXT:         storage d64 [size=8, align=8];
 // CHECK-NEXT:         storage d128 [size=16, align=16];
 // CHECK-NEXT:     }
+// CHECK-NEXT:     machine [cf_protection=check];
 // CHECK-NEXT:     global %[[VALUE_macro_pic:[0-9]+]] macro_pic: i32 [storage=static] = const<i32>(2) [linkage=external];
 // CHECK-NEXT:     global %[[VALUE_macro_pie:[0-9]+]] macro_pie: i32 [storage=static] = const<i32>(2) [linkage=external];
 // CHECK-NEXT:     global %[[VALUE_macro_ssp:[0-9]+]] macro_ssp: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
@@ -594,6 +599,7 @@ int macro_3dnow_a = -1;
 // KERNEL-NEXT:         storage d64 [size=8, align=8];
 // KERNEL-NEXT:         storage d128 [size=16, align=16];
 // KERNEL-NEXT:     }
+// KERNEL-NEXT:     machine [code_model=kernel, pic=none, cf_protection=branch];
 // KERNEL-NEXT:     global %[[VALUE_macro_pic:[0-9]+]] macro_pic: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // KERNEL-NEXT:     global %[[VALUE_macro_pie:[0-9]+]] macro_pie: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // KERNEL-NEXT:     global %[[VALUE_macro_ssp:[0-9]+]] macro_ssp: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
@@ -612,3 +618,45 @@ int macro_3dnow_a = -1;
 // KERNEL-NEXT:     global %[[VALUE_macro_3dnow_a:[0-9]+]] macro_3dnow_a: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // KERNEL-NEXT: }
 // SLATE-FILECHECK-END KERNEL
+// SLATE-FILECHECK-BEGIN MACHINE
+// MACHINE: module {
+// MACHINE-NEXT:     target "x86_64-unknown-linux-gnu" {
+// MACHINE-NEXT:         endian = little;
+// MACHINE-NEXT:         pointer [size=8, align=8];
+// MACHINE-NEXT:         stack_alignment = 16;
+// MACHINE-NEXT:         long_double = f80;
+// MACHINE-NEXT:         storage bool [size=1, align=1];
+// MACHINE-NEXT:         storage i8, u8 [size=1, align=1];
+// MACHINE-NEXT:         storage i16, u16 [size=2, align=2];
+// MACHINE-NEXT:         storage i32, u32 [size=4, align=4];
+// MACHINE-NEXT:         storage i64, u64 [size=8, align=8];
+// MACHINE-NEXT:         storage i128, u128 [size=16, align=16];
+// MACHINE-NEXT:         storage bf16 [size=2, align=2];
+// MACHINE-NEXT:         storage f16 [size=2, align=2];
+// MACHINE-NEXT:         storage f32 [size=4, align=4];
+// MACHINE-NEXT:         storage f64 [size=8, align=8];
+// MACHINE-NEXT:         storage f80 [size=16, align=16];
+// MACHINE-NEXT:         storage f128 [size=16, align=16];
+// MACHINE-NEXT:         storage d32 [size=4, align=4];
+// MACHINE-NEXT:         storage d64 [size=8, align=8];
+// MACHINE-NEXT:         storage d128 [size=16, align=16];
+// MACHINE-NEXT:     }
+// MACHINE-NEXT:     machine [code_model=medium, red_zone=off, indirect_branch_cs_prefix];
+// MACHINE-NEXT:     global %[[VALUE_macro_pic:[0-9]+]] macro_pic: i32 [storage=static] = const<i32>(2) [linkage=external];
+// MACHINE-NEXT:     global %[[VALUE_macro_pie:[0-9]+]] macro_pie: i32 [storage=static] = const<i32>(2) [linkage=external];
+// MACHINE-NEXT:     global %[[VALUE_macro_ssp:[0-9]+]] macro_ssp: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
+// MACHINE-NEXT:     global %[[VALUE_macro_ssp_strong:[0-9]+]] macro_ssp_strong: i32 [storage=static] = const<i32>(3) [linkage=external];
+// MACHINE-NEXT:     global %[[VALUE_macro_ssp_all:[0-9]+]] macro_ssp_all: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
+// MACHINE-NEXT:     global %[[VALUE_macro_ssp_explicit:[0-9]+]] macro_ssp_explicit: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
+// MACHINE-NEXT:     global %[[VALUE_macro_cet:[0-9]+]] macro_cet: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
+// MACHINE-NEXT:     global %[[VALUE_macro_flt_eval_method:[0-9]+]] macro_flt_eval_method: i32 [storage=static] = const<i32>(0) [linkage=external];
+// MACHINE-NEXT:     global %[[VALUE_macro_sse:[0-9]+]] macro_sse: i32 [storage=static] = const<i32>(1) [linkage=external];
+// MACHINE-NEXT:     global %[[VALUE_macro_sse2:[0-9]+]] macro_sse2: i32 [storage=static] = const<i32>(1) [linkage=external];
+// MACHINE-NEXT:     global %[[VALUE_macro_mmx:[0-9]+]] macro_mmx: i32 [storage=static] = const<i32>(1) [linkage=external];
+// MACHINE-NEXT:     global %[[VALUE_macro_mmx_with_sse:[0-9]+]] macro_mmx_with_sse: i32 [storage=static] = const<i32>(1) [linkage=external];
+// MACHINE-NEXT:     global %[[VALUE_macro_flt16_max:[0-9]+]] macro_flt16_max: i32 [storage=static] = const<i32>(1) [linkage=external];
+// MACHINE-NEXT:     global %[[VALUE_macro_soft_float:[0-9]+]] macro_soft_float: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
+// MACHINE-NEXT:     global %[[VALUE_macro_3dnow:[0-9]+]] macro_3dnow: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
+// MACHINE-NEXT:     global %[[VALUE_macro_3dnow_a:[0-9]+]] macro_3dnow_a: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
+// MACHINE-NEXT: }
+// SLATE-FILECHECK-END MACHINE

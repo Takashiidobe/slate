@@ -29,6 +29,30 @@ pub struct Module {
     pub alloca: AllocaLayout,
     pub hosted: bool,
     pub nostdinc: bool,
+    pub machine: MachineCodegen,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+pub struct MachineCodegen {
+    pub code_model: Option<crate::compiler_options::CodeModel>,
+    pub pic: Option<crate::compiler_options::Pic>,
+    pub red_zone: Option<bool>,
+    pub cf_protection: Option<u8>,
+    pub indirect_branch_cs_prefix: bool,
+    pub retpoline: bool,
+}
+
+impl MachineCodegen {
+    pub fn from_options(codegen: &crate::compiler_options::CodegenOptions) -> Self {
+        Self {
+            code_model: codegen.code_model,
+            pic: codegen.pic,
+            red_zone: codegen.red_zone,
+            cf_protection: codegen.cf_protection,
+            indirect_branch_cs_prefix: codegen.indirect_branch_cs_prefix,
+            retpoline: codegen.retpoline,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -438,6 +462,7 @@ impl Module {
             },
             hosted: true,
             nostdinc: false,
+            machine: MachineCodegen::default(),
         }
     }
 

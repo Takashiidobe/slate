@@ -1139,6 +1139,38 @@ impl fmt::Display for DisplayModule<'_> {
         if self.module.nostdinc {
             writeln!(f, "    nostdinc;")?;
         }
+        let machine = self.module.machine;
+        let facts: Vec<String> = [
+            machine
+                .code_model
+                .map(|model| format!("code_model={}", model.spelling())),
+            machine.pic.map(|pic| match pic.level {
+                0 => "pic=none".to_string(),
+                level if pic.executable => format!("pie={level}"),
+                level => format!("pic={level}"),
+            }),
+            machine
+                .red_zone
+                .map(|on| format!("red_zone={}", if on { "on" } else { "off" })),
+            machine.cf_protection.map(|bits| {
+                let level = ["none", "branch", "return", "full"][usize::from(bits & 3)];
+                match bits & 8 {
+                    0 => format!("cf_protection={level}"),
+                    _ if bits & 3 == 0 => "cf_protection=check".to_string(),
+                    _ => format!("cf_protection={level}+check"),
+                }
+            }),
+            machine
+                .indirect_branch_cs_prefix
+                .then(|| "indirect_branch_cs_prefix".to_string()),
+            machine.retpoline.then(|| "retpoline".to_string()),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        if !facts.is_empty() {
+            writeln!(f, "    machine [{}];", facts.join(", "))?;
+        }
         for asm in &self.module.asm {
             write!(f, "    asm {:?}", asm.template)?;
             asm_attributes(f, asm)?;

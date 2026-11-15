@@ -790,7 +790,95 @@ fn arch_mode_projects_select_their_rust_target() {
         translate_arch_mode_project("mixed", &[("realmode.c", &["-m16"]), ("long_mode.c", &[])]);
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(
-        !output.status.success() && stderr.contains("translate for different targets"),
+        !output.status.success() && stderr.contains("build for different targets"),
+        "{stderr}"
+    );
+}
+
+const KERNEL_FLAGS: &[&str] = &[
+    "-nostdinc",
+    "-ffreestanding",
+    "-mcmodel=kernel",
+    "-fno-PIE",
+    "-mno-red-zone",
+    "-mno-sse",
+    "-mno-sse2",
+    "-mno-mmx",
+    "-mno-80387",
+    "-fcf-protection=branch",
+    "-mretpoline-external-thunk",
+    "-mindirect-branch-cs-prefix",
+];
+
+#[test]
+fn freestanding_projects_build_for_bare_metal_targets() {
+    let code16: Vec<&str> = KERNEL_FLAGS[..2]
+        .iter()
+        .copied()
+        .chain(["-m16", "-march=i386", "-mno-sse", "-mno-mmx", "-fno-pic"])
+        .collect();
+    for (work, file, flags, target, expected) in [
+        (
+            "kernel",
+            "long_mode.c",
+            KERNEL_FLAGS,
+            "x86_64-unknown-none",
+            &[
+                "\"-Crelocation-model=static\"",
+                "\"-Zcf-protection=branch\"",
+                "\"-Zretpoline-external-thunk\"",
+                "\"-Zindirect-branch-cs-prefix\"",
+                "\"-Ctarget-feature=-x87\"",
+                "build-std = [\"core\", \"compiler_builtins\"]",
+            ][..],
+        ),
+        (
+            "freestanding-m16",
+            "realmode.c",
+            &code16[..],
+            "i386-unknown-none.json",
+            &["\"-Crelocation-model=static\"", "json-target-spec = true"][..],
+        ),
+    ] {
+        let (crate_dir, output) = translate_arch_mode_project(work, &[(file, flags)]);
+        assert!(
+            output.status.success(),
+            "{work}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let config = std::fs::read_to_string(crate_dir.join(".cargo/config.toml"))
+            .expect("read .cargo/config.toml");
+        assert!(
+            config.contains(&format!("target = \"{target}\"")),
+            "{work}: {config}"
+        );
+        for line in expected {
+            assert!(config.contains(line), "{work}: missing {line} in {config}");
+        }
+        assert!(!config.contains("code-model"), "{work}: {config}");
+        assert!(!config.contains("no-redzone"), "{work}: {config}");
+        let build = cargo_in(&crate_dir, "build");
+        assert!(
+            build.status.success(),
+            "{work}: {}",
+            String::from_utf8_lossy(&build.stderr)
+        );
+    }
+    let vdso: Vec<&str> = KERNEL_FLAGS
+        .iter()
+        .copied()
+        .filter(|flag| !matches!(*flag, "-mcmodel=kernel" | "-fno-PIE"))
+        .chain(["-fpic"])
+        .collect();
+    let (_, output) = translate_arch_mode_project(
+        "kernel-mixed",
+        &[("long_mode.c", KERNEL_FLAGS), ("realmode.c", &vdso)],
+    );
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        !output.status.success()
+            && stderr.contains("build for different targets")
+            && stderr.contains("-Ccode-model=small"),
         "{stderr}"
     );
 }

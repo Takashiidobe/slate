@@ -5004,6 +5004,7 @@ pub(super) fn resolve_type_module(
     module.alloca = crate::ir::AllocaLayout::for_dialect(&unit.dialect);
     module.hosted = unit.dialect.options().hosted;
     module.nostdinc = unit.dialect.options().nostdinc;
+    module.machine = crate::ir::MachineCodegen::from_options(&unit.dialect.options().codegen);
     let mut resolver = TypeResolver::with_names(unit, names);
     let mut next_binding = 0u32;
     for declaration in &unit.decls {

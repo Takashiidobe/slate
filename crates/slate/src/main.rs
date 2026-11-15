@@ -3,7 +3,7 @@ use rayon::prelude::*;
 use slate::backend::{self, codegen, rust_ast};
 use slate::frontend::c_shim;
 use slate::project::merge::{Unit as SlateUnit, collect_all_errors, rust_ident};
-use slate::project::{matrix, merge, plan};
+use slate::project::{build_target, matrix, merge, plan};
 use slate::{api, compile_commands};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
@@ -1220,7 +1220,9 @@ fn translate_slate_project(
     export_dynamic: bool,
 ) -> Result<String, String> {
     let units = parse_slate_units(commands)?;
-    let target = project_target(&units)?;
+    let target = build_target::project_build_target(
+        units.iter().map(|unit| (unit.stem.as_str(), &unit.module)),
+    )?;
     let roots: Vec<&str> = units
         .iter()
         .filter(|unit| {
@@ -1259,66 +1261,8 @@ fn translate_slate_project(
         None,
         &BTreeMap::new(),
     )?;
-    write_cargo_config(crate_dir, target)?;
+    build_target::BuildTarget::write_config(target.as_ref(), crate_dir)?;
     Ok(written)
-}
-
-fn describe_target((triple, code16): (&str, bool)) -> String {
-    if code16 {
-        format!("{triple} (-m16)")
-    } else {
-        triple.to_string()
-    }
-}
-
-fn target_of(unit: &SlateUnit) -> (&str, bool) {
-    (
-        unit.module.target.triple.as_str(),
-        unit.module.target.code16,
-    )
-}
-
-fn project_target(units: &[SlateUnit]) -> Result<Option<(&str, bool)>, String> {
-    let Some(first) = units.first() else {
-        return Ok(None);
-    };
-    match units
-        .iter()
-        .find(|unit| target_of(unit) != target_of(first))
-    {
-        Some(other) => Err(format!(
-            "units {} and {} translate for different targets ({} and {}); translate them as separate projects",
-            first.stem,
-            other.stem,
-            describe_target(target_of(first)),
-            describe_target(target_of(other))
-        )),
-        None => Ok(Some(target_of(first))),
-    }
-}
-
-fn write_cargo_config(crate_dir: &Path, target: Option<(&str, bool)>) -> Result<(), String> {
-    let path = crate_dir.join(".cargo").join("config.toml");
-    let config = match target {
-        None => None,
-        Some((env!("SLATE_BUILD_TARGET"), false)) => None,
-        Some((triple, false)) => Some(format!("[build]\ntarget = \"{triple}\"\n")),
-        Some((triple, true)) => Some(format!(
-            "[build]\ntarget = \"{triple}\"\n\n[target.{triple}]\nrustflags = [\"-Ctarget-feature=+16bit-mode,-32bit-mode\"]\n"
-        )),
-    };
-    match config {
-        Some(config) => {
-            let directory = crate_dir.join(".cargo");
-            std::fs::create_dir_all(&directory)
-                .map_err(|e| format!("create {}: {e}", directory.display()))?;
-            write_file(&path, &config)
-        }
-        None if path.exists() => {
-            std::fs::remove_file(&path).map_err(|e| format!("remove {}: {e}", path.display()))
-        }
-        None => Ok(()),
-    }
 }
 
 const SHARED_MACROS_MODULE: &str = "__slate_macros";

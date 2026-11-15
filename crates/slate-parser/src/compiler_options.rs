@@ -41,11 +41,47 @@ pub struct CodegenOptions {
     pub pic: Option<Pic>,
     pub stack_protector: Option<StackProtector>,
     pub cf_protection: Option<u8>,
+    pub code_model: Option<CodeModel>,
+    pub red_zone: Option<bool>,
+    pub indirect_branch_cs_prefix: bool,
+    pub retpoline: bool,
     pub three_dnow: u8,
     pub delete_null_pointer_checks: bool,
     pub trivial_auto_var_init: TrivialAutoVarInit,
     pub zero_init_padding_bits: ZeroInitPaddingBits,
     pub optimization: Optimization,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum CodeModel {
+    Tiny,
+    Small,
+    Kernel,
+    Medium,
+    Large,
+}
+
+impl CodeModel {
+    pub fn parse(spelling: &str) -> Option<Self> {
+        Some(match spelling {
+            "tiny" => Self::Tiny,
+            "small" => Self::Small,
+            "kernel" => Self::Kernel,
+            "medium" => Self::Medium,
+            "large" => Self::Large,
+            _ => return None,
+        })
+    }
+
+    pub fn spelling(self) -> &'static str {
+        match self {
+            Self::Tiny => "tiny",
+            Self::Small => "small",
+            Self::Kernel => "kernel",
+            Self::Medium => "medium",
+            Self::Large => "large",
+        }
+    }
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
@@ -73,6 +109,10 @@ impl Default for CodegenOptions {
             pic: None,
             stack_protector: None,
             cf_protection: None,
+            code_model: None,
+            red_zone: None,
+            indirect_branch_cs_prefix: false,
+            retpoline: false,
             three_dnow: 0,
             delete_null_pointer_checks: true,
             trivial_auto_var_init: TrivialAutoVarInit::Uninitialized,
@@ -124,7 +164,7 @@ impl std::str::FromStr for TrivialAutoVarInit {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Pic {
     pub level: u8,
     pub executable: bool,

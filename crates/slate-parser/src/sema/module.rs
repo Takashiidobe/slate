@@ -71,6 +71,7 @@ fn resolve_module(
     module.alloca = crate::ir::AllocaLayout::for_dialect(types.dialect());
     module.hosted = types.dialect().options().hosted;
     module.nostdinc = types.dialect().options().nostdinc;
+    module.machine = crate::ir::MachineCodegen::from_options(&types.dialect().options().codegen);
     module.linker_options = types.pragmas.linker_options().to_vec();
     let mut lower = Lowerer {
         types,

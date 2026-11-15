@@ -64,10 +64,18 @@ before its declaration (a function called before its definition, a loop ID in
 
 ```ebnf
 module     = "module" "{" target [ "freestanding" ";" ] [ "nostdinc" ";" ]
+             [ "machine" "[" machine_fact { "," machine_fact } "]" ";" ]
              { asm } { linker_option } { type_def } { global } { function }
              { macro_definition } { macro_expansion } "}" ;
 
 linker_option = "linker" string ";" ;
+
+machine_fact = "code_model=" ( "tiny" | "small" | "kernel" | "medium" | "large" )
+             | "pic=none" | "pic=" int | "pie=" int
+             | "red_zone=" ( "on" | "off" )
+             | "cf_protection=" ( "none" | "branch" | "return" | "full" | "check" )
+               [ "+check" ]
+             | "indirect_branch_cs_prefix" | "retpoline" ;
 
 target     = "target" string "{"
                "endian" "=" ( "little" | "big" ) ";"
@@ -88,6 +96,13 @@ storage_of = "bool" | "i8, u8" | "i16, u16" | "i32, u32" | "i64, u64"
   (`Module.hosted` false, `__STDC_HOSTED__` 0). `nostdinc` marks a unit compiled
   with `-nostdinc` (`Module.nostdinc`): no system include directories, so no
   system libc. Slate emits core-only Rust when either is set.
+- `machine` lists the machine codegen flags the unit set explicitly
+  (`Module.machine`, a `MachineCodegen`), in the order above, and is omitted when
+  none is set: `-mcmodel=`, the last `-fpic`/`-fPIC`/`-fpie`/`-fPIE`/`-fno-*`
+  (`pic=none` for level 0), `-m[no-]red-zone`, `-fcf-protection` (gcc's `check`
+  bit prints as `check` or `<level>+check`), `-mindirect-branch-cs-prefix`, and
+  clang's `-mretpoline`. They change no C semantics; slate maps them to the
+  crate's Rust target and rustflags for freestanding units.
 - `storage` lines cover every scalar format a module can name (`bool`, standard
   integers, floats, in that order), only for formats the target supports.
   Bit-precise integers, pointers, `va_list`, and composites are derived at the

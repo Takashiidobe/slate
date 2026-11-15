@@ -299,6 +299,15 @@ selects the flavor. How to add one: [adding-a-target](../adding-a-target.md).
   header: same types, layout, ABI and predefines as `-m32`, but the backend
   must emit 16-bit real-mode encodings (gcc `.code16gcc`, clang's CODE16
   triple). `-mx32` is rejected until it has a target.
+- `Module.machine` (`MachineCodegen`, printed `machine [...]`) records the
+  explicit code model, PIC/PIE level, red zone, cf-protection,
+  `-mindirect-branch-cs-prefix` and `-mretpoline`; x86 ISA flags such as
+  `-mretpoline-external-thunk`, `-mno-sse` and `-mno-80387` stay in
+  `TargetInfo::isa`. Neither changes layout or ABI. Slate builds a crate whose
+  units are all core-only and SSE-free for `x86_64-unknown-none` (64-bit) or a
+  generated `i386-unknown-none.json` spec (`-m32`/`-m16`), with rustflags
+  derived from these facts, and rejects a crate whose units derive different
+  targets or flags (`project::build_target`).
 - `{x86_64,aarch64,i686,thumbv7a}-pc-windows-msvc`: 32-bit `long`, binary64
   `long double`, unsigned 16-bit `wchar_t`, Microsoft record layout.
   - i686: `long long`/`double` 8-aligned (4 on i686 Linux), 4-byte pointers,

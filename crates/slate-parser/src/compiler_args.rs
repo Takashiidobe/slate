@@ -1,9 +1,10 @@
 use crate::charset::Charset;
 use crate::compiler_options::{
-    CodegenOptions, CompilerOptions, ComplexMethod, FpModel, LayoutOptions, LibraryBuiltins,
-    MathOptions, MathSwitch, MicrosoftFlags, MsvcArch, MsvcArchLevel, MsvcArm64Arch, MsvcFavor,
-    MsvcFloatingModel, MsvcFloatingPoint, MsvcRuntimeChecks, MsvcRuntimeLibrary, OperationValues,
-    Optimization, Pic, SourceGraphs, StackProtector, TrivialAutoVarInit, ZeroInitPaddingBits,
+    CodeModel, CodegenOptions, CompilerOptions, ComplexMethod, FpModel, LayoutOptions,
+    LibraryBuiltins, MathOptions, MathSwitch, MicrosoftFlags, MsvcArch, MsvcArchLevel,
+    MsvcArm64Arch, MsvcFavor, MsvcFloatingModel, MsvcFloatingPoint, MsvcRuntimeChecks,
+    MsvcRuntimeLibrary, OperationValues, Optimization, Pic, SourceGraphs, StackProtector,
+    TrivialAutoVarInit, ZeroInitPaddingBits,
 };
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::SearchPaths;
@@ -342,6 +343,10 @@ struct ParsedCompilerArgs {
     pic: Option<Pic>,
     stack_protector: Option<StackProtector>,
     cf_protection: Vec<u8>,
+    code_model: Option<CodeModel>,
+    red_zone: Option<bool>,
+    indirect_branch_cs_prefix: Option<bool>,
+    retpoline: Option<bool>,
     three_dnow: Option<u8>,
     preferred_stack_boundary: Option<u32>,
     stack_alignment: Option<u32>,
@@ -606,6 +611,9 @@ enum Opt {
     StackProtectorExplicit,
     CfProtection,
     CodeModel,
+    RedZone,
+    IndirectBranchCsPrefix,
+    Retpoline,
     X87,
     ClangX87,
     FpRetIn387,
@@ -770,6 +778,9 @@ impl std::fmt::Display for Opt {
             Self::StackProtectorExplicit => "fstack-protector-explicit",
             Self::CfProtection => "fcf-protection",
             Self::CodeModel => "mcmodel",
+            Self::RedZone => "mred-zone",
+            Self::IndirectBranchCsPrefix => "mindirect-branch-cs-prefix",
+            Self::Retpoline => "mretpoline",
             Self::X87 => "m80387",
             Self::ClangX87 => "mx87",
             Self::FpRetIn387 => "mfp-ret-in-387",
@@ -964,6 +975,8 @@ impl Opt {
             | Self::StackProtectorLevel
             | Self::CfProtection
             | Self::CodeModel
+            | Self::RedZone
+            | Self::IndirectBranchCsPrefix
             | Self::ArchMode
             | Self::RegParm
             | Self::X87
@@ -1004,6 +1017,7 @@ impl Opt {
             | Self::GnucVersion
             | Self::GnuInlineAsm
             | Self::KnrFunctions
+            | Self::Retpoline
             | Self::Mllvm => &[Clang],
             Self::ConformingPreprocessor
             | Self::MsvcUnsignedChar
@@ -1050,6 +1064,7 @@ impl Opt {
         match self {
             Self::Freestanding | Self::Hosted => flavor.is_gcc(),
             Self::FpRetIn387 => !flavor.is_msvc(),
+            Self::IndirectBranchCsPrefix => flavor.is_gcc(),
             Self::UnsignedBitfields | Self::SignedBitfields | Self::AlignDouble => flavor.is_gcc(),
             Self::InlineHintFunctions => false,
             Self::CodegenOnly(spelling) => codegen_only_flag_named(spelling)
@@ -1116,6 +1131,9 @@ impl Opt {
             Self::SmallPie => "-fpie",
             Self::LargePie => "-fPIE",
             Self::StackProtector => "-fstack-protector",
+            Self::RedZone => "-mred-zone",
+            Self::IndirectBranchCsPrefix => "-mindirect-branch-cs-prefix",
+            Self::Retpoline => "-mretpoline",
             Self::X87 => "-m80387",
             Self::ClangX87 => "-mx87",
             Self::FpRetIn387 => "-mfp-ret-in-387",
@@ -1353,10 +1371,8 @@ const CODEGEN_ONLY_FLAGS: &[CodegenOnlyFlag] = &[
     CodegenOnlyFlag::value("-fdiagnostics-color=", GNU_FLAVORS)
         .one_of(&["always", "never", "auto"]),
     CodegenOnlyFlag::switch("-coverage", GNU_FLAVORS).negated_by(&[]),
-    CodegenOnlyFlag::switch("-mred-zone", GNU_FLAVORS),
     CodegenOnlyFlag::switch("-mskip-rax-setup", GNU_FLAVORS),
     CodegenOnlyFlag::switch("-mvzeroupper", GNU_FLAVORS),
-    CodegenOnlyFlag::switch("-mindirect-branch-cs-prefix", GNU_FLAVORS).negated_by(GCC_ONLY),
     CodegenOnlyFlag::value("-mtune=", GNU_FLAVORS),
     CodegenOnlyFlag::value("-mfunction-return=", GNU_FLAVORS).one_of(&[
         "keep",
@@ -1374,7 +1390,6 @@ const CODEGEN_ONLY_FLAGS: &[CodegenOnlyFlag] = &[
     CodegenOnlyFlag::value("-fira-region=", GCC_ONLY).one_of(&["all", "mixed", "one"]),
     CodegenOnlyFlag::value("-freorder-blocks-algorithm=", GCC_ONLY).one_of(&["simple", "stc"]),
     CodegenOnlyFlag::switch("-moutline", CLANG_ONLY),
-    CodegenOnlyFlag::switch("-mretpoline", CLANG_ONLY),
     CodegenOnlyFlag::switch("-fintegrated-as", CLANG_ONLY),
     CodegenOnlyFlag::switch("-fcolor-diagnostics", CLANG_ONLY),
     CodegenOnlyFlag::switch("-fdiagnostics-show-inlining-chain", CLANG_ONLY),
@@ -1537,6 +1552,9 @@ const SWITCH_OPTS: &[Opt] = &[
     Opt::SmallPie,
     Opt::LargePie,
     Opt::StackProtector,
+    Opt::RedZone,
+    Opt::IndirectBranchCsPrefix,
+    Opt::Retpoline,
     Opt::X87,
     Opt::ClangX87,
     Opt::FpRetIn387,
@@ -1951,6 +1969,9 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                         StackProtector::Off
                     })
                 }
+                Opt::RedZone => parsed.red_zone = Some(value),
+                Opt::IndirectBranchCsPrefix => parsed.indirect_branch_cs_prefix = Some(value),
+                Opt::Retpoline => parsed.retpoline = Some(value),
                 Opt::X87 | Opt::ClangX87 => parsed.isa.x86.set(X86Feature::X87, value),
                 Opt::FpRetIn387 => {
                     if !value {
@@ -2075,9 +2096,9 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             }
         } else if let Some(model) = argument.strip_prefix("-mcmodel=") {
             parsed.saw(Opt::CodeModel, argument);
-            if !["tiny", "small", "kernel", "medium", "large"].contains(&model) {
-                return Err(invalid(argument, "unknown code model"));
-            }
+            parsed.code_model = Some(
+                CodeModel::parse(model).ok_or_else(|| invalid(argument, "unknown code model"))?,
+            );
         } else if let Some(mode) = match argument.as_str() {
             "-m16" => Some(ArchMode::Code16),
             "-m32" => Some(ArchMode::Bits32),
@@ -2706,6 +2727,10 @@ fn codegen_options(raw: &ParsedCompilerArgs, target: &TargetInfo) -> CodegenOpti
             level => level,
         }),
         cf_protection,
+        code_model: raw.code_model,
+        red_zone: raw.red_zone,
+        indirect_branch_cs_prefix: raw.indirect_branch_cs_prefix.unwrap_or(false),
+        retpoline: raw.retpoline.unwrap_or(false),
         three_dnow: raw.three_dnow.unwrap_or(0),
         delete_null_pointer_checks: raw.delete_null_pointer_checks.unwrap_or(true),
         trivial_auto_var_init: raw.trivial_auto_var_init.unwrap_or_default(),
