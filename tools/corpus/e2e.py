@@ -1607,9 +1607,33 @@ RECIPES = {
 }
 
 
+def kernel_modules(units, project_dir):
+    by_file = {os.path.realpath(unit["file"]): unit for unit in units}
+    modules = []
+    for unit in units:
+        if not unit["file"].endswith(".mod.c"):
+            continue
+        build = Path(unit["directory"])
+        listing = Path(unit["file"][:-len(".c")])
+        objects = listing.read_text().split() if listing.exists() else []
+        members = [unit]
+        for name in objects:
+            source = Path(name).with_suffix(".c")
+            for root in (project_dir, build):
+                member = by_file.get(os.path.realpath(root / source))
+                if member is not None and member is not unit:
+                    members.append(member)
+                    break
+        modules.append((("mod", *Path(os.path.relpath(listing, build)).with_suffix("").parts), members))
+    return modules
+
+
 def shard_units(units, project_dir, limit):
     standalone = [unit for unit in units if unit["standalone"]]
     linked = [unit for unit in units if not unit["standalone"]]
+    modules = kernel_modules(linked, project_dir)
+    in_module = {id(unit) for _, members in modules for unit in members}
+    linked = [unit for unit in linked if id(unit) not in in_module]
     paths = {unit["file"]: Path(os.path.relpath(unit["file"], project_dir)).parts for unit in linked}
 
     def split(prefix, members):
@@ -1660,7 +1684,7 @@ def shard_units(units, project_dir, limit):
         return mode.lstrip("-") if mode and mode != "-m64" else ""
 
     shards = []
-    for name, members in split((), linked):
+    for name, members in [*split((), linked), *modules]:
         keys = collections.Counter(codegen_key(unit) for unit in members)
         variants = collections.defaultdict(list)
         for key, _ in keys.most_common():

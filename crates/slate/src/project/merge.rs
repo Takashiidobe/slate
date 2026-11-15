@@ -177,65 +177,109 @@ pub fn imported_commons(units: &[Unit]) -> BTreeMap<String, BTreeSet<String>> {
 }
 
 #[derive(Default)]
-pub struct ComdatOwners {
+pub struct SymbolOwners {
     owners: BTreeMap<String, String>,
     symbols: BTreeMap<String, String>,
 }
 
-fn is_comdat(function: &slate_parser::ir::Function) -> bool {
-    function.body.is_some()
-        && matches!(function.linkage, Linkage::External)
-        && (function.semantics.discardable || function.semantics.weak_odr)
+#[derive(Clone, Copy)]
+enum Definition {
+    Strong,
+    Weak,
+    Comdat { discardable: bool },
 }
 
-pub fn comdat_owners(units: &[Unit]) -> ComdatOwners {
-    let mut definitions: BTreeMap<&str, Vec<(&str, bool)>> = BTreeMap::new();
+impl Definition {
+    fn overridable(self) -> bool {
+        !matches!(self, Self::Strong)
+    }
+
+    fn preferred(self) -> bool {
+        matches!(self, Self::Strong | Self::Comdat { discardable: false })
+    }
+}
+
+fn external_definitions(module: &Module) -> impl Iterator<Item = (&str, Definition)> {
+    let functions = module
+        .functions
+        .iter()
+        .filter(|function| function.body.is_some() && matches!(function.linkage, Linkage::External))
+        .map(|function| {
+            let definition = if function.semantics.discardable || function.semantics.weak_odr {
+                Definition::Comdat {
+                    discardable: function.semantics.discardable,
+                }
+            } else if function.symbol.weak {
+                Definition::Weak
+            } else {
+                Definition::Strong
+            };
+            (function.name.as_str(), definition)
+        });
+    let globals = module
+        .globals
+        .iter()
+        .filter(|global| {
+            global.definition && !global.common && matches!(global.linkage, Linkage::External)
+        })
+        .map(|global| {
+            let definition = if global.symbol.weak {
+                Definition::Weak
+            } else {
+                Definition::Strong
+            };
+            (global.variable.name.as_str(), definition)
+        });
+    functions.chain(globals)
+}
+
+pub fn symbol_owners(units: &[Unit]) -> SymbolOwners {
+    let mut definitions: BTreeMap<&str, Vec<(&str, Definition)>> = BTreeMap::new();
     for unit in units {
-        for function in unit.module.functions.iter().filter(|f| is_comdat(f)) {
+        for (name, definition) in external_definitions(&unit.module) {
             definitions
-                .entry(function.name.as_str())
+                .entry(name)
                 .or_default()
-                .push((unit.stem.as_str(), function.semantics.discardable));
+                .push((unit.stem.as_str(), definition));
         }
     }
-    let mut comdats = ComdatOwners::default();
+    let mut owners = SymbolOwners::default();
     for (name, definers) in definitions {
-        if definers.len() < 2 {
+        let strong = definers
+            .iter()
+            .filter(|(_, definition)| !definition.overridable())
+            .count();
+        if definers.len() < 2 || strong > 1 {
             continue;
         }
         let kept = definers
             .iter()
-            .find(|(_, discardable)| !discardable)
+            .find(|(_, definition)| definition.preferred())
             .unwrap_or(&definers[0])
             .0;
-        comdats.owners.insert(name.to_owned(), kept.to_owned());
-        if definers.iter().all(|(_, discardable)| *discardable) {
-            comdats
+        owners.owners.insert(name.to_owned(), kept.to_owned());
+        if definers
+            .iter()
+            .all(|(_, definition)| matches!(definition, Definition::Comdat { discardable: true }))
+        {
+            owners
                 .symbols
                 .insert(name.to_owned(), format!("__slate_odr_{name}"));
         }
     }
-    comdats
+    owners
 }
 
-impl ComdatOwners {
+impl SymbolOwners {
     fn defined_elsewhere(&self, stem: &str, module: &Module) -> BTreeSet<String> {
-        module
-            .functions
-            .iter()
-            .filter(|function| {
-                is_comdat(function)
-                    && self
-                        .owners
-                        .get(&function.name)
-                        .is_some_and(|owner| owner != stem)
-            })
-            .map(|function| function.name.clone())
+        external_definitions(module)
+            .filter(|(name, _)| self.owners.get(*name).is_some_and(|owner| owner != stem))
+            .map(|(name, _)| name.to_owned())
             .collect()
     }
 }
 
-fn without_bodies<'a>(module: &'a Module, names: &BTreeSet<String>) -> Cow<'a, Module> {
+fn without_definitions<'a>(module: &'a Module, names: &BTreeSet<String>) -> Cow<'a, Module> {
     if names.is_empty() {
         return Cow::Borrowed(module);
     }
@@ -243,6 +287,14 @@ fn without_bodies<'a>(module: &'a Module, names: &BTreeSet<String>) -> Cow<'a, M
     for function in &mut module.functions {
         if matches!(function.linkage, Linkage::External) && names.contains(&function.name) {
             function.value.body = None;
+            function.value.symbol.weak = false;
+        }
+    }
+    for global in &mut module.globals {
+        if matches!(global.linkage, Linkage::External) && names.contains(&global.variable.name) {
+            global.value.definition = false;
+            global.value.variable.initializer = None;
+            global.value.symbol.weak = false;
         }
     }
     Cow::Owned(module)
@@ -255,14 +307,14 @@ pub fn translate_units(
     liftable_root: Option<&str>,
     sections: Sections,
     named_c_types: bool,
-    comdats: &ComdatOwners,
+    symbol_owners: &SymbolOwners,
 ) -> Result<Translated, String> {
     let modules: Vec<_> = units
         .iter()
         .map(|unit| {
-            without_bodies(
+            without_definitions(
                 &unit.module,
-                &comdats.defined_elsewhere(&unit.stem, &unit.module),
+                &symbol_owners.defined_elsewhere(&unit.stem, &unit.module),
             )
         })
         .collect();
@@ -276,7 +328,7 @@ pub fn translate_units(
                 imported_commons: imported.remove(&unit.stem).unwrap_or_default(),
                 unit: unit.stem.clone(),
                 named_c_types,
-                odr_symbols: comdats.symbols.clone(),
+                odr_symbols: symbol_owners.symbols.clone(),
             };
             (unit, module, options)
         })
@@ -455,7 +507,7 @@ struct TargetBuild {
     cfg: Cfg,
     properties: BTreeSet<Cfg>,
     owners: CommonOwners,
-    comdats: ComdatOwners,
+    symbol_owners: SymbolOwners,
     units: Vec<TargetUnit>,
 }
 
@@ -565,7 +617,7 @@ fn compile_isolated(
     path: PathBuf,
     preprocessed: frontend::PreprocessedUnit,
     owners: &CommonOwners,
-    comdats: &ComdatOwners,
+    symbol_owners: &SymbolOwners,
     interner: &Interner,
 ) -> Result<(Compiled, bool), String> {
     let stem = stem_of(&path)?;
@@ -590,7 +642,7 @@ fn compile_isolated(
         None,
         Sections::Deferred,
         true,
-        comdats,
+        symbol_owners,
     )?;
     let (_, program) = translated
         .programs
@@ -634,7 +686,7 @@ fn explore_unit(
     target: &str,
     source: &Path,
     owners: &CommonOwners,
-    comdats: &ComdatOwners,
+    symbol_owners: &SymbolOwners,
 ) -> (super::plan::UnitPlan, Vec<ExploredRow>, Interner) {
     let interner = Interner::default();
     let mut seen = BTreeSet::new();
@@ -644,9 +696,15 @@ fn explore_unit(
             return;
         }
         let fingerprint = unit.fingerprint();
-        let result = seen
-            .insert(fingerprint)
-            .then(|| compile_isolated(unit.path().to_path_buf(), unit, owners, comdats, &interner));
+        let result = seen.insert(fingerprint).then(|| {
+            compile_isolated(
+                unit.path().to_path_buf(),
+                unit,
+                owners,
+                symbol_owners,
+                &interner,
+            )
+        });
         rows.push((names, fingerprint, result));
     };
     let plan = super::plan::relevant_features(matrix, target, source, &mut on_run);
@@ -724,12 +782,12 @@ fn prepare_target(matrix: &Matrix, target: &str) -> Result<TargetBuild, String> 
         .filter_map(|command| parse(command).ok())
         .collect();
     let owners = common_owners(parsed.iter().map(|unit| (unit.stem.as_str(), &unit.module)));
-    let comdats = comdat_owners(&parsed);
+    let symbol_owners = symbol_owners(&parsed);
     let explored: Vec<_> = matrix
         .sources
         .par_iter()
         .filter(|source| known.compiles(source))
-        .map(|source| explore_unit(matrix, target, source, &owners, &comdats))
+        .map(|source| explore_unit(matrix, target, source, &owners, &symbol_owners))
         .collect();
     if let Some((unit, error)) = explored
         .iter()
@@ -767,7 +825,7 @@ fn prepare_target(matrix: &Matrix, target: &str) -> Result<TargetBuild, String> 
         cfg: target_cfg(&info),
         properties: super::cfg::target_properties(&info),
         owners,
-        comdats,
+        symbol_owners,
         units: built,
     })
 }
@@ -858,7 +916,7 @@ fn compile_row(
         path,
         preprocessed,
         &build.owners,
-        &build.comdats,
+        &build.symbol_owners,
         &unit.interner,
     )?;
     Ok(RowOutcome::Built(compiled, has_main))
@@ -1619,7 +1677,7 @@ fn check_config(
         units.push(parse(command).map_err(|_| ())?);
     }
     let imported = imported_commons(&units);
-    let comdats = comdat_owners(&units);
+    let symbol_owners = symbol_owners(&units);
     let mut translated = translate_units(
         &units,
         imported,
@@ -1627,7 +1685,7 @@ fn check_config(
         None,
         Sections::ByProject,
         true,
-        &comdats,
+        &symbol_owners,
     )
     .map_err(|_| ())?;
     for (_, program) in &mut translated.programs {

@@ -1157,6 +1157,7 @@ impl<'m> ModuleLowerer<'m> {
                     } else {
                         Ok(Attr::NoMangle)
                     };
+                    let weak = function.symbol.weak.then_some(Attr::WeakLinkage);
                     export.map(|attr| {
                         let symbol = match &attr {
                             Attr::ExportName(symbol) => {
@@ -1168,19 +1169,22 @@ impl<'m> ModuleLowerer<'m> {
                             functions::runtime_symbol(&symbol, self.tables.target.os)
                         else {
                             definition.attrs.push(attr);
+                            definition.attrs.extend(weak);
                             definition.abi.get_or_insert(rust::Abi::CUnwind);
                             return Item::Fn(definition);
                         };
                         self.dependencies.runtime_symbols = true;
-                        if let Some(wrapper) = functions::runtime_export(
+                        if let Some(mut wrapper) = functions::runtime_export(
                             &definition,
                             &symbol,
                             &runtime,
                             self.tables.names[&function.value.id].identity,
                         ) {
+                            wrapper.attrs.extend(weak);
                             self.items.push(Item::Fn(wrapper));
                         } else {
                             definition.attrs.push(attr);
+                            definition.attrs.extend(weak);
                             definition.abi = Some(rust::Abi::C);
                         }
                         Item::Fn(definition)
@@ -1623,6 +1627,7 @@ impl<'m> ModuleLowerer<'m> {
                 matches!(decl, rust::ExternDecl::Static { attrs, .. } if attrs.contains(&Attr::ExternWeakLinkage))
             }),
             Item::Static { attrs, .. } => attrs.contains(&Attr::WeakLinkage),
+            Item::Fn(definition) => definition.attrs.contains(&Attr::WeakLinkage),
             _ => false,
         }) {
             features.push(rust::CrateAttr::Feature(rust::Feature::Linkage));
