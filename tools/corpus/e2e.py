@@ -27,6 +27,7 @@ SLATE = ROOT / "target/test-cache/release/slate"
 SETUP = ROOT / "crates/slate-parser/tools/c_corpus_setup.py"
 STAGES = ("native", "barriers", "translate", "check", "build", "link", "bench", "test")
 COMPILERS = {"clang": "clang", "gcc": "gcc", "clang-aarch64": "clang"}
+CANONICAL_OUT = {("linux", "clang"): Path.home() / "slate-translated/slate-linux"}
 
 
 @dataclass
@@ -1841,7 +1842,8 @@ def main():
 
     recipe = RECIPES[args.project]
     project_dir = args.corpus / args.project
-    out = (args.out or ROOT / "target/corpus" / args.project / args.mode).resolve()
+    out = (args.out or CANONICAL_OUT.get((args.project, args.mode))
+           or ROOT / "target/corpus" / args.project / args.mode).resolve()
     out.mkdir(parents=True, exist_ok=True)
     summary = {"project": args.project, "mode": args.mode, "stages": {}}
 
