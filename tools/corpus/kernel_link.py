@@ -1,18 +1,22 @@
 import argparse
 import collections
+import concurrent.futures
 import json
 import os
 import re
 import shutil
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
-RUNTIME_CRATES = ("core-", "compiler_builtins-")
+CRATE_MEMBER = "slate_crate-"
+CRATE_CGU = re.compile(r"slate_crate-[0-9a-f]+\.slate_crate\.[0-9a-f]+(?:-(.+?))?\.[a-z0-9]+\.rcgu\.o")
+UNIT_ITEM = re.compile(r"<?slate_crate(?:\[[0-9a-f]+\])?::(__slate_unit_[A-Za-z0-9_]+)::")
 ORDERED_SECTIONS = re.compile(r"\.initcall|\.con_initcall|\.init\.setup$|__param$|__modver$|\.apicdrivers$"
                               r"|\.x86_cpu_dev\.init$|\.(early_)?lsm_info\.init$|__earlycon_table$"
                               r"|\.init_array|\.fini_array|\.ctors|\.dtors|\.kunit_(init_)?test_suites$")
+ROOT_FORBIDDEN = re.compile(ORDERED_SECTIONS.pattern + r"|\.export_symbol|__tracepoints|\.altinstr|\.init\.|\.exit\."
+                            r"|__jump_table$|\.discard\.annotate")
 TARGET = "x86_64-unknown-none"
 
 
@@ -29,38 +33,70 @@ def defined_globals(paths, cwd=None):
     return names
 
 
-def ordered_sections(build_dir, members):
-    sections = {member: set() for member in members}
-    for start in range(0, len(members), 400):
-        current = sections[members[start]] if start + 1 == len(members) else None
-        for line in output(["readelf", "-SW", *members[start:start + 400]], build_dir).splitlines():
+def symbol_table(paths, *flags, cwd=None, skip_types=""):
+    table = collections.defaultdict(set)
+    paths = [str(path) for path in paths]
+    for start in range(0, len(paths), 400):
+        for line in output(["nm", "-A", *flags, *paths[start:start + 400]], cwd).splitlines():
+            path, rest = line.split(":", 1)
+            if (fields := rest.split(maxsplit=2)) and not (len(fields) == 3 and fields[1] in skip_types):
+                table[path].add(fields[-1])
+    return table
+
+
+def section_table(paths):
+    table = collections.defaultdict(set)
+    paths = [str(path) for path in paths]
+    for start in range(0, len(paths), 400):
+        current = paths[start] if start + 1 == len(paths) else None
+        for line in output(["readelf", "-SW", *paths[start:start + 400]]).splitlines():
             if line.startswith("File: "):
-                current = sections[line[len("File: "):].strip()]
+                current = line[len("File: "):].strip()
             elif current is not None and (match := re.match(r"\s*\[\s*\d+\]\s+(\S+)", line)):
-                if ORDERED_SECTIONS.match(match[1]):
-                    current.add(match[1])
-    return sections
+                table[current].add(match[1])
+    return table
 
 
-def shard_object(staticlib, native_objects, destination, build_dir, kernel_symbols):
-    with tempfile.TemporaryDirectory() as scratch:
-        scratch = Path(scratch)
-        members = output(["ar", "t", str(staticlib)]).split()
-        subprocess.run(["ar", "x", str(staticlib)], cwd=scratch, check=True)
-        crate = [scratch / name for name in members if not name.startswith(RUNTIME_CRATES)]
-        runtime = [str(scratch / name) for name in members if name.startswith(RUNTIME_CRATES)]
-        subprocess.run(["ar", "rcs", str(scratch / "runtime.a"), *runtime], check=True)
-        subprocess.run(["objcopy", f"--localize-symbols={kernel_symbols}", str(scratch / "runtime.a")], check=True)
-        subprocess.run(["ld", "-m", "elf_x86_64", "-r", "-o", str(destination), *map(str, crate),
-                        "--start-group", str(scratch / "runtime.a"), "--end-group"], check=True)
-    exported = defined_globals(native_objects, build_dir)
-    keep = destination.with_suffix(".keep")
-    keep.write_text("".join(f"{name}\n" for name in sorted(exported)))
-    subprocess.run(["objcopy", f"--keep-global-symbols={keep}", "--remove-section=.eh_frame",
-                    "--remove-section=.rela.eh_frame", str(destination)], check=True)
-    if probestack := unreferenced_probestack(destination):
-        subprocess.run(["objcopy", f"--remove-section={probestack}", str(destination)], check=True)
-    return sorted(exported - defined_globals([destination]))
+def link_units(crate_dir, project_dir):
+    path = crate_dir / "link-order.json"
+    if not path.exists():
+        raise SystemExit(f"{path} is missing: the shard was not translated as a link-order crate")
+    return [(os.path.relpath(Path(entry["file"]).with_suffix(".o"), project_dir), entry["module"])
+            for entry in json.loads(path.read_text())["units"]]
+
+
+def unit_groups(name, units, objects):
+    modules = {module for _, module in units if module}
+    groups = collections.defaultdict(list)
+    for member, path in objects.items():
+        if not member.startswith(CRATE_MEMBER):
+            continue
+        cgu = match[1] if (match := CRATE_CGU.fullmatch(member)) else None
+        if cgu == "cgu":
+            raise SystemExit(f"{name}: {member} is a numbered codegen unit; build with CARGO_INCREMENTAL=1")
+        top = cgu.split("-")[0] if cgu else None
+        if top and top.startswith("__slate_unit_"):
+            if top not in modules:
+                raise SystemExit(f"{name}: {member} belongs to {top}, which link-order.json does not list")
+            groups[top].append(path)
+        else:
+            groups[None].append(path)
+    return groups
+
+
+def check_groups(name, groups, has_root_unit):
+    paths = [path for group in groups.values() for path in group]
+    items = symbol_table(paths, "--defined-only", "--demangle=rust")
+    for module, group in groups.items():
+        for path in group:
+            found = {match[1] for symbol in items.get(str(path), ())
+                     if (match := UNIT_ITEM.match(symbol))} - {module}
+            if found:
+                raise SystemExit(f"{name}: {path.name} ({module or 'crate root'}) defines items of {sorted(found)}")
+    if not has_root_unit and groups.get(None):
+        for path, sections in section_table(groups[None]).items():
+            if ordered := sorted(section for section in sections if ROOT_FORBIDDEN.match(section)):
+                raise SystemExit(f"{name}: crate-root object {Path(path).name} holds ordered sections {ordered}")
 
 
 def unreferenced_probestack(path):
@@ -89,30 +125,134 @@ def prepare(project_dir, mode, compiler, jobs, log):
     return build_dir
 
 
-def swap(shards, out, build_dir, selected, profile):
+def relink(destination, inputs):
+    subprocess.run(["ld", "-m", "elf_x86_64", "-r", "-o", str(destination), *map(str, inputs)], check=True)
+    return destination, defined_globals([destination])
+
+
+def runtime_object(copies, work, kernel_symbols, wanted):
+    shared = {}
+    for crate, by_shard in sorted(copies.items()):
+        exports = {shard: frozenset().union(*symbol_table(paths, "-g", "--defined-only").values())
+                   for shard, paths in by_shard.items()}
+        if len(set(exports.values())) != 1:
+            raise SystemExit(f"{crate} differs between shards {sorted(by_shard)}; build every shard with the same "
+                             "toolchain and flags")
+        shared[crate] = next(iter(by_shard.values()))
+    archive = work / "runtime.a"
+    subprocess.run(["ar", "rcs", str(archive), *(str(path) for paths in shared.values() for path in paths)],
+                   check=True)
+    subprocess.run(["objcopy", f"--localize-symbols={kernel_symbols}", str(archive)], check=True)
+    pulled = sorted(wanted & defined_globals([archive]))
+    if not pulled:
+        return None, set()
+    destination = work / "runtime.o"
+    subprocess.run(["ld", "-m", "elf_x86_64", "-r", "-o", str(destination), *(f"-u{symbol}" for symbol in pulled),
+                    "--start-group", str(archive), "--end-group"], check=True)
+    subprocess.run(["objcopy", "--remove-section=.eh_frame", "--remove-section=.rela.eh_frame", str(destination)],
+                   check=True)
+    if probestack := unreferenced_probestack(destination):
+        subprocess.run(["objcopy", f"--remove-section={probestack}", str(destination)], check=True)
+    return destination, set().union(*symbol_table([destination], "-u").values())
+
+
+def swap(shards, out, build_dir, selected, profile, jobs=os.cpu_count() or 8):
+    project_dir = build_dir.parent
     members = output(["ar", "t", "vmlinux.a.native"], build_dir).split()
     index = {name: position for position, name in enumerate(members)}
-    objects = build_dir / "slate"
-    if objects.exists():
-        shutil.rmtree(objects)
-    objects.mkdir()
-    kernel_symbols = objects / "kernel.symbols"
+    work = build_dir / "slate"
+    if work.exists():
+        shutil.rmtree(work)
+    work.mkdir()
+    kernel_symbols = work / "kernel.symbols"
     kernel_symbols.write_text("".join(f"{name}\n" for name in sorted(defined_globals(members, build_dir))))
-    report = {}
-    replaced = {}
+
+    plans = {}
+    runtime_copies = collections.defaultdict(dict)
     for name in selected:
-        units = shards[name]
-        linked = [obj for obj in (str(Path(unit).with_suffix(".o")) for unit in units) if obj in index]
         staticlib = out / "shards" / name / "cargo-target" / TARGET / profile / "libslate_crate.a"
-        if not linked or not staticlib.exists():
+        if not staticlib.exists():
             continue
-        destination = objects / f"{name}.o"
-        missing = shard_object(staticlib, linked, destination, build_dir, kernel_symbols)
-        for obj in linked:
-            replaced[index[obj]] = None
-        replaced[min(index[obj] for obj in linked)] = os.path.relpath(destination, build_dir)
-        report[name] = {"units": len(units), "linked_units": len(linked), "missing": missing}
-    archive = [kept for position, member in enumerate(members) if (kept := replaced.get(position, member))]
+        units = link_units(out / "shards" / name / "crate", project_dir)
+        if not any(member in index for member, _ in units):
+            continue
+        extracted = work / name / "archive"
+        extracted.mkdir(parents=True)
+        subprocess.run(["ar", "x", str(staticlib)], cwd=extracted, check=True)
+        objects = {path.name: path for path in sorted(extracted.iterdir())}
+        for member, path in objects.items():
+            if not member.startswith(CRATE_MEMBER):
+                runtime_copies[member.split(".", 1)[0]].setdefault(name, []).append(path)
+        groups = unit_groups(name, units, objects)
+        check_groups(name, groups, any(module is None for _, module in units))
+        plans[name] = (units, groups)
+
+    crate_objects = [path for _, groups in plans.values() for group in groups.values() for path in group]
+    undefined_by_object = symbol_table(crate_objects, "-u")
+    undefined = {name: set().union(*(undefined_by_object.get(str(path), set())
+                                     for group in groups.values() for path in group))
+                 for name, (_, groups) in plans.items()}
+    runtime, runtime_needs = runtime_object(runtime_copies, work, kernel_symbols, set().union(*undefined.values()))
+
+    jobs_list = []
+    placements = collections.defaultdict(list)
+    removed = set()
+    report = {}
+    for name, (units, groups) in plans.items():
+        root_member = next((member for member, module in units if module is None), None)
+        linked = [(member, module) for member, module in units if member in index and module is not None]
+        folded = [module for member, module in units if member not in index and module in groups]
+        root_inputs = [*groups.get(None, []), *(path for module in folded for path in groups[module])]
+        anchor = root_member if root_member in index else min((member for member, _ in linked), key=index.get)
+        if root_inputs:
+            jobs_list.append((name, work / name / "__root.o", root_inputs, root_member if root_member in index
+                              else None, anchor, True))
+        for member, module in linked:
+            if module in groups:
+                jobs_list.append((name, work / name / f"{module}.o", groups[module], member, member, False))
+        removed |= {index[member] for member, _ in units if member in index}
+        report[name] = {"units": len(units), "linked_units": len(linked) + (root_member in index),
+                        "folded_units": len(folded), "missing": []}
+
+    with concurrent.futures.ThreadPoolExecutor(jobs) as pool:
+        linked_objects = list(pool.map(lambda job: relink(job[1], job[2]), jobs_list))
+    native_exports = symbol_table(sorted({job[3] for job in jobs_list if job[3]}), "-g", "--defined-only",
+                                  cwd=build_dir)
+    claimed = set()
+    trims = []
+    for (name, destination, _, member, anchor, root), (_, defined) in zip(jobs_list, linked_objects):
+        exported = native_exports.get(member, set()) if member else set()
+        keep = exported | (defined & undefined[name]) | ((defined & runtime_needs) - claimed)
+        claimed |= defined & runtime_needs
+        keep_file = destination.with_suffix(".keep")
+        keep_file.write_text("".join(f"{symbol}\n" for symbol in sorted(keep or {"__slate_keep_none"})))
+        trims.append(destination)
+        slot = placements[index[anchor]]
+        slot.insert(0 if root else len(slot), destination)
+        report[name]["missing"] += sorted(exported - defined)
+
+    with concurrent.futures.ThreadPoolExecutor(jobs) as pool:
+        list(pool.map(lambda path: subprocess.run(
+            ["objcopy", f"--keep-global-symbols={path.with_suffix('.keep')}", "--remove-section=.eh_frame",
+             "--remove-section=.rela.eh_frame", str(path)], check=True), trims))
+    owners = collections.defaultdict(list)
+    for path, names in symbol_table([*trims, *([runtime] if runtime else [])], "-g", "--defined-only",
+                                    skip_types="vVwW").items():
+        for symbol in names:
+            owners[symbol].append(path)
+    if duplicates := {symbol: paths for symbol, paths in owners.items() if len(paths) > 1}:
+        raise SystemExit(f"{len(duplicates)} symbols defined by several slate objects, e.g. "
+                         f"{dict(list(duplicates.items())[:5])}")
+
+    archive = []
+    for position, member in enumerate(members):
+        if position in placements:
+            if runtime is not None:
+                archive.append(os.path.relpath(runtime, build_dir))
+                runtime = None
+            archive += [os.path.relpath(path, build_dir) for path in placements[position]]
+        elif position not in removed:
+            archive.append(member)
     (build_dir / "vmlinux.a").unlink()
     subprocess.run(["ar", "cDPrST", "vmlinux.a", *archive], cwd=build_dir, check=True)
     return report

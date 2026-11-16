@@ -1351,7 +1351,6 @@ pub(super) fn named_prim_item(name: &str, resolved: Prim, target: &TargetInfo) -
         use_item(&["slate_support", name])
     } else {
         Item::TypeAlias {
-            vis: Default::default(),
             name: name.to_string(),
             ty: rust::Type::Prim(resolved),
         }

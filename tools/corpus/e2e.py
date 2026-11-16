@@ -1728,45 +1728,10 @@ def shard_units(units, project_dir, limit):
     shards += [(Path(os.path.relpath(unit["file"], project_dir)).with_suffix("").parts, [unit]) for unit in standalone]
     shards = [("_".join(name).replace("-", "_").replace(".", "_") or "root", sorted(shard, key=link_position))
               for name, shard in shards]
-    shards = link_order_runs(shards, archives, member_name)
     names = [name for name, _ in shards]
     if len(set(names)) != len(names):
         raise SystemExit(f"duplicate shard names: {[n for n, c in collections.Counter(names).items() if c > 1]}")
     return dict(shards)
-
-
-def link_order_runs(shards, archives, member_name):
-    owners = {(unit["directory"], member_name(unit)): name for name, shard in shards for unit in shard}
-    orders = {directory: sorted(members, key=members.get) for directory, members in archives.items() if members}
-    sections = {}
-
-    def ordered_sections(directory):
-        if directory not in sections:
-            sections[directory] = kernel_link.ordered_sections(Path(directory), orders[directory])
-        return sections[directory]
-
-    def conflicts(name, directory, first, position):
-        order = orders[directory]
-        mine = ordered_sections(directory)[order[position]]
-        return mine and any(owners.get((directory, order[other])) != name
-                            and ordered_sections(directory)[order[other]] & mine
-                            for other in range(first + 1, position))
-
-    split = []
-    for name, shard in shards:
-        positions = [(archives.get(unit["directory"]) or {}).get(member_name(unit)) for unit in shard]
-        if any(position is None for position in positions) or len({unit["directory"] for unit in shard}) > 1:
-            split.append((name, shard))
-            continue
-        directory = shard[0]["directory"]
-        runs = []
-        for unit, position in zip(shard, positions):
-            if runs and not conflicts(name, directory, runs[-1][0], position):
-                runs[-1][1].append(unit)
-            else:
-                runs.append((position, [unit]))
-        split += [(name if len(runs) == 1 else f"{name}_r{index}", run) for index, (_, run) in enumerate(runs)]
-    return split
 
 
 def rustc_error_cluster(line):
@@ -1839,7 +1804,8 @@ def sharded_stages(units, project_dir, out, recipe, args, finish):
     def build(name):
         directory = root / name
         env = dict(os.environ, CARGO_TARGET_DIR=str(directory / "cargo-target"), CARGO_INCREMENTAL="1")
-        code, _ = run(["cargo", "build", "--profile", args.profile, "--message-format=short"],
+        code, _ = run(["cargo", "rustc", "--profile", args.profile, "--message-format=short", "--",
+                       "-C", f"metadata={name}"],
                       directory / "build.log", cwd=directory / "crate", env=env)
         errors = [line for line in (directory / "build.log").read_text(errors="replace").splitlines()
                   if re.search(r"(: |^)error(\[E\d+\])?:", line) and not line.startswith("error: could not compile")]

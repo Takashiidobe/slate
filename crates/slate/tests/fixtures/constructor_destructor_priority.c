@@ -31,6 +31,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
+// CHECK-NEXT: #![feature(used_with_arg)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: fn init_late() {
 // CHECK-NEXT:     println!("ctor: late (200)");
@@ -39,7 +40,7 @@ int main(void) {
 // CHECK-NEXT:     init_late();
 // CHECK-NEXT: }
 // CHECK-NEXT: #[allow(non_upper_case_globals)]
-// CHECK-NEXT: #[used]
+// CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: #[unsafe(link_section = ".init_array.00200")]
 // CHECK-NEXT: static __SLATE_INIT_init_late: Option<unsafe extern "C-unwind" fn()> = Some(
 // CHECK-NEXT:     __slate_init_init_late,
@@ -51,7 +52,7 @@ int main(void) {
 // CHECK-NEXT:     init_early();
 // CHECK-NEXT: }
 // CHECK-NEXT: #[allow(non_upper_case_globals)]
-// CHECK-NEXT: #[used]
+// CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: #[unsafe(link_section = ".init_array.00101")]
 // CHECK-NEXT: static __SLATE_INIT_init_early: Option<unsafe extern "C-unwind" fn()> = Some(
 // CHECK-NEXT:     __slate_init_init_early,
@@ -63,7 +64,7 @@ int main(void) {
 // CHECK-NEXT:     init_default();
 // CHECK-NEXT: }
 // CHECK-NEXT: #[allow(non_upper_case_globals)]
-// CHECK-NEXT: #[used]
+// CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: #[unsafe(link_section = ".init_array")]
 // CHECK-NEXT: static __SLATE_INIT_init_default: Option<unsafe extern "C-unwind" fn()> = Some(
 // CHECK-NEXT:     __slate_init_init_default,
@@ -75,7 +76,7 @@ int main(void) {
 // CHECK-NEXT:     fini_late();
 // CHECK-NEXT: }
 // CHECK-NEXT: #[allow(non_upper_case_globals)]
-// CHECK-NEXT: #[used]
+// CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: #[unsafe(link_section = ".fini_array.00200")]
 // CHECK-NEXT: static __SLATE_FINI_fini_late: Option<unsafe extern "C-unwind" fn()> = Some(
 // CHECK-NEXT:     __slate_fini_fini_late,
@@ -87,7 +88,7 @@ int main(void) {
 // CHECK-NEXT:     fini_early();
 // CHECK-NEXT: }
 // CHECK-NEXT: #[allow(non_upper_case_globals)]
-// CHECK-NEXT: #[used]
+// CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: #[unsafe(link_section = ".fini_array.00101")]
 // CHECK-NEXT: static __SLATE_FINI_fini_early: Option<unsafe extern "C-unwind" fn()> = Some(
 // CHECK-NEXT:     __slate_fini_fini_early,
@@ -99,7 +100,7 @@ int main(void) {
 // CHECK-NEXT:     fini_default();
 // CHECK-NEXT: }
 // CHECK-NEXT: #[allow(non_upper_case_globals)]
-// CHECK-NEXT: #[used]
+// CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: #[unsafe(link_section = ".fini_array")]
 // CHECK-NEXT: static __SLATE_FINI_fini_default: Option<unsafe extern "C-unwind" fn()> = Some(
 // CHECK-NEXT:     __slate_fini_fini_default,

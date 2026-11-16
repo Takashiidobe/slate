@@ -205,14 +205,12 @@ fn with_target(args: &[String], target: &str) -> Vec<String> {
 fn warning_items(message: &str, index: usize) -> Vec<rust_ast::Item> {
     vec![
         rust_ast::Item::Const {
-            vis: Default::default(),
             attrs: vec![rust_ast::Attr::Deprecated(Some(message.into()))],
             name: format!("__SLATE_WARNING_{index}"),
             ty: rust_ast::Type::Unit,
             init: rust_ast::Expr::Block(Box::default()),
         },
         rust_ast::Item::Const {
-            vis: Default::default(),
             attrs: Vec::new(),
             name: "_".into(),
             ty: rust_ast::Type::Unit,

@@ -288,7 +288,6 @@ fn binding(name: &str, sites: &[usize], leaves: &[Leaf]) -> Option<Item> {
     let first = &leaves[sites[0]];
     match &first.value {
         Value::Prim(prim) => Some(Item::TypeAlias {
-            vis: Default::default(),
             name: format!("__SlateHoist_{name}"),
             ty: Type::Prim(*prim),
         }),
@@ -298,7 +297,6 @@ fn binding(name: &str, sites: &[usize], leaves: &[Leaf]) -> Option<Item> {
                 .iter()
                 .all(|&at| leaves[at].const_ty.as_ref() == Some(ty));
             agree.then(|| Item::Const {
-                vis: Default::default(),
                 attrs: Vec::new(),
                 name: format!("__SLATE_HOIST_{name}"),
                 ty: ty.clone(),

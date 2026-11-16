@@ -5,7 +5,7 @@ use slate::frontend::c_shim;
 use slate::project::merge::{Unit as SlateUnit, collect_all_errors, rust_ident};
 use slate::project::{build_target, matrix, merge, plan};
 use slate::{api, compile_commands};
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, HashSet};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
@@ -406,22 +406,129 @@ fn package_name(crate_dir: &Path) -> String {
     }
 }
 
+const LINK_ORDER_CODEGEN_UNITS: usize = 4096;
+const LINK_ORDER_RUSTFLAGS: [&str; 3] = [
+    "-Zcodegen-source-order",
+    "-Zhuman-readable-cgu-names",
+    "-Zcross-crate-inline-threshold=never",
+];
+
+fn link_order_sensitive(programs: &[(String, rust_ast::Program)]) -> bool {
+    fn placement(item: &rust_ast::Item) -> Option<Option<&str>> {
+        match item {
+            rust_ast::Item::Cfg { item, .. } => placement(item),
+            rust_ast::Item::GlobalAsm(_) => Some(None),
+            rust_ast::Item::Static { attrs, .. }
+                if !attrs.contains(&rust_ast::Attr::ThreadLocal) =>
+            {
+                attrs.iter().find_map(|attr| match attr {
+                    rust_ast::Attr::LinkSection(section) => Some(Some(section.as_str())),
+                    _ => None,
+                })
+            }
+            _ => None,
+        }
+    }
+    let mut asm = 0;
+    let mut sections = HashSet::new();
+    let mut statics = 0;
+    for placed in programs
+        .iter()
+        .flat_map(|(_, program)| &program.items)
+        .filter_map(placement)
+    {
+        match placed {
+            None => asm += 1,
+            Some(section) => {
+                statics += 1;
+                if !sections.insert(section) {
+                    return true;
+                }
+            }
+        }
+    }
+    asm >= 2 || (asm >= 1 && statics >= 1)
+}
+
+const LINK_ORDER_MAP: &str = "link-order.json";
+
+fn write_link_order_map(
+    crate_dir: &Path,
+    link_order: bool,
+    programs: &[(String, rust_ast::Program)],
+    root: Option<&str>,
+    unit_files: &BTreeMap<String, PathBuf>,
+) -> Result<(), String> {
+    let path = crate_dir.join(LINK_ORDER_MAP);
+    if !link_order || unit_files.is_empty() {
+        return match path.exists() {
+            true => {
+                std::fs::remove_file(&path).map_err(|e| format!("remove {}: {e}", path.display()))
+            }
+            false => Ok(()),
+        };
+    }
+    let units: Vec<serde_json::Value> = programs
+        .iter()
+        .map(|(stem, _)| {
+            let module = (root != Some(stem.as_str())).then(|| format!("__slate_unit_{stem}"));
+            serde_json::json!({"file": unit_files.get(stem), "module": module})
+        })
+        .collect();
+    let text = serde_json::to_string_pretty(&serde_json::json!({"version": 1, "units": units}))
+        .map_err(|e| format!("serialize {}: {e}", path.display()))?;
+    write_file(&path, &format!("{text}\n"))
+}
+
+#[expect(
+    clippy::too_many_arguments,
+    reason = "each argument is a distinct manifest section"
+)]
 fn crate_manifest(
     package: &str,
     tests: &[String],
     c_shims: bool,
     blocks: bool,
     freestanding: bool,
+    link_order: bool,
     cargo_features: &BTreeSet<String>,
     lib_crate_types: Option<&[String]>,
 ) -> String {
-    let (dev_panic, release_profile, support_features) = match freestanding {
+    let (dev_panic, release_panic, support_features) = match freestanding {
         true => (
             "panic = \"abort\"\n",
-            "\n[profile.release]\npanic = \"abort\"\n",
+            "panic = \"abort\"\n",
             ", default-features = false",
         ),
         false => ("", "", ""),
+    };
+    let release_incremental = if link_order {
+        "incremental = true\n"
+    } else {
+        ""
+    };
+    let release_profile = if release_panic.is_empty() && release_incremental.is_empty() {
+        String::new()
+    } else {
+        format!("\n[profile.release]\n{release_panic}{release_incremental}")
+    };
+    let (cargo_features_line, link_order_profiles) = if link_order {
+        let flags = LINK_ORDER_RUSTFLAGS
+            .iter()
+            .map(|flag| format!("\"{flag}\""))
+            .collect::<Vec<_>>()
+            .join(", ");
+        let profiles: String = ["dev", "release"]
+            .iter()
+            .map(|profile| {
+                format!(
+                    "\n[profile.{profile}.package.{package}]\ncodegen-units = {LINK_ORDER_CODEGEN_UNITS}\nrustflags = [{flags}]\n"
+                )
+            })
+            .collect();
+        ("cargo-features = [\"profile-rustflags\"]\n\n", profiles)
+    } else {
+        ("", String::new())
     };
     let test_targets: String = tests
         .iter()
@@ -469,7 +576,7 @@ harness = false
         section
     };
     format!(
-        r#"[package]
+        r#"{cargo_features_line}[package]
 name = "{package}"
 version = "0.0.0"
 edition = "2024"
@@ -488,7 +595,7 @@ bitfields = {{ path = "{}" }}
 overflow-checks = false
 debug-assertions = false
 codegen-units = 256
-{dev_panic}{release_profile}{test_targets}{features_section}"#,
+{dev_panic}{release_profile}{link_order_profiles}{test_targets}{features_section}"#,
         bitfields_path.display()
     )
 }
@@ -504,6 +611,7 @@ fn write_crate_manifest(
     c_shims: bool,
     blocks: bool,
     freestanding: bool,
+    link_order: bool,
     cargo_features: &BTreeSet<String>,
     lib_crate_types: Option<&[String]>,
 ) -> Result<(), String> {
@@ -515,6 +623,7 @@ fn write_crate_manifest(
             c_shims,
             blocks,
             freestanding,
+            link_order,
             cargo_features,
             lib_crate_types,
         ),
@@ -532,6 +641,7 @@ fn init_crate(crate_dir: &Path, lib_crate_types: Option<&[String]>) -> Result<()
         crate_dir,
         &package,
         &[],
+        false,
         false,
         false,
         false,
@@ -1026,6 +1136,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             Some(merged.target_guard),
             merged.shared_macros,
             &merged.unit_cfgs,
+            &BTreeMap::new(),
         )?;
         let report_path = Path::new(paths[1]).join("merge-report.txt");
         std::fs::write(&report_path, report)
@@ -1249,6 +1360,10 @@ fn translate_slate_project(
         )
     })?;
     backend::assign_template_names(translated.programs.iter_mut().map(|(_, program)| program));
+    let unit_files: BTreeMap<String, PathBuf> = units
+        .iter()
+        .map(|unit| (unit.stem.clone(), unit.path.clone()))
+        .collect();
     let written = write_project_crate(
         crate_dir,
         translated.programs,
@@ -1259,6 +1374,7 @@ fn translate_slate_project(
         None,
         None,
         &BTreeMap::new(),
+        &unit_files,
     )?;
     build_target::BuildTarget::write_config(target.as_ref(), crate_dir)?;
     Ok(written)
@@ -1295,7 +1411,7 @@ fn declares_c_panic(program: &rust_ast::Program) -> bool {
 )]
 fn write_project_crate(
     crate_dir: &Path,
-    mut programs: Vec<(String, rust_ast::Program)>,
+    programs: Vec<(String, rust_ast::Program)>,
     shared_types: Option<rust_ast::Program>,
     root: Option<String>,
     crate_types: &[String],
@@ -1303,6 +1419,7 @@ fn write_project_crate(
     target_guard: Option<rust_ast::Item>,
     shared_macros: Option<rust_ast::Program>,
     unit_cfgs: &BTreeMap<String, rust_ast::Cfg>,
+    unit_files: &BTreeMap<String, PathBuf>,
 ) -> Result<String, String> {
     let lib_crate_types = match &root {
         Some(root) => {
@@ -1317,14 +1434,6 @@ fn write_project_crate(
         None => Some(crate_types.to_vec()),
     };
     init_crate(crate_dir, lib_crate_types.as_deref())?;
-    let ordered_asm =
-        slate::project::link_order::hoist_global_asm(&mut programs, root.as_deref(), |stem| {
-            unit_cfgs.contains_key(stem)
-        });
-    let ordered_statics =
-        slate::project::link_order::hoist_section_statics(&mut programs, root.as_deref(), |stem| {
-            unit_cfgs.contains_key(stem)
-        });
     let crate_src = crate_dir.join("src");
     std::fs::create_dir_all(&crate_src)
         .map_err(|e| format!("create {}: {e}", crate_src.display()))?;
@@ -1418,6 +1527,14 @@ fn write_project_crate(
         && programs
             .iter()
             .all(|(_, program)| !program.runtime.has_std());
+    let link_order = freestanding || link_order_sensitive(&programs);
+    write_link_order_map(
+        crate_dir,
+        link_order,
+        &programs,
+        root.as_deref(),
+        unit_files,
+    )?;
     let no_builtins = programs.iter().any(|(_, program)| program.no_builtins);
     let no_std: Vec<_> = freestanding
         .then_some(rust_ast::CrateAttr::NoStd)
@@ -1441,12 +1558,7 @@ fn write_project_crate(
             exports: Vec::new(),
         })
     });
-    let children: Vec<rust_ast::Item> = children
-        .into_iter()
-        .chain(panic_handler)
-        .chain(ordered_asm)
-        .chain(ordered_statics)
-        .collect();
+    let children: Vec<rust_ast::Item> = children.into_iter().chain(panic_handler).collect();
     for (stem, mut program) in programs {
         program.no_unwind = freestanding;
         let is_root = root.as_ref() == Some(&stem);
@@ -1595,6 +1707,7 @@ fn write_project_crate(
         has_shims,
         uses_blocks,
         freestanding,
+        link_order,
         &cargo_features,
         lib_crate_types.as_deref(),
     )?;

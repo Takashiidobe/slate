@@ -1093,6 +1093,7 @@ fn build_project_release_inner(
     link_args: &[String],
 ) -> Result<PathBuf, String> {
     let mut command = Command::new(cargo());
+    command.env_remove("CARGO_INCREMENTAL");
     if !link_args.is_empty() {
         let flags: Vec<String> = link_args
             .iter()
@@ -1336,6 +1337,9 @@ fn write_long_double_shim(project: &Path) -> Result<(), String> {
     cc::Build::new()
         .file("src/slate_long_double.c")
         .compile("slate_long_double");
+    if std::env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("linux") {
+        println!("cargo:rustc-link-arg-bins=-Wl,-z,nostart-stop-gc");
+    }
 }
 "#
         .as_bytes(),

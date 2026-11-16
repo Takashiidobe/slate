@@ -26,6 +26,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
+// CHECK-NEXT: #![feature(used_with_arg)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
@@ -70,7 +71,7 @@ int main(void) {
 // CHECK-NEXT:         as *mut (),
 // CHECK-NEXT:     core::ptr::null_mut::<()>(),
 // CHECK-NEXT: ]);
-// CHECK-NEXT: #[used]
+// CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: static mut __addressable_x: *mut () = (unsafe { core::ptr::addr_of_mut!(x) }) as *mut ();
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {

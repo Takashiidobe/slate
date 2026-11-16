@@ -101,7 +101,6 @@ pub enum Item {
     },
     Const {
         attrs: Vec<Attr>,
-        vis: Visibility,
         name: String,
         ty: Type,
         init: Expr,
@@ -111,7 +110,6 @@ pub enum Item {
         decls: Vec<ExternDecl>,
     },
     TypeAlias {
-        vis: Visibility,
         name: String,
         ty: Type,
     },
@@ -407,7 +405,6 @@ pub enum AttrArg {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum UsedKind {
-    Plain,
     Compiler,
     Linker,
 }

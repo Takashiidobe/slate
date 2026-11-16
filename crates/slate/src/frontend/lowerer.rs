@@ -576,7 +576,7 @@ impl<'m> ModuleLowerer<'m> {
                 comments: Vec::new(),
                 attrs: vec![
                     Attr::Allow(vec![rust::Lint::NonUpperCaseGlobals]),
-                    Attr::Used(rust::UsedKind::Plain),
+                    Attr::Used(rust::UsedKind::Compiler),
                     Attr::LinkSection(section),
                 ],
                 vis: rust::Visibility::Private,
@@ -1015,7 +1015,7 @@ impl<'m> ModuleLowerer<'m> {
                                 global
                                     .symbol
                                     .used
-                                    .then_some(Attr::Used(rust::UsedKind::Plain))
+                                    .then_some(Attr::Used(rust::UsedKind::Compiler))
                             })
                             .chain(global.symbol.section.clone().map(Attr::LinkSection))
                             .collect(),

@@ -221,7 +221,7 @@ int main(void) {
 // CHECK-NEXT:     gnu_attribute_constructor();
 // CHECK-NEXT: }
 // CHECK-NEXT: #[allow(non_upper_case_globals)]
-// CHECK-NEXT: #[used]
+// CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: #[unsafe(link_section = ".init_array")]
 // CHECK-NEXT: static __SLATE_INIT_gnu_attribute_constructor: Option<unsafe extern "C-unwind" fn()> = Some(
 // CHECK-NEXT:     __slate_init_gnu_attribute_constructor,
@@ -233,7 +233,7 @@ int main(void) {
 // CHECK-NEXT:     gnu_attribute_destructor();
 // CHECK-NEXT: }
 // CHECK-NEXT: #[allow(non_upper_case_globals)]
-// CHECK-NEXT: #[used]
+// CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: #[unsafe(link_section = ".fini_array")]
 // CHECK-NEXT: static __SLATE_FINI_gnu_attribute_destructor: Option<unsafe extern "C-unwind" fn()> = Some(
 // CHECK-NEXT:     __slate_fini_gnu_attribute_destructor,

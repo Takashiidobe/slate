@@ -246,15 +246,11 @@ impl<W: Write> Codegen<W> {
             }
             Item::Const {
                 attrs,
-                vis,
                 name,
                 ty,
                 init,
             } => {
                 self.attrs(attrs)?;
-                if let Some(kw) = vis.keyword() {
-                    write!(self.out, "{kw} ")?;
-                }
                 self.out.write_str("const ")?;
                 self.ident(name)?;
                 self.out.write_str(": ")?;
@@ -263,10 +259,7 @@ impl<W: Write> Codegen<W> {
                 self.expr(init)?;
                 self.out.write_str(";\n")?;
             }
-            Item::TypeAlias { vis, name, ty } => {
-                if let Some(kw) = vis.keyword() {
-                    write!(self.out, "{kw} ")?;
-                }
+            Item::TypeAlias { name, ty } => {
                 self.out.write_str("type ")?;
                 self.ident(name)?;
                 self.out.write_str(" = ")?;
@@ -733,7 +726,6 @@ impl<W: Write> Codegen<W> {
                 )
             }
             Attr::Used(kind) => match kind {
-                crate::backend::rust_ast::UsedKind::Plain => self.out.write_str("used"),
                 crate::backend::rust_ast::UsedKind::Compiler => {
                     self.out.write_str("used(compiler)")
                 }

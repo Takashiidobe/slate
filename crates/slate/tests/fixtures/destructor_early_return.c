@@ -15,6 +15,7 @@ int main(int argc, char **argv) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
+// CHECK-NEXT: #![feature(used_with_arg)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: fn cleanup() {
 // CHECK-NEXT:     println!("destructor ran");
@@ -23,7 +24,7 @@ int main(int argc, char **argv) {
 // CHECK-NEXT:     cleanup();
 // CHECK-NEXT: }
 // CHECK-NEXT: #[allow(non_upper_case_globals)]
-// CHECK-NEXT: #[used]
+// CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: #[unsafe(link_section = ".fini_array")]
 // CHECK-NEXT: static __SLATE_FINI_cleanup: Option<unsafe extern "C-unwind" fn()> = Some(
 // CHECK-NEXT:     __slate_fini_cleanup,

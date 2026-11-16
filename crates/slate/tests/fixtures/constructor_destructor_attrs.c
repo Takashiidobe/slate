@@ -15,6 +15,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
+// CHECK-NEXT: #![feature(used_with_arg)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: fn register_default() {
 // CHECK-NEXT:     println!("ctor: default");
@@ -23,7 +24,7 @@ int main(void) {
 // CHECK-NEXT:     register_default();
 // CHECK-NEXT: }
 // CHECK-NEXT: #[allow(non_upper_case_globals)]
-// CHECK-NEXT: #[used]
+// CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: #[unsafe(link_section = ".init_array")]
 // CHECK-NEXT: static __SLATE_INIT_register_default: Option<unsafe extern "C-unwind" fn()> = Some(
 // CHECK-NEXT:     __slate_init_register_default,
@@ -35,7 +36,7 @@ int main(void) {
 // CHECK-NEXT:     cleanup_default();
 // CHECK-NEXT: }
 // CHECK-NEXT: #[allow(non_upper_case_globals)]
-// CHECK-NEXT: #[used]
+// CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: #[unsafe(link_section = ".fini_array")]
 // CHECK-NEXT: static __SLATE_FINI_cleanup_default: Option<unsafe extern "C-unwind" fn()> = Some(
 // CHECK-NEXT:     __slate_fini_cleanup_default,
