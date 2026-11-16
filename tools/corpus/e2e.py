@@ -1643,13 +1643,21 @@ def shard_units(units, project_dir, limit):
         build = unit["directory"]
         if build not in archives:
             archive = Path(build) / "vmlinux.a"
-            archives[build] = set(subprocess.run(["ar", "t", archive.name], cwd=build, check=True, capture_output=True,
-                                                 text=True).stdout.split()) if archive.exists() else None
+            members = subprocess.run(["ar", "t", archive.name], cwd=build, check=True, capture_output=True,
+                                     text=True).stdout.split() if archive.exists() else None
+            archives[build] = None if members is None else {member: index for index, member in enumerate(members)}
         members = archives[build]
-        source = os.path.relpath(unit["file"], build)
+        return members is None or member_name(unit) in members
+
+    def member_name(unit):
+        source = os.path.relpath(unit["file"], unit["directory"])
         if source.startswith(".."):
             source = os.path.relpath(unit["file"], project_dir)
-        return members is None or str(Path(source).with_suffix(".o")) in members
+        return str(Path(source).with_suffix(".o"))
+
+    def link_position(unit):
+        members = archives.get(unit["directory"])
+        return members.get(member_name(unit), len(members)) if members else 0
 
     unlinked = [unit for unit in linked if not in_vmlinux(unit)]
     linked = [unit for unit in linked if in_vmlinux(unit)]
@@ -1721,7 +1729,7 @@ def shard_units(units, project_dir, limit):
     names = ["_".join(name).replace("-", "_").replace(".", "_") or "root" for name, _ in shards]
     if len(set(names)) != len(names):
         raise SystemExit(f"duplicate shard names: {[n for n, c in collections.Counter(names).items() if c > 1]}")
-    return dict(zip(names, (shard for _, shard in shards)))
+    return dict(zip(names, (sorted(shard, key=link_position) for _, shard in shards)))
 
 
 def rustc_error_cluster(line):

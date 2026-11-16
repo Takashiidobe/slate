@@ -55,6 +55,8 @@ with `crates/`.
 - Compilation databases supply per-unit flags and targets. Relative paths resolve against each command's `directory`.
 - Project translation requires exactly one unit defining `main`. Library projects, multiple configurations of one unit, and colliding module stems are rejected.
 - External definitions are exported for linker resolution across modules; tentative common globals have one owner.
+- Compilation database order is link order: units become modules in first-occurrence order, and the first COMDAT kept is the first in that order. Callers that link in a different order (the kernel harness uses `vmlinux.a` member order) reorder the database.
+- rustc places each module in a codegen unit of its own choosing, so section contents from different modules land in arbitrary order. When two or more units carry file-scope `global_asm!` (initcalls, linker sets, `.export_symbol`), `project::link_order::hoist_global_asm` moves them into one `global_asm!` in the crate root, in unit order, with `sym crate::__slate_unit_<stem>::<name>` operands; the named items and the unit's type definitions become `pub`. Items whose `sym` operand names an extern declaration (the `.weak` weak-address alias) stay in their unit. `#[link_section]` statics (constructors in `.init_array`, `__attribute__((section))` data) are still placed per codegen unit.
 - Project generation runs the backend control-flow registry; `--raw` emits the baseline. Exported C signatures remain intact. Target-conditional single-file translation is separate.
 
 ## Macro templates

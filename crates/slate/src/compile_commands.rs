@@ -3,7 +3,7 @@ use slate_parser::compiler_args::{
     CompilerArgError, CompilerArgParser, CompilerArgs, CompilerFlavor,
 };
 use std::cmp::Reverse;
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 
@@ -131,6 +131,11 @@ fn read_entries(
     for path in paths {
         parsed.extend(read_one(path, options)?);
     }
+    let mut link_order: HashMap<PathBuf, usize> = HashMap::new();
+    for entry in &parsed {
+        let next = link_order.len();
+        link_order.entry(entry.command.file.clone()).or_insert(next);
+    }
     parsed.sort_by(|left, right| left.command.file.cmp(&right.command.file));
     if parsed.is_empty() {
         return Err(CompileCommandsError::NoCTranslationUnits {
@@ -162,6 +167,7 @@ fn read_entries(
             _ => unique.push(entry),
         }
     }
+    unique.sort_by_key(|entry| link_order[&entry.command.file]);
     Ok((unique, selected))
 }
 

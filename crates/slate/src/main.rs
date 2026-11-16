@@ -1112,14 +1112,13 @@ fn parse_slate_units(
     commands: Vec<compile_commands::CompileCommand>,
 ) -> Result<Vec<SlateUnit>, String> {
     let names = unit_names(&commands)?;
-    let by_stem: BTreeMap<String, compile_commands::CompileCommand> =
-        names.into_iter().zip(commands).collect();
-    if by_stem.is_empty() {
+    if names.is_empty() {
         return Err("translate-project: no C translation units in compile commands".into());
     }
     let results: Vec<Result<SlateUnit, String>> = slate_worker_pool()?.install(|| {
-        by_stem
+        names
             .into_par_iter()
+            .zip(commands)
             .map(|(stem, command)| {
                 slate::frontend::parse_module_with_compiler_args(&command.file, command.args)
                     .map(|(module, files)| SlateUnit {
@@ -1296,7 +1295,7 @@ fn declares_c_panic(program: &rust_ast::Program) -> bool {
 )]
 fn write_project_crate(
     crate_dir: &Path,
-    programs: Vec<(String, rust_ast::Program)>,
+    mut programs: Vec<(String, rust_ast::Program)>,
     shared_types: Option<rust_ast::Program>,
     root: Option<String>,
     crate_types: &[String],
@@ -1318,6 +1317,10 @@ fn write_project_crate(
         None => Some(crate_types.to_vec()),
     };
     init_crate(crate_dir, lib_crate_types.as_deref())?;
+    let ordered_asm =
+        slate::project::link_order::hoist_global_asm(&mut programs, root.as_deref(), |stem| {
+            unit_cfgs.contains_key(stem)
+        });
     let crate_src = crate_dir.join("src");
     std::fs::create_dir_all(&crate_src)
         .map_err(|e| format!("create {}: {e}", crate_src.display()))?;
@@ -1434,7 +1437,11 @@ fn write_project_crate(
             exports: Vec::new(),
         })
     });
-    let children: Vec<rust_ast::Item> = children.into_iter().chain(panic_handler).collect();
+    let children: Vec<rust_ast::Item> = children
+        .into_iter()
+        .chain(panic_handler)
+        .chain(ordered_asm)
+        .collect();
     for (stem, mut program) in programs {
         program.no_unwind = freestanding;
         let is_root = root.as_ref() == Some(&stem);

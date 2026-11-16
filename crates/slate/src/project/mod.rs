@@ -1,6 +1,7 @@
 pub mod build_target;
 pub mod cfg;
 pub mod hoist;
+pub mod link_order;
 pub mod manifest;
 pub mod matrix;
 pub mod merge;
