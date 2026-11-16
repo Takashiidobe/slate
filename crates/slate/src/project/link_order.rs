@@ -1,6 +1,6 @@
 use crate::backend::rust_ast::{
-    AsmOperand, Attr, EnumDef, Expr, Ident, InlineAsm, Item, Path, Program, RecordDef, StructDef,
-    Type, Visibility,
+    AsmOperand, Attr, EnumDef, Expr, ExternDecl, Ident, InlineAsm, Item, Path, Program, RecordDef,
+    StructDef, Type, Visibility,
 };
 use std::collections::{HashMap, HashSet};
 
@@ -94,6 +94,7 @@ pub fn hoist_section_statics(
     for (stem, program) in programs.iter_mut().filter(|(stem, _)| !gated(stem)) {
         let module = module_path(stem, root);
         let mut unit_items = Vec::new();
+        let mut roots = HashMap::new();
         for item in &mut program.items {
             if !placed_section(item).is_some_and(|section| shared.contains(section)) {
                 continue;
@@ -141,6 +142,7 @@ pub fn hoist_section_statics(
                     other => other,
                 })
                 .collect();
+            roots.insert(name.clone(), root_name.clone());
             moved.push(Item::Static {
                 comments: Vec::new(),
                 attrs,
@@ -165,12 +167,38 @@ pub fn hoist_section_statics(
                 init,
             });
         }
+        for item in std::mem::take(&mut program.items) {
+            match item {
+                Item::GlobalAsm(mut asm) if aliases_only(&asm, &roots) => {
+                    for operand in &mut asm.operands {
+                        if let AsmOperand::Sym(expr) = operand
+                            && let Expr::Var(name) = expr
+                        {
+                            *expr = Expr::Path(Path::new([
+                                Ident::new("crate"),
+                                Ident::new(&roots[name.as_str()]),
+                            ]));
+                        }
+                    }
+                    moved.push(Item::GlobalAsm(asm));
+                }
+                item => program.items.push(item),
+            }
+        }
         if !unit_items.is_empty() {
             program.items.extend(unit_items);
             publish_types(program);
         }
     }
     moved
+}
+
+fn aliases_only(asm: &InlineAsm, roots: &HashMap<String, String>) -> bool {
+    defines_alias(asm)
+        && !asm.operands.is_empty()
+        && asm.operands.iter().all(|operand| {
+            matches!(operand, AsmOperand::Sym(Expr::Var(name)) if roots.contains_key(name.as_str()))
+        })
 }
 
 fn placed_section(item: &Item) -> Option<&str> {
@@ -207,11 +235,8 @@ fn hoistable(program: &Program, item: &Item) -> bool {
     let Item::GlobalAsm(asm) = item else {
         return false;
     };
-    let defines_alias = asm
-        .template
-        .lines()
-        .any(|line| line.trim_start().starts_with(".set"));
-    !defines_alias
+    !defines_alias(asm)
+        && !defines_declared_local_label(program, asm)
         && asm.operands.iter().all(|operand| match operand {
             AsmOperand::Sym(Expr::Var(name)) => program.items.iter().any(|item| match item {
                 Item::Fn(function) => function.name == name.as_str(),
@@ -220,6 +245,65 @@ fn hoistable(program: &Program, item: &Item) -> bool {
             }),
             _ => false,
         })
+}
+
+fn statements(asm: &InlineAsm) -> impl Iterator<Item = &str> {
+    asm.template
+        .split(['\n', ';'])
+        .map(str::trim)
+        .filter(|statement| !statement.is_empty())
+}
+
+fn defines_alias(asm: &InlineAsm) -> bool {
+    statements(asm).any(|statement| statement.starts_with(".set"))
+}
+
+fn defines_declared_local_label(program: &Program, asm: &InlineAsm) -> bool {
+    let declared: HashSet<&str> = program
+        .items
+        .iter()
+        .filter_map(|item| match item {
+            Item::ExternBlock { decls, .. } => Some(decls),
+            _ => None,
+        })
+        .flatten()
+        .map(|decl| match decl {
+            ExternDecl::Fn(function) => function.name.as_str(),
+            ExternDecl::Static { name, .. } => name.as_str(),
+        })
+        .collect();
+    local_labels(asm).any(|label| declared.contains(label))
+}
+
+fn local_labels(asm: &InlineAsm) -> impl Iterator<Item = &str> {
+    let mut exported = HashSet::new();
+    let mut labels = Vec::new();
+    for statement in statements(asm) {
+        let mut words = statement.split([' ', '\t', ',']).filter(|w| !w.is_empty());
+        match words.next() {
+            Some(".globl" | ".global" | ".weak") => exported.extend(words),
+            Some(_) => {
+                if let Some((label, _)) = statement.split_once(':')
+                    && is_symbol(label)
+                    && !label.starts_with(".L")
+                {
+                    labels.push(label);
+                }
+            }
+            None => {}
+        }
+    }
+    labels
+        .into_iter()
+        .filter(move |label| !exported.contains(label))
+}
+
+fn is_symbol(text: &str) -> bool {
+    let mut chars = text.chars();
+    chars
+        .next()
+        .is_some_and(|c| c.is_ascii_alphabetic() || matches!(c, '_' | '.' | '$'))
+        && chars.all(|c| c.is_ascii_alphanumeric() || matches!(c, '_' | '.' | '$'))
 }
 
 fn concatenate(blocks: Vec<InlineAsm>) -> Vec<InlineAsm> {
