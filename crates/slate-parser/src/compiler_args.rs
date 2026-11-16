@@ -17,8 +17,10 @@ use crate::target::x86_isa::{ApxFlag, X86Feature, X86IsaRequest};
 use crate::target_info::{LongDoubleFormat, TargetEnvironment, TargetFamily, TargetInfo, TargetOs};
 use crate::target_registry::{ArchMode, arch_variant};
 use crate::{compiler_headers, native_headers, sysroot};
+use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
+use std::sync::{LazyLock, Mutex};
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum CompilerFlavor {
@@ -2614,7 +2616,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             parsed.saw(Opt::LongDouble, argument);
             parsed.long_double = Some(format);
         } else {
-            return Err(invalid(argument, "unknown option"));
+            report_unsupported_flag(argument);
         }
         index += 1;
     }
@@ -2836,6 +2838,15 @@ fn long_double_flag(argument: &str) -> Option<LongDoubleFormat> {
         "-mlong-double-80" | "--mlong-double-80" => Some(LongDoubleFormat::X87),
         "-mlong-double-128" | "--mlong-double-128" => Some(LongDoubleFormat::Binary128),
         _ => None,
+    }
+}
+
+fn report_unsupported_flag(argument: &str) {
+    static REPORTED: LazyLock<Mutex<HashSet<String>>> = LazyLock::new(Default::default);
+    if let Ok(mut reported) = REPORTED.lock()
+        && reported.insert(argument.to_string())
+    {
+        eprintln!("  ⚠ unsupported compiler flag `{argument}` ignored");
     }
 }
 

@@ -84,6 +84,13 @@ rule pipeline. Flag effects are in [compiler-flags](compiler-flags.md).
   the real compiler would (`-mstack-alignment` is clang-only,
   `-mpreferred-stack-boundary` gcc-only, and msvc has none of the GNU
   codegen, ISA and optimization options).
+- An argument no matcher in `parse_arguments` recognizes is not an error:
+  `report_unsupported_flag` prints `⚠ unsupported compiler flag `<flag>`
+  ignored` to stderr once per flag per process and parsing continues, so
+  harnesses pass every flag from compile_commands. An unknown flag with a
+  separate value also reports the value. If an ignored flag turns out to
+  change semantics, thread it as a new `Opt`. Flavor mismatches and bad
+  values of known options stay errors.
 - Arguments match in `parse_arguments`' `if`/`else if` order, and the
   first match wins. The ISA `-m<feature>` matcher (`X86Feature::parse_flag`)
   and the `-W` warning matcher come late and are broad: an unlisted
