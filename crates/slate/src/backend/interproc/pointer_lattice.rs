@@ -954,14 +954,7 @@ impl ClassifyCtx<'_> {
                 if let Expr::Var(name) = target
                     && let Some(&global_mutable) = self.global_ptr_mutability.get(name.as_str())
                 {
-                    if let Some(source) = source_var(value)
-                        && let Some(canonical) = self.canonical_of(source.as_str())
-                    {
-                        self.observe(&canonical, PointerFact::observe_escape);
-                        if global_mutable {
-                            self.observe(&canonical, PointerFact::observe_write);
-                        }
-                    }
+                    self.escape_stored(value, global_mutable);
                     self.expr(value);
                 } else if let Expr::Var(name) = target {
                     self.observe(name.as_str(), PointerFact::observe_reassign);
@@ -983,12 +976,7 @@ impl ClassifyCtx<'_> {
                     }
                 } else {
                     self.place(target, true);
-                    if let Some(source) = source_var(value)
-                        && let Some(canonical) = self.canonical_of(source.as_str())
-                    {
-                        self.observe(&canonical, PointerFact::observe_escape);
-                    }
-                    self.expr(value);
+                    self.stored(value);
                 }
             }
             Stmt::CompoundAssign { target, value, .. } => {
@@ -1102,12 +1090,45 @@ impl ClassifyCtx<'_> {
         }
     }
 
-    fn stored(&mut self, value: &Expr) {
-        if let Some(source) = source_var(value)
-            && let Some(canonical) = self.canonical_of(source.as_str())
-        {
-            self.observe(&canonical, PointerFact::observe_escape);
+    fn stored_sources(&self, value: &Expr, out: &mut Vec<String>) {
+        match value {
+            Expr::Var(name) => out.extend(self.canonical_of(name.as_str())),
+            Expr::Cast { expr, .. } => self.stored_sources(expr, out),
+            Expr::If {
+                then_expr,
+                else_expr,
+                ..
+            } => {
+                self.stored_sources(then_expr, out);
+                self.stored_sources(else_expr, out);
+            }
+            Expr::Match { arms, .. } => {
+                for arm in arms {
+                    self.stored_sources(&arm.value, out);
+                }
+            }
+            Expr::Block(block) | Expr::Unsafe(block) => {
+                if let Some(tail) = &block.tail {
+                    self.stored_sources(tail, out);
+                }
+            }
+            _ => {}
         }
+    }
+
+    fn escape_stored(&mut self, value: &Expr, write: bool) {
+        let mut sources = Vec::new();
+        self.stored_sources(value, &mut sources);
+        for canonical in sources {
+            self.observe(&canonical, PointerFact::observe_escape);
+            if write {
+                self.observe(&canonical, PointerFact::observe_write);
+            }
+        }
+    }
+
+    fn stored(&mut self, value: &Expr) {
+        self.escape_stored(value, false);
         self.expr(value);
     }
 

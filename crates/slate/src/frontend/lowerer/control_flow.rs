@@ -8,6 +8,7 @@ enum Node<'a> {
     Jump(usize),
     Statement(&'a Statement, Option<usize>),
     Value(&'a ir::Value, usize),
+    Cleanup(&'a ir::Variable, usize),
     Branch(&'a ir::Value, usize, usize),
     Switch(&'a ir::Value, Vec<Case<'a>>, usize),
     Indirect(&'a ir::Value, Vec<(BindingId, usize)>),
@@ -24,7 +25,10 @@ impl Node<'_> {
     fn successors(&self) -> Vec<usize> {
         match self {
             Self::End | Self::Statement(_, None) => Vec::new(),
-            Self::Jump(next) | Self::Statement(_, Some(next)) | Self::Value(_, next) => {
+            Self::Jump(next)
+            | Self::Statement(_, Some(next))
+            | Self::Value(_, next)
+            | Self::Cleanup(_, next) => {
                 vec![*next]
             }
             Self::AsmGoto(_, _, next, labels, _) => std::iter::once(*next)
@@ -43,7 +47,10 @@ impl Node<'_> {
     fn retarget(&mut self, targets: &[usize]) {
         match self {
             Self::End | Self::Statement(_, None) => {}
-            Self::Jump(next) | Self::Statement(_, Some(next)) | Self::Value(_, next) => {
+            Self::Jump(next)
+            | Self::Statement(_, Some(next))
+            | Self::Value(_, next)
+            | Self::Cleanup(_, next) => {
                 *next = targets[*next];
             }
             Self::Branch(_, yes, no) => {
@@ -81,13 +88,17 @@ struct Case<'a> {
 struct Graph<'a> {
     nodes: Vec<Node<'a>>,
     labels: HashMap<BindingId, usize>,
-    breaks: HashMap<BindingId, usize>,
-    continues: HashMap<BindingId, usize>,
+    breaks: HashMap<BindingId, (usize, usize)>,
+    continues: HashMap<BindingId, (usize, usize)>,
     cases: HashMap<BindingId, Vec<Case<'a>>>,
     defaults: HashMap<BindingId, usize>,
     locals: Vec<(BindingId, &'a ir::Type, Option<u64>)>,
     byref: HashSet<BindingId>,
     targets: Vec<BindingId>,
+    active: Vec<&'a ir::Variable>,
+    label_scopes: HashMap<BindingId, Vec<BindingId>>,
+    cleanups: Vec<&'a ir::Variable>,
+    unscoped_cleanup: Option<&'a Statement>,
 }
 
 fn entry_labels(asm: &ir::InlineAsm) -> impl Iterator<Item = BindingId> + '_ {
@@ -119,6 +130,50 @@ fn collect_labels(statements: &[Statement], labels: &mut Vec<BindingId>) {
         }
         for body in children(&statement.value) {
             collect_labels(body, labels);
+        }
+    }
+}
+
+fn cleanup_variable(statement: &ir::Statement) -> Option<&ir::Variable> {
+    match statement {
+        ir::Statement::Let(variable) if variable.cleanup.is_some() => Some(variable),
+        _ => None,
+    }
+}
+
+fn scope_labels(
+    statements: &[Statement],
+    active: &mut Vec<BindingId>,
+    scopes: &mut HashMap<BindingId, Vec<BindingId>>,
+) {
+    let depth = active.len();
+    enter_scope(statements, active, scopes);
+    active.truncate(depth);
+}
+
+fn enter_scope(
+    statements: &[Statement],
+    active: &mut Vec<BindingId>,
+    scopes: &mut HashMap<BindingId, Vec<BindingId>>,
+) {
+    for statement in statements {
+        if let Some(variable) = cleanup_variable(&statement.value) {
+            active.push(variable.id);
+        }
+        if let ir::Statement::Label { id, .. } = statement.value {
+            scopes.insert(id, active.clone());
+        }
+        if let ir::Statement::For { init, .. } = &statement.value {
+            let depth = active.len();
+            enter_scope(init, active, scopes);
+            for body in children(&statement.value).into_iter().skip(1) {
+                scope_labels(body, active, scopes);
+            }
+            active.truncate(depth);
+        } else {
+            for body in children(&statement.value) {
+                scope_labels(body, active, scopes);
+            }
         }
     }
 }
@@ -273,9 +328,10 @@ impl<'a> Graph<'a> {
                 states[current] = blocks.len();
                 block.push(current);
                 let next = match self.nodes[current] {
-                    Node::Jump(next) | Node::Statement(_, Some(next)) | Node::Value(_, next) => {
-                        next
-                    }
+                    Node::Jump(next)
+                    | Node::Statement(_, Some(next))
+                    | Node::Value(_, next)
+                    | Node::Cleanup(_, next) => next,
                     _ => break,
                 };
                 if leaders[next] {
@@ -320,16 +376,71 @@ impl<'a> Graph<'a> {
         index
     }
 
-    fn list(&mut self, statements: &'a [Statement], mut next: usize) -> usize {
+    fn list(&mut self, statements: &'a [Statement], next: usize) -> usize {
+        self.scoped(statements, next, |_, next| next)
+    }
+
+    fn scoped(
+        &mut self,
+        mut statements: &'a [Statement],
+        next: usize,
+        tail: impl FnOnce(&mut Self, usize) -> usize,
+    ) -> usize {
+        let declaration = statements
+            .iter()
+            .enumerate()
+            .find_map(|(index, statement)| Some((index, cleanup_variable(&statement.value)?)));
+        let mut entry = match declaration {
+            Some((index, variable)) => {
+                let exit = self.push(Node::Cleanup(variable, next));
+                self.active.push(variable);
+                let rest = self.scoped(&statements[index + 1..], exit, tail);
+                self.active.pop();
+                statements = &statements[..=index];
+                rest
+            }
+            None => tail(self, next),
+        };
         for statement in statements.iter().rev() {
-            next = self.statement(statement, next);
+            entry = self.statement(statement, entry);
         }
-        next
+        entry
+    }
+
+    fn unwind(&mut self, depth: usize, mut target: usize) -> usize {
+        for index in depth..self.active.len() {
+            target = self.push(Node::Cleanup(self.active[index], target));
+        }
+        target
+    }
+
+    fn goto(&mut self, id: BindingId) -> usize {
+        let label = self.label(id);
+        let depth = self.label_scopes.get(&id).map_or(0, |scope| {
+            scope
+                .iter()
+                .zip(&self.active)
+                .take_while(|(label, active)| **label == active.id)
+                .count()
+        });
+        self.unwind(depth, label)
+    }
+
+    fn condition(&mut self, condition: &'a ir::Evaluation, next: usize) -> usize {
+        if let Some(statement) = condition
+            .statements
+            .iter()
+            .find(|statement| cleanup_variable(&statement.value).is_some())
+        {
+            self.unscoped_cleanup.get_or_insert(statement);
+        }
+        self.list(&condition.statements, next)
     }
 
     fn evaluation(&mut self, evaluation: &'a ir::Evaluation, next: usize) -> usize {
-        let value = self.push(Node::Value(&evaluation.value, next));
-        self.list(&evaluation.statements, value)
+        self.scoped(&evaluation.statements, next, |graph, next| {
+            graph.push(Node::Value(&evaluation.value, next))
+        })
     }
 
     fn statement(&mut self, statement: &'a Statement, next: usize) -> usize {
@@ -341,18 +452,24 @@ impl<'a> Graph<'a> {
                 self.nodes[label] = Node::Jump(entry);
                 label
             }
-            ir::Statement::Goto(id) => self.label(*id),
+            ir::Statement::Goto(id) => self.goto(*id),
             ir::Statement::ComputedGoto(target) => {
                 let targets = self
                     .targets
                     .clone()
                     .into_iter()
-                    .map(|id| (id, self.label(id)))
+                    .map(|id| (id, self.goto(id)))
                     .collect();
                 self.push(Node::Indirect(target, targets))
             }
-            ir::Statement::Break(id) => self.breaks[id],
-            ir::Statement::Continue(id) => self.continues[id],
+            ir::Statement::Break(id) => {
+                let (target, depth) = self.breaks[id];
+                self.unwind(depth, target)
+            }
+            ir::Statement::Continue(id) => {
+                let (target, depth) = self.continues[id];
+                self.unwind(depth, target)
+            }
             ir::Statement::If {
                 condition,
                 then_body,
@@ -378,9 +495,10 @@ impl<'a> Graph<'a> {
                 body,
             } => {
                 let branch = self.push(Node::End);
-                let test = self.list(&condition.statements, branch);
-                self.breaks.insert(*id, next);
-                self.continues.insert(*id, test);
+                let test = self.condition(condition, branch);
+                let depth = self.active.len();
+                self.breaks.insert(*id, (next, depth));
+                self.continues.insert(*id, (test, depth));
                 let entry = self.list(body, test);
                 self.nodes[branch] = Node::Branch(&condition.value, entry, next);
                 if matches!(statement.value, ir::Statement::DoWhile { .. }) {
@@ -396,32 +514,33 @@ impl<'a> Graph<'a> {
                 increment,
                 body,
                 ..
-            } => {
-                let branch = self.push(Node::End);
+            } => self.scoped(init, next, |graph, exit| {
+                let branch = graph.push(Node::End);
                 let test = match condition {
-                    Some(condition) => self.list(&condition.statements, branch),
+                    Some(condition) => graph.condition(condition, branch),
                     None => branch,
                 };
                 let step = match increment {
-                    Some(increment) => self.evaluation(increment, test),
+                    Some(increment) => graph.evaluation(increment, test),
                     None => test,
                 };
-                self.breaks.insert(*id, next);
-                self.continues.insert(*id, step);
-                let entry = self.list(body, step);
-                self.nodes[branch] = match condition {
-                    Some(condition) => Node::Branch(&condition.value, entry, next),
+                let depth = graph.active.len();
+                graph.breaks.insert(*id, (exit, depth));
+                graph.continues.insert(*id, (step, depth));
+                let entry = graph.list(body, step);
+                graph.nodes[branch] = match condition {
+                    Some(condition) => Node::Branch(&condition.value, entry, exit),
                     None => Node::Jump(entry),
                 };
-                self.list(init, test)
-            }
+                test
+            }),
             ir::Statement::Switch {
                 id,
                 discriminant,
                 body,
                 folded,
             } => {
-                self.breaks.insert(*id, next);
+                self.breaks.insert(*id, (next, self.active.len()));
                 self.list(body, next);
                 let cases = self.cases.remove(id).unwrap_or_default();
                 let default = self.defaults.remove(id).unwrap_or(next);
@@ -465,6 +584,9 @@ impl<'a> Graph<'a> {
                 if variable.byref {
                     self.byref.insert(variable.id);
                 }
+                if variable.cleanup.is_some() {
+                    self.cleanups.push(variable);
+                }
                 self.locals
                     .push((variable.id, &variable.ty, variable.alignment));
                 self.push(Node::Statement(statement, Some(next)))
@@ -472,7 +594,7 @@ impl<'a> Graph<'a> {
             ir::Statement::Asm(asm)
                 if !asm.labels.is_empty() || entry_labels(asm).next().is_some() =>
             {
-                let labels: Vec<_> = asm.labels.iter().map(|id| self.label(*id)).collect();
+                let labels: Vec<_> = asm.labels.iter().map(|id| self.goto(*id)).collect();
                 let main = self.push(Node::AsmGoto(statement, asm, next, labels.clone(), None));
                 for binding in entry_labels(asm) {
                     let entry = self.push(Node::AsmGoto(
@@ -551,6 +673,69 @@ impl FunctionLowerer<'_, '_> {
         Expr::Var(self.vla_name(id).into())
     }
 
+    fn cleanup_armed(&self, id: BindingId) -> Expr {
+        Expr::Var(format!("__slate_cleanup_armed_{}", self.local_index(id)).into())
+    }
+
+    fn set_cleanup_armed(&self, id: BindingId, armed: bool) -> Stmt {
+        Stmt::Expr(Expr::MethodCall {
+            recv: Box::new(self.cleanup_armed(id)),
+            method: "set".into(),
+            args: vec![Expr::Value(rust::RustValue::Bool(armed))],
+        })
+    }
+
+    fn dispatch_cleanup_guard(&mut self, variable: &ir::Variable) -> Result<[Stmt; 2]> {
+        let cleanup = variable
+            .cleanup
+            .ok_or(Invariant::UnknownCallee(variable.id))?;
+        let index = self.local_index(variable.id);
+        let call = self.cleanup_call(cleanup, self.slot_pointer(variable.id))?;
+        let call = match call {
+            call @ Expr::Unsafe(_) => call,
+            call => Expr::Unsafe(Box::new(rust::Block {
+                stmts: Vec::new(),
+                tail: Some(Box::new(call)),
+            })),
+        };
+        Ok([
+            Stmt::Let {
+                name: format!("__slate_cleanup_armed_{index}"),
+                mutable: false,
+                ty: None,
+                init: Some(Expr::Call {
+                    func: Box::new(Expr::Var("core::cell::Cell::new".into())),
+                    args: vec![Expr::Value(rust::RustValue::Bool(false))],
+                    binding: CallBinding::Generated,
+                }),
+            },
+            Stmt::Let {
+                name: format!("__slate_cleanup_{index}"),
+                mutable: false,
+                ty: None,
+                init: Some(Expr::Call {
+                    func: Box::new(Expr::Var("__slate_cleanup::Guard".into())),
+                    args: vec![Expr::Closure {
+                        params: Vec::new(),
+                        body: Box::new(Expr::Block(Box::new(rust::Block {
+                            stmts: vec![Stmt::If {
+                                cond: Expr::MethodCall {
+                                    recv: Box::new(self.cleanup_armed(variable.id)),
+                                    method: "get".into(),
+                                    args: Vec::new(),
+                                },
+                                then_body: vec![Stmt::Expr(call)],
+                                else_body: Vec::new(),
+                            }],
+                            tail: None,
+                        }))),
+                    }],
+                    binding: CallBinding::Generated,
+                }),
+            },
+        ])
+    }
+
     pub(super) fn lower_dispatch(
         &mut self,
         statements: &[Statement],
@@ -558,8 +743,29 @@ impl FunctionLowerer<'_, '_> {
     ) -> Result<Vec<Stmt>> {
         let mut graph = Graph::default();
         collect_labels(statements, &mut graph.targets);
+        scope_labels(statements, &mut Vec::new(), &mut graph.label_scopes);
         let end = graph.push(Node::End);
         let entry = graph.list(statements, end);
+        if let Some(statement) = graph.unscoped_cleanup {
+            return Err(Construct::Statement {
+                kind: "CleanupInCondition".into(),
+                ir: statement.display().to_string(),
+            }
+            .into());
+        }
+        let mut cleanups = std::mem::take(&mut graph.cleanups);
+        if let Some(variable) = cleanups
+            .iter()
+            .find(|variable| variable.byref || self.tables.variably_modified(&variable.ty))
+        {
+            return Err(Construct::Statement {
+                kind: "CleanupSlot".into(),
+                ir: format!("cleanup on {}", self.binding_name(variable.id)),
+            }
+            .into());
+        }
+        cleanups.sort_by_key(|variable| variable.id.0);
+        cleanups.dedup_by_key(|variable| variable.id);
         let (entry, blocks) = graph.blocks(entry);
         self.dispatching = true;
         for (id, ty, _) in &graph.locals {
@@ -633,6 +839,9 @@ impl FunctionLowerer<'_, '_> {
                     ty: pointer,
                 }),
             });
+        }
+        for variable in &cleanups {
+            lowered.extend(self.dispatch_cleanup_guard(variable)?);
         }
         let mut arms = Vec::new();
         let mut slot_comments = HashMap::<BindingId, Vec<rust::Comment>>::new();
@@ -729,6 +938,9 @@ impl FunctionLowerer<'_, '_> {
                             None if diverted => Vec::new(),
                             None => self.lower_statement(statement)?,
                         };
+                        if let Some(variable) = cleanup_variable(&statement.value) {
+                            body.push(self.set_cleanup_armed(variable.id, true));
+                        }
                         if let Some(next) = next.filter(|_| terminal) {
                             body.extend(jump(next));
                         }
@@ -740,6 +952,19 @@ impl FunctionLowerer<'_, '_> {
                         } else {
                             vec![Stmt::Expr(self.lower_value(value)?)]
                         };
+                        if terminal {
+                            body.extend(jump(next));
+                        }
+                        body
+                    }
+                    Node::Cleanup(variable, next) => {
+                        let cleanup = variable
+                            .cleanup
+                            .ok_or(Invariant::UnknownCallee(variable.id))?;
+                        let mut body = vec![
+                            self.set_cleanup_armed(variable.id, false),
+                            Stmt::Expr(self.cleanup_call(cleanup, self.slot_pointer(variable.id))?),
+                        ];
                         if terminal {
                             body.extend(jump(next));
                         }

@@ -596,18 +596,17 @@ impl FunctionLowerer<'_, '_> {
         Ok(Some(Stmt::Scope { body: statements }))
     }
 
-    fn cleanup_guard(&mut self, variable: &ir::Variable, cleanup: BindingId) -> Result<[Stmt; 2]> {
+    pub(super) fn cleanup_call(&mut self, cleanup: BindingId, pointer: Expr) -> Result<Expr> {
         self.dependencies.cleanup = true;
-        let names = &self.tables.names;
-        let handler = names
+        let handler = self
+            .tables
+            .names
             .get(&cleanup)
             .ok_or(Invariant::UnknownCallee(cleanup))?;
-        let target = self.binding_name(variable.id);
-        let pointer = format!("__slate_cleanup_ptr_{}", self.local_index(variable.id));
         let call = Expr::Call {
             func: Box::new(Expr::Var(handler.rust.as_str().into())),
             args: vec![Expr::Cast {
-                expr: Box::new(Expr::Var(pointer.as_str().into())),
+                expr: Box::new(pointer),
                 ty: rust::Type::Custom("*mut _".into()),
             }],
             binding: CallBinding::Direct {
@@ -617,6 +616,20 @@ impl FunctionLowerer<'_, '_> {
                 trusted_headers: Default::default(),
             },
         };
+        Ok(if handler.is_unsafe {
+            Expr::Unsafe(Box::new(rust::Block {
+                stmts: Vec::new(),
+                tail: Some(Box::new(call)),
+            }))
+        } else {
+            call
+        })
+    }
+
+    fn cleanup_guard(&mut self, variable: &ir::Variable, cleanup: BindingId) -> Result<[Stmt; 2]> {
+        let target = self.binding_name(variable.id);
+        let pointer = format!("__slate_cleanup_ptr_{}", self.local_index(variable.id));
+        let call = self.cleanup_call(cleanup, Expr::Var(pointer.as_str().into()))?;
         Ok([
             Stmt::Let {
                 name: pointer,
@@ -638,14 +651,7 @@ impl FunctionLowerer<'_, '_> {
                     func: Box::new(Expr::Var("__slate_cleanup::Guard".into())),
                     args: vec![Expr::Closure {
                         params: Vec::new(),
-                        body: Box::new(if handler.is_unsafe {
-                            Expr::Unsafe(Box::new(rust::Block {
-                                stmts: Vec::new(),
-                                tail: Some(Box::new(call)),
-                            }))
-                        } else {
-                            call
-                        }),
+                        body: Box::new(call),
                     }],
                     binding: CallBinding::Generated,
                 }),
