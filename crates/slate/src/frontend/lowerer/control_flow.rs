@@ -685,12 +685,13 @@ impl FunctionLowerer<'_, '_> {
         })
     }
 
-    fn dispatch_cleanup_guard(&mut self, variable: &ir::Variable) -> Result<[Stmt; 2]> {
+    fn dispatch_cleanup_guard(&mut self, variable: &ir::Variable) -> Result<[Stmt; 3]> {
         let cleanup = variable
             .cleanup
             .ok_or(Invariant::UnknownCallee(variable.id))?;
         let index = self.local_index(variable.id);
-        let call = self.cleanup_call(cleanup, self.slot_pointer(variable.id))?;
+        let pointer = format!("__slate_cleanup_ptr_{index}");
+        let call = self.cleanup_call(cleanup, Expr::Var(pointer.as_str().into()))?;
         let call = match call {
             call @ Expr::Unsafe(_) => call,
             call => Expr::Unsafe(Box::new(rust::Block {
@@ -699,6 +700,12 @@ impl FunctionLowerer<'_, '_> {
             })),
         };
         Ok([
+            Stmt::Let {
+                name: pointer,
+                mutable: false,
+                ty: None,
+                init: Some(self.slot_pointer(variable.id)),
+            },
             Stmt::Let {
                 name: format!("__slate_cleanup_armed_{index}"),
                 mutable: false,
