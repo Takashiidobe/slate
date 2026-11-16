@@ -619,6 +619,7 @@ impl FunctionLowerer<'_, '_> {
             };
             let image = image_name(&binding_name(variable.id, &tables.bindings));
             self.dependencies.image_aliases.push(Item::TypeAlias {
+                vis: Default::default(),
                 name: image.clone(),
                 ty: storage,
             });

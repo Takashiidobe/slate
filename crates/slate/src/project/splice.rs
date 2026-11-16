@@ -755,6 +755,7 @@ fn bind_position<'a>(
         bindings.push((
             on,
             Item::TypeAlias {
+                vis: Default::default(),
                 name: name.clone(),
                 ty: ty.clone(),
             },

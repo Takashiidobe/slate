@@ -1,7 +1,8 @@
 use crate::backend::rust_ast::{
-    AsmOperand, EnumDef, Expr, Ident, InlineAsm, Item, Path, Program, RecordDef, StructDef,
-    Visibility,
+    AsmOperand, Attr, EnumDef, Expr, Ident, InlineAsm, Item, Path, Program, RecordDef, StructDef,
+    Type, Visibility,
 };
+use std::collections::{HashMap, HashSet};
 
 pub fn hoist_global_asm(
     programs: &mut [(String, Program)],
@@ -19,11 +20,7 @@ pub fn hoist_global_asm(
     }
     let mut blocks = Vec::new();
     for (stem, program) in programs.iter_mut().filter(|(stem, _)| !gated(stem)) {
-        let module: Vec<Ident> = std::iter::once(Ident::new("crate"))
-            .chain(
-                (root != Some(stem.as_str())).then(|| Ident::new(format!("__slate_unit_{stem}"))),
-            )
-            .collect();
+        let module = module_path(stem, root);
         let mut published = Vec::new();
         let hoisted: Vec<bool> = program
             .items
@@ -57,17 +54,143 @@ pub fn hoist_global_asm(
                 Item::Static { vis, name, .. } if published.contains(name) => {
                     *vis = Visibility::Pub;
                 }
-                Item::Record(RecordDef { vis, .. })
-                | Item::Struct(StructDef { vis, .. })
-                | Item::Enum(EnumDef { vis, .. }) => *vis = Visibility::Pub,
                 _ => {}
             }
         }
+        publish_types(program);
     }
     concatenate(blocks)
         .into_iter()
         .map(Item::GlobalAsm)
         .collect()
+}
+
+pub fn hoist_section_statics(
+    programs: &mut [(String, Program)],
+    root: Option<&str>,
+    gated: impl Fn(&str) -> bool,
+) -> Vec<Item> {
+    let mut contributors: HashMap<String, HashSet<usize>> = HashMap::new();
+    for (index, (stem, program)) in programs.iter().enumerate() {
+        if gated(stem) {
+            continue;
+        }
+        for section in program.items.iter().filter_map(placed_section) {
+            contributors
+                .entry(section.to_owned())
+                .or_default()
+                .insert(index);
+        }
+    }
+    let shared: HashSet<String> = contributors
+        .into_iter()
+        .filter(|(_, units)| units.len() > 1)
+        .map(|(section, _)| section)
+        .collect();
+    if shared.is_empty() {
+        return Vec::new();
+    }
+    let mut moved = Vec::new();
+    for (stem, program) in programs.iter_mut().filter(|(stem, _)| !gated(stem)) {
+        let module = module_path(stem, root);
+        let mut unit_items = Vec::new();
+        for item in &mut program.items {
+            if !placed_section(item).is_some_and(|section| shared.contains(section)) {
+                continue;
+            }
+            let index = moved.len();
+            let root_name = format!("__slate_link_order_{index}");
+            let type_name = format!("__slate_link_order_type_{index}");
+            let init_name = format!("__slate_link_order_init_{index}");
+            let Item::Static {
+                attrs,
+                mutable,
+                name,
+                ty,
+                init,
+                ..
+            } = std::mem::replace(
+                item,
+                Item::Use {
+                    vis: Visibility::Pub,
+                    path: Path::new([Ident::new("crate"), Ident::new(&root_name)]),
+                    alias: None,
+                },
+            )
+            else {
+                unreachable!("placed_section only matches statics")
+            };
+            if let Item::Use { alias, .. } = item {
+                *alias = Some(Ident::new(&name));
+            }
+            let qualified = |name: &str| {
+                module
+                    .iter()
+                    .map(Ident::as_str)
+                    .chain([name])
+                    .collect::<Vec<_>>()
+                    .join("::")
+            };
+            moved.push(Item::Static {
+                comments: Vec::new(),
+                attrs,
+                vis: Visibility::Pub,
+                mutable,
+                name: root_name,
+                ty: Type::Custom(qualified(&type_name)),
+                init: Expr::Path(Path::new(
+                    module.iter().cloned().chain([Ident::new(&init_name)]),
+                )),
+            });
+            unit_items.push(Item::TypeAlias {
+                vis: Visibility::Pub,
+                name: type_name.clone(),
+                ty,
+            });
+            unit_items.push(Item::Const {
+                attrs: Vec::new(),
+                vis: Visibility::Pub,
+                name: init_name,
+                ty: Type::Custom(type_name),
+                init,
+            });
+        }
+        if !unit_items.is_empty() {
+            program.items.extend(unit_items);
+            publish_types(program);
+        }
+    }
+    moved
+}
+
+fn placed_section(item: &Item) -> Option<&str> {
+    let Item::Static { attrs, .. } = item else {
+        return None;
+    };
+    if attrs.contains(&Attr::ThreadLocal) {
+        return None;
+    }
+    attrs.iter().find_map(|attr| match attr {
+        Attr::LinkSection(section) => Some(section.as_str()),
+        _ => None,
+    })
+}
+
+fn module_path(stem: &str, root: Option<&str>) -> Vec<Ident> {
+    std::iter::once(Ident::new("crate"))
+        .chain((root != Some(stem)).then(|| Ident::new(format!("__slate_unit_{stem}"))))
+        .collect()
+}
+
+fn publish_types(program: &mut Program) {
+    for item in &mut program.items {
+        if let Item::Record(RecordDef { vis, .. })
+        | Item::Struct(StructDef { vis, .. })
+        | Item::Enum(EnumDef { vis, .. }) = item
+        {
+            *vis = Visibility::Pub;
+        }
+    }
 }
 
 fn hoistable(program: &Program, item: &Item) -> bool {

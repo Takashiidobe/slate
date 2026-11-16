@@ -101,6 +101,7 @@ pub enum Item {
     },
     Const {
         attrs: Vec<Attr>,
+        vis: Visibility,
         name: String,
         ty: Type,
         init: Expr,
@@ -110,6 +111,7 @@ pub enum Item {
         decls: Vec<ExternDecl>,
     },
     TypeAlias {
+        vis: Visibility,
         name: String,
         ty: Type,
     },

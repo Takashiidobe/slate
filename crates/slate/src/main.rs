@@ -1321,6 +1321,10 @@ fn write_project_crate(
         slate::project::link_order::hoist_global_asm(&mut programs, root.as_deref(), |stem| {
             unit_cfgs.contains_key(stem)
         });
+    let ordered_statics =
+        slate::project::link_order::hoist_section_statics(&mut programs, root.as_deref(), |stem| {
+            unit_cfgs.contains_key(stem)
+        });
     let crate_src = crate_dir.join("src");
     std::fs::create_dir_all(&crate_src)
         .map_err(|e| format!("create {}: {e}", crate_src.display()))?;
@@ -1441,6 +1445,7 @@ fn write_project_crate(
         .into_iter()
         .chain(panic_handler)
         .chain(ordered_asm)
+        .chain(ordered_statics)
         .collect();
     for (stem, mut program) in programs {
         program.no_unwind = freestanding;
