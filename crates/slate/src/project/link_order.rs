@@ -131,6 +131,16 @@ pub fn hoist_section_statics(
                     .collect::<Vec<_>>()
                     .join("::")
             };
+            let attrs = attrs
+                .into_iter()
+                .map(|attr| match attr {
+                    Attr::NoMangle => Attr::ExportName(name.clone()),
+                    Attr::CfgAttr(cfg, inner) if matches!(*inner, Attr::NoMangle) => {
+                        Attr::CfgAttr(cfg, Box::new(Attr::ExportName(name.clone())))
+                    }
+                    other => other,
+                })
+                .collect();
             moved.push(Item::Static {
                 comments: Vec::new(),
                 attrs,
