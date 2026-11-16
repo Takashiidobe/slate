@@ -46,17 +46,11 @@ CONSUMED_PRAGMA = re.compile(
     r"|GCC\s+(?:system_header|poison)|clang\s+(?:deprecated|final|diagnostic))\b"
 )
 
-KEEP_JOINED = ("-D", "-U", "-I", "-std=", "-isystem", "-iquote", "-idirafter", "-include", "-imacros")
 KEEP_SEPARATE = {"-D", "-U", "-I", "-isystem", "-iquote", "-idirafter", "-include", "-imacros", "-mllvm"}
 PATH_FLAGS = {"-I", "-isystem", "-iquote", "-idirafter", "-include", "-imacros"}
-DROP_SEPARATE = {"-Xclang"}
-SEMANTIC_FLAGS = (
-    "-funsigned-char", "-fsigned-char", "-fshort-wchar", "-fms-extensions", "-fms-anonymous-structs",
-    "-fexperimental-late-parse-attributes", "-fstrict-flex-arrays=", "-ffreestanding", "-nostdinc", "-fno-builtin",
-    "-fpic", "-fPIC", "-fpie", "-fPIE", "-fno-pic", "-fno-PIC", "-fno-pie", "-fno-PIE",
-    "-fstack-protector", "-fno-stack-protector", "-fcf-protection", "-mcmodel=", "-mregparm=", "--target=", "-O",
-)
-TARGET_FEATURE = re.compile(r"-march=.+|-m(?!llvm$)[a-z0-9][a-z0-9.-]*(?:=.+)?")
+DROP_SEPARATE = {"-Xclang", "-o", "-MF", "-MT", "-MQ"}
+DROP = {"-c", "-S", "-E", "-M", "-MM", "-MD", "-MMD", "-MP"}
+SOURCE_SUFFIXES = (".c", ".S", ".s", ".i")
 
 
 @dataclass
@@ -113,7 +107,7 @@ def kept_args(argv: list[str], directory: str) -> list[str]:
         flag = next((flag for flag in ("-isystem", "-iquote", "-idirafter", "-I") if arg.startswith(flag)), None)
         if flag and len(arg) > len(flag):
             arg = flag + absolute(directory, arg[len(flag):])
-        if arg.startswith(KEEP_JOINED) or arg.startswith(SEMANTIC_FLAGS) or TARGET_FEATURE.fullmatch(arg):
+        if arg not in DROP and not (not arg.startswith("-") and arg.endswith(SOURCE_SUFFIXES)):
             kept.append(arg)
         index += 1
     return kept
