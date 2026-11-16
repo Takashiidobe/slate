@@ -159,6 +159,8 @@ pub struct AsmOperand {
     pub kind: AsmOperandKind,
     pub width: Option<u64>,
     pub selected: Option<AsmOperandClass>,
+    // a memory operand whose object sits at a link-time constant address.
+    pub address: Option<AsmSymbol>,
 }
 
 #[derive(Debug, Clone)]

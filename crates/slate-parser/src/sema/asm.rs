@@ -169,12 +169,14 @@ impl Lowerer {
                 | AsmOperandKind::InOut { place, .. }
                 | AsmOperandKind::Memory { place, .. } => self.width(&place.ty),
             };
+            let address = self.memory_address(&kind, selected.as_ref());
             lowered.operands.push(AsmOperand {
                 name: source.name,
                 constraint: source.constraint,
                 kind,
                 width,
                 selected,
+                address,
             });
         }
         self.place_pieces(&mut lowered, &renumbered);
@@ -261,6 +263,7 @@ impl Lowerer {
                     _ => {}
                 }
             }
+            operand.address = self.memory_address(&operand.kind, selected.as_ref());
             operand.selected = selected;
         }
         asm.alternative = Some(alternative);
@@ -525,17 +528,39 @@ impl Lowerer {
         }
     }
 
+    fn memory_address(
+        &self,
+        kind: &AsmOperandKind,
+        selected: Option<&AsmOperandClass>,
+    ) -> Option<AsmSymbol> {
+        let (AsmOperandKind::InPlace(place)
+        | AsmOperandKind::Out { place, .. }
+        | AsmOperandKind::InOut {
+            place, input: None, ..
+        }) = kind
+        else {
+            return None;
+        };
+        let symbol = self.symbol_place(place)?;
+        (matches!(selected, Some(AsmOperandClass::Memory))
+            && self.binding_storage(symbol.binding) == Some(StorageDuration::Static))
+        .then_some(symbol)
+    }
+
+    fn binding_storage(&self, binding: BindingId) -> Option<StorageDuration> {
+        self.types.entities.storage(binding).or_else(|| {
+            self.module
+                .globals
+                .iter()
+                .find(|global| global.value.variable.id == binding)
+                .map(|global| global.value.variable.storage)
+        })
+    }
+
     fn symbol_place(&self, place: &Place) -> Option<AsmSymbol> {
         match &place.kind {
             PlaceKind::Binding(binding) => {
-                let storage = self.types.entities.storage(*binding).or_else(|| {
-                    self.module
-                        .globals
-                        .iter()
-                        .find(|global| global.value.variable.id == *binding)
-                        .map(|global| global.value.variable.storage)
-                });
-                let linked = match storage {
+                let linked = match self.binding_storage(*binding) {
                     Some(StorageDuration::Static) => true,
                     // gcc prints a thread-local's symbol; clang rejects it as not a link-time address.
                     Some(StorageDuration::Thread) => self.types.flavor().is_gcc(),

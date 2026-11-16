@@ -111,7 +111,7 @@ void basic(void) {
 // IR-NEXT:     fn %[[VALUE_memory_output:[0-9]+]] @memory_output(%[[VALUE_x_5:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm "mov %1, %0" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "mov " %1 ", " %0;
-// IR-NEXT:             lateout 0 "m" [mem] width 32 place<i32>(%[[VALUE_g]]);
+// IR-NEXT:             lateout 0 "m" [mem] width 32 at<offset=0>(%[[VALUE_g]]) place<i32>(%[[VALUE_g]]);
 // IR-NEXT:             in 1 "r" [reg] width 32 read<i32>(%[[VALUE_x_5]]);
 // IR-NEXT:         }
 // IR-NEXT:     }

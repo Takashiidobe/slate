@@ -37,17 +37,17 @@ void store(long value) {
 // IR-NEXT:     fn %[[VALUE_store:[0-9]+]] @store(%[[VALUE_value:[0-9]+]] value: i64) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm volatile "str %x1, %0" [options=nostack,preserves_flags] {
 // IR-NEXT:             template: "str " %x1(64) ", " %0;
-// IR-NEXT:             lateout 0 "m" [mem] width 64 place<i64>(%[[VALUE_cell]]);
+// IR-NEXT:             lateout 0 "m" [mem] width 64 at<offset=0>(%[[VALUE_cell]]) place<i64>(%[[VALUE_cell]]);
 // IR-NEXT:             in 1 "rZ" [reg | imm] -> imm width 64 const<i64>(0);
 // IR-NEXT:         }
 // IR-NEXT:         asm volatile "str %x1, %0" [options=nostack,preserves_flags] {
 // IR-NEXT:             template: "str " %x1(64) ", " %0;
-// IR-NEXT:             lateout 0 "m" [mem] width 64 place<i64>(%[[VALUE_cell]]);
+// IR-NEXT:             lateout 0 "m" [mem] width 64 at<offset=0>(%[[VALUE_cell]]) place<i64>(%[[VALUE_cell]]);
 // IR-NEXT:             in 1 "rZ" [reg | imm] -> reg width 64 const<i64>(11);
 // IR-NEXT:         }
 // IR-NEXT:         asm volatile "str %x1, %0" [options=nostack,preserves_flags] {
 // IR-NEXT:             template: "str " %x1(64) ", " %0;
-// IR-NEXT:             lateout 0 "m" [mem] width 64 place<i64>(%[[VALUE_cell]]);
+// IR-NEXT:             lateout 0 "m" [mem] width 64 at<offset=0>(%[[VALUE_cell]]) place<i64>(%[[VALUE_cell]]);
 // IR-NEXT:             in 1 "rZ" [reg | imm] -> reg width 64 read<i64>(%[[VALUE_value]]);
 // IR-NEXT:         }
 // IR-NEXT:         asm volatile "add %0, %0, %1" [options=nostack,preserves_flags] {

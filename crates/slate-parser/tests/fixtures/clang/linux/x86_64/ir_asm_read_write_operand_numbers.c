@@ -41,7 +41,7 @@ out:
 // IR-NEXT:         asm volatile "# %0 %1 %2 %3 %4" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %0 " " %1;
 // IR-NEXT:             inlateout 0 "r" [reg] width 64 place<i64>(%[[VALUE_a]]);
-// IR-NEXT:             inlateout 1 "m" [mem] width 64 place<i64>(%[[VALUE_g]]);
+// IR-NEXT:             inlateout 1 "m" [mem] width 64 at<offset=0>(%[[VALUE_g]]) place<i64>(%[[VALUE_g]]);
 // IR-NEXT:             in 2 "r" [reg] width 32 read<i32>(%[[VALUE_b]]);
 // IR-NEXT:         }
 // IR-NEXT:         asm volatile "# %q1 %k1" [dialect=att] [options=nostack] {
@@ -53,7 +53,7 @@ out:
 // IR-NEXT:             inlateout 0 "r" [reg] width 64 place<i64>(%[[VALUE_a]]);
 // IR-NEXT:             lateout 1 "r" [reg] width 32 place<i32>(%[[VALUE_b]]);
 // IR-NEXT:             in 2 "r" [reg] width 32 read<i32>(%[[VALUE_b]]);
-// IR-NEXT:             in 3 "m" [mem] width 64 place<i64>(%[[VALUE_g]]);
+// IR-NEXT:             in 3 "m" [mem] width 64 at<offset=0>(%[[VALUE_g]]) place<i64>(%[[VALUE_g]]);
 // IR-NEXT:         }
 // IR-NEXT:         asm goto "# %0 %1 %l2 %1" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0 " " %0 " " %l0 " " %0;

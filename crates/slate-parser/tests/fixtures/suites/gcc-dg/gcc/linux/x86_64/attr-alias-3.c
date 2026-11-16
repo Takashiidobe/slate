@@ -120,8 +120,8 @@ main() {
 // DEFAULT-NEXT:     fn %[[VALUE_Af4a]] @Af4a() -> void [linkage=external] [alias="lf4"] [c="ftype"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=readonly,nostack] {
-// DEFAULT-NEXT:             in 0 "m" [mem] width 64 place<ptr<i32>>(%[[VALUE_pv4a]]);
-// DEFAULT-NEXT:             in 1 "m" [mem] width 64 place<ptr<fn() -> void>>(%[[VALUE_pf4a]]);
+// DEFAULT-NEXT:             in 0 "m" [mem] width 64 at<offset=0>(%[[VALUE_pv4a]]) place<ptr<i32>>(%[[VALUE_pv4a]]);
+// DEFAULT-NEXT:             in 1 "m" [mem] width 64 at<offset=0>(%[[VALUE_pf4a]]) place<ptr<fn() -> void>>(%[[VALUE_pf4a]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

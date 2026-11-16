@@ -259,6 +259,7 @@ fn intel_size(operand: &ir::AsmOperand) -> Result<&'static str> {
 #[derive(Clone, Copy)]
 enum Slot {
     Positional(usize),
+    MemorySymbol(usize, i64),
     Flags(usize, Option<usize>),
     Register(&'static str),
     PairLow(&'static str),
@@ -820,6 +821,30 @@ fn asm_template(
                         template.push_str(&spill_reference(asm, register));
                         continue;
                     }
+                    Slot::MemorySymbol(slot, offset) => {
+                        let offset = match modifier {
+                            None | Some('b' | 'h' | 'w' | 'k' | 'q') => offset,
+                            Some('H') => offset + 8,
+                            _ => {
+                                return Err(unsupported_asm(format!(
+                                    "memory modifier {modifier:?}"
+                                )));
+                            }
+                        };
+                        used[*index] = true;
+                        let displacement = match offset {
+                            0 => String::new(),
+                            offset => format!("{offset:+}"),
+                        };
+                        template.push_str(&match asm.dialect {
+                            Some(ir::AsmDialect::Intel) => format!(
+                                "{} ptr [rip + {{{slot}}}{displacement}]",
+                                intel_size(operand)?
+                            ),
+                            _ => format!("{{{slot}}}{displacement}(%rip)"),
+                        });
+                        continue;
+                    }
                     Slot::Zero => {
                         template.push_str(match modifier {
                             Some('x') => "xzr",
@@ -1027,7 +1052,11 @@ fn asm_template(
         template.push_str(&format!("\n{comment} {{{slot}}}"));
     }
     for (index, used) in used.into_iter().enumerate() {
-        if let (false, Slot::Positional(slot) | Slot::Flags(slot, _)) = (used, slots[index]) {
+        if let (
+            false,
+            Slot::Positional(slot) | Slot::Flags(slot, _) | Slot::MemorySymbol(slot, _),
+        ) = (used, slots[index])
+        {
             let operand = &asm.operands[index];
             if let Some(ir::AsmOperandClass::Flags(condition)) = operand.selected {
                 template.push_str(&match family {
@@ -1104,6 +1133,42 @@ impl FunctionLowerer<'_, '_> {
             return Ok(Expr::Var(self.binding_name(id).as_str().into()));
         }
         Err(unsupported_asm(format!("symbol binding {id:?}")))
+    }
+
+    fn asm_memory_symbol(&self, symbol: &ir::AsmSymbol) -> bool {
+        let id = symbol.binding;
+        let tables = &self.tables;
+        if tables.target.family != TargetFamily::X86_64
+            || !tables.statics.contains(&id)
+            || tables.indirect_globals.contains(&id)
+            || tables.weak_address_globals.contains(&id)
+            || tables.flexible_globals.contains_key(&id)
+            || tables.register_globals.contains_key(&id)
+            || tables.support_globals.contains_key(&id)
+        {
+            return false;
+        }
+        let Some(global) = tables
+            .module
+            .globals
+            .iter()
+            .map(|global| &global.value)
+            .find(|global| global.variable.id == id)
+        else {
+            return true;
+        };
+        let executable = tables
+            .module
+            .machine
+            .pic
+            .is_some_and(|pic| pic.level == 0 || pic.executable);
+        !global.symbol.weak
+            && (matches!(global.linkage, ir::Linkage::Internal)
+                || executable
+                || matches!(
+                    global.symbol.visibility,
+                    Some(ir::Visibility::Hidden | ir::Visibility::Protected)
+                ))
     }
 
     fn asm_fixed_place(&self, place: &ir::Place, pinned: bool) -> bool {
@@ -2029,6 +2094,18 @@ impl FunctionLowerer<'_, '_> {
                         &mut prefix,
                         &mut writebacks,
                     )?);
+                    continue;
+                }
+                Some(ir::AsmOperandClass::Memory)
+                    if let Some(symbol) = operand
+                        .address
+                        .filter(|symbol| self.asm_memory_symbol(symbol)) =>
+                {
+                    slots.push(Slot::MemorySymbol(operands.len(), symbol.offset));
+                    operands.push(rust::AsmOperand::Sym(self.asm_symbol(&ir::AsmSymbol {
+                        offset: 0,
+                        ..symbol
+                    })?));
                     continue;
                 }
                 Some(ir::AsmOperandClass::Memory) => {

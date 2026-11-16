@@ -54,6 +54,7 @@ impl Lowerer {
                     },
                     width: Some(32),
                     selected: Some(AsmOperandClass::Explicit(register)),
+                    address: None,
                 }
             })
             .collect())

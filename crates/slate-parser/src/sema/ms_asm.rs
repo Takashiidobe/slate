@@ -78,6 +78,7 @@ impl Lowered {
             kind,
             width: None,
             selected,
+            address: None,
         });
         self.operands.len() - 1
     }

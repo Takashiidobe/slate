@@ -362,18 +362,19 @@ asm        = "asm" [ " volatile" ] [ " inline" ] [ " goto" ] string
                    [ "labels:" binding { "," binding } ";" ]
                  "}" ) ;
 asm_operand = ( "in" integer [ "[" c_identifier "]" ] [ string asm_classes ]
-                  [ asm_chosen ] [ asm_width ]
+                  [ asm_chosen ] [ asm_width ] [ asm_at ]
                   ( value | asm_place | asm_symbol | asm_memory )
               | ( "out" | "lateout" ) integer [ "[" c_identifier "]" ] string
-                  asm_classes [ asm_chosen ] [ asm_width ] asm_place
+                  asm_classes [ asm_chosen ] [ asm_width ] [ asm_at ] asm_place
               | ( "inout" | "inlateout" ) integer [ "[" c_identifier "]" ] string
-                  asm_classes [ asm_chosen ] [ asm_width ] asm_place
+                  asm_classes [ asm_chosen ] [ asm_width ] [ asm_at ] asm_place
                   [ " from" value ] ) ";" ;
 asm_options = asm_option { "," asm_option } ;
 asm_option = "pure" | "nomem" | "readonly" | "nostack" | "preserves_flags"
            | "may_unwind" ;
 asm_chosen = "->" asm_class ;
 asm_width  = "width" integer ;
+asm_at     = "at<offset=" [ "-" ] integer ">(" binding ")" ;
 asm_reject = integer "(operand" integer ":" ( "unresolved(" string ")"
            | "clobber-only" | "width" | "not-constant" | "matching" | "missing" ) ")" ;
 asm_classes = "[" asm_alt { ", " asm_alt } "]" ;
@@ -457,6 +458,10 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   asm may address it in place, so no load precedes the statement.
 - An `in` with an `asm_symbol` selected `sym`: a link-time address, the
   binding's symbol plus a byte offset, which Rust takes as a `sym` operand.
+- `asm_at` (`at<offset=N>(%b)`) marks a memory-selected place whose object
+  sits at a link-time address, static-storage binding `%b` plus `N` bytes, so
+  the operand can print as `sym+N(%rip)` like clang's instead of through a
+  register (`AsmOperand::address`).
 - MSVC `__asm` lowers to the same node with `[dialect=intel]`. Its quoted string
   is the statement rebuilt from the AST (instructions joined by `\n`, numbers in
   decimal), not raw source. Its operands carry no constraint: `mem<access>` is a

@@ -512,6 +512,9 @@ impl Printer<'_> {
             if let Some(width) = operand.width {
                 write!(f, " width {width}")?;
             }
+            if let Some(address) = operand.address {
+                write!(f, " at<offset={}>(%{})", address.offset, address.binding.0)?;
+            }
             let (place, input) = match &operand.kind {
                 AsmOperandKind::In(value) => (None, Some(value)),
                 AsmOperandKind::InPlace(place) => (Some(place), None),

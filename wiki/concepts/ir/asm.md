@@ -229,6 +229,10 @@ const int k = 2`, `table[1]`, `s.field`, string elements, `*ptr` to a
   `in(reg) &raw const x`. An input that chose a register reads the place.
   With no alternative chosen, any memory-capable constraint gives
   `InPlace`.
+- A memory-selected place on a static-storage object at a constant offset
+  (`ops.f`, `tbl[2]`) also records `AsmOperand::address`, the binding plus
+  byte offset (`symbol_place`), printed `at<offset=N>(%b)`. Thread-locals and
+  places through a runtime pointer record nothing.
 - An unaddressable operand (bit-field, lane, register variable, temporary)
   falls back to a value: compilers spill it, which an input can't tell from
   a copy. Errors only where compilers agree, for memory-only constraints:
@@ -490,6 +494,12 @@ impossible.
   `InOut` as `&raw mut`, and an unaddressable `In(value)` spills to a temporary first. A
   reference prints `({N:r})` (AT&T) or `<size> ptr [{N:r}]` (Intel, size from the width);
   `%H` adds 8. `%a` on a register operand prints the same reference without a size.
+- On x86_64 a memory operand with an `address` becomes `sym` instead, printed `{N}+off(%rip)`
+  (AT&T) or `<size> ptr [rip + {N}+off]`, as clang emits for a global. objtool resolves kernel
+  pv_ops calls (`call *pv_ops+N(%rip)`) only through that relocation. The static must not be
+  preemptible: internal linkage, hidden or protected visibility, or a `-fno-pic`/`-fPIE` unit;
+  weak, indirect, flexible-array and libc-support statics keep the register form
+  (`asm_memory_operand_global_symbol.c`).
 - A naked function becomes `#[unsafe(naked)] extern "C-unwind" fn` with immutable parameters
   and one `naked_asm!` joining every asm template with newlines; operand numbers continue
   across statements. Only `const` and `sym` operands are allowed; basic templates escape
