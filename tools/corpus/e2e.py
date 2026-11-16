@@ -1703,7 +1703,10 @@ def shard_units(units, project_dir, limit):
         return mode.lstrip("-") if mode and mode != "-m64" else ""
 
     shards = []
-    groups = [*split((), linked), *[(("unlinked", *name), members) for name, members in split((), unlinked)], *modules]
+    images = collections.defaultdict(list)
+    for unit in unlinked:
+        images[paths[unit["file"]][:-1]].append(unit)
+    groups = [*split((), linked), *[(("unlinked", *image), images[image]) for image in sorted(images)], *modules]
     for name, members in groups:
         keys = collections.Counter(codegen_key(unit) for unit in members)
         variants = collections.defaultdict(list)
