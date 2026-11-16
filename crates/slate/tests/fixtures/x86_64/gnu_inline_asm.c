@@ -193,66 +193,37 @@ int main(void) {
 // CHECK-NEXT:     17
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_asm_goto(mut value: i32) -> i32 {
-// CHECK-NEXT:     let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     return 13;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     return 11;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     __slate_state = 1usize;
-// CHECK-NEXT:                     core::arch::asm!(
-// CHECK-NEXT:                         "testl {0:e}, {0:e}\n\tjz {1}", in (reg) value as u32, label {
-// CHECK-NEXT:                         __slate_state = 0usize; }, options(nostack, att_syntax)
-// CHECK-NEXT:                     );
-// CHECK-NEXT:                     continue;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     unreachable!();
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:         let mut __slate_asm_target: bool = false;
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "testl {0:e}, {0:e}\n\tjz {1}", in (reg) value as u32, label {
+// CHECK-NEXT:             __slate_asm_target = true; }, options(nostack, att_syntax)
+// CHECK-NEXT:         );
+// CHECK-NEXT:         if __slate_asm_target {
+// CHECK-NEXT:             return 13;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             return 11;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn gnu_asm_goto_output(value: i32) -> i32 {
 // CHECK-NEXT:     let mut output: core::mem::MaybeUninit<i32> = core::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut i32 = core::ptr::addr_of_mut!(output) as *mut i32;
-// CHECK-NEXT:     let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     return *[[SLATE_SLOT_0]] + 2;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     return *[[SLATE_SLOT_0]] + 1;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     core::ptr::write([[SLATE_SLOT_0]], value);
-// CHECK-NEXT:                     __slate_state = 1usize;
-// CHECK-NEXT:                     let [[T_0]]: u32;
-// CHECK-NEXT:                     core::arch::asm!(
-// CHECK-NEXT:                         "testl {0:e}, {0:e}\n\tjz {1}", inlateout(reg) * [[SLATE_SLOT_0]]
-// CHECK-NEXT:                         as u32 => [[T_0]], label { __slate_state = 0usize; },
-// CHECK-NEXT:                         options(nostack, att_syntax)
-// CHECK-NEXT:                     );
-// CHECK-NEXT:                     *[[SLATE_SLOT_0]] = unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<u32, i32>([[T_0]] as u32)
-// CHECK-NEXT:                     };
-// CHECK-NEXT:                     continue;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     unreachable!();
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:         core::ptr::write([[SLATE_SLOT_0]], value);
+// CHECK-NEXT:         let mut __slate_asm_target: bool = false;
+// CHECK-NEXT:         let [[T_0]]: u32;
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "testl {0:e}, {0:e}\n\tjz {1}", inlateout(reg) * [[SLATE_SLOT_0]] as u32 =>
+// CHECK-NEXT:             [[T_0]], label { __slate_asm_target = true; }, options(nostack, att_syntax)
+// CHECK-NEXT:         );
+// CHECK-NEXT:         *[[SLATE_SLOT_0]] = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:         if __slate_asm_target {
+// CHECK-NEXT:             return *[[SLATE_SLOT_0]] + 2;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             return *[[SLATE_SLOT_0]] + 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(

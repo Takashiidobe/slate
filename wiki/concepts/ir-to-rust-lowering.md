@@ -164,7 +164,13 @@
 - Raw slot pointers avoid creating fresh mutable references that could
   invalidate C pointers retained across states.
 - CFG construction borrows parser IR and preserves source sites for ordinary
-  statement lowering. Asm goto remains unsupported.
+  statement lowering.
+- An asm goto label block only sets the local `__slate_asm_target` (a bool for
+  one label, else the 1-based label index). An ordinary `if` after the asm
+  jumps to the label's state. Goto structuring never sees a state assignment
+  inside an asm operand, so the function is structured like any other, and
+  LLVM folds the flag into the asm's direct jump (objtool needs direct edges to
+  follow stac/clac regions and emit ORC for every instruction).
 - `label_addr` lowers to the constant pointer `label id + 1`, so label tables
   (`static void *t[] = {&&a}`) and label deltas (`&&a - &&b`, folded to an
   integer) are constant initializers; offsets from a label address use

@@ -493,6 +493,16 @@ impl<'a> Graph<'a> {
     }
 }
 
+pub(super) const ASM_TARGET: &str = "__slate_asm_target";
+
+pub(super) fn asm_target_value(labels: usize, index: usize) -> Expr {
+    Expr::Value(if labels == 1 {
+        rust::RustValue::Bool(true)
+    } else {
+        rust::RustValue::Usize(index + 1)
+    })
+}
+
 pub(super) fn state(index: usize) -> Expr {
     Expr::Value(rust::RustValue::Usize(index))
 }
@@ -803,8 +813,42 @@ impl FunctionLowerer<'_, '_> {
                         }]
                     }
                     Node::AsmGoto(statement, asm, next, labels, entry) => {
-                        let mut body = jump(next);
-                        body.insert(1, self.lower_asm(statement, asm, &labels, entry)?);
+                        let single = labels.len() == 1;
+                        let mut body = vec![
+                            Stmt::Let {
+                                name: ASM_TARGET.into(),
+                                mutable: true,
+                                ty: Some(rust::Type::Prim(if single {
+                                    Prim::Bool
+                                } else {
+                                    Prim::Usize
+                                })),
+                                init: Some(Expr::Value(if single {
+                                    rust::RustValue::Bool(false)
+                                } else {
+                                    rust::RustValue::Usize(0)
+                                })),
+                            },
+                            self.lower_asm(statement, asm, labels.len(), entry)?,
+                        ];
+                        let mut dispatch = jump(next);
+                        for (index, label) in labels.iter().enumerate().rev() {
+                            let target = Expr::Var(ASM_TARGET.into());
+                            dispatch = vec![Stmt::If {
+                                cond: if single {
+                                    target
+                                } else {
+                                    Expr::Binary {
+                                        op: BinOp::Eq,
+                                        lhs: Box::new(target),
+                                        rhs: Box::new(asm_target_value(labels.len(), index)),
+                                    }
+                                },
+                                then_body: jump(*label),
+                                else_body: dispatch,
+                            }];
+                        }
+                        body.extend(dispatch);
                         body
                     }
                 });

@@ -98,113 +98,61 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: fn zero_u8(mut p: &u8) -> i32 {
-// CHECK-NEXT:     let mut __slate_state: usize = 3usize;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     return 1;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     return 0;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     if false {
-// CHECK-NEXT:                         __slate_state = 3usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         __slate_state = 1usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 3 => {
-// CHECK-NEXT:                     __slate_state = 2usize;
-// CHECK-NEXT:                     core::arch::asm!(
-// CHECK-NEXT:                         "cmpb $0, {0:l}\n\tje {1}", in (reg) (* (p as * const u8) as u8)
-// CHECK-NEXT:                         as u32, label { __slate_state = 0usize; }, options(nostack,
-// CHECK-NEXT:                         att_syntax)
-// CHECK-NEXT:                     );
-// CHECK-NEXT:                     continue;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     unreachable!();
+// CHECK-NEXT:             let mut __slate_asm_target: bool = false;
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmpb $0, {0:l}\n\tje {1}", in (reg) (* (p as * const u8) as u8) as u32,
+// CHECK-NEXT:                 label { __slate_asm_target = true; }, options(nostack, att_syntax)
+// CHECK-NEXT:             );
+// CHECK-NEXT:             if __slate_asm_target {
+// CHECK-NEXT:                 return 1;
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 if true {
+// CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
+// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn zero_u32(mut p: &u32) -> i32 {
-// CHECK-NEXT:     let mut __slate_state: usize = 3usize;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     return 1;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     return 0;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     if false {
-// CHECK-NEXT:                         __slate_state = 3usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         __slate_state = 1usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 3 => {
-// CHECK-NEXT:                     __slate_state = 2usize;
-// CHECK-NEXT:                     core::arch::asm!(
-// CHECK-NEXT:                         "cmpl $0, {0:e}\n\tje {1}", in (reg) * (p as * const u32) as u32,
-// CHECK-NEXT:                         label { __slate_state = 0usize; }, options(nostack, att_syntax)
-// CHECK-NEXT:                     );
-// CHECK-NEXT:                     continue;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     unreachable!();
+// CHECK-NEXT:             let mut __slate_asm_target: bool = false;
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmpl $0, {0:e}\n\tje {1}", in (reg) * (p as * const u32) as u32, label {
+// CHECK-NEXT:                 __slate_asm_target = true; }, options(nostack, att_syntax)
+// CHECK-NEXT:             );
+// CHECK-NEXT:             if __slate_asm_target {
+// CHECK-NEXT:                 return 1;
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 if true {
+// CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
+// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn zero_u64(mut p: &u64) -> i32 {
-// CHECK-NEXT:     let mut __slate_state: usize = 3usize;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     return 1;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     return 0;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     if false {
-// CHECK-NEXT:                         __slate_state = 3usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         __slate_state = 1usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 3 => {
-// CHECK-NEXT:                     __slate_state = 2usize;
-// CHECK-NEXT:                     core::arch::asm!(
-// CHECK-NEXT:                         "cmpq $0, {0:r}\n\tje {1}", in (reg) * (p as * const u64) as u64,
-// CHECK-NEXT:                         label { __slate_state = 0usize; }, options(nostack, att_syntax)
-// CHECK-NEXT:                     );
-// CHECK-NEXT:                     continue;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     unreachable!();
+// CHECK-NEXT:             let mut __slate_asm_target: bool = false;
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmpq $0, {0:r}\n\tje {1}", in (reg) * (p as * const u64) as u64, label {
+// CHECK-NEXT:                 __slate_asm_target = true; }, options(nostack, att_syntax)
+// CHECK-NEXT:             );
+// CHECK-NEXT:             if __slate_asm_target {
+// CHECK-NEXT:                 return 1;
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 if true {
+// CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
+// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-NEXT: fn load_u64(mut p: &u64) -> u64 {
 // CHECK-NEXT:     let mut x: u64 = 0;

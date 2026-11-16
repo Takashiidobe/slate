@@ -112,114 +112,62 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn branch__const4(key: *mut key, likely: bool) -> i32 {
-// CHECK-NEXT:     let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     return 1;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     return 0;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     __slate_state = 1usize;
-// CHECK-NEXT:                     core::arch::asm!("jmp {2}\n\t.pushsection .data.slate_keys,\"aw\"\n\t.quad {0} + {1}\n\t.popsection", sym k1, const 1 as u8, label {
-// CHECK-NEXT: __slate_state = 0usize;
+// CHECK-NEXT:         let mut __slate_asm_target: bool = false;
+// CHECK-NEXT:         core::arch::asm!("jmp {2}\n\t.pushsection .data.slate_keys,\"aw\"\n\t.quad {0} + {1}\n\t.popsection", sym k1, const 1 as u8, label {
+// CHECK-NEXT: __slate_asm_target = true;
 // CHECK-NEXT: }, options(nostack, att_syntax));
-// CHECK-NEXT:                     continue;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     unreachable!();
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:         if __slate_asm_target {
+// CHECK-NEXT:             return 1;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn branch__const5(key: *mut key, likely: bool) -> i32 {
-// CHECK-NEXT:     let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     return 1;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     return 0;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     __slate_state = 1usize;
-// CHECK-NEXT:                     core::arch::asm!("jmp {2}\n\t.pushsection .data.slate_keys,\"aw\"\n\t.quad {0} + {1}\n\t.popsection", sym k2, const 0 as u8, label {
-// CHECK-NEXT: __slate_state = 0usize;
+// CHECK-NEXT:         let mut __slate_asm_target: bool = false;
+// CHECK-NEXT:         core::arch::asm!("jmp {2}\n\t.pushsection .data.slate_keys,\"aw\"\n\t.quad {0} + {1}\n\t.popsection", sym k2, const 0 as u8, label {
+// CHECK-NEXT: __slate_asm_target = true;
 // CHECK-NEXT: }, options(nostack, att_syntax));
-// CHECK-NEXT:                     continue;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     unreachable!();
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:         if __slate_asm_target {
+// CHECK-NEXT:             return 1;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn branch__const8(key: *mut key, likely: bool) -> i32 {
-// CHECK-NEXT:     let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     return 1;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     return 0;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     __slate_state = 1usize;
-// CHECK-NEXT:                     core::arch::asm!("jmp {2}\n\t.pushsection .data.slate_keys,\"aw\"\n\t.quad {0} + {1}\n\t.popsection", sym holder, const 1 as u8, label {
-// CHECK-NEXT: __slate_state = 0usize;
+// CHECK-NEXT:         let mut __slate_asm_target: bool = false;
+// CHECK-NEXT:         core::arch::asm!("jmp {2}\n\t.pushsection .data.slate_keys,\"aw\"\n\t.quad {0} + {1}\n\t.popsection", sym holder, const 1 as u8, label {
+// CHECK-NEXT: __slate_asm_target = true;
 // CHECK-NEXT: }, options(nostack, att_syntax));
-// CHECK-NEXT:                     continue;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     unreachable!();
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:         if __slate_asm_target {
+// CHECK-NEXT:             return 1;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn branch__const9(key: *mut key, likely: bool) -> i32 {
-// CHECK-NEXT:     let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     return 1;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     return 0;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     __slate_state = 1usize;
-// CHECK-NEXT:                     core::arch::asm!("jmp {2}\n\t.pushsection .data.slate_keys,\"aw\"\n\t.quad {0} + {1}\n\t.popsection", sym k2, const 0 as u8, label {
-// CHECK-NEXT: __slate_state = 0usize;
+// CHECK-NEXT:         let mut __slate_asm_target: bool = false;
+// CHECK-NEXT:         core::arch::asm!("jmp {2}\n\t.pushsection .data.slate_keys,\"aw\"\n\t.quad {0} + {1}\n\t.popsection", sym k2, const 0 as u8, label {
+// CHECK-NEXT: __slate_asm_target = true;
 // CHECK-NEXT: }, options(nostack, att_syntax));
-// CHECK-NEXT:                     continue;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     unreachable!();
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:         if __slate_asm_target {
+// CHECK-NEXT:             return 1;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]

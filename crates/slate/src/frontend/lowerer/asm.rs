@@ -1775,7 +1775,7 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         statement: &Span<ir::Statement>,
         asm: &ir::InlineAsm,
-        labels: &[usize],
+        labels: usize,
         entry: Option<BindingId>,
     ) -> Result<Stmt> {
         let family = self.tables.target.family;
@@ -1783,7 +1783,7 @@ impl FunctionLowerer<'_, '_> {
         let arm = family == TargetFamily::Arm32;
         let narrowed = x86.then(|| high_byte_narrowed(asm)).flatten();
         let asm = narrowed.as_ref().unwrap_or(asm);
-        if asm.labels.len() != labels.len() {
+        if asm.labels.len() != labels {
             return Err(unsupported_asm("asm goto outside dispatch"));
         }
         if !asm.operands.is_empty() && asm.alternative.is_none() {
@@ -2615,12 +2615,11 @@ impl FunctionLowerer<'_, '_> {
                 });
             }
         }
-        let label_slots: Vec<_> = labels
-            .iter()
-            .map(|label| {
+        let label_slots: Vec<_> = (0..labels)
+            .map(|index| {
                 operands.push(rust::AsmOperand::Label {
-                    state: Expr::Var("__slate_state".into()),
-                    value: control_flow::state(*label),
+                    state: Expr::Var(control_flow::ASM_TARGET.into()),
+                    value: control_flow::asm_target_value(labels, index),
                 });
                 operands.len() - 1
             })
@@ -2722,7 +2721,7 @@ impl FunctionLowerer<'_, '_> {
         }
         operands.extend(explicit);
         self.dependencies.asm_unwind |= options.contains(&rust::AsmOption::MayUnwind);
-        self.dependencies.asm_goto_with_outputs |= !labels.is_empty()
+        self.dependencies.asm_goto_with_outputs |= labels != 0
             && operands.iter().any(|operand| {
                 matches!(
                     operand,
