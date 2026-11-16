@@ -1797,9 +1797,14 @@ def sharded_stages(units, project_dir, out, recipe, args, finish):
     paths = {name: [os.path.relpath(unit["file"], project_dir) for unit in shard] for name, shard in shards.items()}
     (out / "shards.json").write_text(json.dumps(paths, indent=1) + "\n")
     log(f"{len(shards)} shards, largest {max(map(len, shards.values()))} units")
+    unknown = sorted(set(args.shards or ()) - set(shards))
+    if unknown:
+        raise SystemExit(f"unknown shards: {', '.join(unknown)}")
     failed = {}
     total = 0
-    for index, (name, shard) in enumerate(shards.items()):
+    selected = [(name, shard) for name, shard in shards.items()
+                if STAGES.index(args.start) <= STAGES.index("translate") and (not args.shards or name in args.shards)]
+    for index, (name, shard) in enumerate(selected):
         directory = root / name
         directory.mkdir(exist_ok=True)
         staging = directory / "next"
@@ -1808,7 +1813,7 @@ def sharded_stages(units, project_dir, out, recipe, args, finish):
         commands = directory / "compile_commands.json"
         commands.write_text(json.dumps([{key: value for key, value in unit.items()
                                          if key not in ("native", "standalone")} for unit in shard], indent=1) + "\n")
-        log(f"[{index + 1}/{len(shards)}] {name} ({len(shard)} units)")
+        log(f"[{index + 1}/{len(selected)}] {name} ({len(shard)} units)")
         crate_type = ["--crate-type", recipe.crate_type]
         while True:
             code, seconds = run([SLATE, "translate-project", *crate_type, "--compile-commands", commands,
@@ -1824,7 +1829,7 @@ def sharded_stages(units, project_dir, out, recipe, args, finish):
         if code:
             lines = (directory / "translate.log").read_text(errors="replace").splitlines()
             failed[name] = next((line for line in lines if "error" in line), lines[-1] if lines else str(code))
-    report = [f"# translate: {len(shards) - len(failed)}/{len(shards)} shards", ""]
+    report = [f"# translate: {len(selected) - len(failed)}/{len(selected)} shards", ""]
     report += [f"- `{name}`: {error}" for name, error in failed.items()]
     (out / "translate.md").write_text("\n".join(report) + "\n")
     if not finish("translate", "failed" if failed else "ok", shards=len(shards), failed=sorted(failed),
@@ -1874,6 +1879,10 @@ def main():
     parser.add_argument("--out", type=Path)
     parser.add_argument("--setup", action="store_true", help="rebuild build-<mode> with c_corpus_setup.py first")
     parser.add_argument("--until", choices=STAGES, default=STAGES[-1])
+    parser.add_argument("--from", dest="start", choices=("native", "translate", "build"), default="native",
+                        help="sharded projects: skip the barrier pass, and translate too for build")
+    parser.add_argument("--shards", type=lambda value: set(value.split(",")),
+                        help="sharded projects: re-translate only these shards; build and link use all")
     parser.add_argument("--jobs", type=int, default=os.cpu_count() or 8)
     parser.add_argument("--profile", default="release")
     parser.add_argument("--test-timeout", type=int, default=7200)
@@ -1942,9 +1951,12 @@ def main():
     if not finish("native", "failed" if missing else "ok", missing=missing, units=len(units)):
         return 1 if missing else 0
 
-    blocked = barrier_report(units, project_dir, out, args.jobs)
-    if not finish("barriers", "ok", blocked=blocked, report="barriers.md"):
-        return 0
+    if (args.start != "native" or args.shards) and not (translation_only and recipe.shard_units):
+        raise SystemExit("--from and --shards apply only to sharded projects")
+    if args.start == "native":
+        blocked = barrier_report(units, project_dir, out, args.jobs)
+        if not finish("barriers", "ok", blocked=blocked, report="barriers.md"):
+            return 0
     if translation_only and recipe.shard_units:
         return sharded_stages(units, project_dir, out, recipe, args, finish)
 
