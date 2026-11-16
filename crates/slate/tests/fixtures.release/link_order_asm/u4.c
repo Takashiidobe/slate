@@ -1,13 +1,13 @@
 __attribute__((used)) static int registered_u4(void) { return 4; }
 
-__asm__(".pushsection slate_order_set,\"aR\"\n"
+__asm__(".pushsection slate_order_set,\"a\"\n"
         ".balign 4\n"
         ".long registered_u4 - .\n"
         ".popsection");
 
 int registered_extern(void);
 
-__asm__(".pushsection slate_order_set,\"aR\"\n"
+__asm__(".pushsection slate_order_set,\"a\"\n"
         ".balign 4\n"
         ".long registered_extern - .\n"
         ".popsection");

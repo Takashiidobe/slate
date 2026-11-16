@@ -1,6 +1,6 @@
 __attribute__((used)) static int registered_u6(void) { return 6; }
 
-__asm__(".pushsection slate_order_set,\"aR\"\n"
+__asm__(".pushsection slate_order_set,\"a\"\n"
         ".balign 4\n"
         ".long registered_u6 - .\n"
         ".popsection");

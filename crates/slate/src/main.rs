@@ -1547,28 +1547,43 @@ fn write_project_crate(
     });
     let mut written = collect_all_errors(results)?;
     let has_shims = !shim_names.is_empty();
+    let shim_path = crate_src.join("slate_long_double.c");
     if has_shims {
-        write_file(
-            &crate_dir.join("build.rs"),
-            &c_shim::shim_build_script(&shim_gates),
-        )?;
-        let shim_path = crate_src.join("slate_long_double.c");
         std::fs::write(
             &shim_path,
             c_shim::render_shim_c_source_for_names(&shim_names),
         )
         .map_err(|e| format!("write {}: {e}", shim_path.display()))?;
         written.push(shim_path);
+    } else if shim_path.exists() {
+        std::fs::remove_file(&shim_path)
+            .map_err(|e| format!("remove {}: {e}", shim_path.display()))?;
+    }
+    let link_arg_target = if root.is_some() {
+        Some("bins")
     } else {
-        for stale in [
-            crate_dir.join("build.rs"),
-            crate_src.join("slate_long_double.c"),
-        ] {
-            if stale.exists() {
-                std::fs::remove_file(&stale)
-                    .map_err(|e| format!("remove {}: {e}", stale.display()))?;
-            }
+        lib_crate_types
+            .as_deref()
+            .is_some_and(|types| types.iter().any(|ty| ty == "cdylib"))
+            .then_some("cdylib")
+    };
+    let statements: String = has_shims
+        .then(|| c_shim::shim_build_statements(&shim_gates))
+        .into_iter()
+        .chain(link_arg_target.map(|target| {
+            format!(
+                "    if std::env::var(\"CARGO_CFG_TARGET_OS\").as_deref() == Ok(\"linux\") {{\n        println!(\"cargo:rustc-link-arg-{target}=-Wl,-z,nostart-stop-gc\");\n    }}\n"
+            )
+        }))
+        .collect();
+    let build_script = crate_dir.join("build.rs");
+    if statements.is_empty() {
+        if build_script.exists() {
+            std::fs::remove_file(&build_script)
+                .map_err(|e| format!("remove {}: {e}", build_script.display()))?;
         }
+    } else {
+        write_file(&build_script, &format!("fn main() {{\n{statements}}}\n"))?;
     }
     if uses_blocks {
         write_blocks_support(crate_dir)?;

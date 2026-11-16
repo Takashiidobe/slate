@@ -421,12 +421,12 @@ fn build_script_condition(cfg: &Cfg) -> String {
     }
 }
 
-pub fn shim_build_script(gates: &[Option<Cfg>]) -> String {
+pub fn shim_build_statements(gates: &[Option<Cfg>]) -> String {
     let compile =
         "cc::Build::new().file(\"src/slate_long_double.c\").compile(\"slate_long_double\");";
     let rerun = "println!(\"cargo:rerun-if-changed=src/slate_long_double.c\");";
     if gates.iter().any(Option::is_none) {
-        return format!("fn main() {{\n    {rerun}\n    {compile}\n}}\n");
+        return format!("    {rerun}\n    {compile}\n");
     }
     let mut unique: Vec<Cfg> = Vec::new();
     for gate in gates.iter().flatten() {
@@ -438,7 +438,7 @@ pub fn shim_build_script(gates: &[Option<Cfg>]) -> String {
         [only] => build_script_condition(only),
         _ => build_script_condition(&Cfg::Any(unique)),
     };
-    format!("fn main() {{\n    {rerun}\n    if {condition} {{\n        {compile}\n    }}\n}}\n")
+    format!("    {rerun}\n    if {condition} {{\n        {compile}\n    }}\n")
 }
 
 fn header_for_shim_name(name: &str) -> Option<&'static str> {

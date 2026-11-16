@@ -9,7 +9,7 @@ unsigned long work_u1(unsigned long), work_u2(unsigned long), work_u3(unsigned l
 
 __attribute__((used)) static int registered_main(void) { return 0; }
 
-__asm__(".pushsection slate_order_set,\"aR\"\n"
+__asm__(".pushsection slate_order_set,\"a\"\n"
         ".balign 4\n"
         ".long registered_main - .\n"
         ".popsection");
