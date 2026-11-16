@@ -840,10 +840,7 @@ impl ClassifyCtx<'_> {
         let Expr::MethodCall { recv, method, args } = peel_unsafe_tail(source_expr) else {
             return false;
         };
-        if !matches!(
-            method.as_str(),
-            "add" | "offset" | "wrapping_add" | "sub" | "wrapping_sub"
-        ) {
+        if !is_pointer_step(method) {
             return false;
         }
         let Expr::Var(recv_name) = &**recv else {
@@ -1059,10 +1056,7 @@ impl ClassifyCtx<'_> {
                     if is_write
                         && let Expr::MethodCall { recv, method, .. } =
                             peel_cast(peel_unsafe_tail(expr))
-                        && matches!(
-                            method.as_str(),
-                            "add" | "offset" | "wrapping_add" | "sub" | "wrapping_sub"
-                        )
+                        && is_pointer_step(method)
                         && let Some(name) = read_var_name(recv)
                         && let Some(canonical) = self.canonical_of(name.as_str())
                     {
@@ -1161,10 +1155,7 @@ impl ClassifyCtx<'_> {
             Expr::MethodCall { recv, method, args } => {
                 if let Some(name) = read_var_name(recv)
                     && let Some(canonical) = self.canonical_of(name.as_str())
-                    && matches!(
-                        method.as_str(),
-                        "add" | "offset" | "wrapping_add" | "sub" | "wrapping_sub" | "offset_from"
-                    )
+                    && (is_pointer_step(method) || method == "offset_from")
                 {
                     self.observe(&canonical, PointerFact::observe_offset);
                 } else {
@@ -1431,14 +1422,7 @@ fn pointer_root(expr: &Expr) -> Option<String> {
         Expr::Var(name) => Some(name.to_string()),
         Expr::AddrOf { expr, .. } | Expr::Ref { expr, .. } => place_root(expr),
         Expr::ArrayPtr { array, .. } => place_root(array),
-        Expr::MethodCall { recv, method, .. }
-            if matches!(
-                method.as_str(),
-                "add" | "offset" | "wrapping_add" | "sub" | "wrapping_sub"
-            ) =>
-        {
-            pointer_root(recv)
-        }
+        Expr::MethodCall { recv, method, .. } if is_pointer_step(method) => pointer_root(recv),
         Expr::MethodCall { recv, method, .. }
             if matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
         {
@@ -2497,10 +2481,7 @@ fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
 
     if let Expr::MethodCall { recv, method, args } = expr
         && let Expr::Var(name) = &**recv
-        && matches!(
-            method.as_str(),
-            "add" | "offset" | "wrapping_add" | "sub" | "wrapping_sub" | "offset_from"
-        )
+        && (is_pointer_step(method) || method == "offset_from")
         && let Some(plan) = ctx.own.get(name.as_str())
     {
         **recv = to_raw_pointer(name.as_str(), plan);
@@ -2697,4 +2678,11 @@ fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
             rewrite_expr(else_expr, ctx);
         }
     }
+}
+
+fn is_pointer_step(method: &str) -> bool {
+    matches!(
+        method,
+        "add" | "offset" | "wrapping_add" | "wrapping_offset" | "sub" | "wrapping_sub"
+    )
 }
