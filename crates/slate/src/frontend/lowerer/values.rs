@@ -1607,8 +1607,15 @@ impl FunctionLowerer<'_, '_> {
                 amount,
                 subtract,
                 element,
-                ..
-            } => self.lower_pointer_offset(value, pointer, amount, *subtract, element)?,
+                overflow,
+            } => self.lower_pointer_offset(
+                value,
+                pointer,
+                amount,
+                *subtract,
+                element,
+                matches!(overflow, ir::Overflow::Wrap),
+            )?,
             ValueKind::PointerDifference { left, right, .. }
                 if let (ValueKind::LabelAddress(left), ValueKind::LabelAddress(right)) =
                     (&left.node.value, &right.node.value) =>

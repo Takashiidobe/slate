@@ -633,6 +633,7 @@ impl<W: Write> Codegen<W> {
             }
             CrateAttr::NoMain => return self.out.write_str("no_main"),
             CrateAttr::NoStd => return self.out.write_str("no_std"),
+            CrateAttr::NoBuiltins => return self.out.write_str("no_builtins"),
         };
         write!(self.out, "{kind}(")?;
         for (i, lint) in lints.iter().enumerate() {

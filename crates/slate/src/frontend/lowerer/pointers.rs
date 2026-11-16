@@ -143,6 +143,7 @@ impl FunctionLowerer<'_, '_> {
         amount: &ir::Value,
         subtract: bool,
         element: &ir::Type,
+        wrap: bool,
     ) -> Result<Expr> {
         let offset = Expr::Cast {
             expr: Box::new(self.lower_value(amount)?),
@@ -157,6 +158,15 @@ impl FunctionLowerer<'_, '_> {
             offset
         };
         Ok(match element {
+            _ if wrap && self.tables.variably_modified(element) => Expr::MethodCall {
+                recv: Box::new(self.lower_value(pointer)?),
+                method: "wrapping_byte_offset".into(),
+                args: vec![Expr::Binary {
+                    op: BinOp::Mul,
+                    lhs: Box::new(offset),
+                    rhs: Box::new(self.runtime_stride(element)?),
+                }],
+            },
             _ if self.tables.variably_modified(element) => Expr::Unsafe(Box::new(rust::Block {
                 stmts: Vec::new(),
                 tail: Some(Box::new(Expr::MethodCall {
@@ -174,7 +184,8 @@ impl FunctionLowerer<'_, '_> {
                     stmts: Vec::new(),
                     tail: Some(Box::new(Expr::MethodCall {
                         recv: Box::new(self.byte_pointer(pointer)?),
-                        method: if self.in_static_initializer
+                        method: if wrap
+                            || self.in_static_initializer
                             || matches!(pointer.node.value, ValueKind::LabelAddress(_))
                         {
                             "wrapping_offset"
@@ -196,7 +207,7 @@ impl FunctionLowerer<'_, '_> {
                     args: vec![offset],
                 }),
             },
-            _ if self.in_static_initializer => Expr::MethodCall {
+            _ if wrap || self.in_static_initializer => Expr::MethodCall {
                 recv: Box::new(self.lower_value(pointer)?),
                 method: "wrapping_offset".into(),
                 args: vec![offset],

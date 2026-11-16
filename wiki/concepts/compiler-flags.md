@@ -447,8 +447,8 @@ where the effect is observable at runtime. Highlights:
   `arcp`, `reassoc`, `afn` have no IR field yet; slate-parser-dyd.57). Its
   macros are emulated.
 - Pointers: `-fno-delete-null-pointer-checks` is recorded but needs a
-  null-access contract in the IR. The pointer wrapping implied by `-fno-strict-overflow` is
-  stored but not yet applied.
+  null-access contract in the IR. The pointer wrapping implied by `-fno-strict-overflow` lowers
+  pointer offsets to `wrapping_offset` (subtraction is not covered yet).
 - Scoped overrides: `__attribute__((optimize))` does not change operation
   contracts yet. `#pragma float_control`, `STDC FP_CONTRACT`, and
   `FENV_ACCESS` do (`sema/pragmas.rs`).

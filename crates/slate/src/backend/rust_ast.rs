@@ -16,6 +16,7 @@ pub struct Program {
     pub macro_outcomes: Vec<MacroOutcome>,
     pub runtime: Runtime,
     pub no_unwind: bool,
+    pub no_builtins: bool,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -272,6 +273,7 @@ pub enum CrateAttr {
     Feature(Feature),
     NoMain,
     NoStd,
+    NoBuiltins,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

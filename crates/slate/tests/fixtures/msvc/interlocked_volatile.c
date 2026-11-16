@@ -93,6 +93,7 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     fn _InterlockedExchangePointer([[ARG_0]]: *mut *mut (), [[ARG_1]]: *mut ()) -> *mut ();
 // I686-PC-WINDOWS-MSVC-NEXT: }
 // I686-PC-WINDOWS-MSVC-EMPTY:
+// I686-PC-WINDOWS-MSVC-NEXT: #[inline(always)]
 // I686-PC-WINDOWS-MSVC-NEXT: fn _InlineInterlockedExchangePointer(Destination: *mut *mut (), Value: &()) -> *mut () {
 // I686-PC-WINDOWS-MSVC-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         let [[T_0:__t[0-9]+]] = (Value as *const ()) as i32;
@@ -103,6 +104,7 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:     [[V_0]] as *mut ()
 // I686-PC-WINDOWS-MSVC-NEXT: }
 // I686-PC-WINDOWS-MSVC-EMPTY:
+// I686-PC-WINDOWS-MSVC-NEXT: #[inline(always)]
 // I686-PC-WINDOWS-MSVC-NEXT: fn _InlineInterlockedCompareExchangePointer(
 // I686-PC-WINDOWS-MSVC-NEXT:     Destination: *mut *mut (),
 // I686-PC-WINDOWS-MSVC-NEXT:     ExChange: &(),
@@ -386,7 +388,7 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:         let [[T_16:__t[0-9]+]] = !(1u8 << (([[V_14]] as u8) & 7));
 // I686-PC-WINDOWS-MSVC-NEXT:         let [[T_17:__t[0-9]+]] = core::sync::atomic::AtomicU8::from_ptr(
 // I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(flags) as *mut i32) as *mut u8)
-// I686-PC-WINDOWS-MSVC-NEXT:                 .offset(([[V_14]] >> 3i32) as isize) as *mut u8,
+// I686-PC-WINDOWS-MSVC-NEXT:                 .wrapping_offset(([[V_14]] >> 3i32) as isize) as *mut u8,
 // I686-PC-WINDOWS-MSVC-NEXT:         )
 // I686-PC-WINDOWS-MSVC-NEXT:         .fetch_and([[T_16]], core::sync::atomic::Ordering::SeqCst);
 // I686-PC-WINDOWS-MSVC-NEXT:         [[T_17]]
@@ -404,9 +406,9 @@ int main(void) { return 0; }
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         let [[T_18:__t[0-9]+]] = !(1u8 << (([[V_15]] as u8) & 7));
 // CHECK-NEXT:         let [[T_19:__t[0-9]+]] = core::sync::atomic::AtomicU8::from_ptr(
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(flags) as *mut i32) as *mut u8)
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 .offset(([[V_15]] >> 3i32) as isize) as *mut u8,
-// I686-PC-WINDOWS-MSVC-NEXT:                 .offset(([[V_16]] >> 3i32) as isize) as *mut u8,
-// AARCH64-PC-WINDOWS-MSVC-NEXT:                 .offset(([[V_15]] >> 3i32) as isize) as *mut u8,
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 .wrapping_offset(([[V_15]] >> 3i32) as isize) as *mut u8,
+// I686-PC-WINDOWS-MSVC-NEXT:                 .wrapping_offset(([[V_16]] >> 3i32) as isize) as *mut u8,
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 .wrapping_offset(([[V_15]] >> 3i32) as isize) as *mut u8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .fetch_and([[T_18]], core::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:         [[T_19]]
@@ -429,9 +431,9 @@ int main(void) { return 0; }
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         let [[T_20:__t[0-9]+]] = !(1u8 << (([[V_17]] as u8) & 7));
 // CHECK-NEXT:         let [[T_21:__t[0-9]+]] = core::sync::atomic::AtomicU8::from_ptr(
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(flags) as *mut i32) as *mut u8)
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 .offset(([[V_17]] >> 3i32) as isize) as *mut u8,
-// I686-PC-WINDOWS-MSVC-NEXT:                 .offset(([[V_18]] >> 3i32) as isize) as *mut u8,
-// AARCH64-PC-WINDOWS-MSVC-NEXT:                 .offset(([[V_17]] >> 3i32) as isize) as *mut u8,
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 .wrapping_offset(([[V_17]] >> 3i32) as isize) as *mut u8,
+// I686-PC-WINDOWS-MSVC-NEXT:                 .wrapping_offset(([[V_18]] >> 3i32) as isize) as *mut u8,
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 .wrapping_offset(([[V_17]] >> 3i32) as isize) as *mut u8,
 // CHECK-NEXT:         )
 // X86_64-PC-WINDOWS-MSVC-NEXT:         .fetch_and([[T_20]], core::sync::atomic::Ordering::SeqCst);
 // I686-PC-WINDOWS-MSVC-NEXT:         .fetch_or([[T_20]], core::sync::atomic::Ordering::SeqCst);
@@ -448,7 +450,7 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:         let [[T_22:__t[0-9]+]] = 1u8 << (([[V_19]] as u8) & 7);
 // X86_64-PC-WINDOWS-MSVC-NEXT:         let [[T_23:__t[0-9]+]] = core::sync::atomic::AtomicU8::from_ptr(
 // X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(flags) as *mut i32) as *mut u8)
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 .offset(([[V_19]] >> 3i32) as isize) as *mut u8,
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 .wrapping_offset(([[V_19]] >> 3i32) as isize) as *mut u8,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         )
 // X86_64-PC-WINDOWS-MSVC-NEXT:         .fetch_or([[T_22]], core::sync::atomic::Ordering::SeqCst);
 // X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_23]]
@@ -465,7 +467,7 @@ int main(void) { return 0; }
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         let [[T_22:__t[0-9]+]] = 1u8 << (([[V_19]] as u8) & 7);
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         let [[T_23:__t[0-9]+]] = core::sync::atomic::AtomicU8::from_ptr(
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(flags) as *mut i32) as *mut u8)
-// AARCH64-PC-WINDOWS-MSVC-NEXT:                 .offset(([[V_19]] >> 3i32) as isize) as *mut u8,
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 .wrapping_offset(([[V_19]] >> 3i32) as isize) as *mut u8,
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         )
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         .fetch_or([[T_22]], core::sync::atomic::Ordering::SeqCst);
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_23]]

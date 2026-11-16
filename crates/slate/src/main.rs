@@ -1411,7 +1411,12 @@ fn write_project_crate(
         && programs
             .iter()
             .all(|(_, program)| !program.runtime.has_std());
-    let no_std = freestanding.then_some(rust_ast::CrateAttr::NoStd);
+    let no_builtins = programs.iter().any(|(_, program)| program.no_builtins);
+    let no_std: Vec<_> = freestanding
+        .then_some(rust_ast::CrateAttr::NoStd)
+        .into_iter()
+        .chain(no_builtins.then_some(rust_ast::CrateAttr::NoBuiltins))
+        .collect();
     if freestanding {
         rust_features.insert(rust_ast::Feature::Linkage);
     }

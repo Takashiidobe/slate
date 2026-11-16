@@ -1811,6 +1811,7 @@ impl<'m> ModuleLowerer<'m> {
                 macro_outcomes,
                 runtime: tables.runtime,
                 no_unwind: !tables.runtime.has_std(),
+                no_builtins: !self.module.hosted,
             },
             barriers,
             address_taken: dependencies.taken_functions,

@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-NEXT:             .fetch_update(
 // CHECK-NEXT:                 core::sync::atomic::Ordering::AcqRel,
 // CHECK-NEXT:                 core::sync::atomic::Ordering::Acquire,
-// CHECK-NEXT:                 |[[T_3:__t[0-9]+]]| Some(([[T_3]] as *mut i32).add(2) as *mut i32),
+// CHECK-NEXT:                 |[[T_3:__t[0-9]+]]| Some(([[T_3]] as *mut i32).wrapping_offset(2 as isize) as *mut i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .unwrap_or_else(|[[T_3]]| [[T_3]]);
 // CHECK-NEXT:         [[T_2]] as *mut i32
