@@ -92,15 +92,19 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
-// CHECK-NEXT: #[repr(C, align(32))]
-// CHECK-NEXT: struct __SlateAlign32<T>(T);
-// CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-NEXT: use slate_support::memset;
-// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
+// CHECK-NEXT: #[repr(C, align(32))]
+// CHECK-NEXT: struct __SlateAlign32<T>(T);
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign32<T> {}
+// CHECK-EMPTY:
+// CHECK-NEXT: use slate_support::memcpy;
+// CHECK-NEXT: use slate_support::memset;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn scribble() {
 // CHECK-NEXT:     let mut junk: __SlateAlign16<[u8; 256]> = __SlateAlign16([0u8; 256]);

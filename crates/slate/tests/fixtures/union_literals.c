@@ -323,6 +323,9 @@ int main(void) {
 // CHECK-NEXT:     fc: same_size,
 // CHECK-NEXT:     dl: same_size,
 // CHECK-NEXT: }
+// CHECK-NEXT: #[repr(transparent)]
+// CHECK-NEXT: struct __SlateConst<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateConst<T> {}
 // CHECK-NEXT: mod __slate_bits {
 // CHECK-NEXT:     #[bitfields::bitfield(
 // CHECK-NEXT:         u8,
@@ -342,7 +345,7 @@ int main(void) {
 // CHECK-NEXT:         pub __slate_pad_1: u8,
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut table: [entry; 3] = [
+// CHECK-NEXT: static table: [entry; 3] = [
 // CHECK-NEXT:     entry {
 // CHECK-NEXT:         fc: same_size { freq: 12u16 },
 // CHECK-NEXT:         dl: same_size { freq: 8u16 },
@@ -356,21 +359,21 @@ int main(void) {
 // CHECK-NEXT:         dl: same_size { code: 9u16 },
 // CHECK-NEXT:     },
 // CHECK-NEXT: ];
-// CHECK-NEXT: static mut second: second_member = second_member {
+// CHECK-NEXT: static second: second_member = second_member {
 // CHECK-NEXT:     bits: 1065353216u32,
 // CHECK-NEXT: };
-// CHECK-NEXT: static mut pointer: pointer_or_int = pointer_or_int {
+// CHECK-NEXT: static pointer: __SlateConst<pointer_or_int> = __SlateConst(pointer_or_int {
 // CHECK-NEXT:     text: (b"text\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT: };
-// CHECK-NEXT: static mut array: array_member = array_member {
+// CHECK-NEXT: });
+// CHECK-NEXT: static array: array_member = array_member {
 // CHECK-NEXT:     text: [97i8, 98i8, 99i8, 0i8],
 // CHECK-NEXT: };
-// CHECK-NEXT: static mut partial_static: partial = {
+// CHECK-NEXT: static partial_static: partial = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: partial = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].small = 120i8;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
-// CHECK-NEXT: static mut record_static: record_member = {
+// CHECK-NEXT: static record_static: record_member = {
 // CHECK-NEXT:     let mut [[T_0]]: record_member = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].record = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: padded = unsafe { core::mem::zeroed() };
@@ -380,12 +383,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
-// CHECK-NEXT: static mut wide_static: long_double_member = {
+// CHECK-NEXT: static wide_static: long_double_member = {
 // CHECK-NEXT:     let mut [[T_0]]: long_double_member = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].wide = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]);
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
-// CHECK-NEXT: static mut bit_static: bit_field_member = {
+// CHECK-NEXT: static bit_static: bit_field_member = {
 // CHECK-NEXT:     let mut [[T_0]]: bit_field_member = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_bits(5u32);
@@ -413,7 +416,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%f %s %s\n".as_ptr(),
 // CHECK-NEXT:             second.real as f64,
-// CHECK-NEXT:             pointer.text,
+// CHECK-NEXT:             pointer.0.text,
 // CHECK-NEXT:             core::ptr::addr_of!(array.text) as *const i8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

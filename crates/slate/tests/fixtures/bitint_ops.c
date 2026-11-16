@@ -1021,14 +1021,14 @@ int main(void) {
 // CHECK-NEXT:         (a.compare(b) >= 0) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut g_add: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
+// CHECK-NEXT: static g_add: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
 // CHECK-NEXT:     200,
 // CHECK-NEXT:     4,
 // CHECK-NEXT:     32,
 // CHECK-NEXT:     bitint::A8,
 // CHECK-NEXT: >>::from_i128(5i32 as i128)
 // CHECK-NEXT:     .wrapping_add(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(7i32 as i128));
-// CHECK-NEXT: static mut g_cmp: bitint::BUint<100, 2, 16, bitint::A8> = <bitint::BUint<
+// CHECK-NEXT: static g_cmp: bitint::BUint<100, 2, 16, bitint::A8> = <bitint::BUint<
 // CHECK-NEXT:     100,
 // CHECK-NEXT:     2,
 // CHECK-NEXT:     16,

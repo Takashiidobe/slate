@@ -55,6 +55,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: static mut ic_myaddr: u32 = 16820416;
 // CHECK-NEXT: static mut ip_packet: packet_type = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: packet_type = unsafe { core::mem::zeroed() };
@@ -62,10 +63,10 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]].priority = 1i32;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
-// CHECK-NEXT: static mut pll: pll_state = pll_state {
+// CHECK-NEXT: static pll: pll_state = pll_state {
 // CHECK-NEXT:     ctrl: [4611u32, 1342177280u32],
 // CHECK-NEXT: };
-// CHECK-NEXT: static mut widths: __SlateAlign16<[i32; 5]> = __SlateAlign16([
+// CHECK-NEXT: static widths: __SlateAlign16<[i32; 5]> = __SlateAlign16([
 // CHECK-NEXT:     31i32, 40i32, 8i32, 1i32, 31i32,
 // CHECK-NEXT: ]);
 // CHECK-NEXT: fn counter() -> i32 {

@@ -60,15 +60,16 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: use slate_support::socketpair;
 // CHECK-NEXT: use slate_support::sendmsg;
 // CHECK-NEXT: use slate_support::recvmsg;
 // CHECK-NEXT: use slate_support::close;
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: fn total_length(vec: &[slate_support::iovec]) -> u64 {
 // CHECK-NEXT:     let mut total: u64 = 0;
 // CHECK-NEXT:     for i in 0..vec.len() as i32 {

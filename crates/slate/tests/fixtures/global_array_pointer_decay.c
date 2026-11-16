@@ -25,6 +25,7 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign32<T> {}
 // CHECK-NEXT: static mut values: [u32; 3] = [1, 2, 3];
 // CHECK-NEXT: static mut aligned_values: __SlateAlign32<[u32; 3]> = __SlateAlign32([4u32, 5u32, 6u32]);
 // CHECK-NEXT: fn update(items: *mut u32) -> u32 {

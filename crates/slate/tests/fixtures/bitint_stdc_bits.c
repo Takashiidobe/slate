@@ -474,7 +474,8 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut seeds: __SlateAlign16<[u64; 24]> = __SlateAlign16([
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-NEXT: static seeds: __SlateAlign16<[u64; 24]> = __SlateAlign16([
 // CHECK-NEXT:     0u64, 1u64, 2u64, 3u64, 5u64, 8u64, 64u64, 100u64, 127u64, 128u64, 129u64, 255u64,
 // CHECK-NEXT:     256u64, 4097u64, 65535u64, 65536u64, 2147483647u64, 2147483648u64, 4294967295u64,
 // CHECK-NEXT:     4294967296u64, 81985529216486895u64, 9223372036854775807u64, 9223372036854775808u64,

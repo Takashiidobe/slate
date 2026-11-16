@@ -132,7 +132,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_places.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_places: 42 items, 16 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_places: 43 items, 16 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced record:state: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 15 function-like, 15 lifted at least once (expansions counted per distinct compile)
@@ -667,6 +667,8 @@ int main(void) {
 // CHECK-NEXT: static mut global: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut shared: state = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlignLargeArray<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NOT: {{.}}

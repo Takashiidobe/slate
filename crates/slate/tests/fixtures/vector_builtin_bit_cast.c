@@ -70,11 +70,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-NEXT: use slate_support::memcmp;
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-NEXT: use slate_support::memcpy;
+// CHECK-NEXT: use slate_support::memcmp;
 // CHECK-NEXT: fn as_doubles(bits: core::simd::Simd<i64, 2>) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<f64, 2>>(bits)

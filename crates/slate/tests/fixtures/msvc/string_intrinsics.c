@@ -112,10 +112,12 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT: static mut bytes: [u8; 16] = unsafe { core::mem::zeroed() };
 // X86_64-PC-WINDOWS-MSVC-EMPTY:
 // I686-PC-WINDOWS-MSVC-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: static mut bytes: __SlateAlign16<[u8; 16]> = __SlateAlign16(unsafe { core::mem::zeroed() });
+// X86_64-PC-WINDOWS-MSVC-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // I686-PC-WINDOWS-MSVC-NEXT: static mut words: [u16; 8] = unsafe { core::mem::zeroed() };
 // X86_64-PC-WINDOWS-MSVC-EMPTY:
 // I686-PC-WINDOWS-MSVC-EMPTY:
+// X86_64-PC-WINDOWS-MSVC-NEXT: static mut bytes: __SlateAlign16<[u8; 16]> = __SlateAlign16(unsafe { core::mem::zeroed() });
+// X86_64-PC-WINDOWS-MSVC-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: static mut words: __SlateAlign16<[u16; 8]> = __SlateAlign16(unsafe { core::mem::zeroed() });
 // X86_64-PC-WINDOWS-MSVC-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: static mut dwords: __SlateAlign16<[u32; 8]> = __SlateAlign16(unsafe { core::mem::zeroed() });

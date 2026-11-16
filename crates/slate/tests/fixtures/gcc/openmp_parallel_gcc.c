@@ -168,6 +168,8 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut global_hits: __SlateAlign16<[i32; 8]> = __SlateAlign16(unsafe { core::mem::zeroed() });
 // CHECK-EMPTY:
 // CHECK-NEXT: fn team_size(requested: i32) -> i32 {

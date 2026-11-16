@@ -58,7 +58,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   large_arrays.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 4 targets
-// CHECK-NEXT: unit large_arrays: 31 items, 16 gated, 1 duplicated functions
+// CHECK-NEXT: unit large_arrays: 36 items, 17 gated, 1 duplicated functions
 // CHECK-NEXT:   duplicated fn:read_crossing: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 3 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_pointer_width = "64", unix))]
-// CHECK-NEXT: static mut crossing: __SlateAlignLargeArray<[c_long; 3]> =
+// CHECK-NEXT: static crossing: __SlateAlignLargeArray<[c_long; 3]> =
 // CHECK-NEXT:     __SlateAlignLargeArray([(1 as c_long), (2 as c_long), (3 as c_long)]);
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(any(target_arch = "x86", windows))]
@@ -85,10 +85,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(any(target_arch = "x86", windows))]
-// CHECK-NEXT: static mut crossing: [c_long; 3] = [1, 2, 3];
+// CHECK-NEXT: static crossing: [c_long; 3] = [1, 2, 3];
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(not(target_arch = "aarch64"))]
-// CHECK-NEXT: static mut larger: __SlateAlign32<[c_char; 32]> = __SlateAlign32([
+// CHECK-NEXT: static larger: __SlateAlign32<[c_char; 32]> = __SlateAlign32([
 // CHECK-NEXT:     108i8, 97i8, 114i8, 103i8, 101i8, 114i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
 // CHECK-NEXT:     0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
 // CHECK-NEXT: ]);
@@ -101,32 +101,35 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(not(target_arch = "x86_64"))]
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_arch = "aarch64")]
-// CHECK-NEXT: static mut explicit_large: __SlateAlign16<[c_char; 32]> = __SlateAlign16([
+// CHECK-NEXT: static explicit_large: __SlateAlign16<[c_char; 32]> = __SlateAlign16([
 // CHECK-NEXT:     101u8, 120u8, 112u8, 108u8, 105u8, 99u8, 105u8, 116u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
 // CHECK-NEXT:     0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
 // CHECK-NEXT: ]);
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_arch = "aarch64")]
-// CHECK-NEXT: static mut larger: __SlateAlign32<[c_char; 32]> = __SlateAlign32([
+// CHECK-NEXT: static larger: __SlateAlign32<[c_char; 32]> = __SlateAlign32([
 // CHECK-NEXT:     108u8, 97u8, 114u8, 103u8, 101u8, 114u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
 // CHECK-NEXT:     0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
 // CHECK-NEXT: ]);
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_arch = "aarch64")]
-// CHECK-NEXT: static mut opted_out: __SlateAlignLargeArray<[c_char; 32]> = __SlateAlignLargeArray([
+// CHECK-NEXT: static opted_out: __SlateAlignLargeArray<[c_char; 32]> = __SlateAlignLargeArray([
 // CHECK-NEXT:     111u8, 112u8, 116u8, 101u8, 100u8, 32u8, 111u8, 117u8, 116u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
 // CHECK-NEXT:     0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
 // CHECK-NEXT: ]);
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_arch = "x86")]
-// CHECK-NEXT: static mut explicit_large: __SlateAlign16<[c_char; 32]> = __SlateAlign16([
+// CHECK-NEXT: static explicit_large: __SlateAlign16<[c_char; 32]> = __SlateAlign16([
 // CHECK-NEXT:     101i8, 120i8, 112i8, 108i8, 105i8, 99i8, 105i8, 116i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
 // CHECK-NEXT:     0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
 // CHECK-NEXT: ]);
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_arch = "x86")]
-// CHECK-NEXT: static mut opted_out: __SlateAlignLargeArray<[c_char; 32]> = __SlateAlignLargeArray([
+// CHECK-NEXT: static opted_out: __SlateAlignLargeArray<[c_char; 32]> = __SlateAlignLargeArray([
 // CHECK-NEXT:     111i8, 112i8, 116i8, 101i8, 100i8, 32i8, 111i8, 117i8, 116i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
 // CHECK-NEXT:     0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
 // CHECK-NEXT: ]);
@@ -136,13 +139,13 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlignLargeArray<T>(T);
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_arch = "x86_64")]
-// CHECK-NEXT: static mut explicit_large: __SlateAlignLargeArray<[c_char; 32]> = __SlateAlignLargeArray([
+// CHECK-NEXT: static explicit_large: __SlateAlignLargeArray<[c_char; 32]> = __SlateAlignLargeArray([
 // CHECK-NEXT:     101i8, 120i8, 112i8, 108i8, 105i8, 99i8, 105i8, 116i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
 // CHECK-NEXT:     0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
 // CHECK-NEXT: ]);
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_arch = "x86_64")]
-// CHECK-NEXT: static mut opted_out: [c_char; 32] = [
+// CHECK-NEXT: static opted_out: [c_char; 32] = [
 // CHECK-NEXT:     111i8, 112i8, 116i8, 101i8, 100i8, 32i8, 111i8, 117i8, 116i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
 // CHECK-NEXT:     0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
 // CHECK-NEXT: ];
@@ -163,6 +166,9 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: struct __SlateAlign32<T>(T);
 // CHECK-EMPTY:
+// CHECK-NEXT: #[repr(transparent)]
+// CHECK-NEXT: struct __SlateConst<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn read_local(seed: i32) -> i32 {
 // CHECK-NEXT:     let mut local: __SlateAlignLargeArray<[i32; 8]> = __SlateAlignLargeArray([0i32; 8]);
@@ -176,11 +182,11 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn read_table(index: i32) -> i32 {
 // CHECK-NEXT:     ((unsafe { table.0[index as usize].len }) as i32)
-// CHECK-NEXT:         + ((unsafe { (*unsafe { descriptor }.offset(index as isize)).freq }) as i32)
+// CHECK-NEXT:         + ((unsafe { (*unsafe { descriptor.0 }.offset(index as isize)).freq }) as i32)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut exported: __SlateAlignLargeArray<[u8; 16]> = __SlateAlignLargeArray([
+// CHECK-NEXT: static exported: __SlateAlignLargeArray<[u8; 16]> = __SlateAlignLargeArray([
 // CHECK-NEXT:     1u8, 2u8, 3u8, 4u8, 5u8, 6u8, 7u8, 8u8, 9u8, 10u8, 11u8, 12u8, 13u8, 14u8, 15u8, 16u8,
 // CHECK-NEXT: ]);
 // CHECK-EMPTY:
@@ -275,9 +281,10 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut descriptor: *const code = unsafe { core::ptr::addr_of!(table.0) as *const code };
+// CHECK-NEXT: static descriptor: __SlateConst<*const code> =
+// CHECK-NEXT:     __SlateConst(unsafe { core::ptr::addr_of!(table.0) as *const code });
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut small: [u8; 15] = {
+// CHECK-NEXT: static small: [u8; 15] = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: [u8; 15] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]][0] = 1u8;
 // CHECK-NEXT:     [[T_0]][1] = 2u8;
@@ -285,7 +292,7 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut table: __SlateAlignLargeArray<[code; 8]> = __SlateAlignLargeArray([
+// CHECK-NEXT: static table: __SlateAlignLargeArray<[code; 8]> = __SlateAlignLargeArray([
 // CHECK-NEXT:     code {
 // CHECK-NEXT:         freq: 1u16,
 // CHECK-NEXT:         len: 2u16,
@@ -323,6 +330,12 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign32<T> {}
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlignLargeArray<T> {}
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateConst<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: use core::ffi::c_long;

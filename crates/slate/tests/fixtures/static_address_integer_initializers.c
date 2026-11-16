@@ -81,8 +81,10 @@ int main(void) {
 // CHECK-NEXT: type __SlateImage_nested = outer;
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: struct __SlateAlign32<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign32<T> {}
 // CHECK-NEXT: static mut data: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
 // CHECK-NEXT: static mut kernels: core::mem::MaybeUninit<__SlateImage_kernels> = unsafe {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: core::mem::MaybeUninit<__SlateImage_kernels> = core::mem::MaybeUninit::zeroed();

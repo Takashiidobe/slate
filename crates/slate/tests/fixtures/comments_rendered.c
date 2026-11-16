@@ -53,7 +53,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: /// limit of things
 // CHECK-NEXT: /// trailing limit
-// CHECK-NEXT: static mut limit: i32 = 3;
+// CHECK-NEXT: static limit: i32 = 3;
 // CHECK-EMPTY:
 // CHECK-NEXT: /// Adds.
 // CHECK-NEXT: ///

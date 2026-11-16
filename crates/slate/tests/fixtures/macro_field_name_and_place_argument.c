@@ -50,10 +50,11 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: static mut regs: __SlateAlign16<{{\[\[}}u64; 3]; 2]> = __SlateAlign16(unsafe {
 // CHECK-NEXT:     core::mem::zeroed()
 // CHECK-NEXT: });
-// CHECK-NEXT: static mut source: __SlateAlign16<{{\[\[}}u64; 3]; 2]> = __SlateAlign16([
+// CHECK-NEXT: static source: __SlateAlign16<{{\[\[}}u64; 3]; 2]> = __SlateAlign16([
 // CHECK-NEXT:     [1u64, 2u64, 3u64],
 // CHECK-NEXT:     [4u64, 5u64, 6u64],
 // CHECK-NEXT: ]);

@@ -647,6 +647,20 @@ impl FunctionLowerer<'_, '_> {
                 .at(Site::of(&value.node)));
             }
         };
+        if tables.sync_wrapped.contains(&variable.id) {
+            self.dependencies.sync_wrapper = true;
+            return Ok((
+                rust::Type::Generic {
+                    name: rust::SYNC_WRAPPER.into(),
+                    args: vec![ty],
+                },
+                Some(Expr::Call {
+                    func: Box::new(Expr::Var(rust::SYNC_WRAPPER.into())),
+                    args: vec![init],
+                    binding: CallBinding::Generated,
+                }),
+            ));
+        }
         let Some(&wrapper) = tables.over_aligned.get(&variable.id) else {
             return Ok((ty, Some(init)));
         };

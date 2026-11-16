@@ -44,6 +44,8 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT: #[repr(C, align(16))]
 // X86_64-PC-WINDOWS-MSVC-NEXT: struct __SlateAlign16<T>(T);
 // X86_64-PC-WINDOWS-MSVC-EMPTY:
+// X86_64-PC-WINDOWS-MSVC-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// X86_64-PC-WINDOWS-MSVC-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: use slate_support::__cpuid;
 // I686-PC-WINDOWS-MSVC-NEXT: use slate_support::__cpuid;
 // X86_64-PC-WINDOWS-MSVC-NEXT: use slate_support::__cpuidex;

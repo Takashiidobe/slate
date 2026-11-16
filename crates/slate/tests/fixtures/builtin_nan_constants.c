@@ -43,6 +43,7 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: static mut quiet_f: f32 = f32::from_bits(0x7fc00000);
 // CHECK-NEXT: static mut quiet_payload_f: f32 = f32::from_bits(0x7fc00015);
 // CHECK-NEXT: static mut signaling_f: f32 = f32::from_bits(0x7fa00000);
@@ -51,7 +52,7 @@ int main(void) {
 // CHECK-NEXT: static mut quiet_payload_d: f64 = f64::from_bits(0x7ff8000000000053);
 // CHECK-NEXT: static mut signaling_d: f64 = f64::from_bits(0x7ff4000000000000);
 // CHECK-NEXT: static mut signaling_payload_d: f64 = f64::from_bits(0x7ff0000000000123);
-// CHECK-NEXT: static mut table: __SlateAlign16<[f64; 2]> = __SlateAlign16([
+// CHECK-NEXT: static table: __SlateAlign16<[f64; 2]> = __SlateAlign16([
 // CHECK-NEXT:     f64::from_bits(0x7ff0000000000001),
 // CHECK-NEXT:     f64::from_bits(0x7ff8000000000002),
 // CHECK-NEXT: ]);

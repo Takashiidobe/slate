@@ -90,6 +90,8 @@ int main(int argc, char **argv) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut word: u64 = 40;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]

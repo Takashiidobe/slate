@@ -84,7 +84,8 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut options: __SlateAlign16<[FlagDef; 4]> = __SlateAlign16([
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-NEXT: static options: __SlateAlign16<[FlagDef; 4]> = __SlateAlign16([
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: FlagDef = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].offset = (4usize as u64) as u16;
@@ -114,7 +115,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_3]]
 // CHECK-NEXT:     },
 // CHECK-NEXT: ]);
-// CHECK-NEXT: static mut tail_offset: u64 = 16usize as u64;
+// CHECK-NEXT: static tail_offset: u64 = 16usize as u64;
 // CHECK-NEXT: static mut narrow_offset: u32 = (6usize as u64) as u32;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut state: State = {

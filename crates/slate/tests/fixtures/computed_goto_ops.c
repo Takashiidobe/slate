@@ -26,6 +26,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: fn jump_probe(x: i32) -> i32 {
 // CHECK-NEXT:     let mut __slate_state: usize = 5usize;
 // CHECK-NEXT:     unsafe {

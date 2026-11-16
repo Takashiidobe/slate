@@ -32,7 +32,8 @@ fn is_inert_init(expr: &Expr) -> bool {
                 )
             }
             Expr::Var(name) if args.len() == 1 => {
-                name.as_str().starts_with("__SlateAlign") && args.iter().all(is_inert_init)
+                crate::backend::rust_ast::is_storage_wrapper(name.as_str())
+                    && args.iter().all(is_inert_init)
             }
             _ => false,
         },

@@ -143,6 +143,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: use slate_support::qsort;
 // CHECK-NEXT: fn counter(mut total: i32) -> i32 {
 // CHECK-NEXT:     counter__bump(unsafe { &mut (*core::ptr::addr_of_mut!(total)) }, 2i32);

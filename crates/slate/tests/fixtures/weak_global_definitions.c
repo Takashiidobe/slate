@@ -50,12 +50,15 @@ int main(void) {
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct rq {}
+// CHECK-NEXT: #[repr(transparent)]
+// CHECK-NEXT: struct __SlateConst<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateConst<T> {}
 // CHECK-NEXT: #[linkage = "weak"]
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut lookup_proto: proto = unsafe { core::mem::zeroed() };
+// CHECK-NEXT: static lookup_proto: __SlateConst<proto> = __SlateConst(unsafe { core::mem::zeroed() });
 // CHECK-NEXT: #[linkage = "weak"]
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut table_proto: proto = unsafe { core::mem::zeroed() };
+// CHECK-NEXT: static table_proto: __SlateConst<proto> = __SlateConst(unsafe { core::mem::zeroed() });
 // CHECK-NEXT: #[linkage = "weak"]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut power_off: Option<unsafe extern "C-unwind" fn()> = unsafe {
@@ -74,7 +77,7 @@ int main(void) {
 // CHECK-NEXT: };
 // CHECK-NEXT: #[linkage = "weak"]
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut banner: [i8; 14] = [
+// CHECK-NEXT: static banner: [i8; 14] = [
 // CHECK-NEXT:     76, 105, 110, 117, 120, 32, 118, 101, 114, 115, 105, 111, 110, 0,
 // CHECK-NEXT: ];
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -82,10 +85,10 @@ int main(void) {
 // CHECK-NEXT:         counters[1][0] = 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "lookup {} {}", unsafe { lookup_proto.id }, unsafe { lookup_proto.name }
+// CHECK-NEXT:         "lookup {} {}", unsafe { lookup_proto.0.id }, unsafe { lookup_proto.0.name }
 // CHECK-NEXT:         .is_null() as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     println!("table {}", unsafe { table_proto.id });
+// CHECK-NEXT:     println!("table {}", unsafe { table_proto.0.id });
 // CHECK-NEXT:     println!("power {}", ((unsafe { power_off }) == None) as i32);
 // CHECK-NEXT:     println!("counters {} {}", unsafe { counters[0] [0] }, unsafe { counters[1] [0] });
 // CHECK-NEXT:     unsafe {

@@ -123,6 +123,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(4))]
 // CHECK-NEXT: struct __SlateAlign4<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign4<T> {}
 // CHECK-NEXT: mod __slate_bits {
 // CHECK-NEXT:     #[bitfields::bitfield(
 // CHECK-NEXT:         u16,
@@ -152,9 +156,6 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: use slate_support::memcmp;
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: fn guid_equal(
 // CHECK-NEXT:     mut a: __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9,
 // CHECK-NEXT:     mut b: __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9,

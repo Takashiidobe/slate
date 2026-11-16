@@ -33,6 +33,7 @@ int main(void) {
 // CHECK-NEXT: static mut x: i32 = 5;
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: static mut arr: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.f")]
 // CHECK-NEXT: extern "C-unwind" fn f() -> i32 {

@@ -163,6 +163,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: fn alias_struct_fields() -> i32 {
 // CHECK-NEXT:     let mut pair: Pair = Pair { lo: 1, hi: 2 };
 // CHECK-NEXT:     let lo: *mut i32 = pair_lo(unsafe { &mut (*core::ptr::addr_of_mut!(pair)) });

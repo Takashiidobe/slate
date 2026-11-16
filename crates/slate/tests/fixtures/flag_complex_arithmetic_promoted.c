@@ -479,6 +479,8 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: #[repr(C, align(16))]
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: struct __SlateAlign16<T>(T);
 // X86_64-UNKNOWN-LINUX-GNU-EMPTY:
+// X86_64-UNKNOWN-LINUX-GNU-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// X86_64-UNKNOWN-LINUX-GNU-EMPTY:
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: fn show(name: *const i8, z: num_complex::Complex<f64>) {
 // I686-UNKNOWN-LINUX-GNU-NEXT: fn show(name: *const i8, z: num_complex::Complex<f64>) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT: fn show(name: *const u8, z: num_complex::Complex<f64>) {

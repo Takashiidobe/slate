@@ -41,6 +41,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: static mut abs_value: i32 = 3;
 // CHECK-NEXT: static mut labs_value: i64 = 40;
 // CHECK-NEXT: static mut llabs_value: i64 = 500;

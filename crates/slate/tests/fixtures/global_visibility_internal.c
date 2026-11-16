@@ -23,13 +23,14 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut typenames: __SlateAlign16<[*const i8; 3]> = __SlateAlign16([
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-NEXT: static typenames: __SlateAlign16<[*const i8; 3]> = __SlateAlign16([
 // CHECK-NEXT:     (b"nil\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT:     (b"boolean\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT:     (b"number\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT: ]);
 // CHECK-NEXT: static mut counter: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT: static mut opmodes: [u8; 4] = [1, 2, 4, 8];
+// CHECK-NEXT: static opmodes: [u8; 4] = [1, 2, 4, 8];
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         unsafe {

@@ -89,6 +89,8 @@ struct Tables<'m> {
     over_aligned: HashMap<BindingId, AlignWrapper>,
     flexible_globals: HashMap<BindingId, String>,
     address_images: HashSet<BindingId>,
+    read_only: HashSet<BindingId>,
+    sync_wrapped: HashSet<BindingId>,
     indirect_globals: HashSet<BindingId>,
     weak_address_globals: HashSet<BindingId>,
     target: &'m TargetInfo,
@@ -156,6 +158,7 @@ struct Dependencies {
     bridges: BTreeMap<String, rust::ExternFnDecl>,
     align_wrappers: BTreeSet<u32>,
     large_array_wrapper: bool,
+    sync_wrapper: bool,
     records: BTreeMap<u32, Record>,
     erased_fields: BTreeSet<(u32, usize)>,
     flexible_records: Vec<Item>,
@@ -793,6 +796,8 @@ impl<'m> ModuleLowerer<'m> {
             over_aligned: HashMap::new(),
             flexible_globals: HashMap::new(),
             address_images: HashSet::new(),
+            read_only: HashSet::new(),
+            sync_wrapped: HashSet::new(),
             indirect_globals: statics
                 .iter()
                 .filter(|global| {
@@ -875,6 +880,30 @@ impl<'m> ModuleLowerer<'m> {
                             && (tables.holds_address_integer(value)
                                 || tables.holds_integer_function_pointer(value))
                     })
+            })
+            .map(|global| global.variable.id)
+            .collect();
+        tables.read_only = statics
+            .iter()
+            .filter(|global| {
+                let variable = &global.variable;
+                global.definition
+                    && variable.is_const
+                    && !global.common
+                    && !global.symbol.selectany
+                    && !variable.access.atomic
+                    && matches!(variable.storage, ir::StorageDuration::Static)
+                    && !tables.address_images.contains(&variable.id)
+                    && !tables.flexible_globals.contains_key(&variable.id)
+            })
+            .map(|global| global.variable.id)
+            .collect();
+        tables.sync_wrapped = statics
+            .iter()
+            .filter(|global| {
+                tables.read_only.contains(&global.variable.id)
+                    && !tables.over_aligned.contains_key(&global.variable.id)
+                    && !tables.is_sync(&global.variable.ty)
             })
             .map(|global| global.variable.id)
             .collect();
@@ -991,7 +1020,7 @@ impl<'m> ModuleLowerer<'m> {
                             .chain(global.symbol.section.clone().map(Attr::LinkSection))
                             .collect(),
                         vis: rust::Visibility::Private,
-                        mutable: true,
+                        mutable: !self.tables.read_only.contains(&global.variable.id),
                         name,
                         ty,
                         init,
@@ -1330,24 +1359,45 @@ impl<'m> ModuleLowerer<'m> {
         let large_array_wrapper = dependencies
             .large_array_wrapper
             .then_some((AlignWrapper::LargeArray, large_array_alignment));
+        let sync_wrapper = dependencies
+            .sync_wrapper
+            .then(|| (rust::SYNC_WRAPPER.to_owned(), vec![rust::Repr::Transparent]));
         let wrappers = exact_wrappers
             .chain(large_array_wrapper)
             .map(|(wrapper, alignment)| {
-                Item::Struct(rust::StructDef {
-                    attrs: vec![Attr::Repr(
-                        std::iter::once(rust::Repr::C)
-                            .chain(alignment.map(rust::Repr::Align))
-                            .collect(),
-                    )],
-                    vis: rust::Visibility::Private,
-                    field_vis: rust::Visibility::Private,
-                    generics: vec![rust::GenericParam {
-                        name: "T".into(),
-                        bounds: Vec::new(),
-                    }],
-                    name: wrapper.name(),
-                    fields: rust::StructFields::Tuple(vec![rust::Type::Custom("T".into())]),
-                })
+                (
+                    wrapper.name(),
+                    std::iter::once(rust::Repr::C)
+                        .chain(alignment.map(rust::Repr::Align))
+                        .collect(),
+                )
+            })
+            .chain(sync_wrapper)
+            .flat_map(|(name, repr)| {
+                let generics = vec![rust::GenericParam {
+                    name: "T".into(),
+                    bounds: Vec::new(),
+                }];
+                let self_ty = rust::Type::Generic {
+                    name: name.clone(),
+                    args: vec![rust::Type::Custom("T".into())],
+                };
+                [
+                    Item::Struct(rust::StructDef {
+                        attrs: vec![Attr::Repr(repr)],
+                        vis: rust::Visibility::Private,
+                        field_vis: rust::Visibility::Private,
+                        generics: generics.clone(),
+                        name,
+                        fields: rust::StructFields::Tuple(vec![rust::Type::Custom("T".into())]),
+                    }),
+                    Item::Impl(rust::ImplBlock {
+                        generics,
+                        trait_: Some(rust::TraitRef::Sync),
+                        self_ty,
+                        items: Vec::new(),
+                    }),
+                ]
             });
         let records = dependencies
             .records

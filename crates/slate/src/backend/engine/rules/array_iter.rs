@@ -28,7 +28,7 @@ fn array_var(base: &Expr) -> Option<Ident> {
 
 fn slate_aligned(ty: &Type) -> Option<&Type> {
     match ty {
-        Type::Generic { name, args } if name.as_str().starts_with("__SlateAlign") => {
+        Type::Generic { name, args } if crate::backend::rust_ast::is_storage_wrapper(name) => {
             match &args[..] {
                 [inner] => Some(inner),
                 _ => None,

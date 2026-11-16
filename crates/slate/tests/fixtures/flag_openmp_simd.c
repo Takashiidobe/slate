@@ -29,6 +29,8 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: #[repr(C, align(16))]
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: struct __SlateAlign16<T>(T);
 // X86_64-UNKNOWN-LINUX-GNU-EMPTY:
+// X86_64-UNKNOWN-LINUX-GNU-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// X86_64-UNKNOWN-LINUX-GNU-EMPTY:
 // CHECK-NEXT: // { dg-options "-fopenmp-simd" }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     let mut values: __SlateAlign16<[i32; 64]> = __SlateAlign16([0i32; 64]);

@@ -58,6 +58,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: mod __slate_bits {
 // CHECK-NEXT:     #[bitfields::bitfield(
 // CHECK-NEXT:         u32,
@@ -76,9 +80,6 @@ int main(void) {
 // CHECK-NEXT:         #[bits(16)]
 // CHECK-NEXT:         pub flags: u32,
 // CHECK-NEXT:     }
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut table: __SlateAlign16<[alt; 2]> = __SlateAlign16([
 // CHECK-NEXT:     alt {

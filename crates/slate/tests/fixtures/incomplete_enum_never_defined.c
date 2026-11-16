@@ -54,16 +54,19 @@ int main(void) {
 // CHECK-NEXT:     pending: *mut i32,
 // CHECK-NEXT:     count: i32,
 // CHECK-NEXT: }
+// CHECK-NEXT: #[repr(transparent)]
+// CHECK-NEXT: struct __SlateConst<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateConst<T> {}
 // CHECK-NEXT: extern "C-unwind" fn attach_noop(mode: *mut i32, flags: i32) -> i32 {
 // CHECK-NEXT:     (mode.is_null() as i32) + flags
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut funcs: mode_funcs = {
+// CHECK-NEXT: static funcs: __SlateConst<mode_funcs> = __SlateConst({
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: mode_funcs = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].mode_valid = None;
 // CHECK-NEXT:     [[T_0]].attach = Some(attach_noop);
 // CHECK-NEXT:     [[T_0]].id = 7i32;
 // CHECK-NEXT:     [[T_0]]
-// CHECK-NEXT: };
+// CHECK-NEXT: });
 // CHECK-NEXT: fn config_score(config: &mode_config) -> i32 {
 // CHECK-NEXT:     let mut score: i32 = (unsafe { (*(config as *const mode_config)).count }) * 10
 // CHECK-NEXT:         + unsafe { (*(*(config as *const mode_config)).funcs).id };
@@ -78,7 +81,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut config: mode_config = {
 // CHECK-NEXT:         let mut [[T_0]]: mode_config = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].funcs = unsafe { core::ptr::addr_of!(funcs) };
+// CHECK-NEXT:         [[T_0]].funcs = unsafe { core::ptr::addr_of!(funcs.0) };
 // CHECK-NEXT:         [[T_0]].pending = core::ptr::null_mut::<i32>();
 // CHECK-NEXT:         [[T_0]].count = 3i32;
 // CHECK-NEXT:         [[T_0]]

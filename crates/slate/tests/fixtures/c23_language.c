@@ -238,9 +238,10 @@ int main(void) {
 // CHECK-NEXT:         4i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut c23_embedded: [u8; 3] = [67, 50, 51];
+// CHECK-NEXT: static c23_embedded: [u8; 3] = [67, 50, 51];
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: struct __SlateAlign32<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign32<T> {}
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct C23Empty {
@@ -259,7 +260,7 @@ int main(void) {
 // CHECK-NEXT: static mut c23_thread_value: i32 = 53;
 // CHECK-NEXT: static mut c23_never_flag: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: use slate_support::exit;
-// CHECK-NEXT: static mut c23_file_constant: i32 = 59;
+// CHECK-NEXT: static c23_file_constant: i32 = 59;
 // CHECK-NEXT: fn c23_unnamed_parameter([[V_0:__v[0-9]+]]: i32, value: i32) -> i32 {
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
@@ -368,7 +369,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut utf8_text: [u8; 3] = [206, 169, 0];
+// CHECK-NEXT: static utf8_text: [u8; 3] = [206, 169, 0];
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -51,6 +51,7 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: static mut word: i64 = 41;
 // CHECK-NEXT: static mut arr: __SlateAlign16<[i64; 4]> = __SlateAlign16([1i64, 2i64, 3i64, 4i64]);
 // CHECK-NEXT: fn read_offset() -> i64 {

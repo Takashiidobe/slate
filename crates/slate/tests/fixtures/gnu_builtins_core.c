@@ -120,8 +120,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: struct __SlateAlign32<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign32<T> {}
 // CHECK-NEXT: static mut gnu_builtin_never: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: fn gnu_builtin_nonlocal() -> i32 {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: __slate_builtin_setjmp::Buffer = unsafe { core::mem::zeroed() };

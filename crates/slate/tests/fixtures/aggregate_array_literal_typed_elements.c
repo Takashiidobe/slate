@@ -45,6 +45,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: fn count_null_pairs() -> i32 {
 // CHECK-NEXT:     let pairs: __SlateAlign16<[pair; 1]> = __SlateAlign16([
 // CHECK-NEXT:         pair {

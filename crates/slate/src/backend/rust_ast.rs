@@ -455,6 +455,7 @@ impl Abi {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Repr {
     C,
+    Transparent,
     Align(u32),
     Packed(u32),
 }
@@ -576,6 +577,12 @@ impl StdTrait {
     }
 }
 
+pub const SYNC_WRAPPER: &str = "__SlateConst";
+
+pub fn is_storage_wrapper(name: &str) -> bool {
+    name.starts_with("__SlateAlign") || name == SYNC_WRAPPER
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ImplBlock {
     pub generics: Vec<GenericParam>,
@@ -588,6 +595,7 @@ pub struct ImplBlock {
 pub enum TraitRef {
     Std(StdTrait),
     From(Type),
+    Sync,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

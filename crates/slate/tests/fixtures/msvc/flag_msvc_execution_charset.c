@@ -41,7 +41,7 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut text: [i8; 3] = [-23, -128, 0];
+// CHECK-NEXT: static text: [i8; 3] = [-23, -128, 0];
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(

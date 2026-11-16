@@ -297,10 +297,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: static mut table: __SlateAlign16<[u64; 8]> = __SlateAlign16(unsafe {
 // CHECK-NEXT:     core::mem::zeroed()
 // CHECK-NEXT: });
-// CHECK-NEXT: static mut global_size: u64 = (core::mem::size_of::<Pair>() as u64).wrapping_mul(2u64);
+// CHECK-NEXT: static global_size: u64 = (core::mem::size_of::<Pair>() as u64).wrapping_mul(2u64);
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::memcpy;

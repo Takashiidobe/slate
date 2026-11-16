@@ -206,6 +206,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: fn offset(base: *const (), field: *const ()) -> u32 {
 // CHECK-NEXT:     ((unsafe { (field as *const i8).offset_from(base as *const i8) }) as i64) as u32
 // CHECK-NEXT: }

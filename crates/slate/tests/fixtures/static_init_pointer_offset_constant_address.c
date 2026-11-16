@@ -33,7 +33,7 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut sysctl_vals: __SlateAlign16<[i32; 4]> = __SlateAlign16([
+// CHECK-NEXT: static sysctl_vals: __SlateAlign16<[i32; 4]> = __SlateAlign16([
 // CHECK-NEXT:     0i32, 1i32, 2i32, 100i32,
 // CHECK-NEXT: ]);
 // CHECK-NEXT: #[repr(C)]
@@ -44,6 +44,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct ctl {
@@ -83,7 +84,7 @@ int main(void) {
 // CHECK-NEXT:     .wrapping_offset(2i32 as isize);
 // CHECK-NEXT: static mut past: *const i32 = unsafe { core::ptr::addr_of!(sysctl_vals.0) as *const i32 }
 // CHECK-NEXT:     .wrapping_offset(4i32 as isize);
-// CHECK-NEXT: static mut unsized_vals: [i32; 3] = [7, 8, 9];
+// CHECK-NEXT: static unsized_vals: [i32; 3] = [7, 8, 9];
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(

@@ -44,6 +44,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: fn spin_until(flag: *mut i32, target: i32) -> i32 {
 // CHECK-NEXT:     let mut spins: i32 = 0;
 // CHECK-NEXT:     while (unsafe { core::ptr::read_volatile(flag) }) < target {

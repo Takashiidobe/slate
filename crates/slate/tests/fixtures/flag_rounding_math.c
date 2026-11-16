@@ -184,9 +184,11 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: #[repr(C, align(16))]
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: struct __SlateAlign16<T>(T);
 // X86_64-UNKNOWN-LINUX-GNU-EMPTY:
-// X86_64-UNKNOWN-LINUX-GNU-NEXT: static mut modes: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32, 2048i32, 1024i32, 3072i32]);
-// I686-UNKNOWN-LINUX-GNU-NEXT: static mut modes: [i32; 4] = [0, 2048, 1024, 3072];
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT: static mut modes: [i32; 4] = [0, 4194304, 8388608, 12582912];
+// X86_64-UNKNOWN-LINUX-GNU-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// X86_64-UNKNOWN-LINUX-GNU-EMPTY:
+// X86_64-UNKNOWN-LINUX-GNU-NEXT: static modes: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32, 2048i32, 1024i32, 3072i32]);
+// I686-UNKNOWN-LINUX-GNU-NEXT: static modes: [i32; 4] = [0, 2048, 1024, 3072];
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT: static modes: [i32; 4] = [0, 4194304, 8388608, 12582912];
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let one: f64 = 1.0f64;

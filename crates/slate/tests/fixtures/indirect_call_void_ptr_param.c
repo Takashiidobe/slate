@@ -50,7 +50,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { handler.unwrap()(d as *const (), 42i32) };
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut c: i8 = 0;
+// CHECK-NEXT: static c: i8 = 0;
 // CHECK-NEXT: extern "C-unwind" fn print_handler(p: *const (), extra: i32) {
 // CHECK-NEXT:     if extra == 0 {
 // CHECK-NEXT:         println!("zero {}", (unsafe { * (p as * const i8) }) as i32);

@@ -71,6 +71,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: static mut present: kobj_attribute = kobj_attribute {
 // CHECK-NEXT:     attr: {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: attribute = unsafe { core::mem::zeroed() };

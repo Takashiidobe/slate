@@ -675,6 +675,7 @@ impl<W: Write> Codegen<W> {
                     }
                     match r {
                         Repr::C => self.out.write_str("C")?,
+                        Repr::Transparent => self.out.write_str("transparent")?,
                         Repr::Align(n) => write!(self.out, "align({n})")?,
                         Repr::Packed(1) => self.out.write_str("packed")?,
                         Repr::Packed(n) => write!(self.out, "packed({n})")?,
@@ -807,6 +808,9 @@ impl<W: Write> Codegen<W> {
     }
 
     fn impl_block(&mut self, im: &ImplBlock) -> fmt::Result {
+        if matches!(im.trait_, Some(TraitRef::Sync)) {
+            self.out.write_str("unsafe ")?;
+        }
         self.out.write_str("impl")?;
         self.generics(&im.generics)?;
         self.out.write_char(' ')?;
@@ -817,6 +821,7 @@ impl<W: Write> Codegen<W> {
                 self.ty(from_ty)?;
                 self.out.write_str("> for ")?;
             }
+            Some(TraitRef::Sync) => self.out.write_str("Sync for ")?,
             None => {}
         }
         self.ty(&im.self_ty)?;

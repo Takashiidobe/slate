@@ -291,6 +291,8 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave,sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_set_ps(__z: f32, __y: f32, __x: f32, __w: f32) -> core::simd::Simd<f32, 4> {

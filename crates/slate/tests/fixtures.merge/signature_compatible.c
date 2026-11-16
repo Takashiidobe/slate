@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-NEXT: total: 12 compiles across 2 targets
 // CHECK-NEXT: unit signature_compatible: 21 items, 3 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit signature_compatible_helper: 23 items, 5 gated, 0 duplicated functions
+// CHECK-NEXT: unit signature_compatible_helper: 24 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:scale: 2 variants
 // CHECK-NEXT:   spliced record:opaque: 2 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
@@ -255,6 +255,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut table: [i32; 3] = [1, 2, 3];
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlignLargeArray<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: use core::ffi::c_long;

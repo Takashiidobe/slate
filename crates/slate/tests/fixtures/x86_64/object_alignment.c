@@ -81,13 +81,16 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: #[repr(C, align(32))]
-// CHECK-NEXT: struct __SlateAlign32<T>(T);
-// CHECK-NEXT: #[repr(C, align(64))]
-// CHECK-NEXT: struct __SlateAlign64<T>(T);
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-NEXT: #[repr(C, align(32))]
+// CHECK-NEXT: struct __SlateAlign32<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign32<T> {}
+// CHECK-NEXT: #[repr(C, align(64))]
+// CHECK-NEXT: struct __SlateAlign64<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign64<T> {}
 // CHECK-NEXT: static mut pad0: i8 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: static mut table: __SlateAlign16<{{\[\[}}u64; 64]; 64]> = __SlateAlign16(unsafe {
 // CHECK-NEXT:     core::mem::zeroed()

@@ -37,9 +37,10 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: static mut greeting: [i8; 6] = [104, 101, 108, 108, 111, 0];
 // CHECK-NEXT: static mut padded: [i8; 8] = [97, 98, 0, 0, 0, 0, 0, 0];
-// CHECK-NEXT: static mut label: [i8; 6] = [108, 97, 98, 101, 108, 0];
+// CHECK-NEXT: static label: [i8; 6] = [108, 97, 98, 101, 108, 0];
 // CHECK-NEXT: static mut grid: {{\[\[}}i8; 4]; 2] = {{\[\[}}97, 98, 99, 0], [120, 121, 122, 0]];
 // CHECK-NEXT: static mut words: __SlateAlign16<[*const i8; 3]> = __SlateAlign16([
 // CHECK-NEXT:     (b"zero\0".as_ptr() as *mut i8) as *const i8,

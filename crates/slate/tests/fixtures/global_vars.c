@@ -31,6 +31,7 @@ int main(void) {
 // CHECK-NEXT: static mut counter: i32 = 4;
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: static mut zeroed: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: static mut numbers: __SlateAlign16<[i32; 4]> = __SlateAlign16({
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: [i32; 4] = unsafe { core::mem::zeroed() };

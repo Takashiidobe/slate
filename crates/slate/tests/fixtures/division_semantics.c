@@ -52,6 +52,7 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: fn quotient(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     a / b
 // CHECK-NEXT: }

@@ -55,9 +55,9 @@ int main(void) {
 // CHECK-NEXT:         1
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut data: [u8; 4] = [67, 50, 51, 10];
-// CHECK-NEXT: static mut framed: [u8; 8] = [170, 187, 67, 50, 51, 10, 204, 221];
-// CHECK-NEXT: static mut empty: [u8; 1] = [238];
+// CHECK-NEXT: static data: [u8; 4] = [67, 50, 51, 10];
+// CHECK-NEXT: static framed: [u8; 8] = [170, 187, 67, 50, 51, 10, 204, 221];
+// CHECK-NEXT: static empty: [u8; 1] = [238];
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

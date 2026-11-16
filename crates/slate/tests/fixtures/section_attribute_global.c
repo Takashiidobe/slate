@@ -33,7 +33,7 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(link_section = "slate_gnu_section")]
 // CHECK-NEXT: static mut second: i32 = 5;
 // CHECK-NEXT: #[unsafe(link_section = "slate_gnu_ro")]
-// CHECK-NEXT: static mut sealed: i32 = 7;
+// CHECK-NEXT: static sealed: i32 = 7;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         first = first + 10;

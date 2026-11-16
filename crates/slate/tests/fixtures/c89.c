@@ -391,6 +391,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: mod __slate_bits {
 // CHECK-NEXT:     #[bitfields::bitfield(
 // CHECK-NEXT:         u8,
@@ -413,7 +414,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut c89_external_value: i32 = 11;
-// CHECK-NEXT: static mut c89_const_global: i32 = 17;
+// CHECK-NEXT: static c89_const_global: i32 = 17;
 // CHECK-NEXT: static mut c89_volatile_global: i32 = 19;
 // CHECK-NEXT: static mut c89_joined_value: i32 = 23;
 // CHECK-NEXT: extern "C-unwind" fn c89_add(left: i32, right: i32) -> i32 {

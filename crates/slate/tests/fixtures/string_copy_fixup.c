@@ -22,14 +22,15 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: use slate_support::strcpy;
 // CHECK-NEXT: use slate_support::strncpy;
 // CHECK-NEXT: use slate_support::strcat;
 // CHECK-NEXT: use slate_support::strncat;
 // CHECK-NEXT: use slate_support::strlen;
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
-// CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut copy: __SlateAlign16<[i8; 16]> = __SlateAlign16({
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { core::mem::zeroed() };

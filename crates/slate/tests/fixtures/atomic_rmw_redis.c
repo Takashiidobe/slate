@@ -162,6 +162,7 @@ int main(void) {
 // CHECK-NEXT: static mut used_memory: u64 = 0;
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: static mut stat_net_input_bytes: i64 = 0;
 // CHECK-NEXT: static mut plain_mask: u32 = 90;
 // CHECK-NEXT: static mut plain_counter: u64 = 10;

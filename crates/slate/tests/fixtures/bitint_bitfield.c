@@ -106,6 +106,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: mod __slate_bits {
 // CHECK-NEXT:     #[derive(Clone, Copy)]
 // CHECK-NEXT:     pub struct __SlateBits0U0 {
@@ -140,9 +144,6 @@ int main(void) {
 // CHECK-NEXT:     pub struct __SlateBits3U0 {
 // CHECK-NEXT:         pub bytes: [u8; 9],
 // CHECK-NEXT:     }
-// CHECK-NEXT: }
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: impl __slate_bits::__SlateBits0U0 {
 // CHECK-NEXT:     const fn __get_a(&self) -> bitint::BUint<156, 3, 24, bitint::A8> {

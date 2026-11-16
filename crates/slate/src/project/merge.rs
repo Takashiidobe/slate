@@ -93,6 +93,7 @@ fn item_key(item: &Item) -> String {
             match &im.trait_ {
                 Some(TraitRef::Std(t)) => t.path().to_string(),
                 Some(TraitRef::From(ty)) => format!("From<{}>", ty.render()),
+                Some(TraitRef::Sync) => "Sync".into(),
                 None => String::new(),
             },
             im.self_ty.render()

@@ -408,7 +408,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut table: [i8; 4] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT: static mut global_offset: u64 = (core::mem::offset_of!(Outer, r#type) as u64)
+// CHECK-NEXT: static global_offset: u64 = (core::mem::offset_of!(Outer, r#type) as u64)
 // CHECK-NEXT:     .wrapping_mul(2u64);
 // CHECK-NEXT: fn classify(offset: u64) -> i32 {
 // CHECK-NEXT:     match offset {

@@ -82,7 +82,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_nesting.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_nesting: 31 items, 2 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_nesting: 32 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 15 function-like, 13 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   inline split_argument: 4
@@ -413,7 +413,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut total: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut tree: [code; 3] = [
+// CHECK-NEXT: static mut used: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: static tree: [code; 3] = [
 // CHECK-NEXT:     code {
 // CHECK-NEXT:         code: 4660u16,
 // CHECK-NEXT:         len: 9u16,
@@ -428,7 +430,7 @@ int main(void) {
 // CHECK-NEXT:     },
 // CHECK-NEXT: ];
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut used: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlignLargeArray<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NOT: {{.}}

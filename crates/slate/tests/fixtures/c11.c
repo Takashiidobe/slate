@@ -593,8 +593,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: #[repr(C, align(64))]
 // CHECK-NEXT: struct __SlateAlign64<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign64<T> {}
 // CHECK-NEXT: static mut c11_aligned_buffer: __SlateAlign64<[u8; 64]> = __SlateAlign64(unsafe {
 // CHECK-NEXT:     core::mem::zeroed()
 // CHECK-NEXT: });
@@ -907,9 +909,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut utf8_text: [i8; 3] = [-50, -87, 0];
-// CHECK-NEXT: static mut utf16_text: [u16; 2] = [937, 0];
-// CHECK-NEXT: static mut utf32_text: [u32; 2] = [128578, 0];
+// CHECK-NEXT: static utf8_text: [i8; 3] = [-50, -87, 0];
+// CHECK-NEXT: static utf16_text: [u16; 2] = [937, 0];
+// CHECK-NEXT: static utf32_text: [u32; 2] = [128578, 0];
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -50,6 +50,7 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let point: __SlateRecord_anon_local_struct_c_13 = __SlateRecord_anon_local_struct_c_13 {
 // CHECK-NEXT:         x: 3,

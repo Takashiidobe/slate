@@ -389,6 +389,8 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn make_counter(start: i32) -> *mut core::ffi::c_void {
 // CHECK-NEXT:     let mut count_byref: core::mem::MaybeUninit<__slate_blocks::Byref<i32>> =
 // CHECK-NEXT:         core::mem::MaybeUninit::uninit();

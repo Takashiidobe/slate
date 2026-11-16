@@ -10,7 +10,7 @@ int sbox_at(int i) { return sbox[i]; }
 __asm__(".section .data.alias_refs,\"aw\"\n.balign 8\n.globl alias_refs\nalias_refs:\n.quad crypto_sbox\n.quad table_alias\n.previous");
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}static mut sbox: [u8; 4] = [1, 2, 3, 4];
+// CHECK: {{^}}static sbox: [u8; 4] = [1, 2, 3, 4];
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut table: [i32; 3] = [10, 20, 30];

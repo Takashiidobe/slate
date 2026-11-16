@@ -236,11 +236,6 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: use slate_support::getopt_long;
-// CHECK-NEXT: use slate_support::atoi;
-// CHECK-NEXT: use slate_support::malloc;
-// CHECK-NEXT: use slate_support::free;
-// CHECK-NEXT: use slate_support::strcmp;
 // CHECK-NEXT: fn __slate_atoi(s: *const i8) -> i32 {
 // CHECK-NEXT:     let bytes = unsafe { core::ffi::CStr::from_ptr(s) }.to_bytes();
 // CHECK-NEXT:     let n = bytes.len();
@@ -265,6 +260,12 @@ int main(void) {
 // CHECK-NEXT:         .unwrap_or(0i128)
 // CHECK-NEXT:         .clamp(i32::MIN as i128, i32::MAX as i128) as i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-NEXT: use slate_support::getopt_long;
+// CHECK-NEXT: use slate_support::atoi;
+// CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
+// CHECK-NEXT: use slate_support::strcmp;
 // CHECK-NEXT: extern "C-unwind" fn gnu_compare_with_direction(
 // CHECK-NEXT:     left: *const (),
 // CHECK-NEXT:     right: *const (),

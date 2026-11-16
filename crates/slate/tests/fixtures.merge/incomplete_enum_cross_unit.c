@@ -31,7 +31,7 @@ int main(void) {
 // CHECK-NEXT: total: 4 compiles across 2 targets
 // CHECK-NEXT: unit incomplete_enum_cross_unit: 13 items, 2 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit incomplete_enum_modes: 14 items, 1 gated, 0 duplicated functions
+// CHECK-NEXT: unit incomplete_enum_modes: 16 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:mode_valid: 2 variants
 // CHECK-NEXT:   spliced fn:access_for: 2 variants
 // CHECK-NEXT: macros: 0 function-like, 0 lifted at least once (expansions counted per distinct compile)
@@ -80,6 +80,9 @@ int main(void) {
 // CHECK-NEXT:     id: i32,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[repr(transparent)]
+// CHECK-NEXT: struct __SlateConst<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn mode_config_access(config: *mut mode_config, flags: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
@@ -104,7 +107,7 @@ int main(void) {
 // CHECK-NEXT:         (unsafe { malloc((core::mem::size_of::<mode_config>() as size_t) as usize) as *mut () })
 // CHECK-NEXT:             as *mut mode_config;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*config).funcs = core::ptr::addr_of!(funcs);
+// CHECK-NEXT:         (*config).funcs = core::ptr::addr_of!(funcs.0);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*config).pending = core::ptr::addr_of_mut!(pending_access);
@@ -115,15 +118,17 @@ int main(void) {
 // CHECK-NEXT:     config
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut funcs: mode_funcs = {
+// CHECK-NEXT: static funcs: __SlateConst<mode_funcs> = __SlateConst({
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: mode_funcs = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].mode_valid = Some(mode_valid);
 // CHECK-NEXT:     [[T_0]].access = Some(access_for);
 // CHECK-NEXT:     [[T_0]].id = 7i32;
 // CHECK-NEXT:     [[T_0]]
-// CHECK-NEXT: };
+// CHECK-NEXT: });
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut pending_access: u32 = 2;
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateConst<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::malloc;

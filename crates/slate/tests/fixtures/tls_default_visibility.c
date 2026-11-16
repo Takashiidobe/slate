@@ -60,6 +60,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: static mut malloc_conf: *const i8 = (b"background_thread:true\0".as_ptr() as *mut i8)
 // CHECK-NEXT:     as *const i8;
 // CHECK-NEXT: static mut exported_count: i32 = 3;

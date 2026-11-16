@@ -37,6 +37,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: static mut counter: i32 = 0;
 // CHECK-NEXT: use slate_support::pthread_join;
 // CHECK-NEXT: extern "C-unwind" fn worker(arg: *mut ()) -> *mut () {

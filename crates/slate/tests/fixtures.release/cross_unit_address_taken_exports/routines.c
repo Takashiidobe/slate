@@ -14,6 +14,11 @@ const struct api_routines api = {add, sub, bump, name};
 // CHECK: {{^}}use crate::__slate_types::api_routines;
 // CHECK-NEXT: use crate::__slate_types::counter;
 // CHECK-EMPTY:
+// CHECK-NEXT: #[repr(transparent)]
+// CHECK-NEXT: struct __SlateConst<T>(T);
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateConst<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.routines.add")]
 // CHECK-NEXT: pub extern "C-unwind" fn add(a: i32, b: i32) -> i32 {
@@ -39,11 +44,11 @@ const struct api_routines api = {add, sub, bump, name};
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut api: api_routines = api_routines {
+// CHECK-NEXT: static api: __SlateConst<api_routines> = __SlateConst(api_routines {
 // CHECK-NEXT:     add: Some(add),
 // CHECK-NEXT:     sub: Some(sub),
 // CHECK-NEXT:     bump: Some(bump),
 // CHECK-NEXT:     name: Some(name),
-// CHECK-NEXT: };
+// CHECK-NEXT: });
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

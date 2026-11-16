@@ -28,6 +28,7 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign64<T> {}
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut object: OverAligned = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: OverAligned = unsafe { core::mem::zeroed() };

@@ -19,6 +19,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: static mut table: __SlateAlign16<[u64; 64]> = __SlateAlign16(unsafe {
 // CHECK-NEXT:     core::mem::zeroed()
 // CHECK-NEXT: });

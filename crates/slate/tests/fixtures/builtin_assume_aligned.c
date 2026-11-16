@@ -27,6 +27,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: struct __SlateAlign32<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign32<T> {}
 // CHECK-NEXT: fn first_word(p: *mut ()) -> *mut () {
 // CHECK-NEXT:     let q: *mut () = p as *mut ();
 // CHECK-NEXT:     q

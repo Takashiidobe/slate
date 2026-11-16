@@ -46,7 +46,7 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut narrow: [i8; 3] = [-61, -87, 0];
+// CHECK-NEXT: static narrow: [i8; 3] = [-61, -87, 0];
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut __slate_str6: [u16; 2] = [233, 0];
 // CHECK-EMPTY:

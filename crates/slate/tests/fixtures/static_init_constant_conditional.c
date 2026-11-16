@@ -48,6 +48,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: fn runtime() -> i32 {
 // CHECK-NEXT:     -1
 // CHECK-NEXT: }
@@ -59,9 +60,9 @@ int main(void) {
 // CHECK-NEXT:     search: *const i8,
 // CHECK-NEXT:     search_length: u64,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut descriptor: [u8; 4] = [18, 7, 66, 9];
-// CHECK-NEXT: static mut log_sizes: [i32; 3] = [0, 6, 12];
-// CHECK-NEXT: static mut headers: __SlateAlign16<[header; 2]> = __SlateAlign16([
+// CHECK-NEXT: static descriptor: [u8; 4] = [18, 7, 66, 9];
+// CHECK-NEXT: static log_sizes: [i32; 3] = [0, 6, 12];
+// CHECK-NEXT: static headers: __SlateAlign16<[header; 2]> = __SlateAlign16([
 // CHECK-NEXT:     header {
 // CHECK-NEXT:         name: (b"CSeq\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT:         name_length: (core::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),

@@ -97,6 +97,19 @@ impl Tables<'_> {
         }
     }
 
+    pub(super) fn place_is_read_only(&self, place: &ir::Place) -> bool {
+        if let Some((array, _)) = self.array_subscript(place) {
+            return self.place_is_read_only(array);
+        }
+        match &without_macro_holes(place).kind {
+            PlaceKind::Binding(id) => self.read_only.contains(id),
+            PlaceKind::Field { base, .. }
+            | PlaceKind::Lane { base, .. }
+            | PlaceKind::ComplexPart { base, .. } => self.place_is_read_only(base),
+            _ => false,
+        }
+    }
+
     pub(super) fn place_is_static(&self, place: &ir::Place) -> bool {
         if let Some((array, _)) = self.array_subscript(place) {
             return self.place_is_static(array);
@@ -449,6 +462,14 @@ impl FunctionLowerer<'_, '_> {
                 ir: place.to_string(),
             }
             .into()),
+            _ if mutable && self.tables.place_is_read_only(place) => Ok(Expr::MethodCall {
+                recv: Box::new(Expr::AddrOf {
+                    mutable: false,
+                    expr: Box::new(self.lower_place(place)?),
+                }),
+                method: "cast_mut".into(),
+                args: Vec::new(),
+            }),
             _ => Ok(Expr::AddrOf {
                 mutable,
                 expr: Box::new(self.lower_place(place)?),
@@ -665,7 +686,10 @@ impl FunctionLowerer<'_, '_> {
                 }),
             };
         }
-        if self.tables.over_aligned.contains_key(&id) || self.aligned_locals.contains(&id) {
+        if self.tables.over_aligned.contains_key(&id)
+            || self.tables.sync_wrapped.contains(&id)
+            || self.aligned_locals.contains(&id)
+        {
             Expr::TupleField {
                 base: Box::new(binding),
                 index: 0,

@@ -210,11 +210,13 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut global: f64 = 0.7f32 as f64;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut table: __SlateAlign16<[f64; 2]> = __SlateAlign16([0.2f32 as f64, 0.001f32 as f64]);
+// CHECK-NEXT: static table: __SlateAlign16<[f64; 2]> = __SlateAlign16([0.2f32 as f64, 0.001f32 as f64]);
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut folded: f64 = (0.1f32 + 0.2f32) as f64;
+// CHECK-NEXT: static folded: f64 = (0.1f32 + 0.2f32) as f64;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let hex: f64 = 0.1f32 as f64;

@@ -459,21 +459,21 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%llu\n".as_ptr(), r.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut g_shl: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
+// CHECK-NEXT: static g_shl: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
 // CHECK-NEXT:     200,
 // CHECK-NEXT:     4,
 // CHECK-NEXT:     32,
 // CHECK-NEXT:     bitint::A8,
 // CHECK-NEXT: >>::from_i128(3i32 as i128)
 // CHECK-NEXT:     .shl_bits(70i32 as usize);
-// CHECK-NEXT: static mut g_shr: bitint::BUint<100, 2, 16, bitint::A8> = <bitint::BUint<
+// CHECK-NEXT: static g_shr: bitint::BUint<100, 2, 16, bitint::A8> = <bitint::BUint<
 // CHECK-NEXT:     100,
 // CHECK-NEXT:     2,
 // CHECK-NEXT:     16,
 // CHECK-NEXT:     bitint::A8,
 // CHECK-NEXT: >>::from_bint(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(1024i32 as i128))
 // CHECK-NEXT:     .shr_bits(4i32 as usize);
-// CHECK-NEXT: static mut g_small: i16 = (3i16.wrapping_shl((7i32 as usize) as u32) as i16) << 7 >> 7;
+// CHECK-NEXT: static g_small: i16 = (3i16.wrapping_shl((7i32 as usize) as u32) as i16) << 7 >> 7;
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     s5(5i8, 2i32, 1u8);
 // CHECK-NEXT:     s5(-7i8, 1i32, 3u8);

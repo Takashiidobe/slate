@@ -38,13 +38,13 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut base: pair = pair {
+// CHECK-NEXT: static base: pair = pair {
 // CHECK-NEXT:     a: 2i32,
 // CHECK-NEXT:     b: 3.5f32,
 // CHECK-NEXT:     c: [4i32, 5i32, 6i32],
 // CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut alias: pair = pair {
+// CHECK-NEXT: static alias: pair = pair {
 // CHECK-NEXT:     a: 2i32,
 // CHECK-NEXT:     b: 3.5f32,
 // CHECK-NEXT:     c: [4i32, 5i32, 6i32],

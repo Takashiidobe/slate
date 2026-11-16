@@ -88,6 +88,37 @@ impl<'m> Tables<'m> {
         }
     }
 
+    pub(super) fn is_sync(&self, ty: &ir::Type) -> bool {
+        match self.resolve_type(ty) {
+            ir::Type::Bool
+            | ir::Type::Numeric(_)
+            | ir::Type::Complex(_)
+            | ir::Type::Imaginary(_)
+            | ir::Type::FixedPoint(_)
+            | ir::Type::Vector { .. } => true,
+            ir::Type::Array { element, .. } => self.is_sync(element),
+            ir::Type::Defined(id) => {
+                let Some(definition) = self.types.get(id) else {
+                    return false;
+                };
+                match &definition.kind {
+                    ir::TypeDefinitionKind::Enum { .. } => true,
+                    ir::TypeDefinitionKind::Record {
+                        fields: Some(fields),
+                        ..
+                    } => {
+                        (definition.provenance.system_header.is_none()
+                            || crate::libc_catalog::record_path(definition, &self.target.triple)
+                                .is_none())
+                            && fields.iter().all(|field| self.is_sync(&field.ty))
+                    }
+                    _ => false,
+                }
+            }
+            _ => false,
+        }
+    }
+
     pub(super) fn has_bit_fields(&self, ty: &ir::Type) -> bool {
         self.record_fields(ty)
             .is_some_and(|fields| fields.iter().any(|field| field.bit_width.is_some()))

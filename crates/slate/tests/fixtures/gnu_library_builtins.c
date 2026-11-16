@@ -54,6 +54,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let buffer: *mut i8 = (unsafe { __builtin_malloc(32u64) }) as *mut i8;
 // CHECK-NEXT:     unsafe { __builtin_strcpy(buffer, c"slate".as_ptr()) };

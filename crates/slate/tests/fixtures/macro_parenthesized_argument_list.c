@@ -58,7 +58,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: static mut debug_level: u32 = 3;
 // CHECK-NEXT: static mut debug_layer: u32 = 16;
-// CHECK-NEXT: static mut module_name: [i8; 5] = [117, 110, 105, 116, 0];
+// CHECK-NEXT: static module_name: [i8; 5] = [117, 110, 105, 116, 0];
 // CHECK-NEXT: unsafe extern "C-unwind" fn debug_print(
 // CHECK-NEXT:     level: u32,
 // CHECK-NEXT:     line: u32,

@@ -28,11 +28,17 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-ffreestanding" }
+// CHECK-NEXT: #[repr(transparent)]
+// CHECK-NEXT: struct __SlateConst<T>(T);
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateConst<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C" fn add_one(value: *mut i32, data: *mut ()) -> i32 {
 // CHECK-NEXT:     (unsafe { *value }) + unsafe { *(data as *mut i32) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut table: [Option<unsafe extern "C" fn(*mut i32, *mut ()) -> i32>; 1] = [Some(add_one)];
+// CHECK-NEXT: static table: __SlateConst<[Option<unsafe extern "C" fn(*mut i32, *mut ()) -> i32>; 1]> =
+// CHECK-NEXT:     __SlateConst([Some(add_one)]);
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn run_extensions(
@@ -56,7 +62,7 @@ int main(void) {
 // CHECK-NEXT:             c"%d %d\n".as_ptr(),
 // CHECK-NEXT:             run_extensions(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(value),
-// CHECK-NEXT:                 core::ptr::addr_of!(table)
+// CHECK-NEXT:                 core::ptr::addr_of!(table.0)
 // CHECK-NEXT:                     as *const Option<unsafe extern "C" fn(*mut i32, *mut ()) -> i32>,
 // CHECK-NEXT:                 1u32,
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(step) as *mut (),

@@ -35,12 +35,13 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut bittab: __SlateAlign16<[u32; 6]> = __SlateAlign16([
+// CHECK-NEXT: static bittab: __SlateAlign16<[u32; 6]> = __SlateAlign16([
 // CHECK-NEXT:     4294967295u32, 3221225474u32, 3221225487u32, 3003121664u32, 3271557121u32,
 // CHECK-NEXT:     3539992589u32,
 // CHECK-NEXT: ]);
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct addr {
@@ -48,19 +49,19 @@ int main(void) {
 // CHECK-NEXT:     port: u16,
 // CHECK-NEXT:     host: u32,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut lo: addr = addr {
+// CHECK-NEXT: static lo: addr = addr {
 // CHECK-NEXT:     family: 2u16,
 // CHECK-NEXT:     port: 65535u16,
 // CHECK-NEXT:     host: 16777343u32,
 // CHECK-NEXT: };
-// CHECK-NEXT: static mut values: [i16; 6] = {
+// CHECK-NEXT: static values: [i16; 6] = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: [i16; 6] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]][0] = -1i16;
 // CHECK-NEXT:     [[T_0]][3] = -254i16;
 // CHECK-NEXT:     [[T_0]][5] = 100i16;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
-// CHECK-NEXT: static mut scales: __SlateAlign16<[f64; 2]> = __SlateAlign16([0.5f64, 3.0f32 as f64]);
+// CHECK-NEXT: static scales: __SlateAlign16<[f64; 2]> = __SlateAlign16([0.5f64, 3.0f32 as f64]);
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: u32 = 0;

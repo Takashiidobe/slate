@@ -308,6 +308,8 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn compose(f: *mut core::ffi::c_void, g: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
 // CHECK-NEXT:     let mut __slate_block_0_slot: core::mem::MaybeUninit<
 // CHECK-NEXT:         __slate_blocks::Block<__slate_block_0_captures>,

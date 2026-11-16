@@ -49,6 +49,10 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-NEXT: #[repr(transparent)]
+// CHECK-NEXT: struct __SlateConst<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateConst<T> {}
 // CHECK-NEXT: extern "C-unwind" fn add(a: u64, b: u64) -> u64 {
 // CHECK-NEXT:     a.wrapping_add(b)
 // CHECK-NEXT: }
@@ -65,19 +69,19 @@ int main(void) {
 // CHECK-NEXT:     (*[[T_1]]).name = (b"tail\0".as_ptr() as *mut i8) as *const i8;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
-// CHECK-NEXT: static mut add_proto: proto = {
+// CHECK-NEXT: static add_proto: __SlateConst<proto> = __SlateConst({
 // CHECK-NEXT:     let mut [[T_0]]: proto = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].func = Some(add);
 // CHECK-NEXT:     [[T_0]].name = (b"add\0".as_ptr() as *mut i8) as *const i8;
 // CHECK-NEXT:     [[T_0]]
-// CHECK-NEXT: };
+// CHECK-NEXT: });
 // CHECK-NEXT: static mut protos: __SlateAlign16<[*const proto; 2]> = __SlateAlign16([
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::addr_of!(
 // CHECK-NEXT:             * (core::ptr::addr_of_mut!(tail_proto) as * mut __SlateImage_tail_proto)
 // CHECK-NEXT:         )
 // CHECK-NEXT:     },
-// CHECK-NEXT:     unsafe { core::ptr::addr_of!(add_proto) },
+// CHECK-NEXT:     unsafe { core::ptr::addr_of!(add_proto.0) },
 // CHECK-NEXT: ]);
 // CHECK-NEXT: static mut poisoned_hook: core::mem::MaybeUninit<__SlateImage_poisoned_hook> = unsafe {
 // CHECK-NEXT:     let mut [[T_0]]: core::mem::MaybeUninit<__SlateImage_poisoned_hook> = core::mem::MaybeUninit::zeroed();

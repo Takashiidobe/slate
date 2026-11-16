@@ -145,6 +145,8 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: unsafe fn probe(n: i32) {
@@ -173,7 +175,7 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut sizes: __SlateAlign16<[i32; 5]> = __SlateAlign16([1i32, 16i32, 17i32, 33i32, 100i32]);
+// CHECK-NEXT: static sizes: __SlateAlign16<[i32; 5]> = __SlateAlign16([1i32, 16i32, 17i32, 33i32, 100i32]);
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(

@@ -69,19 +69,25 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
-// CHECK-NEXT: #[repr(C, align(32))]
-// CHECK-NEXT: struct __SlateAlign32<T>(T);
-// CHECK-NEXT: #[repr(C, align(64))]
-// CHECK-NEXT: struct __SlateAlign64<T>(T);
-// CHECK-NEXT: #[repr(C, align(128))]
-// CHECK-NEXT: struct __SlateAlign128<T>(T);
-// CHECK-NEXT: #[repr(C, align(256))]
-// CHECK-NEXT: struct __SlateAlign256<T>(T);
-// CHECK-NEXT: #[repr(C, align(4096))]
-// CHECK-NEXT: struct __SlateAlign4096<T>(T);
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-NEXT: #[repr(C, align(32))]
+// CHECK-NEXT: struct __SlateAlign32<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign32<T> {}
+// CHECK-NEXT: #[repr(C, align(64))]
+// CHECK-NEXT: struct __SlateAlign64<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign64<T> {}
+// CHECK-NEXT: #[repr(C, align(128))]
+// CHECK-NEXT: struct __SlateAlign128<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign128<T> {}
+// CHECK-NEXT: #[repr(C, align(256))]
+// CHECK-NEXT: struct __SlateAlign256<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign256<T> {}
+// CHECK-NEXT: #[repr(C, align(4096))]
+// CHECK-NEXT: struct __SlateAlign4096<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign4096<T> {}
 // CHECK-NEXT: static mut counter: __SlateAlign64<i32> = __SlateAlign64(3i32);
 // CHECK-NEXT: static mut values: __SlateAlign32<[u32; 3]> = __SlateAlign32([4u32, 5u32, 6u32]);
 // CHECK-NEXT: static mut weights: __SlateAlign128<[f64; 2]> = __SlateAlign128([0.5f64, 1.5f64]);

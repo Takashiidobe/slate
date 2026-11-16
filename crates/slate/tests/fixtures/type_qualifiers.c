@@ -29,7 +29,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: static mut global_bias: i32 = 3;
+// CHECK-NEXT: static global_bias: i32 = 3;
 // CHECK-NEXT: static mut atomic_counter: i32 = 4;
 // CHECK-NEXT: fn add_const_param(value: i32) -> i32 {
 // CHECK-NEXT:     let local_bias: i32 = 5;

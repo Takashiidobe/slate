@@ -163,6 +163,8 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn probe(n: i32) {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
@@ -189,7 +191,7 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut sizes: __SlateAlign16<[i32; 10]> = __SlateAlign16([
+// CHECK-NEXT: static sizes: __SlateAlign16<[i32; 10]> = __SlateAlign16([
 // CHECK-NEXT:     1i32, 8i32, 15i32, 16i32, 17i32, 24i32, 32i32, 33i32, 64i32, 100i32,
 // CHECK-NEXT: ]);
 // CHECK-EMPTY:

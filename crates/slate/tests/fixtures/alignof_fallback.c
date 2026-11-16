@@ -300,10 +300,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: #[repr(C, align(64))]
 // CHECK-NEXT: struct __SlateAlign64<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign64<T> {}
 // CHECK-NEXT: static mut table: [i8; 4] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT: static mut global_align: u64 = (core::mem::align_of::<Pair>() as u64).wrapping_mul(2u64);
+// CHECK-NEXT: static global_align: u64 = (core::mem::align_of::<Pair>() as u64).wrapping_mul(2u64);
 // CHECK-NEXT: fn f() -> i32 {
 // CHECK-NEXT:     7
 // CHECK-NEXT: }

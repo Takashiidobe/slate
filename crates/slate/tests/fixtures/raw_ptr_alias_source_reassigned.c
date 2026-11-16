@@ -41,6 +41,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: static mut nodes: __SlateAlign16<[node; 4]> = __SlateAlign16([
 // CHECK-NEXT:     node { next: 1u32, value: 10i32 },
 // CHECK-NEXT:     node { next: 2u32, value: 20i32 },

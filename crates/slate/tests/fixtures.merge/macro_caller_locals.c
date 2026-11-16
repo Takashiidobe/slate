@@ -81,7 +81,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_caller_locals.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_caller_locals: 26 items, 1 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_caller_locals: 27 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT: macros: 16 function-like, 16 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   macro ADDRESS_OF: 2 lifted, inline:
 // CHECK-NEXT:   macro BITS: 6 lifted, inline:
@@ -377,6 +377,8 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlignLargeArray<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NOT: {{.}}

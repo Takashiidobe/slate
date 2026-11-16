@@ -319,7 +319,7 @@ fn array_source(ty: &Type) -> Option<ArraySource> {
             array_source(inner)
         }
         Type::Generic { name, args }
-            if name.starts_with("__SlateAlign")
+            if crate::backend::rust_ast::is_storage_wrapper(name)
                 && let [inner] = args.as_slice() =>
         {
             array_source(inner)

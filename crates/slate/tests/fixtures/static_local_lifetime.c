@@ -122,6 +122,7 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: static mut global_base: i32 = 100;
 // CHECK-NEXT: fn counter() -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (unsafe { count__11 }) + 1;
@@ -192,7 +193,7 @@ int main(void) {
 // CHECK-NEXT: fn name_of(index: i32) -> *const i8 {
 // CHECK-NEXT:     unsafe { names.0[index as usize] }
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut names: __SlateAlign16<[*const i8; 3]> = __SlateAlign16([
+// CHECK-NEXT: static names: __SlateAlign16<[*const i8; 3]> = __SlateAlign16([
 // CHECK-NEXT:     (b"zero\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT:     (b"one\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT:     (b"two\0".as_ptr() as *mut i8) as *const i8,

@@ -50,6 +50,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: fn first() -> i32 {
 // CHECK-NEXT:     let mut items: __SlateAlign16<[Rec__6; 2]> = __SlateAlign16([
 // CHECK-NEXT:         {

@@ -231,7 +231,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_values.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_values: 56 items, 3 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_values: 57 items, 3 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:double_it: 2 variants
 // CHECK-NEXT:   spliced fn:show_trace: 2 variants
 // CHECK-NEXT:   spliced fn:plain_values: 2 variants
@@ -1373,6 +1373,8 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlignLargeArray<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: use core::ffi::c_long;

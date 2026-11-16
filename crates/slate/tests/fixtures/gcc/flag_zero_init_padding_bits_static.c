@@ -77,6 +77,8 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut gp: padded = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: padded = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].c = 2i8;

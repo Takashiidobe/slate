@@ -46,6 +46,7 @@ int main(void) {
 // CHECK-NEXT:     .wrapping_offset(2i32 as isize) as *const i32;
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: static mut end: *const i32 = unsafe { core::ptr::addr_of_mut!(values.0) as *mut i32 }
 // CHECK-NEXT:     .wrapping_offset(5i32 as isize) as *const i32;
 // CHECK-NEXT: extern "C-unwind" fn twice(x: i32) -> i32 {
