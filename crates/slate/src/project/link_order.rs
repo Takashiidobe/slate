@@ -207,14 +207,19 @@ fn hoistable(program: &Program, item: &Item) -> bool {
     let Item::GlobalAsm(asm) = item else {
         return false;
     };
-    asm.operands.iter().all(|operand| match operand {
-        AsmOperand::Sym(Expr::Var(name)) => program.items.iter().any(|item| match item {
-            Item::Fn(function) => function.name == name.as_str(),
-            Item::Static { name: defined, .. } => defined == name.as_str(),
+    let defines_alias = asm
+        .template
+        .lines()
+        .any(|line| line.trim_start().starts_with(".set"));
+    !defines_alias
+        && asm.operands.iter().all(|operand| match operand {
+            AsmOperand::Sym(Expr::Var(name)) => program.items.iter().any(|item| match item {
+                Item::Fn(function) => function.name == name.as_str(),
+                Item::Static { name: defined, .. } => defined == name.as_str(),
+                _ => false,
+            }),
             _ => false,
-        }),
-        _ => false,
-    })
+        })
 }
 
 fn concatenate(blocks: Vec<InlineAsm>) -> Vec<InlineAsm> {
