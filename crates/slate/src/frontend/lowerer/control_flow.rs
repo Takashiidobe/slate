@@ -721,7 +721,7 @@ impl FunctionLowerer<'_, '_> {
                 mutable: false,
                 ty: None,
                 init: Some(Expr::Call {
-                    func: Box::new(Expr::Var("__slate_cleanup::Guard".into())),
+                    func: Box::new(Expr::Var("::slate_support::Guard".into())),
                     args: vec![Expr::Ref {
                         mutable: true,
                         expr: Box::new(Expr::Closure {

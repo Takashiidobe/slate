@@ -171,14 +171,6 @@ int main(void) {
 // CHECK-NEXT: #![feature(portable_simd)]
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: mod __slate_cleanup {
-// CHECK-NEXT:     pub struct Guard<'a>(pub &'a mut dyn FnMut());
-// CHECK-NEXT:     impl Drop for Guard<'_> {
-// CHECK-NEXT:         fn drop(&mut self) {
-// CHECK-NEXT:             (self.0)()
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn gnu_attribute_allocate([[ARG_0:arg[0-9]+]]: u64, [[ARG_1:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT: }
@@ -299,7 +291,7 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut value: i32 = 53;
 // CHECK-NEXT:         let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(value) as *mut _;
-// CHECK-NEXT:         let __slate_cleanup_0 = __slate_cleanup::Guard(
+// CHECK-NEXT:         let __slate_cleanup_0 = ::slate_support::Guard(
 // CHECK-NEXT:             &mut || gnu_attribute_cleanup(__slate_cleanup_ptr_0 as *mut _),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         unsafe {

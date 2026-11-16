@@ -39,14 +39,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: mod __slate_cleanup {
-// CHECK-NEXT:     pub struct Guard<'a>(pub &'a mut dyn FnMut());
-// CHECK-NEXT:     impl Drop for Guard<'_> {
-// CHECK-NEXT:         fn drop(&mut self) {
-// CHECK-NEXT:             (self.0)()
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT: }
 // CHECK-NEXT: static mut released: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn unlock(depth: *mut i32) {
@@ -62,7 +54,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn guarded(mut held: i32, bail: i32) -> i32 {
 // CHECK-NEXT:     let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(held) as *mut _;
-// CHECK-NEXT:     let __slate_cleanup_0 = __slate_cleanup::Guard(
+// CHECK-NEXT:     let __slate_cleanup_0 = ::slate_support::Guard(
 // CHECK-NEXT:         &mut || unlock(__slate_cleanup_ptr_0 as *mut _),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     if bail != 0 {
@@ -76,7 +68,7 @@ int main(void) {
 // CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut i32 = core::ptr::addr_of_mut!(held) as *mut i32;
 // CHECK-NEXT:     let __slate_cleanup_ptr_2 = [[SLATE_SLOT_0]];
 // CHECK-NEXT:     let __slate_cleanup_armed_2 = core::cell::Cell::new(false);
-// CHECK-NEXT:     let __slate_cleanup_2 = __slate_cleanup::Guard(
+// CHECK-NEXT:     let __slate_cleanup_2 = ::slate_support::Guard(
 // CHECK-NEXT:         &mut || {
 // CHECK-NEXT:             if __slate_cleanup_armed_2.get() {
 // CHECK-NEXT:                 unsafe { unlock(__slate_cleanup_ptr_2 as *mut _) };

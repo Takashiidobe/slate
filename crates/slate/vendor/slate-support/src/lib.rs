@@ -262,3 +262,11 @@ pub type nlink_t = u64;
     all(target_os = "linux", target_arch = "x86_64")
 )))]
 pub type nlink_t = u32;
+
+pub struct Guard<'a>(pub &'a mut dyn FnMut());
+
+impl Drop for Guard<'_> {
+    fn drop(&mut self) {
+        (self.0)()
+    }
+}

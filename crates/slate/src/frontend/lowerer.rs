@@ -122,7 +122,6 @@ struct Dependencies {
     block_items: Vec<Item>,
     block_serial: u32,
     nested_functions: Vec<Item>,
-    cleanup: bool,
     rounding: bool,
     x86_interrupt: bool,
     vectorcall: bool,
@@ -1653,16 +1652,6 @@ impl<'m> ModuleLowerer<'m> {
                 Item::SupportModule(rust::SupportModule {
                     name: "__slate_rounding".into(),
                     source: include_str!("support/rounding.rs").into(),
-                    exports: Vec::new(),
-                }),
-            );
-        }
-        if dependencies.cleanup {
-            items.insert(
-                0,
-                Item::SupportModule(rust::SupportModule {
-                    name: "__slate_cleanup".into(),
-                    source: include_str!("support/cleanup.rs").into(),
                     exports: Vec::new(),
                 }),
             );

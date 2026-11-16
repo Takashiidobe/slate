@@ -36,14 +36,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: mod __slate_cleanup {
-// CHECK-NEXT:     pub struct Guard<'a>(pub &'a mut dyn FnMut());
-// CHECK-NEXT:     impl Drop for Guard<'_> {
-// CHECK-NEXT:         fn drop(&mut self) {
-// CHECK-NEXT:             (self.0)()
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct port {
@@ -90,7 +82,7 @@ int main(void) {
 // CHECK-NEXT:         (*(d as *const dev)).port
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(guard) as *mut _;
-// CHECK-NEXT:     let __slate_cleanup_0 = __slate_cleanup::Guard(
+// CHECK-NEXT:     let __slate_cleanup_0 = ::slate_support::Guard(
 // CHECK-NEXT:         &mut || class_pause_destructor(__slate_cleanup_ptr_0 as *mut _),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     retval = do_send(d, byte);
