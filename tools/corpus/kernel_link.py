@@ -10,6 +10,9 @@ import tempfile
 from pathlib import Path
 
 RUNTIME_CRATES = ("core-", "compiler_builtins-")
+ORDERED_SECTIONS = re.compile(r"\.initcall|\.con_initcall|\.init\.setup$|__param$|__modver$|\.apicdrivers$"
+                              r"|\.x86_cpu_dev\.init$|\.(early_)?lsm_info\.init$|__earlycon_table$"
+                              r"|\.init_array|\.fini_array|\.ctors|\.dtors|\.kunit_(init_)?test_suites$")
 TARGET = "x86_64-unknown-none"
 
 
@@ -24,6 +27,19 @@ def defined_globals(paths, cwd=None):
         if len(fields) == 3:
             names.add(fields[2])
     return names
+
+
+def ordered_sections(build_dir, members):
+    sections = {member: set() for member in members}
+    for start in range(0, len(members), 400):
+        current = sections[members[start]] if start + 1 == len(members) else None
+        for line in output(["readelf", "-SW", *members[start:start + 400]], build_dir).splitlines():
+            if line.startswith("File: "):
+                current = sections[line[len("File: "):].strip()]
+            elif current is not None and (match := re.match(r"\s*\[\s*\d+\]\s+(\S+)", line)):
+                if ORDERED_SECTIONS.match(match[1]):
+                    current.add(match[1])
+    return sections
 
 
 def shard_object(staticlib, native_objects, destination, build_dir, kernel_symbols):

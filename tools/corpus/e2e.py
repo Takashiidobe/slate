@@ -1726,10 +1726,47 @@ def shard_units(units, project_dir, limit):
                 suffix = [part for part in (mode, f"cg{index}" if index else "") if part]
                 shards.append(((*name, *suffix), [unit for unit in members if codegen_key(unit) == key]))
     shards += [(Path(os.path.relpath(unit["file"], project_dir)).with_suffix("").parts, [unit]) for unit in standalone]
-    names = ["_".join(name).replace("-", "_").replace(".", "_") or "root" for name, _ in shards]
+    shards = [("_".join(name).replace("-", "_").replace(".", "_") or "root", sorted(shard, key=link_position))
+              for name, shard in shards]
+    shards = link_order_runs(shards, archives, member_name)
+    names = [name for name, _ in shards]
     if len(set(names)) != len(names):
         raise SystemExit(f"duplicate shard names: {[n for n, c in collections.Counter(names).items() if c > 1]}")
-    return dict(zip(names, (sorted(shard, key=link_position) for _, shard in shards)))
+    return dict(shards)
+
+
+def link_order_runs(shards, archives, member_name):
+    owners = {(unit["directory"], member_name(unit)): name for name, shard in shards for unit in shard}
+    orders = {directory: sorted(members, key=members.get) for directory, members in archives.items() if members}
+    sections = {}
+
+    def ordered_sections(directory):
+        if directory not in sections:
+            sections[directory] = kernel_link.ordered_sections(Path(directory), orders[directory])
+        return sections[directory]
+
+    def conflicts(name, directory, first, position):
+        order = orders[directory]
+        mine = ordered_sections(directory)[order[position]]
+        return mine and any(owners.get((directory, order[other])) != name
+                            and ordered_sections(directory)[order[other]] & mine
+                            for other in range(first + 1, position))
+
+    split = []
+    for name, shard in shards:
+        positions = [(archives.get(unit["directory"]) or {}).get(member_name(unit)) for unit in shard]
+        if any(position is None for position in positions) or len({unit["directory"] for unit in shard}) > 1:
+            split.append((name, shard))
+            continue
+        directory = shard[0]["directory"]
+        runs = []
+        for unit, position in zip(shard, positions):
+            if runs and not conflicts(name, directory, runs[-1][0], position):
+                runs[-1][1].append(unit)
+            else:
+                runs.append((position, [unit]))
+        split += [(name if len(runs) == 1 else f"{name}_r{index}", run) for index, (_, run) in enumerate(runs)]
+    return split
 
 
 def rustc_error_cluster(line):
