@@ -842,6 +842,7 @@ fn freestanding_projects_build_for_bare_metal_targets() {
                 "\"-Zfunction-return=thunk-extern\"",
                 "\"-Ctarget-feature=-x87\"",
                 "\"-Zmerge-functions=disabled\"",
+                "\"-Zplt=yes\"",
                 "\"-Zunstable-options\"",
                 "\"-Cpanic=immediate-abort\"",
                 "build-std = [\"core\", \"compiler_builtins\"]",

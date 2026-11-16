@@ -182,6 +182,7 @@ fn shared_flags(machine: MachineCodegen, isa: X86Isa) -> impl Iterator<Item = St
         .chain(
             [
                 "-Zmerge-functions=disabled",
+                "-Zplt=yes",
                 "-Zunstable-options",
                 "-Cpanic=immediate-abort",
             ]
