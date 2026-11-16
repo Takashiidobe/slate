@@ -124,7 +124,13 @@ fn intervening_ok(arena: &Arena, intervening: &[NodeId], value: &Expr) -> bool {
         let Some(kind) = arena.get(id) else {
             return false;
         };
-        if !value_is_pure && !matches!(kind, NodeKind::Let { .. }) {
+        let crossable = match kind {
+            NodeKind::Let { init, .. } => init
+                .as_ref()
+                .is_none_or(|init| expr_is_zero(init) || expr_is_pure_and_closed(init)),
+            _ => false,
+        };
+        if !value_is_pure && !crossable {
             return false;
         }
         if let NodeKind::Let { name: declared, .. } = kind

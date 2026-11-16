@@ -70,16 +70,18 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut k: u32 = 0;
 // CHECK-NEXT:     let mut tmp: u8 = 0;
-// CHECK-NEXT:     let mut i: u8 = unsafe {
-// CHECK-NEXT:         (*((handle as *mut ()) as *mut __SlateRecord_void_param_byte_view_c_5)).i
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let mut j: u8 = unsafe {
-// CHECK-NEXT:         (*((handle as *mut ()) as *mut __SlateRecord_void_param_byte_view_c_5)).j
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut i: u8 = 0;
+// CHECK-NEXT:     let mut j: u8 = 0;
 // CHECK-NEXT:     let s: *mut u8 = unsafe {
 // CHECK-NEXT:         (*((handle as *mut ()) as *mut __SlateRecord_void_param_byte_view_c_5))
 // CHECK-NEXT:             .s
 // CHECK-NEXT:             .as_mut_ptr() as *mut u8
+// CHECK-NEXT:     };
+// CHECK-NEXT:     i = unsafe {
+// CHECK-NEXT:         (*((handle as *mut ()) as *mut __SlateRecord_void_param_byte_view_c_5)).i
+// CHECK-NEXT:     };
+// CHECK-NEXT:     j = unsafe {
+// CHECK-NEXT:         (*((handle as *mut ()) as *mut __SlateRecord_void_param_byte_view_c_5)).j
 // CHECK-NEXT:     };
 // CHECK-NEXT:     while (k as i32) < len {
 // CHECK-NEXT:         i = ((i as i32) + 1 & 255) as u8;
