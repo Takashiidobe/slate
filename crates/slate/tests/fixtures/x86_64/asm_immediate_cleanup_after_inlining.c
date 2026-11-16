@@ -41,9 +41,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-O2" }
 // CHECK-NEXT: mod __slate_cleanup {
-// CHECK-NEXT:     pub struct Guard<F: FnMut()>(pub F);
+// CHECK-NEXT:     pub struct Guard<'a>(pub &'a mut dyn FnMut());
 // CHECK-EMPTY:
-// CHECK-NEXT:     impl<F: FnMut()> Drop for Guard<F> {
+// CHECK-NEXT:     impl Drop for Guard<'_> {
 // CHECK-NEXT:         fn drop(&mut self) {
 // CHECK-NEXT:             (self.0)()
 // CHECK-NEXT:         }
@@ -87,7 +87,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn guarded(mut guard: *mut i32) -> i32 {
 // CHECK-NEXT:     let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(guard) as *mut _;
-// CHECK-NEXT:     let __slate_cleanup_0 = __slate_cleanup::Guard(|| release(__slate_cleanup_ptr_0 as *mut _));
+// CHECK-NEXT:     let __slate_cleanup_0 =
+// CHECK-NEXT:         __slate_cleanup::Guard(&mut || release(__slate_cleanup_ptr_0 as *mut _));
 // CHECK-NEXT:     println!("held {}", unsafe { *guard });
 // CHECK-NEXT:     (unsafe { *guard }) + 1
 // CHECK-NEXT: }

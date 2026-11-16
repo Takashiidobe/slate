@@ -649,9 +649,12 @@ impl FunctionLowerer<'_, '_> {
                 ty: None,
                 init: Some(Expr::Call {
                     func: Box::new(Expr::Var("__slate_cleanup::Guard".into())),
-                    args: vec![Expr::Closure {
-                        params: Vec::new(),
-                        body: Box::new(call),
+                    args: vec![Expr::Ref {
+                        mutable: true,
+                        expr: Box::new(Expr::Closure {
+                            params: Vec::new(),
+                            body: Box::new(call),
+                        }),
                     }],
                     binding: CallBinding::Generated,
                 }),

@@ -37,8 +37,8 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: mod __slate_cleanup {
-// CHECK-NEXT:     pub struct Guard<F: FnMut()>(pub F);
-// CHECK-NEXT:     impl<F: FnMut()> Drop for Guard<F> {
+// CHECK-NEXT:     pub struct Guard<'a>(pub &'a mut dyn FnMut());
+// CHECK-NEXT:     impl Drop for Guard<'_> {
 // CHECK-NEXT:         fn drop(&mut self) {
 // CHECK-NEXT:             (self.0)()
 // CHECK-NEXT:         }
@@ -90,9 +90,9 @@ int main(void) {
 // CHECK-NEXT:         (*(d as *const dev)).port
 // CHECK-NEXT:     });
 // CHECK-NEXT:     let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(guard) as *mut _;
-// CHECK-NEXT:     let __slate_cleanup_0 = __slate_cleanup::Guard(|| class_pause_destructor(
-// CHECK-NEXT:         __slate_cleanup_ptr_0 as *mut _,
-// CHECK-NEXT:     ));
+// CHECK-NEXT:     let __slate_cleanup_0 = __slate_cleanup::Guard(
+// CHECK-NEXT:         &mut || class_pause_destructor(__slate_cleanup_ptr_0 as *mut _),
+// CHECK-NEXT:     );
 // CHECK-NEXT:     retval = do_send(d, byte);
 // CHECK-NEXT:     if false {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());

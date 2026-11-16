@@ -172,8 +172,8 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-NEXT: mod __slate_cleanup {
-// CHECK-NEXT:     pub struct Guard<F: FnMut()>(pub F);
-// CHECK-NEXT:     impl<F: FnMut()> Drop for Guard<F> {
+// CHECK-NEXT:     pub struct Guard<'a>(pub &'a mut dyn FnMut());
+// CHECK-NEXT:     impl Drop for Guard<'_> {
 // CHECK-NEXT:         fn drop(&mut self) {
 // CHECK-NEXT:             (self.0)()
 // CHECK-NEXT:         }
@@ -299,9 +299,9 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut value: i32 = 53;
 // CHECK-NEXT:         let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(value) as *mut _;
-// CHECK-NEXT:         let __slate_cleanup_0 = __slate_cleanup::Guard(|| gnu_attribute_cleanup(
-// CHECK-NEXT:             __slate_cleanup_ptr_0 as *mut _,
-// CHECK-NEXT:         ));
+// CHECK-NEXT:         let __slate_cleanup_0 = __slate_cleanup::Guard(
+// CHECK-NEXT:             &mut || gnu_attribute_cleanup(__slate_cleanup_ptr_0 as *mut _),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             gnu_cleanup_total = gnu_cleanup_total + 1;
 // CHECK-NEXT:         }
