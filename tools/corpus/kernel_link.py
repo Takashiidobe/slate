@@ -57,12 +57,16 @@ def section_table(paths):
     return table
 
 
-def link_units(crate_dir, project_dir):
+def link_units(crate_dir, project_dir, native_dir):
     path = crate_dir / "link-order.json"
     if not path.exists():
         raise SystemExit(f"{path} is missing: the shard was not translated as a link-order crate")
-    return [(os.path.relpath(Path(entry["file"]).with_suffix(".o"), project_dir), entry["module"])
-            for entry in json.loads(path.read_text())["units"]]
+    units = []
+    for entry in json.loads(path.read_text())["units"]:
+        source = Path(entry["file"])
+        base = native_dir if source.is_relative_to(native_dir) else project_dir
+        units.append((os.path.relpath(source.with_suffix(".o"), base), entry["module"]))
+    return units
 
 
 def unit_groups(name, units, objects):
@@ -156,7 +160,7 @@ def runtime_object(copies, work, kernel_symbols, wanted):
     return destination, set().union(*symbol_table([destination], "-u").values())
 
 
-def swap(shards, out, build_dir, selected, profile, jobs=os.cpu_count() or 8):
+def swap(shards, out, build_dir, native_dir, selected, profile, jobs=os.cpu_count() or 8):
     project_dir = build_dir.parent
     members = output(["ar", "t", "vmlinux.a.native"], build_dir).split()
     index = {name: position for position, name in enumerate(members)}
@@ -173,7 +177,7 @@ def swap(shards, out, build_dir, selected, profile, jobs=os.cpu_count() or 8):
         staticlib = out / "shards" / name / "cargo-target" / TARGET / profile / "libslate_crate.a"
         if not staticlib.exists():
             continue
-        units = link_units(out / "shards" / name / "crate", project_dir)
+        units = link_units(out / "shards" / name / "crate", project_dir, native_dir)
         if not any(member in index for member, _ in units):
             continue
         extracted = work / name / "archive"
@@ -202,6 +206,9 @@ def swap(shards, out, build_dir, selected, profile, jobs=os.cpu_count() or 8):
         root_member = next((member for member, module in units if module is None), None)
         linked = [(member, module) for member, module in units if member in index and module is not None]
         folded = [module for member, module in units if member not in index and module in groups]
+        if built := [member for member, module in units if member not in index and (build_dir / member).exists()]:
+            raise SystemExit(f"{name}: {built} are built but not in vmlinux.a under that name; their native "
+                             "objects would stay linked next to the translated ones")
         root_inputs = [*groups.get(None, []), *(path for module in folded for path in groups[module])]
         anchor = root_member if root_member in index else min((member for member, _ in linked), key=index.get)
         if root_inputs:
@@ -278,7 +285,7 @@ def link_errors(log):
 
 def link_stage(shards, out, project_dir, mode, compiler, selected, profile, jobs):
     build_dir = prepare(project_dir, mode, compiler, jobs, out / "link-native.log")
-    swapped = swap(shards, out, build_dir, selected, profile)
+    swapped = swap(shards, out, build_dir, project_dir / f"build-{mode}", selected, profile)
     log = out / "link.log"
     code = make(build_dir, compiler, jobs, log)
     clusters, objtool = link_errors(log)
