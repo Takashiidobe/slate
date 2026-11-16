@@ -34,6 +34,27 @@ int query_branch_not_folded(const enum freq fr, int x) {
   return x;
 }
 
+static inline __attribute__((always_inline)) void mark(int n) {
+  __asm__ volatile("# mark %0" ::"i"(n));
+}
+
+int assert_kept_beside_asm(int len) {
+  while (len > 0) {
+    if (!(__builtin_constant_p(len >= 0) && len >= 0))
+      __compiletime_assert_1();
+    len -= 3;
+    mark(1);
+  }
+  return len;
+}
+
+void asm_arm_pruned(int n) {
+  if (__builtin_constant_p(n))
+    mark(n);
+  else
+    g = n;
+}
+
 // SLATE-FILECHECK-BEGIN O0
 // O0: module {
 // O0-NEXT:     target "x86_64-unknown-linux-gnu" {
@@ -80,6 +101,31 @@ int query_branch_not_folded(const enum freq fr, int x) {
 // O0-NEXT:         if not<bool>(ne<i32>(const<i32>(0), const<i32>(0))) [folded=true]
 // O0-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___compiletime_assert_1]]);
 // O0-NEXT:         return read<i32>(%[[VALUE_x_3]]);
+// O0-NEXT:     }
+// O0-NEXT:     fn %[[VALUE_mark:[0-9]+]] @mark(%[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
+// O0-NEXT:         asm volatile "# mark %0" [dialect=att] [options=nostack] [alternative=none] {
+// O0-NEXT:             template: "# mark " %0;
+// O0-NEXT:             in 0 "i" [imm | sym] width 32 read<i32>(%[[VALUE_n]]);
+// O0-NEXT:             rejected: 0 (operand 0: not-constant);
+// O0-NEXT:         }
+// O0-NEXT:     }
+// O0-NEXT:     fn %[[VALUE_assert_kept_beside_asm:[0-9]+]] @assert_kept_beside_asm(%[[VALUE_len:[0-9]+]] len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// O0-NEXT:         while %[[VALUE0:[0-9]+]] gt<i32>(read<i32>(%[[VALUE_len]]), const<i32>(0))
+// O0-NEXT:             {
+// O0-NEXT:                 if not<bool>(logical_and<bool>(ne<i32>(const<i32>(0), const<i32>(0)), ge<i32>(read<i32>(%[[VALUE_len]]), const<i32>(0)))) [folded=true]
+// O0-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___compiletime_assert_1]]);
+// O0-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_len]]);
+// O0-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(3));
+// O0-NEXT:                 write<i32>(%[[VALUE_len]], read<i32>(%[[VALUE2]]));
+// O0-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_mark]], const<i32>(1));
+// O0-NEXT:             }
+// O0-NEXT:         return read<i32>(%[[VALUE_len]]);
+// O0-NEXT:     }
+// O0-NEXT:     fn %[[VALUE_asm_arm_pruned:[0-9]+]] @asm_arm_pruned(%[[VALUE_n_2:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// O0-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0)) [folded=false]
+// O0-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_mark]], read<i32>(%[[VALUE_n_2]]));
+// O0-NEXT:         else
+// O0-NEXT:             write<i32>(%[[VALUE_NORMAL]], read<i32>(%[[VALUE_n_2]]));
 // O0-NEXT:     }
 // O0-NEXT: }
 // SLATE-FILECHECK-END O0
@@ -129,6 +175,29 @@ int query_branch_not_folded(const enum freq fr, int x) {
 // O2-NEXT:         if not<bool>(intrinsic<bool, llvm.is.constant>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_freq]]>(%[[VALUE_fr_2]]))))
 // O2-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___compiletime_assert_1]]);
 // O2-NEXT:         return read<i32>(%[[VALUE_x_3]]);
+// O2-NEXT:     }
+// O2-NEXT:     fn %[[VALUE_assert_kept_beside_asm:[0-9]+]] @assert_kept_beside_asm(%[[VALUE_len:[0-9]+]] len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// O2-NEXT:         while %[[VALUE0:[0-9]+]] gt<i32>(read<i32>(%[[VALUE_len]]), const<i32>(0))
+// O2-NEXT:             {
+// O2-NEXT:                 if not<bool>(logical_and<bool>(intrinsic<bool, llvm.is.constant>(ge<i32>(read<i32>(%[[VALUE_len]]), const<i32>(0))), ge<i32>(read<i32>(%[[VALUE_len]]), const<i32>(0))))
+// O2-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___compiletime_assert_1]]);
+// O2-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_len]]);
+// O2-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(3));
+// O2-NEXT:                 write<i32>(%[[VALUE_len]], read<i32>(%[[VALUE2]]));
+// O2-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_mark__const1:[0-9]+]], const<i32>(1));
+// O2-NEXT:             }
+// O2-NEXT:         return read<i32>(%[[VALUE_len]]);
+// O2-NEXT:     }
+// O2-NEXT:     fn %[[VALUE_asm_arm_pruned:[0-9]+]] @asm_arm_pruned(%[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// O2-NEXT:         {
+// O2-NEXT:             write<i32>(%[[VALUE_NORMAL]], read<i32>(%[[VALUE_n]]));
+// O2-NEXT:         }
+// O2-NEXT:     }
+// O2-NEXT:     fn %[[VALUE_mark__const1]] @mark__const1(%[[VALUE_n_2:[0-9]+]] n: i32) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
+// O2-NEXT:         asm volatile "# mark %0" [dialect=att] [options=nostack] {
+// O2-NEXT:             template: "# mark " %0;
+// O2-NEXT:             in 0 "i" [imm | sym] -> imm width 32 const<i32>(1);
+// O2-NEXT:         }
 // O2-NEXT:     }
 // O2-NEXT: }
 // SLATE-FILECHECK-END O2

@@ -56,7 +56,7 @@ impl MacroStructureVisitor for FoldedBranches<'_> {
 }
 
 impl Lowerer {
-    fn branch_integer(&self, value: &Value) -> Option<BigInt> {
+    pub(super) fn branch_integer(&self, value: &Value) -> Option<BigInt> {
         branch_integer_with_objects(
             value,
             self.types.fold_target(),

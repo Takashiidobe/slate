@@ -198,7 +198,11 @@ const int k = 2`, `table[1]`, `s.field`, string elements, `*ptr` to a
     `__builtin_constant_p(param)` folds to 0 in a body that is not cloned,
     so the asm it guards (`nf_hook`'s `static_key_false(&nf_hooks_needed[pf][hook])`,
     `arch_test_bit_acquire`, `if (IS_ENABLED(...))`) stops blocking the
-    function, and the unresolved set is recomputed.
+    function, and the unresolved set is recomputed. That 0 answer prunes only
+    when the condition or the dropped arm holds a rejected asm operand or calls
+    an unresolved function; otherwise the `if` stays and LLVM answers the
+    query after inlining, so a `min()` `BUILD_BUG_ON` beside an unrelated
+    `"i"` asm stays guarded (`copy_string_kernel`, `tlb_flush_mmu`).
   - A parameter that is written later (`"=r"(p) : "i"(p)` in `rip_rel_ptr`)
     keeps its argument value through the leading top-level statements, up to
     and including the first `Write` or asm that writes it, and not past a

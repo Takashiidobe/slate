@@ -38,12 +38,30 @@ restart:
 
 int likely_retry(int *slot, int n) { return retry(LIKELY, slot, n); }
 
+#define statically_true(x) (__builtin_constant_p(x) && (x))
+
+static inline __attribute__((always_inline)) void mark(int n) {
+  __asm__ volatile("# mark %0" ::"i"(n));
+}
+
+unsigned drain(int len) {
+  unsigned total = 0;
+  while (len > 0) {
+    if (!statically_true((long long)len >= 0))
+      __compiletime_assert_1();
+    total += len & 7;
+    len -= 3;
+    mark(1);
+  }
+  return total;
+}
+
 int query(int v, double d) { return __builtin_constant_p(v) + __builtin_constant_p(d); }
 
 int main(void) {
   int slot = 0;
-  printf("%u %u %d %d %d\n", limit(1), limit(9), query(3, 1.5), likely_pick(4),
-         likely_retry(&slot, 5));
+  printf("%u %u %d %d %d %u\n", limit(1), limit(9), query(3, 1.5), likely_pick(4),
+         likely_retry(&slot, 5), drain(10));
   return 0;
 }
 
@@ -58,6 +76,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! statically_true {
+// CHECK-NEXT:     ($x:expr) => {
+// CHECK-NEXT:         (unsafe { __slate_intrinsic_1cfe0293d0a2af8d($x) }) && $x
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __compiletime_assert_1();
 // CHECK-NEXT: }
@@ -65,6 +89,8 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.is.constant.i32"]
 // CHECK-NEXT:     fn __slate_intrinsic_1c5364fcd9da51fe([[ARG_0:arg[0-9]+]]: u32) -> bool;
+// CHECK-NEXT:     #[link_name = "llvm.is.constant.i1"]
+// CHECK-NEXT:     fn __slate_intrinsic_1cfe0293d0a2af8d([[ARG_0]]: bool) -> bool;
 // CHECK-NEXT:     #[link_name = "llvm.is.constant.i32"]
 // CHECK-NEXT:     fn __slate_intrinsic_a39e427d3b6c2df4([[ARG_0]]: i32) -> bool;
 // CHECK-NEXT:     #[link_name = "llvm.is.constant.f64"]
@@ -130,6 +156,26 @@ int main(void) {
 // CHECK-NEXT:     retry(1u32, slot, n)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: #[inline(always)]
+// CHECK-NEXT: fn mark__const1(n: i32) {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!("# mark ${0}", const 1 as i32, options(nostack, att_syntax));
+// CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn drain(mut len: i32) -> u32 {
+// CHECK-NEXT:     let mut total: u32 = 0;
+// CHECK-NEXT:     while len > 0 {
+// CHECK-NEXT:         if !statically_true!((len as i64) >= 0) {
+// CHECK-NEXT:             unsafe { __compiletime_assert_1() };
+// CHECK-NEXT:         }
+// CHECK-NEXT:         total = total.wrapping_add((len & 7) as u32);
+// CHECK-NEXT:         len -= 3;
+// CHECK-NEXT:         mark__const1(1i32);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     total
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn query(v: i32, d: f64) -> i32 {
 // CHECK-NEXT:     ((unsafe { __slate_intrinsic_a39e427d3b6c2df4(v) }) as i32)
 // CHECK-NEXT:         + ((unsafe { __slate_intrinsic_e1dafd5b681c8e0d(d) }) as i32)
@@ -140,12 +186,13 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
-// CHECK-NEXT:             c"%u %u %d %d %d\n".as_ptr(),
+// CHECK-NEXT:             c"%u %u %d %d %d %u\n".as_ptr(),
 // CHECK-NEXT:             limit(1u32),
 // CHECK-NEXT:             limit(9u32),
 // CHECK-NEXT:             query(3i32, 1.5f64),
 // CHECK-NEXT:             likely_pick(4i32),
 // CHECK-NEXT:             likely_retry(core::ptr::addr_of_mut!(slot), 5i32),
+// CHECK-NEXT:             drain(10i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

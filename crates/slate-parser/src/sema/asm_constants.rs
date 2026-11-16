@@ -191,7 +191,33 @@ impl MacroStructureVisitor for JumpTargets {
 
 struct DeadArms<'a> {
     lower: &'a Lowerer,
+    unresolved: &'a HashSet<BindingId>,
     pruned: bool,
+}
+
+impl DeadArms<'_> {
+    fn taken(
+        &self,
+        condition: &mut Value,
+        unanswered_arm: impl FnOnce(bool) -> Uses,
+    ) -> Option<bool> {
+        if let Some(taken) = self.lower.branch_integer(condition) {
+            return Some(taken != 0.into());
+        }
+        let taken = self.lower.folded_condition(condition)?;
+        let mut tested = Uses::default();
+        walk_value_structure(condition, &mut tested);
+        (self.needs_resolution(&tested) || self.needs_resolution(&unanswered_arm(taken)))
+            .then_some(taken)
+    }
+
+    fn needs_resolution(&self, uses: &Uses) -> bool {
+        uses.rejected
+            || uses
+                .callees
+                .iter()
+                .any(|callee| self.unresolved.contains(callee))
+    }
 }
 
 impl MacroStructureVisitor for DeadArms<'_> {
@@ -205,7 +231,13 @@ impl MacroStructureVisitor for DeadArms<'_> {
         else {
             return;
         };
-        let Some(taken) = self.lower.folded_condition(condition) else {
+        let Some(taken) = self.taken(condition, |taken| {
+            if taken {
+                else_body.as_mut().map(Uses::of).unwrap_or_default()
+            } else {
+                Uses::of(then_body)
+            }
+        }) else {
             return;
         };
         let (kept, mut dropped) = if taken {
@@ -242,7 +274,16 @@ impl MacroStructureVisitor for DeadArms<'_> {
         else {
             return;
         };
-        let Some(taken) = self.lower.folded_condition(condition) else {
+        let Some(taken) = self.taken(condition, |taken| {
+            let mut uses = Uses::default();
+            let dropped = if taken {
+                &mut **else_value
+            } else {
+                &mut **then_value
+            };
+            walk_value_structure(dropped, &mut uses);
+            uses
+        }) else {
             return;
         };
         let (kept, dropped) = if taken {
@@ -361,6 +402,7 @@ impl Lowerer {
             };
             let mut dead = DeadArms {
                 lower: self,
+                unresolved,
                 pruned: false,
             };
             walk_macro_structure(&mut body, &mut dead);
