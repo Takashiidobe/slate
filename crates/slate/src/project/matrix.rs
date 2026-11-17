@@ -312,6 +312,7 @@ fn command_for(unit: &UnitCommand, defines: &[String]) -> Result<CompileCommand,
     match CompilerArgParser::parse_in(crate::target::compiler_arguments(&args), &unit.directory) {
         Ok(args) => Ok(CompileCommand {
             file: unit.file.clone(),
+            directory: unit.directory.clone(),
             args,
         }),
         Err(source) => Err(MatrixError::Arguments {

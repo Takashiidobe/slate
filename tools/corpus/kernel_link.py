@@ -63,7 +63,7 @@ def link_units(crate_dir, project_dir, native_dir):
         raise SystemExit(f"{path} is missing: the shard was not translated as a link-order crate")
     units = []
     for entry in json.loads(path.read_text())["units"]:
-        source = Path(entry["file"])
+        source = Path(os.path.normpath(native_dir / entry["file"]))
         base = native_dir if source.is_relative_to(native_dir) else project_dir
         units.append((os.path.relpath(source.with_suffix(".o"), base), entry["module"]))
     return units

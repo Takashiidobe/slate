@@ -565,7 +565,6 @@ harness = false
     } else {
         ""
     };
-    let bitfields_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/bitfields");
     let features_section: String = if cargo_features.is_empty() {
         String::new()
     } else {
@@ -589,14 +588,13 @@ slate-support = {{ path = "slate-support"{support_features} }}
 aligned = {{ path = "aligned" }}
 bitint = {{ path = "bitint" }}
 num-complex = {{ path = "num-complex", default-features = false }}
-bitfields = {{ path = "{}" }}
+bitfields = {{ path = "bitfields" }}
 {blocks_line}{build_section}
 [profile.dev]
 overflow-checks = false
 debug-assertions = false
 codegen-units = 256
-{dev_panic}{release_profile}{link_order_profiles}{test_targets}{features_section}"#,
-        bitfields_path.display()
+{dev_panic}{release_profile}{link_order_profiles}{test_targets}{features_section}"#
     )
 }
 
@@ -697,11 +695,17 @@ fn write_file(path: &Path, contents: &str) -> Result<(), String> {
 
 include!(concat!(env!("OUT_DIR"), "/vendored_libc.rs"));
 include!(concat!(env!("OUT_DIR"), "/vendored_mach2.rs"));
+include!(concat!(env!("OUT_DIR"), "/vendored_bitfields.rs"));
+include!(concat!(env!("OUT_DIR"), "/vendored_bitfields-impl.rs"));
 
-fn write_vendored_libc(crate_dir: &Path) -> Result<(), String> {
-    let libc_dir = crate_dir.join("libc");
-    for (relative, contents) in VENDORED_LIBC {
-        let path = libc_dir.join(relative);
+fn write_vendored_crate(
+    crate_dir: &Path,
+    name: &str,
+    files: &[(&str, &str)],
+) -> Result<(), String> {
+    let vendored_dir = crate_dir.join(name);
+    for (relative, contents) in files {
+        let path = vendored_dir.join(relative);
         if let Some(parent) = path.parent() {
             std::fs::create_dir_all(parent)
                 .map_err(|e| format!("create {}: {e}", parent.display()))?;
@@ -712,15 +716,10 @@ fn write_vendored_libc(crate_dir: &Path) -> Result<(), String> {
 }
 
 fn write_slate_support(crate_dir: &Path) -> Result<(), String> {
-    write_vendored_libc(crate_dir)?;
-    for (relative, contents) in VENDORED_MACH2 {
-        let path = crate_dir.join("mach2").join(relative);
-        if let Some(parent) = path.parent() {
-            std::fs::create_dir_all(parent)
-                .map_err(|error| format!("create {}: {error}", parent.display()))?;
-        }
-        write_file(&path, contents)?;
-    }
+    write_vendored_crate(crate_dir, "libc", VENDORED_LIBC)?;
+    write_vendored_crate(crate_dir, "mach2", VENDORED_MACH2)?;
+    write_vendored_crate(crate_dir, "bitfields", VENDORED_BITFIELDS)?;
+    write_vendored_crate(crate_dir, "bitfields-impl", VENDORED_BITFIELDS_IMPL)?;
     let support_dir = crate_dir.join("slate-support");
     let src_dir = support_dir.join("src");
     std::fs::create_dir_all(&src_dir).map_err(|e| format!("create {}: {e}", src_dir.display()))?;
@@ -1329,6 +1328,15 @@ fn translate_slate_project(
     explicit_docs_only: bool,
     export_dynamic: bool,
 ) -> Result<String, String> {
+    let unit_files: BTreeMap<PathBuf, PathBuf> = commands
+        .iter()
+        .map(|command| {
+            (
+                command.file.clone(),
+                compile_commands::relative_path(&command.directory, &command.file),
+            )
+        })
+        .collect();
     let units = parse_slate_units(commands)?;
     let target = build_target::project_build_target(
         units.iter().map(|unit| (unit.stem.as_str(), &unit.module)),
@@ -1362,7 +1370,7 @@ fn translate_slate_project(
     backend::assign_template_names(translated.programs.iter_mut().map(|(_, program)| program));
     let unit_files: BTreeMap<String, PathBuf> = units
         .iter()
-        .map(|unit| (unit.stem.clone(), unit.path.clone()))
+        .map(|unit| (unit.stem.clone(), unit_files[&unit.path].clone()))
         .collect();
     let written = write_project_crate(
         crate_dir,

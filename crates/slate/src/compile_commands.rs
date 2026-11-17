@@ -71,6 +71,7 @@ pub enum CompileCommandsError {
 #[derive(Debug, PartialEq, Eq)]
 pub struct CompileCommand {
     pub file: PathBuf,
+    pub directory: PathBuf,
     pub args: CompilerArgs,
 }
 
@@ -383,12 +384,16 @@ fn read_one(path: &Path, options: &ReadOptions) -> Result<Vec<Entry>, CompileCom
             position_independent: words
                 .iter()
                 .any(|word| matches!(word.as_str(), "-fPIC" | "-fpic")),
-            unit: UnitCommand {
+            command: CompileCommand {
                 file: file.clone(),
+                directory: directory.clone(),
+                args,
+            },
+            unit: UnitCommand {
+                file,
                 directory,
                 args: unit_args,
             },
-            command: CompileCommand { file, args },
         });
     }
     Ok(commands)
@@ -441,6 +446,19 @@ pub fn path_option(word: &str) -> Option<PathOption<'_>> {
             value => Some(PathOption::Joined(option, value)),
         }
     })
+}
+
+pub fn relative_path(base: &Path, path: &Path) -> PathBuf {
+    let base: Vec<_> = base.components().collect();
+    let target: Vec<_> = path.components().collect();
+    let shared = base
+        .iter()
+        .zip(&target)
+        .take_while(|(left, right)| left == right)
+        .count();
+    std::iter::repeat_n(std::path::Component::ParentDir, base.len() - shared)
+        .chain(target[shared..].iter().copied())
+        .collect()
 }
 
 pub fn absolute_path(base: &Path, path: &Path) -> PathBuf {
